@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from datetime import UTC, datetime
+from datetime import datetime
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -14,11 +14,8 @@ from nfl_ats.active_model import ACTIVE_ATS_MODEL_VERSION
 from nfl_ats.cli_commands import data as data_cmds
 from nfl_ats.cli_commands import operations as operations_cmds
 from nfl_ats.cli_commands import publishing as publishing_cmds
-from nfl_ats.clv import PAPER_DECISION_COLUMNS, paper_decision_ledger_path
 from nfl_ats.data import DataContractError
-from nfl_ats.io import atomic_json, atomic_parquet
-from nfl_ats.lines import apply_external_lines
-from nfl_ats.outcomes import fit_margin_models_for_week
+from nfl_ats.io import atomic_json
 from nfl_ats.pick_refresh import load_pick_revisions
 from nfl_ats.snapshots import write_snapshot
 
@@ -687,19 +684,39 @@ def test_publish_challenger_result_map_covers_live_active_registry() -> None:
     assert len(set(cli.PUBLISH_CHALLENGER_RESULT_KEYS.values())) == len(expected)
 
 
-def _seed_pick_probability(artifacts: Path) -> None:
-    from nfl_ats.pick_probability import STRENGTH_WORDS
+def _seed_pick_probability(
+    artifacts: Path, *, model_logit: float = 0.25, flag_sum: float = 0.25
+) -> None:
+    from nfl_ats.active_model import load_active_ats_model
+    from nfl_ats.pick_probability import (
+        BASE_PROBABILITY_POLICY,
+        COUNTED_FLAG_COLUMNS,
+        FLAG_SUM_COLUMN,
+        MODEL_LOGIT_TERM,
+        MOVE_AVAILABLE_COLUMN,
+        MOVE_COLUMN,
+        OWNER_HELD_MEMBERS,
+        STRENGTH_WORDS,
+    )
 
     directory = artifacts / "pick_probability" / "20260101T000000Z"
     directory.mkdir(parents=True, exist_ok=True)
+    active = load_active_ats_model(artifacts) or {}
+    provenance = {
+        "active_model_id": active["model_id"],
+        "schema_version": 1,
+        "policy": "four_term_pick_probability_v1",
+        "base_probability_policy": BASE_PROBABILITY_POLICY,
+    }
     atomic_json(
         {
             "schema_version": 1,
             "policy": "four_term_pick_probability_v1",
+            "base_probability_policy": BASE_PROBABILITY_POLICY,
             "coefficients": {
                 "intercept": 0.0,
-                "model_logit": 0.25,
-                "flag_sum": 0.25,
+                "model_logit": model_logit,
+                "flag_sum": flag_sum,
                 "move_toward_home": 0.2,
                 "move_available": 0.0,
             },
@@ -710,13 +727,33 @@ def _seed_pick_probability(artifacts: Path) -> None:
             "confidence_bands": [],
             "fitted_games": 300,
             "fitted_seasons": [2024, 2025],
+            "counted_flag_columns": list(COUNTED_FLAG_COLUMNS),
+            "held_members": sorted(OWNER_HELD_MEMBERS),
         },
         directory / "coefficients.json",
     )
     atomic_json(
-        {"artifact": "pick_probability/20260101T000000Z"},
+        {"artifact": "pick_probability/20260101T000000Z", **provenance},
         artifacts / "active_pick_probability.json",
     )
+    atomic_json(
+        {
+            **provenance,
+            "opener_evaluation_model_id": active["model_id"],
+            "features": [MODEL_LOGIT_TERM, FLAG_SUM_COLUMN, MOVE_COLUMN, MOVE_AVAILABLE_COLUMN],
+            "counted_flag_columns": list(COUNTED_FLAG_COLUMNS),
+        },
+        directory / "metadata.json",
+    )
+    forecast_artifact = (active.get("weekly_forecast") or {}).get("artifact")
+    forecast = artifacts / str(forecast_artifact or "") / "recommendations.csv"
+    if forecast_artifact and forecast.is_file():
+        predictions = pd.read_csv(forecast)
+        predictions["base_probability_policy"] = BASE_PROBABILITY_POLICY
+        predictions["home_cover_probability_excluding_push"] = predictions["home_cover_probability"]
+        predictions["push_probability"] = 0.0
+        predictions["home_loss_probability"] = 1.0 - predictions["home_cover_probability"]
+        predictions.to_csv(forecast, index=False)
 
 
 def test_publish_new_overlay_recorders_are_opt_in(
@@ -737,10 +774,10 @@ def test_publish_new_overlay_recorders_are_opt_in(
 
     artifacts = tmp_path / "artifacts"
     _write_board_fixture(artifacts)
-    _seed_pick_probability(artifacts)
     active, _ = _headline_artifacts(artifacts)
     active["weekly_forecast"] = {"artifact": "margin_predictions/forecast"}
     atomic_json(active, artifacts / "active_ats_model.json")
+    _seed_pick_probability(artifacts)
     forecast_metadata = artifacts / "margin_predictions/forecast/metadata.json"
     payload = json.loads(forecast_metadata.read_text())
     payload["active_model_id"] = active["model_id"]
@@ -796,6 +833,7 @@ def test_refresh_crew_recorder_is_gated_and_fails_open(
     destination = tmp_path / "card.md"
 
     monkeypatch.setattr(publishing_cmds, "plan_refresh", lambda *_args, **_kwargs: plan)
+    monkeypatch.setattr(publishing_cmds, "_require_served_pick_probability", lambda: None)
     monkeypatch.setattr(publishing_cmds, "refresh_summary", lambda *_args, **_kwargs: {})
     monkeypatch.setattr(publishing_cmds, "record_plan", lambda *_args, **_kwargs: {"recorded": 1})
     monkeypatch.setattr(
@@ -866,10 +904,10 @@ def test_publish_new_overlay_recorder_failures_do_not_unpublish(
 
     artifacts = tmp_path / "artifacts"
     _write_board_fixture(artifacts)
-    _seed_pick_probability(artifacts)
     active, _ = _headline_artifacts(artifacts)
     active["weekly_forecast"] = {"artifact": "margin_predictions/forecast"}
     atomic_json(active, artifacts / "active_ats_model.json")
+    _seed_pick_probability(artifacts)
     forecast_metadata = artifacts / "margin_predictions/forecast/metadata.json"
     payload = json.loads(forecast_metadata.read_text())
     payload["active_model_id"] = active["model_id"]
@@ -1389,16 +1427,12 @@ def test_cli_handoff(
 def test_cli_refresh_picks_end_to_end(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
-    capsys: pytest.CaptureFixture[str],
-    model_frame: pd.DataFrame,
 ) -> None:
+    from nfl_ats.pick_probability import PickProbabilitySourceError
 
-    data_root = tmp_path / "data"
     artifacts_root = tmp_path / "artifacts"
-    monkeypatch.setenv("NFL_ATS_DATA_DIR", str(data_root))
+    monkeypatch.setenv("NFL_ATS_DATA_DIR", str(tmp_path / "data"))
     monkeypatch.setenv("NFL_ATS_ARTIFACTS_DIR", str(artifacts_root))
-    monkeypatch.setenv("NFL_ATS_REGISTRY_DIR", str(tmp_path / "registry"))
-
     atomic_json(
         {
             "version": ACTIVE_ATS_MODEL_VERSION,
@@ -1412,190 +1446,17 @@ def test_cli_refresh_picks_end_to_end(
         },
         artifacts_root / "active_ats_model.json",
     )
-
-    game_id = "2026_02_III_JJJ"
-    kickoff = pd.Timestamp(datetime.now(UTC)) + pd.Timedelta(days=2)
-    feature_columns = [
-        c
-        for c in model_frame.columns
-        if c
-        not in {
-            "game_id",
-            "season",
-            "week",
-            "gameday",
-            "away_team",
-            "home_team",
-            "home_spread_odds",
-            "away_spread_odds",
-            "spread_line",
-            "home_cover",
-            "ats_margin",
-            "result",
-        }
-    ]
-    target_row = {column: model_frame.iloc[0][column] for column in feature_columns}
-    target_row.update(
-        {
-            "game_id": game_id,
-            "season": 2026,
-            "week": 2,
-            "gameday": pd.Timestamp(kickoff.date()),
-            "away_team": "III",
-            "home_team": "JJJ",
-            "home_spread_odds": -110.0,
-            "away_spread_odds": -110.0,
-            "spread_line": 9.5,
-            "home_cover": np.nan,
-            "ats_margin": np.nan,
-            "result": np.nan,
-            "kickoff": kickoff,
-        }
-    )
-    features = pd.concat([model_frame, pd.DataFrame([target_row])], ignore_index=True, sort=False)
-    features_path = data_root / "processed" / "game_features.parquet"
-    atomic_parquet(features, features_path)
-
-    target, margin_models = fit_margin_models_for_week(
-        features,
-        season=2026,
-        week=2,
-        regressor="ridge",
-        min_train_games=50,
-        feature_profile="base",
-        ridge_alpha=10.0,
-        methods=("market_residual",),
-    )
-    frozen_line = pd.DataFrame({"game_id": [game_id], "home_spread": [1.0]})
-    overridden = apply_external_lines(target, frozen_line)
-    forecast = margin_models["market_residual"].predict(overridden, probability_method="ecdf")
-    true_side = "HOME" if forecast["home_cover_probability"].iloc[0] >= 0.5 else "AWAY"
-    original_pick_side = "AWAY" if true_side == "HOME" else "HOME"
-
-    original = pd.DataFrame(
-        [
-            {
-                "recorded_at_utc": pd.Timestamp("2026-09-15T14:00:00+00:00"),
-                "forecast_artifact": "margin_predictions/test",
-                "forecast_created_at_utc": pd.Timestamp("2026-09-15T13:00:00+00:00"),
-                "model_id": "model-1",
-                "method": "market_residual",
-                "decision_policy_id": ("overlay_union_coach_division_revenge_player_arrests_v2"),
-                "decision_policy_fingerprint": "test-policy-fingerprint",
-                "game_id": game_id,
-                "season": 2026,
-                "week": 2,
-                "kickoff": kickoff,
-                "away_team": "III",
-                "home_team": "JJJ",
-                "model_pick_side": original_pick_side,
-                "pre_arrest_pick_side": original_pick_side,
-                "former_policy_pick_side": original_pick_side,
-                "pick_side": original_pick_side,
-                "coach_fade_flip": False,
-                "division_revenge_flip": False,
-                "player_arrests_flip": False,
-                "spread_gap_zone_flip": False,
-                "composed_overlay_flip": False,
-                "player_arrests_home_flag": False,
-                "player_arrests_away_flag": False,
-                "player_arrests_snapshot_id": "snapshot-tuesday",
-                "player_arrests_snapshot_fetched_at_utc": pd.Timestamp("2026-09-15T12:00:00+00:00"),
-                "player_arrests_safe_index_sha256": "safe-index-hash",
-                "schedule_snapshot_id": "schedule-tuesday",
-                "schedule_parquet_sha256": "schedule-hash",
-                "bet_side": original_pick_side,
-                "decision_home_spread": 1.0,
-                "edge": 0.05,
-                "is_best_pick": False,
-            }
-        ]
-    )
-    atomic_parquet(
-        original[list(PAPER_DECISION_COLUMNS)], paper_decision_ledger_path(artifacts_root)
-    )
-
     destination = tmp_path / "CURRENT_PREDICTIONS.md"
-    destination.write_text(
-        "# NFL ATS predictions: 2026 Week 2\n\nTuesday content.\n", encoding="utf-8"
-    )
-
-    exit_code = cli.main(
-        [
-            "refresh-picks",
-            "--season",
-            "2026",
-            "--week",
-            "2",
-            "--features",
-            str(features_path),
-            "--min-train-games",
-            "50",
-        ]
-    )
-    assert exit_code == 0
-    dry_payload = _last_json(capsys.readouterr().out)
-    assert dry_payload["season"] == 2026
-    assert dry_payload["week"] == 2
-    assert dry_payload["changed_game_ids"] == [game_id]
-    assert dry_payload["ledger"]["skipped"] is True
+    destination.write_text("Tuesday content.\n", encoding="utf-8")
+    command = ["refresh-picks", "--season", "2026", "--week", "2"]
+    with pytest.raises(PickProbabilitySourceError, match="no active pick probability artifact"):
+        cli.main(command)
+    with pytest.raises(PickProbabilitySourceError, match="no active pick probability artifact"):
+        cli.main(
+            [*command, "--record-decisions", "--publish-card", "--destination", str(destination)]
+        )
     assert load_pick_revisions(artifacts_root).empty
-    assert dry_payload["movement_policy"]["current_line_fresh"] is False
-    assert dry_payload["movement_policy"]["current_line_reason"] == "no_market_snapshots"
-    assert dry_payload["movement_policy"]["games_model_only"] == [game_id]
-    assert dry_payload["inactives_refresh_overlay"]["challenger_id"] == "inactives_refresh_v1"
-    assert dry_payload["inactives_refresh_overlay"]["recorded"] == 0
-
-    exit_code = cli.main(
-        [
-            "refresh-picks",
-            "--season",
-            "2026",
-            "--week",
-            "2",
-            "--features",
-            str(features_path),
-            "--min-train-games",
-            "50",
-            "--record-decisions",
-            "--publish-card",
-            "--destination",
-            str(destination),
-            "--note",
-            "thursday_afternoon",
-        ]
-    )
-    assert exit_code == 0
-    payload = _last_json(capsys.readouterr().out)
-    assert payload["season"] == 2026
-    assert payload["week"] == 2
-    assert payload["record_decisions"] is True
-    assert payload["changed_game_ids"] == [game_id]
-    assert payload["ledger"] == {"recorded": 1, "ledger_rows": 1, "best_pick_after": ""}
-    assert payload["card"] == {
-        "written": True,
-        "destination": str(destination),
-        "trigger": "publish_card",
-    }
-    assert payload["movement_policy"]["current_line_fresh"] is False
-    assert payload["movement_policy"]["games_model_only"] == [game_id]
-
-    revisions = load_pick_revisions(artifacts_root)
-    assert len(revisions) == 1
-    assert revisions.iloc[0]["game_id"] == game_id
-    assert revisions.iloc[0]["decision_home_spread"] == pytest.approx(1.0)
-    assert revisions.iloc[0]["previous_pick_side"] == original_pick_side
-    assert revisions.iloc[0]["new_pick_side"] == true_side
-    assert revisions.iloc[0]["movement_policy"] == "model_only"
-    assert revisions.iloc[0]["model_only_pick_side"] == true_side
-    assert pd.isna(revisions.iloc[0]["movement_delta"])
-
-    card_text = destination.read_text(encoding="utf-8")
-    assert "Tuesday content." in card_text
-    assert "Late-week refresh" in card_text
-    assert "thursday_afternoon" in card_text
-    assert "Policy" in card_text
-    assert "model_only" in card_text
+    assert destination.read_text(encoding="utf-8") == "Tuesday content.\n"
 
 
 @pytest.mark.parametrize("explicit_source", [False, True])

@@ -79,6 +79,8 @@ QUOTE_COLUMNS = (
     "bookmaker_key",
     "bookmaker_title",
     "bookmaker_last_update_utc",
+    "quote_timestamp_basis",
+    "source_scan_at_utc",
     "market",
     "market_last_update_utc",
     "outcome_name",
@@ -283,6 +285,7 @@ def write_market_snapshot(
     quota: dict[str, str] | None = None,
     extra_manifest: dict[str, Any] | None = None,
     snapshot_suffix: str = "",
+    provider: str = ODDS_API_PROVIDER,
 ) -> MarketSnapshot:
 
     identifier = run_id(observed_at) + snapshot_suffix
@@ -305,7 +308,7 @@ def write_market_snapshot(
         "schema_version": 1,
         "snapshot_id": identifier,
         "observed_at_utc": _utc(observed_at).isoformat(),
-        "provider": ODDS_API_PROVIDER,
+        "provider": provider,
         "request": request_metadata,
         "quota": quota or {},
         "files": {
@@ -345,7 +348,23 @@ def load_quote_history(root: Path, *, since: pd.Timestamp | None = None) -> pd.D
         ]
     if not paths:
         return pd.DataFrame(columns=QUOTE_COLUMNS)
-    history = pd.concat((pd.read_parquet(path) for path in paths), ignore_index=True)
+    frames: list[pd.DataFrame] = []
+    for path in paths:
+        manifest_path = path.parent / "manifest.json"
+        if not manifest_path.is_file():
+            continue
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        frame = pd.read_parquet(path)
+        frame["publication_scope"] = manifest.get(
+            "publication_scope",
+            "derived_allowed"
+            if manifest.get("provider") == ODDS_API_PROVIDER
+            else "private_research_only",
+        )
+        frames.append(frame)
+    if not frames:
+        return pd.DataFrame(columns=QUOTE_COLUMNS)
+    history = pd.concat(frames, ignore_index=True)
     return history.sort_values(
         ["commence_time_utc", "provider_event_id", "bookmaker_key", "market", "observed_at_utc"]
     ).reset_index(drop=True)
@@ -359,6 +378,73 @@ def latest_book_quotes(quotes: pd.DataFrame, *, before_kickoff: bool = True) -> 
         history = history.loc[history["observed_at_utc"].lt(history["commence_time_utc"])]
     keys = ["provider_event_id", "bookmaker_key", "market", "outcome_side"]
     return history.sort_values("observed_at_utc").groupby(keys, as_index=False).tail(1)
+
+
+def current_spread_quotes(
+    quotes: pd.DataFrame, *, as_of: datetime | None = None, public_only: bool = False
+) -> pd.DataFrame:
+    columns = [
+        "nflverse_game_id",
+        "commence_time_utc",
+        "observed_at_utc",
+        "home_spread_line",
+        "bookmakers",
+        "bookmaker_label",
+        "provider_label",
+    ]
+    if quotes.empty:
+        return pd.DataFrame(columns=columns)
+    if public_only:
+        if "publication_scope" not in quotes.columns:
+            return pd.DataFrame(columns=columns)
+        quotes = quotes.loc[~quotes["publication_scope"].astype(str).str.startswith("private_")]
+    home = quotes.loc[
+        quotes["market"].eq("spreads")
+        & quotes["outcome_side"].eq("HOME")
+        & quotes["nflverse_game_id"].notna()
+    ].copy()
+    if home.empty:
+        return pd.DataFrame(columns=columns)
+    home["observed_at_utc"] = pd.to_datetime(home["observed_at_utc"], utc=True)
+    home["commence_time_utc"] = pd.to_datetime(home["commence_time_utc"], utc=True)
+    home["home_spread_line"] = pd.to_numeric(home["home_spread_line"], errors="coerce")
+    home["bookmaker_title"] = home["bookmaker_title"].fillna(home["bookmaker_key"])
+    home = home.loc[
+        home["observed_at_utc"].lt(home["commence_time_utc"]) & home["home_spread_line"].notna()
+    ]
+    if as_of is not None:
+        home = home.loc[home["observed_at_utc"].le(_utc(as_of))]
+    if home.empty:
+        return pd.DataFrame(columns=columns)
+    if "source_scan_at_utc" in home.columns:
+        scanned = pd.to_datetime(home["source_scan_at_utc"], utc=True, errors="coerce")
+        home["_quote_as_of"] = scanned.where(scanned.notna(), home["observed_at_utc"])
+    else:
+        home["_quote_as_of"] = home["observed_at_utc"]
+    latest = home.groupby("nflverse_game_id")["_quote_as_of"].transform("max")
+    home = home.loc[home["_quote_as_of"].eq(latest)]
+    result = (
+        home.groupby(["nflverse_game_id", "commence_time_utc", "observed_at_utc"], as_index=False)
+        .agg(
+            home_spread_line=("home_spread_line", "median"),
+            bookmakers=("bookmaker_key", "nunique"),
+            bookmaker_label=(
+                "bookmaker_title",
+                lambda values: ", ".join(
+                    sorted({str(value) for value in values if pd.notna(value)})
+                ),
+            ),
+            provider_label=(
+                "provider",
+                lambda values: ", ".join(
+                    sorted({str(value) for value in values if pd.notna(value)})
+                ),
+            ),
+        )
+        .sort_values("commence_time_utc")
+        .reset_index(drop=True)
+    )
+    return result[columns]
 
 
 def spread_consensus(quotes: pd.DataFrame) -> pd.DataFrame:

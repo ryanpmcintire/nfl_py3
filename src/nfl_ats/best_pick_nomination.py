@@ -168,6 +168,32 @@ def served_ranking_scores(predictions: pd.DataFrame) -> pd.DataFrame | None:
     return frame[["game_id", "served_dist"]]
 
 
+def select_served_nominee(
+    predictions: pd.DataFrame, *, probability_column: str = SERVED_SCORE_COLUMN
+) -> tuple[str, int, str]:
+    required = {"game_id", probability_column}
+    missing = sorted(required.difference(predictions.columns))
+    if missing:
+        raise DataContractError(
+            "Served Best Pick is missing probability columns: " + ", ".join(missing)
+        )
+    frame = predictions[["game_id", probability_column]].copy()
+    frame["game_id"] = frame["game_id"].astype(str)
+    if frame["game_id"].duplicated().any():
+        raise DataContractError("Served Best Pick contains duplicate games")
+    probability = pd.to_numeric(frame[probability_column], errors="coerce")
+    eligible = np.isfinite(probability) & probability.between(0.5, 1.0)
+    if not bool(eligible.any()):
+        raise DataContractError("Served Best Pick has no finite picked-side probability")
+    tied = frame.loc[eligible & probability.eq(probability.loc[eligible].max())]
+    n_tied = len(tied)
+    return (
+        str(tied.sort_values("game_id").iloc[0]["game_id"]),
+        n_tied,
+        "game_id" if n_tied > 1 else "none",
+    )
+
+
 def _select_nominee(
     candidates: pd.DataFrame, *, rule_name: str, dispersion_tiebreak: bool
 ) -> tuple[str, int, str]:

@@ -1,70 +1,31 @@
-# Free odds sources
+﻿# Free odds sources
 
 ## Goal
 
-Replace the dead paid Odds API captures with free present-day line sources.
-Done when one or more free sources are proven to carry pregame spreads
-(and totals) on the Tuesday-to-Sunday cadence the board needs, and the
-replacement capture job is specified (not yet built).
+Replace the dead paid Odds API with current free NFL spreads for private personal research, while keeping pool grades and public quote rights separate.
 
 ## State
 
-- 2026-09-19: paid key dead (DEACTIVATED_KEY), owner will not re-subscribe;
-  all 18 paid jobs disabled (lane `odds-api-key-deactivated.md`). Owner
-  confirms no specific free source was ever agreed. Probe launched same day.
+- 2026-09-20 11:20 ET: `scripts/capture_bovada_private.py` made a genuine one-shot public NFL JSON capture at `data/market/raw/20260920T152003Z`: 15/15 future games, 60 spread/total outcome rows, Bovada only. `observed_at_utc` is actual local retrieval; per-book update is unknown. Its 15 games have real earlier Bovada quotes from Sep 14-15, so no baseline was fabricated.
+- 2026-09-20 11:23 ET: `scripts/capture_odds_gap_private.py` read the documented public `/api/lineshop` once with normal headers, privately normalizing 15/15 current-week games for each Bovada, `williamhill_us` (Caesars), and MyBookie. Artifact `data/market/raw/20260920T152349Z-odds-gap-private` has 90 spread rows. `observed_at_utc` is actual retrieval 15:23:49Z; separate `source_scan_at_utc` is 15:00:46Z. Book-specific update times remain unknown. A prior request omitting its working User-Agent returned 403; the corrected public request succeeded. The Odds Gap docs permit personal assistant use with attribution and prohibit feed repackaging; these snapshots are private research only, not a public odds product.
+- `scripts/capture_private_sunday_odds.py` runs both sources at the single enabled `odds_private_sun` Sunday 12:10 ET scheduler slot before 12:50 pick refresh. It skips sources captured within 30 minutes and persists source-specific HTTP 403/429/5xx stop markers. Exact argv exercised 11:27 ET: `MANUAL-RUN OK odds_private_sun`; recent capture skip avoided duplicate fetches. Restart the daemon once schedule edits settle; its current process retains the old schedule.
+- `market_data.current_spread_quotes` uses the freshest snapshot per game; `public_only=True` excludes private-research snapshots via manifest scope. The board agent wired the public selector. Private model input uses genuine chronological leader history; Sunday feature worker is binding observed versus source scan time and testing actual three-book exposure. Public Books-now must not republish these vendor lines. Splash pool lines remain grading lines.
+- Measured selector at as-of 15:30Z: 15 private current lines, each direct single-book Bovada (its 15:20 capture is fresher than the Odds Gap 15:00 scan); zero public current lines. As-of 15:10Z cannot see either response retrieved later. Targeted market/pick/scheduler tests: 104 passed; targeted Ruff format/check, mypy for 235 source files, and comment check pass.
+- Release audit closed an incomplete-snapshot scope gap: quote history now waits for a manifest and defaults unknown providers private. Real selector still measures 15 private and zero public current lines; 104 scoped tests pass after the existing Odds API fixture gained its production-like manifest. No raw market files are tracked (`data/market/**` is ignored), no new credentials exist, and the running scheduler is one uv/venv/Python process tree.
+- ESPN DraftKings per-event summary capture code and 11 disabled schedule slots exist, but today's scoreboard request returned 403. `data/market/espn_pickcenter_blocked.json` stops further requests. All disabled job argvs were manually exercised. No paid key or halves source was reactivated.
+- Scheduler daemon restarted safely after the job edit: old PID 24128, new PID 25656 at 11:29 ET; `--health` reports code and schedule current. Existing unrelated missed-job health rows still exist. Exact nested `lineups_sun_am --dry` argv passed `MANUAL-DRY-RUN OK` at 11:17 ET without a rebuild or publish.
+- Historical scheduler recovery: nine prior unacknowledged misses (six Sep 19 Saturday jobs and three disabled paid-odds windows) were individually acknowledged with the supported CLI, explicitly preserving MISSED status and noting that point-in-time inputs cannot be recreated. The earlier weekly-lock acknowledgement was untouched. Current `--status --brief` still shows 10 MISSED rows, all acknowledged; `--health` reports 17 historical missed windows, zero unacknowledged, code/schedule current, `OVERALL: OK`, daemon PID 25656.
 
 ## Tried
 
-- In-tree candidates noted (unverified): hand-captured Splash board (pool
-  lines only, no cross-book market), `public_betting_live_capture.py`
-  (Action Network splits, percentages not lines), nflverse schedules
-  (closing lines, post-season, not live).
-- Feasibility probe DONE 2026-09-19 (subagent, 7 requests; coordinator
-  re-verified the two load-bearing claims with 2 more requests plus the
-  vendor pricing page):
-  - ESPN: scoreboard carries no odds (measured, 14 events); per-game
-    summary `pickcenter` carries DraftKings spread+total (measured:
-    CAR -2.5, o/u 43.5). Single book, per-event (16 calls/slot), free,
-    no key. Tuesday availability for Sunday games unverified.
-    Licensing red-leaning: ESPN pages already RED in
-    `config/source_policies.json`; a DK line must never publish as
-    consensus.
-  - Same-vendor free tier: Starter FREE, 500 credits/month, all
-    sports/markets, most bookmakers (measured from the pricing page).
-    Bulk-only board fits (~10 jobs x 3 credits = ~130/month); halves
-    (64/run) and props do not. Licensing GREEN (registered source).
-  - nflverse schedules: lines filled weeks 1-3 only (measured, 272 rows
-    via nflreadpy), single number, no books or timestamps. Close
-    reference only, not a live feed.
-  - Action Network: percentages only, not a line source (read).
-  - Nothing else free and live found (Pinnacle/Betfair need funded
-    accounts; archives are closes-only).
-- Standing fact under every option: all six halves jobs die (LEAD-61
-  loses its prospective channel); no free per-event halves source exists.
+- Sep 19 cached Action Network scoreboard does contain per-book spreads, correcting the prior “percentages only” claim. Its existing Saturday/Sunday public-betting jobs remain unchanged; no new Action request or odds normalization was made.
+- Private earlier Bovada read at 10:49 ET had 15 genuine Tuesday-to-Sunday pairs and six changed spreads; the later persisted capture is the authoritative current read. The Odds Gap API docs are at https://theoddsgap.com/api-docs; Bovada terms at https://www.bovada.lv/contents/terms_of_service_bvd.pdf.
+- Targeted market/pick/scheduler/trigger tests passed (123); scheduler dry argv tests passed (57). Ruff on edited odds modules passes. The full suite before concurrent root fixes had 4 failures, 38 errors, 4487 passes, 9 skips; root handles final suite.
 
 ## Next
 
-- Feasibility probe (read-only, no registry cells, no looks spent): for each
-  candidate source verify spread+total pregame, book coverage, Tuesday
-  availability, cadence, and access/licensing terms; rank and specify the
-  replacement capture. Then build it as its own unit.
+- Sunday worker: confirm all 15 games have valid historical-to-current leader pairs, prevent the 15:00 Odds Gap Bovada scan from superseding the direct 15:20 Bovada quote, and honor actual 15:23 retrieval for point-in-time eligibility. Root: use only validated fitted signal, keep single versus three-book coverage in lineage, and perform one safe daemon restart. Board: render no private vendor raw quotes.
 
 ## Open
 
-- Owner decision 2026-09-19: use AS MANY sources as possible (federation,
-  not one feed). Coverage matrix from verified facts:
-  - Splash pool board (hand, already scheduled Tue 12:05): the grade
-    line, authoritative for the card. Unchanged.
-  - ESPN DraftKings single-book (free, per-event): spread+total proxy
-    for market moves and Books-now, always labeled single-book, never
-    consensus. Needs: Tuesday-availability probe, licensing registration
-    (source currently RED).
-  - nflverse schedules (free, weekly): close reference for CLV once
-    updated. Not a live feed.
-  - Public betting splits (already scheduled): field behavior only.
-- Build order proposed: (1) ESPN Tuesday probe + licensing call;
-  (2) ESPN capture job on the old bulk slots; (3) consumer audit
-  (Books-now/market-move/dispersion pools read single-book honestly or
-  degrade); halves stay dead under every option.
-- Same-vendor free tier (500/mo, bulk-only fits) stays a fallback; owner
-  leans away from the vendor entirely.
+- Neither free source provides a confirmed book-specific quote update time. No public odds redistribution is authorized; sourced decisions and private analysis remain separate. ESPN stays blocked at HTTP 403. Public Action odds path needs distinct provenance/access review before adding it as a normalized feed.

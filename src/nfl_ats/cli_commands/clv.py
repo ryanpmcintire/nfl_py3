@@ -462,6 +462,7 @@ def _cmd_opener_evaluation(args: argparse.Namespace) -> None:
     atomic_csv(season_summary, output / "season_summary.csv")
     configuration = {
         "command": command_name,
+        "base_probability_policy": str(scored["base_probability_policy"].iloc[0]),
         "min_train_games": args.min_train_games,
         "bootstrap_samples": args.bootstrap_samples,
         "bootstrap_seed": args.bootstrap_seed,

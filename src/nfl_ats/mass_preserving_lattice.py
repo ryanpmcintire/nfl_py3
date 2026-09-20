@@ -18,7 +18,8 @@ from nfl_ats.modeling import regular_season_rows
 FloatArray = npt.NDArray[np.float64]
 
 DISCRETE_PUSH_READ_SERVED = True
-DISCRETE_PUSH_READ_POLICY = "mass_preserving_lattice_mp1_v1"
+DISCRETE_PUSH_READ_POLICY = "mass_preserving_lattice_mp1_v2"
+BASE_PROBABILITY_POLICY = "discrete_conditional_non_push_v1"
 DISCRETE_PUSH_READ_FILENAME = "discrete_push_read.json"
 
 BAND_HALF_WIDTH = float(BANDWIDTH)
@@ -71,7 +72,7 @@ class MassPreservingRead:
     @property
     def home_cover_probability(self) -> float:
 
-        return self.cover + 0.5 * self.push
+        return self.conditional_cover_probability
 
     @property
     def conditional_cover_probability(self) -> float:
@@ -424,11 +425,22 @@ def serve_discrete_three_way(
                     float(forecasts["push_probability"].iloc[index]),
                     float(forecasts["home_loss_probability"].iloc[index]),
                 ),
-                home_cover_probability=float(forecasts["home_cover_probability"].iloc[index]),
+                home_cover_probability=read.home_cover_probability,
             )
     result["home_cover_probability_excluding_push"] = cover
     result["push_probability"] = push
     result["home_loss_probability"] = loss
+    if "home_cover_probability" in result and "home_cover_probability_smooth" not in result:
+        result["home_cover_probability_smooth"] = result["home_cover_probability"]
+    probability = np.divide(
+        cover, cover + loss, out=np.full(len(result), 0.5), where=(cover + loss) > 0.0
+    )
+    result["home_cover_probability"] = probability
+    result["base_probability_policy"] = BASE_PROBABILITY_POLICY
+    if "pick_probability" in result:
+        result["pick_probability"] = np.maximum(probability, 1.0 - probability)
+    if "confidence" in result:
+        result["confidence"] = np.maximum(probability, 1.0 - probability) - 0.5
     return result
 
 
@@ -453,6 +465,17 @@ def serve_discrete_sweep(
         cover[index], push[index], loss[index] = reader.three_way(
             line, points_by_game[game_id], conditioning_line=quoted
         )
+    if "home_cover_probability" in result and "home_cover_probability_smooth" not in result:
+        result["home_cover_probability_smooth"] = result["home_cover_probability"]
+    probability = np.divide(
+        cover, cover + loss, out=np.full(len(result), 0.5), where=(cover + loss) > 0.0
+    )
+    result["home_cover_probability"] = probability
+    result["base_probability_policy"] = BASE_PROBABILITY_POLICY
+    if "pick_probability" in result:
+        result["pick_probability"] = np.maximum(probability, 1.0 - probability)
+    if "confidence" in result:
+        result["confidence"] = np.maximum(probability, 1.0 - probability) - 0.5
     result["home_cover_probability_excluding_push"] = cover
     result["push_probability"] = push
     result["home_loss_probability"] = loss
@@ -477,6 +500,7 @@ class ProductionDiscretePushRead:
     def to_dict(self) -> dict[str, Any]:
         return {
             "policy": self.policy,
+            "base_probability_policy": BASE_PROBABILITY_POLICY,
             "served": self.served,
             "error": self.error,
             "band_half_width": BAND_HALF_WIDTH,
@@ -583,6 +607,7 @@ def load_forecast_discrete_push_read(forecast_dir: Path) -> dict[str, Any] | Non
 __all__ = [
     "BAND_HALF_WIDTH",
     "BAND_STEP",
+    "BASE_PROBABILITY_POLICY",
     "DISCRETE_PUSH_READ_FILENAME",
     "DISCRETE_PUSH_READ_POLICY",
     "DISCRETE_PUSH_READ_SERVED",

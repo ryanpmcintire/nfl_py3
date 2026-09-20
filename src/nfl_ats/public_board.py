@@ -54,6 +54,8 @@ from nfl_ats.dashboard.findings_content import (
 )
 from nfl_ats.data import DataContractError
 from nfl_ats.displayed_confidence import (
+    DISPLAYED_PICK_PROBABILITY_COLUMN,
+    DISPLAYED_STRENGTH_WORD_COLUMN,
     STRENGTH_ROUNDING_PLACES,
     StrengthBands,
     displayed_pick_probability,
@@ -85,6 +87,7 @@ from nfl_ats.interim_hc_first_game_tilt_overlay import (
 from nfl_ats.key_line_pick_read import pick_overrides_from_metadata
 from nfl_ats.model_explanation import load_model_explanation_html
 from nfl_ats.model_ledger import build_and_render
+from nfl_ats.pick_probability import BASE_PROBABILITY_POLICY, calibrated_discrete_sweep
 from nfl_ats.player_arrests_back_side_overlay import (
     POLICY_BASELINE_OPENER_ACCURACY,
     POLICY_EFFECT_ACCURACY_POINTS,
@@ -94,6 +97,7 @@ from nfl_ats.player_arrests_back_side_overlay import (
     ArrestOverlayResult,
 )
 from nfl_ats.pool_workbench import PoolRules, build_pool_workbench_body
+from nfl_ats.published_picks import frozen_picks, locked_best_pick
 from nfl_ats.reporting import artifact_directories, read_json
 from nfl_ats.signal_ledger import build_signal_ledger_body
 from nfl_ats.snapshots import latest_snapshot, load_snapshot
@@ -851,40 +855,14 @@ _SEASON_OPS_STEPS: tuple[tuple[str, str], ...] = (
 
 
 def _movement_policy_note(challengers: Sequence[Mapping[str, Any]]) -> str:
-
-    entry = next(
-        (
-            candidate
-            for candidate in challengers
-            if str(candidate.get("challenger_id")) == "model_only_refresh_incumbent"
-        ),
-        None,
+    return (
+        '<div class="prose"><p><b>Late line movement informs the cover chance.</b> '
+        "When eligible market evidence is available, its movement joins the model "
+        "and the week's situational signals in one fitted probability. The pick "
+        "comes from that probability at the pool's frozen line; a line move "
+        "cannot switch a pick on its own. When movement evidence is unavailable, "
+        "the fitted read uses the information it has.</p></div>"
     )
-    evidence = entry.get("evidence") if isinstance(entry, dict) else None
-    threshold_text = evidence.get("threshold_frozen") if isinstance(evidence, dict) else None
-    body = (
-        '<div class="prose"><p><b>If lines move late in the week, we follow them.</b> '
-        "At each pass we look at the three books that usually move first: if their "
-        "middle move is a full point or more off Tuesday's frozen number, the pick "
-        "follows them -- and half a point is enough on the biggest spreads, where a "
-        "move by those books is the strongest read on the board -- unless an injury "
-        "filed since Tuesday points the other way, "
-        "which keeps Tuesday's pick. Below that move (or with no fresh lines "
-        "captured), the model's own re-run pick plays as always.</p></div>"
-    )
-    if isinstance(threshold_text, str) and threshold_text.strip():
-        body += (
-            f'<p class="fine" style="margin-top:8px;">As registered '
-            f"({_challenger_display_name('model_only_refresh_incumbent')}): "
-            f"{escape(threshold_text)}</p>"
-        )
-    else:
-        body += (
-            '<p class="fine" style="margin-top:8px;">Not yet measured on this build -- see the '
-            f"{_challenger_display_name('model_only_refresh_incumbent')} candidate rule on the "
-            "findings page once it is tracked.</p>"
-        )
-    return body
 
 
 def _season_ops_timeline_section(challengers: Sequence[Mapping[str, Any]]) -> str:
@@ -1556,6 +1534,8 @@ def render_picks_page(
     recent_form_text: str | None = None,
     played_chain_accuracy: float | None = None,
     strength_bands: StrengthBands | None = None,
+    calibrated_probability: bool = False,
+    frozen_game_ids: frozenset[str] = frozenset(),
 ) -> str:
 
     explanations = explanations or {}
@@ -1589,15 +1569,21 @@ def render_picks_page(
             overlay.overlaid_predictions, data_root, now=generated
         )
     recommendations = (
-        production_overlay.overlaid_predictions
+        predictions
+        if calibrated_probability
+        else production_overlay.overlaid_predictions
         if production_overlay is not None
         else arrest_overlay.overlaid_predictions
     )
-    flipped_by_game = {flip.game_id: flip for flip in overlay.flips}
-    arrest_flipped_by_game = {flip.game_id: flip for flip in arrest_overlay.flips}
+    flipped_by_game = (
+        {} if calibrated_probability else {flip.game_id: flip for flip in overlay.flips}
+    )
+    arrest_flipped_by_game = (
+        {} if calibrated_probability else {flip.game_id: flip for flip in arrest_overlay.flips}
+    )
     production_members_by_game = (
         {game.game_id: game.member_ids for game in production_overlay.games}
-        if production_overlay is not None
+        if production_overlay is not None and not calibrated_probability
         else {}
     )
 
@@ -1629,7 +1615,7 @@ def render_picks_page(
         )
         best_pick_id = resolved_nomination.active_game_id
         if best_pick_id is not None:
-            if resolved_nomination.active_rule == "v2":
+            if resolved_nomination.active_rule in {"v2", "served_probability"}:
                 best_pick_note = f"This pick was {resolved_nomination.method_note}"
             else:
                 tie = (
@@ -1660,7 +1646,7 @@ def render_picks_page(
     for _, row in ordered.iterrows():
         game_id = str(row["game_id"])
         game_sweep = pd.DataFrame()
-        if has_sweep:
+        if has_sweep and game_id not in frozen_game_ids:
             game_sweep = sweep.loc[
                 sweep["game_id"].astype(str).eq(game_id)
                 & sweep["line_offset"].abs().le(SWEEP_HALF_WIDTH)
@@ -1674,7 +1660,9 @@ def render_picks_page(
             flip=flipped_by_game.get(game_id),
             arrest_flip=arrest_flipped_by_game.get(game_id),
             production_members=production_members_by_game.get(game_id, ()),
-            spread_explorer_params=spread_explorer.get(game_id),
+            spread_explorer_params=(
+                None if game_id in frozen_game_ids else spread_explorer.get(game_id)
+            ),
         )
         deep_blocks.append(block)
         if chart_payload is not None:
@@ -1689,7 +1677,10 @@ def render_picks_page(
         ordered, dict.fromkeys(flipped_game_ids), best_pick_id, why_by_game, strength_bands
     )
     board_legend = (
-        '<p class="fine" style="margin-top:8px;">&#9733; best pick &middot; &#8646; flipped '
+        '<p class="fine" style="margin-top:8px;">&#9733; best pick &middot; '
+        "strength runs slight &lt; lean &lt; strong, by the calibrated cover chance.</p>"
+        if calibrated_probability
+        else '<p class="fine" style="margin-top:8px;">&#9733; best pick &middot; &#8646; flipped '
         "by an overlay rule &middot; strength runs slight &lt; lean &lt; strong, by where "
         "this pick's cover chance sits among the model's own picks over the past six "
         "seasons.</p>"
@@ -1698,7 +1689,9 @@ def render_picks_page(
     composition = ["Synchronized with the active model"]
     if strong_count:
         composition.append(f"{strong_count} strong lean{'s' if strong_count != 1 else ''}")
-    if production_overlay is not None:
+    if calibrated_probability:
+        composition.append("Situational evidence weighed in each cover chance")
+    elif production_overlay is not None:
         composition.append(
             f"{production_overlay.flip_count} pick"
             f"{'s' if production_overlay.flip_count != 1 else ''} flipped by the fix-up rules"
@@ -3856,6 +3849,12 @@ def build_public_site(
             now=generated,
             require_fresh_arrest_overlay=require_fresh_arrest_overlay,
             artifacts_root=artifacts_root,
+            locked_game_id=locked_best_pick(
+                artifacts_root,
+                season=int(artifacts.metadata.get("season") or 0),
+                week=int(artifacts.metadata.get("week") or 0),
+                now=generated,
+            ),
         )
         if game_type == "REG" and not artifacts.predictions.empty
         else None
@@ -3876,6 +3875,45 @@ def build_public_site(
         )
     )
     nomination = view.nomination if view is not None else None
+    calibrated_probability = (
+        view is not None
+        and view.pick_probability is not None
+        and view.pick_probability.base_probability_policy == BASE_PROBABILITY_POLICY
+    )
+    served_predictions = (
+        view.predictions if calibrated_probability and view is not None else artifacts.predictions
+    )
+    served_sweep = (
+        calibrated_discrete_sweep(artifacts.sweep, served_predictions)
+        if calibrated_probability
+        else artifacts.sweep
+    )
+    frozen = (
+        frozen_picks(
+            artifacts_root,
+            now=generated,
+            season=int(artifacts.metadata.get("season") or 0),
+            week=int(artifacts.metadata.get("week") or 0),
+        )
+        if calibrated_probability
+        else {}
+    )
+    if frozen:
+        served_predictions = served_predictions.copy()
+        for row_index, row in served_predictions.iterrows():
+            held = frozen.get(str(row["game_id"]))
+            if held is None:
+                continue
+            home = str(row["home_team"])
+            home_probability = (
+                held.displayed_score if held.pick_team == home else 1.0 - held.displayed_score
+            )
+            served_predictions.at[row_index, "home_cover_probability"] = home_probability
+            served_predictions.at[row_index, "spread_line"] = held.market_spread
+            served_predictions.at[row_index, DISPLAYED_PICK_PROBABILITY_COLUMN] = (
+                held.displayed_score
+            )
+            served_predictions.at[row_index, DISPLAYED_STRENGTH_WORD_COLUMN] = held.strength_word
     challengers = load_prospective_challengers(artifacts_root)
     challenger_week_previews = _challenger_week_previews(
         challengers,
@@ -3903,7 +3941,8 @@ def build_public_site(
 
     spread_explorer_params: dict[str, SpreadExplorerGameParams] = {}
     if (
-        str(artifacts.metadata.get("probability_method")) in ("gaussian", "gaussian_median")
+        not calibrated_probability
+        and str(artifacts.metadata.get("probability_method")) in ("gaussian", "gaussian_median")
         and not artifacts.predictions.empty
     ):
         explorer_features = load_feature_table_for_forecast(artifacts.metadata, resolved_data_root)
@@ -3934,8 +3973,8 @@ def build_public_site(
 
     return {
         PICKS_PAGE: render_picks_page(
-            artifacts.predictions,
-            artifacts.sweep,
+            served_predictions,
+            served_sweep,
             artifacts.explanations,
             season=artifacts.metadata.get("season"),
             week=artifacts.metadata.get("week"),
@@ -3955,6 +3994,8 @@ def build_public_site(
             challenger_week_previews=challenger_week_previews,
             recent_form_text=recent_form_text,
             played_chain_accuracy=played_chain_accuracy,
+            calibrated_probability=calibrated_probability,
+            frozen_game_ids=frozenset(frozen),
         ),
         MODELS_PAGE: render_models_page(
             ledger_section,

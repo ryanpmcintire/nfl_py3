@@ -15,7 +15,8 @@ _DAY_INDEX = {"mon": 0, "tue": 1, "wed": 2, "thu": 3, "fri": 4, "sat": 5, "sun":
 _MINUTES_PER_WEEK = 7 * 24 * 60
 _STAMP_FORMAT = "%Y%m%dT%H%M%SZ"
 
-_SNAPSHOT_NAME = re.compile(r"^(\d{8}T\d{6}Z)$")
+_SNAPSHOT_NAME = re.compile(r"^(\d{8}T\d{6}(?:\d{6})?Z)$")
+_FORECAST_NAME = re.compile(r"^\d{4}-week-\d{2}-(\d{8}T\d{6}Z)$")
 
 FRIENDLY_NAMES: dict[str, str] = {
     "data/market/raw": "market_odds",
@@ -119,8 +120,9 @@ def _parse_timestamp(value: str) -> datetime | None:
 
     match = _SNAPSHOT_NAME.match(value)
     if match:
+        stamp_format = "%Y%m%dT%H%M%S%fZ" if len(match.group(1)) == 22 else _STAMP_FORMAT
         try:
-            return datetime.strptime(match.group(1), _STAMP_FORMAT).replace(tzinfo=UTC)
+            return datetime.strptime(match.group(1), stamp_format).replace(tzinfo=UTC)
         except ValueError:
             return None
     try:
@@ -138,7 +140,7 @@ def newest_snapshot_instant(root: Path) -> datetime | None:
     for child in root.iterdir():
         if not child.is_dir():
             continue
-        match = _SNAPSHOT_NAME.match(child.name)
+        match = _SNAPSHOT_NAME.match(child.name) or _FORECAST_NAME.match(child.name)
         if not match:
             continue
         stamp = _parse_timestamp(match.group(1))

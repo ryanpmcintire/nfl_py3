@@ -67,6 +67,60 @@
         "no_fetches_until_explicit_site_permission"
       ]
     },
+    "the_odds_gap_lineshop_private": {
+      "risk": "yellow",
+      "terms_url": "https://theoddsgap.com/api-docs",
+      "terms_reviewed_on": "2026-09-20",
+      "acquisition_allowed": true,
+      "raw_retention": "private_local_only",
+      "raw_redistribution": "prohibited",
+      "derived_publication": "private_research_only_with_attribution",
+      "conditions": [
+        "personal_ai_assistant_research_only",
+        "bounded_sunday_pre_kickoff_capture",
+        "no_sustained_polling_or_bulk_scraping",
+        "no_external_feed_repackaging",
+        "attribute_theoddsgap_com",
+        "source_scan_timestamp_required"
+      ]
+    },
+    "bovada_public_nfl": {
+      "risk": "yellow",
+      "terms_url": "https://www.bovada.lv/contents/terms_of_service_bvd.pdf",
+      "terms_reviewed_on": "2026-09-20",
+      "acquisition_allowed": true,
+      "raw_retention": "private_local_only",
+      "raw_redistribution": "prohibited",
+      "derived_publication": "private_research_only",
+      "conditions": [
+        "personal_research_sunday_pre_kickoff_capture_only",
+        "public_unauthenticated_endpoint_only",
+        "bounded_sunday_pre_kickoff_capture",
+        "capture_timestamp_required",
+        "single_book_bovada_label_required",
+        "no_external_quote_publication"
+      ]
+    },
+    "espn_scoreboard_pickcenter": {
+      "risk": "yellow",
+      "terms_url": "https://www.espn.com/robots.txt",
+      "terms_reviewed_on": "2026-09-19",
+      "acquisition_allowed": true,
+      "raw_retention": "private_local_only",
+      "raw_redistribution": "prohibited",
+      "derived_publication": "aggregates_only",
+      "conditions": [
+        "research_use_only",
+        "capture_timestamp_required",
+        "site_api_scoreboard_and_summary_endpoints_only_no_key_no_auth_bypass",
+        "single_book_draftkings_label_required_never_consensus",
+        "contact_user_agent",
+        "serial_requests",
+        "minimum_delay_seconds_2",
+        "stop_on_403_429_5xx",
+        "never_refetch_cached_response"
+      ]
+    },
     "cbssports_nfl_injuries": {
       "risk": "red",
       "terms_url": "https://www.viacomcbs.legal/us/en/cbsi/terms-of-use",

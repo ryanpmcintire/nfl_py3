@@ -7,6 +7,12 @@ doc.
 
 ## Session startup
 
+- In a checkout shared between Windows and Linux/WSL, keep Windows on `.venv`
+  and set `export UV_PROJECT_ENVIRONMENT="$PWD/.venv-linux"` from the repo
+  root before **every** Linux `uv run` or `uv sync`. Initialize that separate
+  environment with `uv sync --locked`; never let Linux uv replace the Windows
+  `.venv`. Use the Linux uv binary for Linux commands. Setup and Windows
+  recovery commands: `docs/windows_linux_environment.md`.
 - Read `HANDOFF.md`, `docs/lanes/README.md`, and the lane file the prompt
   names (or the most recently modified lane when the prompt says to
   continue). Read the `## Recommended execution order` section of

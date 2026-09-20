@@ -133,7 +133,7 @@ def test_band_read_pushes_only_on_an_integer_line_and_sums_to_one() -> None:
     assert integer.push > 0.0 and half.push == 0.0
     for read in (integer, half):
         assert read.cover + read.push + read.loss == pytest.approx(1.0)
-        assert read.home_cover_probability == pytest.approx(read.cover + 0.5 * read.push)
+        assert read.home_cover_probability == pytest.approx(read.cover / (read.cover + read.loss))
         assert read.three_way() == (read.cover, read.push, read.loss)
     assert integer.band == BAND_HALF_WIDTH
     sparse_lines = np.concatenate([np.full(30, 12.0), np.full(400, 0.0)])
@@ -309,11 +309,23 @@ def test_served_push_at_three_reads_the_lattice_and_never_moves_the_pick(
         discrete_read=reader,
         discrete_read_log=log,
     )
-    untouched = [column for column in baseline.columns if column not in THREE_WAY_COLUMNS]
+    changed = {
+        *THREE_WAY_COLUMNS,
+        "home_cover_probability",
+        "pick",
+        "bet_side",
+        "edge",
+        "bet_odds",
+        "break_even_probability",
+    }
+    untouched = [column for column in baseline.columns if column not in changed]
     pd.testing.assert_frame_equal(baseline[untouched], served[untouched])
-    assert (
-        baseline["home_cover_probability"].ge(0.5) == served["home_cover_probability"].ge(0.5)
-    ).all()
+    ats = served.loc[served["method"].eq("market_residual")]
+    np.testing.assert_allclose(
+        ats["home_cover_probability"],
+        ats["home_cover_probability_excluding_push"]
+        / (ats["home_cover_probability_excluding_push"] + ats["home_loss_probability"]),
+    )
     others = baseline["method"].ne("market_residual")
     pd.testing.assert_frame_equal(
         baseline.loc[others, list(THREE_WAY_COLUMNS)], served.loc[others, list(THREE_WAY_COLUMNS)]
@@ -340,7 +352,7 @@ def test_served_push_at_three_reads_the_lattice_and_never_moves_the_pick(
             row["push_probability"],
             row["home_loss_probability"],
         )
-        assert record.home_cover_probability == row["home_cover_probability"]
+        assert record.home_cover_probability == record.discrete.conditional_cover_probability
         assert (
             record.discrete.push
             == ats.set_index(ats["game_id"].astype(str)).loc[game_id, "push_probability"]
@@ -357,18 +369,21 @@ def test_line_sweep_reads_push_off_the_lattice_at_every_alternative_line(
         features, season=2020, week=1, min_train_games=80, discrete_read=reader
     )
     two_way = ["home_cover_probability", "pick_probability", "confidence"]
-    pd.testing.assert_frame_equal(
-        baseline.drop(columns=list(THREE_WAY_COLUMNS)), served.drop(columns=list(THREE_WAY_COLUMNS))
-    )
+    untouched = [c for c in baseline if c not in (*THREE_WAY_COLUMNS, *two_way)]
+    pd.testing.assert_frame_equal(baseline[untouched], served[untouched])
     ats = served.loc[served["method"].eq("market_residual")]
     total = ats[list(THREE_WAY_COLUMNS)].sum(axis=1)
     assert np.allclose(total, 1.0)
     integer_lines = np.isclose(ats["alternative_line"] % 1.0, 0.0)
     assert (ats.loc[integer_lines, "push_probability"] > 0.0).all()
     assert (ats.loc[~integer_lines, "push_probability"] == 0.0).all()
-    assert (baseline[two_way].to_numpy() == served[two_way].to_numpy()).all()
+    np.testing.assert_allclose(
+        ats["home_cover_probability"],
+        ats["home_cover_probability_excluding_push"]
+        / (ats["home_cover_probability_excluding_push"] + ats["home_loss_probability"]),
+    )
     others = served["method"].ne("market_residual")
-    pd.testing.assert_frame_equal(baseline.loc[others], served.loc[others])
+    pd.testing.assert_frame_equal(baseline.loc[others], served.loc[others, baseline.columns])
 
 
 def test_flag_off_serves_no_reader_and_a_fit_failure_degrades_with_the_error(

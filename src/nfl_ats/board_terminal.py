@@ -407,6 +407,7 @@ def _terminal_chrome(
 ) -> str:
 
     return (
+        '<a class="skip-link" href="#main-content">Skip to content</a>'
         '<div class="terminal-chrome">'
         + _ticker(chrome)
         + _header(
@@ -656,9 +657,8 @@ def _best_pick_note_html(content: BoardContent) -> str:
     lead = (
         '<p class="policy-note"><b>Best pick</b> &mdash; '
         f"{escape(best.pick_team)} {escape(best.pick_spread_text)} at "
-        f"{escape(best.probability_text)} cover chance. It is the highest model chance among "
-        "the games where the books agreed most closely on the line, not across the whole card, "
-        "and it is re-nominated only on the Sunday-morning pass.</p>"
+        f"{escape(best.probability_text)} cover chance. "
+        f"{escape(content.best_pick_note)}</p>"
     )
     if not content.best_pick_ranking:
         return lead
@@ -667,7 +667,7 @@ def _best_pick_note_html(content: BoardContent) -> str:
         label = f"{escape(row.pick_team)} {escape(row.pick_spread_text)}".strip()
         if row.eligible and row.rank is not None:
             marker = f"<b>{row.rank}.</b>"
-            note = "current best pick" if row.is_candidate else ""
+            note = "leads this ranking" if row.is_candidate else ""
         elif row.cover_probability < 0.5:
             marker = "&ndash;"
             note = "out: the model has this side under an even chance to cover"
@@ -849,8 +849,14 @@ def _board_section(content: BoardContent) -> str:
                 f"{_lock_html(game.lock_text)}{kickoff_countdown}</td>"
                 f'<td class="matchup" data-label="Matchup">{matchup_cell}</td>'
                 f'<td class="pick" data-label="Pick">{pick_cell}</td>'
-                f'<td class="market-now" data-label="Books now" '
+                f'<td class="market-now" '
+                f'data-label="{escape(game.market_now_book_label or "Books now")}" '
                 f'title="{escape(game.market_move_text)}">{escape(game.market_now_text)}'
+                + (
+                    f'<span class="market-source">{escape(game.market_now_book_label)}</span>'
+                    if game.market_now is not None and game.market_now_book_label
+                    else ""
+                )
                 + (
                     f'<span class="market-move{_move_cls}">{escape(game.market_move_label)}</span>'
                     if game.market_move_label
@@ -863,24 +869,27 @@ def _board_section(content: BoardContent) -> str:
                 "</tr>"
             )
 
+    probability_help = (
+        "The fitted chance this side covers, excluding a tie at the spread. Situational "
+        "evidence is included in this one number."
+        if content.calibrated_probability
+        else "The model's estimated chance this side covers at the quoted spread."
+    )
+    flip_help = (
+        "The adverse line where the fitted cover chance first favours the other team. "
+        "A held pick stays on this side through the explored edge."
+        if content.calibrated_probability
+        else "The adverse line where the card first changes sides. A held pick stays on "
+        "this side through the explored edge."
+    )
     table = (
         '<table class="board"><thead><tr>'
         "<th>Kickoff</th><th>Matchup</th><th>Pick</th>"
-        '<th><abbr title="The average line across the books in the latest capture, written '
-        "for the picked side. The pool's own line is the one in the Pick column and does not "
-        'move.">Books now</abbr></th>'
-        "<th><abbr title=\"The computer's own chance that this side covers, adjusted for how "
-        "it has actually done on spreads this size. Big favourites and big underdogs have "
-        "been its weak spot, so a very confident-looking number there is pulled back toward "
-        'what it has really hit.">'
-        "Cover chance</abbr></th>"
-        "<th><abbr title=\"Read it as: if the pick's own line reaches this number, the card "
-        "switches to the team after the arrow. E.g. a NYJ +3 pick with NYJ +2.5 → TEN "
-        "flips to TEN once NYJ gets only +2.5. Uses the spread adjuster's math plus the "
-        "fix-up rules re-checked within a point of the quoted line -- crossing the "
-        "7.5-10 fade zone's edge flips a pick too when the edge is that close. "
-        "'Within ±4' means nothing in the adjuster's explored range changes the "
-        'pick.">'
+        '<th><abbr title="The latest line captured today before kickoff, written for the '
+        "picked side. The source appears below the line. The pool's own line is the one "
+        'in the Pick column and does not move.">Books now</abbr></th>'
+        f'<th><abbr title="{escape(probability_help)}">Cover chance</abbr></th>'
+        f'<th><abbr title="{escape(flip_help)}">'
         "Flips at</abbr></th><th>Confidence</th>"
         "</tr></thead><tbody>" + "".join(rows) + "</tbody></table>"
     )
@@ -1453,7 +1462,7 @@ def render(content: BoardContent, *, page: str = PICKS_PAGE) -> str:
             game_type=content.game_type,
             week_label=content.week_label,
         )
-        + '<main class="week-page">'
+        + '<main id="main-content" class="week-page" tabindex="-1">'
         + _season_record_strip_html(content)
         + _pool_line_note_html(content)
         + _headline_section(content.headline)
@@ -1936,7 +1945,7 @@ def render_model_page(content: ModelPageContent) -> str:
 
     body = (
         _terminal_chrome(content.ticker_chrome, page=MODEL_PAGE)
-        + "<main>"
+        + '<main id="main-content" tabindex="-1">'
         + _page_lead(
             "THE MODEL",
             "What we play, how it's done, what's challenging it",
@@ -2213,7 +2222,7 @@ def render_history_page(content: HistoryPageContent) -> str:
 
     body = (
         _terminal_chrome(content.ticker_chrome, page=HISTORY_PAGE)
-        + "<main>"
+        + '<main id="main-content" tabindex="-1">'
         + _page_lead(
             "HISTORY",
             "Recorded picks, settled honestly",
@@ -2382,7 +2391,7 @@ def render_findings_page(content: FindingsPageContent) -> str:
 
     body = (
         _terminal_chrome(content.ticker_chrome, page=FINDINGS_PAGE)
-        + "<main>"
+        + '<main id="main-content" tabindex="-1">'
         + _page_lead(
             "WHAT WE'VE LEARNED",
             "Every finding, in plain words",

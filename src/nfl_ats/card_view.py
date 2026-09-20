@@ -15,6 +15,7 @@ from nfl_ats.best_pick_nomination import (
     nominate_v2_small_spread,
     nomination_v2_disclosure_note,
     nomination_v2_tie_note,
+    select_served_nominee,
 )
 from nfl_ats.coach_fade_overlay import (
     OVERLAY_WEEK_MAX,
@@ -34,7 +35,10 @@ from nfl_ats.four_overlay_composition import (
     forecasts_for_card,
     protection_flags_for_card,
 )
+from nfl_ats.mass_preserving_lattice import THREE_WAY_COLUMNS
 from nfl_ats.pick_probability import (
+    CALIBRATED_PICK_PROBABILITY_COLUMN,
+    MARKET_MOVE_FEATURE_LEGACY,
     PickProbabilityModel,
     attach_pick_probability,
     load_pick_probability_model_or_none,
@@ -47,6 +51,7 @@ from nfl_ats.player_arrests_back_side_overlay import (
     load_latest_complete_arrest_snapshot,
 )
 from nfl_ats.prospective_scoring import artifact_model_config
+from nfl_ats.published_picks import game_deadlines
 from nfl_ats.snapshots import latest_snapshot, load_snapshot, load_verified_snapshot
 
 
@@ -272,7 +277,50 @@ def resolve_nomination(
     nominate_v2_fn: Callable[..., NominationV2Result | None] = nominate_v2_small_spread,
     renominated_game_id: str | None = None,
     locked_game_id: str | None = None,
+    as_of: datetime | None = None,
 ) -> BestPickNomination:
+
+    if CALIBRATED_PICK_PROBABILITY_COLUMN in predictions.columns:
+        if predictions.empty or (
+            "game_type" in predictions.columns
+            and not predictions["game_type"].astype(str).eq("REG").all()
+        ):
+            return BestPickNomination(None, "", None, "served_probability", None, "", "")
+        candidates = predictions
+        if as_of is not None and locked_game_id is None:
+            deadlines = game_deadlines(predictions)
+            if len(deadlines) != len(predictions):
+                raise DataContractError(
+                    "Served Best Pick requires a kickoff deadline for every game"
+                )
+            instant = pd.Timestamp(as_of).tz_convert("UTC")
+            eligible = pd.to_datetime(
+                predictions["game_id"].astype(str).map(deadlines), utc=True, errors="coerce"
+            ).gt(instant)
+            candidates = predictions.loc[eligible]
+            if candidates.empty:
+                return BestPickNomination(None, "", None, "served_probability", None, "", "")
+        served_id, n_tied, _tie_break = select_served_nominee(
+            candidates, probability_column=CALIBRATED_PICK_PROBABILITY_COLUMN
+        )
+        tie_note = (
+            f"{n_tied} games share the highest estimate; the tie is resolved consistently."
+            if n_tied > 1
+            else ""
+        )
+        method_note = "the game with the highest estimated chance for its picked side to cover."
+        if tie_note:
+            method_note += " " + tie_note
+        base = BestPickNomination(
+            v1_game_id=None,
+            v1_tie_note="",
+            v2_result=None,
+            active_rule="served_probability",
+            active_game_id=served_id,
+            active_tie_note=tie_note,
+            method_note=method_note,
+        )
+        return apply_locked_best_pick(base, predictions, locked_game_id)
 
     v1_id, v1_tie = _v1_nomination(predictions, sweep)
     resolved_v2 = (
@@ -303,6 +351,15 @@ def resolve_nomination(
         )
     renominated = apply_sunday_renomination(base, predictions, renominated_game_id)
     return apply_locked_best_pick(renominated, predictions, locked_game_id)
+
+
+@dataclass(frozen=True)
+class CardProbabilities:
+    predictions: pd.DataFrame
+    overlay: OverlayResult
+    arrest_overlay: ArrestOverlayResult
+    production_overlay: FourOverlayCompositionResult | None
+    pick_probability: PickProbabilityModel | None
 
 
 @dataclass(frozen=True)
@@ -342,27 +399,29 @@ def _served_probability_frame(
     frame = final_predictions.reset_index(drop=True).copy()
     raw = predictions.reset_index(drop=True).copy()
     raw["game_id"] = raw["game_id"].astype(str)
-    lookup = raw.set_index("game_id")["home_cover_probability"]
+    lookup = raw.set_index("game_id")
     frame["game_id"] = frame["game_id"].astype(str)
-    frame["home_cover_probability"] = frame["game_id"].map(lookup).astype(float)
+    for column in ("home_cover_probability", *THREE_WAY_COLUMNS):
+        if column in lookup.columns:
+            frame[column] = frame["game_id"].map(lookup[column]).astype(float)
+    if "base_probability_policy" in lookup.columns:
+        frame["base_probability_policy"] = frame["game_id"].map(lookup["base_probability_policy"])
     return attach_pick_probability(frame, model, flags=flags, move=move)
 
 
-def resolve_card_view(
+def resolve_card_probabilities(
     predictions: pd.DataFrame,
-    sweep: pd.DataFrame,
-    metadata: Mapping[str, Any],
     *,
     data_root: Path | None = None,
     now: datetime | None = None,
     require_fresh_arrest_overlay: bool = True,
-    nominate_v2_fn: Callable[..., NominationV2Result | None] = nominate_v2_small_spread,
-    renominated_game_id: str | None = None,
-    locked_game_id: str | None = None,
     displayed_confidence: ProductionDisplayedConfidence | None = None,
     artifacts_root: Path | None = None,
-) -> CardView:
+) -> CardProbabilities:
 
+    pick_probability = (
+        load_pick_probability_model_or_none(artifacts_root) if artifacts_root is not None else None
+    )
     overlay = resolve_overlay(predictions, data_root)
     arrest_overlay = resolve_player_arrests_overlay(
         overlay.overlaid_predictions,
@@ -408,7 +467,16 @@ def resolve_card_view(
                 forecasts_tuesday_noon=forecasts_tuesday,
                 protection_back_side=protection_flags_for_card(predictions, data_root),
             )
-            served_move = market_move_toward_home(predictions, data_root, now=now)
+            served_move = market_move_toward_home(
+                predictions,
+                data_root,
+                now=now,
+                feature_version=(
+                    pick_probability.market_move_feature_version
+                    if pick_probability is not None
+                    else MARKET_MOVE_FEATURE_LEGACY
+                ),
+            )
         except (FileNotFoundError, OSError, ValueError, DataContractError):
             if require_fresh_arrest_overlay:
                 raise
@@ -417,9 +485,6 @@ def resolve_card_view(
         production_overlay.overlaid_predictions
         if production_overlay is not None
         else arrest_overlay.overlaid_predictions
-    )
-    pick_probability = (
-        load_pick_probability_model_or_none(artifacts_root) if artifacts_root is not None else None
     )
     if pick_probability is not None:
         final_predictions = _served_probability_frame(
@@ -431,32 +496,67 @@ def resolve_card_view(
         )
     else:
         final_predictions = attach_displayed_confidence(final_predictions, displayed_confidence)
-    nomination = resolve_nomination(
+    return CardProbabilities(
         final_predictions,
+        overlay,
+        arrest_overlay,
+        production_overlay,
+        pick_probability,
+    )
+
+
+def resolve_card_view(
+    predictions: pd.DataFrame,
+    sweep: pd.DataFrame,
+    metadata: Mapping[str, Any],
+    *,
+    data_root: Path | None = None,
+    now: datetime | None = None,
+    require_fresh_arrest_overlay: bool = True,
+    nominate_v2_fn: Callable[..., NominationV2Result | None] = nominate_v2_small_spread,
+    renominated_game_id: str | None = None,
+    locked_game_id: str | None = None,
+    displayed_confidence: ProductionDisplayedConfidence | None = None,
+    artifacts_root: Path | None = None,
+) -> CardView:
+
+    probabilities = resolve_card_probabilities(
+        predictions,
+        data_root=data_root,
+        now=now,
+        require_fresh_arrest_overlay=require_fresh_arrest_overlay,
+        displayed_confidence=displayed_confidence,
+        artifacts_root=artifacts_root,
+    )
+    nomination = resolve_nomination(
+        probabilities.predictions,
         sweep,
         metadata,
         data_root,
         nominate_v2_fn=nominate_v2_fn,
         renominated_game_id=renominated_game_id,
         locked_game_id=locked_game_id,
+        as_of=now,
     )
     return CardView(
-        final_predictions,
-        overlay,
-        arrest_overlay,
+        probabilities.predictions,
+        probabilities.overlay,
+        probabilities.arrest_overlay,
         nomination,
-        production_overlay,
-        pick_probability,
+        probabilities.production_overlay,
+        probabilities.pick_probability,
     )
 
 
 __all__ = [
     "BestPickNomination",
+    "CardProbabilities",
     "CardView",
     "V2NominationInputs",
     "apply_locked_best_pick",
     "apply_sunday_renomination",
     "compute_v2_nomination",
+    "resolve_card_probabilities",
     "resolve_card_view",
     "resolve_nomination",
     "resolve_overlay",

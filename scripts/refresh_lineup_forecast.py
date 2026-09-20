@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 import json
 import subprocess
 import sys
@@ -12,7 +13,12 @@ REPO = Path(__file__).resolve().parents[1]
 UV = REPO / ".tools" / "uv.exe"
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="Refresh the current week's lineup forecast")
+    parser.add_argument(
+        "--dry-run", action="store_true", help="show the weekly plan without writing"
+    )
+    args = parser.parse_args(argv)
     artifacts = REPO / "artifacts"
     active = load_active_ats_model(artifacts)
     if active is None:
@@ -23,11 +29,6 @@ def main() -> int:
     metadata = json.loads((forecast / "metadata.json").read_text(encoding="utf-8"))
     season = int(metadata["season"])
     week = int(metadata["week"])
-    subprocess.run(
-        [sys.executable, str(REPO / "scripts" / "build_week_lineups.py")],
-        cwd=REPO,
-        check=True,
-    )
     command = [
         str(UV),
         "run",
@@ -43,6 +44,13 @@ def main() -> int:
         "--skip-prospective",
         "--skip-drift",
     ]
+    if args.dry_run:
+        return subprocess.run([*command, "--dry-run"], cwd=REPO, check=False).returncode
+    subprocess.run(
+        [sys.executable, str(REPO / "scripts" / "build_week_lineups.py")],
+        cwd=REPO,
+        check=True,
+    )
     completed = subprocess.run(command, cwd=REPO, check=False)
     if completed.returncode != 0:
         return completed.returncode

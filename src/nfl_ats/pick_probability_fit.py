@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 from datetime import UTC, datetime
 from itertools import pairwise
@@ -15,10 +16,13 @@ from nfl_ats.pbp08_matchup_flags import build_flag_table
 from nfl_ats.pbp08_protection_mismatch_tilt_overlay import latest_pbp_snapshot
 from nfl_ats.pick_probability import (
     ACTIVE_PICK_PROBABILITY_FILENAME,
+    BASE_PROBABILITY_POLICY,
     COEFFICIENTS_FILENAME,
     CONFIDENCE_BAND_EDGES,
     COUNTED_FLAG_COLUMNS,
     FLAG_SUM_COLUMN,
+    MARKET_MOVE_FEATURE_LEGACY,
+    MARKET_MOVE_FEATURE_SUNDAY,
     METADATA_FILENAME,
     MOVE_AVAILABLE_COLUMN,
     MOVE_COLUMN,
@@ -33,6 +37,7 @@ from nfl_ats.pick_probability import (
     PickProbabilityModel,
     PickProbabilitySourceError,
     StrengthBand,
+    active_market_move_feature_version,
     signed_composition_flags,
 )
 from nfl_ats.public_board import find_matching_opener_evaluation
@@ -45,6 +50,7 @@ MODEL_PROBABILITY_SOURCE = "home_cover_probability_at_open"
 FORECAST_TEMP_ARCHIVE = "raw/forecast_archive/full_2020_2025/forecasts.parquet"
 MARKET_MOVE_ARTIFACT_ROOT = "sharp_weighted_follow"
 MARKET_MOVE_COLUMN = "leader_median_net"
+SUNDAY_MARKET_MOVE_ARTIFACT = Path("sunday_market_probability/20260920_fixed/market_move.parquet")
 SCHEDULE_COLUMNS = (
     "game_id",
     "season",
@@ -113,7 +119,27 @@ def _newest_artifact_directory(root: Path, filename: str) -> Path | None:
     return candidates[-1] if candidates else None
 
 
-def _market_move_table(artifacts_root: Path) -> tuple[pd.DataFrame, str | None]:
+def _market_move_table(
+    artifacts_root: Path, feature_version: str
+) -> tuple[pd.DataFrame, str | None]:
+    if feature_version == MARKET_MOVE_FEATURE_SUNDAY:
+        path = artifacts_root / SUNDAY_MARKET_MOVE_ARTIFACT
+        summary_path = path.parent / "summary.json"
+        if not path.is_file() or not summary_path.is_file():
+            raise PickProbabilitySourceError("Sunday market-move training artifact is missing")
+        summary = json.loads(summary_path.read_text(encoding="utf-8"))
+        if summary.get("market_move_feature_version") != MARKET_MOVE_FEATURE_SUNDAY:
+            raise PickProbabilitySourceError(
+                "Sunday market-move training artifact has wrong version"
+            )
+        if hashlib.sha256(path.read_bytes()).hexdigest() != summary.get("market_move_sha256"):
+            raise PickProbabilitySourceError("Sunday market-move training artifact hash differs")
+        frame = pd.read_parquet(path)
+        if frame.game_id.duplicated().any() or frame[MARKET_MOVE_COLUMN].isna().any():
+            raise PickProbabilitySourceError("Sunday market-move training artifact is invalid")
+        return frame[["game_id", MARKET_MOVE_COLUMN]], str(SUNDAY_MARKET_MOVE_ARTIFACT)
+    if feature_version != MARKET_MOVE_FEATURE_LEGACY:
+        raise PickProbabilitySourceError("Unsupported market-move training feature version")
     directory = _newest_artifact_directory(
         artifacts_root / MARKET_MOVE_ARTIFACT_ROOT, "per_game.parquet"
     )
@@ -159,7 +185,10 @@ def _protection_back_side(schedules: pd.DataFrame, data_root: Path) -> pd.DataFr
 
 
 def build_fit_population(
-    artifacts_root: Path, data_root: Path
+    artifacts_root: Path,
+    data_root: Path,
+    *,
+    market_move_feature_version: str = MARKET_MOVE_FEATURE_LEGACY,
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
 
     active = load_active_ats_model(artifacts_root)
@@ -183,6 +212,14 @@ def build_fit_population(
     if missing:
         raise PickProbabilitySourceError(
             f"opener evaluation is missing columns for the fit: {', '.join(missing)}"
+        )
+    if (
+        "base_probability_policy" not in per_game
+        or not per_game["base_probability_policy"].eq(BASE_PROBABILITY_POLICY).all()
+    ):
+        raise PickProbabilitySourceError(
+            "opener evaluation does not use the served discrete probability; "
+            "re-run opener-evaluation before fitting the pick probability"
         )
 
     schedules, _team_stats = load_snapshot(latest_snapshot(data_root / "raw"))
@@ -229,7 +266,7 @@ def build_fit_population(
     )
     graded = graded.merge(flags, on="game_id", how="left", validate="one_to_one")
 
-    market, market_artifact = _market_move_table(artifacts_root)
+    market, market_artifact = _market_move_table(artifacts_root, market_move_feature_version)
     graded = graded.merge(market, on="game_id", how="left")
     raw_move = (
         pd.to_numeric(graded[MARKET_MOVE_COLUMN], errors="coerce")
@@ -244,7 +281,9 @@ def build_fit_population(
         "opener_evaluation_model_id": str(opener_metadata.get("active_model_id") or ""),
         "active_model_id": str((active or {}).get("model_id") or ""),
         "model_probability_source": MODEL_PROBABILITY_SOURCE,
+        "base_probability_policy": BASE_PROBABILITY_POLICY,
         "market_move_artifact": market_artifact,
+        "market_move_feature_version": market_move_feature_version,
         "graded_games": len(graded),
         "pushes_dropped": pushes,
         "ungraded_dropped": ungraded,
@@ -304,11 +343,38 @@ def _strength_bands(frame: pd.DataFrame, column: str) -> list[StrengthBand]:
     return bands
 
 
+def _probability_metrics(frame: pd.DataFrame, column: str) -> dict[str, Any]:
+    selected = frame.loc[frame[column].notna()]
+    if selected.empty:
+        return {"games": 0}
+    probability = selected[column].to_numpy(dtype=float).clip(1e-9, 1.0 - 1e-9)
+    target = selected["home_covered"].to_numpy(dtype=float)
+    return {
+        "games": len(selected),
+        "accuracy": float(np.mean((probability >= 0.5) == target)),
+        "brier": float(np.mean((probability - target) ** 2)),
+        "log_loss": float(
+            -np.mean(target * np.log(probability) + (1.0 - target) * np.log1p(-probability))
+        ),
+    }
+
+
 def fit_pick_probability(
-    artifacts_root: Path, data_root: Path, *, now: datetime | None = None
+    artifacts_root: Path,
+    data_root: Path,
+    *,
+    now: datetime | None = None,
+    activate: bool = True,
+    market_move_feature_version: str | None = None,
 ) -> tuple[PickProbabilityModel, Path, dict[str, Any]]:
 
-    population, provenance = build_fit_population(artifacts_root, data_root)
+    if market_move_feature_version is None:
+        market_move_feature_version = active_market_move_feature_version(artifacts_root)
+    population, provenance = build_fit_population(
+        artifacts_root,
+        data_root,
+        market_move_feature_version=market_move_feature_version,
+    )
     if population.empty:
         raise PickProbabilitySourceError("the pick-probability fit population is empty")
 
@@ -316,6 +382,7 @@ def fit_pick_probability(
     means, stds = _standardisers(population)
     beta = _fit_logit(_design(population, means, stds), target, FIT_RIDGE)
     natural = _natural_coefficients(beta, means, stds)
+    population["in_sample_home_probability"] = _predict(population, beta, means, stds)
 
     seasons = sorted(int(value) for value in population["season"].unique())
     out_of_season = pd.Series(np.nan, index=population.index, dtype=float)
@@ -334,6 +401,27 @@ def fit_pick_probability(
         out_of_season.loc[test.index] = _predict(test, fold_beta, fold_means, fold_stds)
         fold_coefficients[str(held)] = _natural_coefficients(fold_beta, fold_means, fold_stds)
     population["out_of_season_home_probability"] = out_of_season
+    chronological = pd.Series(np.nan, index=population.index, dtype=float)
+    chronological_coefficients: dict[str, dict[str, float]] = {}
+    for held in seasons:
+        train = population.loc[population["season"].lt(held)]
+        test = population.loc[population["season"].eq(held)]
+        if train["season"].nunique() < 2 or test.empty:
+            continue
+        if int(train["season"].max()) >= held:
+            raise PickProbabilitySourceError("calibration training reaches its test season")
+        fold_means, fold_stds = _standardisers(train)
+        fold_beta = _fit_logit(
+            _design(train, fold_means, fold_stds),
+            train["home_covered"].astype(float).to_numpy(),
+            FIT_RIDGE,
+        )
+        chronological.loc[test.index] = _predict(test, fold_beta, fold_means, fold_stds)
+        chronological_coefficients[str(held)] = _natural_coefficients(
+            fold_beta, fold_means, fold_stds
+        )
+    population["chronological_home_probability"] = chronological
+    population["neutral_market_probability"] = 0.5
     scored = population.loc[population["out_of_season_home_probability"].notna()].copy()
 
     strength = tuple(_strength_bands(scored, "out_of_season_home_probability"))
@@ -361,10 +449,13 @@ def fit_pick_probability(
         fitted_seasons=tuple(seasons),
         artifact=relative,
         policy=PICK_PROBABILITY_POLICY,
+        base_probability_policy=BASE_PROBABILITY_POLICY,
+        market_move_feature_version=market_move_feature_version,
     )
 
     directory = artifacts_root / PICK_PROBABILITY_ARTIFACT_ROOT / stamp
     directory.mkdir(parents=True, exist_ok=True)
+    population.to_parquet(directory / "per_game.parquet", index=False)
     (directory / COEFFICIENTS_FILENAME).write_text(
         json.dumps(model.to_dict(), indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
@@ -377,6 +468,23 @@ def fit_pick_probability(
         "ridge": FIT_RIDGE,
         "records": records,
         "fold_coefficients": fold_coefficients,
+        "chronological_coefficients": chronological_coefficients,
+        "prediction_artifact": "per_game.parquet",
+        "activated": activate,
+        "validation_metrics": {
+            column: _probability_metrics(population, column)
+            for column in (
+                "model_probability",
+                "neutral_market_probability",
+                "in_sample_home_probability",
+                "out_of_season_home_probability",
+                "chronological_home_probability",
+            )
+        },
+        "validation_limitations": (
+            "Features were selected using these seasons; this is not an untouched outer test. "
+            "Weekly ranking uncertainty is assessed separately from average calibration."
+        ),
         "model_only_confidence_bands": [band.to_dict() for band in model_confidence],
         **provenance,
     }
@@ -391,10 +499,19 @@ def fit_pick_probability(
         "fitted_games": len(population),
         "fitted_seasons": seasons,
         "active_model_id": provenance["active_model_id"],
+        "base_probability_policy": BASE_PROBABILITY_POLICY,
+        "market_move_feature_version": market_move_feature_version,
     }
-    (artifacts_root / ACTIVE_PICK_PROBABILITY_FILENAME).write_text(
+    (directory / "activation.json").write_text(
         json.dumps(pointer, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
+    if activate:
+        from nfl_ats.io import atomic_text
+
+        atomic_text(
+            json.dumps(pointer, indent=2, sort_keys=True) + "\n",
+            artifacts_root / ACTIVE_PICK_PROBABILITY_FILENAME,
+        )
     return model, directory, metadata
 
 

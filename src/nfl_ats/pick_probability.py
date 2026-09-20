@@ -5,11 +5,12 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import numpy as np
 import pandas as pd
 
+from nfl_ats.active_model import ACTIVE_ATS_MODEL_FILENAME, load_active_ats_model
 from nfl_ats.bye_edge_fade_overlay import bye_edge_flag_by_game
 from nfl_ats.coach_fade_overlay import OVERLAY_WEEK_MAX as COACH_WEEK_MAX
 from nfl_ats.coach_fade_overlay import year_one_by_game
@@ -29,6 +30,7 @@ from nfl_ats.four_overlay_composition import (
     PRECIP_HIGH_TOTAL_TILT,
     TANK_ZONE_FADE_TILT,
 )
+from nfl_ats.mass_preserving_lattice import BASE_PROBABILITY_POLICY
 from nfl_ats.player_arrests_back_side_overlay import _broad_side_flags
 from nfl_ats.tank_zone_fade_tilt_overlay import OVERLAY_WEEK_MAX as TANK_ZONE_WEEK_MAX
 from nfl_ats.tank_zone_fade_tilt_overlay import OVERLAY_WEEK_MIN as TANK_ZONE_WEEK_MIN
@@ -40,6 +42,10 @@ COEFFICIENTS_FILENAME = "coefficients.json"
 METADATA_FILENAME = "metadata.json"
 SCHEMA_VERSION = 1
 PICK_PROBABILITY_POLICY = "four_term_pick_probability_v1"
+MARKET_MOVE_FEATURE_LEGACY = "leader_median_pre_sunday_v1"
+MARKET_MOVE_FEATURE_SUNDAY = "leader_median_through_sunday_prekick_v1"
+MARKET_MOVE_FEATURE_VERSIONS = (MARKET_MOVE_FEATURE_LEGACY, MARKET_MOVE_FEATURE_SUNDAY)
+MARKET_MOVE_FEATURE_VERSION_COLUMN = "market_move_feature_version"
 
 MODEL_LOGIT_TERM = "model_logit"
 FLAG_SUM_TERM = "flag_sum"
@@ -156,6 +162,8 @@ class PickProbabilityModel:
     fitted_seasons: tuple[int, ...]
     artifact: str
     policy: str = PICK_PROBABILITY_POLICY
+    base_probability_policy: str | None = None
+    market_move_feature_version: str = MARKET_MOVE_FEATURE_LEGACY
 
     @property
     def lean_minimum(self) -> float:
@@ -226,6 +234,8 @@ class PickProbabilityModel:
         return {
             "schema_version": SCHEMA_VERSION,
             "policy": self.policy,
+            "base_probability_policy": self.base_probability_policy,
+            "market_move_feature_version": self.market_move_feature_version,
             "coefficients": {
                 INTERCEPT_TERM: self.intercept,
                 MODEL_LOGIT_TERM: self.model_logit,
@@ -247,6 +257,11 @@ class PickProbabilityModel:
             raise PickProbabilitySourceError(
                 f"pick probability artifact {artifact} has schema version "
                 f"{payload.get('schema_version')!r}, expected {SCHEMA_VERSION}"
+            )
+        feature_version = payload.get("market_move_feature_version", MARKET_MOVE_FEATURE_LEGACY)
+        if feature_version not in MARKET_MOVE_FEATURE_VERSIONS:
+            raise PickProbabilitySourceError(
+                f"pick probability artifact {artifact} has unsupported market move version"
             )
         raw = payload.get("coefficients")
         if not isinstance(raw, Mapping):
@@ -298,6 +313,12 @@ class PickProbabilityModel:
             fitted_seasons=tuple(int(value) for value in payload.get("fitted_seasons") or ()),
             artifact=artifact,
             policy=str(payload.get("policy") or PICK_PROBABILITY_POLICY),
+            base_probability_policy=(
+                str(payload["base_probability_policy"])
+                if payload.get("base_probability_policy")
+                else None
+            ),
+            market_move_feature_version=str(feature_version),
         )
 
 
@@ -325,6 +346,34 @@ def active_pick_probability_path(artifacts_root: Path) -> Path:
     return artifacts_root / ACTIVE_PICK_PROBABILITY_FILENAME
 
 
+def active_market_move_feature_version(artifacts_root: Path) -> str:
+    pointer_path = active_pick_probability_path(artifacts_root)
+    if not pointer_path.is_file():
+        return MARKET_MOVE_FEATURE_LEGACY
+    try:
+        pointer = json.loads(pointer_path.read_text(encoding="utf-8"))
+        relative = pointer["artifact"]
+        directory = (artifacts_root / relative).resolve()
+        if not directory.is_relative_to(
+            (artifacts_root / PICK_PROBABILITY_ARTIFACT_ROOT).resolve()
+        ):
+            raise ValueError("Invalid active artifact path")
+        coefficients = json.loads((directory / COEFFICIENTS_FILENAME).read_text(encoding="utf-8"))
+        metadata = json.loads((directory / METADATA_FILENAME).read_text(encoding="utf-8"))
+        versions = (
+            pointer.get("market_move_feature_version", MARKET_MOVE_FEATURE_LEGACY),
+            coefficients.get("market_move_feature_version", MARKET_MOVE_FEATURE_LEGACY),
+            metadata.get("market_move_feature_version", MARKET_MOVE_FEATURE_LEGACY),
+        )
+    except (OSError, KeyError, TypeError, ValueError, AttributeError) as error:
+        raise PickProbabilitySourceError(
+            f"Active pick probability market move version is unreadable: {error}"
+        ) from error
+    if len(set(versions)) != 1 or versions[0] not in MARKET_MOVE_FEATURE_VERSIONS:
+        raise PickProbabilitySourceError("Active pick probability market move versions disagree")
+    return str(versions[0])
+
+
 def load_pick_probability_model(artifacts_root: Path) -> PickProbabilityModel:
 
     pointer_path = active_pick_probability_path(artifacts_root)
@@ -348,7 +397,12 @@ def load_pick_probability_model(artifacts_root: Path) -> PickProbabilityModel:
         raise PickProbabilitySourceError(
             f"active pick probability pointer {pointer_path} names no artifact"
         )
-    coefficients_path = artifacts_root / relative / COEFFICIENTS_FILENAME
+    directory = (artifacts_root / relative).resolve()
+    if not directory.is_relative_to((artifacts_root / PICK_PROBABILITY_ARTIFACT_ROOT).resolve()):
+        raise PickProbabilitySourceError(
+            f"active pick probability pointer {pointer_path} names an invalid artifact path"
+        )
+    coefficients_path = directory / COEFFICIENTS_FILENAME
     if not coefficients_path.is_file():
         raise PickProbabilitySourceError(
             f"active pick probability artifact {relative} has no {COEFFICIENTS_FILENAME}"
@@ -361,12 +415,103 @@ def load_pick_probability_model(artifacts_root: Path) -> PickProbabilityModel:
         ) from error
     if not isinstance(payload, Mapping):
         raise PickProbabilitySourceError(f"pick probability artifact {relative} is not an object")
-    return PickProbabilityModel.from_dict(payload, artifact=relative)
+    versions = (
+        pointer.get("market_move_feature_version", MARKET_MOVE_FEATURE_LEGACY),
+        payload.get("market_move_feature_version", MARKET_MOVE_FEATURE_LEGACY),
+    )
+    if any(version not in MARKET_MOVE_FEATURE_VERSIONS for version in versions):
+        raise PickProbabilitySourceError(
+            f"pick probability artifact {relative} names an unsupported market move version"
+        )
+    if versions[0] != versions[1]:
+        raise PickProbabilitySourceError(
+            f"pick probability artifact {relative} has inconsistent market move versions"
+        )
+    if (
+        payload.get("policy") != PICK_PROBABILITY_POLICY
+        or type(payload.get("schema_version")) is not int
+        or payload.get("schema_version") != SCHEMA_VERSION
+    ):
+        raise PickProbabilitySourceError(
+            f"pick probability artifact {relative} names an unsupported policy or schema"
+        )
+    coefficients = payload.get("coefficients")
+    if not isinstance(coefficients, Mapping) or set(coefficients) != set(COEFFICIENT_TERMS):
+        raise PickProbabilitySourceError(
+            f"pick probability artifact {relative} names unexpected coefficient terms"
+        )
+    try:
+        active = load_active_ats_model(artifacts_root)
+    except (OSError, ValueError, AttributeError) as error:
+        raise PickProbabilitySourceError(f"active ATS model is unreadable: {error}") from error
+    if active is not None:
+        model_id = active.get("model_id")
+        if not isinstance(model_id, str) or not model_id:
+            raise PickProbabilitySourceError("active ATS model has no model id")
+        try:
+            metadata = json.loads((directory / METADATA_FILENAME).read_text(encoding="utf-8"))
+        except (OSError, ValueError) as error:
+            raise PickProbabilitySourceError(
+                f"pick probability artifact {relative} has unreadable metadata: {error}"
+            ) from error
+        if not isinstance(metadata, Mapping):
+            raise PickProbabilitySourceError(
+                f"pick probability artifact {relative} metadata is not an object"
+            )
+        if metadata.get("market_move_feature_version", MARKET_MOVE_FEATURE_LEGACY) != versions[0]:
+            raise PickProbabilitySourceError(
+                f"pick probability artifact {relative} metadata has an "
+                "incompatible market move version"
+            )
+        expected = {
+            "schema_version": SCHEMA_VERSION,
+            "policy": PICK_PROBABILITY_POLICY,
+            "base_probability_policy": BASE_PROBABILITY_POLICY,
+            "active_model_id": model_id,
+        }
+        for source_name, source in (("pointer", pointer), ("metadata", metadata)):
+            for key, value in expected.items():
+                if source.get(key) != value or type(source.get(key)) is not type(value):
+                    raise PickProbabilitySourceError(
+                        f"pick probability {source_name} {relative} has incompatible {key}: "
+                        f"{source.get(key)!r}, expected {value!r}"
+                    )
+        if metadata.get("opener_evaluation_model_id") != model_id:
+            raise PickProbabilitySourceError(
+                f"pick probability artifact {relative} opener evaluation names another model"
+            )
+        expected_features = [MODEL_LOGIT_TERM, FLAG_SUM_COLUMN, MOVE_COLUMN, MOVE_AVAILABLE_COLUMN]
+        if metadata.get("features") != expected_features:
+            raise PickProbabilitySourceError(
+                f"pick probability artifact {relative} names unexpected features"
+            )
+        if payload.get("base_probability_policy") != BASE_PROBABILITY_POLICY:
+            raise PickProbabilitySourceError(
+                f"pick probability artifact {relative} uses an incompatible base probability"
+            )
+        for source in (metadata, payload):
+            if source.get("counted_flag_columns") != list(COUNTED_FLAG_COLUMNS):
+                raise PickProbabilitySourceError(
+                    f"pick probability artifact {relative} counts incompatible situational terms"
+                )
+        if payload.get("held_members") != sorted(OWNER_HELD_MEMBERS):
+            raise PickProbabilitySourceError(
+                f"pick probability artifact {relative} has incompatible held members"
+            )
+    try:
+        return PickProbabilityModel.from_dict(payload, artifact=relative)
+    except (TypeError, ValueError, OverflowError) as error:
+        raise PickProbabilitySourceError(
+            f"pick probability artifact {relative} is malformed: {error}"
+        ) from error
 
 
 def load_pick_probability_model_or_none(artifacts_root: Path) -> PickProbabilityModel | None:
 
-    if not active_pick_probability_path(artifacts_root).is_file():
+    if (
+        not active_pick_probability_path(artifacts_root).is_file()
+        and not (artifacts_root / ACTIVE_ATS_MODEL_FILENAME).exists()
+    ):
         return None
     return load_pick_probability_model(artifacts_root)
 
@@ -506,26 +651,35 @@ def _empty_move(predictions: pd.DataFrame) -> pd.DataFrame:
             "game_id": predictions["game_id"].astype(str),
             MOVE_COLUMN: 0.0,
             MOVE_AVAILABLE_COLUMN: 0.0,
+            MARKET_MOVE_FEATURE_VERSION_COLUMN: MARKET_MOVE_FEATURE_LEGACY,
         }
     ).reset_index(drop=True)
 
 
 def market_move_toward_home(
-    predictions: pd.DataFrame, data_root: Path | None, *, now: datetime | None = None
+    predictions: pd.DataFrame,
+    data_root: Path | None,
+    *,
+    now: datetime | None = None,
+    feature_version: str = MARKET_MOVE_FEATURE_LEGACY,
 ) -> pd.DataFrame:
 
+    if feature_version not in MARKET_MOVE_FEATURE_VERSIONS:
+        raise DataContractError("Unsupported market move feature version")
+    empty = _empty_move(predictions)
+    empty[MARKET_MOVE_FEATURE_VERSION_COLUMN] = feature_version
     if data_root is None or "kickoff" not in predictions.columns:
-        return _empty_move(predictions)
+        return empty
     try:
         from nfl_ats.clv import LIVE_CAPTURE_KIND, load_decision_quotes
         from nfl_ats.sharp_book_movement_features import sharp_book_movement_features
 
         quotes = load_decision_quotes(data_root / "market" / "raw", capture_kind=LIVE_CAPTURE_KIND)
         if quotes.empty:
-            return _empty_move(predictions)
+            return empty
         kickoff = pd.to_datetime(predictions["kickoff"], utc=True, errors="coerce")
         if kickoff.isna().all():
-            return _empty_move(predictions)
+            return empty
         anchor = kickoff.min()
         games = pd.DataFrame(
             {
@@ -536,9 +690,13 @@ def market_move_toward_home(
         ).dropna(subset=["commence_time_utc"])
         if now is not None:
             games["cutoff_utc"] = pd.Timestamp(now).tz_convert("UTC")
-        exposure = sharp_book_movement_features(quotes, games.drop_duplicates("game_id"))
+        exposure = sharp_book_movement_features(
+            quotes,
+            games.drop_duplicates("game_id"),
+            include_sunday=feature_version == MARKET_MOVE_FEATURE_SUNDAY,
+        )
     except (ImportError, KeyError, OSError, ValueError, DataContractError):
-        return _empty_move(predictions)
+        return empty
     move = pd.to_numeric(exposure["leader_median_net_move"], errors="coerce").fillna(0.0)
     available = pd.to_numeric(exposure["leader_books"], errors="coerce").fillna(0.0).gt(0)
     table = pd.DataFrame(
@@ -555,6 +713,7 @@ def market_move_toward_home(
     )
     merged[MOVE_COLUMN] = merged[MOVE_COLUMN].fillna(0.0)
     merged[MOVE_AVAILABLE_COLUMN] = merged[MOVE_AVAILABLE_COLUMN].fillna(0.0)
+    merged[MARKET_MOVE_FEATURE_VERSION_COLUMN] = feature_version
     return merged
 
 
@@ -574,10 +733,49 @@ def calibrated_pick_probability(
         )
     frame = predictions.reset_index(drop=True).copy()
     frame["game_id"] = frame["game_id"].astype(str)
+    if model.base_probability_policy == BASE_PROBABILITY_POLICY:
+        if (
+            "base_probability_policy" not in frame
+            or not frame["base_probability_policy"].eq(BASE_PROBABILITY_POLICY).all()
+        ):
+            raise DataContractError("Calibration requires the fitted discrete probability source")
+        mass_columns = (
+            "home_cover_probability_excluding_push",
+            "push_probability",
+            "home_loss_probability",
+        )
+        if not set(mass_columns).issubset(frame.columns):
+            raise DataContractError(
+                "Calibrated serving requires discrete cover, push and loss mass"
+            )
+        mass = frame[list(mass_columns)].apply(pd.to_numeric, errors="coerce")
+        if (
+            not np.isfinite(mass.to_numpy()).all()
+            or (mass < 0).any().any()
+            or not np.allclose(mass.sum(axis=1), 1.0)
+        ):
+            raise DataContractError("Calibrated serving received invalid discrete margin mass")
+        if mass.iloc[:, 0].le(0.0).any() or mass.iloc[:, 2].le(0.0).any():
+            raise DataContractError("Calibrated serving requires cover and loss margin support")
+        non_push = mass.iloc[:, 0] + mass.iloc[:, 2]
+        conditional = mass.iloc[:, 0].div(non_push).fillna(0.5)
+        if not np.allclose(
+            conditional, pd.to_numeric(frame["home_cover_probability"], errors="coerce")
+        ):
+            raise DataContractError(
+                "Calibration input differs from the discrete non-push probability"
+            )
     resolved_flags = _empty_flags(frame) if flags is None else flags.reset_index(drop=True).copy()
     resolved_flags["game_id"] = resolved_flags["game_id"].astype(str)
     resolved_move = _empty_move(frame) if move is None else move.reset_index(drop=True).copy()
     resolved_move["game_id"] = resolved_move["game_id"].astype(str)
+    if model.market_move_feature_version == MARKET_MOVE_FEATURE_SUNDAY and (
+        MARKET_MOVE_FEATURE_VERSION_COLUMN not in resolved_move
+        or not resolved_move[MARKET_MOVE_FEATURE_VERSION_COLUMN]
+        .eq(MARKET_MOVE_FEATURE_SUNDAY)
+        .all()
+    ):
+        raise DataContractError("Sunday-trained probability requires Sunday market movement")
 
     joined = frame[["game_id", "home_team", "away_team", "home_cover_probability"]].merge(
         resolved_flags[["game_id", FLAG_SUM_COLUMN]], on="game_id", how="left"
@@ -653,10 +851,112 @@ def attach_pick_probability(
     frame[CALIBRATED_STRENGTH_WORD_COLUMN] = frame["game_id"].map(
         lookup[CALIBRATED_STRENGTH_WORD_COLUMN]
     )
+    if model.base_probability_policy == BASE_PROBABILITY_POLICY:
+        for column in (
+            "home_cover_probability_excluding_push",
+            "push_probability",
+            "home_loss_probability",
+        ):
+            frame[f"uncalibrated_{column}"] = frame[column]
+        available = 1.0 - pd.to_numeric(frame["push_probability"], errors="raise")
+        frame["home_cover_probability_excluding_push"] = (
+            frame[CALIBRATED_HOME_PROBABILITY_COLUMN] * available
+        )
+        frame["home_loss_probability"] = (
+            1.0 - frame[CALIBRATED_HOME_PROBABILITY_COLUMN]
+        ) * available
     frame["home_cover_probability"] = frame[CALIBRATED_HOME_PROBABILITY_COLUMN]
+    for column, served_values in (
+        ("pick_probability", frame[CALIBRATED_PICK_PROBABILITY_COLUMN]),
+        ("confidence", frame[CALIBRATED_PICK_PROBABILITY_COLUMN] - 0.5),
+    ):
+        if column in frame:
+            frame[f"uncalibrated_{column}"] = frame[column]
+            frame[column] = served_values
     frame[DISPLAYED_PICK_PROBABILITY_COLUMN] = frame[CALIBRATED_PICK_PROBABILITY_COLUMN]
     frame[DISPLAYED_STRENGTH_WORD_COLUMN] = frame[CALIBRATED_STRENGTH_WORD_COLUMN]
     return frame
+
+
+def calibrated_discrete_sweep(sweep: pd.DataFrame, predictions: pd.DataFrame) -> pd.DataFrame:
+    if sweep.empty:
+        return sweep
+    columns = ("home_cover_probability_excluding_push", "push_probability", "home_loss_probability")
+    required = {
+        "game_id",
+        "base_probability_policy",
+        CALIBRATED_HOME_PROBABILITY_COLUMN,
+        *(f"uncalibrated_{column}" for column in columns),
+    }
+    sweep_required = {"game_id", "line_offset", "base_probability_policy", *columns}
+    if not required.issubset(predictions.columns) or not sweep_required.issubset(sweep.columns):
+        raise DataContractError("Calibrated line sweep requires the served discrete mass")
+    if not all(
+        frame["base_probability_policy"].eq(BASE_PROBABILITY_POLICY).all()
+        for frame in (predictions, sweep)
+    ):
+        raise DataContractError("Calibrated line sweep has an incompatible probability source")
+    anchors = predictions.assign(game_id=predictions["game_id"].astype(str)).set_index("game_id")
+    if not anchors.index.is_unique:
+        raise DataContractError("Calibrated line sweep requires one anchor per game")
+    result = sweep.copy()
+    mass = result[list(columns)].to_numpy(dtype=float)
+    if not np.isfinite(mass).all() or (mass < 0.0).any() or not np.allclose(mass.sum(axis=1), 1.0):
+        raise DataContractError("Calibrated line sweep received invalid discrete mass")
+    for identifier, positions in result.groupby("game_id").groups.items():
+        game_id = str(identifier)
+        if game_id not in anchors.index:
+            raise DataContractError(f"No calibrated margin anchor for {game_id}")
+        anchor = cast("pd.Series[Any]", anchors.loc[game_id])
+        cover = float(anchor[f"uncalibrated_{columns[0]}"])
+        push = float(anchor[f"uncalibrated_{columns[1]}"])
+        loss = float(anchor[f"uncalibrated_{columns[2]}"])
+        probability = float(anchor[CALIBRATED_HOME_PROBABILITY_COLUMN])
+        anchor_mass = np.array([cover, push, loss])
+        zero = result.loc[positions].loc[
+            np.isclose(result.loc[positions, "line_offset"].to_numpy(dtype=float), 0.0)
+        ]
+        if (
+            not np.isfinite(anchor_mass).all()
+            or (anchor_mass < 0.0).any()
+            or not np.isclose(anchor_mass.sum(), 1.0)
+            or not np.isfinite(probability)
+            or not 0.0 <= probability <= 1.0
+            or len(zero) != 1
+            or not np.allclose(zero[list(columns)].to_numpy(dtype=float)[0], anchor_mass)
+        ):
+            raise DataContractError(
+                f"Discrete line sweep differs from its served anchor for {game_id}"
+            )
+        if cover <= 0.0 or loss <= 0.0:
+            raise DataContractError(f"Discrete margin support cannot be reweighted for {game_id}")
+        home_weight = probability * (1.0 - push) / cover
+        away_weight = (1.0 - probability) * (1.0 - push) / loss
+
+        old_cover = result.loc[positions, columns[0]].to_numpy(dtype=float)
+        old_push = result.loc[positions, columns[1]].to_numpy(dtype=float)
+        tails = np.column_stack([old_cover, old_cover + old_push])
+        home_mass = np.minimum(tails, cover)
+        push_mass = np.clip(tails - cover, 0.0, push)
+        away_mass = np.maximum(tails - cover - push, 0.0)
+        reweighted = home_mass * home_weight + push_mass + away_mass * away_weight
+        new_cover, new_upper = reweighted[:, 0], reweighted[:, 1]
+        new_push = np.clip(new_upper - new_cover, 0.0, 1.0)
+        new_loss = np.clip(1.0 - new_upper, 0.0, 1.0)
+        result.loc[positions, columns[0]] = new_cover
+        result.loc[positions, columns[1]] = new_push
+        result.loc[positions, columns[2]] = new_loss
+        non_push = new_cover + new_loss
+        if (non_push <= 0.0).any():
+            raise DataContractError(f"Discrete line sweep has only push mass for {game_id}")
+        result.loc[positions, "home_cover_probability"] = new_cover / non_push
+    sweep_probability = result["home_cover_probability"].to_numpy(dtype=float)
+    picked_probability = np.maximum(sweep_probability, 1.0 - sweep_probability)
+    if "pick_probability" in result:
+        result["pick_probability"] = picked_probability
+    if "confidence" in result:
+        result["confidence"] = picked_probability - 0.5
+    return result
 
 
 def landing_rate_sentence(model: PickProbabilityModel | None) -> str:
@@ -668,18 +968,20 @@ def landing_rate_sentence(model: PickProbabilityModel | None) -> str:
     slight = model.landing_rate("slight")
     if not graded or strong is None or slight is None:
         return (
-            "The chance beside each pick is how often picks like this one have actually landed, "
-            "not a feeling about the game."
+            "Cover chance is a fitted estimate, excluding games that tie the spread. "
+            "A higher estimate does not establish that one game is substantially safer."
         )
     return (
-        "The chance beside each pick is how often picks like this one have actually landed: "
-        f"across {graded:,} past games scored the same way, the picks this card called strong "
-        f"won {strong:.0%} of the time and the ones it called slight won {slight:.0%}."
+        "Cover chance is a fitted estimate, excluding ties. "
+        f"Across {graded:,} past games with each season held out of fitting, strong estimates "
+        f"won {strong:.0%} and slight estimates won {slight:.0%}. These broad groups do not "
+        "establish a large advantage for the single highest estimate."
     )
 
 
 __all__ = [
     "ACTIVE_PICK_PROBABILITY_FILENAME",
+    "BASE_PROBABILITY_POLICY",
     "CALIBRATED_HOME_PROBABILITY_COLUMN",
     "CALIBRATED_PICK_PROBABILITY_COLUMN",
     "CALIBRATED_PICK_SIDE_COLUMN",
@@ -706,6 +1008,7 @@ __all__ = [
     "StrengthBand",
     "active_pick_probability_path",
     "attach_pick_probability",
+    "calibrated_discrete_sweep",
     "calibrated_pick_probability",
     "landing_rate_sentence",
     "load_pick_probability_model",

@@ -42,7 +42,11 @@ from nfl_ats.home_side_location import center_offsets_from_metadata
 from nfl_ats.key_line_pick_read import pick_overrides_from_metadata
 from nfl_ats.lineup_view import TeamLineup, load_lineups
 from nfl_ats.market_decomposition import FAMILY_PHRASES
-from nfl_ats.pick_probability import landing_rate_sentence
+from nfl_ats.pick_probability import (
+    BASE_PROBABILITY_POLICY,
+    calibrated_discrete_sweep,
+    landing_rate_sentence,
+)
 from nfl_ats.pick_refresh import (
     FOLLOW_NEWS_VETO_REASON,
     HANDLE_FOLLOW_POLICY,
@@ -220,6 +224,7 @@ class GameRow:
     explanation_text: str = EXPLANATION_NOT_RECORDED_TEXT
     market_now: float | None = None
     market_now_books: int = 0
+    market_now_book_label: str = ""
     qb_note: str | None = None
 
     @property
@@ -1342,13 +1347,6 @@ def _late_week_change_reason(
         sentence = factor_move_sentence(factor_move)
     else:
         sentence = _LATE_WEEK_CHANGE_REASONS.get(policy, "A late-week check moved this pick.")
-    delta = _number(revision.get("movement_delta"))
-    if delta:
-        size = abs(delta)
-        toward = str(revision.get("movement_pick_side") or "")
-        team = home if toward == "HOME" else away if toward == "AWAY" else ""
-        target = f" toward {team}" if team else ""
-        sentence += f" The line moved {size:g} point{'' if size == 1 else 's'}{target}."
     referee = str(revision.get("rookie_crew_referee") or "")
     if referee and policy == ROOKIE_CREW_POLICY:
         sentence += f" {referee} has the whistle."
@@ -1540,6 +1538,7 @@ def _build_week_changes(
     published_at: Any,
     data_root: Path | None = None,
     raw_probabilities: Mapping[str, float] | None = None,
+    calibrated: bool = False,
 ) -> WeekChangesPanel:
 
     if not games:
@@ -1594,7 +1593,9 @@ def _build_week_changes(
         was_best = bool(locked.get("is_best_pick"))
         revision = latest_revisions.get(game.game_id)
         board_side = "HOME" if game.pick_team == game.home else "AWAY"
-        played_side = _revision_side(revision, "new_pick_side") or board_side
+        played_side = (
+            board_side if calibrated else _revision_side(revision, "new_pick_side") or board_side
+        )
         ahead_of_board = played_side != board_side
         now_team = game.home if played_side == "HOME" else game.away
         side_moved = was_team != now_team
@@ -1617,6 +1618,8 @@ def _build_week_changes(
             factor_move=factor_moves.get(game.game_id),
             raw_home_cover_probability=raw_probabilities.get(game.game_id),
         )
+        if calibrated and side_moved:
+            reason = f"The updated cover chance favours {now_team}."
         moved_at = when if when is not None else published
         known = not pd.isna(moved_at)
         dated.append(
@@ -1726,6 +1729,7 @@ class BoardContent:
     disclaimer: Disclaimer
     ticker_chrome: TickerChrome
     link_preview: LinkPreview
+    calibrated_probability: bool = False
     season_record: SeasonRecordStrip | None = None
     pool_line_note: str = ""
     confidence_legend_text: str = ""
@@ -2756,7 +2760,7 @@ def _best_pick_note(nomination: Any) -> str:
 
     if nomination is None or nomination.active_game_id is None:
         return ""
-    if nomination.active_rule == "v2":
+    if nomination.active_rule in {"v2", "served_probability"}:
         return f"This pick was {nomination.method_note}"
     tie = f" {nomination.active_tie_note}" if nomination.active_tie_note else ""
     return (
@@ -2833,7 +2837,9 @@ def _build_policy_note(view: Any, strong_count: int, n_games: int) -> tuple[Poli
     )
 
 
-def _build_findings(games: tuple[GameRow, ...], flip_count: int) -> tuple[Finding, ...]:
+def _build_findings(
+    games: tuple[GameRow, ...], flip_count: int, *, calibrated: bool = False
+) -> tuple[Finding, ...]:
 
     if not games:
         return ()
@@ -2848,6 +2854,8 @@ def _build_findings(games: tuple[GameRow, ...], flip_count: int) -> tuple[Findin
             "efficient."
         ),
     )
+    if calibrated:
+        return (shape_finding,)
     overlay_finding = Finding(
         tag="NOTE // OVERLAY REACH",
         text=(
@@ -2904,8 +2912,8 @@ def _build_refresh_lines(
 _KNOWN_SOURCE_POLICY_CARD_STATES = {COMPLETE, DEGRADED, BLOCKED}
 
 
-def _market_now_by_game(data_root: Path, *, now: datetime) -> dict[str, tuple[float | None, int]]:
-    from nfl_ats.market_data import load_quote_history, spread_consensus
+def _market_now_by_game(data_root: Path, *, now: datetime) -> dict[str, tuple[float, int, str]]:
+    from nfl_ats.market_data import current_spread_quotes, load_quote_history
 
     try:
         quotes = load_quote_history(
@@ -2914,16 +2922,24 @@ def _market_now_by_game(data_root: Path, *, now: datetime) -> dict[str, tuple[fl
         )
         if quotes.empty:
             return {}
-        consensus = spread_consensus(quotes)
+        current = current_spread_quotes(quotes, as_of=now, public_only=True)
     except Exception:
         return {}
-    result: dict[str, tuple[float | None, int]] = {}
-    for _, row in consensus.iterrows():
+    if current.empty:
+        return {}
+    eastern = ZoneInfo("America/New_York")
+    observed = pd.to_datetime(current["observed_at_utc"], utc=True, errors="coerce")
+    current = current.loc[
+        observed.dt.tz_convert(eastern).dt.date.eq(now.astimezone(eastern).date())
+    ]
+    result: dict[str, tuple[float, int, str]] = {}
+    for _, row in current.iterrows():
         game_id = str(row.get("nflverse_game_id") or "")
-        value = _number(row.get("consensus_home_spread"))
+        value = _number(row.get("home_spread_line"))
         books = int(_number(row.get("bookmakers")) or 0)
         if game_id and value is not None:
-            result[game_id] = (value, books)
+            label = str(row.get("bookmaker_label") or "") if books == 1 else f"{books} books"
+            result[game_id] = (value, books, label)
     return result
 
 
@@ -3348,6 +3364,13 @@ def load_board_content(
 
     final = view.predictions if view is not None else artifacts.predictions
     pick_probability = view.pick_probability if view is not None else None
+    calibrated_mass = (
+        pick_probability is not None
+        and pick_probability.base_probability_policy == BASE_PROBABILITY_POLICY
+    )
+    served_sweep = (
+        calibrated_discrete_sweep(artifacts.sweep, final) if calibrated_mass else artifacts.sweep
+    )
     if pick_probability is None:
         strength_bands = displayed_confidence.bands
         final = attach_displayed_confidence(final, displayed_confidence)
@@ -3374,7 +3397,7 @@ def load_board_content(
                 *existing,
                 PLAYER_ARRESTS_BACK_SIDE_POLICY,
             )
-    flipped_game_ids = set(flip_member_ids_by_game)
+    flipped_game_ids = set() if calibrated_mass else set(flip_member_ids_by_game)
 
     best_pick_id = view.nomination.active_game_id if view is not None else None
     best_pick_note = _best_pick_note(view.nomination) if view is not None else ""
@@ -3396,8 +3419,12 @@ def load_board_content(
                 outcome_row.get("away_score"),
             )
 
-    spread_explorer_params = _load_spread_explorer_params(
-        artifacts.metadata, artifacts.predictions, resolved_data_root
+    spread_explorer_params = (
+        {}
+        if calibrated_mass
+        else _load_spread_explorer_params(
+            artifacts.metadata, artifacts.predictions, resolved_data_root
+        )
     )
 
     forecast_dir = active_artifact_path(artifacts_root, artifacts.active, "weekly_forecast")
@@ -3450,7 +3477,7 @@ def load_board_content(
         word = row_confidence_word(row, strength_bands)
         played = (
             _played_pick(row, played_overrides[game_id], played_calibration, strength_bands)
-            if game_id in played_overrides
+            if not calibrated_mass and game_id in played_overrides
             else None
         )
         if played is not None:
@@ -3488,15 +3515,18 @@ def load_board_content(
                 }
             )
         result, home_score, away_score = outcome_by_game_id.get(game_id, (None, None, None))
-        flip_line_value, flip_held_value, flip_reason_value = _flip_line(
-            game_id,
-            home_team,
-            team,
-            market_spread,
-            flip_member_ids_by_game.get(game_id, ()),
-            artifacts.sweep,
-            spread_explorer_params,
-        )
+        if calibrated_mass and frozen_pick is not None:
+            flip_line_value, flip_held_value, flip_reason_value = None, False, None
+        else:
+            flip_line_value, flip_held_value, flip_reason_value = _flip_line(
+                game_id,
+                home_team,
+                team,
+                market_spread,
+                () if calibrated_mass else flip_member_ids_by_game.get(game_id, ()),
+                served_sweep,
+                spread_explorer_params,
+            )
         is_game_final, cover_result, final_score_text = _game_final_state(
             home=home_team,
             away=away_team,
@@ -3506,6 +3536,7 @@ def load_board_content(
             home_score=home_score,
             away_score=away_score,
         )
+        market_now = market_now_by_game.get(game_id)
         games.append(
             GameRow(
                 game_id=game_id,
@@ -3519,7 +3550,7 @@ def load_board_content(
                 confidence_word=word,
                 is_best=best_pick_id is not None and game_id == best_pick_id,
                 is_flipped=game_id in flipped_game_ids,
-                flip_member_labels=_flip_member_labels(view, game_id),
+                flip_member_labels=() if calibrated_mass else _flip_member_labels(view, game_id),
                 final=is_game_final,
                 cover_result=cover_result,
                 final_score_text=final_score_text,
@@ -3529,16 +3560,21 @@ def load_board_content(
                 flip_line=flip_line_value,
                 flip_held=flip_held_value,
                 flip_reason=flip_reason_value,
-                explanation_text=_explanation_with_qb_note(
-                    _played_side_explanation(
-                        pick_explanations.get(game_id, EXPLANATION_NOT_RECORDED_TEXT),
-                        pick_team=team,
-                        model_team=model_team,
-                    ),
-                    qb_notes.get(game_id),
+                explanation_text=(
+                    f"{team} was the side on the board when picks locked, so that remains the pick."
+                    if calibrated_mass and frozen_pick is not None
+                    else _explanation_with_qb_note(
+                        _played_side_explanation(
+                            pick_explanations.get(game_id, EXPLANATION_NOT_RECORDED_TEXT),
+                            pick_team=team,
+                            model_team=model_team,
+                        ),
+                        qb_notes.get(game_id),
+                    )
                 ),
-                market_now=market_now_by_game.get(game_id, (None, 0))[0],
-                market_now_books=market_now_by_game.get(game_id, (None, 0))[1],
+                market_now=market_now[0] if market_now is not None else None,
+                market_now_books=market_now[1] if market_now is not None else 0,
+                market_now_book_label=market_now[2] if market_now is not None else "",
                 qb_note=qb_notes.get(game_id),
             )
         )
@@ -3547,7 +3583,17 @@ def load_board_content(
         record_published_picks(artifacts_root, published_rows, published_at=generated)
 
     strong_count = sum(1 for game in games if game.confidence_word == "strong")
-    policy, flip_count = _build_policy_note(view, strong_count, len(games))
+    if calibrated_mass:
+        policy = PolicyNote(
+            composition_text="Calibrated cover chances guide every pick.",
+            rich_narrative="Situational evidence is weighed within each game's cover chance.",
+            policy_id=None,
+            policy_fingerprint=None,
+            members_text=None,
+        )
+        flip_count = 0
+    else:
+        policy, flip_count = _build_policy_note(view, strong_count, len(games))
 
     paper_decisions = load_paper_decisions(artifacts_root)
     served_decisions = served_paper_decisions(artifacts_root)
@@ -3577,17 +3623,21 @@ def load_board_content(
     dives = tuple(
         _build_dive(
             game,
-            sweep=artifacts.sweep,
+            sweep=pd.DataFrame() if calibrated_mass and game.game_id in frozen else served_sweep,
             waterfall_feed=waterfall_feed,
             waterfall_document=waterfall_document,
             active=artifacts.active,
-            spread_explorer_params=spread_explorer_params,
-            raw_home_cover_probability=raw_probability_by_game.get(game.game_id),
+            spread_explorer_params=(
+                {} if calibrated_mass and game.game_id in frozen else spread_explorer_params
+            ),
+            raw_home_cover_probability=(
+                None if calibrated_mass else raw_probability_by_game.get(game.game_id)
+            ),
             lineups=lineups,
         )
         for game in games
     )
-    findings = _build_findings(tuple(games), flip_count)
+    findings = _build_findings(tuple(games), flip_count, calibrated=calibrated_mass)
     refresh_lines = _build_refresh_lines(
         tuple(games),
         artifacts_root,
@@ -3623,6 +3673,7 @@ def load_board_content(
         best_pick_note=best_pick_note,
         flip_count=flip_count,
         strong_count=strong_count,
+        calibrated_probability=calibrated_mass,
         confidence_legend_text=_confidence_legend_text(
             strength_bands, landing_rate_sentence(pick_probability)
         ),
@@ -3665,6 +3716,7 @@ def load_board_content(
             published_at=_card_publication_time(forecast_dir),
             data_root=resolved_data_root,
             raw_probabilities=raw_probability_by_game,
+            calibrated=calibrated_mass,
         ),
         ticker_chrome=ticker_chrome,
         link_preview=link_preview,

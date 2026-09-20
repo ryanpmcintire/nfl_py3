@@ -400,6 +400,13 @@ def plan_weekly_run(
             ),
             WeeklyStep(
                 number=7,
+                name="fit-pick-probability",
+                description="fit the served probability against the matching opener evaluation",
+                command=("fit-pick-probability",),
+                notes=("fatal: publishing requires calibration for the active model",),
+            ),
+            WeeklyStep(
+                number=7,
                 name="overlay-composition",
                 description="refresh overlay composition against the matching opener evaluation",
                 command=("overlay-composition",),
@@ -444,7 +451,7 @@ def plan_weekly_run(
             number=8,
             name="publish-predictions",
             description=(
-                "write the tracked card (frozen four-overlay OR-union policy), "
+                "write the tracked card with the active calibrated probability, "
                 "the public site, and (with "
                 "--record-decisions) the CLV ledger, this week's Best Pick, and the "
                 "overlay's own prospective challenger ledger row"

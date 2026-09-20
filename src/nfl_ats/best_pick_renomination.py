@@ -7,7 +7,11 @@ from typing import Any
 
 import pandas as pd
 
-from nfl_ats.best_pick_nomination import dispersion_pool_from_frame, week_dispersion_pool
+from nfl_ats.best_pick_nomination import (
+    dispersion_pool_from_frame,
+    select_served_nominee,
+    week_dispersion_pool,
+)
 from nfl_ats.io import atomic_text
 from nfl_ats.market_data import load_quote_history, spread_consensus
 from nfl_ats.pick_refresh import (
@@ -267,17 +271,10 @@ def plan_best_pick_renomination(
         playable["pick_side"].astype(str).eq("HOME"), 1.0 - playable["home_probability"]
     )
 
-    pool_frame, pool_source, pool_reason = renomination_pool(
-        data_root, playable["game_id"].astype(str).tolist(), instant=instant
-    )
-    ranked = playable.merge(
-        pool_frame[["game_id", "spread_std", "pool_pass"]], on="game_id", how="left"
-    )
-    candidates = ranked.loc[ranked["pool_pass"].fillna(False).astype(bool)]
-    if candidates.empty:
-        candidates = ranked
-        pool_reason = "empty_filter"
-    candidates = candidates.loc[candidates["statistic"].ge(BEST_PICK_MINIMUM_COVER_CHANCE)]
+    ranked = playable.copy()
+    ranked["spread_std"] = float("nan")
+    ranked["pool_pass"] = True
+    candidates = ranked.loc[ranked["statistic"].ge(BEST_PICK_MINIMUM_COVER_CHANCE)]
     if candidates.empty:
         return _held(
             plan,
@@ -286,7 +283,9 @@ def plan_best_pick_renomination(
             previous_game_id=previous_game_id,
         )
 
-    candidate_game_id, n_tied, tie_break = select_renominee(candidates)
+    candidate_game_id, n_tied, tie_break = select_served_nominee(
+        candidates, probability_column="statistic"
+    )
     chosen = candidates.loc[candidates["game_id"].eq(candidate_game_id)].iloc[0]
     served = not serve_reason
     game_id = candidate_game_id if served else previous_game_id
@@ -304,8 +303,8 @@ def plan_best_pick_renomination(
         statistic=float(chosen["statistic"]),
         n_tied=n_tied,
         tie_break=tie_break,
-        pool_source=pool_source,
-        pool_reason=pool_reason,
+        pool_source="all_playable_games",
+        pool_reason="",
         pool_day=str(local.date()),
         n_candidates=len(candidates),
         matchup=_matchup(plan, game_id),
@@ -331,8 +330,8 @@ def _ranking_rows(
     frame["spread_size"] = pd.to_numeric(frame["decision_home_spread"], errors="coerce").abs()
     frame["kickoff"] = pd.to_datetime(frame["kickoff"], utc=True)
     ordered = frame.sort_values(
-        ["pool_pass", "statistic", "spread_std", "spread_size", "kickoff", "game_id"],
-        ascending=[False, False, True, True, True, True],
+        ["pool_pass", "statistic", "game_id"],
+        ascending=[False, False, True],
         na_position="last",
     )
     rows: list[dict[str, Any]] = []
@@ -411,8 +410,8 @@ def best_pick_note_line(renomination: SundayRenomination, pick: str, previous_pi
     return (
         f"**Best Pick of the week ({BEST_PICK_MARK.strip()}):** {pick} in {renomination.matchup}. "
         "The pool scores one Best Pick per regular-season week. The star moved here on Sunday "
-        "morning: of the games that have not kicked off yet, this is the one the model is now "
-        f"most sure about at the spread the pool locked on Tuesday.{tuesday}"
+        "morning: among the games still open for changes, this has the highest estimated "
+        f"chance for its picked side to cover the spread the pool locked on Tuesday.{tuesday}"
     )
 
 

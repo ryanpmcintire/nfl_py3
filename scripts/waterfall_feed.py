@@ -239,13 +239,19 @@ def _load_home_side_offsets(forecast_directory: Path) -> tuple[dict[str, float],
 
 
 def _production_resolver(
-    card: pd.DataFrame, sweep: pd.DataFrame, metadata: dict[str, Any], *, data_root: Path
+    card: pd.DataFrame,
+    sweep: pd.DataFrame,
+    metadata: dict[str, Any],
+    *,
+    data_root: Path,
+    artifacts_root: Path,
 ) -> Any:
     return resolve_card_view(
         card,
         sweep,
         metadata,
         data_root=data_root,
+        artifacts_root=artifacts_root,
         require_fresh_arrest_overlay=True,
     )
 
@@ -381,6 +387,9 @@ def allowed_rationale_numbers(
     allowed.add(f"{abs(float(game['predicted_residual'])):.2f}")
     allowed.add(plain(f"{float(game['market_line']):+.1f}"))
     allowed.add(f"{float(game['final_probability']):.3f}")
+    allowed.add(f"{float(game.get('smooth_margin_home_cover_probability', 0.0)):.3f}")
+    allowed.add(f"{float(game.get('discrete_base_home_cover_probability', 0.0)):.3f}")
+    allowed.add(f"{float(game.get('served_pick_probability', 0.0)):.3f}")
     return allowed
 
 
@@ -483,13 +492,25 @@ def build_feed(
         context.sweep,
         context.metadata,
         data_root=context.data_root,
+        artifacts_root=context.artifacts_root,
     )
     played = view.predictions
     played_probabilities = {
         str(gid): float(prob)
         for gid, prob in zip(played["game_id"], played["home_cover_probability"], strict=True)
     }
-    flip_map = _overlay_flip_map(view)
+    calibrated = view.pick_probability is not None
+    base_probabilities = (
+        {
+            str(gid): float(prob)
+            for gid, prob in zip(
+                played["game_id"], played["model_home_cover_probability"], strict=True
+            )
+        }
+        if calibrated
+        else {}
+    )
+    flip_map = {} if calibrated else _overlay_flip_map(view)
 
     recs_indexed = context.recommendations.set_index("game_id")
     games: list[dict[str, Any]] = []
@@ -499,7 +520,21 @@ def build_feed(
         home_side_offset = float(context.home_side_offsets.get(game_id, 0.0))
         model_residual = residual - home_side_offset
         line = float(row["spread_line"])
-        raw_probability = float(row["home_cover_probability"])
+        discrete_base_probability = float(row["home_cover_probability"])
+        raw_probability = float(
+            row["home_cover_probability_smooth"] if calibrated else discrete_base_probability
+        )
+        if calibrated and (
+            not math.isfinite(raw_probability)
+            or not math.isclose(
+                discrete_base_probability,
+                base_probabilities[game_id],
+                abs_tol=PROBABILITY_TOLERANCE,
+            )
+        ):
+            raise WaterfallFeedError(
+                f"Discrete probability source disagrees with the served card for {game_id}"
+            )
         firing = [{"overlay": member, "fires": True} for member in flip_map.get(game_id, [])]
         try:
             waterfall = build_game_waterfall(
@@ -517,20 +552,52 @@ def build_feed(
             ) from error
         played_probability = played_probabilities[game_id]
         played_side = "HOME" if played_probability >= 0.5 else "AWAY"
-        if waterfall.picked_side != played_side:
+        if not calibrated and waterfall.picked_side != played_side:
             raise WaterfallFeedError(
                 f"Reconstructed pick {waterfall.picked_side} disagrees with the played "
                 f"card pick {played_side} for {game_id}"
             )
-        if abs(waterfall.final_probability - played_probability) > PROBABILITY_TOLERANCE:
+        if (
+            not calibrated
+            and abs(waterfall.final_probability - played_probability) > PROBABILITY_TOLERANCE
+        ):
             raise WaterfallFeedError(
                 f"Reconstructed final probability {waterfall.final_probability:.6f} "
                 f"disagrees with the played card {played_probability:.6f} for {game_id}"
             )
         kickoff = pd.Timestamp(row["kickoff"]).isoformat()
-        picked_team = (
-            str(row["home_team"]) if waterfall.picked_side == "HOME" else str(row["away_team"])
+        picked_side = played_side if calibrated else waterfall.picked_side
+        picked_team = str(row["home_team"] if picked_side == "HOME" else row["away_team"])
+        steps = _split_home_side_step(
+            [asdict(step) for step in waterfall.steps],
+            home_side_offset=home_side_offset,
+            probability_rule_offset_points=float(offset),
+            picked_side=picked_side,
         )
+        if calibrated:
+            steps[-1]["label"] = (
+                "Margin-model read before the discrete and fitted probability steps"
+            )
+        sentences = rationale_sentences(
+            family_contributions=dict(contributions_by_game[game_id]),
+            steps_flip_overlays=[event.overlay for event in waterfall.flip_events],
+            picked_side=picked_side,
+            picked_team=picked_team,
+            probability_rule_offset_points=float(offset),
+            home_side_offset_points=home_side_offset,
+            predicted_residual=residual,
+            market_line=line,
+            final_probability=(
+                played_probability if picked_side == "HOME" else 1.0 - played_probability
+            ),
+        )
+        if calibrated:
+            sentences[:0] = [
+                f"The smooth margin read gives home cover {raw_probability:.3f}; "
+                f"the discrete margin read gives {discrete_base_probability:.3f}",
+                f"Fitted signals adjust home cover from {discrete_base_probability:.3f} "
+                f"to {played_probability:.3f}, choosing {picked_team}",
+            ]
         games.append(
             {
                 "game_id": game_id,
@@ -539,36 +606,20 @@ def build_feed(
                 "kickoff": kickoff,
                 "market_line": line,
                 "predicted_residual": residual,
-                "final_probability": waterfall.final_probability,
-                "picked_side": waterfall.picked_side,
+                "final_probability": played_probability,
+                "served_pick_probability": (
+                    played_probability if picked_side == "HOME" else 1.0 - played_probability
+                ),
+                "picked_side": picked_side,
+                "smooth_margin_home_cover_probability": raw_probability,
+                "discrete_base_home_cover_probability": discrete_base_probability,
+                "fitted_probability_adjustment": played_probability - discrete_base_probability,
                 "edge_vs_spread": abs(residual),
                 "key_number_distance": key_number_distance(line + residual),
                 "home_side_offset_points": home_side_offset,
-                "steps": _split_home_side_step(
-                    [
-                        {
-                            **asdict(step),
-                            "delta_points": step.delta_points + 0.0,
-                            "cumulative_points": step.cumulative_points + 0.0,
-                        }
-                        for step in waterfall.steps
-                    ],
-                    home_side_offset=home_side_offset,
-                    probability_rule_offset_points=float(offset),
-                    picked_side=waterfall.picked_side,
-                ),
+                "steps": steps,
                 "flip_events": [asdict(event) for event in waterfall.flip_events],
-                "rationale_sentences": rationale_sentences(
-                    family_contributions=dict(contributions_by_game[game_id]),
-                    steps_flip_overlays=[event.overlay for event in waterfall.flip_events],
-                    picked_side=waterfall.picked_side,
-                    picked_team=picked_team,
-                    probability_rule_offset_points=float(offset),
-                    home_side_offset_points=home_side_offset,
-                    predicted_residual=residual,
-                    market_line=line,
-                    final_probability=waterfall.final_probability,
-                ),
+                "rationale_sentences": sentences,
             }
         )
 

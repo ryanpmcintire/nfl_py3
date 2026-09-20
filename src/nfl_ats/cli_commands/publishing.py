@@ -1359,6 +1359,7 @@ def _cmd_publish_board(args: argparse.Namespace) -> None:
 
 
 def _cmd_refresh_picks(args: argparse.Namespace) -> None:
+    _require_served_pick_probability()
     season, week = _resolve_active_forecast_season_week(args, _artifacts_root())
     plan = plan_refresh(
         _artifacts_root(),

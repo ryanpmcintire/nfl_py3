@@ -20,6 +20,10 @@ modified lane when the prompt just says to continue.
 
 ## Active
 
+- [confidence-best-pick-unification](confidence-best-pick-unification.md) - priority: verify confidence discrimination and unify the served selector; audit plan fixed before measurement
+
+- [sunday-readiness-2026-09-20](sunday-readiness-2026-09-20.md) - Sunday discrete forecast and fitted refresh complete locally: 16 paper rows and six revision rows agree, Rams star, private quote prices excluded; root commit/push pending
+
 - [pooled-signal-model](pooled-signal-model.md) — MOD-20, unit 1 done 2026-09-16 (first pooled fit recorded, unresolved); next: grow the reproducible feature set
 - [market-derived-ratings](market-derived-ratings.md) — MOD-21, closed 2026-09-16 (refuted on accuracy; Brier companion unresolved)
 - [line-move-target](line-move-target.md) — MKT-20, closed 2026-09-16 (refuted as a target; the move stays a fitted term)
@@ -44,6 +48,8 @@ modified lane when the prompt just says to continue.
 - [odds-api-key-deactivated](odds-api-key-deactivated.md) — 2026-09-19: bulk odds captures failing HTTP 401 DEACTIVATED_KEY (billing); owner action needed before the next odds window
 
 ## Done
+
+- [windows-linux-recovery](done/windows-linux-recovery.md) - 2026-09-20: restored Windows dependencies and scheduler, isolated Linux environment instructions, repaired Shopify skill YAML, verified all gates and regenerated dashboard locally
 
 - [halves-ledger-lockday](done/halves-ledger-lockday.md) — 2026-09-12
 - [dashboard-2026-09-12-evening](done/dashboard-2026-09-12-evening.md) — 2026-09-12, Books-now market-move line

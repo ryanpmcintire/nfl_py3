@@ -93,7 +93,7 @@ REPO = Path(__file__).resolve().parents[1]
 def test_atoms_are_declared_once_as_three_and_seven() -> None:
     assert KEY_LINE_ATOMS == (3.0, 7.0)
     assert prediction_cli.KEY_LINE_ATOMS is KEY_LINE_ATOMS
-    assert KEY_LINE_PICK_READ_POLICY == "key_line_pick_read_v1"
+    assert KEY_LINE_PICK_READ_POLICY == "key_line_pick_read_v2"
     assert KeyLinePickRead(reader=reader_for_2020_week_1(synthetic_pool())).atoms is KEY_LINE_ATOMS
 
 
@@ -147,10 +147,10 @@ def test_decision_number_is_lane_t_cover_plus_half_push() -> None:
     reader = reader_for_2020_week_1(synthetic_pool(push_share=0.10))
     read = reader.read(3.0, 2.0)
     assert read.push > 0.05
-    assert key_line_decision_probability(read) == read.cover + 0.5 * read.push
+    assert key_line_decision_probability(read) == read.cover / (read.cover + read.loss)
     assert key_line_decision_probability(read) == read.home_cover_probability
     assert key_line_decision_probability(read) != pytest.approx(
-        read.cover / (read.cover + read.loss), abs=1e-6
+        read.cover + 0.5 * read.push, abs=1e-6
     )
 
 
@@ -229,7 +229,7 @@ def test_override_touches_only_key_line_two_way_after_the_offset(
     for game_id, row in ats.loc[ats["spread_line"].ne(3.0)].iterrows():
         record = log[str(game_id)]
         assert not record.touched and record.atom is None
-        assert record.served == record.smooth == row["home_cover_probability"]
+        assert record.served == record.discrete == row["home_cover_probability"]
 
 
 def test_no_policy_is_byte_identical_and_offset_applies_first_in_the_pure_function(
@@ -259,8 +259,13 @@ def test_no_policy_is_byte_identical_and_offset_applies_first_in_the_pure_functi
         assert out["home_cover_probability"].iloc[index] == key_line_decision_probability(
             policy.reader.read(3.0, float(expected[index]))
         )
-    assert np.array_equal(
-        out.loc[~on_atom, "home_cover_probability"], shifted.loc[~on_atom, "home_cover_probability"]
+    np.testing.assert_allclose(
+        out.loc[~on_atom, "home_cover_probability"],
+        out.loc[~on_atom, "home_cover_probability_excluding_push"]
+        / (
+            out.loc[~on_atom, "home_cover_probability_excluding_push"]
+            + out.loc[~on_atom, "home_loss_probability"]
+        ),
     )
     with pytest.raises(ValueError, match="row-aligned"):
         apply_key_line_pick_read(
@@ -341,7 +346,7 @@ def test_sidecar_and_metadata_carry_both_reads_and_rebuild_the_overrides(
     json.dumps(sidecar)
     assert sidecar["served"] is True and sidecar["error"] is None
     assert sidecar["policy"] == KEY_LINE_PICK_READ_POLICY and sidecar["atoms"] == [3.0, 7.0]
-    assert sidecar["fit"]["decision_number"] == "cover + push / 2"
+    assert sidecar["fit"]["decision_number"] == "cover / (cover + loss)"
     assert [g["game_id"] for g in sidecar["games"]] == ids
     touched = [g for g in sidecar["games"] if g["touched"]]
     assert touched and all(g["atom"] == 3.0 for g in touched)
@@ -355,11 +360,7 @@ def test_sidecar_and_metadata_carry_both_reads_and_rebuild_the_overrides(
             "push",
             "loss",
         } <= set(game)
-        assert game["home_cover_probability"] == (
-            game["home_cover_probability_discrete"]
-            if game["touched"]
-            else game["home_cover_probability_smooth"]
-        )
+        assert game["home_cover_probability"] == game["home_cover_probability_discrete"]
         assert game["side_changed"] == (
             (game["home_cover_probability"] >= 0.5)
             != (game["home_cover_probability_smooth"] >= 0.5)
@@ -562,7 +563,7 @@ def test_margin_predict_serves_the_key_line_read_and_writes_the_sidecar(
                 game_id=str(row["game_id"]),
             )
             assert row["home_cover_probability"] == pytest.approx(
-                expected.cover + 0.5 * expected.push
+                expected.conditional_cover_probability
             )
             assert offsets_by_game[str(row["game_id"])]["home_side_offset"] == 1.25
             uncorrected_point = float(game["point"]) - 1.25
@@ -577,11 +578,11 @@ def test_margin_predict_serves_the_key_line_read_and_writes_the_sidecar(
             )
             assert offsets_by_game[str(row["game_id"])][
                 "home_cover_probability_uncorrected"
-            ] == pytest.approx(expected_off.cover + 0.5 * expected_off.push)
+            ] == pytest.approx(expected_off.conditional_cover_probability)
         else:
             assert not game["touched"]
             assert row["home_cover_probability"] == pytest.approx(
-                game["home_cover_probability_smooth"]
+                game["home_cover_probability_discrete"]
             )
     assert touched_ids
     assert [g["game_id"] for g in block["touched"]] == touched_ids
@@ -606,7 +607,7 @@ def test_margin_predict_serves_the_key_line_read_and_writes_the_sidecar(
     off_card = pd.read_csv(off.output / "recommendations.csv").set_index("game_id")
     for game_id in touched_ids:
         assert off_card.loc[game_id, "home_cover_probability"] == pytest.approx(
-            by_game[game_id]["home_cover_probability_smooth"]
+            by_game[game_id]["home_cover_probability_discrete"]
         )
 
 
@@ -1106,9 +1107,16 @@ def test_refresh_reproduces_the_served_number_and_reapplies_the_policy(
     assert by_id["2026_02_GGG_HHH"].new_home_cover_probability == key_line_decision_probability(
         reader.read(3.0, point)
     )
-    for game_id, value in reference.items():
-        if game_id != "2026_02_GGG_HHH":
-            assert by_id[game_id].new_home_cover_probability == pytest.approx(value)
+    predictions = model.predict(overridden, probability_method="ecdf")
+    for position, (_, game) in enumerate(overridden.iterrows()):
+        expected = reader.read(
+            float(game["spread_line"]),
+            float(predictions["predicted_margin"].iloc[position])
+            + residual_location(model.residuals, "ecdf"),
+        )
+        assert by_id[str(game["game_id"])].new_home_cover_probability == pytest.approx(
+            expected.conditional_cover_probability
+        )
 
 
 def test_refresh_without_a_sidecar_is_the_pre_promotion_refit(
@@ -1160,14 +1168,15 @@ def test_refresh_frame_split_is_the_lattice_split_beside_the_key_line_pick(
         point = float(forecasts["predicted_margin"].iloc[position]) + location
         assert _split(result, position) == reader.read(line, point).three_way()
         if game_id == "2026_02_GGG_HHH":
-            cover, push, _ = _split(result, position)
-            assert result["home_cover_probability"].iloc[position] == cover + 0.5 * push
+            cover, _, loss = _split(result, position)
+            assert result["home_cover_probability"].iloc[position] == cover / (cover + loss)
             assert result["home_cover_probability"].iloc[position] == key_line_decision_probability(
                 reader.read(3.0, point)
             )
         else:
-            assert result["home_cover_probability"].iloc[position] == float(
-                forecasts["home_cover_probability"].iloc[position]
+            assert (
+                result["home_cover_probability"].iloc[position]
+                == reader.read(line, point).conditional_cover_probability
             )
     touched = ids.index("2026_02_GGG_HHH")
     assert _split(result, touched) != _split(forecasts, touched)
@@ -1210,9 +1219,10 @@ def test_refresh_serves_the_discrete_split_without_a_key_line_sidecar(
         forecasts, overridden, reader, residuals=model.residuals, probability_method="ecdf"
     )
     pd.testing.assert_frame_equal(result, expected)
-    assert np.array_equal(
-        result["home_cover_probability"].to_numpy(dtype=float),
-        forecasts["home_cover_probability"].to_numpy(dtype=float),
+    np.testing.assert_allclose(
+        result["home_cover_probability"],
+        result["home_cover_probability_excluding_push"]
+        / (result["home_cover_probability_excluding_push"] + result["home_loss_probability"]),
     )
 
 
@@ -1330,7 +1340,7 @@ def test_refresh_atom_test_is_keyed_to_the_frozen_tuesday_line(
     from nfl_ats.io import atomic_parquet
     from nfl_ats.pick_refresh import plan_refresh
 
-    artifacts_root, data_root, features_path, reference = _refresh_setup(
+    artifacts_root, data_root, features_path, _ = _refresh_setup(
         tmp_path, model_frame, with_sidecar=True, with_push_sidecar=True
     )
     moved = copy.deepcopy(GAMES)
@@ -1367,12 +1377,16 @@ def test_refresh_atom_test_is_keyed_to_the_frozen_tuesday_line(
     assert by_id["2026_02_GGG_HHH"].new_home_cover_probability == float(
         result["home_cover_probability"].iloc[touched]
     )
-    assert by_id["2026_02_CCC_DDD"].new_home_cover_probability == pytest.approx(
-        reference["2026_02_CCC_DDD"]
-    )
     drifted = ids.index("2026_02_CCC_DDD")
+    assert by_id["2026_02_CCC_DDD"].new_home_cover_probability == pytest.approx(
+        result["home_cover_probability"].iloc[drifted]
+    )
     assert result["home_cover_probability"].iloc[drifted] == float(
-        forecasts["home_cover_probability"].iloc[drifted]
+        result["home_cover_probability_excluding_push"].iloc[drifted]
+        / (
+            result["home_cover_probability_excluding_push"].iloc[drifted]
+            + result["home_loss_probability"].iloc[drifted]
+        )
     )
     assert (
         _split(result, drifted)
@@ -1662,8 +1676,11 @@ def test_lane_t_kl1b_replays_bit_for_bit_through_the_served_read() -> None:
         touched[group.index] = [log[g].touched for g in games["game_id"]]
     assert np.array_equal(touched, scored["touched_KL1b"].to_numpy(dtype=bool))
     assert int(touched.sum()) == 272
-    assert np.array_equal(served, scored["p_KL1b"].to_numpy(dtype=float))
-    assert np.array_equal(served[~touched], scored.loc[~touched, "p_S3"].to_numpy(dtype=float))
+    expected = scored["cover_MP1"] / (scored["cover_MP1"] + scored["loss_MP1"])
+    np.testing.assert_allclose(served, expected.to_numpy(dtype=float), rtol=0.0, atol=1e-14)
+    np.testing.assert_allclose(
+        served[~touched], expected.loc[~touched].to_numpy(dtype=float), rtol=0.0, atol=1e-14
+    )
     week1 = json.loads((root / "week1.json").read_text(encoding="utf-8"))
     changed = week1["card_changes"]["KL1b"]
     assert [row["game_id"] for row in changed] == ["2026_01_NO_DET"]

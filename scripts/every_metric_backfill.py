@@ -302,7 +302,7 @@ def main():
     served_regressor = active_model["regressor"]
 
     files = discover_prediction_files()
-    known_families = sorted(set(family_of(p) for p in files))
+    known_families = sorted({family_of(p) for p in files})
 
     loaded = {}
     inventory = []
@@ -311,7 +311,7 @@ def main():
         fam = family_of(path)
         pf = pq.ParquetFile(path)
         n_rows_meta = pf.metadata.num_rows
-        df, available_cols = load_needed_columns(path)
+        df, _available_cols = load_needed_columns(path)
         entry = {
             "path": rel,
             "family": fam,
@@ -345,7 +345,6 @@ def main():
         )
         has_margin_pred = "predicted_margin" in df.columns and df["predicted_margin"].notna().any()
         has_actual_margin = margin is not None and margin.notna().any()
-        has_market = market_signed_raw is not None
         cover_placeholder = actual_cover_series(
             df, margin, market_signed_raw if market_signed_raw is not None else None
         )
@@ -549,16 +548,21 @@ def main():
             mae_diff = diff_positive_favours_candidate(
                 "margin_mae", overall.get("margin_mae"), overall["market"].get("margin_mae")
             )
-            if acc_diff is not None and mae_diff is not None and acc_diff != 0 and mae_diff != 0:
-                if (acc_diff > 0) != (mae_diff > 0):
-                    decisive_cases.append(
-                        {
-                            "scope": "served_backtest_candidate",
-                            "name": label,
-                            "accuracy_diff": acc_diff,
-                            "margin_mae_diff": mae_diff,
-                        }
-                    )
+            if (
+                acc_diff is not None
+                and mae_diff is not None
+                and acc_diff != 0
+                and mae_diff != 0
+                and (acc_diff > 0) != (mae_diff > 0)
+            ):
+                decisive_cases.append(
+                    {
+                        "scope": "served_backtest_candidate",
+                        "name": label,
+                        "accuracy_diff": acc_diff,
+                        "margin_mae_diff": mae_diff,
+                    }
+                )
 
     margins_summary = family_summary.get("margins")
     if margins_summary is not None:
@@ -569,16 +573,21 @@ def main():
                 continue
             acc_diff = acc.get("mean_diff_positive_favours_candidate")
             mae_diff = mae.get("mean_diff_positive_favours_candidate")
-            if acc_diff is not None and mae_diff is not None and acc_diff != 0 and mae_diff != 0:
-                if (acc_diff > 0) != (mae_diff > 0):
-                    decisive_cases.append(
-                        {
-                            "scope": "margins_family_aggregate",
-                            "name": label,
-                            "accuracy_diff": acc_diff,
-                            "margin_mae_diff": mae_diff,
-                        }
-                    )
+            if (
+                acc_diff is not None
+                and mae_diff is not None
+                and acc_diff != 0
+                and mae_diff != 0
+                and (acc_diff > 0) != (mae_diff > 0)
+            ):
+                decisive_cases.append(
+                    {
+                        "scope": "margins_family_aggregate",
+                        "name": label,
+                        "accuracy_diff": acc_diff,
+                        "margin_mae_diff": mae_diff,
+                    }
+                )
 
     results = {
         "generated_at_utc": started.isoformat(),
@@ -606,34 +615,40 @@ def main():
     report_lines.append("# ENG-46 unit 1: every metric from the same run (read-only measurement)")
     report_lines.append("")
     report_lines.append(
-        "Generated (measured, this run): {0} UTC".format(started.strftime("%Y-%m-%d %H:%M:%S"))
+        "Generated (measured, this run): {} UTC".format(started.strftime("%Y-%m-%d %H:%M:%S"))
     )
     report_lines.append("")
     report_lines.append("## Decisive line")
     report_lines.append("")
     if decisive_cases:
-        names = ", ".join("{0}:{1}".format(c["scope"], c["name"]) for c in decisive_cases)
+        names = ", ".join("{}:{}".format(c["scope"], c["name"]) for c in decisive_cases)
         report_lines.append(
-            f"measured: {len(decisive_cases)} candidate(s) show a margin-MAE paired difference with the opposite sign from their "
-            f"accuracy-point difference: {names}. Per AGENTS.md this is neither a refuted mechanism nor a "
-            "positive-control bound, so it is unresolved_below_power, not a rejection; it implies the parent "
-            "session should record probability_positive for margin MAE separately from accuracy before treating "
-            "the two metrics as redundant for these candidates."
+            f"measured: {len(decisive_cases)} candidate(s) show a margin-MAE paired difference "
+            "with the opposite sign from their "
+            f"accuracy-point difference: {names}. Per AGENTS.md this is neither a refuted "
+            "mechanism nor a positive-control bound, so it is unresolved_below_power, "
+            "not a rejection; "
+            "it implies the parent session should record probability_positive for margin MAE "
+            "separately from accuracy before treating the two metrics as redundant for these "
+            "candidates."
         )
     else:
         report_lines.append(
-            "measured: 0 served-or-near-served candidates show a margin-MAE paired difference with the opposite "
-            "sign from their accuracy-point difference (checked across the {0} served-backtest candidates and the "
-            "margins-family aggregate). This implies accuracy and margin MAE currently agree in direction for the "
-            "served model's own candidates, so adding margin MAE/Brier/log-loss reporting would mostly add "
-            "precision and calibration information, not contradict the accuracy-based read; it does not by "
+            "measured: 0 served-or-near-served candidates show a margin-MAE paired difference "
+            "with the opposite sign from their accuracy-point difference (checked across the {} "
+            "served-backtest candidates and the margins-family aggregate). This implies accuracy "
+            "and margin MAE currently agree in direction for the served model's own candidates, "
+            "so adding margin MAE/Brier/log-loss reporting would mostly add precision and "
+            "calibration information, not contradict the accuracy-based read; it does not by "
             "itself close any open signal.".format(len(served_report["candidates"]))
         )
     report_lines.append("")
     report_lines.append(
-        "Sign convention (measured, served backtest {0} rows): +market_spread/spread_line MAE = {1:.4f}, "
-        "-market_spread MAE = {2:.4f} -> chose {3}. Pooled across {4} rows from all supportable files: "
-        "+sign MAE = {5:.4f}, -sign MAE = {6:.4f}, agrees with served-file choice.".format(
+        "Sign convention (measured, served backtest {} rows): "
+        "+market_spread/spread_line MAE = {:.4f}, "
+        "-market_spread MAE = {:.4f} -> chose {}. "
+        "Pooled across {} rows from all supportable files: "
+        "+sign MAE = {:.4f}, -sign MAE = {:.4f}, agrees with served-file choice.".format(
             served_df.shape[0] if served_df is not None else 0,
             sign_report["served_file_mae_if_positive_sign"] or float("nan"),
             sign_report["served_file_mae_if_negative_sign"] or float("nan"),
@@ -645,14 +660,16 @@ def main():
     )
     report_lines.append("")
     report_lines.append(
-        f"Every look counted (measured): {total_looks} (file x candidate x metric combinations actually computed "
-        f"across {len(files)} predictions.parquet files, of which {len(loaded)} supported at least one metric)."
+        f"Every look counted (measured): {total_looks} "
+        "(file x candidate x metric combinations actually computed "
+        f"across {len(files)} predictions.parquet files, "
+        f"of which {len(loaded)} supported at least one metric)."
     )
     report_lines.append("")
     report_lines.append("## Inventory (measured)")
     report_lines.append("")
     report_lines.append(
-        "{0} predictions.parquet files found under artifacts/. {1} skipped for lacking a predicted "
+        "{} predictions.parquet files found under artifacts/. {} skipped for lacking a predicted "
         "margin or cover probability column; reasons listed in results.json `inventory`.".format(
             len(files), sum(1 for e in inventory if e["skip_reason"] is not None)
         )
@@ -674,19 +691,24 @@ def main():
         bri = any(e["supports"]["brier"] for e in entries)
         ll = any(e["supports"]["log_loss"] for e in entries)
         mae = any(e["supports"]["margin_mae"] for e in entries)
-        yn = lambda b: "yes" if b else "no"
+
+        def yn(b):
+            return "yes" if b else "no"
+
         report_lines.append(
-            f"| {fam} | {len(entries)} | {rows_sum} | {season_range} | {yn(acc)} | {yn(bri)} | {yn(ll)} | {yn(mae)} |"
+            f"| {fam} | {len(entries)} | {rows_sum} | {season_range} | "
+            f"{yn(acc)} | {yn(bri)} | {yn(ll)} | {yn(mae)} |"
         )
     report_lines.append("")
     report_lines.append(
-        "## Served backtest ({0}, method={1}, regressor={2}) (measured)".format(
+        "## Served backtest ({}, method={}, regressor={}) (measured)".format(
             served_report["path"], served_method, served_regressor
         )
     )
     report_lines.append("")
     report_lines.append(
-        "| candidate | n | accuracy (cand/mkt) | brier (cand/mkt) | log_loss (cand/mkt) | margin_mae (cand/mkt) | P+ acc | P+ brier | P+ logloss | P+ mae |"
+        "| candidate | n | accuracy (cand/mkt) | brier (cand/mkt) | log_loss (cand/mkt) | "
+        "margin_mae (cand/mkt) | P+ acc | P+ brier | P+ logloss | P+ mae |"
     )
     report_lines.append("|---|---|---|---|---|---|---|---|---|---|")
     for label in sorted(served_report["candidates"].keys()):
@@ -698,7 +720,7 @@ def main():
             return f"{v:.4f}" if v is not None else "n/a"
 
         report_lines.append(
-            "| {0} | {1} | {2}/{3} | {4}/{5} | {6}/{7} | {8}/{9} | {10} | {11} | {12} | {13} |".format(
+            "| {} | {} | {}/{} | {}/{} | {}/{} | {}/{} | {} | {} | {} | {} |".format(
                 label,
                 o["n_rows"],
                 fmt(o.get("accuracy")),
@@ -717,7 +739,8 @@ def main():
         )
     report_lines.append("")
     report_lines.append(
-        f"probability_positive is the season-block bootstrap ({N_BOOTSTRAP} draws, resampling seasons with "
+        f"probability_positive is the season-block bootstrap ({N_BOOTSTRAP} draws, "
+        "resampling seasons with "
         "replacement) share of draws where the metric favours the candidate over the market "
         "baseline; never read as the binary contains-zero test."
     )
@@ -727,20 +750,22 @@ def main():
     )
     report_lines.append("")
     report_lines.append(
-        "Mapping used (inferred, stated so it can be challenged): accuracy -> accuracy_points/ats_points; "
+        "Mapping used (inferred, stated so it can be challenged): "
+        "accuracy -> accuracy_points/ats_points; "
         "brier -> brier_improvement/brier; log_loss -> log_loss_improvement/log_loss; "
         "margin_mae -> mae_improvement/mae. A family's existing units come from registry signals "
         "whose `source` path prefix matches `artifacts/<family>/`."
     )
     report_lines.append("")
     report_lines.append(
-        "| family | files | supportable metrics | matched registry signals | existing units | new metrics |"
+        "| family | files | supportable metrics | matched registry signals | "
+        "existing units | new metrics |"
     )
     report_lines.append("|---|---|---|---|---|---|")
     for fam in sorted(family_summary.keys()):
         s = family_summary[fam]
         report_lines.append(
-            "| {0} | {1} | {2} | {3} | {4} | {5} |".format(
+            "| {} | {} | {} | {} | {} | {} |".format(
                 fam,
                 s["n_files_total"],
                 ",".join(s["supportable_metrics"]) or "none",
@@ -751,7 +776,7 @@ def main():
         )
     report_lines.append("")
     report_lines.append(
-        "Families with zero matched registry signals (measured, {0} of {1}): {2}".format(
+        "Families with zero matched registry signals (measured, {} of {}): {}".format(
             len(unmatched_families),
             len(known_families),
             ", ".join(unmatched_families) if unmatched_families else "none",
@@ -761,8 +786,9 @@ def main():
     report_lines.append("## Caveats (inferred / methodology choices, not measurements)")
     report_lines.append("")
     report_lines.append(
-        "- Market baseline cover probability is fixed at 0.5 (Brier fixed at 0.25, log loss fixed at "
-        "ln2 = 0.6931) by the task's own definition, excluding push games; it is not fitted from data, "
+        "- Market baseline cover probability is fixed at 0.5 (Brier fixed at 0.25, "
+        "log loss fixed at ln2 = 0.6931) by the task's own definition, excluding push games; "
+        "it is not fitted from data, "
         "so its bootstrap variability comes only from which games are sampled, not from the "
         "baseline value itself."
     )
@@ -772,7 +798,8 @@ def main():
         "simplification for this pass."
     )
     report_lines.append(
-        "- The margins-family aggregate in the decisive check is the unweighted mean of each file's "
+        "- The margins-family aggregate in the decisive check is the unweighted mean "
+        "of each file's "
         "own metric, not a pooled re-fit across files, because many margins snapshots are "
         "overlapping retrain runs over the same seasons and pooling raw rows would overweight "
         "repeated games."

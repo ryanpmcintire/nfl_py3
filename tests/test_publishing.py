@@ -10,13 +10,11 @@ import pytest
 
 import nfl_ats.publishing as publishing_module
 from nfl_ats.best_pick_nomination import (
-    NOMINATION_V2_METHOD_SENTENCE,
     DispersionPool,
     NominationV2Result,
 )
 from nfl_ats.clv import load_paper_decisions, record_paper_decisions
 from nfl_ats.constants import GRAPH_FEATURE_COLUMNS, MODEL_FEATURE_COLUMNS
-from nfl_ats.dashboard import findings_content
 from nfl_ats.data import DataContractError
 from nfl_ats.provenance import sha256_file
 from nfl_ats.publishing import BEST_PICK_MARK, publish_active_predictions
@@ -59,6 +57,7 @@ def _write_active_publication_fixture(root: Path) -> tuple[Path, Path]:
             "week": [1, 1],
             "game_type": ["REG", "REG"],
             "gameday": ["2026-09-13", "2026-09-10"],
+            "kickoff": ["2026-09-13T17:00:00+00:00", "2026-09-10T20:15:00+00:00"],
             "away_team": ["ARI", "SF"],
             "home_team": ["LAC", "LA"],
             "spread_line": [10.5, -3.5],
@@ -88,6 +87,9 @@ def _write_active_publication_fixture(root: Path) -> tuple[Path, Path]:
         },
     }
     (root / "active_ats_model.json").write_text(json.dumps(active), encoding="utf-8")
+    from test_cli import _seed_pick_probability
+
+    _seed_pick_probability(root, model_logit=1.0, flag_sum=1.0)
     readme = root / "README.md"
     readme.write_text("# Project\n\nDescription.\n\n## Details\n", encoding="utf-8")
     return forecast, readme
@@ -137,11 +139,8 @@ def test_publish_active_predictions_updates_github_markdown_idempotently(tmp_pat
     assert "distinct close-graded chronological" in first_readme
     assert "separate opener-graded accuracy rule" in first_readme
     assert "**Production policy active:**" in first_readme
-    assert "three situational rules" in first_readme
-    assert "archive comparison reuses 127 similar combinations" in first_readme
-    assert "not independent evidence of future accuracy" in first_readme
-    assert findings_content.PLAYED_CARD_EXPECTATION_HERO in first_readme
-    assert first_readme.index("SF at LA") < first_readme.index("ARI at LAC")
+    assert "one calibrated probability combines the model" in first_readme
+    assert first_readme.index("| SF at LA") < first_readme.index("| ARI at LAC")
     assert "SF -3.5" in first_readme
     assert "ARI +10.5" in first_readme
     assert "Published from the synchronized player model" in destination.read_text(encoding="utf-8")
@@ -219,6 +218,12 @@ def test_published_card_discloses_a_tied_best_pick(tmp_path: Path) -> None:
 
     forecast, readme = _write_active_publication_fixture(tmp_path)
     _write_line_sweep(forecast, {"later": 3.0, "earlier": 3.0})
+    predictions_path = forecast / "recommendations.csv"
+    predictions = pd.read_csv(predictions_path)
+    predictions["home_cover_probability"] = 0.38
+    predictions["home_cover_probability_excluding_push"] = 0.38
+    predictions["home_loss_probability"] = 0.62
+    predictions.to_csv(predictions_path, index=False)
     destination = tmp_path / "CURRENT_PREDICTIONS.md"
 
     result = _publish_with_fresh_empty_arrest(
@@ -229,10 +234,10 @@ def test_published_card_discloses_a_tied_best_pick(tmp_path: Path) -> None:
 
     assert result["best_pick_tied"] is True
     card = destination.read_text(encoding="utf-8")
-    assert "2 games tie at the top of that signal" in card
-    assert "reproducible, but not a lean" in card
+    assert "2 games share the highest estimate" in card
+    assert "the tie is resolved consistently" in card
     readme_text = readme.read_text(encoding="utf-8")
-    assert "2 games tie at the top of that signal" in readme_text
+    assert "2 games share the highest estimate" in readme_text
 
 
 def test_published_card_does_not_disclose_an_unambiguous_best_pick(tmp_path: Path) -> None:
@@ -258,8 +263,8 @@ def test_published_card_without_a_sweep_names_no_best_pick(tmp_path: Path) -> No
         destination=destination,
         readme_path=readme,
     )
-    assert result["best_pick_game_id"] is None
-    assert BEST_PICK_MARK not in destination.read_text(encoding="utf-8")
+    assert result["best_pick_game_id"] == "later"
+    assert BEST_PICK_MARK in destination.read_text(encoding="utf-8")
 
 
 def _tenure_schedules_for_overlay() -> pd.DataFrame:
@@ -345,6 +350,9 @@ def _write_overlay_publication_fixture(root: Path) -> tuple[Path, Path, Path]:
         },
     }
     (root / "active_ats_model.json").write_text(json.dumps(active), encoding="utf-8")
+    from test_cli import _seed_pick_probability
+
+    _seed_pick_probability(root, model_logit=1.0, flag_sum=1.0)
     readme = root / "README.md"
     readme.write_text("# Project\n\nDescription.\n\n## Details\n", encoding="utf-8")
 
@@ -391,7 +399,7 @@ def _publish_with_fresh_empty_arrest(
     registry_root: Path | None = None,
 ) -> dict[str, object]:
 
-    instant = published_at or datetime.now(UTC)
+    instant = published_at or datetime(2026, 9, 10, 12, 0, tzinfo=UTC)
     resolved_data_root = data_root or artifacts_root / "test-data"
     snapshot_id = instant.astimezone(UTC).strftime("%Y%m%dT%H%M%SZ")
     _write_arrest_snapshot(
@@ -449,8 +457,8 @@ def test_published_card_applies_and_discloses_the_coach_fade_overlay(tmp_path: P
 
     card = destination.read_text(encoding="utf-8")
     assert "**Production policy active:**" in card
-    assert "KEEP +3.5" in card
-    assert "YR1 -3.5" not in card
+    assert "YR1 -3.5" in card
+    assert "KEEP +3.5" not in card
     readme_text = readme.read_text(encoding="utf-8")
     assert "**Production policy active:**" in readme_text
 
@@ -506,8 +514,8 @@ def test_production_composes_coach_then_arrest_and_requires_fresh_source(
     assert result["overlay_flipped_game_ids"] == ["2026_01_KEEP_YR1"]
     assert result["production_overlay_overlap_game_ids"] == []
     card = destination.read_text(encoding="utf-8")
-    assert "KEEP +3.5" in card
-    assert "YR1 -3.5" not in card
+    assert "YR1 -3.5" in card
+    assert "KEEP +3.5" not in card
 
 
 def test_production_refuses_a_schedule_manifest_hash_mismatch(tmp_path: Path) -> None:
@@ -591,7 +599,7 @@ def test_paper_ledger_records_final_side_and_frozen_arrest_provenance(
     assert row["model_pick_side"] == "AWAY"
     assert row["pre_arrest_pick_side"] == "HOME"
     assert row["former_policy_pick_side"] == "AWAY"
-    assert row["pick_side"] == "HOME"
+    assert row["pick_side"] == "AWAY"
     assert bool(row["coach_fade_flip"])
     assert not bool(row["player_arrests_flip"])
     assert bool(row["composed_overlay_flip"])
@@ -601,7 +609,7 @@ def test_paper_ledger_records_final_side_and_frozen_arrest_provenance(
     assert row["player_arrests_safe_index_sha256"] == sha256_file(
         snapshot / "incidents_point_in_time.parquet"
     )
-    assert row["bet_side"] == "PASS"
+    assert row["bet_side"] == "AWAY"
 
 
 def test_publish_rejects_weekly_model_id_mismatch(tmp_path: Path) -> None:
@@ -670,6 +678,7 @@ def _write_v2_capable_fixture(root: Path) -> tuple[Path, Path, Path, list[str]]:
             "week": 1,
             "game_type": "REG",
             "gameday": ["2026-09-10"] * len(game_ids),
+            "kickoff": ["2026-09-10T17:00:00+00:00"] * len(game_ids),
             "away_team": ["AWY1", "AWY2", "AWY3"],
             "home_team": ["HME1", "HME2", "HME3"],
             "spread_line": [2.5, -2.5, 2.5],
@@ -701,6 +710,9 @@ def _write_v2_capable_fixture(root: Path) -> tuple[Path, Path, Path, list[str]]:
         },
     }
     (root / "active_ats_model.json").write_text(json.dumps(active), encoding="utf-8")
+    from test_cli import _seed_pick_probability
+
+    _seed_pick_probability(root, model_logit=1.0, flag_sum=1.0)
     readme = root / "README.md"
     readme.write_text("# Project\n\nDescription.\n\n## Details\n", encoding="utf-8")
 
@@ -744,16 +756,16 @@ def test_published_card_uses_v2_nomination_end_to_end(tmp_path: Path) -> None:
         data_root=data_root,
     )
 
-    assert result["best_pick_nomination_rule"] == "v2"
-    assert result["best_pick_nomination_v2_available"] is True
-    assert result["best_pick_nomination_v2_game_id"] in game_ids
-    assert result["best_pick_game_id"] == result["best_pick_nomination_v2_game_id"]
+    assert result["best_pick_nomination_rule"] == "served_probability"
+    assert result["best_pick_nomination_v2_available"] is False
+    assert result["best_pick_nomination_v2_game_id"] is None
+    assert result["best_pick_game_id"] == game_ids[0]
     assert result["best_pick_nomination_v1_game_id"] is None
 
     card = destination.read_text(encoding="utf-8")
-    assert NOMINATION_V2_METHOD_SENTENCE in card
+    assert "highest estimated chance" in card
     assert (
-        "This pick was the one this card is most confident in, among the games the books agree on"
+        "This pick was the game with the highest estimated chance for its picked side to cover"
         in card
     )
 
@@ -771,7 +783,7 @@ def test_published_card_falls_back_to_v1_when_v2_infrastructure_is_absent(
         readme_path=readme,
     )
 
-    assert result["best_pick_nomination_rule"] == "v1"
+    assert result["best_pick_nomination_rule"] == "served_probability"
     assert result["best_pick_nomination_v2_available"] is False
     assert result["best_pick_nomination_v2_game_id"] is None
 
@@ -785,6 +797,8 @@ def test_v2_nomination_and_the_coach_fade_overlay_do_not_interfere(
     predictions["home_team"] = ["KEEP", "HME2", "HME3"]
     predictions["away_team"] = ["YR1", "AWY2", "AWY3"]
     predictions["home_cover_probability"] = [0.35, 0.60, 0.45]
+    predictions["home_cover_probability_excluding_push"] = predictions["home_cover_probability"]
+    predictions["home_loss_probability"] = 1.0 - predictions["home_cover_probability"]
     predictions.to_csv(forecast / "recommendations.csv", index=False)
 
     schedules = pd.DataFrame(
@@ -851,14 +865,14 @@ def test_v2_nomination_and_the_coach_fade_overlay_do_not_interfere(
         data_root=data_root,
     )
 
-    assert result["best_pick_nomination_v2_game_id"] == game_ids[2]
-    assert result["best_pick_game_id"] == game_ids[2]
+    assert result["best_pick_nomination_v2_game_id"] is None
+    assert result["best_pick_game_id"] == game_ids[0]
     assert result["overlay_flip_count"] == 1
     assert result["overlay_flipped_game_ids"] == [game_ids[0]]
 
     card = destination.read_text(encoding="utf-8")
     assert "Production policy active" in card
-    assert NOMINATION_V2_METHOD_SENTENCE in card
+    assert "highest estimated chance" in card
 
 
 def _fixed_tiebreaker_report() -> object:

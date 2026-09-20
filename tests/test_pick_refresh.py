@@ -181,6 +181,10 @@ def _write_live_quote(
     quotes = pd.DataFrame([row], columns=list(QUOTE_COLUMNS))
     directory = data_root / "market" / "raw" / snapshot_id
     atomic_parquet(quotes, directory / "quotes.parquet")
+    atomic_json(
+        {"provider": "the-odds-api", "publication_scope": "derived_allowed"},
+        directory / "manifest.json",
+    )
 
 
 def _reference_probability(

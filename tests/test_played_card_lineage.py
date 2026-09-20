@@ -332,6 +332,10 @@ def _write_played_card_fixture(root: Path) -> tuple[Path, Path]:
             "home_team": ["KEEP"],
             "spread_line": [-3.5],
             "home_cover_probability": [0.35],
+            "home_cover_probability_excluding_push": [0.35],
+            "push_probability": [0.0],
+            "home_loss_probability": [0.65],
+            "base_probability_policy": ["discrete_conditional_non_push_v1"],
             "bet_side": ["AWAY"],
             "edge": [0.15],
             "method": ["market_residual"],
@@ -359,6 +363,9 @@ def _write_played_card_fixture(root: Path) -> tuple[Path, Path]:
         },
     }
     (root / "active_ats_model.json").write_text(json.dumps(active), encoding="utf-8")
+    from test_cli import _seed_pick_probability
+
+    _seed_pick_probability(root, model_logit=1.0, flag_sum=1.0)
     readme = root / "README.md"
     readme.write_text("# Project\n\nDescription.\n\n## Details\n", encoding="utf-8")
 

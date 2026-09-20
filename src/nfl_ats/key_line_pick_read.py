@@ -14,12 +14,14 @@ from nfl_ats.mass_preserving_lattice import (
     DiscretePushReader,
     MassPreservingRead,
     residual_location,
+    serve_discrete_sweep,
+    serve_discrete_three_way,
 )
 
 FloatArray = npt.NDArray[np.float64]
 
 KEY_LINE_PICK_READ_SERVED = True
-KEY_LINE_PICK_READ_POLICY = "key_line_pick_read_v1"
+KEY_LINE_PICK_READ_POLICY = "key_line_pick_read_v2"
 KEY_LINE_PICK_READ_FILENAME = "key_line_pick_read.json"
 KEY_LINE_ATOMS: tuple[float, ...] = (3.0, 7.0)
 KEY_LINE_TOLERANCE = 1e-9
@@ -208,7 +210,7 @@ class KeyLinePickRead:
         return {
             "policy": self.policy,
             "atoms": list(self.atoms),
-            "decision_number": "cover + push / 2",
+            "decision_number": "cover / (cover + loss)",
             "band_half_width": self.reader.half_width,
             "min_band_games": self.reader.min_band_games,
             "prior_rows": self.reader.prior_rows,
@@ -228,15 +230,23 @@ def apply_key_line_pick_read(
 
     if len(forecasts) != len(games):
         raise ValueError("forecasts and games must be row-aligned")
-    result = forecasts.copy()
+    result = serve_discrete_three_way(
+        forecasts,
+        games,
+        policy.reader,
+        residuals=residuals,
+        probability_method=probability_method,
+    )
     if result.empty:
         return result
     location = residual_location(residuals, probability_method)
     lines = pd.to_numeric(games["spread_line"], errors="raise").to_numpy(dtype=float)
     points = result["predicted_margin"].to_numpy(dtype=float) + location
-    smooth = result["home_cover_probability"].to_numpy(dtype=float)
+    smooth = result.get("home_cover_probability_smooth", result["home_cover_probability"]).to_numpy(
+        dtype=float
+    )
     ids = games["game_id"].astype(str).to_numpy()
-    served = smooth.copy()
+    served = result["home_cover_probability"].to_numpy(dtype=float).copy()
     touched = key_line_mask(lines, policy.atoms)
     for index, (game_id, line, point) in enumerate(zip(ids, lines, points, strict=True)):
         read = policy.reader.read(float(line), float(point))
@@ -272,33 +282,12 @@ def apply_key_line_pick_read_to_sweep(
     quoted_lines_by_game: Mapping[str, float] | None = None,
 ) -> pd.DataFrame:
 
-    result = sweep.copy()
-    if result.empty:
-        return result
-    ids = result["game_id"].astype(str).to_numpy()
-    lines = result["alternative_line"].to_numpy(dtype=float)
-    touched = key_line_mask(lines, policy.atoms)
-    probability = result["home_cover_probability"].to_numpy(dtype=float).copy()
-    for index in np.flatnonzero(touched):
-        game_id = ids[index]
-        if game_id not in points_by_game:
-            raise ValueError(f"No served point for game {game_id!r} in the line sweep")
-        quoted = None if quoted_lines_by_game is None else quoted_lines_by_game.get(game_id)
-        read = policy.reader.read(
-            float(lines[index]), float(points_by_game[game_id]), conditioning_line=quoted
-        )
-        probability[index] = key_line_decision_probability(read)
-    result["home_cover_probability"] = probability
-    pick_probability = np.where(probability >= 0.5, probability, 1.0 - probability)
-    if "pick_probability" in result.columns:
-        current = result["pick_probability"].to_numpy(dtype=float).copy()
-        current[touched] = pick_probability[touched]
-        result["pick_probability"] = current
-    if "confidence" in result.columns:
-        confidence = result["confidence"].to_numpy(dtype=float).copy()
-        confidence[touched] = pick_probability[touched] - 0.5
-        result["confidence"] = confidence
-    return result
+    return serve_discrete_sweep(
+        sweep,
+        policy.reader,
+        points_by_game=points_by_game,
+        quoted_lines_by_game=quoted_lines_by_game,
+    )
 
 
 def key_line_sidecar(

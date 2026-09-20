@@ -1003,6 +1003,7 @@ def _published_card_artifacts(
     sweep_widths: list[float] | None = None,
     game_type: str | None = None,
 ) -> Path:
+    from test_cli import _seed_pick_probability
 
     artifacts = tmp_path / "artifacts"
     forecast_relative = "margin_predictions/2026-week-01-test"
@@ -1063,6 +1064,7 @@ def _published_card_artifacts(
         },
         artifacts / "active_ats_model.json",
     )
+    _seed_pick_probability(artifacts, model_logit=1.0, flag_sum=1.0)
     return artifacts
 
 
@@ -1343,7 +1345,7 @@ def test_best_pick_is_persisted_with_the_week_and_matches_the_ranker(tmp_path: P
         tmp_path,
         kickoffs=_ALL_PRE_KICKOFF,
         spread_lines=[2.5, -3.0],
-        probabilities=[0.6, 0.4],
+        probabilities=[0.6, 0.35],
         bet_sides=["HOME", "PASS"],
         sweep_widths=[1.0, 3.0],
     )
@@ -1389,7 +1391,7 @@ def test_best_pick_is_first_write_wins_across_republications(tmp_path: Path) -> 
         tmp_path,
         kickoffs=_ALL_PRE_KICKOFF,
         spread_lines=[2.5, -3.0],
-        probabilities=[0.6, 0.4],
+        probabilities=[0.6, 0.35],
         bet_sides=["HOME", "PASS"],
         sweep_widths=[1.0, 3.0],
     )
@@ -1400,7 +1402,7 @@ def test_best_pick_is_first_write_wins_across_republications(tmp_path: Path) -> 
         tmp_path,
         kickoffs=_ALL_PRE_KICKOFF,
         spread_lines=[2.5, -3.0],
-        probabilities=[0.6, 0.4],
+        probabilities=[0.8, 0.4],
         bet_sides=["HOME", "PASS"],
         sweep_widths=[3.5, 0.5],
     )
@@ -1417,19 +1419,21 @@ def test_best_pick_flag_can_land_on_rows_an_earlier_run_appended(tmp_path: Path)
         tmp_path,
         kickoffs=_ALL_PRE_KICKOFF,
         spread_lines=[2.5, -3.0],
-        probabilities=[0.6, 0.4],
+        probabilities=[0.6, 0.35],
         bet_sides=["HOME", "PASS"],
     )
     now = datetime(2026, 9, 8, 16, 0, tzinfo=UTC)
     first = record_paper_decisions(artifacts, now=now)
     assert first["recorded"] == 2
-    assert first["best_pick_recorded"] is False
+    ledger = load_paper_decisions(artifacts)
+    ledger["is_best_pick"] = False
+    ledger.to_parquet(artifacts / "clv_ledger" / "decisions.parquet", index=False)
 
     _published_card_artifacts(
         tmp_path,
         kickoffs=_ALL_PRE_KICKOFF,
         spread_lines=[2.5, -3.0],
-        probabilities=[0.6, 0.4],
+        probabilities=[0.6, 0.35],
         bet_sides=["HOME", "PASS"],
         sweep_widths=[1.0, 3.0],
     )
@@ -1626,6 +1630,11 @@ def test_opener_manifest_mapping_matches_production_and_ignores_future_outcomes(
     pilot_setup: tuple[Path, pd.DataFrame, dict[str, Any]], tmp_path: Path, method: str
 ) -> None:
     from nfl_ats.margin import fit_margin_model
+    from nfl_ats.mass_preserving_lattice import (
+        DiscretePushReader,
+        prior_pool,
+        serve_discrete_three_way,
+    )
 
     root, features, config = pilot_setup
     atomic_json(
@@ -1644,7 +1653,9 @@ def test_opener_manifest_mapping_matches_production_and_ignores_future_outcomes(
     scored = opener_pick_evaluation(root, features, active_model_config=config, min_train_games=50)
     first = scored.iloc[0]
     target = features.loc[features["game_id"].eq(first["game_id"])].copy()
-    cutoff = target["gameday"].min()
+    cutoff = features.loc[
+        features["season"].eq(first["season"]) & features["week"].eq(first["week"]), "gameday"
+    ].min()
     model = fit_margin_model(
         features.loc[features["gameday"].lt(cutoff)],
         target="market_residual",
@@ -1653,7 +1664,19 @@ def test_opener_manifest_mapping_matches_production_and_ignores_future_outcomes(
         ridge_alpha=10.0,
     )
     target["spread_line"] = first["tue_open_home_spread"]
-    expected = model.predict(target, probability_method=method)
+    expected = serve_discrete_three_way(
+        model.predict(target, probability_method=method),
+        target,
+        DiscretePushReader.for_week(
+            prior_pool(features, scored.set_index("game_id")["tue_open_home_spread"]),
+            season=int(first["season"]),
+            week=int(first["week"]),
+            cutoff=pd.Timestamp(cutoff),
+            exclude_game_ids=target["game_id"],
+        ),
+        residuals=model.residuals,
+        probability_method=method,
+    )
     assert first["home_cover_probability_at_open"] == pytest.approx(
         expected.iloc[0]["home_cover_probability"]
     )
@@ -1694,7 +1717,10 @@ def test_opener_pick_evaluation_serves_the_walk_forward_home_side_offset(
     first, second = by_game.loc["G055"], by_game.loc["G065"]
     assert int(first["week"]) < int(second["week"])
     assert first["home_side_offset_at_open"] == 0.0
-    assert first["home_cover_probability_at_open"] == first["home_cover_probability_at_open_raw"]
+    assert (
+        first["home_cover_probability_at_open"]
+        == first["home_cover_probability_at_open_discrete_uncorrected"]
+    )
     stream = archive_prior_stream(scored)
     expected = fit_home_side_offsets(
         prior_rows_before(stream, int(second["season"]), int(second["week"]))
@@ -1709,7 +1735,8 @@ def test_opener_pick_evaluation_serves_the_walk_forward_home_side_offset(
     )
     direction = np.sign(second["home_side_offset_at_open"])
     served_minus_raw = (
-        second["home_cover_probability_at_open"] - second["home_cover_probability_at_open_raw"]
+        second["home_cover_probability_at_open"]
+        - second["home_cover_probability_at_open_discrete_uncorrected"]
     )
     assert direction * served_minus_raw >= 0.0
     assert bool(second["pick_home_at_open_probability_rule_raw"]) == bool(
@@ -1737,16 +1764,15 @@ def test_opener_pick_evaluation_without_the_offset_is_the_raw_model(
     for column in (
         "home_cover_probability_at_open",
         "home_cover_probability_at_close",
-        "pick_home_at_open_probability_rule",
-        "correct_at_open_probability_rule",
     ):
-        pd.testing.assert_series_equal(scored[column], scored[f"{column}_raw"], check_names=False)
+        pd.testing.assert_series_equal(
+            scored[column], scored[f"{column}_discrete_uncorrected"], check_names=False
+        )
     pd.testing.assert_series_equal(
         scored["residual_at_open_served"], scored["residual_at_open"], check_names=False
     )
-    metrics = opener_evaluation_metrics(scored)
-    assert metrics["opener_accuracy_probability_rule"] == pytest.approx(
-        metrics["opener_accuracy_probability_rule_raw"]
+    assert scored["pick_home_at_open_probability_rule"].equals(
+        scored["home_cover_probability_at_open_discrete_uncorrected"].ge(0.5)
     )
     summary = opener_evaluation_home_side_offset_summary(scored, served=False)
     assert summary["served"] is False
@@ -1958,7 +1984,7 @@ def test_opener_missing_mapping_uses_manifest(
     pd.testing.assert_frame_equal(ecdf, ecdf_without_manifest)
     assert ecdf["probability_method"].eq("ecdf").all()
     assert not np.allclose(
-        implicit["home_cover_probability_at_open"], ecdf["home_cover_probability_at_open"]
+        implicit["home_cover_probability_at_open_raw"], ecdf["home_cover_probability_at_open_raw"]
     )
 
 

@@ -670,6 +670,8 @@ def test_dry_run_strips_only_the_recording_flags() -> None:
         "thursday_afternoon",
     ]
     assert capture_scheduler.dry_command(["x.ps1", "--current"]) == ["x.ps1", "--current"]
+    lineup = next(job for job in capture_scheduler.SCHEDULE if job.name == "lineups_sun_am")
+    assert capture_scheduler.dry_command(lineup.command) == [*lineup.command, "--dry-run"]
 
 
 def test_dry_manual_run_is_labelled_dry_in_state_and_log(

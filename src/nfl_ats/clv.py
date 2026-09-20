@@ -36,6 +36,13 @@ from nfl_ats.margin import (
     margin_feature_columns,
 )
 from nfl_ats.market_data import own_week_tuesday_quotes, tuesday_opener_quotes
+from nfl_ats.mass_preserving_lattice import (
+    BASE_PROBABILITY_POLICY,
+    THREE_WAY_COLUMNS,
+    DiscretePushReader,
+    prior_pool,
+    serve_discrete_three_way,
+)
 from nfl_ats.modeling import regular_season_rows
 from nfl_ats.odds_backfill import DECISION_LABELS, HISTORICAL_CAPTURE_KIND
 from nfl_ats.provenance import sha256_file
@@ -47,7 +54,7 @@ BootstrapBlock = Literal["week", "season"]
 
 CACHE_DISABLED_ENV = "NFL_ATS_DISABLE_EVAL_CACHE"
 _PAIRING_CACHE_VERSION = "1"
-_OPENER_EVAL_CACHE_VERSION = "1"
+_OPENER_EVAL_CACHE_VERSION = "2-discrete-conditional"
 
 
 def evaluation_cache_root() -> Path | None:
@@ -70,6 +77,9 @@ _ESTIMATOR_SOURCE_MODULES = (
     "modeling.py",
     "home_side_location.py",
     "calibration.py",
+    "mass_preserving_lattice.py",
+    "conditional_margin.py",
+    "key_line_pick_read.py",
 )
 
 
@@ -2070,6 +2080,7 @@ def opener_pick_evaluation(
     frame["gameday"] = pd.to_datetime(frame["gameday"], errors="raise")
     completed = frame.loc[frame["result"].notna()].copy()
 
+    discrete_pool = prior_pool(frame, paired.set_index("game_id")["tue_open_home_spread"])
     scored_weeks: list[pd.DataFrame] = []
     stream_columns = ["game_id", "season", "week", "spread_line", "point_incumbent", "result"]
     archive_stream = pd.DataFrame(columns=stream_columns)
@@ -2077,7 +2088,10 @@ def opener_pick_evaluation(
         week_rows = frame.loc[frame["game_id"].isin(set(group["game_id"]))]
         if week_rows.empty:
             continue
-        cutoff = week_rows["gameday"].min()
+        target_week = frame.loc[
+            frame["season"].eq(int(str(season))) & frame["week"].eq(int(str(week)))
+        ]
+        cutoff = target_week["gameday"].min()
         training = completed.loc[completed["gameday"].lt(cutoff)]
         if len(training) < min_train_games:
             continue
@@ -2087,6 +2101,13 @@ def opener_pick_evaluation(
             model_name=config["regressor"],
             feature_profile=profile,
             ridge_alpha=config["ridge_alpha"],
+        )
+        reader = DiscretePushReader.for_week(
+            discrete_pool,
+            season=int(str(season)),
+            week=int(str(week)),
+            cutoff=pd.Timestamp(cutoff),
+            exclude_game_ids=set(week_rows["game_id"].astype(str)),
         )
         scoring = week_rows.merge(
             group[["game_id", "tue_open_home_spread", "close_home_spread"]],
@@ -2101,6 +2122,7 @@ def opener_pick_evaluation(
         scored["probability_method"] = probability_method
         scored["season"] = int(str(season))
         scored["week"] = int(str(week))
+        scored["base_probability_policy"] = BASE_PROBABILITY_POLICY
         predicted_at_open = model.predict(at_open, probability_method=probability_method)
         predicted_at_close = model.predict(at_close, probability_method=probability_method)
         scored["residual_at_open"] = predicted_at_open["predicted_market_residual"].to_numpy()
@@ -2126,17 +2148,39 @@ def opener_pick_evaluation(
             served_at_close = model.predict(
                 at_close, probability_method=probability_method, center_offset=offsets
             )
-            scored["home_cover_probability_at_open"] = served_at_open[
-                "home_cover_probability"
-            ].to_numpy()
-            scored["home_cover_probability_at_close"] = served_at_close[
-                "home_cover_probability"
-            ].to_numpy()
         else:
-            scored["home_cover_probability_at_open"] = scored["home_cover_probability_at_open_raw"]
-            scored["home_cover_probability_at_close"] = scored[
-                "home_cover_probability_at_close_raw"
-            ]
+            served_at_open = predicted_at_open
+            served_at_close = predicted_at_close
+        for label, games, served_forecast, raw_forecast in (
+            ("open", at_open, served_at_open, predicted_at_open),
+            ("close", at_close, served_at_close, predicted_at_close),
+        ):
+            scored[f"home_cover_probability_at_{label}_smooth"] = served_forecast[
+                "home_cover_probability"
+            ].to_numpy()
+            discrete = serve_discrete_three_way(
+                served_forecast,
+                games,
+                reader,
+                residuals=model.residuals,
+                probability_method=probability_method,
+            )
+            for column in ("home_cover_probability", *THREE_WAY_COLUMNS):
+                scored[f"{column}_at_{label}"] = discrete[column].to_numpy()
+            uncorrected = (
+                serve_discrete_three_way(
+                    raw_forecast,
+                    games,
+                    reader,
+                    residuals=model.residuals,
+                    probability_method=probability_method,
+                )
+                if np.any(offsets != 0.0)
+                else discrete
+            )
+            scored[f"home_cover_probability_at_{label}_discrete_uncorrected"] = uncorrected[
+                "home_cover_probability"
+            ].to_numpy()
         scored["residual_at_open_served"] = scored["residual_at_open"] + offsets
         scored["residual_at_close_served"] = scored["residual_at_close"] + offsets
         scored_weeks.append(scored)
@@ -2390,13 +2434,12 @@ def opener_evaluation_home_side_offset_summary(
         scored.get("home_side_offset_at_open", pd.Series(dtype=float)), errors="coerce"
     ).fillna(0.0)
     changed = 0
-    if {"pick_home_at_open_probability_rule", "pick_home_at_open_probability_rule_raw"}.issubset(
-        scored.columns
-    ):
+    baseline = "home_cover_probability_at_open_discrete_uncorrected"
+    if {"pick_home_at_open_probability_rule", baseline}.issubset(scored.columns):
         changed = int(
             scored["pick_home_at_open_probability_rule"]
             .astype(bool)
-            .ne(scored["pick_home_at_open_probability_rule_raw"].astype(bool))
+            .ne(scored[baseline].ge(0.5))
             .sum()
         )
     return {

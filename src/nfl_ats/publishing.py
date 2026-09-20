@@ -252,7 +252,7 @@ def _best_pick_note(card: pd.DataFrame, nomination: BestPickNomination) -> str:
         f"**Best Pick of the week ({BEST_PICK_MARK.strip()}):** {pick_text} in {row['Matchup']}. "
         "The pool scores one Best Pick per regular-season week"
     )
-    if nomination.active_rule == "v2":
+    if nomination.active_rule in {"v2", "served_probability"}:
         return f"{lead}. This pick was {nomination.method_note}\n\n"
     disclosure = f" {nomination.active_tie_note}" if nomination.active_tie_note else ""
     return (
@@ -354,6 +354,7 @@ def _publication_header(
     overlay: OverlayResult | None = None,
     arrest_overlay: ArrestOverlayResult | None = None,
     production_overlay: FourOverlayCompositionResult | None = None,
+    pick_probability: PickProbabilityModel | None = None,
 ) -> str:
     historical = active["historical_evaluation"]
     intervals = historical.get("intervals", {})
@@ -376,7 +377,10 @@ def _publication_header(
         "The model's baseline comparison is the separate opener-graded accuracy rule "
         "documented in `docs/opener_evaluation.md`.\n\n"
         + (
-            _composition_note(production_overlay)
+            "**Production policy active:** one calibrated probability combines the model, "
+            "situational evidence and available line movement to choose each side.\n\n"
+            if pick_probability is not None
+            else _composition_note(production_overlay)
             if production_overlay is not None
             else (_overlay_note(overlay) if overlay is not None else "")
             + (_arrest_overlay_note(arrest_overlay) if arrest_overlay is not None else "")
@@ -519,6 +523,7 @@ def publish_active_predictions(
         overlay,
         arrest_overlay,
         production_overlay,
+        pick_probability,
     )
     table = card.to_markdown(index=False)
     heading = f"## Current ATS forecast: {metadata['season']} Week {metadata['week']}\n\n"
@@ -642,9 +647,9 @@ def publish_active_predictions(
                 .tail(1)
             )
             for _, revision_row in latest_revisions.iterrows():
-                adapted = refresh_change_from_pick_revision(
-                    cast(dict[str, Any], revision_row.to_dict())
-                )
+                revision = cast(dict[str, Any], revision_row.to_dict())
+                revision["movement_delta"] = None
+                adapted = refresh_change_from_pick_revision(revision)
                 if adapted is not None:
                     refresh_changes_by_game[str(revision_row["game_id"])] = adapted
 

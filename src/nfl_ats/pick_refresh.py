@@ -36,7 +36,7 @@ from nfl_ats.key_line_pick_read import (
 )
 from nfl_ats.lines import apply_external_lines
 from nfl_ats.margin import MARGIN_FEATURE_PROFILES, MarginFeatureProfile
-from nfl_ats.market_data import load_quote_history, spread_consensus
+from nfl_ats.market_data import current_spread_quotes, load_quote_history
 from nfl_ats.mass_preserving_lattice import (
     THREE_WAY_COLUMNS,
     load_forecast_discrete_push_read,
@@ -44,6 +44,11 @@ from nfl_ats.mass_preserving_lattice import (
 )
 from nfl_ats.nfl_week import week_cycle_sunday
 from nfl_ats.outcomes import MARGIN_DISTRIBUTION_METHODS, fit_margin_models_for_week
+from nfl_ats.pick_probability import (
+    CALIBRATED_PICK_SIDE_COLUMN,
+    PICK_PROBABILITY_POLICY,
+    active_pick_probability_path,
+)
 from nfl_ats.prediction_safety import validate_three_way_split
 from nfl_ats.provenance import sha256_file
 from nfl_ats.public_betting_live import HandleReading, load_latest_public_handle
@@ -159,25 +164,34 @@ def current_captured_home_spread(
             "latest_observed_at_utc": None,
             "games_with_current_line": 0,
         }
-    observed = pd.to_datetime(quotes["observed_at_utc"], utc=True)
+    current = current_spread_quotes(quotes, as_of=now_floor.to_pydatetime())
+    if current.empty:
+        return {}, {
+            "fresh": False,
+            "reason": "no_pregame_spread_quotes",
+            "latest_observed_at_utc": None,
+            "games_with_current_line": 0,
+        }
+    observed = pd.to_datetime(current["observed_at_utc"], utc=True)
     latest_observed = observed.max()
     now_ts = pd.Timestamp(now)
     now_ts = now_ts.tz_localize("UTC") if now_ts.tzinfo is None else now_ts.tz_convert("UTC")
-    if (
-        latest_observed.tz_convert(PICK_LOCK_TIMEZONE).date()
-        != now_ts.tz_convert(PICK_LOCK_TIMEZONE).date()
-    ):
+    current = current.loc[
+        observed.dt.tz_convert(PICK_LOCK_TIMEZONE).dt.date.eq(
+            now_ts.tz_convert(PICK_LOCK_TIMEZONE).date()
+        )
+    ]
+    if current.empty:
         return {}, {
             "fresh": False,
             "reason": "latest_capture_not_from_today",
             "latest_observed_at_utc": latest_observed.isoformat(),
             "games_with_current_line": 0,
         }
-    consensus = spread_consensus(quotes)
     lines = {
         str(game_id): float(spread)
         for game_id, spread in zip(
-            consensus["nflverse_game_id"], consensus["consensus_home_spread"], strict=True
+            current["nflverse_game_id"], current["home_spread_line"], strict=True
         )
         if pd.notna(spread)
     }
@@ -1092,6 +1106,7 @@ def plan_refresh(
                 "game_id",
                 "season",
                 "week",
+                "gameday",
                 "home_team",
                 "away_team",
                 "kickoff",
@@ -1131,9 +1146,21 @@ def plan_refresh(
         )
         if frozen_union.isna().any():
             raise DataContractError("Tuesday paper ledger is missing frozen composition flags")
-        overlaid_frame.loc[frozen_union.astype(bool), "home_cover_probability"] = (
-            1.0 - overlaid_frame.loc[frozen_union.astype(bool), "home_cover_probability"]
-        )
+        served_probabilities: pd.DataFrame | None = None
+        if active_pick_probability_path(artifacts_root).is_file():
+            from nfl_ats.card_view import resolve_card_probabilities
+
+            probability_view = resolve_card_probabilities(
+                scored,
+                data_root=data_root,
+                now=computed_at.to_pydatetime(),
+                artifacts_root=artifacts_root,
+            )
+            served_probabilities = probability_view.predictions.set_index("game_id")
+        else:
+            overlaid_frame.loc[frozen_union.astype(bool), "home_cover_probability"] = (
+                1.0 - overlaid_frame.loc[frozen_union.astype(bool), "home_cover_probability"]
+            )
         overlaid = overlaid_frame.set_index("game_id")
 
         published_side = _published_pick_side(original)
@@ -1226,6 +1253,10 @@ def plan_refresh(
 
             new_prob = float(row["home_cover_probability"])
             model_only_side = "HOME" if new_prob >= 0.5 else "AWAY"
+            if served_probabilities is not None:
+                new_prob = float(
+                    cast(Any, served_probabilities.loc[game_id, "home_cover_probability"])
+                )
 
             decision_home_spread = float(cast(Any, orig_row["decision_home_spread"]))
             current_line = current_lines.get(game_id)
@@ -1267,12 +1298,13 @@ def plan_refresh(
             rookie_crew_flag = 0.0 if rookie_crew is None else float(rookie_crew["flag"])
             rookie_crew_referee = "" if rookie_crew is None else str(rookie_crew["referee"])
             rookie_crew_side = "" if rookie_crew is None else str(rookie_crew["side"])
-            rookie_crew_fires = ROOKIE_CREW_SERVED and rookie_crew_side not in (
-                "",
-                model_only_side,
+            rookie_crew_fires = (
+                served_probabilities is None
+                and ROOKIE_CREW_SERVED
+                and rookie_crew_side not in ("", model_only_side)
             )
 
-            if LATE_WEEK_FOLLOW_SERVED and late_week_fires:
+            if served_probabilities is None and LATE_WEEK_FOLLOW_SERVED and late_week_fires:
                 policy = (
                     LATE_WEEK_FOLLOW_NEWS_VETO_POLICY
                     if follow_news_veto
@@ -1303,7 +1335,8 @@ def plan_refresh(
             handle_ticket = None if handle is None else handle.heavy_ticket_pct
             handle_pre_rule_side = new_side
             if (
-                HANDLE_FOLLOW_SERVED
+                served_probabilities is None
+                and HANDLE_FOLLOW_SERVED
                 and policy == MOVEMENT_POLICY_MODEL_ONLY
                 and handle_money is not None
                 and handle_money >= HANDLE_FOLLOW_MONEY_THRESHOLD
@@ -1311,6 +1344,10 @@ def plan_refresh(
             ):
                 policy = HANDLE_FOLLOW_POLICY
                 new_side = handle_side
+            if served_probabilities is not None:
+                new_side = str(served_probabilities.loc[game_id, CALIBRATED_PICK_SIDE_COLUMN])
+                policy = PICK_PROBABILITY_POLICY
+                handle_pre_rule_side = new_side
             consensus_arm_side = (
                 consensus_side
                 if consensus_fires and not (LATE_WEEK_FOLLOW_SERVED and late_week_fires)
@@ -1826,7 +1863,6 @@ def _served_side_rows(
             side = game.new_pick_side
             home_probability = float(game.new_home_cover_probability)
             policy = game.movement_policy
-            delta: float | None = game.movement_delta
         else:
             recorded = ledger_latest.get(game.game_id) if ledger_latest else None
             if recorded is None:
@@ -1834,8 +1870,6 @@ def _served_side_rows(
             side = str(recorded.get("new_pick_side") or "")
             home_probability = float(recorded.get("new_home_cover_probability") or 0.5)
             policy = str(recorded.get("movement_policy") or "")
-            raw_delta = recorded.get("movement_delta")
-            delta = None if raw_delta is None or pd.isna(raw_delta) else float(raw_delta)
         if side not in ("HOME", "AWAY") or side == published:
             continue
         estimate = home_probability if side == "HOME" else 1.0 - home_probability
@@ -1848,7 +1882,6 @@ def _served_side_rows(
                 "New pick": str(new_team),
                 "Model estimate": f"{estimate:.1%}",
                 "Policy": policy,
-                "Market move": "n/a" if delta is None else f"{delta:+.2f}",
             }
         )
     return rows
@@ -1874,20 +1907,11 @@ def _refresh_section_markdown(
         f"{len(changed)} pick{plural} changed since the Tuesday card{label}, recomputed with "
         "current data but scored at the frozen Tuesday grading line. Only games whose "
         "deadline (their own kickoff, or that week's Sunday 4:00 PM ET if earlier) had not "
-        'yet passed were eligible. "Policy" is '
-        f"`{LATE_WEEK_LEADER_MEDIAN_FOLLOW_POLICY}` when the "
-        "three leading books moved the line at least a full point since Tuesday -- or half a "
-        "point on the biggest spreads, 10.5 or more -- and the pick "
-        f"followed them, `{LATE_WEEK_FOLLOW_NEWS_VETO_POLICY}` when they moved that far "
-        "but the injury report points the other way, so Tuesday's pick stands, "
-        "`handle_follow_0_70` when that rule did not fire and at least 70% of the money "
-        "bet on the game sat on the other side, `rookie_crew_underdog_v1` when it did not "
-        "fire and the officiating crew for that game is new this season, or `model_only` "
-        "when nothing above fired (or no market evidence was available). The 1.0-point "
-        "`movement_ge_1.0` consensus rule was retired from the served chain on 2026-09-10 "
-        "and is recorded as the paired challenger `consensus_movement_1_0_off_incumbent` "
-        "-- see docs/late_week_refresh.md's movement-policy sections. Where this table "
-        "and the picks table above disagree, the side here is the one being played.\n\n"
+        'yet passed were eligible. "Policy" identifies the probability rule recorded for '
+        f"that revision. `{PICK_PROBABILITY_POLICY}` combines the model, situational evidence "
+        "and available line movement into the same calibrated chance shown on the card. "
+        "Earlier revisions retain their original policy labels. Where this table and the "
+        "picks table above disagree, the side here is the one being played.\n\n"
     )
     return heading + star + intro + table + "\n"
 

@@ -129,7 +129,7 @@ def test_push_falls_out_of_the_same_object_and_is_empty_at_a_half_point() -> Non
     assert half.push == 0.0
     for read in (integer, half):
         assert read.cover + read.push + read.loss == pytest.approx(1.0, abs=1e-12)
-        assert read.home_cover_probability == pytest.approx(read.cover + 0.5 * read.push)
+        assert read.home_cover_probability == pytest.approx(read.cover / (read.cover + read.loss))
 
 
 def test_the_read_keeps_key_number_mass_a_gaussian_would_smooth_away() -> None:

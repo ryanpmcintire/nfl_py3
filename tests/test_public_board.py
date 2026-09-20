@@ -355,7 +355,7 @@ def test_render_picks_page_includes_the_season_ops_timeline() -> None:
     assert "Week 1, 2026 locks Tuesday, September 8, 2026." in page
     for day in ("Tue", "Wed", "Thu", "Sat", "Sun AM"):
         assert f"<b>{day}</b>" in page
-    assert "If lines move late in the week, we follow them." in page
+    assert "Late line movement informs the cover chance." in page
     assert "Sunday- and Monday-night games lock there too" in page
     assert_public_safe(page)
 
@@ -370,8 +370,8 @@ def test_render_picks_page_movement_policy_note_quotes_the_registered_evidence()
         }
     ]
     page = render_picks_page(_predictions_fixture(), _sweep_fixture(), challengers=challengers)
-    assert "1.0, exactly as measured in this test fixture." in page
-    assert "Not yet measured on this build" not in page
+    assert "Late line movement informs the cover chance." in page
+    assert "1.0, exactly as measured in this test fixture." not in page
 
 
 def test_render_team_explorer_page_empty_state_without_data() -> None:
@@ -410,7 +410,7 @@ def test_render_team_explorer_page_handles_unknown_metric_gracefully() -> None:
 def test_render_picks_page_movement_policy_note_degrades_without_the_challenger() -> None:
 
     page = render_picks_page(_predictions_fixture(), _sweep_fixture())
-    assert "Not yet measured on this build" in page
+    assert "Late line movement informs the cover chance." in page
 
 
 def test_render_picks_page_declares_utf8_charset_before_any_non_ascii() -> None:
@@ -1050,10 +1050,23 @@ def _write_board_fixture(
         "week": 1,
     }
     (forecast / "metadata.json").write_text(json.dumps(metadata), encoding="utf-8")
-    _leaky_predictions().to_csv(forecast / "recommendations.csv", index=False)
+    card = _leaky_predictions()
+    card["home_cover_probability_excluding_push"] = card["home_cover_probability"]
+    card["push_probability"] = 0.0
+    card["home_loss_probability"] = 1.0 - card["home_cover_probability"]
+    card["base_probability_policy"] = "discrete_conditional_non_push_v1"
+    card.to_csv(forecast / "recommendations.csv", index=False)
     sweep = pd.concat(
         [_sweep_fixture(), _sweep_fixture().assign(method="market")], ignore_index=True
     )
+    home_by_game = card.set_index("game_id")["home_cover_probability"]
+    sweep["home_cover_probability"] = (
+        sweep["game_id"].map(home_by_game) + 0.1 * sweep["line_offset"]
+    )
+    sweep["home_cover_probability_excluding_push"] = sweep["home_cover_probability"]
+    sweep["push_probability"] = 0.0
+    sweep["home_loss_probability"] = 1.0 - sweep["home_cover_probability"]
+    sweep["base_probability_policy"] = "discrete_conditional_non_push_v1"
     sweep.to_parquet(forecast / "line_sweep.parquet", index=False)
 
     active = {
@@ -1078,6 +1091,9 @@ def _write_board_fixture(
         },
     }
     (root / "active_ats_model.json").write_text(json.dumps(active), encoding="utf-8")
+    from test_cli import _seed_pick_probability
+
+    _seed_pick_probability(root, model_logit=1.0, flag_sum=1.0)
 
     if with_decomposition:
         decomposition = root / "market_decomposition" / "20260101T000000Z"
@@ -1741,6 +1757,9 @@ def _write_gaussian_board_fixture(
         },
     }
     (root / "active_ats_model.json").write_text(json.dumps(active), encoding="utf-8")
+    from test_cli import _seed_pick_probability
+
+    _seed_pick_probability(root, model_logit=1.0, flag_sum=1.0)
     return card
 
 
@@ -1750,7 +1769,7 @@ def test_build_public_site_renders_cover_curve_for_a_gaussian_active_model(
 
     artifacts_root = tmp_path / "artifacts"
     data_root = tmp_path / "data"
-    card = _write_gaussian_board_fixture(artifacts_root, data_root, model_frame)
+    _write_gaussian_board_fixture(artifacts_root, data_root, model_frame)
 
     pages = build_public_site(
         artifacts_root,
@@ -1758,12 +1777,8 @@ def test_build_public_site_renders_cover_curve_for_a_gaussian_active_model(
         require_fresh_arrest_overlay=False,
     )
 
-    assert pages[PICKS_PAGE].count('class="ats-cover"') == len(card)
-    match = re.search(r'id="ats-cover-data">(.*?)</script>', pages[PICKS_PAGE])
-    assert match is not None
-    payload = json.loads(match.group(1))
-    assert set(payload) == set(card["game_id"].astype(str))
-    assert all("center" in game for game in payload.values())
+    assert 'class="ats-cover"' not in pages[PICKS_PAGE]
+    assert 'id="ats-cover-data"' not in pages[PICKS_PAGE]
 
 
 def test_build_public_site_without_gaussian_probability_method_has_no_gaussian_payload(
@@ -1793,7 +1808,7 @@ def test_build_public_site_refuses_a_drifted_gaussian_card(
     card.loc[0, "home_cover_probability"] = 0.999999
     card.to_csv(card_path, index=False)
 
-    with pytest.raises(DataContractError, match="do not"):
+    with pytest.raises(DataContractError, match="discrete non-push probability"):
         build_public_site(
             artifacts_root,
             data_root=data_root,

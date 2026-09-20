@@ -40,7 +40,9 @@ def leader_follow_threshold(decision_home_spread: float | None) -> float:
     return LEADER_FOLLOW_THRESHOLD
 
 
-def sharp_book_movement_features(quotes: pd.DataFrame, games: pd.DataFrame) -> pd.DataFrame:
+def sharp_book_movement_features(
+    quotes: pd.DataFrame, games: pd.DataFrame, *, include_sunday: bool = False
+) -> pd.DataFrame:
     required = {"game_id", "commence_time_utc", "week_first_commence_utc"}
     if not required.issubset(games.columns) or games.game_id.duplicated().any():
         raise DataContractError("Games require unique IDs and kickoff/week anchors")
@@ -54,7 +56,9 @@ def sharp_book_movement_features(quotes: pd.DataFrame, games: pd.DataFrame) -> p
     deadline = (
         (sunday + pd.Timedelta(hours=16)).dt.tz_localize("America/New_York").dt.tz_convert("UTC")
     )
-    cutoffs = [kickoff, deadline]
+    cutoffs = [kickoff]
+    if not include_sunday:
+        cutoffs.append(deadline)
     if "cutoff_utc" in result:
         cutoffs.append(pd.to_datetime(result.cutoff_utc, utc=True))
     result["cutoff_utc"] = pd.concat(cutoffs, axis=1).min(axis=1)
@@ -81,29 +85,57 @@ def sharp_book_movement_features(quotes: pd.DataFrame, games: pd.DataFrame) -> p
         }
         if not needed.issubset(quotes.columns):
             raise DataContractError("Missing spread quote columns")
+        quote_columns = sorted(needed)
+        for optional in (
+            "quote_timestamp_basis",
+            "snapshot_timestamp_utc",
+            "source_scan_at_utc",
+        ):
+            if optional in quotes:
+                quote_columns.append(optional)
         q = quotes.loc[
             quotes.market.eq("spreads") & quotes.bookmaker_key.isin(LEADERSHIP_WEIGHTS),
-            sorted(needed),
+            quote_columns,
         ].rename(columns={"nflverse_game_id": "game_id"})
+        if "quote_timestamp_basis" not in q:
+            q["quote_timestamp_basis"] = ""
+        if "snapshot_timestamp_utc" not in q:
+            q["snapshot_timestamp_utc"] = pd.NaT
+        if "source_scan_at_utc" not in q:
+            q["source_scan_at_utc"] = pd.NaT
         q = q.merge(
             result[["game_id", "cutoff_utc", "_monday", "_wednesday", "_sunday"]], on="game_id"
         )
         for column in ("observed_at_utc", "bookmaker_last_update_utc"):
             q[column] = pd.to_datetime(q[column], utc=True, errors="coerce")
+        q["snapshot_timestamp_utc"] = pd.to_datetime(
+            q["snapshot_timestamp_utc"], utc=True, errors="coerce"
+        )
+        q["source_scan_at_utc"] = pd.to_datetime(q["source_scan_at_utc"], utc=True, errors="coerce")
+        q["quote_as_of_utc"] = q["source_scan_at_utc"].fillna(q["observed_at_utc"])
         q["home_spread_line"] = pd.to_numeric(q.home_spread_line, errors="coerce")
         q = q.loc[
             q.observed_at_utc.lt(q.cutoff_utc)
+            & (~include_sunday | q.snapshot_timestamp_utc.lt(q.cutoff_utc))
+            & q.quote_as_of_utc.le(q.observed_at_utc)
             & q.observed_at_utc.ge(q._monday)
-            & q.observed_at_utc.lt(q._sunday)
-            & q.bookmaker_last_update_utc.le(q.observed_at_utc)
+            & (include_sunday | q.observed_at_utc.lt(q._sunday))
+            & (
+                q.bookmaker_last_update_utc.le(q.observed_at_utc)
+                | (
+                    include_sunday
+                    & q.bookmaker_last_update_utc.isna()
+                    & q.quote_timestamp_basis.eq("capture_observed_utc")
+                )
+            )
             & np.isfinite(q.home_spread_line)
         ].copy()
-        keys = ["game_id", "bookmaker_key", "observed_at_utc"]
+        keys = ["game_id", "bookmaker_key", "quote_as_of_utc"]
         if q.groupby(keys).home_spread_line.nunique().gt(1).any():
             raise DataContractError("Conflicting book lines at one observed timestamp")
-        q = q.sort_values(keys).drop_duplicates(keys)
+        q = q.sort_values([*keys, "observed_at_utc"]).drop_duplicates(keys, keep="last")
         q["move"] = q.groupby(["game_id", "bookmaker_key"]).home_spread_line.diff()
-        q = q.loc[q.observed_at_utc.ge(q._wednesday) & q.move.notna()].copy()
+        q = q.loc[q.quote_as_of_utc.ge(q._wednesday) & q.move.notna()].copy()
         moved = q.loc[q.bookmaker_key.isin(LEADER_BOOKS) & q.move.ne(0), "game_id"]
         result["leader_move_observed"] = result.game_id.isin(moved)
         books = q.groupby(["game_id", "bookmaker_key"], as_index=False).move.sum()

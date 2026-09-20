@@ -101,7 +101,10 @@ from nfl_ats.outcomes import (
     walk_forward_key_number_mass,
     walk_forward_outcomes,
 )
-from nfl_ats.pick_probability import ACTIVE_PICK_PROBABILITY_FILENAME
+from nfl_ats.pick_probability import (
+    ACTIVE_PICK_PROBABILITY_FILENAME,
+    MARKET_MOVE_FEATURE_VERSIONS,
+)
 from nfl_ats.players import injury_reports_absent_reason
 from nfl_ats.pool import (
     build_ats_pool_card,
@@ -403,13 +406,22 @@ def _cmd_margin_predict(args: argparse.Namespace) -> None:
 def _cmd_fit_pick_probability(args: argparse.Namespace) -> None:
     from nfl_ats.pick_probability_fit import fit_pick_probability
 
-    del args
     artifacts_root = _artifacts_root()
-    model, directory, metadata = fit_pick_probability(artifacts_root, _data_root())
+    model, directory, metadata = fit_pick_probability(
+        artifacts_root,
+        _data_root(),
+        activate=not args.no_activate,
+        market_move_feature_version=args.market_move_feature_version,
+    )
     _print_json(
         {
             "artifact_directory": str(directory),
-            "active_pointer": str(artifacts_root / ACTIVE_PICK_PROBABILITY_FILENAME),
+            "active_pointer": (
+                str(artifacts_root / ACTIVE_PICK_PROBABILITY_FILENAME)
+                if not args.no_activate
+                else None
+            ),
+            "market_move_feature_version": model.market_move_feature_version,
             "coefficients": model.to_dict()["coefficients"],
             "strength_bands": [band.to_dict() for band in model.strength_bands],
             "confidence_bands": [band.to_dict() for band in model.confidence_bands],
@@ -894,6 +906,12 @@ def register(
             "artifacts/pick_probability"
         ),
     )
+    fit_pick_probability_parser.add_argument(
+        "--market-move-feature-version",
+        choices=MARKET_MOVE_FEATURE_VERSIONS,
+        default=None,
+    )
+    fit_pick_probability_parser.add_argument("--no-activate", action="store_true")
     fit_pick_probability_parser.set_defaults(handler=_cmd_fit_pick_probability)
 
     market_decomposition = subparsers.add_parser(

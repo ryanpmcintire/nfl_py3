@@ -133,6 +133,22 @@ LINEUP_CAPTURE = [
     str(REPO / "scripts" / "refresh_lineup_forecast.py"),
 ]
 
+ESPN_ODDS_CAPTURE = [
+    str(UV),
+    "run",
+    "--no-sync",
+    "python",
+    str(REPO / "scripts" / "capture_espn_pickcenter.py"),
+]
+
+PRIVATE_SUNDAY_ODDS_CAPTURE = [
+    str(UV),
+    "run",
+    "--no-sync",
+    "python",
+    str(REPO / "scripts" / "capture_private_sunday_odds.py"),
+]
+
 
 def _sportradar_injury_job(day: str, at: str, report: str) -> Job:
     return Job(
@@ -568,6 +584,37 @@ SCHEDULE: tuple[Job, ...] = (
         dedupe_dir="data/market/raw",
         dedupe_minutes=90,
     ),
+    *(
+        Job(
+            f"odds_espn_{name}",
+            day,
+            at,
+            30,
+            ESPN_ODDS_CAPTURE,
+            False,
+            "Single-book DraftKings pregame spreads and totals from ESPN pickcenter. "
+            "Disabled after the first live scoreboard request returned HTTP 403; "
+            "the source policy requires stopping, and a private block marker "
+            "prevents further network requests until access is reviewed.",
+            season_guarded=False,
+            dedupe_dir="data/market/raw",
+            dedupe_minutes=15,
+            added_on="2026-09-20",
+        )
+        for name, day, at in (
+            ("tue_open", "tue", "12:05"),
+            ("wed", "wed", "18:00"),
+            ("thu", "thu", "18:00"),
+            ("fri_midday", "fri", "12:30"),
+            ("fri_evening", "fri", "18:00"),
+            ("sat_morning", "sat", "10:00"),
+            ("sat_midday", "sat", "12:00"),
+            ("sun_morning", "sun", "11:00"),
+            ("sun_close", "sun", "12:20"),
+            ("sun_late", "sun", "16:15"),
+            ("mon", "mon", "19:00"),
+        )
+    ),
     Job(
         "odds_tue_open_halves",
         "tue",
@@ -747,6 +794,18 @@ SCHEDULE: tuple[Job, ...] = (
         season_guarded=False,
         dedupe_dir="data/raw/public_betting_live",
         dedupe_minutes=90,
+    ),
+    Job(
+        "odds_private_sun",
+        "sun",
+        "12:10",
+        35,
+        PRIVATE_SUNDAY_ODDS_CAPTURE,
+        True,
+        "Private personal-research leader spread capture before Sunday pick refresh; "
+        "source age guard skips redundant calls and HTTP blocks stop a source.",
+        season_guarded=False,
+        added_on="2026-09-20",
     ),
     Job(
         "injuries_wed",
@@ -2038,7 +2097,15 @@ RECORDING_FLAGS: frozenset[str] = frozenset(
 
 
 def dry_command(command: list[str]) -> list[str]:
-    return [token for token in command if token not in RECORDING_FLAGS]
+    stripped = [token for token in command if token not in RECORDING_FLAGS]
+    if (
+        len(stripped) >= 5
+        and stripped[3] == "python"
+        and Path(stripped[4]).name == "refresh_lineup_forecast.py"
+        and "--dry-run" not in stripped
+    ):
+        return [*stripped, "--dry-run"]
+    return stripped
 
 
 def has_ever_executed(state: dict[str, Any], job_name: str) -> bool:

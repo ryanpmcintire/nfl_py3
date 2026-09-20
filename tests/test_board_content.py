@@ -33,6 +33,9 @@ def _headline_artifacts(root: Path) -> tuple[dict, Path]:
         "historical_evaluation": {"accuracy": 0.52, "games": 100, "correct": 52},
     }
     (root / "active_ats_model.json").write_text(json.dumps(active), encoding="utf-8")
+    from test_cli import _seed_pick_probability
+
+    _seed_pick_probability(root, model_logit=1.0, flag_sum=1.0)
     directory = root / "opener_evaluation" / "20260905T000000Z"
     directory.mkdir(parents=True)
     metadata = {

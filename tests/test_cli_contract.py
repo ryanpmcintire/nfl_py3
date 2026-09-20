@@ -134,6 +134,7 @@ def test_publish_predictions_handler_passes_the_parsed_request(
         return {"published": True}
 
     monkeypatch.setattr(publishing_cmds, "orchestrate_publish_predictions", fake)
+    monkeypatch.setattr(publishing_cmds, "_require_served_pick_probability", lambda: None)
     exit_code = cli.main(
         [
             "publish-predictions",

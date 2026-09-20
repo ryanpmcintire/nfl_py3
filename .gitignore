@@ -5,6 +5,7 @@ __pycache__/
 .pytest_cache/
 .pytest_graph/
 .pytest_tmp/
+.pytest-temp-*/
 .test-tmp-*/
 .agent_tmp/
 .tmp/
@@ -15,6 +16,7 @@ htmlcov/
 
 # Environments and local tooling
 .venv/
+.venv-linux/
 .tools/
 .uv-cache/
 .python-version.local
@@ -108,3 +110,4 @@ restic_password*
 data/offsite_backup_log.txt
 data/sync_captures_log.txt
 data/scheduler_stdout.txt
+data/environment_recovery/
