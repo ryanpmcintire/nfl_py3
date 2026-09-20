@@ -29,6 +29,10 @@ refresh Sunday inputs and publish a card without private quote prices.
   zero eligible current public lines. Exact private move deltas were removed
   from the public card appendix, board reason and explanations. The public
   model-page paragraph now describes fitted movement rather than a hard flip.
+- Release `5fb88a2` is on `master` and `origin/master` (verified with
+  `git log -1`). Root measured the GitHub Pages build for that exact SHA,
+  HTTP 200 for the live index, and a live index SHA-256 equal to the committed
+  `docs/index.html`.
 
 ## Tried
 
@@ -48,10 +52,11 @@ refresh Sunday inputs and publish a card without private quote prices.
 
 ## Next
 
-- Root agent refreshes `HANDOFF.md`, reviews remaining Git changes, then makes
-  the user-authorized commit/push. Confirm the public site rebuild after push.
+- Continue the separate confidence-ranking research in
+  `docs/lanes/confidence-best-pick-unification.md`; keep the published card
+  bound to its active forecast and fit on future refreshes.
 
 ## Open
 
 - Public Books-now remains unavailable today because the current quote
-  snapshots cannot be redistributed. The local release is not yet pushed.
+  snapshots cannot be redistributed.

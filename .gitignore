@@ -110,4 +110,5 @@ restic_password*
 data/offsite_backup_log.txt
 data/sync_captures_log.txt
 data/scheduler_stdout.txt
+data/scheduler_locks/
 data/environment_recovery/

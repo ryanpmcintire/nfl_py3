@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-20T15:54:41.636196+00:00`
+Refreshed at: `2026-09-20T15:59:00.752361+00:00`
 
 ## Start here
 
@@ -20,29 +20,14 @@ Refreshed at: `2026-09-20T15:54:41.636196+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `ebe962d54611` — Free-odds probe: ESPN single-book verified, federation decision
-- Pending change set: 77 paths
+- Baseline commit: `5fb88a2428fb` — Unify calibrated picks and restore Sunday odds refresh
+- Pending change set: 6 paths
   - `M  .gitignore`
-  - `M  AGENTS.md`
-  - `M  CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
-  - `M  README.md`
   - `M  ROADMAP.md`
-  - `M  config/source_policies.json`
-  - `A  docs/confidence_ranking_audit.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
   - `M  docs/lanes/README.md`
-  - `A  docs/lanes/confidence-best-pick-unification.md`
-  - `A  docs/lanes/done/lineup-refresh-dry-run.md`
-  - `A  docs/lanes/done/windows-linux-recovery.md`
-  - `M  docs/lanes/free-odds-sources.md`
-  - `A  docs/lanes/sunday-market-probability.md`
-  - `A  docs/lanes/sunday-readiness-2026-09-20.md`
-  - `M  docs/model.html`
-  - `A  docs/windows_linux_environment.md`
-  - ...and 57 more
+  - `M  docs/lanes/confidence-best-pick-unification.md`
+  - `M  docs/lanes/sunday-readiness-2026-09-20.md`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

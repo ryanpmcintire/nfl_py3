@@ -2,65 +2,54 @@
 
 ## Goal
 
-Audit actual probability reliability and within-week ranking, then unify the
-served Best Pick path without claiming consistency proves predictive power.
+Audit probability reliability and within-week ranking, then keep the served
+Best Pick on the same calibrated probability as each game's side and display.
+Consistency alone is not evidence that the top-ranked game wins more often.
 
 ## State
 
-- Owner corrected the prior session: changing the star without examining
-  confidence evidence was inadequate. Plan frozen before measurement in
-  `docs/confidence_ranking_audit.md`; no new fit may activate from this audit.
-- Read: active calibration stores coefficients and aggregate bands but no
-  prediction-level replay; loader omits active-model binding. Initial
-  nomination fits an unused separate ranker and differs from Sunday rules.
-- No commit/push or candidate activation performed in this lane's integration.
-- Implemented: one calibrated probability and nominee selector, discrete
-  non-push serving and line sweep, active-model/source binding, held-out
-  predictions, and board wording. Unlocked picks ignore legacy revisions;
-  locked picks retain the published side and suppress hypothetical curves.
-- Explicit as-of nomination requires every kickoff deadline, excludes games
-  already locked, and preserves the recorded locked nominee. Historical calls
-  without an as-of time retain their prior selection behavior.
-- Root reported a regenerated forecast at `2026-week-02-20260920T150905Z`;
-  compatible calibration and publication remain pending. The older active
-  calibration fails the strict discrete-source loader, so the live site is
-  not yet operationally complete.
+- The shared selector, discrete conditional non-push probability, line sweep,
+  active-model/source binding, and board wording are published in release
+  `5fb88a2` on `master` and `origin/master`. Root measured a Pages build for
+  that exact SHA and a live index hash equal to committed `docs/index.html`.
+- The active Week 2 forecast is
+  `margin_predictions/2026-week-02-20260920T150905Z`; compatible active fit
+  `pick_probability/20260920T152908Z` includes the Sunday-through-pregame
+  leader-move feature. The final card and four pages were published with LA
+  -7.5 as Best Pick at 65.7%; 16 paper and six revision rows reconcile with
+  the served card, including the frozen Thursday result.
+- Unlocked picks ignore stale legacy revisions; locked picks preserve their
+  recorded side without a hypothetical new curve. Explicit as-of nomination
+  excludes expired deadlines and fails closed when a kickoff is unknown.
+- The ranking audit remains open. `docs/confidence_ranking_audit.md` fixed
+  its plan before measurement; reuse of historical feature choices prevents
+  calling its replay an untouched outer test. No ranking change is justified
+  solely by the published card's internal consistency.
 
 ## Tried
 
-- Read production fit, loader, nomination and earlier research rationale.
-- Code-path audit delegated read-only; root reconstructs production evidence.
-- Real final opener evaluation completed with corrected full-week cutoff;
-  output `data/environment_recovery/aligned_opener_final.txt`.
-- Candidate `artifacts/pick_probability/20260920T135812Z` was fitted with
-  activate=False; activation.json saved beside coefficients. Corrected audit
-  and prediction-level replay: `artifacts/confidence_ranking_audit/20260920_aligned`.
-  Original smooth-input diagnostic: sibling `20260920`. Neither is untouched
-  outer evidence. Registry recording and result interpretation still pending.
-- Measured here: focused board/publication/CLI/lineage command passed 198
-  tests before the final as-of contract edit; the three affected publication
-  tests then passed. Direct checks exercised expired-game exclusion, locked
-  and historical selection, missing-deadline failure, discrete zero-line
-  mass arithmetic, and generic calibrated probability/confidence fields.
-  Focused Ruff format/check and mypy passed. No new test files or functions.
-- Read-only Sunday move trace: the fitted leader-median feature excludes
-  Sunday observations; the no-blackout challenger uses a different input
-  contract. The current DraftKings-only feed cannot supply the three leader
-  books. No new coefficient or independent flip was served from that read.
+- Corrected aligned opener evaluation lives in
+  `data/environment_recovery/aligned_opener_final.txt`. Inactive candidate
+  fit `pick_probability/20260920T135812Z` and prediction-level replay
+  `confidence_ranking_audit/20260920_aligned` are research inputs, not the
+  active fit or independent outer evidence.
+- Focused integration checks passed 204 attribution/board tests. The release
+  passed Ruff format/check, mypy, comment guard and 4,529 tests (nine skipped).
+  No new test files or functions were added.
+- The Sunday movement trace found the prior fitted leader feature excluded
+  Sunday observations. The published fit now has the separate Sunday-through-
+  pregame input contract; current private quotes can inform derived picks but
+  cannot appear as public Books-now prices.
 
 ## Next
 
-- Root completes corrected audit and unresolved-signal recording, verifies
-  full gates, prepares compatible calibration, and checks the regenerated
-  forecast before any activation or publication decision.
-- Run live refresh/ledger checks, exercise modified scheduler argv, recover
-  the missed capture window, publish the board only after the active artifacts
-  align, and refresh `HANDOFF.md` before any authorized push.
+- Finish the predeclared reliability and within-week ranking audit, record
+  unresolved cells under the weak-signals rules, and state what the evidence
+  means for Best Pick selection before considering another ranker change.
 
 ## Open
 
-- Historical feature-selection reuse prevents calling this an untouched test.
-- Real-site board tests still need a compatible active calibration artifact;
-  do not weaken source or model validation to make the old pointer pass.
-- No commit or push authorized. Prior unrelated changes remain untouched.
-- Backups: `data/environment_recovery/before_probability_unification`.
+- The confidence-ranking audit has no untouched outer test because historical
+  feature selection was reused. Today's public Books-now prices remain
+  unavailable under the source terms. Backups are in
+  `data/environment_recovery/before_probability_unification`.
