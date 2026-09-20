@@ -35,6 +35,14 @@ refresh Sunday inputs and publish a card without private quote prices.
 
 ## Tried
 
+- Headline provenance, measured from fit metadata: `20260918T164601Z`
+  recorded 841-662 (56.0%); `20260920T135812Z` 859-644 (57.2%);
+  `20260920T161202Z` 863-640 (57.4%). These are identical 1,503 nonpush
+  opener-graded historical games: +18 net wins in the bundled model/discrete
+  base refresh and +4 after the Sunday movement feature. The old/new opener
+  populations have all 1,537 IDs in common, the same 34 pushes and unchanged
+  grades. This is a revised historical replay, not new actual paper wins.
+  Fit metadata supplies no headline interval and discloses selection reuse.
 - `nfl-ats publish-predictions --with-board` exited zero; final
   `nfl-ats card-ledger-check` exited zero. The local rendered visible-text
   comparison to `HEAD` is in ignored
