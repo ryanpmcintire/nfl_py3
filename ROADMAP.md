@@ -821,6 +821,28 @@ gets measured is recorded through both registries with
 
 ## Recommended execution order
 
+1. **Current priority, 2026-09-20: validate confidence and Best Pick together.**
+   One served probability now decides both side and nominee. This integration
+   does not establish that the largest estimate wins more often or is calibrated.
+   Complete the fixed Sunday ranking replay with every pregame candidate,
+   including eventual pushes; then evaluate any probability repair out of season.
+   Preserve the original outcome-conditioned diagnostic and its limitations.
+   State and reproduction: `docs/lanes/confidence-best-pick-unification.md` and
+   `docs/confidence_best_pick_sunday_matched.md`. Do not restore the separate
+   ranker or independent side-flip rules from the historical instructions below.
+2. **Keep Sunday's card current before kickoff.** Fresh private odds and the
+   scheduled lineup update are captured. Publish the latest forecast with the
+   provisional nominee explanation, reconcile the paper ledger while preserving
+   locked games, and verify the deployed page. State:
+   `docs/lanes/sunday-readiness-2026-09-20.md` and
+   `docs/lanes/free-odds-sources.md`.
+3. **Continue from lane files with bounded reads and non-Astra delegation.**
+   Follow `AGENTS.md`, run the scheduler each session, and keep uncertainty
+   distinct from research closure and the forced-pick decision. The historical
+   priorities below are preserved context, superseded by these current items.
+
+### Historical priority snapshots
+
 **Next action, refreshed 2026-09-05 (late evening) after the 25-lane Codex day
 (review findings closed, validated headline numbers, layout A, calibrated lineup
 chances, 39 active challengers). Pushed through `3fdd73b`.**

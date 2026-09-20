@@ -385,8 +385,9 @@ Refreshed at: `{timestamp}`
 ## Start here
 
 1. Run `git status --short` and `git log -3 --oneline --decorate`.
-2. Read this file, [README.md](README.md), the recommended execution order in
-   [ROADMAP.md](ROADMAP.md), and the relevant file under [`docs/`](docs/).
+2. Read this file, [the lane index](docs/lanes/README.md), and the task's lane.
+   Read only the recommended execution order in [ROADMAP.md](ROADMAP.md)
+   when choosing new work; do not read the full roadmap or README.
 3. Run `.\\.tools\\uv.exe run nfl-ats doctor` when the local environment exists.
 4. Inspect `artifacts/active_ats_model.json` before quoting current model results.
 5. Before changing code, state the verified current condition and intended next work.

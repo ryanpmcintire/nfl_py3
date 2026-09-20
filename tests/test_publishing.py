@@ -765,7 +765,8 @@ def test_published_card_uses_v2_nomination_end_to_end(tmp_path: Path) -> None:
     card = destination.read_text(encoding="utf-8")
     assert "highest estimated chance" in card
     assert (
-        "This pick was the game with the highest estimated chance for its picked side to cover"
+        "This pick was provisionally chosen because it has the highest estimated chance "
+        "to cover among eligible games. Its estimated lead over the other picks is uncertain."
         in card
     )
 

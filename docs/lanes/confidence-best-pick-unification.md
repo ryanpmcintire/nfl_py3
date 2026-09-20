@@ -2,54 +2,26 @@
 
 ## Goal
 
-Audit probability reliability and within-week ranking, then keep the served
-Best Pick on the same calibrated probability as each game's side and display.
-Consistency alone is not evidence that the top-ranked game wins more often.
+Assess whether the single served probability ranks games within a week and calibrates the top pick. The owner requires an overfit assessment, actual within-week ordering, and top-pick calibration; merely making Best Pick equal the highest displayed probability does not complete this work.
 
 ## State
 
-- The shared selector, discrete conditional non-push probability, line sweep,
-  active-model/source binding, and board wording are published in release
-  `5fb88a2` on `master` and `origin/master`. Root measured a Pages build for
-  that exact SHA and a live index hash equal to committed `docs/index.html`.
-- The active Week 2 forecast is
-  `margin_predictions/2026-week-02-20260920T150905Z`; compatible active fit
-  `pick_probability/20260920T152908Z` includes the Sunday-through-pregame
-  leader-move feature. The final card and four pages were published with LA
-  -7.5 as Best Pick at 65.7%; 16 paper and six revision rows reconcile with
-  the served card, including the frozen Thursday result.
-- Unlocked picks ignore stale legacy revisions; locked picks preserve their
-  recorded side without a hypothetical new curve. Explicit as-of nomination
-  excludes expired deadlines and fails closed when a kickoff is unknown.
-- The ranking audit remains open. `docs/confidence_ranking_audit.md` fixed
-  its plan before measurement; reuse of historical feature choices prevents
-  calling its replay an untouched outer test. No ranking change is justified
-  solely by the published card's internal consistency.
+- Probability/side/Best Pick integration is published in release `5fb88a2`. The live nominee can change at each refresh; its argmax status remains provisional pending reliability work. No ranking change follows automatically from this replay.
+- The fixed matched replay and full plan/results are in `docs/confidence_best_pick_sunday_matched.md`; prediction-level outputs are `artifacts/confidence_best_pick_sunday_matched/20260920_fixed/`.
+- Eight corrected full-pool unresolved inferential cells were recorded in `registry/weak_signals.json` under `confidence_best_pick_sunday_matched_full_pool_v2`. The eight earlier v1 cells were invalidated with `weak-signals invalidate` and linked to v2, so pooling excludes the outcome-conditioned nonpush diagnostic while preserving its history.
 
 ## Tried
 
-- Corrected aligned opener evaluation lives in
-  `data/environment_recovery/aligned_opener_final.txt`. Inactive candidate
-  fit `pick_probability/20260920T135812Z` and prediction-level replay
-  `confidence_ranking_audit/20260920_aligned` are research inputs, not the
-  active fit or independent outer evidence.
-- Focused integration checks passed 204 attribution/board tests. The release
-  passed Ruff format/check, mypy, comment guard and 4,529 tests (nine skipped).
-  No new test files or functions were added.
-- The Sunday movement trace found the prior fitted leader feature excluded
-  Sunday observations. The published fit now has the separate Sunday-through-
-  pregame input contract; current private quotes can inform derived picks but
-  cannot appear as public Books-now prices.
+- Predeclared one comparison before scoring: Sunday-inclusive frozen heldout probability argmax versus archived alpha=2000 chance of the **same current served side**, on the same regular-season games with kickoff after each week's Sunday 12:45 p.m. ET cutoff; grade both nominees at opener. No fitting, thresholds, side changes, or old eligibility screens.
+- The chronological alpha archive supplies full-game prior-week scores, but no alpha LOSO scores. Its parameter was previously selected and the NFL years reused; this replay is diagnostic rather than untouched validation.
+- Corrected chronological pool: all 1,537 opener games can enter selection; 930 eligible in 72 weeks, 141 started games excluded. Nominees differ in 58 weeks; 27 decisive W/P/L grades split 14 better for current, 13 for alpha (exact two-sided sign null p=1). Current W/L/P 40/32/0, alpha 38/31/3; wins per nominated week +2.78 points [-11.11,+16.67], `probability_positive=0.6504`. Pushes were not replaced or treated as losses; accuracy and probability loss use the 72/69 nonpush nominees respectively.
+- Current nonpush top predicted 65.44%, realized 55.56%: actual-minus-predicted -9.88 points [-21.25,+1.47], `probability_positive=0.0443`. Current top versus rest -1.91 points [-13.64,+9.98], P+ 0.3805; within-week slope +2.95 points per 10 confidence points [-3.52,+9.36], P+ 0.8082. Current LOSO top is 63/43/1 W/L/P in 107 weeks; alpha has no matched LOSO evidence.
+- Measured by root: `.\.tools\uv.exe run --no-sync python scripts/confidence_best_pick_sunday_matched.py` reproduced the corrected results; log `data/environment_recovery/matched_ranking_final_verified.txt`. It rewrites research outputs and does not alter the registry or live state. Ruff format/check passed.
 
 ## Next
 
-- Finish the predeclared reliability and within-week ranking audit, record
-  unresolved cells under the weak-signals rules, and state what the evidence
-  means for Best Pick selection before considering another ranker change.
+- Predeclare a small probability-recalibration experiment targeting the selected top pick's optimism, with fitting, calibration and held-out seasons distinct. Compare reliability, Brier/log loss and within-week ordering against the same model and market baselines; preserve all pregame nominees, including eventual pushes. Automatic live refreshes continue. This audit makes no ranker or coefficient change and does not repromote alpha.
 
 ## Open
 
-- The confidence-ranking audit has no untouched outer test because historical
-  feature selection was reused. Today's public Books-now prices remain
-  unavailable under the source terms. Backups are in
-  `data/environment_recovery/before_probability_unification`.
+- Current top-pick calibration is concerning and ordering evidence is weak, but neither mechanism is closed by an interval crossing zero. No untouched outer period or matched alpha LOSO exists. Sunday's private odds cannot be shown as public Books-now prices. Backups are in `data/environment_recovery/before_probability_unification`.

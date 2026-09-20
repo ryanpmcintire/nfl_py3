@@ -22,7 +22,7 @@ modified lane when the prompt just says to continue.
 
 - [confidence-best-pick-unification](confidence-best-pick-unification.md) - shared calibrated selector published in `5fb88a2`; confidence reliability and within-week ranking research remains open
 
-- [sunday-readiness-2026-09-20](sunday-readiness-2026-09-20.md) - Week 2 release `5fb88a2` deployed and live index hash verified; 16 paper and six revision rows agree, private quote prices excluded
+- [sunday-readiness-2026-09-20](sunday-readiness-2026-09-20.md) - noon forecast, provisional NO Best Pick and board republished locally; 16 paper and six revision rows agree, root release pending
 
 - [pooled-signal-model](pooled-signal-model.md) — MOD-20, unit 1 done 2026-09-16 (first pooled fit recorded, unresolved); next: grow the reproducible feature set
 - [market-derived-ratings](market-derived-ratings.md) — MOD-21, closed 2026-09-16 (refuted on accuracy; Brier companion unresolved)

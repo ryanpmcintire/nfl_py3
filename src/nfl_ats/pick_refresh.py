@@ -1832,9 +1832,10 @@ def _renomination_sentence(renomination: SundayRenomination | None) -> str:
     if renomination is None or not renomination.moved:
         return ""
     return (
-        f"The Best Pick moved to {renomination.matchup} on the Sunday refresh: of the games that "
-        "have not kicked off yet, it is the one the model is now most sure about at the spread "
-        f"the pool locked on Tuesday. Tuesday's Best Pick was {renomination.previous_matchup}.\n\n"
+        f"The Best Pick moved to {renomination.matchup} on the Sunday refresh. It provisionally "
+        "has the highest estimated chance to cover among games that have not kicked off at "
+        "the spread the pool locked on Tuesday. Its estimated lead over the other picks is "
+        f"uncertain. Tuesday's Best Pick was {renomination.previous_matchup}.\n\n"
     )
 
 

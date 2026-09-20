@@ -6,13 +6,14 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-20T15:59:00.752361+00:00`
+Refreshed at: `2026-09-20T16:43:23.401178+00:00`
 
 ## Start here
 
 1. Run `git status --short` and `git log -3 --oneline --decorate`.
-2. Read this file, [README.md](README.md), the recommended execution order in
-   [ROADMAP.md](ROADMAP.md), and the relevant file under [`docs/`](docs/).
+2. Read this file, [the lane index](docs/lanes/README.md), and the task's lane.
+   Read only the recommended execution order in [ROADMAP.md](ROADMAP.md)
+   when choosing new work; do not read the full roadmap or README.
 3. Run `.\.tools\uv.exe run nfl-ats doctor` when the local environment exists.
 4. Inspect `artifacts/active_ats_model.json` before quoting current model results.
 5. Before changing code, state the verified current condition and intended next work.
@@ -20,14 +21,29 @@ Refreshed at: `2026-09-20T15:59:00.752361+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `5fb88a2428fb` — Unify calibrated picks and restore Sunday odds refresh
-- Pending change set: 6 paths
-  - `M  .gitignore`
+- Baseline commit: `f2ebbcab67db` — Record verified Sunday deployment and ignore scheduler locks
+- Pending change set: 24 paths
+  - `M  CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
+  - `M  README.md`
   - `M  ROADMAP.md`
+  - `A  docs/confidence_best_pick_sunday_matched.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
   - `M  docs/lanes/README.md`
   - `M  docs/lanes/confidence-best-pick-unification.md`
+  - `M  docs/lanes/free-odds-sources.md`
   - `M  docs/lanes/sunday-readiness-2026-09-20.md`
+  - `M  docs/model.html`
+  - `A  registry/experiments/margin-backtest/20260920T160800Z.json`
+  - `A  registry/experiments/margin-predict/2026-week-02-20260920T160851Z.json`
+  - `A  registry/experiments/waterfall-feed/20260920T161344Z.json`
+  - `M  registry/weak_signals.json`
+  - `A  scripts/confidence_best_pick_sunday_matched.py`
+  - `M  src/nfl_ats/best_pick_renomination.py`
+  - `M  src/nfl_ats/card_view.py`
+  - ...and 4 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -41,13 +57,13 @@ trust live Git output after checkout.
 - Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20260920T135435Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card applies this after the coach policy, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,093 / 2,091 (52.27%)**
-- Linked forecast: **2026 Week 2**, created `2026-09-20T15:09:05.672580+00:00`
+- Linked forecast: **2026 Week 2**, created `2026-09-20T16:08:51.430516+00:00`
 
 The 52.27% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 2** from model `3412097369e4e4ca`, published `2026-09-20T15:41:23.824646+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 2** from model `3412097369e4e4ca`, published `2026-09-20T16:35:39.449781+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 
@@ -69,11 +85,9 @@ the last published Markdown forecast but must rebuild or transfer local artifact
 
 ## Highest-priority work
 
-1. **The 2026-09-14 override-distance work was redone from scratch the same day (owner: bad statistics, overfit).** Current version: `docs/leader_median_model_confidence.md`, lane `docs/lanes/leader-median-model-confidence.md`, artifact `artifacts/leader_median_model_confidence/20260914T202723Z/`, registry family `leader_median_model_confidence_v1` (19 cells, all unresolved); the three `leader_median_override_distance_v1` cells are invalidated. Honest leave-one-season-out read of the served leader-median rule, thresholds and confidence cut both chosen out of season: **+2.13 accuracy points [-0.51, +4.80], P+ 0.94**, against the in-sample +3.00 it was promoted on; no confidence gate beats the ungated rule out of season; the firmest quarter of its flips (model above 0.58) is 20-22. The handle-follow distance constant was removed from `pick_refresh.py` (in-sample median of 37 flips; a random split is as lopsided one time in five). The Best Pick ranker's +5.94 is an 11-5 record on 16 decisive weeks and is recorded as no evidence; the star stays on the card's own most confident pick only because it has no fitted parameter. Open owner decisions: whether the leader-median rule keeps serving on +2.13 out of season, and whether the Best Pick star reverts to the old ranker. **Later the same day, owner directive: no rule flips a served side on its own signal.** Off: late-week follow, handle follow, rookie crew (`pick_refresh.py` served flags); held: interim-HC and precip composition members (`OWNER_HELD_MEMBERS`, n 39 and 29-50). Seven larger-sample composition flips still serve; inventory in `docs/lanes/served-flip-rules-hold.md`. MKT-16 measured the line move as a term in the model's probability: out of season +2.00 vs the card [-2.10, +6.05], P+ 0.84, a dead heat with the hard rule's own out-of-season +2.13, and the flips concentrate in the near-50/50 band. **MKT-17 extended this to all nine composition flags jointly** (`docs/joint_probability_model.md`): the raw model is overconfident (fitted logit slope 0.135-0.424 LOSO) and the flags jointly fit beat the card on log loss/Brier with intervals entirely positive, but the served flip chain itself reads an even cleaner win over the card, so the joint model does not yet beat what is served -- the seven flips stay served as-is pending a further split (recalibrated-M1 vs M3, open in `docs/lanes/joint-probability-model.md`).
-2. **DO THIS FIRST (owner order, 2026-09-05): turn on the late-week line-move rule before the Thursday 2026-09-10 refresh so it is in the picks the owner submits for Week 1.** The rule: if the spread moves at least half a point against our Tuesday pick between Wednesday and the pick deadline, switch to the other side. Measured on top of the picks we actually play, 2023-2025 (799 games): +1.752 accuracy points, week-blocked 95% [-0.868, +4.375], `probability_positive` 0.899, positive in every season (+1.13 / +1.13 / +3.00), 143 of 799 picks switched. It is wired as the paired challenger `late_week_move_follow_refresh_v1` (src/nfl_ats/late_week_move_follow_refresh_overlay.py, commit 64b39fc); promote that module's decision to the served refresh pick in `refresh-picks`, keep recording both sides, republish the card, and report the Week 1 games it switches. Do not re-open the decision: the owner's rule is that a 0.90 marginal on the played card is played. The other two EV-positive constructs stay as paired challengers for now: trade-deadline drag (+0.877, P+ 0.986) cannot fire before November, and expected lineup loss (+0.658, P+ 0.665) is smaller. **2026-09-06: promoted in code (measured).** The served `refresh-picks` pick now follows the module's 0.5-point equal-book Wednesday-to-deadline decision with precedence over the 1.0-point consensus rule (`LATE_WEEK_MOVE_FOLLOW_POLICY`, shared `late_week_follow_frame` so served and challenger agree by construction); every revision row keeps both arms' evidence plus the model-only counterfactual (pick-revision ledger 33 -> 38 columns), the paired challenger recorder keeps running unchanged, and the board's Season-ops note now reads the half-point rule. Pinned by 6 new `test_pick_refresh.py` cases (served override, sub-threshold stand, precedence, served/challenger parity, summary+ledger+card, fail-open) with the full pre-existing refresh/tilt/contract suites still green. No Week 1 game to report yet: the Tuesday ledger the rule switches from is first written at the Tuesday 2026-09-08 lock (2026-09-08 is a Tuesday; earlier text said Monday), so the first live fire is the NEW Wednesday 2026-09-09 6:15 PM ET pass (`refresh_wed`, below), then Thursday's. **2026-09-07 (measured): the rule would not have fired at all as scheduled.** `data/scheduler_log.txt` shows every in-season refresh job (`refresh_sun`, `refresh_sun_inactives_early/late`, 2026-09-06) dying on `usage: nfl-ats refresh-picks [-h] --season SEASON --week WEEK` -- the parser required a pair the schedule never passed and nothing had ever parsed the jobs' argv. Fixed: `refresh-picks` now defaults `--season`/ `--week` to the active model's linked forecast (`cli_common._add_active_forecast_season_week_args`, `active_model.active_forecast_season_week`), and `tests/test_capture_scheduler.py` parses every scheduled `nfl-ats` argv against the real parser. Second gap, same day: 2026 Week 1 opens on a WEDNESDAY (`2026_01_NE_SEA`, 2026-09-09 20:20 ET, schedules snapshot 20260905T211016Z) and the schedule had no post-Tuesday odds capture and no refresh pass before that kickoff; added `odds_wed_opener` (Wed 18:00 ET) and `refresh_wed` (Wed 18:15 ET, closes 19:45), both backfill-guarded. The scheduler daemon was restarted on the new code (44 enabled jobs). **2026-09-09 (measured): the served arm is now the LEADING BOOKS' MEDIAN, not the equal-book mean.** Predeclared in `docs/sharp_weighted_follow.md` before any arm was computed and measured in `artifacts/sharp_weighted_follow/20260909T233606Z/`: on the frozen 2026-09-05 baseline, 2023-2025, 799 opener-graded games, the leader-median arm (S1) scores +3.004 accuracy points [-0.993, +6.953] `probability_positive` 0.930 against the equal-book arm's (S4) +1.752 [-0.870, +4.326] P+ 0.907; head to head S1 - S4 = +1.252 [-0.990, +3.522] P+ 0.864 week-blocked, [0.000, +2.256] P+ 0.982 season-blocked. Mechanism: S1's fire set almost contains S4's (325 both, same side on all 325; 4 equal-only) plus 198 games where the leaders cleared 0.5 and the twelve-book mean was diluted -- the Tuesday card is 47.94% right on those and following the leaders makes it 52.06%; a fire-count-matched loose equal gate does not recover it (S1 +1.377, P+ 0.961). Served as `LATE_WEEK_LEADER_MEDIAN_FOLLOW_POLICY` / `late_week_leader_median_follow_0_5`; `late_week_follow_frame` now returns BOTH arms so the equal-book rule keeps recording as the paired OFF challenger under its existing `late_week_move_follow_refresh_v1` id, with the served arm registered as `late_week_leader_median_follow_v1`. The three `late_week_*` pick-revision columns now carry the leader-median move, side and leading-book count. Proven against the real data root (16 games with exposure, 1 followed: `2026_01_MIA_LV`, leader median -0.5 on 3 leading books) and, on a scratch artifacts copy, `--record-decisions` wrote the revision row with `movement_policy=late_week_leader_median_follow_0_5`.
-3. On Tuesday 2026-09-08 run the real lock as `weekly-run --record-decisions`; do not create the genuine Week 1 rows early. The chain now refits and activates a new model id, then runs `opener-evaluation` and `overlay-composition` (about 17 minutes together; skipped only when the model id is unchanged) and ends with `publish-board` (85d2e79). Read the per-recorder result JSON, run `scripts/lockday_verify.py` against the real rows, screenshot-check the board, push. **Injury sentence expectation, corrected 2026-09-07 (measured):** the newest player snapshot (`20260905T123614Z`) has zero 2026 injury rows because the league's first Week 1 report is published Wednesday, so the lock's card will read "No injury reports had been published yet when these picks were made; they lean on lineups and recent play." -- that is the true state, not a defect. The ENG-39 `injury_feature_presence` check aborted both the Sunday 2026-09-06 and Monday 2026-09-07 daily forecast refreshes at `weekly-run` step 5 on exactly this; it now passes only when `players.injury_reports_absent_reason` proves the week's rows do not exist in the newest snapshot (recorded verbatim as a warning), and still fails closed otherwise (`docs/injury_timestamp_fallback.md`, 2026-09-07 section).
-4. Standing per-session contract (AGENTS.md): one visible dashboard improvement, `publish-board`, push; Codex lanes (gpt-6-astra) instead of Claude agents until the owner says otherwise; never trigger GitHub Actions.
-5. **Completed 2026-09-02:** the six Tuesday recorders are automatic, `crew_tilt_refresh_v1` is on the late-refresh path, and the static lock-day rehearsal (`scripts/lockday_rehearsal.py`, now 39 active paths, 0 errors) imports no model stack and touches no ledger.
+1. **Current priority, 2026-09-20: validate confidence and Best Pick together.** One served probability now decides both side and nominee. This integration does not establish that the largest estimate wins more often or is calibrated. Complete the fixed Sunday ranking replay with every pregame candidate, including eventual pushes; then evaluate any probability repair out of season. Preserve the original outcome-conditioned diagnostic and its limitations. State and reproduction: `docs/lanes/confidence-best-pick-unification.md` and `docs/confidence_best_pick_sunday_matched.md`. Do not restore the separate ranker or independent side-flip rules from the historical instructions below.
+2. **Keep Sunday's card current before kickoff.** Fresh private odds and the scheduled lineup update are captured. Publish the latest forecast with the provisional nominee explanation, reconcile the paper ledger while preserving locked games, and verify the deployed page. State: `docs/lanes/sunday-readiness-2026-09-20.md` and `docs/lanes/free-odds-sources.md`.
+3. **Continue from lane files with bounded reads and non-Astra delegation.** Follow `AGENTS.md`, run the scheduler each session, and keep uncertainty distinct from research closure and the forced-pick decision. The historical priorities below are preserved context, superseded by these current items.
 
 The roadmap is authoritative. Negative results remain part of the evidence base and
 must not be silently removed or retuned away.

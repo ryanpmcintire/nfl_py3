@@ -15,7 +15,7 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 
 **Production policy active:** one calibrated probability combines the model, situational evidence and available line movement to choose each side.
 
-**Best Pick of the week (★):** LA -7.5 in NYG at LA. The pool scores one Best Pick per regular-season week. This pick was the game with the highest estimated chance for its picked side to cover.
+**Best Pick of the week (★):** NO +8.5 in NO at BAL. The pool scores one Best Pick per regular-season week. This pick was provisionally chosen because it has the highest estimated chance to cover among eligible games. Its estimated lead over the other picks is uncertain.
 
 | Date        | Matchup    | ATS prediction   | Cover chance   |
 |:------------|:-----------|:-----------------|:---------------|
@@ -27,14 +27,14 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 | Sun, Sep 20 | IND at KC  | IND +6.5         | 55.0%          |
 | Sun, Sep 20 | JAX at DEN | DEN -2.5         | 60.3%          |
 | Sun, Sep 20 | LV at LAC  | LV +7.5          | 51.7%          |
-| Sun, Sep 20 | MIA at SF  | SF -13.5         | 62.4%          |
+| Sun, Sep 20 | MIA at SF  | SF -13.5         | 59.8%          |
 | Sun, Sep 20 | MIN at CHI | MIN +5.5         | 54.5%          |
-| Sun, Sep 20 | NO at BAL  | NO +8.5          | 63.5%          |
+| Sun, Sep 20 | NO at BAL  | ★ NO +8.5        | 63.5%          |
 | Sun, Sep 20 | PHI at TEN | PHI -6.5         | 55.2%          |
 | Sun, Sep 20 | PIT at NE  | NE -4.5          | 57.2%          |
 | Sun, Sep 20 | SEA at ARI | SEA -4.5         | 50.8%          |
 | Sun, Sep 20 | WAS at DAL | DAL -3.5         | 53.2%          |
-| Mon, Sep 21 | NYG at LA  | ★ LA -7.5        | 65.7%          |
+| Mon, Sep 21 | NYG at LA  | LA -7.5          | 63.2%          |
 
 [Open the standalone card](CURRENT_PREDICTIONS.md) for provenance and interpretation.
 <!-- CURRENT_PREDICTIONS:END -->
@@ -65,7 +65,7 @@ produce, the same way it already fails on a stale `HANDOFF.md`.
 ## Research state
 
 <!-- RESEARCH_STATE:START -->
-- **Weak-signal registry:** 6,901 results recorded -- 6,854 unresolved_below_power, 47 closed (43 refuted_mechanism, 4 bounded_by_control). An interval crossing zero is never by itself grounds to close a line of work; see `AGENTS.md`.
+- **Weak-signal registry:** 6,917 results recorded -- 6,870 unresolved_below_power, 47 closed (43 refuted_mechanism, 4 bounded_by_control). An interval crossing zero is never by itself grounds to close a line of work; see `AGENTS.md`.
 - **Rotation registry:** 455 declared research families -- 89 open, 1 confirmed/closed/retired, 365 declared for coverage only (no window yet).
 - **Prospective challengers:** 62 of 68 registered challengers are actively tracked prospectively (`artifacts/prospective/challengers.json`).
 <!-- RESEARCH_STATE:END -->

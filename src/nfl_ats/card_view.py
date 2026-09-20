@@ -258,6 +258,8 @@ def apply_locked_best_pick(
     if locked_game_id not in set(predictions["game_id"].astype(str)):
         return base
     if locked_game_id == base.active_game_id:
+        if base.active_rule == "served_probability":
+            return replace(base, active_tie_note="", method_note=LOCKED_BEST_PICK_NOTE)
         return base
     return replace(
         base,
@@ -308,7 +310,10 @@ def resolve_nomination(
             if n_tied > 1
             else ""
         )
-        method_note = "the game with the highest estimated chance for its picked side to cover."
+        method_note = (
+            "provisionally chosen because it has the highest estimated chance to cover "
+            "among eligible games. Its estimated lead over the other picks is uncertain."
+        )
         if tie_note:
             method_note += " " + tie_note
         base = BestPickNomination(

@@ -185882,6 +185882,419 @@
       "source": "artifacts/st_player_ratings/20260903T200725Z/results.json",
       "standard_error": null
     },
+    "sunday_alpha_selected_current_calibration_chrono_full_pool_v2": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "The full-pool paired interval spans both signs; neither a wrong sign nor a positive-control bound resolves the ranking mechanism.",
+      "closing_ground": null,
+      "description": "Actual minus current-model predicted accuracy points on alpha-selected games. Full pregame candidate pool; pushes selected before outcome grading.",
+      "effect": -3.0798609294089974,
+      "effect_units": "accuracy_points",
+      "family": "confidence_best_pick_sunday_matched_full_pool_v2",
+      "interval": [
+        -14.880907319599169,
+        8.358282982817958
+      ],
+      "league": "nfl",
+      "notes": "Second declared evaluation look corrects an outcome-conditioned nonpush nominee pool; full W/L/P recorded, paired effect is wins per nomination; push nominees excluded only from conditional nonpush calibration. Earlier v1 records remain provenance of the invalid operational pool, not operational evidence.",
+      "plain_summary": "The full pregame-pool Sunday Best Pick ranking comparison remains uncertain.",
+      "probability_positive": 0.3101,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 72,
+      "sample_games": 69,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\confidence_best_pick_sunday_matched\\20260920_fixed\\summary.json",
+      "standard_error": null
+    },
+    "sunday_alpha_selected_current_calibration_chrono_v1": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Paired and diagnostic intervals span both signs; no refuted ranking mechanism or validated positive-control bound.",
+      "closing_ground": null,
+      "description": "Actual minus current-model predicted accuracy points on alpha-selected games.",
+      "effect": -3.8511556959184787,
+      "effect_units": "accuracy_points",
+      "family": "confidence_best_pick_sunday_matched_v1",
+      "interval": [
+        -15.471283774265313,
+        7.355274728909559
+      ],
+      "invalidated_reason": "Outcome-conditioned nominee pool excluded eventual pushes before ranking; preserved as diagnostic only, superseded by full pregame pool replay.",
+      "league": "nfl",
+      "notes": "One new matched ranking arm plus seven declared diagnostics; alpha=2000 was chosen in earlier work and these seasons were reused; no untouched outer test or alpha LOSO archive. Outcome-conditioned nonpush candidate pool; diagnostic only, not an operational nomination replay. Superseded for operational comparison by full-pool v2.\n[2026-09-20T16:38:36.799971+00:00] invalidated: Outcome-conditioned nominee pool excluded eventual pushes before ranking; preserved as diagnostic only, superseded by full pregame pool replay.. Superseded by: 'sunday_alpha_selected_current_calibration_chrono_full_pool_v2'. Invalidation is not closure.",
+      "plain_summary": "The weekly Best Pick ranking remains uncertain after comparing the same Sunday-eligible games.",
+      "probability_positive": 0.2588,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 72,
+      "sample_games": 72,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\confidence_best_pick_sunday_matched\\20260920_nonpush_conditional\\summary.json",
+      "standard_error": null,
+      "status": "invalidated",
+      "superseded_by": "sunday_alpha_selected_current_calibration_chrono_full_pool_v2"
+    },
+    "sunday_current_top_calibration_chrono_full_pool_v2": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "The full-pool paired interval spans both signs; neither a wrong sign nor a positive-control bound resolves the ranking mechanism.",
+      "closing_ground": null,
+      "description": "Actual minus predicted accuracy points on Sunday probability weekly top picks. Full pregame candidate pool; pushes selected before outcome grading.",
+      "effect": -9.879695449048656,
+      "effect_units": "accuracy_points",
+      "family": "confidence_best_pick_sunday_matched_full_pool_v2",
+      "interval": [
+        -21.24626225458579,
+        1.468628544177213
+      ],
+      "league": "nfl",
+      "notes": "Second declared evaluation look corrects an outcome-conditioned nonpush nominee pool; full W/L/P recorded, paired effect is wins per nomination; push nominees excluded only from conditional nonpush calibration. Earlier v1 records remain provenance of the invalid operational pool, not operational evidence.",
+      "plain_summary": "The full pregame-pool Sunday Best Pick ranking comparison remains uncertain.",
+      "probability_positive": 0.0443,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 72,
+      "sample_games": 72,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\confidence_best_pick_sunday_matched\\20260920_fixed\\summary.json",
+      "standard_error": null
+    },
+    "sunday_current_top_calibration_chrono_v1": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Paired and diagnostic intervals span both signs; no refuted ranking mechanism or validated positive-control bound.",
+      "closing_ground": null,
+      "description": "Actual minus predicted accuracy points on Sunday probability weekly top picks.",
+      "effect": -9.879695449048656,
+      "effect_units": "accuracy_points",
+      "family": "confidence_best_pick_sunday_matched_v1",
+      "interval": [
+        -21.24626225458579,
+        1.468628544177213
+      ],
+      "invalidated_reason": "Outcome-conditioned nominee pool excluded eventual pushes before ranking; preserved as diagnostic only, superseded by full pregame pool replay.",
+      "league": "nfl",
+      "notes": "One new matched ranking arm plus seven declared diagnostics; alpha=2000 was chosen in earlier work and these seasons were reused; no untouched outer test or alpha LOSO archive. Outcome-conditioned nonpush candidate pool; diagnostic only, not an operational nomination replay. Superseded for operational comparison by full-pool v2.\n[2026-09-20T16:38:34.093410+00:00] invalidated: Outcome-conditioned nominee pool excluded eventual pushes before ranking; preserved as diagnostic only, superseded by full pregame pool replay.. Superseded by: 'sunday_current_top_calibration_chrono_full_pool_v2'. Invalidation is not closure.",
+      "plain_summary": "The weekly Best Pick ranking remains uncertain after comparing the same Sunday-eligible games.",
+      "probability_positive": 0.0443,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 72,
+      "sample_games": 72,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\confidence_best_pick_sunday_matched\\20260920_nonpush_conditional\\summary.json",
+      "standard_error": null,
+      "status": "invalidated",
+      "superseded_by": "sunday_current_top_calibration_chrono_full_pool_v2"
+    },
+    "sunday_current_top_calibration_loso_full_pool_v2": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "The full-pool paired interval spans both signs; neither a wrong sign nor a positive-control bound resolves the ranking mechanism.",
+      "closing_ground": null,
+      "description": "Actual minus predicted accuracy points on Sunday probability weekly top picks. Full pregame candidate pool; pushes selected before outcome grading.",
+      "effect": -5.251066127937595,
+      "effect_units": "accuracy_points",
+      "family": "confidence_best_pick_sunday_matched_full_pool_v2",
+      "interval": [
+        -14.813608974279614,
+        4.1511563340931765
+      ],
+      "league": "nfl",
+      "notes": "Second declared evaluation look corrects an outcome-conditioned nonpush nominee pool; full W/L/P recorded, paired effect is wins per nomination; push nominees excluded only from conditional nonpush calibration. Earlier v1 records remain provenance of the invalid operational pool, not operational evidence.",
+      "plain_summary": "The full pregame-pool Sunday Best Pick ranking comparison remains uncertain.",
+      "probability_positive": 0.1363,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 106,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts\\confidence_best_pick_sunday_matched\\20260920_fixed\\summary.json",
+      "standard_error": null
+    },
+    "sunday_current_top_calibration_loso_v1": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Paired and diagnostic intervals span both signs; no refuted ranking mechanism or validated positive-control bound.",
+      "closing_ground": null,
+      "description": "Actual minus predicted accuracy points on Sunday probability weekly top picks.",
+      "effect": -5.750903339344018,
+      "effect_units": "accuracy_points",
+      "family": "confidence_best_pick_sunday_matched_v1",
+      "interval": [
+        -15.026738391022647,
+        3.4125323811538157
+      ],
+      "invalidated_reason": "Outcome-conditioned nominee pool excluded eventual pushes before ranking; preserved as diagnostic only, superseded by full pregame pool replay.",
+      "league": "nfl",
+      "notes": "One new matched ranking arm plus seven declared diagnostics; alpha=2000 was chosen in earlier work and these seasons were reused; no untouched outer test or alpha LOSO archive. Outcome-conditioned nonpush candidate pool; diagnostic only, not an operational nomination replay. Superseded for operational comparison by full-pool v2.\n[2026-09-20T16:38:26.856368+00:00] invalidated: Outcome-conditioned nominee pool excluded eventual pushes before ranking; preserved as diagnostic only, superseded by full pregame pool replay.. Superseded by: 'sunday_current_top_calibration_loso_full_pool_v2'. Invalidation is not closure.",
+      "plain_summary": "The weekly Best Pick ranking remains uncertain after comparing the same Sunday-eligible games.",
+      "probability_positive": 0.1102,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 107,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts\\confidence_best_pick_sunday_matched\\20260920_nonpush_conditional\\summary.json",
+      "standard_error": null,
+      "status": "invalidated",
+      "superseded_by": "sunday_current_top_calibration_loso_full_pool_v2"
+    },
+    "sunday_current_top_vs_rest_chrono_full_pool_v2": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "The full-pool paired interval spans both signs; neither a wrong sign nor a positive-control bound resolves the ranking mechanism.",
+      "closing_ground": null,
+      "description": "Sunday probability top pick versus eligible rest-of-week accuracy. Full pregame candidate pool; pushes selected before outcome grading.",
+      "effect": -1.9125666000665997,
+      "effect_units": "accuracy_points",
+      "family": "confidence_best_pick_sunday_matched_full_pool_v2",
+      "interval": [
+        -13.634986637590805,
+        9.984353512999343
+      ],
+      "league": "nfl",
+      "notes": "Second declared evaluation look corrects an outcome-conditioned nonpush nominee pool; full W/L/P recorded, paired effect is wins per nomination; push nominees excluded only from conditional nonpush calibration. Earlier v1 records remain provenance of the invalid operational pool, not operational evidence.",
+      "plain_summary": "The full pregame-pool Sunday Best Pick ranking comparison remains uncertain.",
+      "probability_positive": 0.3805,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 72,
+      "sample_games": 72,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\confidence_best_pick_sunday_matched\\20260920_fixed\\summary.json",
+      "standard_error": null
+    },
+    "sunday_current_top_vs_rest_chrono_v1": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Paired and diagnostic intervals span both signs; no refuted ranking mechanism or validated positive-control bound.",
+      "closing_ground": null,
+      "description": "Sunday probability top pick versus eligible rest-of-week accuracy.",
+      "effect": -1.9125666000665997,
+      "effect_units": "accuracy_points",
+      "family": "confidence_best_pick_sunday_matched_v1",
+      "interval": [
+        -13.634986637590805,
+        9.984353512999343
+      ],
+      "invalidated_reason": "Outcome-conditioned nominee pool excluded eventual pushes before ranking; preserved as diagnostic only, superseded by full pregame pool replay.",
+      "league": "nfl",
+      "notes": "One new matched ranking arm plus seven declared diagnostics; alpha=2000 was chosen in earlier work and these seasons were reused; no untouched outer test or alpha LOSO archive. Outcome-conditioned nonpush candidate pool; diagnostic only, not an operational nomination replay. Superseded for operational comparison by full-pool v2.\n[2026-09-20T16:38:31.686422+00:00] invalidated: Outcome-conditioned nominee pool excluded eventual pushes before ranking; preserved as diagnostic only, superseded by full pregame pool replay.. Superseded by: 'sunday_current_top_vs_rest_chrono_full_pool_v2'. Invalidation is not closure.",
+      "plain_summary": "The weekly Best Pick ranking remains uncertain after comparing the same Sunday-eligible games.",
+      "probability_positive": 0.3805,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 72,
+      "sample_games": 72,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\confidence_best_pick_sunday_matched\\20260920_nonpush_conditional\\summary.json",
+      "standard_error": null,
+      "status": "invalidated",
+      "superseded_by": "sunday_current_top_vs_rest_chrono_full_pool_v2"
+    },
+    "sunday_current_top_vs_rest_loso_full_pool_v2": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "The full-pool paired interval spans both signs; neither a wrong sign nor a positive-control bound resolves the ranking mechanism.",
+      "closing_ground": null,
+      "description": "Sunday probability top pick versus eligible rest-of-week accuracy. Full pregame candidate pool; pushes selected before outcome grading.",
+      "effect": 2.085411967487439,
+      "effect_units": "accuracy_points",
+      "family": "confidence_best_pick_sunday_matched_full_pool_v2",
+      "interval": [
+        -8.273247716643944,
+        12.133685693237576
+      ],
+      "league": "nfl",
+      "notes": "Second declared evaluation look corrects an outcome-conditioned nonpush nominee pool; full W/L/P recorded, paired effect is wins per nomination; push nominees excluded only from conditional nonpush calibration. Earlier v1 records remain provenance of the invalid operational pool, not operational evidence.",
+      "plain_summary": "The full pregame-pool Sunday Best Pick ranking comparison remains uncertain.",
+      "probability_positive": 0.6625,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 106,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts\\confidence_best_pick_sunday_matched\\20260920_fixed\\summary.json",
+      "standard_error": null
+    },
+    "sunday_current_top_vs_rest_loso_v1": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Paired and diagnostic intervals span both signs; no refuted ranking mechanism or validated positive-control bound.",
+      "closing_ground": null,
+      "description": "Sunday probability top pick versus eligible rest-of-week accuracy.",
+      "effect": 1.7260750671965628,
+      "effect_units": "accuracy_points",
+      "family": "confidence_best_pick_sunday_matched_v1",
+      "interval": [
+        -8.312252648701246,
+        11.53298395529704
+      ],
+      "invalidated_reason": "Outcome-conditioned nominee pool excluded eventual pushes before ranking; preserved as diagnostic only, superseded by full pregame pool replay.",
+      "league": "nfl",
+      "notes": "One new matched ranking arm plus seven declared diagnostics; alpha=2000 was chosen in earlier work and these seasons were reused; no untouched outer test or alpha LOSO archive. Outcome-conditioned nonpush candidate pool; diagnostic only, not an operational nomination replay. Superseded for operational comparison by full-pool v2.\n[2026-09-20T16:38:24.429516+00:00] invalidated: Outcome-conditioned nominee pool excluded eventual pushes before ranking; preserved as diagnostic only, superseded by full pregame pool replay.. Superseded by: 'sunday_current_top_vs_rest_loso_full_pool_v2'. Invalidation is not closure.",
+      "plain_summary": "The weekly Best Pick ranking remains uncertain after comparing the same Sunday-eligible games.",
+      "probability_positive": 0.6403,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 107,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts\\confidence_best_pick_sunday_matched\\20260920_nonpush_conditional\\summary.json",
+      "standard_error": null,
+      "status": "invalidated",
+      "superseded_by": "sunday_current_top_vs_rest_loso_full_pool_v2"
+    },
+    "sunday_current_within_week_slope_chrono_full_pool_v2": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "The full-pool paired interval spans both signs; neither a wrong sign nor a positive-control bound resolves the ranking mechanism.",
+      "closing_ground": null,
+      "description": "Sunday probability within-week accuracy slope per 10 confidence points. Full pregame candidate pool; pushes selected before outcome grading.",
+      "effect": 2.953698487206112,
+      "effect_units": "accuracy_points",
+      "family": "confidence_best_pick_sunday_matched_full_pool_v2",
+      "interval": [
+        -3.5184496158577097,
+        9.363624741721056
+      ],
+      "league": "nfl",
+      "notes": "Second declared evaluation look corrects an outcome-conditioned nonpush nominee pool; full W/L/P recorded, paired effect is wins per nomination; push nominees excluded only from conditional nonpush calibration. Earlier v1 records remain provenance of the invalid operational pool, not operational evidence.",
+      "plain_summary": "The full pregame-pool Sunday Best Pick ranking comparison remains uncertain.",
+      "probability_positive": 0.8082,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 72,
+      "sample_games": 907,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\confidence_best_pick_sunday_matched\\20260920_fixed\\summary.json",
+      "standard_error": null
+    },
+    "sunday_current_within_week_slope_chrono_v1": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Paired and diagnostic intervals span both signs; no refuted ranking mechanism or validated positive-control bound.",
+      "closing_ground": null,
+      "description": "Sunday probability within-week accuracy slope per 10 confidence points.",
+      "effect": 2.953698487206112,
+      "effect_units": "accuracy_points",
+      "family": "confidence_best_pick_sunday_matched_v1",
+      "interval": [
+        -3.5184496158577097,
+        9.363624741721056
+      ],
+      "invalidated_reason": "Outcome-conditioned nominee pool excluded eventual pushes before ranking; preserved as diagnostic only, superseded by full pregame pool replay.",
+      "league": "nfl",
+      "notes": "One new matched ranking arm plus seven declared diagnostics; alpha=2000 was chosen in earlier work and these seasons were reused; no untouched outer test or alpha LOSO archive. Outcome-conditioned nonpush candidate pool; diagnostic only, not an operational nomination replay. Superseded for operational comparison by full-pool v2.\n[2026-09-20T16:38:29.255450+00:00] invalidated: Outcome-conditioned nominee pool excluded eventual pushes before ranking; preserved as diagnostic only, superseded by full pregame pool replay.. Superseded by: 'sunday_current_within_week_slope_chrono_full_pool_v2'. Invalidation is not closure.",
+      "plain_summary": "The weekly Best Pick ranking remains uncertain after comparing the same Sunday-eligible games.",
+      "probability_positive": 0.8082,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 72,
+      "sample_games": 907,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\confidence_best_pick_sunday_matched\\20260920_nonpush_conditional\\summary.json",
+      "standard_error": null,
+      "status": "invalidated",
+      "superseded_by": "sunday_current_within_week_slope_chrono_full_pool_v2"
+    },
+    "sunday_current_within_week_slope_loso_full_pool_v2": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "The full-pool paired interval spans both signs; neither a wrong sign nor a positive-control bound resolves the ranking mechanism.",
+      "closing_ground": null,
+      "description": "Sunday probability within-week accuracy slope per 10 confidence points. Full pregame candidate pool; pushes selected before outcome grading.",
+      "effect": 3.607978113631984,
+      "effect_units": "accuracy_points",
+      "family": "confidence_best_pick_sunday_matched_full_pool_v2",
+      "interval": [
+        -2.3531042012076417,
+        9.255074023791748
+      ],
+      "league": "nfl",
+      "notes": "Second declared evaluation look corrects an outcome-conditioned nonpush nominee pool; full W/L/P recorded, paired effect is wins per nomination; push nominees excluded only from conditional nonpush calibration. Earlier v1 records remain provenance of the invalid operational pool, not operational evidence.",
+      "plain_summary": "The full pregame-pool Sunday Best Pick ranking comparison remains uncertain.",
+      "probability_positive": 0.8856,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1321,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts\\confidence_best_pick_sunday_matched\\20260920_fixed\\summary.json",
+      "standard_error": null
+    },
+    "sunday_current_within_week_slope_loso_v1": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Paired and diagnostic intervals span both signs; no refuted ranking mechanism or validated positive-control bound.",
+      "closing_ground": null,
+      "description": "Sunday probability within-week accuracy slope per 10 confidence points.",
+      "effect": 3.607978113631984,
+      "effect_units": "accuracy_points",
+      "family": "confidence_best_pick_sunday_matched_v1",
+      "interval": [
+        -2.3531042012076417,
+        9.255074023791748
+      ],
+      "invalidated_reason": "Outcome-conditioned nominee pool excluded eventual pushes before ranking; preserved as diagnostic only, superseded by full pregame pool replay.",
+      "league": "nfl",
+      "notes": "One new matched ranking arm plus seven declared diagnostics; alpha=2000 was chosen in earlier work and these seasons were reused; no untouched outer test or alpha LOSO archive. Outcome-conditioned nonpush candidate pool; diagnostic only, not an operational nomination replay. Superseded for operational comparison by full-pool v2.\n[2026-09-20T16:38:21.923378+00:00] invalidated: Outcome-conditioned nominee pool excluded eventual pushes before ranking; preserved as diagnostic only, superseded by full pregame pool replay.. Superseded by: 'sunday_current_within_week_slope_loso_full_pool_v2'. Invalidation is not closure.",
+      "plain_summary": "The weekly Best Pick ranking remains uncertain after comparing the same Sunday-eligible games.",
+      "probability_positive": 0.8856,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1321,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts\\confidence_best_pick_sunday_matched\\20260920_nonpush_conditional\\summary.json",
+      "standard_error": null,
+      "status": "invalidated",
+      "superseded_by": "sunday_current_within_week_slope_loso_full_pool_v2"
+    },
     "sunday_market_probability_chronological_accuracy_points_v1": {
       "category": "market",
       "classification": "unresolved_below_power",
@@ -186049,6 +186462,65 @@
       ],
       "source": "artifacts\\sunday_market_probability\\20260920_fixed\\summary.json",
       "standard_error": null
+    },
+    "sunday_matched_current_vs_alpha_chrono_full_pool_v2": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "The full-pool paired interval spans both signs; neither a wrong sign nor a positive-control bound resolves the ranking mechanism.",
+      "closing_ground": null,
+      "description": "Matched weekly wins per nomination, current Sunday probability ranking minus alpha current-side ranking; all pregame candidates, pushes retained as no win but not losses.",
+      "effect": 2.7777777777777777,
+      "effect_units": "accuracy_points",
+      "family": "confidence_best_pick_sunday_matched_full_pool_v2",
+      "interval": [
+        -11.11111111111111,
+        16.666666666666668
+      ],
+      "league": "nfl",
+      "notes": "Second declared evaluation look corrects an outcome-conditioned nonpush nominee pool; full W/L/P recorded, paired effect is wins per nomination; push nominees excluded only from conditional nonpush calibration. Earlier v1 records remain provenance of the invalid operational pool, not operational evidence.",
+      "plain_summary": "The full pregame-pool Sunday Best Pick ranking comparison remains uncertain.",
+      "probability_positive": 0.6504,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 72,
+      "sample_games": 72,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\confidence_best_pick_sunday_matched\\20260920_fixed\\summary.json",
+      "standard_error": null
+    },
+    "sunday_matched_current_vs_alpha_chrono_v1": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Paired and diagnostic intervals span both signs; no refuted ranking mechanism or validated positive-control bound.",
+      "closing_ground": null,
+      "description": "Matched weekly top-1 current Sunday probability ranking minus alpha=2000 current-side ranking.",
+      "effect": 1.3888888888888888,
+      "effect_units": "accuracy_points",
+      "family": "confidence_best_pick_sunday_matched_v1",
+      "interval": [
+        -12.5,
+        15.277777777777779
+      ],
+      "invalidated_reason": "Outcome-conditioned nominee pool excluded eventual pushes before ranking; preserved as diagnostic only, superseded by full pregame pool replay.",
+      "league": "nfl",
+      "notes": "One new matched ranking arm plus seven declared diagnostics; alpha=2000 was chosen in earlier work and these seasons were reused; no untouched outer test or alpha LOSO archive. Outcome-conditioned nonpush candidate pool; diagnostic only, not an operational nomination replay. Superseded for operational comparison by full-pool v2.\n[2026-09-20T16:38:19.444701+00:00] invalidated: Outcome-conditioned nominee pool excluded eventual pushes before ranking; preserved as diagnostic only, superseded by full pregame pool replay.. Superseded by: 'sunday_matched_current_vs_alpha_chrono_full_pool_v2'. Invalidation is not closure.",
+      "plain_summary": "The weekly Best Pick ranking remains uncertain after comparing the same Sunday-eligible games.",
+      "probability_positive": 0.57055,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 72,
+      "sample_games": 72,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\confidence_best_pick_sunday_matched\\20260920_nonpush_conditional\\summary.json",
+      "standard_error": null,
+      "status": "invalidated",
+      "superseded_by": "sunday_matched_current_vs_alpha_chrono_full_pool_v2"
     },
     "surface_familiarity_r1_turf_venue_visitor_split": {
       "category": "environment",

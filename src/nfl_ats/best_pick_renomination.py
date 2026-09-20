@@ -410,8 +410,9 @@ def best_pick_note_line(renomination: SundayRenomination, pick: str, previous_pi
     return (
         f"**Best Pick of the week ({BEST_PICK_MARK.strip()}):** {pick} in {renomination.matchup}. "
         "The pool scores one Best Pick per regular-season week. The star moved here on Sunday "
-        "morning: among the games still open for changes, this has the highest estimated "
-        f"chance for its picked side to cover the spread the pool locked on Tuesday.{tuesday}"
+        "morning: it is provisionally the highest estimated chance to cover among games still "
+        "open for changes at the spread the pool locked on Tuesday. Its estimated lead over "
+        f"the other picks is uncertain.{tuesday}"
     )
 
 
