@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-20T16:43:23.401178+00:00`
+Refreshed at: `2026-09-20T16:46:11.645298+00:00`
 
 ## Start here
 
@@ -21,29 +21,11 @@ Refreshed at: `2026-09-20T16:43:23.401178+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `f2ebbcab67db` — Record verified Sunday deployment and ignore scheduler locks
-- Pending change set: 24 paths
-  - `M  CURRENT_PREDICTIONS.md`
+- Baseline commit: `f11aa360aa8d` — Qualify Sunday Best Pick and correct ranking replay
+- Pending change set: 3 paths
   - `M  HANDOFF.md`
-  - `M  README.md`
-  - `M  ROADMAP.md`
-  - `A  docs/confidence_best_pick_sunday_matched.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
   - `M  docs/lanes/README.md`
-  - `M  docs/lanes/confidence-best-pick-unification.md`
-  - `M  docs/lanes/free-odds-sources.md`
   - `M  docs/lanes/sunday-readiness-2026-09-20.md`
-  - `M  docs/model.html`
-  - `A  registry/experiments/margin-backtest/20260920T160800Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-02-20260920T160851Z.json`
-  - `A  registry/experiments/waterfall-feed/20260920T161344Z.json`
-  - `M  registry/weak_signals.json`
-  - `A  scripts/confidence_best_pick_sunday_matched.py`
-  - `M  src/nfl_ats/best_pick_renomination.py`
-  - `M  src/nfl_ats/card_view.py`
-  - ...and 4 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

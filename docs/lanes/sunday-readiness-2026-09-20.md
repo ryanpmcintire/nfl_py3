@@ -28,9 +28,10 @@ refresh Sunday inputs and publish a card without private quote prices.
 - Today's Bovada and Odds Gap quote snapshots are private research sources.
   Public Books-now has no eligible current public lines; exact private quote
   prices and move deltas stay off the published pages.
-- Release `f2ebbca` is the last verified deployment. This newer local card,
-  wording and board await the root agent's authorized commit, push and live
-  deployment verification.
+- Measured: release `f11aa36` was pushed to `master`; GitHub Pages API reports
+  its exact commit built. The live dashboard returned HTTP 200 and its SHA-256
+  matched `git show HEAD:docs/index.html`. Root reran the ledger check and the
+  corrected ranking replay; both passed. `nfl-ats handoff --check` was CURRENT.
 
 ## Tried
 
@@ -48,10 +49,9 @@ refresh Sunday inputs and publish a card without private quote prices.
 
 ## Next
 
-- Root commits and pushes this local release, verifies the live Pages build,
-  and refreshes `HANDOFF.md`. Continue separate confidence-ranking research
-  in `docs/lanes/confidence-best-pick-unification.md` without treating the
-  provisional Sunday star as validated.
+- The release is deployed. Continue the probability-calibration experiment
+  in `docs/lanes/confidence-best-pick-unification.md`; the provisional Sunday
+  star does not settle that work. Scheduled refreshes continue automatically.
 
 ## Open
 
