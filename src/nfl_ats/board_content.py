@@ -44,6 +44,7 @@ from nfl_ats.lineup_view import TeamLineup, load_lineups
 from nfl_ats.market_decomposition import FAMILY_PHRASES
 from nfl_ats.pick_probability import (
     BASE_PROBABILITY_POLICY,
+    CALIBRATED_PICK_PROBABILITY_COLUMN,
     calibrated_discrete_sweep,
     landing_rate_sentence,
 )
@@ -1737,6 +1738,7 @@ class BoardContent:
     injury_coverage_note: str = ""
     best_pick_ranking: tuple[BestPickRank, ...] = ()
     best_pick_ranking_as_of: str | None = None
+    best_pick_gap_points: float | None = None
     week_timeline: WeekTimeline = field(default_factory=WeekTimeline)
     refresh_lines: tuple[str, ...] = ()
     source_policy: SourcePolicyView = field(default_factory=_default_source_policy_view)
@@ -2770,6 +2772,55 @@ def _best_pick_note(nomination: Any) -> str:
     )
 
 
+def _best_pick_probability_gap(
+    predictions: pd.DataFrame,
+    *,
+    active_game_id: str | None,
+    active_rule: str,
+    locked_game_id: str | None,
+    as_of: datetime,
+) -> float | None:
+    column = CALIBRATED_PICK_PROBABILITY_COLUMN
+    if active_rule != "served_probability" or active_game_id is None or predictions.empty:
+        return None
+    if not {"game_id", column}.issubset(predictions.columns):
+        return None
+    if (
+        "game_type" in predictions.columns
+        and not predictions["game_type"].astype(str).eq("REG").all()
+    ):
+        return None
+    game_ids = predictions["game_id"].astype(str)
+    if game_ids.duplicated().any():
+        return None
+    if locked_game_id is not None:
+        return None
+    deadlines = game_deadlines(predictions)
+    if len(deadlines) != len(predictions):
+        return None
+    instant = pd.Timestamp(as_of).tz_convert("UTC")
+    kickoff = pd.to_datetime(game_ids.map(deadlines), utc=True, errors="coerce")
+    if kickoff.isna().any():
+        return None
+    candidates = predictions.loc[kickoff.gt(instant)]
+    probability = pd.to_numeric(candidates[column], errors="coerce")
+    eligible = probability.between(0.5, 1.0)
+    if not eligible.all():
+        return None
+    eligible_probabilities = probability.loc[eligible]
+    if len(eligible_probabilities) < 2:
+        return None
+    nominee_mask = candidates["game_id"].astype(str).loc[eligible].eq(active_game_id)
+    nominee = eligible_probabilities.loc[nominee_mask]
+    if len(nominee) != 1:
+        return None
+    highest = eligible_probabilities.max()
+    if nominee.iloc[0] != highest:
+        return None
+    runner_up = eligible_probabilities.loc[~nominee_mask].max()
+    return float((highest - runner_up) * 100)
+
+
 def _build_policy_note(view: Any, strong_count: int, n_games: int) -> tuple[PolicyNote, int]:
 
     if view is None:
@@ -3336,6 +3387,16 @@ def load_board_content(
         season=int(artifacts.metadata.get("season") or 0),
         week=int(artifacts.metadata.get("week") or 0),
     )
+    locked_best_pick_id = (
+        locked_best_pick(
+            artifacts_root,
+            season=int(artifacts.metadata.get("season") or 0),
+            week=int(artifacts.metadata.get("week") or 0),
+            now=generated,
+        )
+        if game_type == "REG" and not artifacts.predictions.empty
+        else None
+    )
     view = (
         resolve_card_view(
             artifacts.predictions,
@@ -3349,12 +3410,7 @@ def load_board_content(
                 season=int(artifacts.metadata.get("season") or 0),
                 week=int(artifacts.metadata.get("week") or 0),
             ),
-            locked_game_id=locked_best_pick(
-                artifacts_root,
-                season=int(artifacts.metadata.get("season") or 0),
-                week=int(artifacts.metadata.get("week") or 0),
-                now=generated,
-            ),
+            locked_game_id=locked_best_pick_id,
             displayed_confidence=displayed_confidence,
             artifacts_root=artifacts_root,
         )
@@ -3401,6 +3457,17 @@ def load_board_content(
 
     best_pick_id = view.nomination.active_game_id if view is not None else None
     best_pick_note = _best_pick_note(view.nomination) if view is not None else ""
+    best_pick_gap_points = (
+        _best_pick_probability_gap(
+            final,
+            active_game_id=best_pick_id,
+            active_rule=view.nomination.active_rule,
+            locked_game_id=locked_best_pick_id,
+            as_of=generated,
+        )
+        if view is not None
+        else None
+    )
 
     raw_probability_by_game: dict[str, float] = {}
     if {"game_id", "home_cover_probability"}.issubset(artifacts.predictions.columns):
@@ -3686,6 +3753,7 @@ def load_board_content(
         injury_note=injury_pick_note(artifacts.metadata, source_policy_view),
         best_pick_ranking=best_pick_ranking,
         best_pick_ranking_as_of=best_pick_ranking_as_of,
+        best_pick_gap_points=best_pick_gap_points,
         injury_coverage_note=injury_feed_coverage_note(
             resolved_data_root,
             season=season_number,

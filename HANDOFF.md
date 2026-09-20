@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-20T16:55:10.613850+00:00`
+Refreshed at: `2026-09-20T22:34:11.715235+00:00`
 
 ## Start here
 
@@ -21,10 +21,23 @@ Refreshed at: `2026-09-20T16:55:10.613850+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `1e1db34fdacf` — Record verified noon deployment and calibration handoff
-- Pending change set: 2 paths
+- Baseline commit: `d4c519487713` — Record played-card headline provenance
+- Pending change set: 15 paths
+  - `M  AGENTS.md`
   - `M  HANDOFF.md`
-  - `M  docs/lanes/sunday-readiness-2026-09-20.md`
+  - `M  README.md`
+  - `M  ROADMAP.md`
+  - `A  docs/confidence_top_calibration.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - `M  docs/lanes/confidence-best-pick-unification.md`
+  - `M  docs/model.html`
+  - `M  registry/weak_signals.json`
+  - `M  scripts/confidence_best_pick_sunday_matched.py`
+  - `A  scripts/confidence_top_calibration.py`
+  - `M  src/nfl_ats/board_content.py`
+  - `M  src/nfl_ats/board_terminal.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -66,8 +79,8 @@ the last published Markdown forecast but must rebuild or transfer local artifact
 
 ## Highest-priority work
 
-1. **Current priority, 2026-09-20: validate confidence and Best Pick together.** One served probability now decides both side and nominee. This integration does not establish that the largest estimate wins more often or is calibrated. Complete the fixed Sunday ranking replay with every pregame candidate, including eventual pushes; then evaluate any probability repair out of season. Preserve the original outcome-conditioned diagnostic and its limitations. State and reproduction: `docs/lanes/confidence-best-pick-unification.md` and `docs/confidence_best_pick_sunday_matched.md`. Do not restore the separate ranker or independent side-flip rules from the historical instructions below.
-2. **Keep Sunday's card current before kickoff.** Fresh private odds and the scheduled lineup update are captured. Publish the latest forecast with the provisional nominee explanation, reconcile the paper ledger while preserving locked games, and verify the deployed page. State: `docs/lanes/sunday-readiness-2026-09-20.md` and `docs/lanes/free-odds-sources.md`.
+1. **Keep Sunday's card current, preserving locked games.** Continue from `docs/lanes/sunday-readiness-2026-09-20.md` and `docs/lanes/free-odds-sources.md`; reconcile the paper ledger and inspect the latest scheduled refresh before changing the forecast. Commit and push completed work at verified clear stopping points under the owner's standing authorization.
+2. **Confidence calibration: bounded repair measured 2026-09-20.** The complete candidate replay and two predeclared out-of-season temperature repairs are saved in `docs/confidence_best_pick_sunday_matched.md` and `docs/confidence_top_calibration.md`. Chronological nominee Brier improvement +0.001040 [-0.027412,+0.030943], probability_positive 0.5227, accompanies unstable fitted temperatures and worse all-game Brier. The served probability is unchanged; 28 new cells remain unresolved, not closed. Acquire more timestamped nominees before another declared calibration comparison. State: `docs/lanes/confidence-best-pick-unification.md`. Do not restore a separate ranker or independent side-flip rules.
 3. **Continue from lane files with bounded reads and non-Astra delegation.** Follow `AGENTS.md`, run the scheduler each session, and keep uncertainty distinct from research closure and the forced-pick decision. The historical priorities below are preserved context, superseded by these current items.
 
 The roadmap is authoritative. Negative results remain part of the evidence base and

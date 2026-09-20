@@ -6,6 +6,10 @@ Assess whether the single served probability ranks games within a week and calib
 
 ## State
 
+- Measured final verification: 4,529 tests passed, nine skipped; Ruff format/lint and mypy passed. Local `publish-board` passed; rendered diff reflects the existing Denver lock and new Findings summaries. Saved pre-kickoff inputs render the unlocked nominee's 0.4-point gap; the locked card omits it. Exact checks and review sweep: `docs/confidence_top_calibration.md` execution verification.
+- Measured 2026-09-20: the declared three-season calibration repair is complete; protocol/results `docs/confidence_top_calibration.md`, reproducible script `scripts/confidence_top_calibration.py`, outputs `artifacts/confidence_top_calibration/20260920_fixed/`. The served probability is unchanged.
+- Chronological nominee Brier improvement +0.001040 [-0.027412,+0.030943], probability_positive 0.5227; all-game change -0.002490 [-0.006082,+0.001022], P+ 0.0853. Nominee inverse temperatures 1.083538, 0.000001, 0.242607 vary by fold. All 28 cells are recorded unresolved; no closing ground demonstrated.
+- Dashboard gap text now compares an unlocked Best Pick with its eligible runner-up only when deadlines and probabilities are complete. Locked nominees omit the comparison because the lock-time candidate distribution is unavailable.
 - Probability/side/Best Pick integration is published in release `5fb88a2`. The live nominee can change at each refresh; its argmax status remains provisional pending reliability work. No ranking change follows automatically from this replay.
 - The fixed matched replay and full plan/results are in `docs/confidence_best_pick_sunday_matched.md`; prediction-level outputs are `artifacts/confidence_best_pick_sunday_matched/20260920_fixed/`.
 - Eight corrected full-pool unresolved inferential cells were recorded in `registry/weak_signals.json` under `confidence_best_pick_sunday_matched_full_pool_v2`. The eight earlier v1 cells were invalidated with `weak-signals invalidate` and linked to v2, so pooling excludes the outcome-conditioned nonpush diagnostic while preserving its history.
@@ -20,7 +24,9 @@ Assess whether the single served probability ranks games within a week and calib
 
 ## Next
 
-- Predeclare a small probability-recalibration experiment targeting the selected top pick's optimism, with fitting, calibration and held-out seasons distinct. Compare reliability, Brier/log loss and within-week ordering against the same model and market baselines; preserve all pregame nominees, including eventual pushes. Automatic live refreshes continue. This audit makes no ranker or coefficient change and does not repromote alpha.
+- Continue the Sunday-readiness lane, preserving locked games. Calibration research next needs additional timestamped weekly nominees and a declared mechanism; monotone temperature fitting cannot establish better ranking. Do not repeat these 28 looks or promote a best cell.
+- Implementation and research results are verified and ready for commit/push.
+- Owner standing instruction (2026-09-20): commit and push at every verified clear stopping point, without asking again; persisted in `AGENTS.md`.
 
 ## Open
 

@@ -263,7 +263,9 @@ tool output is the cost and the lane file is the cure.
   virtual environments or test output; the tracked Markdown prediction card
   is the deliberate exception.
 - Preserve unrelated user changes; never rewrite Git history.
-- Do not commit or push unless the user explicitly asks.
+- At every verified clear stopping point, commit and push completed work after
+  refreshing the handoff. The owner has given standing authorization; do not
+  ask again or leave finished work uncommitted and unpushed.
 
 ## Required verification
 

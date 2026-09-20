@@ -29,7 +29,7 @@ OUTPUT = Path("artifacts/confidence_best_pick_sunday_matched/20260920_fixed")
 PROTOCOLS = ("leave_one_season_out", "chronological")
 
 
-def push_candidates(current: pd.DataFrame) -> pd.DataFrame:
+def push_candidates(current: pd.DataFrame, *, include_features: bool = False) -> pd.DataFrame:
     opener = pd.read_parquet(OPENER)
     population = pd.read_parquet(POPULATION)
     pushes = opener.loc[opener.margin_vs_open.eq(0.0)].copy()
@@ -130,6 +130,11 @@ def push_candidates(current: pd.DataFrame) -> pd.DataFrame:
             pushes.loc[held, f"{protocol}_sunday_p"] = 1.0 / (
                 1.0 + np.exp(-np.clip(z, -35.0, 35.0))
             )
+    feature_columns = (
+        ["model_logit", "composition_flag_sum", "market_move_toward_home", "market_move_available"]
+        if include_features
+        else []
+    )
     return pushes[
         [
             "game_id",
@@ -138,6 +143,7 @@ def push_candidates(current: pd.DataFrame) -> pd.DataFrame:
             "model_probability",
             "leave_one_season_out_sunday_p",
             "chronological_sunday_p",
+            *feature_columns,
         ]
     ].assign(home_covered=np.nan)
 

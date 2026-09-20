@@ -16449,6 +16449,790 @@
       "source": "artifacts/confidence_ranking_audit/20260920/audit.json",
       "standard_error": 9.356819612584617
     },
+    "confidence_top_calibration_20260920_chronological_all_all_temperature_brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control established. Retain the estimates for further calibration work.",
+      "closing_ground": null,
+      "description": "chronological, all, all_temperature: brier_improvement; positive improvement favors calibration; positive gap means observed accuracy exceeds confidence.",
+      "effect": -0.0001213984937702569,
+      "effect_units": "brier_improvement",
+      "family": "confidence_top_calibration_20260920",
+      "interval": [
+        -0.0011432156249530697,
+        0.0008754693122542122
+      ],
+      "league": "nfl",
+      "notes": "Two temperature arms, two protocols, two scoring populations: 8 Brier, 8 log-loss and 8 calibration-gap looks; 4 predeclared ranking diagnostics. Chronological primary; leave-two-seasons-out diagnostic can train on later years. Frozen upstream model selection reused. Temperature positive and shared across eligible games, preserving sides and nominees. Do not pool these overlapping populations or unlike metrics.",
+      "plain_summary": "We tested confidence adjustments learned from all past eligible games on all eligible Sunday games. Results vary across seasons; this research changes no picks.",
+      "probability_positive": 0.4177,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/confidence_top_calibration/20260920_fixed/summary.json",
+      "standard_error": 0.00051584124290964
+    },
+    "confidence_top_calibration_20260920_chronological_all_all_temperature_calibration_gap_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control established. Retain the estimates for further calibration work.",
+      "closing_ground": null,
+      "description": "chronological, all, all_temperature: calibration_gap_points; positive improvement favors calibration; positive gap means observed accuracy exceeds confidence.",
+      "effect": 1.1661676019214477,
+      "effect_units": "accuracy_points",
+      "family": "confidence_top_calibration_20260920",
+      "interval": [
+        -2.198303283574825,
+        4.391755767370887
+      ],
+      "league": "nfl",
+      "notes": "Two temperature arms, two protocols, two scoring populations: 8 Brier, 8 log-loss and 8 calibration-gap looks; 4 predeclared ranking diagnostics. Chronological primary; leave-two-seasons-out diagnostic can train on later years. Frozen upstream model selection reused. Temperature positive and shared across eligible games, preserving sides and nominees. Do not pool these overlapping populations or unlike metrics.",
+      "plain_summary": "We compared estimated cover chances with actual wins for all eligible Sunday games. The historical fit varies across seasons and needs more evidence.",
+      "probability_positive": 0.754,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/confidence_top_calibration/20260920_fixed/summary.json",
+      "standard_error": 1.6703321750278353
+    },
+    "confidence_top_calibration_20260920_chronological_all_all_temperature_log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control established. Retain the estimates for further calibration work.",
+      "closing_ground": null,
+      "description": "chronological, all, all_temperature: log_loss_improvement; positive improvement favors calibration; positive gap means observed accuracy exceeds confidence.",
+      "effect": -0.00035030736913273735,
+      "effect_units": "log_loss_improvement",
+      "family": "confidence_top_calibration_20260920",
+      "interval": [
+        -0.0026025202064214902,
+        0.001835176448793214
+      ],
+      "league": "nfl",
+      "notes": "Two temperature arms, two protocols, two scoring populations: 8 Brier, 8 log-loss and 8 calibration-gap looks; 4 predeclared ranking diagnostics. Chronological primary; leave-two-seasons-out diagnostic can train on later years. Frozen upstream model selection reused. Temperature positive and shared across eligible games, preserving sides and nominees. Do not pool these overlapping populations or unlike metrics.",
+      "plain_summary": "We tested confidence adjustments learned from all past eligible games on all eligible Sunday games. Results vary across seasons; this research changes no picks.",
+      "probability_positive": 0.3914,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/confidence_top_calibration/20260920_fixed/summary.json",
+      "standard_error": 0.0011393860914561786
+    },
+    "confidence_top_calibration_20260920_chronological_all_nominee_temperature_brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control established. Retain the estimates for further calibration work.",
+      "closing_ground": null,
+      "description": "chronological, all, nominee_temperature: brier_improvement; positive improvement favors calibration; positive gap means observed accuracy exceeds confidence.",
+      "effect": -0.0024902531983469135,
+      "effect_units": "brier_improvement",
+      "family": "confidence_top_calibration_20260920",
+      "interval": [
+        -0.006081639556528199,
+        0.001022418921241501
+      ],
+      "league": "nfl",
+      "notes": "Two temperature arms, two protocols, two scoring populations: 8 Brier, 8 log-loss and 8 calibration-gap looks; 4 predeclared ranking diagnostics. Chronological primary; leave-two-seasons-out diagnostic can train on later years. Frozen upstream model selection reused. Temperature positive and shared across eligible games, preserving sides and nominees. Do not pool these overlapping populations or unlike metrics.",
+      "plain_summary": "We tested confidence adjustments learned from past weekly Best Picks on all eligible Sunday games. Results vary across seasons; this research changes no picks.",
+      "probability_positive": 0.0853,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/confidence_top_calibration/20260920_fixed/summary.json",
+      "standard_error": 0.0018175977508637336
+    },
+    "confidence_top_calibration_20260920_chronological_all_nominee_temperature_calibration_gap_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control established. Retain the estimates for further calibration work.",
+      "closing_ground": null,
+      "description": "chronological, all, nominee_temperature: calibration_gap_points; positive improvement favors calibration; positive gap means observed accuracy exceeds confidence.",
+      "effect": 4.393041309747606,
+      "effect_units": "accuracy_points",
+      "family": "confidence_top_calibration_20260920",
+      "interval": [
+        0.9125184139696709,
+        7.676328777922494
+      ],
+      "league": "nfl",
+      "notes": "Two temperature arms, two protocols, two scoring populations: 8 Brier, 8 log-loss and 8 calibration-gap looks; 4 predeclared ranking diagnostics. Chronological primary; leave-two-seasons-out diagnostic can train on later years. Frozen upstream model selection reused. Temperature positive and shared across eligible games, preserving sides and nominees. Do not pool these overlapping populations or unlike metrics.",
+      "plain_summary": "We compared estimated cover chances with actual wins for all eligible Sunday games. The historical fit varies across seasons and needs more evidence.",
+      "probability_positive": 0.9942,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/confidence_top_calibration/20260920_fixed/summary.json",
+      "standard_error": 1.7209815269842526
+    },
+    "confidence_top_calibration_20260920_chronological_all_nominee_temperature_log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control established. Retain the estimates for further calibration work.",
+      "closing_ground": null,
+      "description": "chronological, all, nominee_temperature: log_loss_improvement; positive improvement favors calibration; positive gap means observed accuracy exceeds confidence.",
+      "effect": -0.005190525825718442,
+      "effect_units": "log_loss_improvement",
+      "family": "confidence_top_calibration_20260920",
+      "interval": [
+        -0.01279328966085533,
+        0.0022132241917221986
+      ],
+      "league": "nfl",
+      "notes": "Two temperature arms, two protocols, two scoring populations: 8 Brier, 8 log-loss and 8 calibration-gap looks; 4 predeclared ranking diagnostics. Chronological primary; leave-two-seasons-out diagnostic can train on later years. Frozen upstream model selection reused. Temperature positive and shared across eligible games, preserving sides and nominees. Do not pool these overlapping populations or unlike metrics.",
+      "plain_summary": "We tested confidence adjustments learned from past weekly Best Picks on all eligible Sunday games. Results vary across seasons; this research changes no picks.",
+      "probability_positive": 0.088,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/confidence_top_calibration/20260920_fixed/summary.json",
+      "standard_error": 0.0038524247950916793
+    },
+    "confidence_top_calibration_20260920_chronological_nominee_minus_rest_accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control established. Retain the estimates for further calibration work.",
+      "closing_ground": null,
+      "description": "chronological: nominee_minus_rest_accuracy_points; predeclared ranking diagnostic, not a candidate arm.",
+      "effect": -4.9145504701060245,
+      "effect_units": "accuracy_points",
+      "family": "confidence_top_calibration_20260920",
+      "interval": [
+        -18.965311694478352,
+        9.107223794723788
+      ],
+      "league": "nfl",
+      "notes": "Two temperature arms, two protocols, two scoring populations: 8 Brier, 8 log-loss and 8 calibration-gap looks; 4 predeclared ranking diagnostics. Chronological primary; leave-two-seasons-out diagnostic can train on later years. Frozen upstream model selection reused. Temperature positive and shared across eligible games, preserving sides and nominees. Do not pool these overlapping populations or unlike metrics.",
+      "plain_summary": "We compared the weekly Best Pick with the other eligible games. The historical evidence remains uncertain, so this check changes no picks.",
+      "probability_positive": 0.2568,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 54,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/confidence_top_calibration/20260920_fixed/summary.json",
+      "standard_error": 7.2035749297908485
+    },
+    "confidence_top_calibration_20260920_chronological_nominees_all_temperature_brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control established. Retain the estimates for further calibration work.",
+      "closing_ground": null,
+      "description": "chronological, nominees, all_temperature: brier_improvement; positive improvement favors calibration; positive gap means observed accuracy exceeds confidence.",
+      "effect": -0.00234761653715341,
+      "effect_units": "brier_improvement",
+      "family": "confidence_top_calibration_20260920",
+      "interval": [
+        -0.01068828515265629,
+        0.005962648799002495
+      ],
+      "league": "nfl",
+      "notes": "Two temperature arms, two protocols, two scoring populations: 8 Brier, 8 log-loss and 8 calibration-gap looks; 4 predeclared ranking diagnostics. Chronological primary; leave-two-seasons-out diagnostic can train on later years. Frozen upstream model selection reused. Temperature positive and shared across eligible games, preserving sides and nominees. Do not pool these overlapping populations or unlike metrics.",
+      "plain_summary": "We tested confidence adjustments learned from all past eligible games on the weekly Best Pick. Results vary across seasons; this research changes no picks.",
+      "probability_positive": 0.2889,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 54,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/confidence_top_calibration/20260920_fixed/summary.json",
+      "standard_error": 0.004217835547487829
+    },
+    "confidence_top_calibration_20260920_chronological_nominees_all_temperature_calibration_gap_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control established. Retain the estimates for further calibration work.",
+      "closing_ground": null,
+      "description": "chronological, nominees, all_temperature: calibration_gap_points; positive improvement favors calibration; positive gap means observed accuracy exceeds confidence.",
+      "effect": -12.403856707643705,
+      "effect_units": "accuracy_points",
+      "family": "confidence_top_calibration_20260920",
+      "interval": [
+        -25.458369177059474,
+        0.8419334687905786
+      ],
+      "league": "nfl",
+      "notes": "Two temperature arms, two protocols, two scoring populations: 8 Brier, 8 log-loss and 8 calibration-gap looks; 4 predeclared ranking diagnostics. Chronological primary; leave-two-seasons-out diagnostic can train on later years. Frozen upstream model selection reused. Temperature positive and shared across eligible games, preserving sides and nominees. Do not pool these overlapping populations or unlike metrics.",
+      "plain_summary": "We compared estimated cover chances with actual wins for the weekly Best Pick. The historical fit varies across seasons and needs more evidence.",
+      "probability_positive": 0.034,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 54,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/confidence_top_calibration/20260920_fixed/summary.json",
+      "standard_error": 6.744951251179026
+    },
+    "confidence_top_calibration_20260920_chronological_nominees_all_temperature_log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control established. Retain the estimates for further calibration work.",
+      "closing_ground": null,
+      "description": "chronological, nominees, all_temperature: log_loss_improvement; positive improvement favors calibration; positive gap means observed accuracy exceeds confidence.",
+      "effect": -0.006042322418594885,
+      "effect_units": "log_loss_improvement",
+      "family": "confidence_top_calibration_20260920",
+      "interval": [
+        -0.025233641863621765,
+        0.012889704849441921
+      ],
+      "league": "nfl",
+      "notes": "Two temperature arms, two protocols, two scoring populations: 8 Brier, 8 log-loss and 8 calibration-gap looks; 4 predeclared ranking diagnostics. Chronological primary; leave-two-seasons-out diagnostic can train on later years. Frozen upstream model selection reused. Temperature positive and shared across eligible games, preserving sides and nominees. Do not pool these overlapping populations or unlike metrics.",
+      "plain_summary": "We tested confidence adjustments learned from all past eligible games on the weekly Best Pick. Results vary across seasons; this research changes no picks.",
+      "probability_positive": 0.2637,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 54,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/confidence_top_calibration/20260920_fixed/summary.json",
+      "standard_error": 0.0096030181930993
+    },
+    "confidence_top_calibration_20260920_chronological_nominees_nominee_temperature_brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control established. Retain the estimates for further calibration work.",
+      "closing_ground": null,
+      "description": "chronological, nominees, nominee_temperature: brier_improvement; positive improvement favors calibration; positive gap means observed accuracy exceeds confidence.",
+      "effect": 0.0010400384061863596,
+      "effect_units": "brier_improvement",
+      "family": "confidence_top_calibration_20260920",
+      "interval": [
+        -0.027411822269550114,
+        0.030942551168445385
+      ],
+      "league": "nfl",
+      "notes": "Two temperature arms, two protocols, two scoring populations: 8 Brier, 8 log-loss and 8 calibration-gap looks; 4 predeclared ranking diagnostics. Chronological primary; leave-two-seasons-out diagnostic can train on later years. Frozen upstream model selection reused. Temperature positive and shared across eligible games, preserving sides and nominees. Do not pool these overlapping populations or unlike metrics.",
+      "plain_summary": "We tested confidence adjustments learned from past weekly Best Picks on the weekly Best Pick. Results vary across seasons; this research changes no picks.",
+      "probability_positive": 0.5227,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 54,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/confidence_top_calibration/20260920_fixed/summary.json",
+      "standard_error": 0.014919397616763905
+    },
+    "confidence_top_calibration_20260920_chronological_nominees_nominee_temperature_calibration_gap_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control established. Retain the estimates for further calibration work.",
+      "closing_ground": null,
+      "description": "chronological, nominees, nominee_temperature: calibration_gap_points; positive improvement favors calibration; positive gap means observed accuracy exceeds confidence.",
+      "effect": -4.193449007090096,
+      "effect_units": "accuracy_points",
+      "family": "confidence_top_calibration_20260920",
+      "interval": [
+        -17.47467089909912,
+        9.334164771526076
+      ],
+      "league": "nfl",
+      "notes": "Two temperature arms, two protocols, two scoring populations: 8 Brier, 8 log-loss and 8 calibration-gap looks; 4 predeclared ranking diagnostics. Chronological primary; leave-two-seasons-out diagnostic can train on later years. Frozen upstream model selection reused. Temperature positive and shared across eligible games, preserving sides and nominees. Do not pool these overlapping populations or unlike metrics.",
+      "plain_summary": "We compared estimated cover chances with actual wins for the weekly Best Pick. The historical fit varies across seasons and needs more evidence.",
+      "probability_positive": 0.2746,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 54,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/confidence_top_calibration/20260920_fixed/summary.json",
+      "standard_error": 6.886936259843756
+    },
+    "confidence_top_calibration_20260920_chronological_nominees_nominee_temperature_log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control established. Retain the estimates for further calibration work.",
+      "closing_ground": null,
+      "description": "chronological, nominees, nominee_temperature: log_loss_improvement; positive improvement favors calibration; positive gap means observed accuracy exceeds confidence.",
+      "effect": 0.0011032606861690638,
+      "effect_units": "log_loss_improvement",
+      "family": "confidence_top_calibration_20260920",
+      "interval": [
+        -0.05929882686458739,
+        0.06467829126699284
+      ],
+      "league": "nfl",
+      "notes": "Two temperature arms, two protocols, two scoring populations: 8 Brier, 8 log-loss and 8 calibration-gap looks; 4 predeclared ranking diagnostics. Chronological primary; leave-two-seasons-out diagnostic can train on later years. Frozen upstream model selection reused. Temperature positive and shared across eligible games, preserving sides and nominees. Do not pool these overlapping populations or unlike metrics.",
+      "plain_summary": "We tested confidence adjustments learned from past weekly Best Picks on the weekly Best Pick. Results vary across seasons; this research changes no picks.",
+      "probability_positive": 0.5097,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 54,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/confidence_top_calibration/20260920_fixed/summary.json",
+      "standard_error": 0.03165895616319754
+    },
+    "confidence_top_calibration_20260920_chronological_within_week_slope_accuracy_points_per_10_confidence_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control established. Retain the estimates for further calibration work.",
+      "closing_ground": null,
+      "description": "chronological: within_week_slope_accuracy_points_per_10_confidence_points; predeclared ranking diagnostic, not a candidate arm.",
+      "effect": 3.4882148388963596,
+      "effect_units": "accuracy_points",
+      "family": "confidence_top_calibration_20260920",
+      "interval": [
+        -4.890814393914174,
+        11.292617200110698
+      ],
+      "league": "nfl",
+      "notes": "Two temperature arms, two protocols, two scoring populations: 8 Brier, 8 log-loss and 8 calibration-gap looks; 4 predeclared ranking diagnostics. Chronological primary; leave-two-seasons-out diagnostic can train on later years. Frozen upstream model selection reused. Temperature positive and shared across eligible games, preserving sides and nominees. Do not pool these overlapping populations or unlike metrics.",
+      "plain_summary": "We checked whether stronger cover estimates selected more winners. The historical evidence remains uncertain, so this check changes no picks.",
+      "probability_positive": 0.8052,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/confidence_top_calibration/20260920_fixed/summary.json",
+      "standard_error": 4.104464387766459
+    },
+    "confidence_top_calibration_20260920_leave_two_seasons_out_all_all_temperature_brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control established. Retain the estimates for further calibration work.",
+      "closing_ground": null,
+      "description": "leave_two_seasons_out, all, all_temperature: brier_improvement; positive improvement favors calibration; positive gap means observed accuracy exceeds confidence.",
+      "effect": -0.00034655363353814126,
+      "effect_units": "brier_improvement",
+      "family": "confidence_top_calibration_20260920",
+      "interval": [
+        -0.002137520630028583,
+        0.001328688379874689
+      ],
+      "league": "nfl",
+      "notes": "Two temperature arms, two protocols, two scoring populations: 8 Brier, 8 log-loss and 8 calibration-gap looks; 4 predeclared ranking diagnostics. Chronological primary; leave-two-seasons-out diagnostic can train on later years. Frozen upstream model selection reused. Temperature positive and shared across eligible games, preserving sides and nominees. Do not pool these overlapping populations or unlike metrics.",
+      "plain_summary": "We tested confidence adjustments learned from all past eligible games on all eligible Sunday games. Results vary across seasons; this research changes no picks.",
+      "probability_positive": 0.3525,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/confidence_top_calibration/20260920_fixed/summary.json",
+      "standard_error": 0.0008811153673744194
+    },
+    "confidence_top_calibration_20260920_leave_two_seasons_out_all_all_temperature_calibration_gap_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control established. Retain the estimates for further calibration work.",
+      "closing_ground": null,
+      "description": "leave_two_seasons_out, all, all_temperature: calibration_gap_points; positive improvement favors calibration; positive gap means observed accuracy exceeds confidence.",
+      "effect": 0.7973106962953433,
+      "effect_units": "accuracy_points",
+      "family": "confidence_top_calibration_20260920",
+      "interval": [
+        -2.1264916959734093,
+        3.6012934173983937
+      ],
+      "league": "nfl",
+      "notes": "Two temperature arms, two protocols, two scoring populations: 8 Brier, 8 log-loss and 8 calibration-gap looks; 4 predeclared ranking diagnostics. Chronological primary; leave-two-seasons-out diagnostic can train on later years. Frozen upstream model selection reused. Temperature positive and shared across eligible games, preserving sides and nominees. Do not pool these overlapping populations or unlike metrics.",
+      "plain_summary": "We compared estimated cover chances with actual wins for all eligible Sunday games. The historical fit varies across seasons and needs more evidence.",
+      "probability_positive": 0.6978,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/confidence_top_calibration/20260920_fixed/summary.json",
+      "standard_error": 1.4646219347997322
+    },
+    "confidence_top_calibration_20260920_leave_two_seasons_out_all_all_temperature_log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control established. Retain the estimates for further calibration work.",
+      "closing_ground": null,
+      "description": "leave_two_seasons_out, all, all_temperature: log_loss_improvement; positive improvement favors calibration; positive gap means observed accuracy exceeds confidence.",
+      "effect": -0.0012925458966564533,
+      "effect_units": "log_loss_improvement",
+      "family": "confidence_top_calibration_20260920",
+      "interval": [
+        -0.005797666809273958,
+        0.002884204245833044
+      ],
+      "league": "nfl",
+      "notes": "Two temperature arms, two protocols, two scoring populations: 8 Brier, 8 log-loss and 8 calibration-gap looks; 4 predeclared ranking diagnostics. Chronological primary; leave-two-seasons-out diagnostic can train on later years. Frozen upstream model selection reused. Temperature positive and shared across eligible games, preserving sides and nominees. Do not pool these overlapping populations or unlike metrics.",
+      "plain_summary": "We tested confidence adjustments learned from all past eligible games on all eligible Sunday games. Results vary across seasons; this research changes no picks.",
+      "probability_positive": 0.2817,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/confidence_top_calibration/20260920_fixed/summary.json",
+      "standard_error": 0.0022079827249677775
+    },
+    "confidence_top_calibration_20260920_leave_two_seasons_out_all_nominee_temperature_brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control established. Retain the estimates for further calibration work.",
+      "closing_ground": null,
+      "description": "leave_two_seasons_out, all, nominee_temperature: brier_improvement; positive improvement favors calibration; positive gap means observed accuracy exceeds confidence.",
+      "effect": -0.0010686920326927324,
+      "effect_units": "brier_improvement",
+      "family": "confidence_top_calibration_20260920",
+      "interval": [
+        -0.004311718075893087,
+        0.002077296494966331
+      ],
+      "league": "nfl",
+      "notes": "Two temperature arms, two protocols, two scoring populations: 8 Brier, 8 log-loss and 8 calibration-gap looks; 4 predeclared ranking diagnostics. Chronological primary; leave-two-seasons-out diagnostic can train on later years. Frozen upstream model selection reused. Temperature positive and shared across eligible games, preserving sides and nominees. Do not pool these overlapping populations or unlike metrics.",
+      "plain_summary": "We tested confidence adjustments learned from past weekly Best Picks on all eligible Sunday games. Results vary across seasons; this research changes no picks.",
+      "probability_positive": 0.269,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/confidence_top_calibration/20260920_fixed/summary.json",
+      "standard_error": 0.0016494206350936692
+    },
+    "confidence_top_calibration_20260920_leave_two_seasons_out_all_nominee_temperature_calibration_gap_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control established. Retain the estimates for further calibration work.",
+      "closing_ground": null,
+      "description": "leave_two_seasons_out, all, nominee_temperature: calibration_gap_points; positive improvement favors calibration; positive gap means observed accuracy exceeds confidence.",
+      "effect": 3.4256917524815553,
+      "effect_units": "accuracy_points",
+      "family": "confidence_top_calibration_20260920",
+      "interval": [
+        0.46344557575371964,
+        6.3181642316258655
+      ],
+      "league": "nfl",
+      "notes": "Two temperature arms, two protocols, two scoring populations: 8 Brier, 8 log-loss and 8 calibration-gap looks; 4 predeclared ranking diagnostics. Chronological primary; leave-two-seasons-out diagnostic can train on later years. Frozen upstream model selection reused. Temperature positive and shared across eligible games, preserving sides and nominees. Do not pool these overlapping populations or unlike metrics.",
+      "plain_summary": "We compared estimated cover chances with actual wins for all eligible Sunday games. The historical fit varies across seasons and needs more evidence.",
+      "probability_positive": 0.9858,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/confidence_top_calibration/20260920_fixed/summary.json",
+      "standard_error": 1.5021349083161617
+    },
+    "confidence_top_calibration_20260920_leave_two_seasons_out_all_nominee_temperature_log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control established. Retain the estimates for further calibration work.",
+      "closing_ground": null,
+      "description": "leave_two_seasons_out, all, nominee_temperature: log_loss_improvement; positive improvement favors calibration; positive gap means observed accuracy exceeds confidence.",
+      "effect": -0.0023718839941412745,
+      "effect_units": "log_loss_improvement",
+      "family": "confidence_top_calibration_20260920",
+      "interval": [
+        -0.009566751154980065,
+        0.004572687133901829
+      ],
+      "league": "nfl",
+      "notes": "Two temperature arms, two protocols, two scoring populations: 8 Brier, 8 log-loss and 8 calibration-gap looks; 4 predeclared ranking diagnostics. Chronological primary; leave-two-seasons-out diagnostic can train on later years. Frozen upstream model selection reused. Temperature positive and shared across eligible games, preserving sides and nominees. Do not pool these overlapping populations or unlike metrics.",
+      "plain_summary": "We tested confidence adjustments learned from past weekly Best Picks on all eligible Sunday games. Results vary across seasons; this research changes no picks.",
+      "probability_positive": 0.266,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/confidence_top_calibration/20260920_fixed/summary.json",
+      "standard_error": 0.003640850740158513
+    },
+    "confidence_top_calibration_20260920_leave_two_seasons_out_nominee_minus_rest_accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control established. Retain the estimates for further calibration work.",
+      "closing_ground": null,
+      "description": "leave_two_seasons_out: nominee_minus_rest_accuracy_points; predeclared ranking diagnostic, not a candidate arm.",
+      "effect": -7.946035446035445,
+      "effect_units": "accuracy_points",
+      "family": "confidence_top_calibration_20260920",
+      "interval": [
+        -21.788572538572534,
+        6.092634988468321
+      ],
+      "league": "nfl",
+      "notes": "Two temperature arms, two protocols, two scoring populations: 8 Brier, 8 log-loss and 8 calibration-gap looks; 4 predeclared ranking diagnostics. Chronological primary; leave-two-seasons-out diagnostic can train on later years. Frozen upstream model selection reused. Temperature positive and shared across eligible games, preserving sides and nominees. Do not pool these overlapping populations or unlike metrics.",
+      "plain_summary": "We compared the weekly Best Pick with the other eligible games. The historical evidence remains uncertain, so this check changes no picks.",
+      "probability_positive": 0.1304,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 54,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/confidence_top_calibration/20260920_fixed/summary.json",
+      "standard_error": 7.077877341365264
+    },
+    "confidence_top_calibration_20260920_leave_two_seasons_out_nominees_all_temperature_brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control established. Retain the estimates for further calibration work.",
+      "closing_ground": null,
+      "description": "leave_two_seasons_out, nominees, all_temperature: brier_improvement; positive improvement favors calibration; positive gap means observed accuracy exceeds confidence.",
+      "effect": -0.0004887559030401878,
+      "effect_units": "brier_improvement",
+      "family": "confidence_top_calibration_20260920",
+      "interval": [
+        -0.016092137219514274,
+        0.013941662910452445
+      ],
+      "league": "nfl",
+      "notes": "Two temperature arms, two protocols, two scoring populations: 8 Brier, 8 log-loss and 8 calibration-gap looks; 4 predeclared ranking diagnostics. Chronological primary; leave-two-seasons-out diagnostic can train on later years. Frozen upstream model selection reused. Temperature positive and shared across eligible games, preserving sides and nominees. Do not pool these overlapping populations or unlike metrics.",
+      "plain_summary": "We tested confidence adjustments learned from all past eligible games on the weekly Best Pick. Results vary across seasons; this research changes no picks.",
+      "probability_positive": 0.4812,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 54,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/confidence_top_calibration/20260920_fixed/summary.json",
+      "standard_error": 0.007700882350292112
+    },
+    "confidence_top_calibration_20260920_leave_two_seasons_out_nominees_all_temperature_calibration_gap_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control established. Retain the estimates for further calibration work.",
+      "closing_ground": null,
+      "description": "leave_two_seasons_out, nominees, all_temperature: calibration_gap_points; positive improvement favors calibration; positive gap means observed accuracy exceeds confidence.",
+      "effect": -19.481974197407673,
+      "effect_units": "accuracy_points",
+      "family": "confidence_top_calibration_20260920",
+      "interval": [
+        -32.260691543071026,
+        -6.720479229596653
+      ],
+      "league": "nfl",
+      "notes": "Two temperature arms, two protocols, two scoring populations: 8 Brier, 8 log-loss and 8 calibration-gap looks; 4 predeclared ranking diagnostics. Chronological primary; leave-two-seasons-out diagnostic can train on later years. Frozen upstream model selection reused. Temperature positive and shared across eligible games, preserving sides and nominees. Do not pool these overlapping populations or unlike metrics.",
+      "plain_summary": "We compared estimated cover chances with actual wins for the weekly Best Pick. The historical fit varies across seasons and needs more evidence.",
+      "probability_positive": 0.0015,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 54,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/confidence_top_calibration/20260920_fixed/summary.json",
+      "standard_error": 6.499479881692785
+    },
+    "confidence_top_calibration_20260920_leave_two_seasons_out_nominees_all_temperature_log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control established. Retain the estimates for further calibration work.",
+      "closing_ground": null,
+      "description": "leave_two_seasons_out, nominees, all_temperature: log_loss_improvement; positive improvement favors calibration; positive gap means observed accuracy exceeds confidence.",
+      "effect": -0.0044425565223263005,
+      "effect_units": "log_loss_improvement",
+      "family": "confidence_top_calibration_20260920",
+      "interval": [
+        -0.04762857786874712,
+        0.0342842434175339
+      ],
+      "league": "nfl",
+      "notes": "Two temperature arms, two protocols, two scoring populations: 8 Brier, 8 log-loss and 8 calibration-gap looks; 4 predeclared ranking diagnostics. Chronological primary; leave-two-seasons-out diagnostic can train on later years. Frozen upstream model selection reused. Temperature positive and shared across eligible games, preserving sides and nominees. Do not pool these overlapping populations or unlike metrics.",
+      "plain_summary": "We tested confidence adjustments learned from all past eligible games on the weekly Best Pick. Results vary across seasons; this research changes no picks.",
+      "probability_positive": 0.426,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 54,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/confidence_top_calibration/20260920_fixed/summary.json",
+      "standard_error": 0.021069966961991652
+    },
+    "confidence_top_calibration_20260920_leave_two_seasons_out_nominees_nominee_temperature_brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control established. Retain the estimates for further calibration work.",
+      "closing_ground": null,
+      "description": "leave_two_seasons_out, nominees, nominee_temperature: brier_improvement; positive improvement favors calibration; positive gap means observed accuracy exceeds confidence.",
+      "effect": 0.012261726313718366,
+      "effect_units": "brier_improvement",
+      "family": "confidence_top_calibration_20260920",
+      "interval": [
+        -0.013252101158646109,
+        0.038225162568065865
+      ],
+      "league": "nfl",
+      "notes": "Two temperature arms, two protocols, two scoring populations: 8 Brier, 8 log-loss and 8 calibration-gap looks; 4 predeclared ranking diagnostics. Chronological primary; leave-two-seasons-out diagnostic can train on later years. Frozen upstream model selection reused. Temperature positive and shared across eligible games, preserving sides and nominees. Do not pool these overlapping populations or unlike metrics.",
+      "plain_summary": "We tested confidence adjustments learned from past weekly Best Picks on the weekly Best Pick. Results vary across seasons; this research changes no picks.",
+      "probability_positive": 0.827,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 54,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/confidence_top_calibration/20260920_fixed/summary.json",
+      "standard_error": 0.013058959366631182
+    },
+    "confidence_top_calibration_20260920_leave_two_seasons_out_nominees_nominee_temperature_calibration_gap_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control established. Retain the estimates for further calibration work.",
+      "closing_ground": null,
+      "description": "leave_two_seasons_out, nominees, nominee_temperature: calibration_gap_points; positive improvement favors calibration; positive gap means observed accuracy exceeds confidence.",
+      "effect": -12.784770899019891,
+      "effect_units": "accuracy_points",
+      "family": "confidence_top_calibration_20260920",
+      "interval": [
+        -25.798284842626757,
+        0.16135445023784287
+      ],
+      "league": "nfl",
+      "notes": "Two temperature arms, two protocols, two scoring populations: 8 Brier, 8 log-loss and 8 calibration-gap looks; 4 predeclared ranking diagnostics. Chronological primary; leave-two-seasons-out diagnostic can train on later years. Frozen upstream model selection reused. Temperature positive and shared across eligible games, preserving sides and nominees. Do not pool these overlapping populations or unlike metrics.",
+      "plain_summary": "We compared estimated cover chances with actual wins for the weekly Best Pick. The historical fit varies across seasons and needs more evidence.",
+      "probability_positive": 0.0268,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 54,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/confidence_top_calibration/20260920_fixed/summary.json",
+      "standard_error": 6.630432061776698
+    },
+    "confidence_top_calibration_20260920_leave_two_seasons_out_nominees_nominee_temperature_log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control established. Retain the estimates for further calibration work.",
+      "closing_ground": null,
+      "description": "leave_two_seasons_out, nominees, nominee_temperature: log_loss_improvement; positive improvement favors calibration; positive gap means observed accuracy exceeds confidence.",
+      "effect": 0.024574623304823514,
+      "effect_units": "log_loss_improvement",
+      "family": "confidence_top_calibration_20260920",
+      "interval": [
+        -0.03223930244873915,
+        0.08270401112385736
+      ],
+      "league": "nfl",
+      "notes": "Two temperature arms, two protocols, two scoring populations: 8 Brier, 8 log-loss and 8 calibration-gap looks; 4 predeclared ranking diagnostics. Chronological primary; leave-two-seasons-out diagnostic can train on later years. Frozen upstream model selection reused. Temperature positive and shared across eligible games, preserving sides and nominees. Do not pool these overlapping populations or unlike metrics.",
+      "plain_summary": "We tested confidence adjustments learned from past weekly Best Picks on the weekly Best Pick. Results vary across seasons; this research changes no picks.",
+      "probability_positive": 0.8001,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 54,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/confidence_top_calibration/20260920_fixed/summary.json",
+      "standard_error": 0.029309693042598527
+    },
+    "confidence_top_calibration_20260920_leave_two_seasons_out_within_week_slope_accuracy_points_per_10_confidence_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control established. Retain the estimates for further calibration work.",
+      "closing_ground": null,
+      "description": "leave_two_seasons_out: within_week_slope_accuracy_points_per_10_confidence_points; predeclared ranking diagnostic, not a candidate arm.",
+      "effect": 3.524477447059712,
+      "effect_units": "accuracy_points",
+      "family": "confidence_top_calibration_20260920",
+      "interval": [
+        -2.8945619741133237,
+        9.462283054526962
+      ],
+      "league": "nfl",
+      "notes": "Two temperature arms, two protocols, two scoring populations: 8 Brier, 8 log-loss and 8 calibration-gap looks; 4 predeclared ranking diagnostics. Chronological primary; leave-two-seasons-out diagnostic can train on later years. Frozen upstream model selection reused. Temperature positive and shared across eligible games, preserving sides and nominees. Do not pool these overlapping populations or unlike metrics.",
+      "plain_summary": "We checked whether stronger cover estimates selected more winners. The historical evidence remains uncertain, so this check changes no picks.",
+      "probability_positive": 0.8619,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/confidence_top_calibration/20260920_fixed/summary.json",
+      "standard_error": 3.16485918800823
+    },
     "contest_utility_accuracy_point_beats_star_lever": {
       "category": "modeling",
       "classification": "unresolved_below_power",

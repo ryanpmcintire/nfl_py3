@@ -654,11 +654,17 @@ def _best_pick_note_html(content: BoardContent) -> str:
     best = next((game for game in content.games if game.is_best), None)
     if best is None:
         return ""
+    gap_note = (
+        f"Its estimated cover chance is {content.best_pick_gap_points:.1f} percentage points "
+        "above the runner-up among eligible games. "
+        if content.best_pick_gap_points is not None
+        else ""
+    )
     lead = (
         '<p class="policy-note"><b>Best pick</b> &mdash; '
         f"{escape(best.pick_team)} {escape(best.pick_spread_text)} at "
         f"{escape(best.probability_text)} cover chance. "
-        f"{escape(content.best_pick_note)}</p>"
+        f"{gap_note}{escape(content.best_pick_note)}</p>"
     )
     if not content.best_pick_ranking:
         return lead
