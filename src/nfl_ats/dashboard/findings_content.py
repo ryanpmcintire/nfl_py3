@@ -1455,9 +1455,9 @@ HONESTY_RULES: tuple[HonestyRule, ...] = (
     HonestyRule(
         title="When does a signal help?",
         body=(
-            "The planned signal comparison will use the same games with and without an "
+            "The signal comparison uses the same games with and without an "
             "input, relearning how the remaining inputs work together in one probability. "
-            "It will show the uncertainty, the games where the pick changes and whether "
+            "It shows the uncertainty, the games where the pick changes and whether "
             "the difference repeats across seasons. An uncertain result leaves a question "
             "open; it does not establish that the input is useless."
         ),

@@ -4,6 +4,7 @@ from datetime import UTC, datetime
 from html import escape
 from itertools import groupby
 from pathlib import Path
+from typing import Any
 
 from nfl_ats import board_assistant
 from nfl_ats.board_content import (
@@ -2379,6 +2380,257 @@ def _ledger_summary_section_html(content: FindingsPageContent) -> str:
     )
 
 
+def _atlas_float(value: Any) -> float:
+    return float(value)
+
+
+def _atlas_signed(value: Any, *, digits: int = 1, suffix: str = "") -> str:
+    number = _atlas_float(value)
+    return f"{number:+.{digits}f}{suffix}".replace("-", "&minus;").replace("+", "&#43;")
+
+
+def _atlas_percent(value: Any, *, digits: int = 1) -> str:
+    return f"{_atlas_float(value) * 100:.{digits}f}%"
+
+
+def _atlas_interval(values: Any, *, digits: int = 1, suffix: str = "") -> str:
+    return (
+        f"{_atlas_signed(values[0], digits=digits, suffix=suffix)} to "
+        f"{_atlas_signed(values[1], digits=digits, suffix=suffix)}"
+    )
+
+
+def _atlas_plot(cell: dict[str, Any], span: float) -> str:
+    interval = cell["accuracy_interval"]
+    estimate = _atlas_float(cell["accuracy_delta_points"])
+    low = _atlas_float(interval[0])
+    high = _atlas_float(interval[1])
+    left = 8.0
+    width = 224.0
+
+    def x(value: float) -> float:
+        return left + ((value + span) / (2.0 * span)) * width
+
+    label = escape(str(cell["label"]))
+    accessible = escape(
+        f"{cell['label']}: {estimate:+.1f} percentage points; "
+        f"uncertainty interval {low:+.1f} to {high:+.1f}"
+    )
+    return (
+        f'<svg class="atlas-forest" viewBox="0 0 240 26" role="img" aria-label="{accessible}" '
+        'preserveAspectRatio="none">'
+        f"<title>{accessible}</title>"
+        f'<line class="atlas-zero" x1="{x(0):.2f}" x2="{x(0):.2f}" y1="2" y2="24" />'
+        f'<line class="atlas-interval" x1="{x(low):.2f}" x2="{x(high):.2f}" y1="13" y2="13" />'
+        f'<circle class="atlas-point" cx="{x(estimate):.2f}" cy="13" r="3.5" />'
+        f"<desc>{label}</desc></svg>"
+    )
+
+
+def _atlas_seasons_html(cells: list[dict[str, Any]], title: str) -> str:
+    rows = "".join(
+        '<tr><td data-label="View">'
+        f"{escape(str(cell['label']))}</td>"
+        f'<td data-label="Season">{escape(str(season["season"]))}</td>'
+        f'<td data-label="Games">{int(season["games"])}</td>'
+        '<td data-label="Win-rate difference" class="prob">'
+        f"{_atlas_signed(season['accuracy_delta_points'], suffix=' pts')}</td>"
+        '<td data-label="Brier improvement" class="prob">'
+        f"{_atlas_signed(season['brier_improvement'], digits=3)}</td></tr>"
+        for cell in cells
+        for season in cell["seasons"]
+    )
+    return (
+        '<details class="atlas-details atlas-seasons"><summary>Season-by-season results</summary>'
+        f'<div class="atlas-detail-body"><p>{escape(title)}. Each row is descriptive; '
+        "the seasons share the same comparison design.</p>"
+        '<div class="board-scroll atlas-scroll"><table class="atlas-table"><thead><tr>'
+        "<th>Time window</th><th>Season</th><th>Games</th>"
+        f"<th>Win-rate difference</th><th>Brier improvement</th></tr></thead><tbody>{rows}"
+        "</tbody></table></div></div></details>"
+    )
+
+
+def _atlas_evaluation_html(
+    cells: list[dict[str, Any]], *, title: str, explanation: str, open_panel: bool
+) -> str:
+    intervals = [abs(_atlas_float(bound)) for cell in cells for bound in cell["accuracy_interval"]]
+    estimates = [abs(_atlas_float(cell["accuracy_delta_points"])) for cell in cells]
+    span = max([1.0, *intervals, *estimates])
+    order = {"overall": 0, "weeks_1_4": 1, "weeks_5_12": 2, "weeks_13_18": 3}
+    ordered = sorted(cells, key=lambda cell: order.get(str(cell["cell"]), 99))
+    rows = "".join(
+        '<tr><th scope="row">'
+        f"{escape(str(cell['label']))}</th>"
+        f'<td data-label="Games">{int(cell["games"])}</td>'
+        '<td data-label="Different picks"><b>'
+        f'{int(cell["decisive_games"])} games</b><span class="atlas-cell-note">'
+        f"Full {int(cell['full_decisive_wins'])} &middot; Reduced "
+        f'{int(cell["reduced_decisive_wins"])} wins</span><span class="atlas-cell-note">'
+        "Under an even-chance comparison, "
+        f"{_atlas_percent(cell['exact_null_p'])} chance of a split at least this lopsided"
+        "</span></td>"
+        '<td data-label="Win-rate difference"><b>'
+        f"{_atlas_signed(cell['accuracy_delta_points'], suffix=' pts')}</b>"
+        '<span class="atlas-cell-note">'
+        f"{_atlas_interval(cell['accuracy_interval'], suffix=' pts')}</span>"
+        f"{_atlas_plot(cell, span)}</td>"
+        '<td data-label="Resamples favoring full" class="prob">'
+        f"{_atlas_percent(cell['probability_positive'])}</td>"
+        '<td data-label="Brier improvement" class="prob">'
+        f"{_atlas_signed(cell['brier_improvement'], digits=3)}"
+        '<span class="atlas-cell-note">'
+        f"{_atlas_interval(cell['brier_interval'], digits=3)}</span></td>"
+        '<td data-label="Log-loss improvement" class="prob">'
+        f"{_atlas_signed(cell['log_loss_improvement'], digits=3)}</td></tr>"
+        for cell in ordered
+    )
+    table = (
+        '<div class="board-scroll atlas-scroll"><table class="atlas-table"><thead><tr>'
+        "<th>Time window</th><th>Games</th><th>Different picks</th>"
+        "<th>Win-rate difference and interval</th><th>Resamples favoring full</th>"
+        "<th>Brier improvement and interval</th><th>Log-loss improvement</th>"
+        f"</tr></thead><tbody>{rows}</tbody></table></div>"
+    )
+    contents = (
+        f'<div class="atlas-view-intro"><h3>{escape(title)}</h3><p>{escape(explanation)}</p></div>'
+        f"{table}" + _atlas_seasons_html(ordered, title)
+    )
+    if open_panel:
+        return f'<div class="atlas-primary">{contents}</div>'
+    return (
+        f'<details class="atlas-details"><summary>{escape(title)}</summary>'
+        f'<div class="atlas-detail-body">{contents}</div></details>'
+    )
+
+
+def _atlas_metrics_html(metrics: dict[str, dict[str, Any]]) -> str:
+    labels = {
+        "full": "Model with game situations",
+        "reduced": "Same model without them",
+        "model": "Base prediction model",
+        "market": "Market baseline",
+    }
+    rows = "".join(
+        '<tr><th scope="row">'
+        f"{escape(labels.get(key, humanize_identifier(key)))}</th>"
+        f'<td data-label="Win rate">{_atlas_percent(metrics[key]["accuracy"])}</td>'
+        f'<td data-label="Brier score">{_atlas_float(metrics[key]["brier"]):.3f}</td>'
+        f'<td data-label="Log loss">{_atlas_float(metrics[key]["log_loss"]):.3f}</td></tr>'
+        for key in ("full", "reduced", "model", "market")
+    )
+    reliability_rows = "".join(
+        '<tr><th scope="row">'
+        f"{escape(labels.get(key, humanize_identifier(key)))}</th>"
+        '<td data-label="Home-cover chance range">'
+        f"{_atlas_percent(bin_row['lower'], digits=0)}&ndash;"
+        f"{_atlas_percent(bin_row['upper'], digits=0)}</td>"
+        f'<td data-label="Games">{int(bin_row["games"])}</td>'
+        '<td data-label="Average home-cover chance">'
+        f"{_atlas_percent(bin_row['mean_probability'])}</td>"
+        f'<td data-label="Home covered">{_atlas_percent(bin_row["observed_frequency"])}</td></tr>'
+        for key in ("full", "reduced", "model", "market")
+        for bin_row in metrics[key]["reliability"]
+    )
+    return (
+        '<div class="atlas-scorecard"><div class="atlas-view-intro"><h3>Probability quality</h3>'
+        "<p>Lower Brier score and log loss mean better probability estimates. Positive "
+        "improvement values above mean lower error for the full version.</p></div>"
+        '<div class="board-scroll atlas-scroll">'
+        '<table class="atlas-table atlas-metrics"><thead><tr>'
+        "<th>Version</th><th>Win rate</th><th>Brier score</th><th>Log loss</th>"
+        f"</tr></thead><tbody>{rows}</tbody></table></div>"
+        '<p class="atlas-footnote">The market baseline assigns a 50% home-cover chance on '
+        "games that did not push. Its win rate follows the home-side tie break and need not "
+        "be 50%.</p>"
+        '<details class="atlas-details"><summary>Probability reliability</summary>'
+        '<div class="atlas-detail-body"><p>Average predicted home-cover chances are paired '
+        "with how often the home team covered in each range.</p>"
+        '<div class="board-scroll atlas-scroll"><table class="atlas-table"><thead><tr>'
+        "<th>Version</th><th>Home-cover chance range</th><th>Games</th>"
+        f"<th>Average home-cover chance</th><th>Home covered</th></tr></thead>"
+        f"<tbody>{reliability_rows}</tbody></table>"
+        "</div></div></details></div>"
+    )
+
+
+def _signal_atlas_section_html(content: FindingsPageContent) -> str:
+    report = content.atlas
+    if report is None:
+        return ""
+    evaluations = report["evaluations"]
+    metrics = evaluations["out_of_season"][0]["metrics"]
+    limitations = "".join(f"<li>{escape(str(item))}</li>" for item in report["limitations"])
+    look_count = int(report["look_count"])
+    bootstrap_draws = int(report["bootstrap_draws"])
+    cells_per_view = len(evaluations["out_of_season"])
+    gap = report.get("in_sample_gap")
+    gap_html = ""
+    if gap is not None:
+        gap_html = (
+            '<p class="atlas-gap"><strong>Same-year minus season-held-out:</strong> '
+            f"win-rate difference {_atlas_signed(gap['accuracy_delta_points'], suffix=' pts')}; "
+            f"Brier improvement {_atlas_signed(gap['brier_improvement'], digits=3)}; "
+            f"log-loss improvement {_atlas_signed(gap['log_loss_improvement'], digits=3)}. "
+            "A larger positive gap means the same-year result looks better.</p>"
+        )
+    inventory = report.get("look_inventory")
+    inventory_html = f"{look_count} version &times; time-window &times; evaluation comparisons"
+    if inventory is not None:
+        inventory_html = (
+            f"{int(inventory['arm_cell_evaluation_combinations'])} version &times; time-window "
+            f"&times; evaluation comparisons; {int(inventory['paired_metric_comparisons'])} "
+            f"paired score comparisons; {int(inventory['fitted_models'])} fitted versions; "
+            f"{int(inventory['reliability_bins_declared_per_arm'])} pre-set reliability ranges "
+            f"per version; and {int(inventory['year_breakdowns'])} year-by-year rows"
+        )
+    return (
+        '<section class="signal-atlas" aria-labelledby="signal-atlas-h">'
+        '<div class="section-head"><h2 id="signal-atlas-h">When do game situations help?</h2>'
+        '<span class="sub">Full model compared with the same model refit without them</span></div>'
+        '<div class="atlas-intro"><p>These historical comparisons ask whether game-situation '
+        "inputs were associated with better picks and probabilities. They do not show that a "
+        "situation caused an outcome or change the published card.</p></div>"
+        '<div class="atlas-caution"><strong>Limits of this view</strong><ul>'
+        f"{limitations}</ul></div>"
+        + _atlas_evaluation_html(
+            evaluations["out_of_season"],
+            title="Each season held out separately",
+            explanation=(
+                "Each season is scored after fitting on the other seasons. A held-out season "
+                "can be later or earlier than the seasons used to fit. The inputs were chosen "
+                "using these years, so this is not an untouched test."
+            ),
+            open_panel=True,
+        )
+        + _atlas_metrics_html(metrics)
+        + _atlas_evaluation_html(
+            evaluations["chronological"],
+            title="Earlier years only",
+            explanation=(
+                "Each result is fitted only on earlier seasons, then scored on the next season. "
+                "This is the stricter time-ordered view."
+            ),
+            open_panel=False,
+        )
+        + _atlas_evaluation_html(
+            evaluations["in_sample"],
+            title="Same years used to fit",
+            explanation=(
+                "This descriptive view fits and scores on the same years. It provides context "
+                "for the gap between fitted and held-out results."
+            ),
+            open_panel=False,
+        )
+        + gap_html
+        + '<p class="atlas-footnote">'
+        f"Related views include {inventory_html}. These overlap and are not independent evidence. "
+        f"No best time window was selected. The main count is {len(metrics)} versions &times; "
+        f"{cells_per_view} time windows &times; {len(evaluations)} evaluation views. "
+        f"Intervals use {bootstrap_draws:,} resamples.</p></section>"
+    )
+
+
 def render_findings_page(content: FindingsPageContent) -> str:
 
     tiles = "".join(
@@ -2404,6 +2656,7 @@ def render_findings_page(content: FindingsPageContent) -> str:
             "Each answer traces to a registry entry or is declared evergreen.",
         )
         + f'<div class="kpi-grid">{tiles}</div>'
+        + _signal_atlas_section_html(content)
         + groups_html
         + '<section aria-labelledby="watching-h"><div class="section-head">'
         '<h2 id="watching-h">What we&#39;re watching</h2>'

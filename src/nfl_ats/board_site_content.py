@@ -66,6 +66,7 @@ from nfl_ats.public_board import (
 )
 from nfl_ats.published_picks import FrozenPick, frozen_picks
 from nfl_ats.reporting import artifact_directories, read_json
+from nfl_ats.signal_atlas import load_signal_atlas
 from nfl_ats.signal_ledger import build_ledger_rows
 from nfl_ats.weak_signals import default_registry_path
 
@@ -1109,6 +1110,7 @@ class FindingsPageContent:
     ledger_summary: SignalLedgerSummary
     ticker_chrome: TickerChrome
     link_preview: LinkPreview
+    atlas: dict[str, Any] | None = None
 
 
 def _history_forecast_probability(artifacts_root: Path, row: Mapping[Any, Any]) -> float | None:
@@ -1741,6 +1743,7 @@ def _load_signal_ledger_summary(registry_root: Path | None) -> SignalLedgerSumma
 def _load_findings_content(
     challengers: Sequence[Mapping[str, Any]],
     *,
+    artifacts_root: Path | None = None,
     registry_root: Path | None,
     generated_at: datetime,
     board: BoardContent,
@@ -1780,6 +1783,11 @@ def _load_findings_content(
                 f"{ledger_summary.total_signals} recorded signals, grouped by verdict -- "
                 "curated findings, open leads, and the honesty rules that keep them straight."
             ),
+        ),
+        atlas=(
+            load_signal_atlas(artifacts_root, registry_root=registry_root or Path("registry"))
+            if artifacts_root is not None
+            else None
         ),
     )
 
@@ -1835,7 +1843,11 @@ def load_site_content(
         generated_at=generated,
     )
     findings = _load_findings_content(
-        challengers, registry_root=registry_root, generated_at=generated, board=board
+        challengers,
+        artifacts_root=artifacts_root,
+        registry_root=registry_root,
+        generated_at=generated,
+        board=board,
     )
 
     headline = headline_with_season_record(board.headline, history)

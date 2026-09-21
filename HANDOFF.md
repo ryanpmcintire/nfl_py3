@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-21T22:44:12.134800+00:00`
+Refreshed at: `2026-09-21T23:31:08.843841+00:00`
 
 ## Start here
 
@@ -21,17 +21,25 @@ Refreshed at: `2026-09-21T22:44:12.134800+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `c95063f29fc8` — Refresh Week 2 results ahead of Monday night
-- Pending change set: 12 paths
+- Baseline commit: `7dba38c548e8` — Define conditional signal atlas validation and clarify Findings
+- Pending change set: 20 paths
   - `M  HANDOFF.md`
+  - `M  README.md`
   - `M  ROADMAP.md`
   - `M  docs/findings.html`
   - `M  docs/history.html`
   - `M  docs/index.html`
+  - `M  docs/lanes/README.md`
   - `M  docs/lanes/conditional-signal-atlas.md`
-  - `A  docs/lanes/done/conditional-signal-atlas-legacy.md`
   - `M  docs/model.html`
+  - `A  registry/conditional_signal_atlas.json`
+  - `M  registry/weak_signals.json`
+  - `A  scripts/conditional_signal_atlas.py`
+  - `M  src/nfl_ats/board_site_content.py`
+  - `M  src/nfl_ats/board_terminal.py`
+  - `M  src/nfl_ats/board_terminal_style.css`
   - `M  src/nfl_ats/dashboard/findings_content.py`
+  - `A  src/nfl_ats/signal_atlas.py`
   - `?? registry/experiments/margin-backtest/20260921T160806Z.json`
   - `?? registry/experiments/margin-predict/2026-week-02-20260921T161008Z.json`
   - `?? registry/experiments/waterfall-feed/20260921T161510Z.json`
