@@ -71,7 +71,13 @@ line-length = 100
 # Repository-local test/promotion scratch directories can retain unreadable ACLs
 # after interrupted Windows workers. They contain no source and Ruff panics when
 # it tries to scan them, so keep the required repository-wide checks deterministic.
-extend-exclude = [".promotion-*", ".pytest_tmp", ".pytest-temp-*", ".test-tmp-*"]
+extend-exclude = [
+    ".promotion-*",
+    ".pytest_tmp",
+    ".pytest-temp-*",
+    ".pytest-best-pick-gap",
+    ".test-tmp-*",
+]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "C4", "SIM", "RUF"]

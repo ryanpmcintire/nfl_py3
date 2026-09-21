@@ -2356,7 +2356,11 @@ def _build_season_record(
         else season_rows.iloc[0:0]
     )
     week_wins, week_losses, week_pushes, week_pending = _grade_decisions(week_rows, outcomes)
-    week_tail = " so far" if week_pending else ""
+    week_tail = (
+        f" so far · {week_pending} game{'s' if week_pending != 1 else ''} left"
+        if week_pending
+        else ""
+    )
     week_record_text = f"This week: {_record_text(week_wins, week_losses, week_pushes)}{week_tail}"
     season_record_text = (
         f"Season to date: {_record_text(season_wins, season_losses, season_pushes)}"
