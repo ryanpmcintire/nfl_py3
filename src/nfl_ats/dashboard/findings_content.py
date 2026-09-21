@@ -1439,19 +1439,27 @@ FINDINGS: tuple[Finding, ...] = (
 HONESTY_KICKER = "Before you trust a percentage"
 HONESTY_TITLE = "How to read any number on this dashboard"
 HONESTY_SUB = (
-    "Four rules we hold ourselves to. They are the difference between a number that means "
-    "something and a number that merely looks good."
+    "Check the comparison, the uncertainty and whether the result holds up across seasons."
 )
 
 HONESTY_RULES: tuple[HonestyRule, ...] = (
     HonestyRule(
-        title="Every number comes from games the model had never seen",
+        title="Check how the comparison was made",
         body=(
-            "Nothing here is scored on games the model learned from. For each week, the model "
-            "is rebuilt using only games that had already finished before that week's first "
-            "kickoff, and then it picks once. It is slower, and the numbers come out lower "
-            "than the alternative. That is the trade: a number you can believe instead of a "
-            "number you can enjoy."
+            "A result should distinguish the games used to learn from the games used to "
+            "check it. Holding out a season can still use later seasons to learn; predicting "
+            "with only earlier games is a different check. A pattern discovered while "
+            "comparing groups still needs a check on fresh games."
+        ),
+    ),
+    HonestyRule(
+        title="When does a signal help?",
+        body=(
+            "The planned signal comparison will use the same games with and without an "
+            "input, relearning how the remaining inputs work together in one probability. "
+            "It will show the uncertainty, the games where the pick changes and whether "
+            "the difference repeats across seasons. An uncertain result leaves a question "
+            "open; it does not establish that the input is useless."
         ),
     ),
     HonestyRule(

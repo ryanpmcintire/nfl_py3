@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-21T19:16:39.997210+00:00`
+Refreshed at: `2026-09-21T22:44:12.134800+00:00`
 
 ## Start here
 
@@ -21,20 +21,17 @@ Refreshed at: `2026-09-21T19:16:39.997210+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `71ff6d878b1c` — Evaluate Best Pick calibration and explain nominee confidence gap
-- Pending change set: 15 paths
-  - `M  CURRENT_PREDICTIONS.md`
+- Baseline commit: `c95063f29fc8` — Refresh Week 2 results ahead of Monday night
+- Pending change set: 12 paths
   - `M  HANDOFF.md`
-  - `M  README.md`
   - `M  ROADMAP.md`
   - `M  docs/findings.html`
   - `M  docs/history.html`
   - `M  docs/index.html`
-  - `A  docs/lanes/done/week2-monday-update-2026-09-21.md`
+  - `M  docs/lanes/conditional-signal-atlas.md`
+  - `A  docs/lanes/done/conditional-signal-atlas-legacy.md`
   - `M  docs/model.html`
-  - `M  pyproject.toml`
-  - `M  src/nfl_ats/board_content.py`
-  - `M  tiebreaker.json`
+  - `M  src/nfl_ats/dashboard/findings_content.py`
   - `?? registry/experiments/margin-backtest/20260921T160806Z.json`
   - `?? registry/experiments/margin-predict/2026-week-02-20260921T161008Z.json`
   - `?? registry/experiments/waterfall-feed/20260921T161510Z.json`
