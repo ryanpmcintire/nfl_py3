@@ -25,10 +25,10 @@ $$('.dive-panel').forEach(panel=>{
  points.forEach(([position,x,y])=>{
   const player=roster?$$('.lineup-row',roster).find(r=>$('.lineup-pos',r)?.textContent===position):null;
   const name=player?$('.lineup-player b',player).textContent:position.replace(/1$/,'');const prob=player?$('.lineup-prob',player).childNodes[0].textContent.trim():'Not listed';
-  const group=document.createElementNS('http://www.w3.org/2000/svg','g');group.classList.add('formation-player');group.setAttribute('tabindex','0');group.setAttribute('role','button');group.setAttribute('aria-label',name+' '+position);
+  const group=document.createElementNS('http://www.w3.org/2000/svg','g');group.classList.add('formation-player');group.setAttribute('tabindex','0');group.setAttribute('role','button');group.setAttribute('aria-label',name+' '+position);group.setAttribute('aria-pressed','false');
   group.innerHTML='<circle cx="'+x+'" cy="'+y+'" r="14"/><text class="position" x="'+x+'" y="'+(y+3)+'"></text><text class="surname" x="'+x+'" y="'+(y+28)+'"></text>';
   $('.position',group).textContent=position.replace(/\d+$/,'');$('.surname',group).textContent=player?name.split(' ').slice(-1)[0]:'';
-  function activate(){$$('.formation-player',field).forEach(n=>n.classList.remove('active'));group.classList.add('active');$('.role',field).textContent=position;$('.person b',field).textContent=name;$('.chance',field).textContent=prob}
+  function activate(){$$('.formation-player',field).forEach(n=>{const active=n===group;n.classList.toggle('active',active);n.setAttribute('aria-pressed',String(active))});$('.role',field).textContent=position;$('.person b',field).textContent=name;$('.chance',field).textContent=prob}
   group.addEventListener('click',activate);group.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();activate()}});svg.append(group);if(position==='QB1')first=activate;
  });if(first)first();
  const tabs=document.createElement('div');tabs.className='merged-tabs';tabs.setAttribute('role','tablist');tabs.setAttribute('aria-label','Matchup views');

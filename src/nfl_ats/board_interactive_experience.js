@@ -150,7 +150,7 @@
     const inputs = {};
     for (const side of ['away', 'home']) { if (side === 'home') board.append(element('div', 'ball-score-dash', '—')); const team = element('div', 'ball-score-team'), label = element('label', '', game[side]); const input = element('input'); input.type = 'number'; input.inputMode = 'numeric'; input.min = '0'; input.max = '99'; input.step = '1'; input.value = String(defaultScores(game)[side]); input.id = `${game.id}-${side}-scenario-score`; label.htmlFor = input.id; const numbers = element('div', 'ball-score-number'); for (const [text, step] of [['−', -1], ['+', 1]]) { const b = element('button', '', text); b.type = 'button'; b.setAttribute('aria-label', `${step > 0 ? 'Increase' : 'Decrease'} ${game[side]} score`); b.addEventListener('click', () => { input.value = String(Math.max(0, Math.min(99, (Number.isFinite(input.valueAsNumber) ? Math.trunc(input.valueAsNumber) : 0) + step))); update(); }); if (step === -1) numbers.append(b, input); else numbers.append(b); } inputs[side] = input; team.append(label, numbers); board.append(team); }
     lab.append(board); const result = element('div', 'ball-score-result'); result.setAttribute('aria-live', 'polite'); result.append(element('strong'), element('p')); lab.append(result);
-    const chart = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); chart.classList.add('ball-margin-chart'); chart.setAttribute('viewBox', '0 0 540 90'); chart.setAttribute('role', 'img'); lab.append(chart);
+    const chart = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); chart.classList.add('ball-margin-chart'); chart.setAttribute('viewBox', '0 0 540 90'); chart.setAttribute('aria-hidden', 'true'); lab.append(chart);
     const footer = element('div', 'ball-scenario-footer'); footer.append(element('p', '', 'Only these hypothetical scores change. The published card and recorded results do not.')); const preview = element('button', 'ball-button', 'Preview the receipt ↗'); preview.type = 'button'; preview.addEventListener('click', () => openReceipt(game, true)); footer.append(preview); lab.append(footer);
     function update() {
       const scores = { away: inputs.away.valueAsNumber, home: inputs.home.valueAsNumber }, valid = scoresValid(scores);
@@ -180,16 +180,23 @@
     $('.merged-scenario-link button', panel).addEventListener('click', e => { e.stopImmediatePropagation(); tab(panel, 'analysis'); $('.adjuster-slider', panel)?.focus(); }, true);
     tab(panel, 'field');
   });
+  $$('table.board tr.game').forEach(row => {
+    if (!row.hasAttribute('tabindex')) row.tabIndex = 0;
+    if (!row.hasAttribute('aria-label')) {
+      const matchup = $('.row-link', row)?.textContent.replace(/\s+/g, ' ').trim();
+      if (matchup) row.setAttribute('aria-label', `${matchup}. Open game room`);
+    }
+  });
   const keyboardHint = element('p', 'ball-keyboard-hint'); keyboardHint.innerHTML = '<kbd>↑</kbd> <kbd>↓</kbd> switch games &nbsp; <kbd>Enter</kbd> game room &nbsp; <kbd>Esc</kbd> return'; $('.board-col .sort-toggle').after(keyboardHint);
   function moveGame(direction) { const order = $$('table.board tr.game').map(r => r.dataset.gameId), index = order.indexOf(selectedPanel().id); window.atsSelectGame(order[(index + direction + order.length) % order.length]); }
   document.addEventListener('keydown', event => {
     if (event.defaultPrevented || event.ctrlKey || event.metaKey || event.altKey) return;
     if (receiptUI.dialog.open) return;
-    const editable = event.target.closest('input,textarea,select,[contenteditable="true"],[role="tablist"],.stadium-stage'); if (editable) return;
-    if (event.key === 'Escape' && roomUI.dialog.open) { event.preventDefault(); roomUI.dialog.close(); return; }
+    if (roomUI.dialog.open) { if (event.key === 'Escape') { event.preventDefault(); roomUI.dialog.close(); } return; }
+    const nativeControl = event.target.closest('input,textarea,select,button,a,summary,[contenteditable="true"],[role="tablist"],.stadium-stage'); if (nativeControl) return;
+    if ($('#week-live')?.hidden) return;
     if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(event.key)) return;
-    if (event.key === 'Enter') { const row = event.target.closest('table.board tr.game'); if (!roomUI.dialog.open && (row || !event.target.closest('button,a,summary'))) { event.preventDefault(); if (row) window.atsSelectGame(row.dataset.gameId); openRoom(); } return; }
-    if (event.target.closest('button,a,summary') && !event.target.closest('table.board') && !roomUI.dialog.open) return;
+    if (event.key === 'Enter') { const row = event.target.closest('table.board tr.game'); if (!row) return; event.preventDefault(); window.atsSelectGame(row.dataset.gameId); openRoom(); return; }
     event.preventDefault(); moveGame(event.key === 'ArrowUp' || event.key === 'ArrowLeft' ? -1 : 1);
   });
   inspector.addEventListener('ball:gamechange', () => { if (roomUI.dialog.open) syncRoom(); });

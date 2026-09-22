@@ -19,6 +19,11 @@ and, once ported, the second host for the capture schedule.
 
 None of the secrets are in the repository. `git status` must never list them.
 
+`config/source_policies.json` is canonical, non-secret configuration and is
+tracked. A fresh checkout therefore includes the fail-closed policy registry
+required before any raw capture; API keys remain in the environment files
+described below.
+
 ## Bring-up order
 
 1. Install WireGuard for Windows (`winget install WireGuard.WireGuard`,
@@ -150,17 +155,17 @@ before the venv existed, so its first catch-up runs failed on
 `Failed to spawn nfl-ats`; restarted afterwards). Under the capture role
 the server's schedule shows 81 enabled / 96 disabled jobs.
 `--run-job nflverse_injuries_thu` on the server: OK, wrote a snapshot.
-`--run-job odds_thu_tnf`: needed two files a fresh copy lacks,
-`config/source_policies.json` (untracked in git, copied by hand) and
-`data/processed/game_features.parquet` (game-id lookup for quotes; the
-sync job now pushes the local copy to the server whenever its size
-changes). Memory during the nflverse capture stayed under 200 MB used.
+`--run-job odds_thu_tnf`: at the time it needed two files that copy lacked.
+`config/source_policies.json` is now tracked and arrives with a fresh checkout.
+`data/processed/game_features.parquet` supplies the game-id lookup for quotes;
+the sync job now pushes the local copy to the server whenever its size changes.
+Memory during the nflverse capture stayed under 200 MB used.
 
 Remaining bring-up on the server, in order (the sandbox refused to copy
 code or keys to the server, so the owner runs the first two by hand):
 
 1. Copy the code:
-   `scp -r pyproject.toml uv.lock README.md src scripts registry deploy backup-server:/data/nfl_py3/`
+   `scp -r pyproject.toml uv.lock README.md src scripts registry config deploy backup-server:/data/nfl_py3/`
 2. Write the keys (values from the user environment) to
    `~/.config/nfl_py3/env` on the server, mode 600:
    `THE_ODDS_API_KEY=...`, `CFBD_API_KEY=...`, `NFL_ATS_SCHEDULER_ROLE=capture`.

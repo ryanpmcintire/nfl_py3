@@ -185,6 +185,7 @@ header.bar{padding-top:17px;padding-bottom:17px}.brand .dot{background:var(--amb
 .field-team-legend .defense-key { color: var(--opponent-light); }
 .field-retrieved { color: #b3c5ba; }
 table.board tr.game { cursor: pointer; }
+table.board tr.game:focus-visible { outline: 2px solid var(--cyan); outline-offset: -2px; }
 table.board tr.game td { transition: background-color 180ms ease; }
 table.board tr.game.is-selected td { background: #333628; }
 table.board tr.game.is-selected td:first-child { box-shadow: inset 3px 0 #f4b655, inset 9px 0 15px -10px #f4b655; }

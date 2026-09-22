@@ -622,11 +622,68 @@ def injury_feed_coverage_note(
     rows = injuries.loc[
         pd.to_numeric(injuries["season"], errors="coerce").eq(float(season))
         & pd.to_numeric(injuries["week"], errors="coerce").eq(float(week))
-    ]
-    pending = {str(team) for team in teams_still_to_play}
-    designated = rows.loc[rows["report_status"].notna() & rows["report_status"].astype(str).ne("")]
-    pending_designated = designated.loc[designated["team"].astype(str).isin(pending)]
-    pending_teams = sorted(set(pending_designated["team"].astype(str)))
+    ].copy()
+    pending = {str(team).strip().upper() for team in teams_still_to_play}
+    rows["_card_team"] = rows["team"].astype("string").str.strip().str.upper()
+    rows["_card_status"] = rows["report_status"].astype("string").str.strip().str.casefold()
+    pending_rows = rows.loc[rows["_card_team"].isin(pending)].copy()
+    if "gsis_id" in pending_rows.columns:
+        pending_rows["_card_gsis_id"] = pending_rows["gsis_id"].astype("string").str.strip()
+        identified = pending_rows["_card_gsis_id"].notna() & pending_rows["_card_gsis_id"].ne("")
+        known_players = pending_rows.loc[identified].copy()
+        unnamed_players = pending_rows.loc[~identified].copy()
+        observed_column = next(
+            (
+                column
+                for column in ("effective_observed_at", "date_modified")
+                if column in known_players.columns
+            ),
+            None,
+        )
+        if observed_column is not None:
+            known_players["_card_observed_at"] = pd.to_datetime(
+                known_players[observed_column], utc=True, errors="coerce"
+            )
+            known_players = known_players.sort_values("_card_observed_at", na_position="first")
+        known_players = known_players.drop_duplicates(["_card_team", "_card_gsis_id"], keep="last")
+        pending_rows = pd.concat([known_players, unnamed_players], ignore_index=True)
+    pending_designated = pending_rows.loc[
+        pending_rows["_card_status"].isin(("out", "doubtful", "questionable"))
+    ].copy()
+    pending_teams = sorted(set(pending_designated["_card_team"].dropna().astype(str)))
+    if not pending_designated.empty:
+        pending_designated["_card_name"] = pd.NA
+        if "gsis_id" in pending_designated.columns:
+            try:
+                rosters = pd.read_parquet(snapshot.rosters_path)
+            except Exception:
+                rosters = pd.DataFrame()
+            roster_fields = {"season", "week", "team", "gsis_id", "full_name"}
+            if not rosters.empty and roster_fields.issubset(rosters.columns):
+                roster_names = rosters.loc[
+                    pd.to_numeric(rosters["season"], errors="coerce").eq(float(season))
+                    & rosters["gsis_id"].notna()
+                ].copy()
+                roster_names["_card_team"] = (
+                    roster_names["team"].astype("string").str.strip().str.upper()
+                )
+                roster_names["_card_gsis_id"] = roster_names["gsis_id"].astype("string").str.strip()
+                roster_names = roster_names.loc[roster_names["_card_gsis_id"].ne("")]
+                roster_names["_card_week"] = pd.to_numeric(roster_names["week"], errors="coerce")
+                roster_names = roster_names.loc[
+                    roster_names["_card_week"].notna() & roster_names["_card_week"].le(float(week))
+                ]
+                roster_names = roster_names.sort_values("_card_week").drop_duplicates(
+                    ["_card_team", "_card_gsis_id"], keep="last"
+                )
+                pending_designated = pending_designated.drop(columns="_card_name").merge(
+                    roster_names[["_card_team", "_card_gsis_id", "full_name"]].rename(
+                        columns={"full_name": "_card_name"}
+                    ),
+                    on=["_card_team", "_card_gsis_id"],
+                    how="left",
+                    validate="many_to_one",
+                )
     arrived: pd.Timestamp | None = None
     if "effective_observed_at" in rows.columns:
         stamps = pd.to_datetime(rows["effective_observed_at"], utc=True, errors="coerce").dropna()
@@ -656,7 +713,43 @@ def injury_feed_coverage_note(
         age_hours = max((now.astimezone(UTC) - captured.to_pydatetime()).total_seconds() / 3600, 0)
         plural = "s" if round(age_hours) != 1 else ""
         status += f", and the feed was last checked {age_hours:.0f} hour{plural} ago"
-    status += ". Designations announced in the news but not yet in the feed are read only as a "
+    status += "."
+    details: list[str] = []
+    for report_status, label in (("out", "Out"), ("doubtful", "Doubtful")):
+        status_rows = pending_designated.loc[
+            pending_designated["_card_status"].eq(report_status)
+        ].copy()
+        if status_rows.empty:
+            continue
+        status_rows["_card_name_sort"] = status_rows["_card_name"].fillna("").astype(str)
+        status_rows = status_rows.sort_values(["_card_team", "_card_name_sort"])
+        shown = status_rows.head(8)
+        team_parts: list[str] = []
+        for team, team_rows in shown.groupby("_card_team", sort=True):
+            names = [
+                str(value).strip()
+                for value in team_rows["_card_name"]
+                if pd.notna(value) and str(value).strip()
+            ]
+            unnamed = len(team_rows) - len(names)
+            players = names
+            if unnamed:
+                players.append(f"{unnamed} player{'s' if unnamed != 1 else ''}")
+            team_parts.append(f"{team}: {', '.join(players)}")
+        hidden = len(status_rows) - len(shown)
+        detail = f"{label} — {'; '.join(team_parts)}"
+        if hidden:
+            detail += f"; {hidden} more"
+        details.append(detail)
+    questionable = pending_designated.loc[pending_designated["_card_status"].eq("questionable")]
+    if not questionable.empty:
+        counts = questionable.groupby("_card_team", sort=True).size()
+        details.append(
+            "Questionable — " + ", ".join(f"{team}: {int(count)}" for team, count in counts.items())
+        )
+    if details:
+        status += f" Pending designations: {'. '.join(details)}."
+    status += " Designations announced in the news but not yet in the feed are read only as a "
     status += "tiebreak when the books move a line."
     return status
 

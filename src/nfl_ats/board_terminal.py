@@ -292,7 +292,7 @@ def _nav_links(page: str) -> str:
 
 def _ticker(chrome: TickerChrome) -> str:
 
-    def tick(game: GameRow) -> str:
+    def tick(game: GameRow, linked: bool) -> str:
         href = f"index.html#{escape(game.game_id)}"
         if chrome.best_pick_game_id is not None and game.game_id == chrome.best_pick_game_id:
             inner = (
@@ -306,15 +306,18 @@ def _ticker(chrome: TickerChrome) -> str:
                 f"{escape(game.pick_spread_text)}</b> "
                 f'<span class="up">{escape(game.probability_text)}</span>'
             )
-        return (
-            f'<a class="tick tick-link" href="{href}" data-game-id="{escape(game.game_id)}">'
-            f"{inner}</a>"
-        )
+        if linked:
+            return (
+                f'<a class="tick tick-link" href="{href}" data-game-id="{escape(game.game_id)}">'
+                f"{inner}</a>"
+            )
+        return f'<span class="tick" aria-hidden="true">{inner}</span>'
 
-    ticks = "".join(tick(game) for game in chrome.games)
+    ticks = "".join(tick(game, True) for game in chrome.games)
+    repeated_ticks = "".join(tick(game, False) for game in chrome.games)
     return (
         '<div class="ticker" role="marquee" aria-label="This week\'s board, scrolling summary">'
-        f'<div class="ticker-track">{ticks}{ticks}</div></div>'
+        f'<div class="ticker-track">{ticks}{repeated_ticks}</div></div>'
     )
 
 
@@ -877,6 +880,11 @@ def _board_section(content: BoardContent) -> str:
                 "</tr>"
             )
 
+    market_help = (
+        "The latest line captured today before kickoff, written for the picked side. "
+        "The source appears below the line. The pool's own line is the one in the Pick "
+        "column and does not move."
+    )
     probability_help = (
         "The fitted chance this side covers, excluding a tie at the spread. Situational "
         "evidence is included in this one number."
@@ -890,12 +898,17 @@ def _board_section(content: BoardContent) -> str:
         else "The adverse line where the card first changes sides. A held pick stays on "
         "this side through the explored edge."
     )
+    column_guide = (
+        '<details class="board-column-guide"><summary>Column guide</summary><dl>'
+        f"<dt>Books now</dt><dd>{escape(market_help)}</dd>"
+        f"<dt>Cover chance</dt><dd>{escape(probability_help)}</dd>"
+        f"<dt>Flips at</dt><dd>{escape(flip_help)}</dd>"
+        "</dl></details>"
+    )
     table = (
         '<table class="board"><thead><tr>'
         "<th>Kickoff</th><th>Matchup</th><th>Pick</th>"
-        '<th><abbr title="The latest line captured today before kickoff, written for the '
-        "picked side. The source appears below the line. The pool's own line is the one "
-        'in the Pick column and does not move.">Books now</abbr></th>'
+        f'<th><abbr title="{escape(market_help)}">Books now</abbr></th>'
         f'<th><abbr title="{escape(probability_help)}">Cover chance</abbr></th>'
         f'<th><abbr title="{escape(flip_help)}">'
         "Flips at</abbr></th><th>Confidence</th>"
@@ -908,6 +921,7 @@ def _board_section(content: BoardContent) -> str:
         "&middot; click a row to inspect</span>"
         "</div>"
         f"{_board_sort_toggle_html()}"
+        f"{column_guide}"
         f'<div class="board-scroll">{table}</div>'
         f"{_confidence_legend_html(content)}"
         f"{_best_pick_note_html(content)}"
@@ -1161,11 +1175,11 @@ def _lineups_html(dive: GameDive) -> str:
         '<span class="sample-tag">source-aware</span></div>'
         '<div class="lineup-toggles" role="group" aria-label="Lineup units">'
         '<button type="button" class="lineup-toggle is-active" '
-        'data-lineup-toggle="offense">Offense</button>'
+        'data-lineup-toggle="offense" aria-pressed="true">Offense</button>'
         '<button type="button" class="lineup-toggle is-active" '
-        'data-lineup-toggle="defense">Defense</button>'
+        'data-lineup-toggle="defense" aria-pressed="true">Defense</button>'
         '<button type="button" class="lineup-toggle is-active" '
-        'data-lineup-toggle="special_teams">Special teams</button>'
+        'data-lineup-toggle="special_teams" aria-pressed="true">Special teams</button>'
         "</div>"
         '<div class="lineup-grid">'
         f'<div class="lineup-team">{_lineup_team_html(dive.away_lineup)}</div>'

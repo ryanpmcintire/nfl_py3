@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-22T19:53:45.681608+00:00`
+Refreshed at: `2026-09-22T21:29:03.198344+00:00`
 
 ## Start here
 
@@ -21,19 +21,29 @@ Refreshed at: `2026-09-22T19:53:45.681608+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `46ae04e270a3` — Record owner rejection of Findings and unresolved direction
-- Pending change set: 11 paths
+- Baseline commit: `359d89665e0a` — Save bounded weekly card readiness proposal
+- Pending change set: 34 paths
   - ` M CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
+  - `M  ROADMAP.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
   - `M  docs/lanes/README.md`
-  - `A  docs/lanes/weekly-card-readiness.md`
-  - ` M tiebreaker.json`
-  - `?? registry/experiments/margin-backtest/20260921T160806Z.json`
-  - `?? registry/experiments/margin-backtest/20260922T183842Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-02-20260921T161008Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-02-20260922T184009Z.json`
-  - `?? registry/experiments/waterfall-feed/20260921T161510Z.json`
-  - `?? registry/experiments/waterfall-feed/20260922T184503Z.json`
+  - `A  docs/lanes/done/dashboard-column-guide.md`
+  - `A  docs/lanes/done/dashboard-formation-selection-state.md`
+  - `A  docs/lanes/done/dashboard-lineup-toggle-state.md`
+  - `A  docs/lanes/done/dashboard-ticker-keyboard.md`
+  - `A  docs/lanes/done/lead64-card-designations.md`
+  - `A  docs/lanes/done/weekly-card-readiness.md`
+  - `A  docs/lanes/week3-lines-2026-09-22.md`
+  - `D  docs/lanes/weekly-card-readiness.md`
+  - `M  docs/model.html`
+  - `M  docs/offsite_backup.md`
+  - `M  src/nfl_ats/board_content.py`
+  - `M  src/nfl_ats/board_interactive.css`
+  - `M  src/nfl_ats/board_interactive_experience.js`
+  - ...and 14 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

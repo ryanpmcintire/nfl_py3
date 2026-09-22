@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 
-from nfl_ats import board_interactive, board_terminal
+from nfl_ats import board_interactive, board_terminal, board_week_navigation
 from nfl_ats.board_site_content import SiteContent, load_site_content
 
 
@@ -16,11 +16,12 @@ def build_site(
     require_fresh_arrest_overlay: bool = True,
 ) -> dict[str, str]:
 
+    generated = (generated_at or datetime.now(UTC)).astimezone(UTC)
     content: SiteContent = load_site_content(
         artifacts_root,
         data_root=data_root,
         registry_root=registry_root,
-        generated_at=generated_at,
+        generated_at=generated,
         require_fresh_arrest_overlay=require_fresh_arrest_overlay,
     )
 
@@ -30,10 +31,17 @@ def build_site(
         board_terminal.HISTORY_PAGE: board_terminal.render_history_page(content.history),
         board_terminal.FINDINGS_PAGE: board_terminal.render_findings_page(content.findings),
     }
-    return {
+    enhanced = {
         page: board_interactive.enhance(document, page=page, board=content.board)
         for page, document in pages.items()
     }
+    enhanced[board_terminal.PICKS_PAGE] = board_week_navigation.enhance(
+        enhanced[board_terminal.PICKS_PAGE],
+        content,
+        data_root=data_root,
+        generated_at=generated,
+    )
+    return enhanced
 
 
 __all__ = ["build_site"]

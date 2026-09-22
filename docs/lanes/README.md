@@ -20,7 +20,7 @@ modified lane when the prompt just says to continue.
 
 ## Active
 
-- [weekly-card-readiness](weekly-card-readiness.md) - 2026-09-22: proposed bounded next task; explain the displayed week and missing next-week pool lines. Selection only, no implementation started.
+- [week3-lines-2026-09-22](week3-lines-2026-09-22.md) - 2026-09-22: genuine locked FTPL spreads required before the Week 3 production forecast.
 
 - [confidence-best-pick-unification](confidence-best-pick-unification.md) - shared calibrated selector published in `5fb88a2`; confidence reliability and within-week ranking research remains open
 
@@ -50,6 +50,13 @@ modified lane when the prompt just says to continue.
 - [odds-api-key-deactivated](odds-api-key-deactivated.md) — 2026-09-19: bulk odds captures failing HTTP 401 DEACTIVATED_KEY (billing); owner action needed before the next odds window
 
 ## Done
+
+- [weekly-card-readiness](done/weekly-card-readiness.md) - 2026-09-22: current-week selector, original archived picks, readiness, and parallel dashboard fixes verified; Week 3 input acquisition remains active.
+- [dashboard-lineup-toggle-state](done/dashboard-lineup-toggle-state.md) - 2026-09-22: initial lineup toggle state agrees with visible content.
+- [dashboard-formation-selection-state](done/dashboard-formation-selection-state.md) - 2026-09-22: formation controls expose the selected player.
+- [dashboard-column-guide](done/dashboard-column-guide.md) - 2026-09-22: accessible plain-language guide to card columns.
+- [dashboard-ticker-keyboard](done/dashboard-ticker-keyboard.md) - 2026-09-22: each ticker matchup appears once in keyboard navigation.
+- [lead64-card-designations](done/lead64-card-designations.md) - 2026-09-22: current injury designations and names appear on the card; wider acquisition workflow remains open.
 
 - [windows-linux-recovery](done/windows-linux-recovery.md) - 2026-09-20: restored Windows dependencies and scheduler, isolated Linux environment instructions, repaired Shopify skill YAML, verified all gates and regenerated dashboard locally
 

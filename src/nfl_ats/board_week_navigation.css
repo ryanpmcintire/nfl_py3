@@ -1,0 +1,56 @@
+#week-browser {
+  margin: 0 0 24px;
+  padding: 20px 22px;
+  border: 1px solid var(--line, #344044);
+  border-radius: 12px;
+  background: var(--panel, #191f22);
+  color: var(--text, #eff1ed);
+}
+#week-browser label {
+  display: inline-block;
+  margin-right: 12px;
+  font-size: 14px;
+  font-weight: 700;
+}
+#week-select, #week-current {
+  min-height: 44px;
+  border: 1px solid var(--line, #344044);
+  border-radius: 7px;
+  padding: 10px 14px;
+  color: var(--text, #eff1ed);
+  background: var(--panel-alt, #14191c);
+  font: inherit;
+  font-size: 14px;
+}
+#week-select { min-width: 215px; cursor: pointer; }
+#week-current { margin-left: 10px; cursor: pointer; }
+#week-current:disabled { color: var(--text-dim, #b4c0c2); cursor: default; }
+#week-select:focus-visible, #week-current:focus-visible {
+  outline: 2px solid var(--cyan, #7bd3c7);
+  outline-offset: 3px;
+}
+#week-selection-status { margin: 14px 0 0; color: var(--text-dim, #b4c0c2); font-size: 13px; }
+#week-readiness {
+  margin: 18px 0 0;
+  padding: 16px;
+  border-left: 3px solid var(--amber, #f4b655);
+  background: var(--panel-alt, #14191c);
+  line-height: 1.6;
+}
+#week-live[hidden], #week-archive[hidden], #week-readiness[hidden], [data-week-panel][hidden] { display: none !important; }
+body[data-week-live-visible="false"] .ticker { display: none !important; }
+#main-content[data-current-card-ready="false"] > :not(#week-browser):not(#week-archive) { display: none !important; }
+#week-archive section { border: 1px solid var(--line, #344044); border-radius: 12px; padding: 22px; }
+#week-archive h2 { margin-top: 0; }
+#week-archive p { color: var(--text-dim, #b4c0c2); line-height: 1.6; }
+#week-archive .week-archive-scroll { overflow-x: auto; }
+#week-archive table { width: 100%; border-collapse: collapse; font-size: 14px; }
+#week-archive th, #week-archive td { padding: 13px 12px; text-align: left; border-bottom: 1px solid var(--line, #344044); }
+#week-archive th { color: var(--text-dim, #b4c0c2); font-size: 12px; }
+@media (max-width: 600px) {
+  #week-browser, #week-archive section { padding: 16px; }
+  #week-browser label { display: block; margin: 0 0 10px; }
+  #week-select { width: 100%; }
+  #week-current { margin: 10px 0 0; width: 100%; }
+  #week-archive th, #week-archive td { padding: 12px 8px; font-size: 12px; }
+}
