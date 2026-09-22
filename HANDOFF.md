@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-22T19:01:46.114834+00:00`
+Refreshed at: `2026-09-22T19:53:45.681608+00:00`
 
 ## Start here
 
@@ -21,12 +21,12 @@ Refreshed at: `2026-09-22T19:01:46.114834+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `c94d7c732a9d` — Match Findings to recovered atlas mockup and wire interactions
+- Baseline commit: `46ae04e270a3` — Record owner rejection of Findings and unresolved direction
 - Pending change set: 11 paths
   - ` M CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
   - `M  docs/lanes/README.md`
-  - `M  docs/lanes/conditional-signal-atlas.md`
+  - `A  docs/lanes/weekly-card-readiness.md`
   - ` M tiebreaker.json`
   - `?? registry/experiments/margin-backtest/20260921T160806Z.json`
   - `?? registry/experiments/margin-backtest/20260922T183842Z.json`

@@ -20,6 +20,8 @@ modified lane when the prompt just says to continue.
 
 ## Active
 
+- [weekly-card-readiness](weekly-card-readiness.md) - 2026-09-22: proposed bounded next task; explain the displayed week and missing next-week pool lines. Selection only, no implementation started.
+
 - [confidence-best-pick-unification](confidence-best-pick-unification.md) - shared calibrated selector published in `5fb88a2`; confidence reliability and within-week ranking research remains open
 
 - [sunday-readiness-2026-09-20](sunday-readiness-2026-09-20.md) - noon forecast and provisional NO Best Pick deployed in f11aa36; live HTML matches committed page, 16 paper and six revision rows agree; calibration research remains open
