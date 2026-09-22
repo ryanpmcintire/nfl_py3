@@ -363,12 +363,11 @@ def test_mobile_overflow_fix_attr_row_first_column_can_shrink() -> None:
 def test_mobile_overflow_fix_board_table_cells_wrap_onto_multiple_lines() -> None:
 
     css = board_terminal.TERMINAL_STYLE_CSS
-    index = css.rfind("@media (max-width:680px)")
-    assert index != -1, "no max-width:680px mobile block found"
-    tail = css[index:]
-    assert re.search(r"table\.board td\{[^}]*flex-wrap\s*:\s*wrap", tail), (
-        "the mobile block's table.board td rule never gained flex-wrap:wrap"
-    )
+    mobile_blocks = re.findall(r"@media \(max-width:680px\)\{((?:[^{}]|\{[^{}]*\})*)\}", css)
+    assert mobile_blocks, "no max-width:680px mobile block found"
+    assert any(
+        re.search(r"table\.board td\{[^}]*flex-wrap\s*:\s*wrap", block) for block in mobile_blocks
+    ), "the mobile block's table.board td rule never gained flex-wrap:wrap"
 
 
 def test_terminal_attribution_labels_are_plain_english() -> None:

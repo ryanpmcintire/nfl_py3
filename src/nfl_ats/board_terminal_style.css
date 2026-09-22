@@ -937,3 +937,542 @@ table.board td.kickoff .lock-countdown:empty{display:none}
     .atlas-caution ul{ columns:1; }
     .atlas-primary, .atlas-scorecard{ padding:11px 9px; }
   }
+
+  body[data-interactive-page="findings"] main{
+    max-width:1440px;
+    padding:20px 36px 60px;
+  }
+  body[data-interactive-page="findings"] .signal-atlas{
+    margin-top:22px;
+    padding:0;
+    border:0;
+    border-radius:0;
+    background:#101315;
+    box-shadow:none;
+  }
+  body[data-interactive-page="findings"] .atlas-shell{
+    display:grid;
+    grid-template-columns:248px minmax(0,1fr);
+    min-height:0;
+    overflow:visible;
+    border:0;
+    border-radius:4px;
+    background:transparent;
+    gap:20px;
+  }
+  body[data-interactive-page="findings"] .atlas-signal-rail{
+    padding:24px 18px;
+    border-right:1px solid #30383b;
+    background:#14191c;
+    border:1px solid #30383b;
+    border-radius:5px;
+  }
+  body[data-interactive-page="findings"] .atlas-rail-label,
+  body[data-interactive-page="findings"] .atlas-workspace-eyebrow,
+  body[data-interactive-page="findings"] .atlas-detail-eyebrow{
+    margin:0;
+    color:#849093;
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:.13em;
+    line-height:1.35;
+    text-transform:uppercase;
+  }
+  body[data-interactive-page="findings"] .atlas-signal-choice{
+    display:flex;
+    gap:11px;
+    align-items:flex-start;
+    margin-top:16px;
+    padding:14px 12px;
+    border:1px solid #8f6c32;
+    border-radius:3px;
+    background:#252117;
+    color:#f4e6c8;
+  }
+  body[data-interactive-page="findings"] .atlas-signal-mark{
+    width:3px;
+    min-width:3px;
+    height:34px;
+    border-radius:2px;
+    background:#d9a64a;
+  }
+  body[data-interactive-page="findings"] .atlas-signal-choice strong,
+  body[data-interactive-page="findings"] .atlas-signal-choice small{
+    display:block;
+    font-size:13px;
+  }
+  body[data-interactive-page="findings"] .atlas-signal-choice strong{
+    font-size:16px;
+    line-height:1.4;
+  }
+  body[data-interactive-page="findings"] .atlas-signal-choice small{
+    margin-top:4px;
+    color:#b8ae9d;
+    font-size:10px;
+  }
+  body[data-interactive-page="findings"] .atlas-rail-note{
+    margin:19px 3px 0;
+    color:#a4adb0;
+    font-size:13px;
+    line-height:1.55;
+  }
+  body[data-interactive-page="findings"] .atlas-workspace{
+    min-width:0;
+    background:#191f22;
+    border:1px solid #30383b;
+    border-radius:5px;
+    overflow:hidden;
+  }
+  body[data-interactive-page="findings"] .atlas-workspace-header{
+    padding:24px 26px 0;
+    border-bottom:1px solid #30383b;
+  }
+  body[data-interactive-page="findings"] .atlas-workspace-header h2{
+    margin:0;
+    color:#f2f2ed;
+    font-size:32px;
+    font-weight:650;
+    letter-spacing:-.025em;
+  }
+  body[data-interactive-page="findings"] .atlas-workspace-header p{
+    margin:7px 0 0;
+    color:#929c9f;
+    font-size:12px;
+    line-height:1.5;
+  }
+  body[data-interactive-page="findings"] .atlas-workspace-header .atlas-context-question{
+    margin-top:8px;
+    color:#d2d5d2;
+    font-size:18px;
+    font-weight:600;
+  }
+  body[data-interactive-page="findings"] .atlas-tabs{
+    display:flex;
+    gap:20px;
+    align-items:center;
+    margin-top:20px;
+    min-height:42px;
+    color:#768084;
+    font-size:15px;
+  }
+  body[data-interactive-page="findings"] .atlas-tabs .is-active{
+    align-self:stretch;
+    padding-top:10px;
+    border-bottom:2px solid #d9a64a;
+    color:#f0dfbd;
+    font-weight:700;
+  }
+  body[data-interactive-page="findings"] .atlas-tab-muted{
+    color:#697376;
+    font-size:12px;
+  }
+  body[data-interactive-page="findings"] .atlas-workspace-body{
+    display:grid;
+    grid-template-columns:minmax(340px,1.7fr) minmax(280px,1fr);
+    gap:20px;
+    padding:24px;
+  }
+  body[data-interactive-page="findings"] .atlas-chart{
+    min-width:0;
+    padding:22px 18px;
+    border:1px solid #354044;
+    border-radius:4px;
+    background:#171d20;
+  }
+  body[data-interactive-page="findings"] .atlas-chart-heading{
+    display:block;
+    justify-content:space-between;
+    gap:16px;
+    align-items:baseline;
+    margin-bottom:22px;
+  }
+  body[data-interactive-page="findings"] .atlas-chart-heading h3{
+    margin:0;
+    color:#e9ebe7;
+    font-size:21px;
+    font-weight:650;
+    line-height:1.3;
+  }
+  body[data-interactive-page="findings"] .atlas-chart-heading p{
+    margin:8px 0 0;
+    color:#a4adb0;
+    font-size:13px;
+    line-height:1.4;
+    text-align:left;
+  }
+  body[data-interactive-page="findings"] .atlas-plot{
+    position:relative;
+  }
+  body[data-interactive-page="findings"] .atlas-zero-guide{
+    display:block;
+    position:absolute;
+    top:0;
+    bottom:28px;
+    left:114px;
+    right:78px;
+    z-index:1;
+    pointer-events:none;
+  }
+  body[data-interactive-page="findings"] .atlas-plot-row{
+    display:grid;
+    grid-template-columns:88px minmax(100px,1fr) 52px;
+    gap:12px;
+    align-items:center;
+    width:100%;
+    min-height:64px;
+    margin:0 0 9px;
+    padding:0 13px;
+    border:1px solid transparent;
+    border-radius:3px;
+    background:transparent;
+    color:#aeb6b6;
+    font:inherit;
+    cursor:pointer;
+    text-align:left;
+  }
+  body[data-interactive-page="findings"] .atlas-plot-row:hover,
+  body[data-interactive-page="findings"] .atlas-plot-row:focus-visible{
+    border-color:#566164;
+    outline:0;
+  }
+  body[data-interactive-page="findings"] .atlas-plot-row[aria-pressed="true"]{
+    border-color:#84662f;
+    background:#28231a;
+    color:#f1e2c4;
+  }
+  body[data-interactive-page="findings"] .atlas-row-label{
+    font-size:14px;
+    font-weight:650;
+  }
+  body[data-interactive-page="findings"] .atlas-row-value{
+    color:#dce4df;
+    font-size:14px;
+    font-variant-numeric:tabular-nums;
+    text-align:right;
+  }
+  body[data-interactive-page="findings"] .atlas-plot-row[aria-pressed="true"] .atlas-row-value{
+    color:#ebc779;
+  }
+  body[data-interactive-page="findings"] .atlas-track{
+    position:relative;
+    display:block;
+    height:26px;
+    border-left:1px dashed transparent;
+  }
+  body[data-interactive-page="findings"] .atlas-track::before{
+    position:absolute;
+    top:0;
+    bottom:0;
+    left:var(--atlas-zero);
+    border-left:1px dashed #596265;
+    content:"";
+    display:none;
+  }
+  body[data-interactive-page="findings"] .atlas-track::after{
+    position:absolute;
+    top:50%;
+    right:0;
+    left:0;
+    border-top:1px solid #31393c;
+    content:"";
+  }
+  body[data-interactive-page="findings"] .atlas-range{
+    position:absolute;
+    z-index:2;
+    top:50%;
+    left:var(--atlas-low);
+    width:calc(var(--atlas-high) - var(--atlas-low));
+    border-top:2px solid #85d3b8;
+    transform:translateY(-1px);
+  }
+  body[data-interactive-page="findings"] .atlas-range::before,
+  body[data-interactive-page="findings"] .atlas-range::after{
+    position:absolute;
+    top:-5px;
+    height:8px;
+    border-left:2px solid #85d3b8;
+    content:"";
+  }
+  body[data-interactive-page="findings"] .atlas-range::before{ left:0; }
+  body[data-interactive-page="findings"] .atlas-range::after{ right:0; }
+  body[data-interactive-page="findings"] .atlas-point{
+    position:absolute;
+    z-index:3;
+    top:50%;
+    left:var(--atlas-point);
+    display:block;
+    width:10px;
+    height:10px;
+    border:2px solid #17201e;
+    border-radius:50%;
+    background:#9be0c8;
+    transform:translate(-50%,-50%);
+  }
+  body[data-interactive-page="findings"] .atlas-plot-row[aria-pressed="true"] .atlas-point{
+    border-color:#3b2e19;
+    background:#e1af51;
+  }
+  body[data-interactive-page="findings"] .atlas-axis{
+    position:relative;
+    height:25px;
+    margin:8px 78px 0 114px;
+    color:#6f797c;
+    font-size:12px;
+    font-variant-numeric:tabular-nums;
+  }
+  body[data-interactive-page="findings"] .atlas-axis span{
+    position:absolute;
+    left:var(--atlas-tick);
+    transform:translateX(-50%);
+  }
+  body[data-interactive-page="findings"] .atlas-chart-note{
+    margin:15px 0 0;
+    color:#a4adb0;
+    font-size:13px;
+    line-height:1.5;
+  }
+  body[data-interactive-page="findings"] .atlas-context-card{
+    align-self:stretch;
+    min-height:0;
+    padding:22px;
+    border:1px solid #51462f;
+    border-radius:3px;
+    background:#211f19;
+  }
+  body[data-interactive-page="findings"] .atlas-context-detail h3{
+    margin:8px 0 18px;
+    color:#f2f2ed;
+    font-size:26px;
+    font-weight:650;
+  }
+  body[data-interactive-page="findings"] .atlas-probability-label{
+    margin:0;
+    color:#8f999b;
+    font-size:12px;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+  }
+  body[data-interactive-page="findings"] .atlas-probability{
+    margin:5px 0 18px;
+    color:#f0e5d1;
+    font-size:40px;
+    font-weight:650;
+    letter-spacing:-.04em;
+    line-height:1.1;
+    font-variant-numeric:tabular-nums;
+  }
+  body[data-interactive-page="findings"] .atlas-detail-section{
+    padding-top:15px;
+    border-top:1px solid #2f3739;
+  }
+  body[data-interactive-page="findings"] .atlas-detail-section + .atlas-detail-section{
+    margin-top:14px;
+  }
+  body[data-interactive-page="findings"] .atlas-detail-section h4{
+    margin:0 0 5px;
+    color:#d9ddda;
+    font-size:14px;
+  }
+  body[data-interactive-page="findings"] .atlas-detail-section p,
+  body[data-interactive-page="findings"] .atlas-detail-note{
+    margin:0;
+    color:#929c9f;
+    font-size:10px;
+    line-height:1.55;
+  }
+  body[data-interactive-page="findings"] .atlas-detail-note{
+    margin-top:15px;
+    color:#6f797c;
+  }
+  body[data-interactive-page="findings"] [data-atlas-detail][hidden],
+  body[data-interactive-page="findings"] [data-atlas-seasons][hidden]{
+    display:none !important;
+  }
+  body[data-interactive-page="findings"] .atlas-next-step{
+    display:flex;
+    justify-content:space-between;
+    gap:20px;
+    align-items:center;
+    padding:20px 24px;
+    border-top:1px solid #30383b;
+    background:#151a1d;
+  }
+  body[data-interactive-page="findings"] .atlas-next-step strong,
+  body[data-interactive-page="findings"] .atlas-next-step small{
+    display:block;
+    font-size:14px;
+    margin-top:6px;
+  }
+  body[data-interactive-page="findings"] .atlas-next-step strong{
+    color:#e4e7e3;
+    font-size:20px;
+  }
+  body[data-interactive-page="findings"] .atlas-next-step small{
+    margin-top:3px;
+    color:#7f898b;
+    font-size:14px;
+  }
+  body[data-interactive-page="findings"] .atlas-next-step button{
+    padding:12px 16px;
+    border:1px solid #9a7534;
+    border-radius:3px;
+    background:#2a2418;
+    color:#f0cf8b;
+    font:inherit;
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  body[data-interactive-page="findings"] .atlas-next-step button:hover,
+  body[data-interactive-page="findings"] .atlas-next-step button:focus-visible{
+    border-color:#d1a34b;
+    outline:1px solid #d1a34b;
+    outline-offset:2px;
+  }
+  body[data-interactive-page="findings"] #atlas-seasons,
+  body[data-interactive-page="findings"] .atlas-supporting-details .atlas-details,
+  body[data-interactive-page="findings"] .findings-disclosure{
+    margin-top:14px;
+    padding:0;
+    border:1px solid #30383b;
+    border-radius:3px;
+    background:#14191c;
+  }
+  body[data-interactive-page="findings"] #atlas-seasons > summary,
+  body[data-interactive-page="findings"] .atlas-supporting-details .atlas-details > summary,
+  body[data-interactive-page="findings"] .findings-disclosure > summary{
+    padding:14px 17px;
+    color:#cbd0cd;
+    font-size:12px;
+    font-weight:650;
+    cursor:pointer;
+  }
+  body[data-interactive-page="findings"] #atlas-seasons[open] > summary,
+  body[data-interactive-page="findings"] .atlas-supporting-details .atlas-details[open] > summary,
+  body[data-interactive-page="findings"] .findings-disclosure[open] > summary{
+    border-bottom:1px solid #30383b;
+  }
+  body[data-interactive-page="findings"] #atlas-seasons .atlas-detail-copy{
+    margin:14px 17px 0;
+    color:#879194;
+    font-size:11px;
+  }
+  body[data-interactive-page="findings"] #atlas-seasons [data-atlas-seasons]{
+    padding:0 17px 17px;
+  }
+  body[data-interactive-page="findings"] .atlas-supporting-details{
+    margin-top:20px;
+  }
+  body[data-interactive-page="findings"] .atlas-supporting-details .atlas-details > :not(summary),
+  body[data-interactive-page="findings"] .findings-disclosure-body{
+    margin-right:17px;
+    margin-left:17px;
+  }
+  body[data-interactive-page="findings"] .findings-disclosure-body{
+    padding-bottom:18px;
+  }
+  body[data-interactive-page="findings"] .page-lead{ margin:8px 0 24px; }
+  body[data-interactive-page="findings"] .page-lead .micro{ display:none; }
+  body[data-interactive-page="findings"] .page-lead .sub{ font-size:18px; }
+  body[data-interactive-page="findings"] .atlas-zero-guide::after{
+    content:"";
+    position:absolute;
+    top:0;
+    bottom:0;
+    left:var(--atlas-zero);
+    border-left:1px dashed #6e7778;
+  }
+  body[data-interactive-page="findings"] .atlas-plot-row[aria-pressed="true"] .atlas-range,
+  body[data-interactive-page="findings"] .atlas-plot-row[aria-pressed="true"] .atlas-range::before,
+  body[data-interactive-page="findings"] .atlas-plot-row[aria-pressed="true"] .atlas-range::after{
+    border-color:#e3b665;
+  }
+  body[data-interactive-page="findings"] .atlas-detail-section p{
+    color:#c1c4bd;
+    font-size:14px;
+    line-height:1.5;
+  }
+  body[data-interactive-page="findings"] .atlas-detail-note{
+    margin-top:15px;
+    font-size:12px;
+    color:#a4a49a;
+  }
+  @media (max-width:1200px){
+    body[data-interactive-page="findings"] .atlas-shell{
+      grid-template-columns:210px minmax(0,1fr);
+    }
+    body[data-interactive-page="findings"] .atlas-workspace-body{
+      grid-template-columns:1fr;
+    }
+  }
+  @media (max-width:680px){
+    body[data-interactive-page="findings"] main{
+      padding-right:16px;
+      padding-left:16px;
+    }
+    body[data-interactive-page="findings"] .atlas-shell{
+      display:block;
+    }
+    body[data-interactive-page="findings"] .atlas-signal-rail{
+      margin-bottom:16px;
+      padding:16px;
+      border-right:1px solid #30383b;
+      border-bottom:1px solid #30383b;
+    }
+    body[data-interactive-page="findings"] .atlas-signal-choice{
+      max-width:260px;
+    }
+    body[data-interactive-page="findings"] .atlas-rail-note{
+      margin-top:11px;
+    }
+    body[data-interactive-page="findings"] .atlas-workspace-header,
+    body[data-interactive-page="findings"] .atlas-workspace-body,
+    body[data-interactive-page="findings"] .atlas-next-step{
+      padding-right:14px;
+      padding-left:14px;
+    }
+    body[data-interactive-page="findings"] .atlas-tabs{
+      display:block;
+      padding-bottom:12px;
+    }
+    body[data-interactive-page="findings"] .atlas-tabs .is-active{
+      display:inline-block;
+      padding:8px 0;
+    }
+    body[data-interactive-page="findings"] .atlas-tab-muted{
+      display:block;
+      margin-top:8px;
+    }
+    body[data-interactive-page="findings"] .atlas-workspace-body{
+      gap:22px;
+      padding-top:23px;
+      padding-bottom:23px;
+    }
+    body[data-interactive-page="findings"] .atlas-chart-heading{
+      display:block;
+    }
+    body[data-interactive-page="findings"] .atlas-chart-heading p{
+      margin-top:5px;
+      text-align:left;
+    }
+    body[data-interactive-page="findings"] .atlas-plot-row{
+      grid-template-columns:68px minmax(60px,1fr) 43px;
+      gap:8px;
+      padding-right:8px;
+      padding-left:8px;
+    }
+    body[data-interactive-page="findings"] .atlas-axis{
+      margin-right:60px;
+      margin-left:85px;
+    }
+    body[data-interactive-page="findings"] .atlas-chart{ padding:18px 12px; }
+    body[data-interactive-page="findings"] .atlas-row-label,
+    body[data-interactive-page="findings"] .atlas-row-value{ font-size:12px; }
+    body[data-interactive-page="findings"] .atlas-workspace-header h2{ font-size:26px; }
+    body[data-interactive-page="findings"] .atlas-zero-guide{ left:85px; right:60px; }
+    body[data-interactive-page="findings"] .atlas-next-step{
+      flex-direction:column;
+      align-items:flex-start;
+    }
+  }

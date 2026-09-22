@@ -126,31 +126,43 @@ $$('nav.links a').forEach(a=>{const target=targets[a.textContent];if(target)a.hr
 const page=document.body.dataset.interactivePage;
 if(page==='week')return;
 document.body.classList.add('reader-page');
-const titles={model:['THE MODEL','Show your work.','What shapes the picks, how the historical record compares, and which ideas are being tested next.'],history:['THE RECORD','Keep the receipts.','Published picks and historical evaluations, clearly separated. See the opening-line and closing-line grades side by side.'],findings:['WHAT WE’VE LEARNED','Know why you picked it.','The ideas behind the card, the questions still open, and the evidence behind each one.']};
+const titles={model:['THE MODEL','Show your work.','What shapes the picks, how the historical record compares, and which ideas are being tested next.'],history:['THE RECORD','Keep the receipts.','Published picks and historical evaluations, clearly separated. See the opening-line and closing-line grades side by side.'],findings:['FINDINGS','When does it help?','Explore the situations where a signal could add value.']};
 const [label,title,sub]=titles[page];$('.page-lead .micro').textContent=label;$('.page-lead h1').textContent=title;$('.page-lead p.sub').textContent=sub;
 document.title="You Don't Know Ball / "+label;
 
 const labels={'stats-h':'The historical record','howgood-h':'How it performed by season','ledger-h':'What we are testing next','families-h':'What goes into a pick','history-picks-h':'Picks published before kickoff','history-grading-h':'Opening line versus closing line','history-challengers-h':'How the new ideas are doing','group-helps-h':'Ideas informing the card','group-unproven-h':'Questions still open','group-no-edge-h':'Other research results','group-context-h':'How to read the evidence','watching-h':'What we are watching','recentactivity-h':'Recent research','honesty-h':'How we check our work','ledgersummary-h':'Browse the research record'};
 Object.entries(labels).forEach(([id,text])=>{const h=document.getElementById(id);if(h)h.textContent=text});
 const nav=document.createElement('div');nav.className='reader-nav';nav.setAttribute('aria-label','Jump to a section');
-$$('main>section[aria-labelledby]').forEach(section=>{const id=section.getAttribute('aria-labelledby'),heading=document.getElementById(id);if(!heading)return;const a=document.createElement('a');a.href='#'+id;a.textContent=heading.textContent;nav.append(a)});$('.page-lead').after(nav);
+if(page!=='findings'){$$('main>section[aria-labelledby]').forEach(section=>{const id=section.getAttribute('aria-labelledby'),heading=document.getElementById(id);if(!heading)return;const a=document.createElement('a');a.href='#'+id;a.textContent=heading.textContent;nav.append(a)});$('.page-lead').after(nav)}
 $$('table.board').forEach((table,index)=>{
 const rows=$$('tbody tr',table);if(rows.length<12)return;
 const search=document.createElement('label');search.className='reader-search';search.textContent='Find an entry';const input=document.createElement('input');input.type='search';input.placeholder='Search names or descriptions';input.setAttribute('aria-label','Search table '+(index+1));search.append(input);table.closest('.board-scroll')?.before(search);input.addEventListener('input',()=>{const q=input.value.toLowerCase().trim();rows.forEach(r=>r.hidden=!r.textContent.toLowerCase().includes(q))});
 });
 if(page==='findings'){
-const sections=['group-helps-h','group-unproven-h','group-no-edge-h','group-context-h'].map(id=>document.getElementById(id)?.closest('section')).filter(Boolean);
-const filters=document.createElement('div');filters.className='finding-filters';filters.setAttribute('role','group');filters.setAttribute('aria-label','Choose research topics');
-const names=['In the card','Still exploring','Other results','Reading the numbers','All topics'];
-function choose(i){sections.forEach((s,j)=>s.hidden=i!==4&&j!==i);$$('button',filters).forEach((b,j)=>b.setAttribute('aria-pressed',String(i===j)))}
-names.forEach((name,i)=>{const b=document.createElement('button');b.textContent=name;b.type='button';b.addEventListener('click',()=>choose(i));filters.append(b)});nav.after(filters);choose(0);
-$$('.find-card').forEach(card=>{const paragraphs=$$('p',card);if(paragraphs.length<2)return;const details=document.createElement('details');const summary=document.createElement('summary');summary.textContent='Read the evidence';details.append(summary);paragraphs.slice(1).forEach(p=>details.append(p));card.append(details)});
-nav.addEventListener('click',e=>{if(e.target.closest('a'))choose(4)});
-// Keep one topic selector at the top; put deeper research navigation with those sections.
-const watching=document.getElementById('watching-h')?.closest('section');if(watching)watching.before(nav);
-$$('a',nav).slice(0,4).forEach(a=>a.remove());
-const kpis=$('main>.kpi-grid');if(kpis){const context=document.createElement('details');context.innerHTML='<summary>Historical context for these findings</summary>';context.append(kpis);sections[0].after(context)}
-
+const rows=$$('[data-atlas-context]');
+const seasonDetails=document.getElementById('atlas-seasons');
+function selectContext(row){
+ const context=row.dataset.atlasContext;
+ rows.forEach(button=>button.setAttribute('aria-pressed',String(button===row)));
+ $$('[data-atlas-detail]').forEach(panel=>{panel.hidden=panel.dataset.atlasDetail!==context});
+ $$('[data-atlas-seasons]').forEach(panel=>{panel.hidden=panel.dataset.atlasSeasons!==context});
+}
+rows.forEach((row,index)=>{
+ row.addEventListener('click',()=>selectContext(row));
+ row.addEventListener('keydown',event=>{
+  const offsets={ArrowDown:1,ArrowRight:1,ArrowUp:-1,ArrowLeft:-1};
+  if(!(event.key in offsets)&&event.key!=='Home'&&event.key!=='End')return;
+  event.preventDefault();
+  const next=event.key==='Home'?0:event.key==='End'?rows.length-1:(index+offsets[event.key]+rows.length)%rows.length;
+  selectContext(rows[next]);rows[next].focus();
+ });
+});
+$$('[data-atlas-explore-seasons]').forEach(button=>button.addEventListener('click',()=>{
+ if(!seasonDetails)return;
+ seasonDetails.open=true;
+ seasonDetails.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'start'});
+ $('summary',seasonDetails)?.focus({preventScroll:true});
+}));
 }
 if(page==='model'){
 const stats=document.getElementById('stats-h').closest('section');

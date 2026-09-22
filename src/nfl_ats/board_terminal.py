@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from html import escape
 from itertools import groupby
+from math import ceil, floor
 from pathlib import Path
 from typing import Any
 
@@ -2554,6 +2555,152 @@ def _atlas_metrics_html(metrics: dict[str, dict[str, Any]]) -> str:
     )
 
 
+def _atlas_phase_seasons_html(cells: list[dict[str, Any]]) -> str:
+    panels: list[str] = []
+    for index, cell in enumerate(cells):
+        cell_id = escape(str(cell["cell"]))
+        rows = "".join(
+            "<tr>"
+            f"<td>{escape(str(row['season']))}</td>"
+            f"<td>{_atlas_signed(row.get('accuracy_delta_points'))}</td>"
+            f"<td>{escape(str(row.get('games', '—')))}</td>"
+            "</tr>"
+            for row in cell.get("seasons", [])
+        )
+        panels.append(
+            f'<div class="atlas-season-panel" data-atlas-seasons="{cell_id}"'
+            f"{'' if index == 0 else ' hidden'}>"
+            f'<p class="atlas-season-title">{escape(str(cell["label"]))}</p>'
+            '<div class="board-scroll atlas-scroll"><table class="atlas-table">'
+            "<thead><tr><th>Season</th><th>Win-rate difference</th>"
+            "<th>Games</th></tr></thead>"
+            f"<tbody>{rows}</tbody></table></div></div>"
+        )
+    return (
+        '<details class="atlas-details atlas-season-explorer" id="atlas-seasons">'
+        "<summary>Compare the result across seasons</summary>"
+        '<p class="atlas-detail-copy">Each row is the held-out result for one season. '
+        "The comparison uses the selected time window from the chart above.</p>"
+        f"{''.join(panels)}</details>"
+    )
+
+
+def _atlas_explorer_html(cells: list[dict[str, Any]]) -> str:
+    phase_order = ("weeks_1_4", "weeks_5_12", "weeks_13_18")
+    cell_by_id = {str(cell["cell"]): cell for cell in cells}
+    phases = [cell_by_id[cell_id] for cell_id in phase_order if cell_id in cell_by_id]
+    if not phases:
+        return '<p class="atlas-empty">No time-of-season comparisons are available.</p>'
+    labels = {
+        "weeks_1_4": "Weeks 1\u20134",
+        "weeks_5_12": "Weeks 5\u201312",
+        "weeks_13_18": "Weeks 13\u201318",
+    }
+    titles = {
+        "weeks_1_4": "Early season",
+        "weeks_5_12": "Midseason",
+        "weeks_13_18": "Late season",
+    }
+    minimum = min(_atlas_float(cell["accuracy_interval"][0]) for cell in phases)
+    maximum = max(_atlas_float(cell["accuracy_interval"][1]) for cell in phases)
+    scale_low = floor(min(minimum, 0.0) / 4) * 4
+    scale_high = ceil(max(maximum, 0.0) / 4) * 4
+    if scale_low >= 0:
+        scale_low = -4
+    if scale_high <= 0:
+        scale_high = 4
+    scale_span = float(scale_high - scale_low)
+
+    def position(value: Any) -> float:
+        bounded = min(float(scale_high), max(float(scale_low), _atlas_float(value)))
+        return (bounded - scale_low) / scale_span * 100.0
+
+    zero_position = position(0.0)
+    rows: list[str] = []
+    details: list[str] = []
+    for index, cell in enumerate(phases):
+        cell_key = str(cell["cell"])
+        cell_id = escape(cell_key)
+        label = labels.get(cell_key, str(cell["label"]))
+        low = position(cell["accuracy_interval"][0])
+        high = position(cell["accuracy_interval"][1])
+        point = position(cell["accuracy_delta_points"])
+        rows.append(
+            '<button type="button" class="atlas-plot-row" '
+            f'data-atlas-context="{cell_id}" aria-pressed="{"true" if index == 0 else "false"}" '
+            f'aria-controls="atlas-detail-{cell_id}">'
+            f'<span class="atlas-row-label">{escape(label)}</span>'
+            f'<span class="atlas-track" style="--atlas-low:{low:.3f}%;--atlas-high:{high:.3f}%;'
+            f'--atlas-point:{point:.3f}%"><span class="atlas-range" aria-hidden="true"></span>'
+            '<span class="atlas-point" aria-hidden="true"></span></span>'
+            '<span class="atlas-row-value">'
+            f"{_atlas_signed(cell.get('accuracy_delta_points'))}</span>"
+            "</button>"
+        )
+        details.append(
+            f'<div class="atlas-context-detail" id="atlas-detail-{cell_id}" '
+            f'data-atlas-detail="{cell_id}"{"" if index == 0 else " hidden"}>'
+            '<p class="atlas-detail-eyebrow">Selected context</p>'
+            f"<h3>{escape(titles.get(cell_key, label))}</h3>"
+            '<p class="atlas-probability-label">Chance of improvement</p>'
+            f'<p class="atlas-probability">{_atlas_percent(cell.get("probability_positive"))}</p>'
+            '<div class="atlas-detail-section"><h4>Why it could matter</h4>'
+            "<p>Game situations may add more information at some points in the season. "
+            "They contribute to one combined probability.</p></div>"
+            '<div class="atlas-detail-section"><h4>What the history suggests</h4>'
+            f"<p>{escape(str(cell.get('games', '—')))} games: "
+            f"{_atlas_signed(cell.get('accuracy_delta_points'))} points in accuracy, "
+            f"with a 95% range of {_atlas_interval(cell.get('accuracy_interval', []))}."
+            "</p></div>"
+            '<p class="atlas-detail-note">These results combine several inputs. '
+            "Published picks are unchanged.</p></div>"
+        )
+    ticks = "".join(
+        f'<span style="--atlas-tick:{position(tick):.3f}%">{_atlas_signed(tick)}</span>'
+        for tick in range(scale_low, scale_high + 1, 4)
+    )
+    season_cells = [
+        dict(cell, label=labels.get(str(cell["cell"]), cell["label"])) for cell in phases
+    ]
+    return (
+        '<div class="atlas-shell">'
+        '<aside class="atlas-signal-rail" aria-label="Available signals">'
+        '<p class="atlas-rail-label">Choose a signal</p>'
+        '<div class="atlas-signal-choice" aria-current="true">'
+        '<span class="atlas-signal-mark" aria-hidden="true"></span>'
+        "<span><strong>Combined game situations</strong>"
+        "<small>Time of season</small></span></div>"
+        '<p class="atlas-rail-note">Individual situations have not been measured '
+        "separately here.</p>"
+        "</aside>"
+        '<div class="atlas-workspace">'
+        '<header class="atlas-workspace-header">'
+        "<h2>Combined game situations</h2>"
+        '<p class="atlas-context-question">Where does it look most useful?</p>'
+        '<div class="atlas-tabs"><span class="is-active">Time of season</span>'
+        '<span class="atlas-tab-muted">Select a row to explore</span></div>'
+        "</header>"
+        '<div class="atlas-workspace-body">'
+        '<div class="atlas-chart">'
+        '<div class="atlas-chart-heading"><h3>Change in pick accuracy</h3>'
+        "<p>Compared with the model alone · 95% uncertainty</p></div>"
+        f'<div class="atlas-plot" style="--atlas-zero:{zero_position:.3f}%">'
+        '<span class="atlas-zero-guide" aria-hidden="true"></span>'
+        f'{"".join(rows)}<div class="atlas-axis" aria-hidden="true">{ticks}</div></div>'
+        '<p class="atlas-chart-note">Percentage points. The dashed line marks no change; '
+        "bars show the uncertainty.</p>"
+        "</div>"
+        f'<aside class="atlas-context-card" aria-live="polite">{"".join(details)}</aside>'
+        "</div>"
+        '<div class="atlas-next-step"><span><strong>Next, compare across seasons</strong>'
+        "<small>Look for a pattern that holds up year after year.</small></span>"
+        '<button type="button" data-atlas-explore-seasons>Explore seasons '
+        '<span aria-hidden="true">→</span></button>'
+        "</div></div></div>"
+        f"{_atlas_phase_seasons_html(season_cells)}"
+    )
+
+
 def _signal_atlas_section_html(content: FindingsPageContent) -> str:
     report = content.atlas
     if report is None:
@@ -2585,14 +2732,16 @@ def _signal_atlas_section_html(content: FindingsPageContent) -> str:
             f"per version; and {int(inventory['year_breakdowns'])} year-by-year rows"
         )
     return (
-        '<section class="signal-atlas" aria-labelledby="signal-atlas-h">'
-        '<div class="section-head"><h2 id="signal-atlas-h">When do game situations help?</h2>'
-        '<span class="sub">Full model compared with the same model refit without them</span></div>'
-        '<div class="atlas-intro"><p>These historical comparisons ask whether game-situation '
-        "inputs were associated with better picks and probabilities. They do not show that a "
-        "situation caused an outcome or change the published card.</p></div>"
+        '<section class="signal-atlas" aria-label="Signal atlas">'
+        + _atlas_explorer_html(evaluations["out_of_season"])
+        + '<div class="atlas-supporting-details">'
+        '<details class="atlas-details"><summary>How to read this comparison</summary>'
+        "<p>These historical comparisons ask whether the combined game-situation signal was "
+        "associated with better picks and probabilities. They do not show that a situation "
+        "caused an outcome or change the published card.</p>"
         '<div class="atlas-caution"><strong>Limits of this view</strong><ul>'
-        f"{limitations}</ul></div>"
+        f"{limitations}</ul></div></details>"
+        '<details class="atlas-details"><summary>Evaluation views</summary>'
         + _atlas_evaluation_html(
             evaluations["out_of_season"],
             title="Each season held out separately",
@@ -2603,7 +2752,6 @@ def _signal_atlas_section_html(content: FindingsPageContent) -> str:
             ),
             open_panel=True,
         )
-        + _atlas_metrics_html(metrics)
         + _atlas_evaluation_html(
             evaluations["chronological"],
             title="Earlier years only",
@@ -2627,7 +2775,10 @@ def _signal_atlas_section_html(content: FindingsPageContent) -> str:
         f"Related views include {inventory_html}. These overlap and are not independent evidence. "
         f"No best time window was selected. The main count is {len(metrics)} versions &times; "
         f"{cells_per_view} time windows &times; {len(evaluations)} evaluation views. "
-        f"Intervals use {bootstrap_draws:,} resamples.</p></section>"
+        f"Intervals use {bootstrap_draws:,} resamples.</p></details>"
+        '<details class="atlas-details"><summary>Scoring and calibration</summary>'
+        + _atlas_metrics_html(metrics)
+        + "</details></div></section>"
     )
 
 
@@ -2651,23 +2802,31 @@ def render_findings_page(content: FindingsPageContent) -> str:
         _terminal_chrome(content.ticker_chrome, page=FINDINGS_PAGE)
         + '<main id="main-content" tabindex="-1">'
         + _page_lead(
-            "WHAT WE'VE LEARNED",
-            "Every finding, in plain words",
-            "Each answer traces to a registry entry or is declared evergreen.",
+            "FINDINGS",
+            "When does it help?",
+            "Explore the situations where a signal could add value.",
         )
-        + f'<div class="kpi-grid">{tiles}</div>'
         + _signal_atlas_section_html(content)
-        + groups_html
-        + '<section aria-labelledby="watching-h"><div class="section-head">'
+        + '<details class="findings-disclosure"><summary>More findings and research notes</summary>'
+        '<div class="findings-disclosure-body">'
+        f'<div class="kpi-grid">{tiles}</div>{groups_html}</div></details>'
+        + '<details class="findings-disclosure">'
+        "<summary>Signals we are watching and recent activity</summary>"
+        '<div class="findings-disclosure-body"><section aria-labelledby="watching-h">'
+        '<div class="section-head">'
         '<h2 id="watching-h">What we&#39;re watching</h2>'
         f'<span class="sub">{len(content.watching_leads)} of '
         f"{content.ledger_summary.total_signals} recorded signals</span></div>"
         f"{leads_html}</section>"
         + _recent_activity_section_html(content.recent_activity)
-        + '<section aria-labelledby="honesty-h"><div class="section-head">'
+        + '</div></details><details class="findings-disclosure">'
+        "<summary>Methods and signal registry</summary>"
+        '<div class="findings-disclosure-body"><section aria-labelledby="honesty-h">'
+        '<div class="section-head">'
         '<h2 id="honesty-h">How we keep ourselves honest</h2></div>'
         f'<div class="find-grid">{honesty_html}</div></section>'
         + _ledger_summary_section_html(content)
+        + "</div></details>"
         + board_assistant.assistant_section(board_assistant.build_knowledge_for_findings(content))
         + "</main>"
         + _generic_footer(content.generated_at_text)
