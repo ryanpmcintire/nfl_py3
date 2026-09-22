@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-22T11:04:05.356766+00:00`
+Refreshed at: `2026-09-22T11:22:27.863760+00:00`
 
 ## Start here
 
@@ -21,20 +21,10 @@ Refreshed at: `2026-09-22T11:04:05.356766+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `0c7cad988ec5` — Implement conditional signal atlas with paired probability comparisons
-- Pending change set: 15 paths
+- Baseline commit: `f12ff780e663` — Make Findings visible by name in dashboard navigation
+- Pending change set: 5 paths
   - `M  HANDOFF.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
   - `M  docs/lanes/conditional-signal-atlas.md`
-  - `M  docs/model.html`
-  - `M  src/nfl_ats/board_assistant.py`
-  - `M  src/nfl_ats/board_interactive_layout.js`
-  - `M  src/nfl_ats/board_terminal.py`
-  - `M  src/nfl_ats/dashboard/findings_content.py`
-  - `M  src/nfl_ats/public_board.py`
-  - `M  tests/test_board_terminal.py`
   - `?? registry/experiments/margin-backtest/20260921T160806Z.json`
   - `?? registry/experiments/margin-predict/2026-week-02-20260921T161008Z.json`
   - `?? registry/experiments/waterfall-feed/20260921T161510Z.json`

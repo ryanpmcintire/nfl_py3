@@ -4,6 +4,7 @@
 Show when a fitted signal helps within predeclared groups, with paired full/reduced fits, uncertainty and probability quality. Keep every pick inside one calibrated probability.
 
 ## State
+- 2026-09-22 owner correction: the shipped Findings atlas does not match the approved mockup. Matching that reference is the current task; renaming the tab or fixing filters alone does not satisfy it. The owner also reports nonfunctional filter buttons and a cluttered page. Reported by the original UI implementer (unverified): its brief contained only prose requirements, with no mockup image or markup. Recover the approved reference before further layout changes; do not substitute another invented design.
 - Implemented the first family: the current combined game-situation term, overall and weeks 1–4, 5–12, 13–18. Declaration: `registry/conditional_signal_atlas.json`. Evaluator: `scripts/conditional_signal_atlas.py`; implementation: `src/nfl_ats/signal_atlas.py`.
 - Measured 2026-09-21 with `.\.tools\uv.exe run --no-sync python scripts/conditional_signal_atlas.py`; artifact `artifacts/signal_atlas/20260921T231249832601Z`. Both arms are independently refitted on identical games/folds. Full probabilities reproduce the active fit in all three views. Prediction rows, natural-scale coefficients, declaration and source hashes are saved.
 - Measured season-held-out overall: 1,503 games; 387 different picks, full 212 wins versus reduced 175; +2.46 accuracy points, 95% paired season/week resampling interval −0.35 to +5.33; `probability_positive=0.9588`; Brier improvement +0.002812. This supports further evaluation; historical input availability and feature selection remain uncertified, so it does not authorize a serving change.
@@ -18,7 +19,9 @@ Show when a fitted signal helps within predeclared groups, with paired full/redu
 Legacy atlas (`scripts/signal_atlas.py`) measures independent flips and is not the source of this comparison. Historical work remains in the roadmap and prior artifacts. Review found and fixed missing current-declaration freshness checks. No new test files/functions or research-only runtime assertions were added.
 
 ## Next
+Recover the original approved mockup, then reproduce its layout and working interactions using the real atlas data. Verify the rendered page against that reference before publishing. The original reference is currently missing from the available task context.
 Extend one predeclared fitted family at a time. Each family needs paired out-of-season fits, chronological checks, proper scores, saved rows and counted looks. Build timestamp-certified inputs before using this diagnostic as new forward evidence.
 
 ## Open
+Approved mockup unavailable: recovery agent reported (unverified) the original request in local session `01a0c60c-60e6-7330-af4a-8d3dc9122a6b`, turn `01a0c612-1bd5-7500-9aee-49ee88ccfa97`, but no recoverable visual output. Ask the owner to reattach the reference. No UI code changed during recovery; filter/layout complaints remain unresolved.
 Individual situational signals and other split dimensions remain future work. The present comparison removes the fitted combined situation term only. Fixed-prediction bootstrap intervals exclude refitting/selection uncertainty. The exact decisive-game null assumes independence. No new signal is promoted and no forecast changes.
