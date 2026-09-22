@@ -4,6 +4,8 @@
 Match the approved Findings mockup with an interactive explorer backed by measured, paired signal comparisons. Every pick stays inside one calibrated probability.
 
 ## State
+- 2026-09-22 owner rejection after deployment: the result still does not meet expectations and is not useful. Passing checks and publishing did not complete the requested feature. Do not describe this lane as accepted or finished.
+- The assistant paused implementation, then emitted HOLD, creating contradictory directions. Clear verdicts describe whether conversation context is saved, not feature acceptance. The owner must not have to recover our mockup or reconstruct this failure.
 - 2026-09-22 owner correction: the first UI did not match the mockup. Fixing labels or filters alone did not satisfy the request. The original image was recoverable; asking the owner to supply our own mockup was wrong.
 - Read: original PNG and complete generation prompt are saved at `docs/design/mockups/conditional-signal-atlas.png` and `.md`. Use these assets for future work; never ask the owner to recover them again.
 - Implemented the reference layout: signal rail, context workspace, selectable interval chart, selected-context explanation and season action. Clicking a row or using arrow/Home/End keys updates the explanation and season view. Removed the inert finding-filter buttons. Mobile layout stacks without horizontal overflow.
@@ -16,7 +18,7 @@ Match the approved Findings mockup with an interactive explorer backed by measur
 The earlier card/filter implementation was the wrong interpretation of the reference. The legacy independent-flip atlas is not the source of this comparison. This repair changes presentation and interaction only.
 
 ## Next
-Extend one predeclared fitted family at a time, with paired out-of-season fits, chronological checks, proper scores, saved rows and counted looks. Build timestamp-certified inputs before using this diagnostic as new forward evidence. Preserve the saved visual reference when adding selectors.
+Resolve the gap between the original intended use, the saved mockup and the available data before further implementation. Do not automatically extend signal families, redesign the page, remove the tab or treat the prior options menu as an owner decision. No new direction has been agreed.
 
 ## Open
 Individual signals and other split dimensions remain future work. Existing intervals exclude refitting/selection uncertainty. Fitted-source and model/declaration freshness guards remain in place. Active master and deployment state are recorded by Git and HANDOFF.md.

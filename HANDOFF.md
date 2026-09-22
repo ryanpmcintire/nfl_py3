@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-22T12:31:41.521439+00:00`
+Refreshed at: `2026-09-22T19:01:46.114834+00:00`
 
 ## Start here
 
@@ -21,25 +21,19 @@ Refreshed at: `2026-09-22T12:31:41.521439+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `2b0c9a304427` — Record approved mockup as blocker for Findings redesign
-- Pending change set: 17 paths
+- Baseline commit: `c94d7c732a9d` — Match Findings to recovered atlas mockup and wire interactions
+- Pending change set: 11 paths
+  - ` M CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
-  - `M  ROADMAP.md`
-  - `A  docs/design/mockups/conditional-signal-atlas.md`
-  - `A  docs/design/mockups/conditional-signal-atlas.png`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
   - `M  docs/lanes/README.md`
   - `M  docs/lanes/conditional-signal-atlas.md`
-  - `M  docs/model.html`
-  - `M  src/nfl_ats/board_interactive_layout.js`
-  - `M  src/nfl_ats/board_terminal.py`
-  - `M  src/nfl_ats/board_terminal_style.css`
-  - `M  tests/test_board_terminal.py`
+  - ` M tiebreaker.json`
   - `?? registry/experiments/margin-backtest/20260921T160806Z.json`
+  - `?? registry/experiments/margin-backtest/20260922T183842Z.json`
   - `?? registry/experiments/margin-predict/2026-week-02-20260921T161008Z.json`
+  - `?? registry/experiments/margin-predict/2026-week-02-20260922T184009Z.json`
   - `?? registry/experiments/waterfall-feed/20260921T161510Z.json`
+  - `?? registry/experiments/waterfall-feed/20260922T184503Z.json`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -53,13 +47,13 @@ trust live Git output after checkout.
 - Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20260920T135435Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card applies this after the coach policy, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,093 / 2,091 (52.27%)**
-- Linked forecast: **2026 Week 2**, created `2026-09-21T16:10:08.373992+00:00`
+- Linked forecast: **2026 Week 2**, created `2026-09-22T18:40:09.166405+00:00`
 
 The 52.27% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 2** from model `3412097369e4e4ca`, published `2026-09-21T19:04:53.863360+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 2** from model `3412097369e4e4ca`, published `2026-09-22T18:43:28.216322+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 
