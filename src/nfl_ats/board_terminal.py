@@ -70,7 +70,7 @@ SITE_PAGES: tuple[tuple[str, str, str], ...] = (
     (PICKS_PAGE, "This week", "This week's picks"),
     (MODEL_PAGE, "The model", "The model"),
     (HISTORY_PAGE, "History", "History"),
-    (FINDINGS_PAGE, "What we've learned", "What we've learned"),
+    (FINDINGS_PAGE, "Findings", "Findings"),
 )
 
 _DIVE_SCRIPT = """

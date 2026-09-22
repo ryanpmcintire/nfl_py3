@@ -1299,7 +1299,7 @@ def _findings_answer(knowledge: Mapping[str, Any]) -> AssistantAnswer | None:
         return None
     return AssistantAnswer(
         topic="findings",
-        text=text + " More on What we've learned.",
+        text=text + " More on Findings.",
         anchors=("findings.html",),
     )
 
@@ -1903,7 +1903,7 @@ _ASSISTANT_SCRIPT_TEMPLATE = """
       if (bodies.length < 4 && e.id.indexOf("watching:") === 0) { bodies.push(e.body); }
     });
     if (!bodies.length) return null;
-    return asAnswer("findings", bodies.join(" ") + " More on What we've learned.",
+    return asAnswer("findings", bodies.join(" ") + " More on Findings.",
       ["findings.html"]);
   }
   function gameWhy(g, corpus) {
@@ -2466,7 +2466,7 @@ def assistant_section(corpus: Mapping[str, Any]) -> str:
         ("This week's picks", "index.html"),
         ("Best Pick", "index.html"),
         ("Model record", "model.html"),
-        ("What we've learned", "findings.html"),
+        ("Findings", "findings.html"),
         ("History", "history.html"),
     ]
     links = " ".join(f'<a href="{escape(href)}">{escape(label)}</a>' for label, href in topics)

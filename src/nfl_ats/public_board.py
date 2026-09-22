@@ -146,7 +146,7 @@ SITE_PAGES: tuple[tuple[str, str, str], ...] = (
     (PICKS_PAGE, "This week", "This week's picks"),
     (MODELS_PAGE, "Models", "Model ledger"),
     (TEAM_EXPLORER_PAGE, "Team trends", "Team pregame-state trends"),
-    (FINDINGS_PAGE, "What we've learned", "What we've learned"),
+    (FINDINGS_PAGE, "Findings", "Findings"),
     (POOL_PAGE, "Pool workbench", "Pool workbench"),
     (LEDGER_PAGE, "Signal ledger", "Signal ledger"),
 )

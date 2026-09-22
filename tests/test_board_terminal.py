@@ -190,7 +190,7 @@ def test_terminal_nav_has_exactly_four_pages() -> None:
     _assert_nav_lists_every_page(html)
     assert len(board_terminal.SITE_PAGES) == 4
     labels = {label for _filename, label, _title in board_terminal.SITE_PAGES}
-    assert labels == {"This week", "The model", "History", "What we've learned"}
+    assert labels == {"This week", "The model", "History", "Findings"}
 
 
 def _history_fixture(*, picks: tuple[HistoryPickRow, ...] = ()) -> HistoryPageContent:
@@ -631,7 +631,7 @@ def test_model_ledger_every_live_challenger_arm_has_a_human_display_name() -> No
 
 def test_findings_page_renders_real_findings(site_content: SiteContent) -> None:
     html = board_terminal.render_findings_page(site_content.findings)
-    assert "ATS Terminal — What we&#x27;ve learned" in html or "What we've learned" in html
+    assert "ATS Terminal — Findings" in html
     _assert_nav_lists_every_page(html)
     _assert_no_desk_references(html)
     _assert_no_cut_page_links(html)

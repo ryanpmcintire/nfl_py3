@@ -325,7 +325,7 @@ class HonestyRule:
     body: str
 
 
-HERO_KICKER = "What we've learned"
+HERO_KICKER = "Findings"
 HERO_TITLE = "Everything the research has settled, in plain English"
 HERO_SUB = (
     "Every finding states its evidence and how confident we are. Every answer below is "

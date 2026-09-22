@@ -121,7 +121,7 @@ $$('.dive-panel').forEach(panel=>{
 (()=>{
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
 $('.brand .dot').textContent='↗';$('.brand-word').innerHTML="YOU DON'T KNOW BALL<span>TALK SHIT. PICK SIDES.</span>";
-const targets={'This week':'index.html','The model':'model.html','History':'history.html',"What we've learned":'findings.html'};
+const targets={'This week':'index.html','The model':'model.html','History':'history.html','Findings':'findings.html'};
 $$('nav.links a').forEach(a=>{const target=targets[a.textContent];if(target)a.href=target});
 const page=document.body.dataset.interactivePage;
 if(page==='week')return;
