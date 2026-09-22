@@ -828,6 +828,13 @@ gets measured is recorded through both registries with
 - **Verification (measured):** Ruff format/check, mypy, and full pytest passed (4529 passed, 9 skipped); publish-board succeeded. Rendered index diff +162/-12; other three pages each +36/-9 from shared assets. No new tests or research-only runtime assertions; review removed an incompatible proposed market gate.
 - **Current operations:** Week 3 awaits genuine locked FTPL spreads; the scheduler is running. Paid odds returned 401, Bovada empty JSON, and OddsGap yielded one matchup. Acquisition steps are saved in `docs/lanes/week3-lines-2026-09-22.md`; completed dashboard work is saved in `docs/lanes/done/weekly-card-readiness.md`.
 
+### UI-20 week-filter repair (2026-09-22)
+
+- The owner rejected the page replacement. Filtering now swaps only the weekly card and associated details while preserving the existing dashboard. Archived weeks use its table and inspector styling; the original published card retains its game room and selection state. Current week remains the default.
+- **Measured:** desktop and 390px mobile browser checks passed for Weeks 1/2/3, selection, keyboard, current-week reset, browser Back and the original game room. One card remains visible with no horizontal overflow. Week 3 correctly reports picks pending.
+- **Measured verification:** Ruff format/check, mypy and full pytest passed (4,529 passed, 9 skipped); JavaScript syntax, diff whitespace and `publish-board` passed. Rendered index diff +130/-93; other three pages each +2/-2. No new tests or research-only runtime assertions.
+- Repair and remaining acquisition work are saved in `docs/lanes/done/dashboard-week-filter-repair.md` and `docs/lanes/week3-lines-2026-09-22.md`.
+
 ## Recommended execution order
 
 1. **Keep Sunday's card current, preserving locked games.** Continue from

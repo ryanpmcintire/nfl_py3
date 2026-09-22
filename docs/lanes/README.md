@@ -51,6 +51,7 @@ modified lane when the prompt just says to continue.
 
 ## Done
 
+- [dashboard-week-filter-repair](done/dashboard-week-filter-repair.md) - 2026-09-22: filter only the weekly card; preserve the dashboard and interactive game details, verified on desktop and mobile.
 - [injury-current-season-capture](done/injury-current-season-capture.md) - 2026-09-22: failed current-season requests preserve existing data and leave no empty capture directory; broader Friday/Sunday acquisition remains open.
 - [Backlog triage and deployment](done/backlog-triage-2026-09-22.md) - completed batch deployed; scoped blockers and next-work pointers saved.
 

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-22T21:48:10.188314+00:00`
+Refreshed at: `2026-09-22T23:59:37.666481+00:00`
 
 ## Start here
 
@@ -21,22 +21,29 @@ Refreshed at: `2026-09-22T21:48:10.188314+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `22b62eeca236` — Add current-week navigation and improve dashboard interactions
-- Pending change set: 14 paths
+- Baseline commit: `d25645160565` — Reject injury captures missing the current season
+- Pending change set: 21 paths
   - ` M CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
   - `M  ROADMAP.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
   - `M  docs/lanes/README.md`
-  - `A  docs/lanes/done/backlog-triage-2026-09-22.md`
-  - `A  docs/lanes/done/injury-current-season-capture.md`
-  - `M  scripts/nflverse_injuries_ingest.py`
+  - `A  docs/lanes/done/dashboard-week-filter-repair.md`
+  - `M  docs/lanes/week3-lines-2026-09-22.md`
+  - `M  docs/model.html`
+  - `M  src/nfl_ats/board_interactive_experience.js`
+  - `M  src/nfl_ats/board_week_navigation.css`
+  - `M  src/nfl_ats/board_week_navigation.js`
+  - `M  src/nfl_ats/board_week_navigation.py`
   - ` M tiebreaker.json`
   - `?? registry/experiments/margin-backtest/20260921T160806Z.json`
   - `?? registry/experiments/margin-backtest/20260922T183842Z.json`
   - `?? registry/experiments/margin-predict/2026-week-02-20260921T161008Z.json`
   - `?? registry/experiments/margin-predict/2026-week-02-20260922T184009Z.json`
   - `?? registry/experiments/waterfall-feed/20260921T161510Z.json`
-  - `?? registry/experiments/waterfall-feed/20260922T184503Z.json`
+  - ...and 1 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

@@ -1,56 +1,29 @@
-#week-browser {
-  margin: 0 0 24px;
-  padding: 20px 22px;
-  border: 1px solid var(--line, #344044);
-  border-radius: 12px;
-  background: var(--panel, #191f22);
-  color: var(--text, #eff1ed);
-}
-#week-browser label {
-  display: inline-block;
-  margin-right: 12px;
-  font-size: 14px;
-  font-weight: 700;
-}
-#week-select, #week-current {
-  min-height: 44px;
-  border: 1px solid var(--line, #344044);
-  border-radius: 7px;
-  padding: 10px 14px;
-  color: var(--text, #eff1ed);
-  background: var(--panel-alt, #14191c);
-  font: inherit;
-  font-size: 14px;
-}
-#week-select { min-width: 215px; cursor: pointer; }
-#week-current { margin-left: 10px; cursor: pointer; }
-#week-current:disabled { color: var(--text-dim, #b4c0c2); cursor: default; }
-#week-select:focus-visible, #week-current:focus-visible {
-  outline: 2px solid var(--cyan, #7bd3c7);
-  outline-offset: 3px;
-}
-#week-selection-status { margin: 14px 0 0; color: var(--text-dim, #b4c0c2); font-size: 13px; }
-#week-readiness {
-  margin: 18px 0 0;
-  padding: 16px;
-  border-left: 3px solid var(--amber, #f4b655);
-  background: var(--panel-alt, #14191c);
-  line-height: 1.6;
-}
-#week-live[hidden], #week-archive[hidden], #week-readiness[hidden], [data-week-panel][hidden] { display: none !important; }
-body[data-week-live-visible="false"] .ticker { display: none !important; }
-#main-content[data-current-card-ready="false"] > :not(#week-browser):not(#week-archive) { display: none !important; }
-#week-archive section { border: 1px solid var(--line, #344044); border-radius: 12px; padding: 22px; }
-#week-archive h2 { margin-top: 0; }
-#week-archive p { color: var(--text-dim, #b4c0c2); line-height: 1.6; }
-#week-archive .week-archive-scroll { overflow-x: auto; }
-#week-archive table { width: 100%; border-collapse: collapse; font-size: 14px; }
-#week-archive th, #week-archive td { padding: 13px 12px; text-align: left; border-bottom: 1px solid var(--line, #344044); }
-#week-archive th { color: var(--text-dim, #b4c0c2); font-size: 12px; }
-@media (max-width: 600px) {
-  #week-browser, #week-archive section { padding: 16px; }
-  #week-browser label { display: block; margin: 0 0 10px; }
-  #week-select { width: 100%; }
-  #week-current { margin: 10px 0 0; width: 100%; }
-  #week-archive th, #week-archive td { padding: 12px 8px; font-size: 12px; }
+#week-browser { display:flex; align-items:center; flex-wrap:wrap; gap:10px; margin:22px 0 16px; }
+#week-browser label { font-size:12px; font-weight:700; color:var(--text-dim); }
+#week-select, #week-current { min-height:40px; border:1px solid var(--line); border-radius:5px; padding:8px 12px; color:var(--text); background:var(--panel); font:inherit; font-size:12px; }
+#week-select { cursor:pointer; max-width:100%; }
+#week-current { cursor:pointer; }
+#week-current:disabled { opacity:.45; cursor:default; }
+#week-select:focus-visible, #week-current:focus-visible, .week-game-link:focus-visible, .week-archive-row:focus-visible { outline:2px solid var(--cyan); outline-offset:3px; }
+#week-selection-status { margin:0 0 0 auto; color:var(--text-dim); font-size:11px; }
+#week-readiness { flex-basis:100%; }
+#week-readiness[hidden], #main-content > [hidden], body[data-week-live-visible="false"] .ticker { display:none !important; }
+#week-card { min-width:0; }
+.week-game-link { border:0; padding:0; background:none; color:inherit; font:inherit; cursor:pointer; text-align:left; }
+.week-saved-card .board td { white-space:normal; }
+.week-saved-note { color:var(--text-dim); font-size:12px; line-height:1.6; margin:14px 0; }
+.week-archive-detail .week-saved-note { padding:0 20px; }
+.week-saved-result { display:grid; gap:12px; padding:24px 20px; border-bottom:1px solid var(--line); }
+.week-saved-result strong { color:var(--text); font-size:22px; }
+.week-saved-card .inspector-col { min-width:0; }
+.week-pending-card { display:block; }
+.week-pending-message { padding:36px 24px; border:1px solid var(--line); background:var(--panel); }
+.week-pending-message h3 { font-size:26px; margin:12px 0; }
+.week-pending-message p { color:var(--text-dim); line-height:1.6; }
+@media (max-width:600px) {
+  #week-browser { gap:8px; }
+  #week-browser label { flex-basis:100%; }
+  #week-select { flex:1; min-width:0; }
+  #week-selection-status { flex-basis:100%; margin:0; }
+  .week-pending-message { padding:24px 16px; }
 }

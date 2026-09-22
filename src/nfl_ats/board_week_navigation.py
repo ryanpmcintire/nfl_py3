@@ -117,28 +117,39 @@ def _archive_markup(weeks: list[dict[str, Any]]) -> str:
     sections: list[str] = []
     for week in weeks:
         rows: list[str] = []
-        for game in week["games"]:
+        for index, game in enumerate(week["games"]):
             featured = "Best pick" if game["bestPick"] else "Card pick"
             rows.append(
-                "<tr>"
-                f"<td>{html.escape(game['awayTeam'])} at {html.escape(game['homeTeam'])}</td>"
-                f"<td>{html.escape(game['pickTeam'])} {html.escape(game['pickLine'])}</td>"
-                f"<td>{html.escape(game['confidence'])}</td>"
-                f"<td>{html.escape(game['status'])}</td>"
-                f"<td>{html.escape(game['score'] or '—')}</td>"
-                f"<td>{featured}</td>"
-                "</tr>"
+                f'<tr class="game week-archive-row" data-archive-index="{index}" tabindex="0"'
+                f' aria-label="Inspect {html.escape(game["awayTeam"])} '
+                f'at {html.escape(game["homeTeam"])}">'
+                '<td class="matchup" data-label="Matchup">'
+                '<button type="button" class="week-game-link">'
+                f"{html.escape(game['awayTeam'])} at <b>{html.escape(game['homeTeam'])}</b>"
+                "</button></td>"
+                '<td class="pick" data-label="Pick">'
+                f"{html.escape(game['pickTeam'])} {html.escape(game['pickLine'])}</td>"
+                f'<td class="prob" data-label="Cover chance">{html.escape(game["confidence"])}</td>'
+                f'<td data-label="Result">{html.escape(game["status"])}</td>'
+                f'<td data-label="Score">{html.escape(game["score"] or "—")}</td>'
+                f'<td data-label="Card">{featured}</td></tr>'
             )
         sections.append(
-            f'<section data-week-panel="{week["key"]}" hidden>'
-            f"<h2>{week['label']} published picks</h2>"
-            "<p>These picks and pool lines are the card that was served for this week.</p>"
-            '<div class="board-scroll week-archive-scroll"><table><thead><tr>'
-            "<th>Matchup</th><th>Pick</th><th>Confidence</th><th>Result</th>"
+            f'<div class="week-grid week-saved-card" data-week-panel="{week["key"]}">'
+            '<section class="board-col"><div class="section-head">'
+            f"<h2>Week {week['week']} / The complete card</h2>"
+            f'<span class="sub">{len(week["games"])} games · select a game to inspect</span></div>'
+            '<p class="week-saved-note">The picks and pool lines published for this week.</p>'
+            '<div class="board-scroll"><table class="board"><thead><tr>'
+            "<th>Matchup</th><th>Pick</th><th>Cover chance</th><th>Result</th>"
             "<th>Score</th><th>Card</th>"
             f"</tr></thead><tbody>{''.join(rows)}</tbody></table></div></section>"
+            '<section class="inspector-col"><div class="section-head">'
+            "<h2>Game room / Selected matchup</h2>"
+            '<span class="sub">The published pick and final result</span></div>'
+            '<div class="week-archive-detail" aria-live="polite"></div></section></div>'
         )
-    return f'<div id="week-archive" hidden>{"".join(sections)}</div>'
+    return f'<template id="week-archive">{"".join(sections)}</template>'
 
 
 def enhance(
@@ -174,7 +185,7 @@ def enhance(
             + browser
             + document[opening_end + 1 :]
         )
-        document = document.replace("<body", '<body data-week-live-visible="false"', 1)
+        document = document.replace("<body", '<body data-week-live-visible="true"', 1)
         return document.replace("</head>", f"<style>{css}</style></head>", 1)
     published = None
     if content.board.season is not None and content.board.week is not None and content.board.games:

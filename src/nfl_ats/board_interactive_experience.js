@@ -194,7 +194,7 @@
     if (receiptUI.dialog.open) return;
     if (roomUI.dialog.open) { if (event.key === 'Escape') { event.preventDefault(); roomUI.dialog.close(); } return; }
     const nativeControl = event.target.closest('input,textarea,select,button,a,summary,[contenteditable="true"],[role="tablist"],.stadium-stage'); if (nativeControl) return;
-    if ($('#week-live')?.hidden) return;
+    if (document.body.dataset.weekLiveVisible === 'false') return;
     if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(event.key)) return;
     if (event.key === 'Enter') { const row = event.target.closest('table.board tr.game'); if (!row) return; event.preventDefault(); window.atsSelectGame(row.dataset.gameId); openRoom(); return; }
     event.preventDefault(); moveGame(event.key === 'ArrowUp' || event.key === 'ArrowLeft' ? -1 : 1);
