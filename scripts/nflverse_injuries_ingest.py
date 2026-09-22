@@ -70,7 +70,6 @@ def fetch_season(season: int) -> dict[str, Any]:
 
 
 def run_ingest(output_dir: Path) -> None:
-    output_dir.mkdir(parents=True, exist_ok=True)
     manifest_entries: list[dict[str, Any]] = []
     frames: list[pd.DataFrame] = []
 
@@ -91,11 +90,18 @@ def run_ingest(output_dir: Path) -> None:
         assert frame is not None
         frames.append(frame)
 
+    failed_entries = [e for e in manifest_entries if not e["ok"]]
+    if any(e["season"] == SEASON_END for e in failed_entries):
+        raise SystemExit(
+            f"current season {SEASON_END} failed to fetch -- aborting without writing a snapshot"
+        )
+
     if not frames:
         raise SystemExit(
             "no seasons fetched successfully -- aborting, not writing an empty snapshot"
         )
 
+    output_dir.mkdir(parents=True, exist_ok=True)
     combined = pd.concat(frames, ignore_index=True, sort=False)
     combined["season"] = pd.to_numeric(combined["season"], errors="raise").astype(int)
 
@@ -103,7 +109,6 @@ def run_ingest(output_dir: Path) -> None:
     atomic_parquet(combined, out_path)
 
     ok_entries = [e for e in manifest_entries if e["ok"]]
-    failed_entries = [e for e in manifest_entries if not e["ok"]]
     per_season_row_counts = {str(e["season"]): e["n_rows"] for e in ok_entries}
     per_season_null_date_modified = {
         str(e["season"]): e["n_null_date_modified"] for e in ok_entries
@@ -152,7 +157,9 @@ def run_ingest(output_dir: Path) -> None:
 def main() -> None:
     import argparse
 
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(
+        description="Capture nflverse injury reports through the current season."
+    )
     parser.add_argument("--output", type=Path, default=None)
     args = parser.parse_args()
     output_dir = args.output or (

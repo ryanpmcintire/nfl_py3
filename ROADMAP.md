@@ -821,6 +821,7 @@ gets measured is recorded through both registries with
 
 ### Dashboard release verified - 2026-09-22
 
+- **LEAD-64 (capture integrity subtask):** the injury importer now aborts before creating a capture directory or replacing output when the current-season request fails. Historical-season gaps remain tolerated. This prevents a historical-only capture from reporting success and an empty failed directory from suppressing scheduler retries. The Friday/Sunday acquisition workflow remains open; verification is recorded in the [capture integrity lane](docs/lanes/done/injury-current-season-capture.md).
 - **UI-20:** current-week selector, original published-pick archives, Week 3 readiness, keyboard game-room controls, correct lineup/formation selection states, column guide, and unique ticker keyboard links. Measured in Edge: Weeks 1/2 each show 16 original picks; history, mobile layout and keyboard interaction pass without browser exceptions.
 - **LEAD-64 (presentation subtask):** current injury names/designations reach the card, latest cleared statuses suppress prior designations, and completed games are excluded. The Friday/Sunday acquisition workflow remains open.
 - **OPS-06:** second-host setup now includes the tracked non-secret source-policy configuration. External second-host deployment remains open.

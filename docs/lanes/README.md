@@ -51,6 +51,9 @@ modified lane when the prompt just says to continue.
 
 ## Done
 
+- [injury-current-season-capture](done/injury-current-season-capture.md) - 2026-09-22: failed current-season requests preserve existing data and leave no empty capture directory; broader Friday/Sunday acquisition remains open.
+- [Backlog triage and deployment](done/backlog-triage-2026-09-22.md) - completed batch deployed; scoped blockers and next-work pointers saved.
+
 - [weekly-card-readiness](done/weekly-card-readiness.md) - 2026-09-22: current-week selector, original archived picks, readiness, and parallel dashboard fixes verified; Week 3 input acquisition remains active.
 - [dashboard-lineup-toggle-state](done/dashboard-lineup-toggle-state.md) - 2026-09-22: initial lineup toggle state agrees with visible content.
 - [dashboard-formation-selection-state](done/dashboard-formation-selection-state.md) - 2026-09-22: formation controls expose the selected player.
