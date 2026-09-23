@@ -4,6 +4,20 @@
 Re-grade Tuesday-knowable legacy registry families on the line-move yardstick
 (finer than accuracy per docs/lanes/positive-control-power.md).
 
+## State (2026-09-23, session 6 - batch 4 added and run, ruff clean, record
+commands drafted, NOT run)
+
+**Session 6 summary**: added `TERM_DECLARATIONS_BATCH4` (`--batch 4`) for
+the 2 families batch 3 flagged but skipped -- `special_teams_return_top_quartile`
+and `hc_year_one_fade`. `ruff check` (no --fix) passes clean. Ran `--batch 4`
+twice (first run hit a `data_root` path bug in the special_teams builder,
+fixed, second run clean, both terms `error: null`, 1503 paired_games each).
+Results in Batch 4 results below. `hc_year_one_fade` correctly uses the
+week<=8 restriction the registry family requires (batch 3's `coach_fade`
+term did not have this restriction, so it is a different, non-duplicate
+construction). Record commands drafted, NOT executed (no registry-write
+authorization given).
+
 ## State (2026-09-23, session 5 - all code written, ruff clean, both runs
 executed successfully, record commands drafted, NOT run)
 
@@ -144,6 +158,41 @@ Only 4 of the requested 8 confirmed within budget; ranks below coach_fade
 by a passing `ruff check` and two successful runs (session 5) — nothing
 pending from session 4's interrupted edit.
 
+## Batch 4 (session 6, predeclared BEFORE running)
+
+The 2 families the batch-3 ranking flagged but skipped:
+`special_teams_return_top_quartile` (ratio 1.694, onfield) and
+`hc_year_one_fade` (ratio 1.495, offfield). Both have confirmed live
+Tuesday-safe standalone builders in `src/nfl_ats`, used as-is (read, not
+re-derived):
+
+1. `special_teams_return_top_quartile` ->
+   `special_teams_return_tilt_overlay.special_teams_return_flag_by_game_fail_open(REPO, schedule)`
+   (local data confirmed present:
+   `data/raw/special_teams/20260819T232400Z/team_season.parquet`) ->
+   `home_return_top_quartile`/`away_return_top_quartile`. Term: +1.0 home
+   flagged (and not both flagged), -1.0 away flagged (and not both), 0.0
+   else -- mirrors `apply_special_teams_return_tilt_overlay`'s own
+   both-flagged exclusion.
+2. `hc_year_one_fade` -> SAME builder batch 3's `coach_fade_on_production`
+   used, `coach_fade_overlay.year_one_by_game(schedule)` (`CHALLENGER_ID =
+   "hc_year_one_fade_overlay"` in that module -- confirmed this is the
+   correct source). **Read (`registry/weak_signals.json` line 37580) shows
+   the registered family is restricted to "weeks 1-8"** (`docs/hc_year_one_fade.md`,
+   effect 0.7528 accuracy_points, se 0.5036) and `year_one_by_game` itself
+   carries no week filter -- the week<=8 cutoff lives only in
+   `apply_coach_fade_overlay`'s `eligible` mask (`OVERLAY_WEEK_MAX = 8`).
+   Batch 3's `add_coach_fade_term` applied the flag to ALL weeks, no cutoff
+   -- so batch 3 did NOT actually regrade the registered `hc_year_one_fade`
+   family, it graded an unrestricted variant of the same underlying flag.
+   This resolves part of the open ranking discrepancy: batch 4's
+   `hc_year_one_fade_on_production` term applies the same week<=8 filter as
+   the registry entry (and as `apply_coach_fade_overlay`), so it is NOT a
+   duplicate of batch 3's term despite sharing a builder function.
+
+Both added as `TERM_DECLARATIONS_BATCH4` behind `--batch 4` in
+`scripts/line_move_regrade_legacy.py`; batches 1-3 unchanged.
+
 ## Results (session 5, measured this session)
 
 `division_revenge_tilt` (batch 2, merge-fix run,
@@ -165,9 +214,36 @@ Batch 3 (`artifacts/line_move_regrade_legacy/20260923T224045Z/results.json`,
   negative but week block crosses zero, so this one does NOT meet the
   wrong-sign-resolved bar on both block types; stays unresolved.
 
+## Batch 4 results (session 6, measured this session)
+
+`artifacts/line_move_regrade_legacy/20260923T224601Z/results.json`, both
+`error: null`, 1503 paired games each (matches base population; first run
+hit a `data_root` path bug in the special_teams builder -- passed `REPO`
+instead of `REPO / "data"`, fixed and confirmed via a clean re-run, `ruff
+check` still passes):
+
+- `special_teams_return_top_quartile_on_production`: mean **-0.0642
+  pts**, season-block **[-0.0913, -0.0359]** P+ **0.00**, week-block
+  **[-0.1086, -0.0225]** P+ **0.002** -- both block types entirely
+  negative (accuracy companion -0.0027 pts, P+ 0.2965). decisive record
+  35-56 (91 decisive games, mean -1.060 pts); term fires on 36.8% of
+  games. **This is the OPPOSITE sign from the registered family's own
+  prior read** (registry `special_teams_return_top_quartile`: P+ 0.9547,
+  "back them" -- predicted positive on team_covered/accuracy). On the
+  line-move yardstick the market moves AWAY from the flagged side, not
+  toward it.
+- `hc_year_one_fade_on_production` (week<=8 only, matching the
+  registry's own restriction -- NOT a duplicate of batch 3's unrestricted
+  `coach_fade_on_production`): mean **-0.0043 pts**, season-block
+  **[-0.0214, 0.0153]** P+ 0.32, week-block **[-0.0240, 0.0147]** P+
+  0.3245 -- both intervals cross zero, unresolved. decisive record 9-14
+  (23 decisive games, mean -0.283 pts); term fires on 17.6% of games.
+
 ## Next
 
-- 2026-09-23 root: division revenge (b2) and batch 3 recorded (registry 7,057). Division revenge is a resolved wrong sign on both blockings (-0.054 [-0.115,-0.012]). coach_fade stays unresolved (season block negative, week block crosses zero). Batch 4 = special_teams_return_top_quartile and hc_year_one_fade (skipped by an unrecoverable ranking discrepancy). Draft commands below are history.
+- 2026-09-23 root: batch 4 recorded (registry 7,059). special_teams_return_top_quartile is a resolved wrong sign on line movement for this Tuesday-base variant (-0.064 [-0.091,-0.036], week block also negative, decisive 35-56), opposite its accuracy prior; not a served member (only in unserved_tilt_marginals). hc_year_one_fade unresolved. Further batches only for families with a live builder; the ranking discrepancy is documented in Open.
+
+- 2026-09-23 root: division revenge (b2) and batch 3 recorded (registry 7,057). Division revenge is a resolved wrong sign on both blockings (-0.054 [-0.115,-0.012]). coach_fade stays unresolved (season block negative, week block crosses zero). Batch 4 (special_teams_return_top_quartile, hc_year_one_fade) run this session -- see Batch 4 results above. special_teams_return_top_quartile is a candidate wrong-sign-resolved case (both blockings wholly negative, P+ 0.00/0.002) but OPPOSITE-signed from its own registry prior (which was positive, P+ 0.9547) -- naming the mechanism is an orchestrator research call, not made this session. hc_year_one_fade (week<=8) stays unresolved (both blockings cross zero). Neither recorded yet (no registry-write authorization this session). Draft commands below are history except where noted.
 1. **Orchestrator decision needed on `division_revenge_tilt`**: both season-
    and week-block intervals are wholly negative (P+ 0.00 both). Per
    AGENTS.md this is the shape of an admissible `wrong_sign_resolved` closing
@@ -188,6 +264,10 @@ nfl-ats weak-signals record --effect-units ats_points --classification unresolve
 nfl-ats weak-signals record --effect-units ats_points --classification unresolved_below_power --league nfl --season-start 2020 --season-end 2025 --sample-blocks 6 --family line_move_regrade_legacy_v3 --category schedule --plain-summary "Dome-shootout-favorite line-move regrade: mean -0.006 pts/game toward the pick; season-block interval [-0.014,0.000] P+ 0.011; week-block interval [-0.016,0.002] P+ 0.076."
 
 nfl-ats weak-signals record --effect-units ats_points --classification unresolved_below_power --league nfl --season-start 2020 --season-end 2025 --sample-blocks 6 --family line_move_regrade_legacy_v3 --category onfield --plain-summary "Coach-fade (year-one HC) line-move regrade: mean -0.016 pts/game toward the pick; season-block interval [-0.020,-0.012] P+ 0.00; week-block interval [-0.037,0.004] P+ 0.064 -- season block alone is wholly negative, week block crosses zero."
+
+nfl-ats weak-signals record --effect-units ats_points --classification unresolved_below_power --league nfl --season-start 2020 --season-end 2025 --sample-blocks 6 --family line_move_regrade_legacy_v4 --category onfield --plain-summary "Special-teams-return-top-quartile line-move regrade: mean -0.064 pts/game toward the pick; season-block interval [-0.091,-0.036] P+ 0.00; week-block interval [-0.109,-0.023] P+ 0.002 -- both intervals wholly negative, OPPOSITE sign from the registered family's own prior (P+ 0.9547 positive). Drafted as unresolved_below_power pending an orchestrator call on whether this is an admissible wrong_sign_resolved closing ground with a named mechanism."
+
+nfl-ats weak-signals record --effect-units ats_points --classification unresolved_below_power --league nfl --season-start 2020 --season-end 2025 --sample-blocks 6 --family line_move_regrade_legacy_v4 --category offfield --plain-summary "HC-year-one-fade (weeks 1-8 only, matching the registered family) line-move regrade: mean -0.004 pts/game toward the pick; season-block interval [-0.021,0.015] P+ 0.32; week-block interval [-0.024,0.015] P+ 0.32 -- both intervals cross zero."
 ```
 
 3. Report the open discrepancy (special_teams_return_top_quartile /
@@ -209,9 +289,14 @@ this file if needed; re-fetch via `git log -p -- docs/lanes/line-move-regrade-le
 restating here to keep this file under one page.
 
 ## Open
-- The ranking discrepancy above (special_teams_return_top_quartile,
-  hc_year_one_fade) needs orchestrator adjudication before any future batch
-  reuses this session's ranked-list methodology.
+- Batch-4 ranking discrepancy RESOLVED for `hc_year_one_fade` this session
+  (batch 3's coach_fade term was an unrestricted variant, not the
+  registered weeks-1-8 family; batch 4 built the correct restricted
+  version, both blockings cross zero). `special_teams_return_top_quartile`
+  now needs a DIFFERENT orchestrator call: both blockings are wholly
+  negative on the line-move yardstick, opposite-signed from the family's
+  own registry prior -- naming a mechanism (or declining to) is a research
+  decision this session did not make.
 - If a future session wants more than 4 batch-3 terms, ranks below
   coach_fade (<0.513) are completely unexamined.
 - Split-half reliability check on the roof_state replication (AGENTS.md's

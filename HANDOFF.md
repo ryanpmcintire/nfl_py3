@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-23T22:43:26.793660+00:00`
+Refreshed at: `2026-09-23T22:47:23.127199+00:00`
 
 ## Start here
 
@@ -21,7 +21,7 @@ Refreshed at: `2026-09-23T22:43:26.793660+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `107359c212ed` — Line-move regrade: fix the division revenge join; batch 3 selection recorded
+- Baseline commit: `733be4b0100d` — Line-move regrade batch 3 and division revenge: revenge tilt moves the line away
 - Pending change set: 9 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M artifacts/prospective/challengers.json`

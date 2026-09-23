@@ -18,7 +18,7 @@ from line_move_yardstick_paired_eval import cell_stats  # noqa: E402
 from roof_state_screen import build_prediction_table as roof_state_prediction_table  # noqa: E402
 
 from nfl_ats.bye_edge_fade_overlay import bye_edge_flag_by_game  # noqa: E402
-from nfl_ats.coach_fade_overlay import year_one_by_game  # noqa: E402
+from nfl_ats.coach_fade_overlay import OVERLAY_WEEK_MAX, year_one_by_game  # noqa: E402
 from nfl_ats.data import DataContractError  # noqa: E402
 from nfl_ats.division_revenge_tilt_overlay import division_revenge_side_by_game  # noqa: E402
 from nfl_ats.forecast_cold_visitor_tilt_overlay import (  # noqa: E402
@@ -54,6 +54,9 @@ from nfl_ats.schedule_flag_features import (  # noqa: E402
     derive_dome_shootout_favorite_features,
     derive_home_thursday_features,
     derive_week1_dog_features,
+)
+from nfl_ats.special_teams_return_tilt_overlay import (  # noqa: E402
+    special_teams_return_flag_by_game_fail_open,
 )
 from nfl_ats.tank_zone_fade_tilt_overlay import tank_zone_flag_by_game  # noqa: E402
 from nfl_ats.transaction_flag_features import (  # noqa: E402
@@ -427,6 +430,43 @@ def add_coach_fade_term(population: pd.DataFrame, schedule: pd.DataFrame) -> pd.
     return out
 
 
+def add_special_teams_return_term(
+    population: pd.DataFrame, schedule: pd.DataFrame
+) -> pd.DataFrame:
+    flags = special_teams_return_flag_by_game_fail_open(REPO / "data", schedule)
+    flags = flags.drop_duplicates(subset="game_id")[
+        ["game_id", "home_return_top_quartile", "away_return_top_quartile"]
+    ]
+    flags["game_id"] = flags["game_id"].astype(str)
+    out = population.merge(flags, on="game_id", how="left")
+    out["home_return_top_quartile"] = out["home_return_top_quartile"].fillna(False)
+    out["away_return_top_quartile"] = out["away_return_top_quartile"].fillna(False)
+    both_flagged = out["home_return_top_quartile"] & out["away_return_top_quartile"]
+    out["special_teams_return_term"] = np.where(
+        out["home_return_top_quartile"] & ~both_flagged,
+        1.0,
+        np.where(out["away_return_top_quartile"] & ~both_flagged, -1.0, 0.0),
+    )
+    return out
+
+
+def add_hc_year_one_fade_term(population: pd.DataFrame, schedule: pd.DataFrame) -> pd.DataFrame:
+    flags = year_one_by_game(schedule)
+    flags = flags.drop_duplicates(subset="game_id")[
+        ["game_id", "year_one_home", "year_one_away"]
+    ]
+    out = population.merge(flags, on="game_id", how="left")
+    out["year_one_home"] = out["year_one_home"].fillna(False)
+    out["year_one_away"] = out["year_one_away"].fillna(False)
+    week_eligible = pd.to_numeric(out["week"], errors="coerce").le(OVERLAY_WEEK_MAX)
+    out["hc_year_one_fade_term"] = np.where(
+        out["year_one_home"] & week_eligible,
+        1.0,
+        np.where(out["year_one_away"] & week_eligible, -1.0, 0.0),
+    )
+    return out
+
+
 def loso(frame: pd.DataFrame, features: tuple[str, ...]) -> tuple[np.ndarray, dict]:
     frame = frame.reset_index(drop=True)
     x_cols = list(features)
@@ -567,6 +607,38 @@ TERM_DECLARATIONS_BATCH3 = (
     },
 )
 
+SELECTION_RULE_BATCH4 = (
+    "Batch 4 (2026-09-23, session 6): the 2 families batch 3 confirmed had a live builder but "
+    "deliberately left ungraded, flagged as an open ranking discrepancy -- "
+    "special_teams_return_top_quartile (ratio 1.694, onfield) and hc_year_one_fade (ratio 1.495, "
+    "offfield). special_teams_return_top_quartile builds from "
+    "special_teams_return_tilt_overlay.special_teams_return_flag_by_game_fail_open, local data "
+    "confirmed present. hc_year_one_fade shares its builder (coach_fade_overlay.year_one_by_game) "
+    "with batch 3's coach_fade_on_production, but the registered hc_year_one_fade family is "
+    "restricted to weeks 1-8 (docs/hc_year_one_fade.md) while batch 3's term applied the flag to "
+    "all weeks with no cutoff -- batch 3 therefore graded an unrestricted variant, not the "
+    "registered family; this batch applies the same week<=8 cutoff apply_coach_fade_overlay uses "
+    "(OVERLAY_WEEK_MAX), so the two terms are not duplicates despite the shared flag builder."
+)
+
+RATIO_TABLE_BATCH4 = (
+    ("special_teams_return_top_quartile_on_production", 1.694, "onfield"),
+    ("hc_year_one_fade_on_production", 1.495, "offfield"),
+)
+
+TERM_DECLARATIONS_BATCH4 = (
+    {
+        "label": "special_teams_return_top_quartile_on_production",
+        "term_columns": ("special_teams_return_term",),
+        "builder": add_special_teams_return_term,
+    },
+    {
+        "label": "hc_year_one_fade_on_production",
+        "term_columns": ("hc_year_one_fade_term",),
+        "builder": add_hc_year_one_fade_term,
+    },
+)
+
 
 def variant_report(
     declaration: dict, population: pd.DataFrame, schedule: pd.DataFrame, seed: int, draws: int
@@ -625,11 +697,15 @@ def variant_report(
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--batch", type=int, choices=(1, 2, 3), default=1)
+    parser.add_argument("--batch", type=int, choices=(1, 2, 3, 4), default=1)
     parser.add_argument("--only", type=str, default=None)
     args = parser.parse_args()
 
-    if args.batch == 3:
+    if args.batch == 4:
+        term_declarations = TERM_DECLARATIONS_BATCH4
+        selection_rule = SELECTION_RULE_BATCH4
+        ratio_table = RATIO_TABLE_BATCH4
+    elif args.batch == 3:
         term_declarations = TERM_DECLARATIONS_BATCH3
         selection_rule = SELECTION_RULE_BATCH3
         ratio_table = RATIO_TABLE_BATCH3
