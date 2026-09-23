@@ -364,3 +364,327 @@ where the season-lagged rate is noisy; full per-cell table is in
    pick-probability signal decision. If a fitted rate from this table is
    later wired into a served or research pick path, that wiring is the
    decision point requiring a record.
+
+## Unit 5 predeclaration (2026-09-23, fourth session, before grading)
+
+Part (a): `scripts/injury_scenario_producer.py` severity source switches from
+the fixed practice-only fallback to `nfl_ats.availability.resolve_unavailability`-
+style season-lagged rates fit on `data/processed/injury_play_outcomes.parquet`
+via `build_season_lagged_availability_rates(target_seasons=[2026])` (prior
+seasons only, matches the existing contract). Sparse-cell guard: a cell
+(report_category, practice_category, position_group or its `__all__`
+aggregate) is only trusted if its fitted-rate row has
+`observations >= 250` (chosen from Unit 4's own calibration table, where the
+`out`+`full` (n=200) and `out`+`none` (n=51) cells were the ones fitted beat
+by fixed; `questionable`+`dnp` n=2,701 and `questionable`+`limited` n=10,437
+were comfortably fitted-favoring); below the floor, falls back to
+`fixed_unavailability`.
+
+Part (b): grading population = seasons 2020-2024 intersection already
+established in Unit 2 (`opener_evaluation` per_game via
+`pick_probability_fit.build_fit_population`, `game_features_player_value.parquet`
+point-in-time rows, i.e. both `*_injury_observed_at` populated). Borderline
+players per team-game come from `injury_play_outcomes.parquet` (report/practice
+category + position_group), severity resolved the same way as part (a) but
+with a genuine leave-earlier-seasons-only rate per target season (2013..s-1
+training window, s in 2020..2024) — no fold sees its own season's outcomes.
+To bound the joint-scenario enumeration, each side keeps at most the 6
+highest-severity borderline players (2^6=64 subsets/side, 4,096 scenarios/game
+cap); games/sides needing the cap are counted and disclosed, not silently
+dropped.
+
+Margin-shift slope is the season-specific Unit 2 LOSO fold slope (loaded from
+`artifacts/injury_value_margin_map/20260923T210029Z/summary.json`
+`margin_regression.loso_folds`, e.g. 2020 -0.274 ... 2024 -0.313), i.e. the
+2020 games use the slope fit on 2021-2024 only, matching "Unit 2 slope refit
+LOSO" literally (a stricter, per-season LOSO, not the single pooled slope
+Unit 3's live producer used for 2026).
+
+Cover-probability read: the live producer's technique (shift the margin
+center by `delta` == read the discrete distribution at `line - delta` with
+center fixed) needs a per-game discrete lattice, which is not persisted for
+historical games. Deviation, disclosed: reuse the actual served discrete
+primitive `nfl_ats.mass_preserving_lattice.band_read` /
+`discrete_margin_mapping.discrete_side_read` directly (not reimplemented),
+with `pool_line`/`pool_margin` = `data/processed/game_features.parquet`
+`spread_line`/`result` for all seasons strictly before the target game's
+season (2009 floor, point-in-time safe), and a per-game `point` (center)
+solved once by bisection so that
+`discrete_side_read(pool, pool, tue_open_home_spread, point).home_cover_probability`
+reproduces that game's own known served `home_cover_probability_at_open`
+exactly (this makes every zero-shift scenario collapse back to the served
+probability by construction, and keeps the read genuinely nonlinear/discrete,
+unlike a local-linear proxy which would erase exactly the curvature effect
+Unit 3 found). Scenario probability = the same read at
+`line = tue_open_home_spread - margin_shift`. Games where bisection fails to
+bracket a root are flagged and fall back to the served probability
+(no-shift), counted and disclosed, not silently included as a match.
+
+## Unit 5 complete (2026-09-23, fifth session)
+
+Pre-work: `Get-CimInstance Win32_Process` found 12 stray processes from the
+prior session's two hung background tasks (`bhxm0adxc`: 3 bash wrappers +
+3 python leaves running `injury_scenario_producer.py`; `bqer9icvr`: 3 bash
+wrappers running `ruff check ... && injury_scenario_grade.py` + 3 python
+leaves running `injury_scenario_grade.py`), all confirmed by command line as
+this repo's `F:\Repos\nfl_py3\scripts\injury_scenario_*.py` — killed all 12
+(`Stop-Process -Force`).
+
+Bug 2 fix applied in both files: `SIGNAL_REPORT_CATEGORIES =
+frozenset(("out","doubtful","questionable"))`,
+`SIGNAL_PRACTICE_CATEGORIES = frozenset(("dnp","limited"))`. In
+`scripts/injury_scenario_producer.py`'s `borderline_players`, a player is
+skipped unless its report or practice category is in one of those sets,
+before `resolve_severity` is used for magnitude. In
+`scripts/injury_scenario_grade.py`'s `build_borderline_table`, the outcomes
+frame is filtered the same way on its precomputed `report_category`/
+`practice_category` columns before severity resolution.
+
+Enumeration cap added to the producer (it previously had none):
+`MAX_ENUMERATED_PLAYERS_PER_SIDE = 12`. `side_subsets` now sorts a side's
+gated borderline players by `sit_probability` descending, enumerates 2^n
+over at most the top 12, and folds any remainder's summed `sit_probability`
+into every scenario's `sit_severity` as a constant expected-value addend
+(not part of the combinatorics or pairwise coupling) — so a long report
+still bounds runtime at 4,096 scenarios/side without silently dropping the
+excluded players' contribution to the value-lost estimate. Returns
+`(subsets, truncated)` now; caller records `side_truncated_at_cap` per game
+and the summary reports `games_with_side_truncated_at_cap` and
+`max_enumerated_players_per_side`. The grader's existing
+`MAX_BORDERLINE_PER_SIDE=6` (simple truncation, predeclared in Unit 5,
+already a hard cap) was left as-is — untouched by this fix.
+
+`ruff check scripts/injury_scenario_producer.py scripts/injury_scenario_grade.py`
+-> all checks passed.
+
+**Producer run** (`.tools/uv.exe run python scripts/injury_scenario_producer.py`,
+finished well under a minute): output
+`artifacts/injury_scenario_producer/20260923T213811Z/`. 16 games,
+`severity_source_counts` = `{season_lagged_rate: 12, fixed_status_prior: 0}`
+(sparse floor not rejecting everything, gate is working). Only
+`2026_03_ATL_GB` has borderline players (10 GB-home, 2 ATL-away, all
+DNP/Limited — qualitative gate correctly admits only real DNP/Limited rows,
+no cap truncation since 10<12), 4,096 scenarios,
+`served_home_cover_probability=0.428377`,
+`scenario_mixed_home_cover_probability=0.430144`, shift **+0.177 percentage
+points** (up slightly from Unit 3's fixed-severity +0.116, still well under
+1 point), pick side unchanged (away/ATL both ways). All other 15 games:
+zero borderline players (no report yet this early in the week or all Full
+Participation), zero shift. `games_with_side_truncated_at_cap=0`. Same
+honest null as Unit 3, now on the corrected qualitative-gate + fitted-rate
+severity path instead of the fixed-practice-only fallback.
+
+**Grader run** (`.tools/uv.exe run python scripts/injury_scenario_grade.py`,
+finished in well under the 480s timeout): output
+`artifacts/injury_scenario_grade/20260923T213822Z/summary.json` +
+`scoped_population.parquet`. 1,227 scoped games (seasons 2020-2024,
+point-in-time only, same population as Unit 2/5-predeclaration).
+`center_bisection_failures=0`, `games_zero_borderline_both_sides_with_nonzero_base_diff=0`.
+`games_with_side_truncated_at_cap=793` of 1,227 (real historical injury
+reports routinely list more than 6 qualitatively-borderline players/side,
+unlike this week's sparse Tuesday snapshot — disclosed, not hidden; the
+6-cap's expected-value handling was NOT added this unit, only the producer
+got it, per this session's scope decision to leave the grader's already-
+predeclared cap untouched).
+
+Cell 1, `raw_scenario_vs_served` (scenario-mixed probability vs served,
+paired, decisive_games=70, full/reduced wins 32/38, exact_null_p=0.5504):
+accuracy_delta_points **-0.489** [-2.277, 1.100], probability_positive
+**0.29225**. Brier improvement -0.0000940 [-0.00124, 0.00102], probability
+positive 0.4495. Log-loss improvement -0.000201 [-0.00259, 0.00210],
+probability positive 0.448. Per-season accuracy_delta_points: 2020 -0.457,
+2021 +0.424, 2022 -3.279, 2023 +0.758, 2024 0.0 — no consistent sign.
+**unresolved_below_power** (probability_positive not <=0.025 or >=0.975;
+interval crosses zero both directions; not a refuted mechanism).
+
+Cell 2, `fitted_term_scenario_shift_vs_4term_baseline` (scenario_shift as a
+5th fitted term on the served 4-term LOSO logistic vs the served 4-term
+baseline, decisive_games=50, full/reduced wins 19/31, exact_null_p=0.1189):
+accuracy_delta_points **-0.978** [-2.653, 0.239], probability_positive
+**0.0695**. Brier improvement -0.000410 [-0.00130, 0.000318], probability
+positive 0.178. Log-loss improvement -0.000818 [-0.00261, 0.000654],
+probability positive 0.183. Per-season accuracy_delta_points: 2020 0.0,
+2021 -0.847, 2022 -2.869, 2023 -1.136, 2024 0.0. **unresolved_below_power**
+(probability_positive=0.0695 is directionally suggestive but does not clear
+the <=0.025 resolved-directional bar; interval crosses zero; not refuted).
+
+Decision-relevant conclusion: on 2020-2024 historical outcomes, neither
+mixing lineup scenarios into the served cover probability nor adding the
+scenario shift as a 5th fitted term shows a resolved effect either way;
+both point estimates are negative (mixture slightly hurts paired accuracy
+on this population) but neither clears the resolved-directional bar, so
+per AGENTS.md this stays open/unresolved, not closed.
+
+Record commands for the root (not run — registry write is out of scope
+here):
+```
+nfl-ats weak-signals record --name injury_scenario_mixture_raw_vs_served --description "Joint lineup-scenario mixture (qualitative Q/D/O-or-DNP/Limited gate, season-lagged fitted severity with sparse-cell fallback, top-12-enumerated-plus-expected-value-remainder per side, measured pairwise unit coupling, per-season LOSO margin slope, exact discrete-lattice re-read via bisected center) vs served cover probability, paired on seasons 2020-2024 point-in-time injury population (same scope as Unit 2)." --source artifacts/injury_scenario_grade/20260923T213822Z/summary.json --effect -0.4889975550122249 --effect-units accuracy_points --classification unresolved_below_power --league nfl --season-start 2020 --season-end 2024 --standard-error 0.8860039282576608 --interval-low -2.276983459489766 --interval-high 1.1004249130211567 --probability-positive 0.29225 --sample-games 1227 --sample-blocks 89 --classification-evidence "Bootstrap probability_positive=0.29225 (2000 draws, season/week blocks), exact_null_p=0.5504 on 70 decisive games (32 scenario wins vs 38 served wins); Brier and log-loss also cross zero (probability_positive 0.4495/0.448); per-season accuracy_delta_points has no consistent sign (2020 -0.46, 2021 +0.42, 2022 -3.28, 2023 +0.76, 2024 0.0). Not a refuted mechanism (sign not consistently reversed) and no positive control run, so unresolved_below_power." --category health --plain-summary "Building out realistic game-day injury scenarios and mixing their cover probabilities together did not clearly sharpen or dull picks compared to just using the served number, on five seasons of real outcomes; the difference is too small and inconsistent to call yet."
+
+nfl-ats weak-signals record --name injury_scenario_mixture_fitted_term_vs_4term_baseline --description "Scenario-mixture shift (scenario_mixed_home_cover_probability minus served) added as a 5th fitted term to the served 4-term LOSO logistic (model_logit, composition_flag_sum, market_move_toward_home, market_move_available), paired against the served 4-term baseline on the same seasons 2020-2024 point-in-time population, both refit LOSO by season." --source artifacts/injury_scenario_grade/20260923T213822Z/summary.json --effect -0.9779951100244498 --effect-units accuracy_points --classification unresolved_below_power --league nfl --season-start 2020 --season-end 2024 --standard-error 0.7315433172923517 --interval-low -2.6528599737210365 --interval-high 0.23907253292673966 --probability-positive 0.0695 --sample-games 1227 --sample-blocks 89 --classification-evidence "Bootstrap probability_positive=0.0695 (2000 draws, season/week blocks) is directionally suggestive (candidate worse) but does not clear the <=0.025 resolved-directional bar; exact_null_p=0.1189 on 50 decisive games (19 candidate wins vs 31 baseline wins); Brier/log-loss also cross zero (probability_positive 0.178/0.183). Not refuted (interval not entirely on one side) and no positive control run, so unresolved_below_power." --category health --plain-summary "Adding the injury-scenario mixture as one more fitted ingredient in the pick model, instead of using it standalone, still did not clearly help or hurt picks over 2020-2024 -- it leans toward hurting a little but not enough to call it settled."
+```
+
+## Unit 5 status (2026-09-23, fourth session, superseded above): NOT complete, 50-call cap hit
+
+Both scripts are written and ruff-clean but neither has produced a real
+result yet. Two real bugs were found and one is still unfixed. Do not trust
+any artifact under `artifacts/injury_scenario_grade/` or a fresh
+`artifacts/injury_scenario_producer/` run from this session without
+re-checking against the fixes below.
+
+**Bug 1 (found, fixed in both files): coupling multiplier used the wrong
+unit.** In `side_subsets` (both `scripts/injury_scenario_producer.py` and
+`scripts/injury_scenario_grade.py`), the original Unit-3 code counted
+same-unit sitting pairs, then applied `UNIT_COUPLING_MULTIPLIER[sitting[0]["unit"]]`
+once per pair — using the FIRST sitting player's unit for every pair
+regardless of which unit that pair actually shared. This crashed
+(`KeyError: 'other'`) the first time a game had a sitting player whose unit
+is `"other"` (kicker/punter/long-snapper position groups) ahead of a same-
+unit pair elsewhere in the sitting list — which the old fixed-practice-only
+severity never surfaced enough borderline players to trigger, but the new
+fitted-rate severity does. Fixed in both files: apply
+`UNIT_COUPLING_MULTIPLIER[left["unit"]]` per matching pair directly, no
+`sitting[0]` indirection. **This fix is already saved on disk in both
+files** (confirmed via the successful Edit calls before the cap hit).
+
+**Bug 2 (found, NOT yet fixed anywhere): fitted rates make almost every
+player "borderline," causing combinatorial hang.** `practice_severity()`
+(the old fixed-only function) returned exactly `0.0` for
+`Full Participation`/no-report players, so only real DNP/Limited/Q-D-O
+players ever entered the scenario enumeration (small n, fast). The new
+`resolve_severity()` returns whatever the season-lagged fitted rate is for
+a cell, and a `(report=none, practice=full, position_group=X)` cell can have
+a small but nonzero fitted rate (normal game-day-inactive noise in the
+2013-2025 training data) that clears the 250-observation sparse floor. That
+turns nearly every listed player into a "borderline" player with tiny
+severity, blowing up `side_subsets`'s `2**n` enumeration per side (n can be
+15+ for a full injury report) — `scripts/injury_scenario_producer.py`'s
+week-3 background run (task `bhxm0adxc`) hung with zero output for 6+
+minutes before the cap hit and was never confirmed to finish; presumed
+still running or effectively stuck. A second producer run plus grading run
+(`bqer9icvr`) were also launched in the background after Bug 1's fix but
+before Bug 2 was diagnosed, so they carry the same hang risk and their
+output must not be trusted without verifying they actually completed.
+
+**Required fix, not yet applied**: gate "borderline" on a qualitative signal
+before ever computing/using the fitted magnitude, in both
+`borderline_players` (producer) and `build_borderline_table` (grader): only
+keep a player if `report_category in {"out","doubtful","questionable"}` OR
+`practice_category in {"dnp","limited"}` (i.e. never treat a `none`/`full`
+row as borderline regardless of what a sparse-cell-cleared fitted rate says
+— the fitted rate should only refine the MAGNITUDE for players who already
+show a real signal, not manufacture new borderline players out of normal
+noise). The grading script also already has a 6-per-side severity cap
+(`MAX_BORDERLINE_PER_SIDE = 6`) as a second safety net once the gate is
+added; the producer script has no such cap and should probably get one too
+now that fitted rates are wired in (even gated players could exceed 6 on a
+long Wednesday/Thursday report later in a real week). `SIGNAL_REPORT_CATEGORIES`
+and `SIGNAL_PRACTICE_CATEGORIES` constants were being added to
+`scripts/injury_scenario_producer.py` when the cap hit — the edit with those
+two frozensets did NOT apply (cap hit mid-call); the file on disk right now
+has Bug 1's fix but NOT the qualitative gate.
+
+## Unit 5 Next (for the root / a fresh subagent)
+
+1. In `scripts/injury_scenario_producer.py`: add
+   `SIGNAL_REPORT_CATEGORIES = frozenset(("out","doubtful","questionable"))`
+   and `SIGNAL_PRACTICE_CATEGORIES = frozenset(("dnp","limited"))` (module
+   level, after the `nfl_ats.availability` imports), then in
+   `borderline_players` compute `report_cat`/`practice_cat` via
+   `availability_report_category(row.get("report_status"))` /
+   `availability_practice_category(row["practice_status"])` and skip the
+   player unless `report_cat in SIGNAL_REPORT_CATEGORIES or practice_cat in
+   SIGNAL_PRACTICE_CATEGORIES`, BEFORE calling `resolve_severity` (or call
+   it and just gate on the result — either order is fine, but the gate must
+   exist). Same gate in `scripts/injury_scenario_grade.py`'s
+   `build_borderline_table` using `row.report_category`/`row.practice_category`
+   (already precomputed columns on the `injury_play_outcomes.parquet` rows,
+   no need to re-normalize).
+2. Kill any stray background python processes from this session first
+   (task ids `bhxm0adxc`, `bqer9icvr` — check with the shell's job list /
+   `tasklist | grep python` on Windows; if still running they are almost
+   certainly hung on the combinatorial bug above, not doing useful work).
+   Confirmed post-handback: `bhxm0adxc` finished on its own with
+   **exit code 255 (failed)**, not an infinite hang — consistent with the
+   Bug 2 diagnosis (most likely the same `KeyError`/combinatorial-blowup
+   family, or a related crash from the unguarded fitted-rate severity
+   change) rather than a true hang. Its output file is
+   `C:\Users\Ryan\AppData\Local\Temp\claude\F--Repos-nfl-py3\5ea705ef-c6be-4b65-8730-46dcbf2a8514\tasks\bhxm0adxc.output`
+   (not read this session — read it first before re-running, it likely has
+   the exact traceback). `bqer9icvr` also confirmed finished, also
+   **exit code 255 (failed)** — output file
+   `C:\Users\Ryan\AppData\Local\Temp\claude\F--Repos-nfl-py3\5ea705ef-c6be-4b65-8730-46dcbf2a8514\tasks\bqer9icvr.output`
+   (not read this session either). Both background runs are confirmed
+   over, neither is still occupying anything, and neither needs to be
+   killed — the "kill stray processes" step above is now moot; go straight
+   to reading both output files for the exact tracebacks, apply the Bug 2
+   qualitative-gate fix, then re-run fresh.
+3. Re-run `.tools/uv.exe run ruff check scripts/injury_scenario_producer.py
+   scripts/injury_scenario_grade.py`, fix anything new, then run the
+   producer once
+   (`.tools/uv.exe run python scripts/injury_scenario_producer.py`) and
+   confirm it finishes in well under a minute now that the gate bounds `n`.
+   Sanity-check `severity_source_counts` in its summary.json — expect a mix
+   of `season_lagged_rate` and `fixed_status_prior`, not all-fixed (that
+   would mean the sparse floor of 250 is rejecting everything, worth a
+   second look) and not a huge borderline-player blowup (that would mean
+   the gate didn't take).
+4. Run the grader once
+   (`.tools/uv.exe run python scripts/injury_scenario_grade.py`) — expect a
+   few minutes given the per-game bisection over ~1,200+ scoped games; if it
+   is still slow, the next lever is lowering `MAX_BORDERLINE_PER_SIDE` from
+   6 before touching anything else. Read `summary.json`'s
+   `raw_scenario_vs_served` and `fitted_term_scenario_shift_vs_4term_baseline`
+   cells (each already has `accuracy_delta_points`, `probability_positive`,
+   `brier_improvement`/`brier_probability_positive`,
+   `log_loss_improvement`/`log_loss_probability_positive`, `decisive_games`,
+   `full_decisive_wins`/`reduced_decisive_wins`, `exact_null_p`, and a
+   per-season `seasons` breakdown for season-block intervals) plus
+   `games_zero_borderline_both_sides_with_nonzero_base_diff` and
+   `center_bisection_failures` for disclosure. Classify each cell with the
+   same `probability_positive>=0.975 or <=0.025 -> resolved_directional`
+   rule as Unit 2 (else `unresolved_below_power`), then write two
+   `nfl-ats weak-signals record --category health --plain-summary ...`
+   commands (one per cell, same style/fields as Unit 2's two commands
+   above) and add them to this lane before any write-up calls this
+   settled. Neither cell's numbers exist yet — do not fabricate or guess
+   them; run the script for real first.
+5. If the qualitative gate alone doesn't bound runtime for some outlier
+   game (a real Q/D-heavy week can list 10+ players even after the gate),
+   the existing `MAX_BORDERLINE_PER_SIDE=6` truncation in the grader (and a
+   same-style cap worth adding to the producer) is the disclosed release
+   valve — `games_with_side_truncated_at_cap` in the grader's summary
+   already counts how often this binds.
+
+Reported (per AGENTS.md calibration + "count every look"): for (1) raw
+scenario-mixed vs served probability and (2) scenario-shift added as a 5th
+fitted term (`scenario_mixed_home_cover_probability - served_home_cover_probability`)
+on top of the served 4-term LOSO logistic (`FIT_FEATURES`) refit LOSO by
+season — both via `nfl_ats.signal_atlas._cell` (same machinery Unit 2 used):
+accuracy_delta_points, decisive-game record with exact binomial p, Brier and
+log-loss improvement with block-bootstrap 95% CI and probability_positive,
+and the per-season breakdown (season-block intervals). Classification uses
+the same `probability_positive>=0.975 or <=0.025 -> resolved_directional`
+rule as Unit 2; anything else `unresolved_below_power`, no interval-crossing
+closures. Script: `scripts/injury_scenario_grade.py`. Output:
+`artifacts/injury_scenario_grade/<ts>/`. No `src/` or served-path changes,
+run once.
+
+(Steps 1-5 above are now DONE — see "Unit 5 complete" earlier in this file
+for the real fix, the real producer/grader runs, both real result cells,
+and the two fully-assembled record commands. This section is kept verbatim
+as history of the predeclared plan; do not redo it.)
+
+## Next (for the root, 2026-09-23 fifth session handback)
+1. Run the two `nfl-ats weak-signals record` commands in "Unit 5 complete"
+   above (`injury_scenario_mixture_raw_vs_served`,
+   `injury_scenario_mixture_fitted_term_vs_4term_baseline`) — registry
+   write is the root's job, out of scope for this subagent.
+2. Both cells are `unresolved_below_power`; neither closes blocker 1/2 from
+   the original "Next" section, and neither promotes the scenario mixture
+   to a served or research-path input. Do not restore `injury_scenarios.py`
+   into `src/` on the strength of this unit.
+3. If revisited later: `games_with_side_truncated_at_cap=793/1227` in the
+   grader shows the 6-per-side cap binds often on real historical reports;
+   an expected-value-remainder upgrade (same style as the producer's new
+   12-cap) could be added to the grader if truncation bias is ever
+   suspected of masking a real effect — not needed to close this unit.

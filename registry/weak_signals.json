@@ -41270,6 +41270,62 @@
       "source": "docs/injury_news_vs_level.md",
       "standard_error": null
     },
+    "injury_scenario_mixture_fitted_term_vs_4term_baseline": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Bootstrap probability_positive=0.0695 (2000 draws, season/week blocks) is directionally suggestive (candidate worse) but does not clear the <=0.025 resolved-directional bar; exact_null_p=0.1189 on 50 decisive games (19 candidate wins vs 31 baseline wins); Brier/log-loss also cross zero (probability_positive 0.178/0.183). Not refuted (interval not entirely on one side) and no positive control run, so unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Scenario-mixture shift (scenario_mixed_home_cover_probability minus served) added as a 5th fitted term to the served 4-term LOSO logistic (model_logit, composition_flag_sum, market_move_toward_home, market_move_available), paired against the served 4-term baseline on the same seasons 2020-2024 point-in-time population, both refit LOSO by season.",
+      "effect": -0.9779951100244498,
+      "effect_units": "accuracy_points",
+      "family": null,
+      "interval": [
+        -2.6528599737210365,
+        0.23907253292673966
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Adding the injury-scenario mixture as one more fitted ingredient in the pick model, instead of using it standalone, still did not clearly help or hurt picks over 2020-2024 -- it leans toward hurting a little but not enough to call it settled.",
+      "probability_positive": 0.0695,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 89,
+      "sample_games": 1227,
+      "seasons": [
+        2020,
+        2024
+      ],
+      "source": "artifacts/injury_scenario_grade/20260923T213822Z/summary.json",
+      "standard_error": 0.7315433172923517
+    },
+    "injury_scenario_mixture_raw_vs_served": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Bootstrap probability_positive=0.29225 (2000 draws, season/week blocks), exact_null_p=0.5504 on 70 decisive games (32 scenario wins vs 38 served wins); Brier and log-loss also cross zero (probability_positive 0.4495/0.448); per-season accuracy_delta_points has no consistent sign (2020 -0.46, 2021 +0.42, 2022 -3.28, 2023 +0.76, 2024 0.0). Not a refuted mechanism (sign not consistently reversed) and no positive control run, so unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Joint lineup-scenario mixture (qualitative Q/D/O-or-DNP/Limited gate, season-lagged fitted severity with sparse-cell fallback, top-12-enumerated-plus-expected-value-remainder per side, measured pairwise unit coupling, per-season LOSO margin slope, exact discrete-lattice re-read via bisected center) vs served cover probability, paired on seasons 2020-2024 point-in-time injury population (same scope as Unit 2).",
+      "effect": -0.4889975550122249,
+      "effect_units": "accuracy_points",
+      "family": null,
+      "interval": [
+        -2.276983459489766,
+        1.1004249130211567
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Building out realistic game-day injury scenarios and mixing their cover probabilities together did not clearly sharpen or dull picks compared to just using the served number, on five seasons of real outcomes; the difference is too small and inconsistent to call yet.",
+      "probability_positive": 0.29225,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 89,
+      "sample_games": 1227,
+      "seasons": [
+        2020,
+        2024
+      ],
+      "source": "artifacts/injury_scenario_grade/20260923T213822Z/summary.json",
+      "standard_error": 0.8860039282576608
+    },
     "injury_signal_on_refresh_card_composition_on_raw_2023_2025": {
       "category": "modeling",
       "classification": "unresolved_below_power",
