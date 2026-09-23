@@ -165336,6 +165336,62 @@
       "source": "artifacts/qb_continuity_replication/20260816T143913Z/paired_comparisons.csv; scripts/audit_terminal_verdicts.py (2026-08-18)",
       "standard_error": null
     },
+    "players_on_field_rating_diff_divergence_pick_probability_term": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval spans zero; 35 decisive games 17-18; coefficient sign flips twice",
+      "closing_ground": null,
+      "description": "diff_divergence (availability part) as a fifth fitted term in the served pick probability, LOSO by season, MOD-22 unit 1",
+      "effect": -0.0665335994677312,
+      "effect_units": "accuracy_points",
+      "family": "players_on_field_rating_v1",
+      "interval": [
+        -0.9139580463669194,
+        0.9097749286714685
+      ],
+      "league": "nfl",
+      "notes": "reliability inherited from PER-09 split-half of the season-lagged ratings, not remeasured",
+      "plain_summary": null,
+      "probability_positive": 0.425,
+      "recorded_at": "2026-09-23",
+      "reliability": 0.154,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/players_on_field_rating/20260923T191937Z/summary.json",
+      "standard_error": null
+    },
+    "players_on_field_rating_diff_lineup_total_pick_probability_term": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval touches but is not wholly below zero; 4 decisive games 0-4; coefficient sign flips once across folds",
+      "closing_ground": null,
+      "description": "diff_lineup_total as a fifth fitted term in the served pick probability, LOSO by season, MOD-22 unit 1",
+      "effect": -0.2661343978709248,
+      "effect_units": "accuracy_points",
+      "family": "players_on_field_rating_v1",
+      "interval": [
+        -0.6766014385668202,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "reliability inherited from PER-09 split-half of the season-lagged ratings, not remeasured",
+      "plain_summary": null,
+      "probability_positive": 0.04025,
+      "recorded_at": "2026-09-23",
+      "reliability": 0.154,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/players_on_field_rating/20260923T191937Z/summary.json",
+      "standard_error": null
+    },
     "pol09_best_pick_composed_v1_tiebreak_dispersion_vs_alphabetical": {
       "category": "modeling",
       "classification": "unresolved_below_power",

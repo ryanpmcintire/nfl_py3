@@ -24,10 +24,7 @@ from nfl_ats.coach_fade_overlay import (
 )
 from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES
 from nfl_ats.data import DataContractError
-from nfl_ats.displayed_confidence import (
-    ProductionDisplayedConfidence,
-    attach_displayed_confidence,
-)
+from nfl_ats.displayed_confidence import StrengthBands, attach_displayed_confidence
 from nfl_ats.four_overlay_composition import (
     FAIL_CLOSED_MEMBERS,
     FourOverlayCompositionResult,
@@ -420,7 +417,7 @@ def resolve_card_probabilities(
     data_root: Path | None = None,
     now: datetime | None = None,
     require_fresh_arrest_overlay: bool = True,
-    displayed_confidence: ProductionDisplayedConfidence | None = None,
+    displayed_confidence: StrengthBands | None = None,
     artifacts_root: Path | None = None,
 ) -> CardProbabilities:
 
@@ -521,7 +518,7 @@ def resolve_card_view(
     nominate_v2_fn: Callable[..., NominationV2Result | None] = nominate_v2_small_spread,
     renominated_game_id: str | None = None,
     locked_game_id: str | None = None,
-    displayed_confidence: ProductionDisplayedConfidence | None = None,
+    displayed_confidence: StrengthBands | None = None,
     artifacts_root: Path | None = None,
 ) -> CardView:
 

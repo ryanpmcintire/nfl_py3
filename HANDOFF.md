@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-23T18:04:29.126287+00:00`
+Refreshed at: `2026-09-23T19:31:15.577796+00:00`
 
 ## Start here
 
@@ -21,15 +21,27 @@ Refreshed at: `2026-09-23T18:04:29.126287+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `13b4a23f8b8f` — Trim the test suite to durable contracts
-- Pending change set: 7 paths
-  - `M  HANDOFF.md`
-  - ` M README.md`
+- Baseline commit: `eeba6478c585` — Measure the served card against line-following on line movement
+- Pending change set: 19 paths
+  - `M  ROADMAP.md`
+  - ` M docs/findings.html`
+  - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/clv-metric-everywhere.md`
-  - `A  docs/lanes/done/midweek-model-activation.md`
+  - `M  docs/lanes/README.md`
+  - `A  docs/lanes/displayed-confidence-served-probability.md`
+  - `R  docs/lanes/spread-explorer-discrete.md -> docs/lanes/done/spread-explorer-discrete.md`
+  - `A  docs/lanes/players-on-field-rating.md`
+  - `M  docs/lanes/pool-rank-card.md`
+  - ` M docs/model.html`
   - `M  registry/weak_signals.json`
-  - `A  scripts/line_move_yardstick_paired_eval.py`
+  - `A  scripts/players_on_field_rating_eval.py`
+  - `M  src/nfl_ats/board_content.py`
+  - `M  src/nfl_ats/card_view.py`
+  - `M  src/nfl_ats/displayed_confidence.py`
+  - `M  src/nfl_ats/public_board.py`
+  - `M  src/nfl_ats/publishing.py`
+  - `?? docs/lanes/opener-error-transfer.md`
+  - `?? scripts/opener_error_transfer_eval.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

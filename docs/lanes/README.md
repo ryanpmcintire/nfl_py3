@@ -20,6 +20,9 @@ modified lane when the prompt just says to continue.
 
 ## Active
 
+- [opener-error-transfer](opener-error-transfer.md) - XLG-09, started 2026-09-23: college-trained opener-error model graded on NFL openers.
+- [players-on-field-rating](players-on-field-rating.md) - MOD-22, started 2026-09-23: team strength as the sum of the players expected on the field.
+- [displayed-confidence-served-probability](displayed-confidence-served-probability.md) - 2026-09-23: replace the in-sample 12-cell displayed cover chance with the served fitted probability if it calibrates as well out of season.
 - [week3-research-recorders](week3-research-recorders.md) - nine challenger records remain missing; all 16 served Week 3 paper decisions are complete.
 - [news-trigger-refresh](news-trigger-refresh.md) - MKT-08 dispatch implemented and verified; prospective comparison awaits new events.
 - [gh-window-incident](gh-window-incident.md) - prior runaway CLI windows remain a separate investigation; no gh commands used for this deployment.
@@ -46,6 +49,7 @@ modified lane when the prompt just says to continue.
 
 ## Done
 
+- [spread-explorer-discrete](done/spread-explorer-discrete.md) - 2026-09-23: spread explorer serves the discrete margin read.
 - [small-maintenance-2026-09-23.md](done/small-maintenance-2026-09-23.md) — roadmap scheduler guidance now matches the conditional workflow; lane-index and root README links verified.
 - [week3-lines-2026-09-22](done/week3-lines-2026-09-22.md) - genuine pool lines, all 16 Week 3 picks, paper decisions, and generated dashboard completed.
 - [week-card-consistency](done/week-card-consistency.md) - Weeks 1-3 share seven columns and interactive game details, verified on desktop and mobile.

@@ -22,10 +22,8 @@ from nfl_ats.dashboard.findings_content import (
 )
 from nfl_ats.displayed_confidence import (
     PICK_SIDE_FLOOR,
-    ProductionDisplayedConfidence,
     StrengthBands,
     attach_displayed_confidence,
-    fit_production_displayed_confidence,
 )
 from nfl_ats.four_overlay_composition import (
     BYE_EDGE_FADE,
@@ -1489,7 +1487,6 @@ def _played_side_overrides(
 def _played_pick(
     row: pd.Series,
     revision: Mapping[str, Any],
-    calibration: ProductionDisplayedConfidence | None,
     bands: Any,
 ) -> tuple[str, float, str] | None:
 
@@ -1508,13 +1505,7 @@ def _played_pick(
     )
     if stated is None or stated < PICK_SIDE_FLOOR:
         return team, PICK_SIDE_FLOOR, confidence_word(PICK_SIDE_FLOOR, bands)
-    if calibration is None:
-        return team, stated, confidence_word(stated, bands)
-    calibrated = calibration.calibrate(
-        pd.Series([stated], dtype=float), pd.Series([float(row["spread_line"])], dtype=float)
-    )
-    displayed = max(float(calibrated.iloc[0]), PICK_SIDE_FLOOR)
-    return team, displayed, confidence_word(displayed, bands)
+    return team, stated, confidence_word(stated, bands)
 
 
 def _raw_read_team(game: GameRow, raw_home_cover_probability: float | None) -> str:
@@ -3470,12 +3461,6 @@ def load_board_content(
     )
     week_label = _WEEK_LABELS.get(game_type, f"Week {artifacts.metadata.get('week')}")
 
-    displayed_confidence = fit_production_displayed_confidence(
-        artifacts_root,
-        artifacts.active,
-        season=int(artifacts.metadata.get("season") or 0),
-        week=int(artifacts.metadata.get("week") or 0),
-    )
     locked_best_pick_id = (
         locked_best_pick(
             artifacts_root,
@@ -3500,7 +3485,6 @@ def load_board_content(
                 week=int(artifacts.metadata.get("week") or 0),
             ),
             locked_game_id=locked_best_pick_id,
-            displayed_confidence=displayed_confidence,
             artifacts_root=artifacts_root,
         )
         if game_type == "REG" and not artifacts.predictions.empty
@@ -3517,14 +3501,12 @@ def load_board_content(
         calibrated_discrete_sweep(artifacts.sweep, final) if calibrated_mass else artifacts.sweep
     )
     if pick_probability is None:
-        strength_bands = displayed_confidence.bands
-        final = attach_displayed_confidence(final, displayed_confidence)
-        played_calibration: ProductionDisplayedConfidence | None = displayed_confidence
+        strength_bands = None
+        final = attach_displayed_confidence(final, None)
     else:
         strength_bands = StrengthBands(
             lean_min=pick_probability.lean_minimum, strong_min=pick_probability.strong_minimum
         )
-        played_calibration = None
     sort_columns = [column for column in ("kickoff", "game_id") if column in final]
     ordered = final.sort_values(sort_columns, na_position="last") if sort_columns else final
 
@@ -3632,7 +3614,7 @@ def load_board_content(
         model_team = team
         word = row_confidence_word(row, strength_bands)
         played = (
-            _played_pick(row, played_overrides[game_id], played_calibration, strength_bands)
+            _played_pick(row, played_overrides[game_id], strength_bands)
             if not calibrated_mass and game_id in played_overrides
             else None
         )

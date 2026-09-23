@@ -60,7 +60,6 @@ from nfl_ats.displayed_confidence import (
     StrengthBands,
     displayed_pick_probability,
     displayed_strength_word,
-    served_strength_bands,
 )
 from nfl_ats.division_revenge_tilt_overlay import apply_division_revenge_tilt_overlay
 from nfl_ats.findings_registry import (
@@ -87,7 +86,12 @@ from nfl_ats.interim_hc_first_game_tilt_overlay import (
 from nfl_ats.key_line_pick_read import pick_overrides_from_metadata
 from nfl_ats.model_explanation import load_model_explanation_html
 from nfl_ats.model_ledger import build_and_render
-from nfl_ats.pick_probability import BASE_PROBABILITY_POLICY, calibrated_discrete_sweep
+from nfl_ats.pick_probability import (
+    BASE_PROBABILITY_POLICY,
+    PickProbabilitySourceError,
+    calibrated_discrete_sweep,
+    load_pick_probability_model_or_none,
+)
 from nfl_ats.player_arrests_back_side_overlay import (
     POLICY_BASELINE_OPENER_ACCURACY,
     POLICY_EFFECT_ACCURACY_POINTS,
@@ -719,6 +723,21 @@ def _default_data_root() -> Path:
 
 
 CONFIDENCE_ROUNDING_PLACES = STRENGTH_ROUNDING_PLACES
+
+
+def _served_strength_bands(
+    artifacts_root: Path | None, active: Mapping[str, Any] | None
+) -> StrengthBands | None:
+
+    if active is None or artifacts_root is None:
+        return None
+    try:
+        model = load_pick_probability_model_or_none(artifacts_root)
+    except PickProbabilitySourceError:
+        return None
+    if model is None:
+        return None
+    return StrengthBands(lean_min=model.lean_minimum, strong_min=model.strong_minimum)
 
 
 def confidence_word(probability: float, bands: StrengthBands | None) -> str:
@@ -1597,7 +1616,7 @@ def render_picks_page(
     )
 
     if strength_bands is None and artifacts_root is not None:
-        strength_bands = served_strength_bands(artifacts_root, active_model)
+        strength_bands = _served_strength_bands(artifacts_root, active_model)
     strong_count = sum(
         1 for _, row in ordered.iterrows() if row_confidence_word(row, strength_bands) == "strong"
     )
@@ -4026,7 +4045,7 @@ def build_public_site(
             model_id=str(model_id) if model_id else None,
             generated_at=generated,
             best_pick_game_id=(nomination.active_game_id if nomination is not None else None),
-            strength_bands=served_strength_bands(artifacts_root, artifacts.active),
+            strength_bands=_served_strength_bands(artifacts_root, artifacts.active),
         ),
         LEDGER_PAGE: render_signal_ledger_page(generated_at=generated),
     }

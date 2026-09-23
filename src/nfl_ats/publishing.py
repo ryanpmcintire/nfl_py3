@@ -28,11 +28,8 @@ from nfl_ats.card_view import BestPickNomination, resolve_card_view
 from nfl_ats.coach_fade_overlay import OverlayResult, overlay_disclosure_note
 from nfl_ats.dashboard.findings_content import PLAYED_CARD_EXPECTATION_HERO
 from nfl_ats.displayed_confidence import (
-    DISPLAYED_CONFIDENCE_FILENAME,
     DISPLAYED_PICK_PROBABILITY_COLUMN,
-    ProductionDisplayedConfidence,
     attach_displayed_confidence,
-    fit_production_displayed_confidence,
 )
 from nfl_ats.four_overlay_composition import FourOverlayCompositionResult
 from nfl_ats.io import atomic_json, atomic_text
@@ -164,7 +161,6 @@ def _publication_context(
     ArrestOverlayResult,
     FourOverlayCompositionResult | None,
     pd.DataFrame,
-    ProductionDisplayedConfidence,
     PickProbabilityModel | None,
 ]:
     active = load_active_ats_model(artifacts_root)
@@ -188,12 +184,6 @@ def _publication_context(
         raise ValueError("Weekly recommendations contain a method other than the active method")
     sweep_path = forecast / "line_sweep.parquet"
     sweep = pd.read_parquet(sweep_path) if sweep_path.is_file() else pd.DataFrame()
-    displayed_confidence = fit_production_displayed_confidence(
-        artifacts_root,
-        active,
-        season=int(metadata["season"]),
-        week=int(metadata["week"]),
-    )
     view = resolve_card_view(
         predictions,
         sweep,
@@ -211,13 +201,12 @@ def _publication_context(
             week=int(metadata["week"]),
             now=published_at or datetime.now(UTC),
         ),
-        displayed_confidence=displayed_confidence,
         artifacts_root=artifacts_root,
     )
     served = (
         view.predictions
         if view.pick_probability is not None
-        else attach_displayed_confidence(view.predictions, displayed_confidence)
+        else attach_displayed_confidence(view.predictions, None)
     )
     card = _published_card(
         served,
@@ -238,7 +227,6 @@ def _publication_context(
         view.arrest_overlay,
         view.production_overlay,
         served,
-        displayed_confidence,
         view.pick_probability,
     )
 
@@ -455,7 +443,6 @@ def publish_active_predictions(
         arrest_overlay,
         production_overlay,
         raw_predictions,
-        displayed_confidence,
         pick_probability,
     ) = _publication_context(
         artifacts_root,
@@ -667,7 +654,6 @@ def publish_active_predictions(
         if include_pick_explanation_lines:
             detail = detail + "\n\n" + render_explanations_markdown(explanations)
         atomic_json(source_report.to_metadata(), forecast_dir / "source_policy.json")
-        atomic_json(displayed_confidence.to_dict(), forecast_dir / DISPLAYED_CONFIDENCE_FILENAME)
 
     atomic_json(source_report.to_metadata(), destination.parent / "source_policy.json")
 
