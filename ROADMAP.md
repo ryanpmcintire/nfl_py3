@@ -861,10 +861,12 @@ stay unavailable. Published pages were reviewed on desktop and mobile, and the
    timestamped nominees before another declared calibration comparison. State:
    `docs/lanes/confidence-best-pick-unification.md`. Do not restore a separate
    ranker or independent side-flip rules.
-3. **Continue from lane files with bounded reads and non-Astra delegation.**
-   Follow `AGENTS.md`, run the scheduler each session, and keep uncertainty
-   distinct from research closure and the forced-pick decision. The historical
-   priorities below are preserved context, superseded by these current items.
+3. **Continue from lane files with bounded reads and scoped delegation.**
+   Follow `AGENTS.md` and the applicable procedures in `docs/agent_workflow.md`.
+   Run the scheduler in operational sessions; harness maintenance and read-only
+   work do not trigger operational jobs. Keep uncertainty distinct from research
+   closure and the forced-pick decision. The historical priorities below are
+   preserved context, superseded by these current items.
 
 ### Historical priority snapshots
 

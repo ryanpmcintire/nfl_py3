@@ -53,6 +53,7 @@ modified lane when the prompt just says to continue.
 
 ## Done
 
+- [small-maintenance-2026-09-23.md](done/small-maintenance-2026-09-23.md) — roadmap scheduler guidance now matches the conditional workflow; lane-index and root README links verified.
 - [week3-lines-2026-09-22](done/week3-lines-2026-09-22.md) - genuine pool lines, all 16 Week 3 picks, paper decisions, and generated dashboard completed.
 - [week-card-consistency](done/week-card-consistency.md) - Weeks 1-3 share seven columns and interactive game details, verified on desktop and mobile.
 - [agent-harness-hygiene](done/agent-harness-hygiene.md) - shared policy and conditional workflow consolidated; repeated local prompt injection removed.

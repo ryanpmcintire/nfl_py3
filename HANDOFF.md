@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-23T12:40:45.655037+00:00`
+Refreshed at: `2026-09-23T13:34:19.460491+00:00`
 
 ## Start here
 
@@ -21,9 +21,12 @@ Refreshed at: `2026-09-23T12:40:45.655037+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `f9bed0072232` — Fix tiebreaker score rounding and complete season comparison
-- Pending change set: 1 paths
+- Baseline commit: `7be7adb07703` — Refresh handoff after tiebreaker dashboard fix
+- Pending change set: 4 paths
   - `M  HANDOFF.md`
+  - `M  ROADMAP.md`
+  - `M  docs/lanes/README.md`
+  - `A  docs/lanes/done/small-maintenance-2026-09-23.md`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -67,7 +70,7 @@ the last published Markdown forecast but must rebuild or transfer local artifact
 
 1. **Keep Sunday's card current, preserving locked games.** Continue from `docs/lanes/sunday-readiness-2026-09-20.md` and `docs/lanes/free-odds-sources.md`; reconcile the paper ledger and inspect the latest scheduled refresh before changing the forecast. Commit and push completed work at verified clear stopping points under the owner's standing authorization.
 2. **Confidence calibration: bounded repair measured 2026-09-20.** The complete candidate replay and two predeclared out-of-season temperature repairs are saved in `docs/confidence_best_pick_sunday_matched.md` and `docs/confidence_top_calibration.md`. Chronological nominee Brier improvement +0.001040 [-0.027412,+0.030943], probability_positive 0.5227, accompanies unstable fitted temperatures and worse all-game Brier. The served probability is unchanged; 28 new cells remain unresolved, not closed. Acquire more timestamped nominees before another declared calibration comparison. State: `docs/lanes/confidence-best-pick-unification.md`. Do not restore a separate ranker or independent side-flip rules.
-3. **Continue from lane files with bounded reads and non-Astra delegation.** Follow `AGENTS.md`, run the scheduler each session, and keep uncertainty distinct from research closure and the forced-pick decision. The historical priorities below are preserved context, superseded by these current items.
+3. **Continue from lane files with bounded reads and scoped delegation.** Follow `AGENTS.md` and the applicable procedures in `docs/agent_workflow.md`. Run the scheduler in operational sessions; harness maintenance and read-only work do not trigger operational jobs. Keep uncertainty distinct from research closure and the forced-pick decision. The historical priorities below are preserved context, superseded by these current items.
 
 The roadmap is authoritative. Negative results remain part of the evidence base and
 must not be silently removed or retuned away.
