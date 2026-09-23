@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-23T22:03:00.087414+00:00`
+Refreshed at: `2026-09-23T22:09:26.063823+00:00`
 
 ## Start here
 
@@ -21,13 +21,18 @@ Refreshed at: `2026-09-23T22:03:00.087414+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `1a26d8c0812f` — Bound three Tuesday line-move variants by a direct positive control
-- Pending change set: 8 paths
+- Baseline commit: `3bd120428b28` — Regrade eight legacy Tuesday families on line movement
+- Pending change set: 13 paths
   - ` M artifacts/prospective/challengers.json`
-  - `A  docs/lanes/line-move-regrade-legacy.md`
+  - ` M docs/findings.html`
+  - ` M docs/history.html`
+  - ` M docs/index.html`
+  - `M  docs/lanes/line-move-regrade-legacy.md`
   - ` M docs/lanes/prospective-leads-2026-09-23.md`
+  - ` M docs/model.html`
   - `M  registry/weak_signals.json`
-  - `A  scripts/line_move_regrade_legacy.py`
+  - ` M scripts/lockday_verify.py`
+  - `A  scripts/roof_state_line_move_replication.py`
   - ` M scripts/total_conditioned_lattice.py`
   - ` M src/nfl_ats/cli_commands/publishing.py`
   - `?? src/nfl_ats/total_conditioned_lattice_challenger.py`
