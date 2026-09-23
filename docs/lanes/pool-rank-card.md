@@ -12,7 +12,7 @@ POOL-01: choose the card that maximises expected pool finishing position given t
   would poison unit-based pooling); outcome lives here and in the
   artifact.
 
-- 2026-09-23: the pool's own field split per game is public after lock (Splash contest Statistics -> General, per week). Weeks 1-2 aggregate side counts and Best Pick counts saved to `data/splash/field/2026_week0{1,2}_field_distribution.tsv` (32 games, 250 entries). Per-entrant pick lists are also shown there, but compiling them was blocked as personal-data handling; any per-entrant panel needs an explicit owner decision. After each lock, capture the week's aggregate split the same way.
+- 2026-09-23: the pool's own field split per game is public after lock (Splash contest Statistics -> General, per week). Weeks 1-2 aggregate side counts and Best Pick counts saved to `data/splash/field/2026_week0{1,2}_field_distribution.tsv` (32 games, 250 entries). Per-entrant pick lists are also shown there. Owner ruled 2026-09-23 that pool handles are anonymous and a per-entrant panel is approved; the in-page pull is still blocked by the harness permission classifier until the owner adds an allow rule for the browser JavaScript tool. After each lock, capture the week's aggregate split the same way.
 
 ## Tried
 - 107 season-weeks replayed, one greedy rank-optimal rule vs served
@@ -28,9 +28,66 @@ POOL-01: choose the card that maximises expected pool finishing position given t
 ## Next
 - Standing-aware variant (unit 2) only with a fitted field on real pool
   picks; otherwise remeasure when public splits cover more games.
-- 2026-09-23 unit-2-prerequisite subagent HOLD (hit 50-tool cap mid
-  investigation, no script/artifact written yet). Data sources located,
-  a fresh agent should continue directly from step (A) below:
+- 2026-09-23 steps A-D DONE. Script `scripts/pool_field_share_fit.py`
+  (no comments/docstrings); artifact
+  `artifacts/pool_field_share/<ts>/{results.json,games.csv}` (latest run
+  20260923T193620Z-ish, re-run to regenerate). Served probability
+  recovered from `artifacts/margin_predictions/2026-week-0{1,2}-*/
+  recommendations.csv`, one row per game, taking each game's own latest
+  pre-kickoff snapshot (no leakage) -- `home_cover_probability` column is
+  the served model probability, `model_name`/`method` columns show which
+  challenger the served card used per game (mostly `ridge`/
+  `market_residual`). n=32 games (2026 weeks 1-2, all with public split,
+  market odds, served probability, and real field share).
+  - **measured** MAE (share points) vs real home_share, n=32: public
+    split 0.174, market vig-free-odds home probability 0.158, served
+    model home_cover_probability 0.170. All three proxies barely beat a
+    flat 0.5 guess (real home_share std is small at this n).
+  - **measured** Pearson r [95% bootstrap CI], n=32: public split 0.133
+    [-0.30, 0.57]; market vig-free 0.138 wrong-signed [-0.53, 0.21];
+    served probability -0.078 [-0.41, 0.27]. Every interval crosses
+    zero -- `unresolved_below_power` per AGENTS.md, not a rejection of
+    any of the three signals, just that n=32 games cannot resolve an
+    effect this small. No registry cell recorded (same reasoning as
+    unit 1: no valid rank/share effect-unit for pooling yet).
+  - Simplest field model: OLS `home_share ~ public_split +
+    market_vig_free_home`, weeks as folds (fit one week, score the
+    other). **measured**: trained-on-week2/scored-on-week1 MAE 0.170,
+    r -0.318; trained-on-week1/scored-on-week2 MAE 0.155, r 0.036. The
+    market coefficient flips sign between folds (+3.79 vs -3.83) --
+    the 2-fold, 16-games-per-fold fit is unstable, consistent with the
+    zero-crossing correlations above. Do not treat these coefficients as
+    a real field model; they are a first pass sized by n=32.
+  - Rank replay with this fitted (out-of-fold) field share substituted
+    for the constant-lean proxy, `ENTRANTS=249` (measured from the field
+    TSV's `entries=250`, minus our own entry), custom per-game-share
+    simulator/greedy search written inside the new script (no
+    `pool.py`/`FieldModel` edits -- `FieldModel.public_lean` is one
+    scalar for the whole field, confirmed at `src/nfl_ats/pool.py:230`,
+    so it cannot take a per-game vector without a src/ change, which is
+    out of scope):
+    - Week 1: 1 decisive flip out of 16 games -- DEN@KC. Fitted field
+      said the field leans away (DEN, 38.7% home share) while the served
+      card correctly picked home (KC) to cover, and KC did cover. The
+      rank-optimal card under the fitted field would have flipped to
+      DEN and made the realised rank **worse** (served rank 28.6 vs
+      flipped-to-optimal rank 62.9, a -34.3 rank loss) -- the flip was
+      wrong because the fitted field share (38.7% home) undershot the
+      real field share for that game (41.6% home) enough to flip the
+      side, and the unstable 2-fold model above explains why. **Do not
+      serve this flip; it would have hurt.**
+    - Week 2: 0 decisive flips -- the fitted field agreed with the
+      served card on every game; realised rank unchanged (7.50).
+  - **Decision implication**: with only 32 games and an unstable 2-fold
+    field-share fit, this round finds no case where the fitted-field
+    rank-optimal card should have overridden the served card -- the one
+    disagreement (week 1 DEN@KC) would have cost rank, not gained it.
+    The served card was not changed. This does not close the
+    standing-aware/fitted-field idea (interval-crosses-zero is not
+    grounds for rejection); it says the field-share model needs more
+    weeks (more n) before its flips are trustworthy enough to act on.
+- 2026-09-23 (superseded) unit-2-prerequisite subagent HOLD notes below,
+  kept for the data-source specifics they still document:
   - Real field share: `data/splash/field/2026_week01_field_distribution.tsv`
     and `..._week02_...` (comment line, then header
     `away home away_score home_score team line result picks best_picks`,
@@ -115,6 +172,12 @@ POOL-01: choose the card that maximises expected pool finishing position given t
 ## Open
 - Whether the owner wants rank-scale units added to the registry
   (feeds ENG-46 unit 2 scope).
-- Whether `artifacts/margin_predictions/2026-week-0{1,2}-*` actually
-  contains the served home-cover probability, or another artifact does --
-  unconfirmed, first thing to check next round.
+- CONFIRMED 2026-09-23: `artifacts/margin_predictions/2026-week-0{1,2}-*/
+  recommendations.csv` does contain the served home-cover probability
+  (`home_cover_probability`, one row per game, picked per the game's own
+  latest pre-kickoff snapshot).
+- Re-run `scripts/pool_field_share_fit.py` once more weeks of real field
+  share TSVs accumulate (capture after each week's lock, same as unit 1);
+  a 2-fold, 32-game field model is too unstable to trust its flips (see
+  State/Tried above). Do not serve the DEN@KC-style flip pattern without
+  a larger, stabler fit.

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-23T19:34:18.246000+00:00`
+Refreshed at: `2026-09-23T19:37:36.897926+00:00`
 
 ## Start here
 
@@ -21,23 +21,14 @@ Refreshed at: `2026-09-23T19:34:18.246000+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `52aa98b125c7` — Remove the in-sample displayed-confidence lookup; record MOD-22 unit 1; queue XLG-09
-- Pending change set: 15 paths
+- Baseline commit: `caa19e4c6165` — Record XLG-09 unit 1; archive lanes superseded by the served fitted probability
+- Pending change set: 6 paths
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/README.md`
-  - `R  docs/lanes/best-pick-served-score-ranker.md -> docs/lanes/done/best-pick-served-score-ranker.md`
-  - `R  docs/lanes/four-term-probability.md -> docs/lanes/done/four-term-probability.md`
-  - `R  docs/lanes/handle-follow-override-defect.md -> docs/lanes/done/handle-follow-override-defect.md`
-  - `R  docs/lanes/joint-probability-model.md -> docs/lanes/done/joint-probability-model.md`
-  - `R  docs/lanes/leader-median-model-confidence.md -> docs/lanes/done/leader-median-model-confidence.md`
-  - `R  docs/lanes/market-updated-model.md -> docs/lanes/done/market-updated-model.md`
-  - `R  docs/lanes/served-flip-rules-hold.md -> docs/lanes/done/served-flip-rules-hold.md`
-  - `A  docs/lanes/opener-error-transfer.md`
+  - `M  docs/lanes/pool-rank-card.md`
   - ` M docs/model.html`
-  - `M  registry/weak_signals.json`
-  - `A  scripts/opener_error_transfer_eval.py`
+  - `A  scripts/pool_field_share_fit.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
