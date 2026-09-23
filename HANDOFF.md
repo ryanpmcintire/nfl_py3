@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-23T01:39:03.878060+00:00`
+Refreshed at: `2026-09-23T01:39:45.936742+00:00`
 
 ## Start here
 
@@ -21,29 +21,9 @@ Refreshed at: `2026-09-23T01:39:03.878060+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `3be30802150f` — Keep week filtering inside the dashboard card
-- Pending change set: 50 paths
-  - `M  AGENTS.md`
-  - `M  CLAUDE.md`
-  - `M  CURRENT_PREDICTIONS.md`
+- Baseline commit: `9fb2571c3953` — Publish Week 3 picks and unify weekly dashboard cards
+- Pending change set: 1 paths
   - `M  HANDOFF.md`
-  - `M  README.md`
-  - `M  ROADMAP.md`
-  - `A  docs/agent_workflow.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - `M  docs/lanes/README.md`
-  - `A  docs/lanes/done/agent-harness-hygiene.md`
-  - `A  docs/lanes/done/week-card-consistency.md`
-  - `A  docs/lanes/done/week3-lines-2026-09-22.md`
-  - `A  docs/lanes/gh-window-incident.md`
-  - `A  docs/lanes/news-trigger-refresh.md`
-  - `D  docs/lanes/week3-lines-2026-09-22.md`
-  - `A  docs/lanes/week3-research-recorders.md`
-  - `M  docs/model.html`
-  - `M  docs/timing_policy_audit.md`
-  - ...and 30 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
