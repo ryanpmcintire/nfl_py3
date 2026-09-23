@@ -293,8 +293,92 @@ further computation needed — the harness, results, and command drafts are
 all on disk. This lane can move to docs/lanes/done/ once the owner has
 acted on (or explicitly declined) the drafted commands.
 
+## Unit 2 (line-move yardstick power) 2026-09-23 session 3
+
+New script scripts/line_move_power.py (ruff-clean), reusing
+positive_control_power.py's LOSO/synthetic-injection/season-block-bootstrap
+structure but retargeted at the line-move yardstick:
+- base = Tuesday-knowable fit (model_logit, composition_flag_sum), served
+  2020-2025 population (rows with missing open_move dropped), matching
+  scripts/tuesday_terms_line_move.py's BASE_FEATURES and
+  src/nfl_ats/clv.py:2217 line_move_toward_pick construction
+  (sign(pick_home) * open_move, open_move = close_home_spread -
+  tue_open_home_spread at clv.py:2214).
+- Per grid point, coefficient is declared directly in line-move POINTS
+  (not logit-SD units). It is converted to a matching logit-SD shift for
+  the synthetic outcome DGP by dividing by an empirically measured
+  points-per-base-logit-SD slope (OLS, real population) — this keeps the
+  term's effect on the synthetic outcome and on the injected move
+  internally consistent and non-arbitrary (points_per_base_logit_sd_
+  empirical field in the artifact) rather than picking two independent
+  unrelated knobs.
+- synthetic_move = real open_move + coef_points * term_std; base and
+  variant (base+synthetic_term) models refit via LOSO on the synthetic
+  outcome; diff_line_move = sign(variant_pick)*synthetic_move -
+  sign(base_pick)*synthetic_move; season-block paired bootstrap; detection
+  = interval_low > 0. Same mde_from_grid interpolation as unit 1, now in
+  line-move points.
+- Conversion step: accuracy_points_per_line_move_point_empirical = 100 *
+  OLS slope of (pick_correct 0/1) on (real signed line move toward the
+  REAL base model's real pick), using real 2020-2025 outcomes only (no
+  synthetic injection) — this is the number that turns each line-move MDE
+  into its accuracy-point equivalent.
+
+Smoke tests: --sims 5 --draws 50 --grid 0.5,4.0 (3.2s, showed detection=1.0
+even at 0.5 points, so grid was rescaled down) then --sims 30 --draws 150
+--grid 0.02,0.05,0.10,0.20,0.35,0.50 (27.0s,
+artifacts/line_move_power/20260923T214349Z/results.json) which bracketed the
+crossing cleanly for all 4 prevalence cases. DEFAULT_GRID_POINTS in the
+script updated to that bracket. Full run launched in foreground with
+--sims 150 --draws 300 --fit-iterations 20 (defaults), moved to background
+by the harness after 120s (bash id brchdj9ry, output file
+C:\Users\Ryan\AppData\Local\Temp\claude\F--Repos-nfl-py3\
+5ea705ef-c6be-4b65-8730-46dcbf2a8514\tasks\brchdj9ry.output); a Monitor
+(task bgkm8l6t3) is watching that file for the final summary JSON or an
+error and will notify on completion — do not re-run, wait for the
+notification or read the tail of that output file / the newest
+artifacts/line_move_power/<ts>/results.json.
+
+Smoke-test numbers already establish the qualitative finding: at the
+smoke-test scale, MDE-at-80%-power in line-move points was roughly
+0.08 (binary_p03/p10), 0.16 (continuous_std), 0.23 (binary_p50) points,
+converting via accuracy_points_per_line_move_point_empirical=3.305 to
+roughly 0.28, 0.28, 0.52, 0.76 accuracy-point equivalents respectively —
+all far below unit 1's accuracy-yardstick MDE of 1.5-4.9 points. The full
+150-sim/300-draw run (Next step) should tighten these numbers but is not
+expected to change the qualitative finding that the line-move yardstick
+resolves roughly an order of magnitude smaller effects than the accuracy
+yardstick on the same 2020-2025 population.
+
+FINAL (2026-09-23, unit 2 complete): full run finished, elapsed ~153s,
+artifacts/line_move_power/20260923T214645Z/results.json (n=1503 games, 6
+season blocks, sims=150, draws=300, fit_iterations=20,
+points_per_base_logit_sd_empirical=0.1128,
+accuracy_points_per_line_move_point_empirical=3.305 over 1503 games).
+MDE at 80% power, line-move points -> accuracy-point equivalent:
+  binary_p03: 0.080 pts -> 0.266 acc-pts
+  binary_p10: 0.086 pts -> 0.286 acc-pts
+  binary_p50: 0.212 pts -> 0.700 acc-pts
+  continuous_std: 0.163 pts -> 0.540 acc-pts
+All four interpolated cleanly between grid points (no boundary notes). This
+is 7-18x smaller than unit 1's accuracy-yardstick MDE (1.914-4.928 acc-pts
+on the same served_2020_2025 population) — the line-move yardstick resolves
+effects roughly an order of magnitude smaller than the accuracy yardstick on
+the same 1,503-game population, because it grades a continuous paired
+quantity (points of close-minus-open movement) instead of a binary
+win/loss, so it is the more sensitive yardstick per AGENTS.md's mandate to
+prefer the line-move read. This unit is COMPLETE: no registry
+reclassification is authorized or drafted from this result (same
+root-decision framing as unit 1 — an MDE table bounds what the evaluator
+can resolve; it is not itself a verdict on any specific term's size, and no
+existing registry cell was measured on the line-move yardstick, so there is
+nothing here to compare against a registry interval yet).
+
 ## Root decision 2026-09-23
 
 The 11 drafted bounded_by_control reclassifications are NOT run. The minimum detectable effects (1.5-4.9 accuracy points at 80% power) are 2-10x the plausible size of these terms (every point estimate today sits between -1.5 and +0.3 points), so they bound only implausibly large effects; AGENTS.md closes a line only for a control able to detect an effect of the size in question. The table stands as the evaluator's resolution: single added-term accuracy tests on 1,503 or 3,734 games cannot resolve realistic effects; prefer the line-move yardstick and larger populations. A cell may be reclassified only when its hypothesized size is at or above the matched MDE.
 
 - Superseded by "Root decision 2026-09-23" above: the drafted commands are not run; nothing here awaits review.
+
+## Root decision 2026-09-23 (unit 2)
+Line-move MDE at 80% power on 2020-2025: 0.08-0.21 line-move points, about 0.27-0.70 accuracy-point equivalents (3.305 accuracy points per line-move point, measured), 7-18x finer than the accuracy yardstick (1.9-4.9). Decision: every Tuesday-knowable term is graded first on paired line movement toward the pick with the Tuesday-knowable base (scripts/tuesday_terms_line_move.py pattern), accuracy as the companion. The four unresolved Tuesday line-move cells (docs/lanes/done/tuesday-terms-line-move.md) exclude effects at the continuous MDE (0.163 points); they are not reclassified yet because the accuracy conversion rests on one synthetic outcome model. Next: a second control that injects the effect directly into the real move series without the conversion, then reclassify cells whose interval excludes that MDE.
