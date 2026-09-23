@@ -484,3 +484,158 @@ whether cfb_transfer_logit_tuesday_line_move's near-miss, 0.0714 vs MDE
 0.0654, warrants a slightly larger run to tighten the boundary rather than
 leaving it unresolved_below_power). This unit is COMPLETE; nothing further
 to compute here.
+
+## Unit 4 (population flag on the direct line-move control) 2026-09-23 session 5
+
+Added `--population {served_2020_2025,opener_error_transfer_v4_2013_2025,
+extended_2011_2025}` to scripts/line_move_power_direct.py (default unchanged
+= served_2020_2025, exact same code path as before). Mechanism (base LOSO-once
+on real outcomes, margin_sd_points_empirical = std of the population's own
+margin_vs_open, coef_logit = coef_points / logistic_scale, no synthetic
+outcome draw) is untouched; only three population loader functions were
+added:
+- `load_v4_2013_2025_population()`: imports
+  scripts/opener_error_transfer_unit4.py's `load_line_move_population`,
+  `load_cfb_population`, `attach_cfb_transfer_logit` unchanged and reproduces
+  its exact post-`dropna(cfb_pred_p)` game set (verified n=3234, 13 season
+  blocks, seasons 2013-2025 -- exact match to the registry cell). margin_vs_open
+  (not part of unit4's own pipeline) is merged in separately: from
+  build_fit_population for 2020-2025 rows, and for 2013-2019 rows computed as
+  `(home_score - away_score) - open_home_spread` from
+  data/processed/sbr_odds.parquet -- sign convention verified this session:
+  sign(margin_vs_open_sbr) agrees with home_covered on 99.4% of 2011-2021
+  SBR-matched rows (2676 rows checked).
+- `load_extended_2011_2025_population()`: reads
+  artifacts/extended_fit_population/20260923T205910Z/population.parquet
+  (3,734 games, 2011-2025) and merges in open_move/margin_vs_open the same
+  way (build_fit_population for 2020-2025, SBR-derived for 2011-2019). All
+  3,734 rows matched either source (games=games_scored=3734, 15 season
+  blocks) -- no drops.
+`ruff check scripts/line_move_power_direct.py` passes clean.
+
+Smoke tests (--sims 5 --draws 40 --grid 0.05,0.5) on both new populations
+confirmed mechanics (detection rises with coefficient) and sane
+margin_sd_points_empirical (13.21 pts for v4_2013_2025, 13.34 pts for
+extended_2011_2025, both close to unit 3's served-population value of 12.97).
+
+Full runs (defaults: sims=150, draws=300, fit-iterations=20, grid
+0.05,0.1,0.2,0.35,0.5,0.65,0.85 -- same grid unit 3 used), run in the
+foreground:
+- opener_error_transfer_v4_2013_2025: 37.3s,
+  artifacts/line_move_power_direct/20260923T222614Z/results.json (games=
+  games_scored=3234, season_blocks=13, seasons 2013-2025,
+  margin_sd_points_empirical=13.2077).
+- extended_2011_2025: 34.4s,
+  artifacts/line_move_power_direct/20260923T222654Z/results.json (games=
+  games_scored=3734, season_blocks=15, seasons 2011-2025,
+  margin_sd_points_empirical=13.3439).
+
+MDE at 80% power, line-move points (all eight interpolated cleanly, no
+boundary notes):
+  opener_error_transfer_v4_2013_2025 (n=3234, 13 season blocks):
+    binary_p03=0.04413, binary_p10=0.05456, binary_p50=0.06067,
+    continuous_std=0.05559
+  extended_2011_2025 (n=3734, 15 season blocks):
+    binary_p03=0.02330, binary_p10=0.03241, binary_p50=0.03849,
+    continuous_std=0.03922
+Both are tighter than unit 3's served_2020_2025 MDE (binary_p03=0.05337,
+binary_p10=0.07289, binary_p50=0.06286, continuous_std=0.06535) despite the
+larger populations resting on a mix of SBR-proxy and archived-Tuesday opens
+rather than one uniform source -- consistent with more season blocks (13,
+15 vs 6) giving the bootstrap more independent draws.
+
+Registry check: the two named cells.
+- cfb_transfer_logit_line_move_v4_all_graded (registry: effect=-0.000309,
+  interval=[-0.028940978434370324, 0.026209065704122198], sample_games=3234,
+  sample_blocks=13, seasons=[2013,2025], source=
+  artifacts/opener_error_transfer_unit4/20260923T221635Z/summary.json) --
+  EXACT population match to the opener_error_transfer_v4_2013_2025 harness
+  run (same n=3234, blocks=13, seasons 2013-2025). cfb_transfer_logit is a
+  continuous transfer logit (confirmed unit 3 session), so matched against
+  continuous_std MDE=0.05559. max(abs(-0.028940978434370324),
+  0.026209065704122198) = 0.028940978434370324 < 0.05559 -> QUALIFIES.
+- roof_state_predicted_open_line_move_replication_2011_2019 (registry:
+  effect=-0.002241, interval=[-0.018494, 0.013883], sample_games=2231,
+  sample_blocks=9, seasons=[2011,2019], source=
+  artifacts/roof_state_line_move_replication/20260923T220802Z/results.json)
+  -- APPROXIMATE population match only: this cell's own population (2011-2019,
+  2231 games, 9 season blocks) is a proper subset of the harness's
+  extended_2011_2025 population (3734 games, 15 season blocks, extends
+  through 2025) with different season coverage. roof_state_term is a binary
+  flag (predicted_open cast to float); its real prevalence, measured this
+  session from the source artifact's own `roof_state_term_nonzero_rate`
+  field, is 0.0121 (1.21%), closest to the binary_p03 (3%) tested bucket
+  though below it (extrapolation caveat: true MDE at 1.21% prevalence could
+  differ from the p03 reading, direction not established since prevalence is
+  below the smallest tested case). Matched against binary_p03 MDE=0.02330.
+  max(abs(-0.018494), 0.013883) = 0.018494 < 0.02330 -> QUALIFIES, conditional
+  on the population-approximation and below-range-prevalence caveats above.
+
+Both qualify for reclassification bounded_by_control / positive_control_bound
+under the same standard as unit 3 (interval excludes an effect at least the
+size the control is proven able to detect). Exact `--replace` commands (every
+original registry field preserved -- category, description, effect,
+effect_units, family, interval, league, notes, plain_summary,
+probability_positive, reliability, sample_games, sample_blocks, seasons,
+source, recorded_at -- only classification, closing_ground and
+classification_evidence changed) are below. NOT RUN (out of scope this
+session; no registry writes, no commits, no src/ edits).
+
+```
+.tools/uv.exe run nfl-ats weak-signals record \
+  --name cfb_transfer_logit_line_move_v4_all_graded \
+  --description "CFB-trained opener-error logit (season-specific, point-in-time CFB training strictly preceding each held-out NFL season) added as a 3rd fitted term to a Tuesday-knowable-only base (model_logit + composition_flag_sum), LOSO by season, graded on close-minus-open line movement toward the pick (not accuracy), on the extended 2011-2025 NFL population restricted to the 13 seasons a preceding local CFB season exists for (2013-2025); 2013-2019 opens/closes sourced directly from data/processed/sbr_odds.parquet, 2020-2025 from the archived Tuesday open to close" \
+  --source artifacts/opener_error_transfer_unit4/20260923T221635Z/summary.json \
+  --effect -0.00030921459492888067 \
+  --effect-units ats_points \
+  --classification bounded_by_control \
+  --league nfl \
+  --season-start 2013 \
+  --season-end 2025 \
+  --interval-low -0.028940978434370324 \
+  --interval-high 0.026209065704122198 \
+  --probability-positive 0.509 \
+  --sample-games 3234 \
+  --sample-blocks 13 \
+  --reliability 0.14132263925353555 \
+  --family opener_error_transfer_v4 \
+  --classification-evidence "Positive control scripts/line_move_power_direct.py --population opener_error_transfer_v4_2013_2025 (exact population match: n=3234 games, 13 season blocks, seasons 2013-2025, sims=150, draws=300, fit-iterations=20, grid 0.05-0.85 points; artifacts/line_move_power_direct/20260923T222614Z/results.json) measures MDE at 80% power = 0.05559 line-move points for a continuous term (cfb_transfer_logit is a continuous transfer logit, not a flag). This cell's season-block interval [-0.02894, 0.02621] has max(abs)=0.02894 < 0.05559, so an effect at least the size the control is proven able to detect would have been excluded from this interval; AGENTS.md positive-control closing ground applies." \
+  --closing-ground positive_control_bound \
+  --plain-summary "Checked back to 2013 using real market data instead of a placeholder, the college-football transfer signal's effect on how far the line moves toward the pick comes out essentially exactly at zero -- a direct positive control shows this evaluator can detect a real effect roughly twice this interval's width, so the null reading is trustworthy, not just underpowered." \
+  --category market \
+  --notes "" \
+  --recorded-at 2026-09-23 \
+  --replace
+
+.tools/uv.exe run nfl-ats weak-signals record \
+  --name roof_state_predicted_open_line_move_replication_2011_2019 \
+  --description "OOS replication of roof-state-predicted-open on 2011-2019 using SBR proxy open/close lines, line-move-toward-pick grade" \
+  --source artifacts/roof_state_line_move_replication/20260923T220802Z/results.json \
+  --effect -0.002241 \
+  --effect-units ats_points \
+  --classification bounded_by_control \
+  --league nfl \
+  --season-start 2011 \
+  --season-end 2019 \
+  --interval-low -0.018494 \
+  --interval-high 0.013883 \
+  --probability-positive 0.386 \
+  --sample-games 2231 \
+  --sample-blocks 9 \
+  --classification-evidence "Positive control scripts/line_move_power_direct.py --population extended_2011_2025 (n=3734 games, 15 season blocks, seasons 2011-2025, sims=150, draws=300, fit-iterations=20, grid 0.05-0.85 points; artifacts/line_move_power_direct/20260923T222654Z/results.json) measures MDE at 80% power = 0.02330 line-move points for a binary term at 3% prevalence (roof_state_term's real measured prevalence is 1.21%, artifacts/roof_state_line_move_replication/20260923T220802Z/results.json roof_state_term_nonzero_rate, closest tested bucket though below the smallest tested prevalence -- extrapolation caveat noted). This cell's season-block interval [-0.018494, 0.013883] has max(abs)=0.018494 < 0.02330. CAVEAT: this cell's own population (2011-2019, 2231 games, 9 season blocks) is a proper subset of the harness's 2011-2025 population (3734 games, 15 blocks) with different season coverage -- approximate, not exact, population match." \
+  --closing-ground positive_control_bound \
+  --plain-summary "Out-of-sample replication on an independent 9-season window with an independent (SBR proxy) line archive; sign flips negative, both season- and week-block intervals cross zero. A direct positive control on the closely related broader 2011-2025 population shows this evaluator can detect a real effect roughly the same size as this interval's width, so the flat replication reading is not simply underpowered, subject to the population-match caveat above." \
+  --category environment \
+  --notes "" \
+  --recorded-at 2026-09-23 \
+  --replace
+```
+
+Next: owner/orchestrator decides whether to run these 2 drafted commands
+(roof_state one carries the population-approximation + below-range-prevalence
+caveat, so may warrant a dedicated 2011-2019-only or lower-prevalence control
+run before treating it as final). This unit is COMPLETE; nothing further to
+compute here.
+
+## Root decision 2026-09-23 (unit 4)
+Ran the cfb_transfer_logit_line_move_v4_all_graded reclassification (exact population match, upper 0.026 < MDE 0.0556). Did NOT run the roof-state replication reclassification: its 2,231-game, 9-block population is smaller than the 3,734-game control (larger true MDE) and its 1.2% prevalence is below the smallest tested bucket; it stays unresolved.

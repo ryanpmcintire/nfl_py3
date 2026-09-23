@@ -32,6 +32,126 @@ DEFAULT_FIT_ITERATIONS = 20
 DEFAULT_SIMS = 150
 DEFAULT_DRAWS = 300
 DEFAULT_GRID_POINTS = (0.01, 0.02, 0.05, 0.10, 0.20, 0.35)
+EXTENDED_POPULATION_PATH = (
+    REPO / "artifacts" / "extended_fit_population" / "20260923T205910Z" / "population.parquet"
+)
+POPULATION_COLUMNS = [
+    "game_id",
+    "season",
+    "model_logit",
+    "composition_flag_sum",
+    "home_covered",
+    "open_move",
+    "margin_vs_open",
+]
+
+
+def build_sbr_margin_move(season_start, season_end):
+    sbr = pd.read_parquet(
+        REPO / "data/processed/sbr_odds.parquet",
+        columns=[
+            "game_id",
+            "season",
+            "home_score",
+            "away_score",
+            "open_home_spread",
+            "close_home_spread",
+        ],
+    )
+    sbr = sbr.loc[sbr["game_id"].notna()].copy()
+    sbr["game_id"] = sbr["game_id"].astype(str)
+    sbr = sbr.dropna(subset=["home_score", "away_score", "open_home_spread", "close_home_spread"])
+    sbr = sbr.loc[sbr["season"].between(season_start, season_end)]
+    sbr = sbr.drop_duplicates(subset="game_id")
+    sbr["open_move_sbr"] = sbr["close_home_spread"] - sbr["open_home_spread"]
+    sbr["margin_vs_open_sbr"] = (
+        sbr["home_score"] - sbr["away_score"]
+    ) - sbr["open_home_spread"]
+    return sbr[["game_id", "open_move_sbr", "margin_vs_open_sbr"]]
+
+
+def load_served_population():
+    population, provenance = build_fit_population(REPO / "artifacts", REPO / "data")
+    population = population.dropna(subset=["open_move", "margin_vs_open"]).reset_index(drop=True)
+    return population[POPULATION_COLUMNS].copy(), provenance, "served_2020_2025"
+
+
+def load_v4_2013_2025_population():
+    import opener_error_transfer_unit4 as oet4
+
+    nfl, nfl_provenance, graded_meta = oet4.load_line_move_population()
+    cfb_all = oet4.load_cfb_population()
+    cfb_pred_p, _per_fold_meta = oet4.attach_cfb_transfer_logit(nfl, cfb_all)
+    nfl = nfl.copy()
+    nfl["cfb_pred_p"] = cfb_pred_p
+    nfl = nfl.dropna(subset=["cfb_pred_p"]).reset_index(drop=True)
+
+    true_pop, _true_provenance = build_fit_population(REPO / "artifacts", REPO / "data")
+    true_margin = true_pop[["game_id", "margin_vs_open"]].copy()
+    true_margin["game_id"] = true_margin["game_id"].astype(str)
+
+    sbr_margin = build_sbr_margin_move(oet4.SBR_SEASON_START, oet4.SBR_SEASON_END)
+
+    nfl = nfl.merge(true_margin, on="game_id", how="left")
+    nfl = nfl.merge(sbr_margin[["game_id", "margin_vs_open_sbr"]], on="game_id", how="left")
+    nfl["margin_vs_open"] = nfl["margin_vs_open"].fillna(nfl["margin_vs_open_sbr"])
+    nfl = nfl.dropna(subset=["open_move", "margin_vs_open"]).reset_index(drop=True)
+    provenance = {
+        "nfl_provenance": nfl_provenance,
+        "graded_meta": graded_meta,
+        "note": (
+            "reproduces scripts/opener_error_transfer_unit4.py's load_line_move_population "
+            "plus attach_cfb_transfer_logit dropna(cfb_pred_p) game set; margin_vs_open is "
+            "merged in separately (not part of unit4's own pipeline) from build_fit_population "
+            "for 2020-2025 rows and from SBR home_score/away_score/open_home_spread for "
+            "2013-2019 rows (sign convention verified: sign(margin_vs_open) agrees with "
+            "home_covered on 99.4% of 2011-2021 SBR-matched rows)"
+        ),
+    }
+    return nfl[POPULATION_COLUMNS].copy(), provenance, "opener_error_transfer_v4_2013_2025"
+
+
+def load_extended_2011_2025_population():
+    extended = pd.read_parquet(EXTENDED_POPULATION_PATH).copy()
+    extended["game_id"] = extended["game_id"].astype(str)
+
+    true_pop, true_provenance = build_fit_population(REPO / "artifacts", REPO / "data")
+    true_margin = true_pop[["game_id", "open_move", "margin_vs_open"]].copy()
+    true_margin["game_id"] = true_margin["game_id"].astype(str)
+    true_margin = true_margin.rename(
+        columns={"open_move": "open_move_true", "margin_vs_open": "margin_vs_open_true"}
+    )
+
+    sbr_margin = build_sbr_margin_move(2011, 2019)
+
+    extended = extended.merge(true_margin, on="game_id", how="left")
+    extended = extended.merge(sbr_margin, on="game_id", how="left")
+    extended["open_move"] = extended["open_move_true"].fillna(extended["open_move_sbr"])
+    extended["margin_vs_open"] = extended["margin_vs_open_true"].fillna(
+        extended["margin_vs_open_sbr"]
+    )
+    extended = extended.dropna(subset=["open_move", "margin_vs_open"]).reset_index(drop=True)
+    provenance = {
+        "extended_population_source": str(
+            EXTENDED_POPULATION_PATH.relative_to(REPO)
+        ).replace("\\", "/"),
+        "true_provenance": true_provenance,
+        "note": (
+            "extended_fit_population 2011-2025 parquet joined to SBR home_score/away_score/"
+            "open/close for 2011-2019 (margin_vs_open_sbr = (home_score - away_score) - "
+            "open_home_spread, sign convention verified: 99.4% agreement with home_covered) "
+            "and to build_fit_population open_move/margin_vs_open for 2020-2025; games "
+            "matching neither source are dropped"
+        ),
+    }
+    return extended[POPULATION_COLUMNS].copy(), provenance, "extended_2011_2025"
+
+
+POPULATION_LOADERS = {
+    "served_2020_2025": load_served_population,
+    "opener_error_transfer_v4_2013_2025": load_v4_2013_2025_population,
+    "extended_2011_2025": load_extended_2011_2025_population,
+}
 
 
 def run_cell(
@@ -77,12 +197,16 @@ def main(argv=None):
     parser.add_argument(
         "--grid", default=",".join(str(value) for value in DEFAULT_GRID_POINTS)
     )
+    parser.add_argument(
+        "--population",
+        choices=list(POPULATION_LOADERS),
+        default="served_2020_2025",
+    )
     args = parser.parse_args(argv)
     grid = tuple(float(value) for value in args.grid.split(","))
 
     started = time.time()
-    population, provenance = build_fit_population(REPO / "artifacts", REPO / "data")
-    population = population.dropna(subset=["open_move", "margin_vs_open"]).reset_index(drop=True)
+    population, provenance, population_label = POPULATION_LOADERS[args.population]()
 
     margin_sd_points = float(population["margin_vs_open"].std(ddof=0))
     logistic_scale = margin_sd_points * sqrt(3.0) / pi
@@ -102,7 +226,7 @@ def main(argv=None):
         "created_at_utc": datetime.now(UTC).isoformat(),
         "unit": "positive-control power unit 3: conversion-free direct line-move control",
         "base_features": list(BASE_FEATURES),
-        "population_label": "served_2020_2025",
+        "population_label": population_label,
         "games": len(population),
         "games_scored": int(mask.sum()),
         "seasons": sorted(int(value) for value in population["season"].unique()),
