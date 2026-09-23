@@ -814,8 +814,10 @@ SCHEDULE: tuple[Job, ...] = (
             at,
             90,
             PRIVATE_SUNDAY_ODDS_CAPTURE,
-            True,
-            "2026-09-23: the free Sunday-only slot left every Tue-Sat Books-now read "
+            False,
+            "Disabled 2026-09-23: config/source_policies.json limits Bovada and Odds Gap to "
+            "a bounded Sunday pre-kickoff capture, so mid-week runs breach the recorded "
+            "terms. Kept for history. The free Sunday-only slot left every Tue-Sat Books-now read "
             "on the stale paid-API opener, and the served pick's market-move term "
             "needs real mid-week snapshots too. Same private Bovada/Odds Gap sources, "
             "script, and per-source 30-minute age guard as odds_private_sun, just run "
