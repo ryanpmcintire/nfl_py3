@@ -45464,6 +45464,62 @@
       "source": "artifacts/experiments/altitude_fourth_quarter/results.json",
       "standard_error": null
     },
+    "lead59_dpi_tilt_pass_heavy_favorite_fit_term": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Accuracy CI [-0.669,+0.330] and Brier CI [-0.00615,+0.00010] both cross zero on 18 decisive games; trait year-over-year reliability -0.066 (158 pairs) is near zero. No AGENTS.md closing ground applies.",
+      "closing_ground": null,
+      "description": "DPI-heavy referee crew (archive-on lagged top quartile, coverage-filtered) crossed with a pass-heavy home favorite, added as one fitted term to the served four-term pick probability, LOSO by season 2020-2025",
+      "effect": -0.133,
+      "effect_units": "accuracy_points",
+      "family": "lead59_type_trait_archive_bins_fit_v1",
+      "interval": [
+        -0.669,
+        0.33
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When a DPI-heavy referee crew works a pass-heavy home favorite, the home side did not measurably do better or worse in a small sample; not ready to serve.",
+      "probability_positive": 0.2986,
+      "recorded_at": "2026-09-23",
+      "reliability": -0.0663,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/lead59_type_trait_bins/20260923T205414Z/summary.json",
+      "standard_error": null
+    },
+    "lead59_holding_tilt_run_heavy_fit_term": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Accuracy CI [-1.793,+0.346] and Brier CI [-0.00138,+0.00002] both cross zero (barely, on the Brier upper edge) on 21 decisive games; whole interval is not on the wrong side, so wrong_sign_resolved does not apply.",
+      "closing_ground": null,
+      "description": "Holding-heavy referee crew (archive-on lagged top quartile, coverage-filtered) crossed with a run-heavy home offense, added as one fitted term to the served four-term pick probability, LOSO by season 2020-2025",
+      "effect": -0.599,
+      "effect_units": "accuracy_points",
+      "family": "lead59_type_trait_archive_bins_fit_v1",
+      "interval": [
+        -1.793,
+        0.346
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When a holding-heavy referee crew works a run-heavy home offense, the home side trended worse in a small sample, but it is too small to call; not ready to serve.",
+      "probability_positive": 0.1422,
+      "recorded_at": "2026-09-23",
+      "reliability": 0.3226,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/lead59_type_trait_bins/20260923T205414Z/summary.json",
+      "standard_error": null
+    },
     "lead_08_injury_trajectory_refresh_cx14": {
       "category": "health",
       "classification": "unresolved_below_power",
