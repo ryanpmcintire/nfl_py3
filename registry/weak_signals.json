@@ -188710,6 +188710,34 @@
       "source": "artifacts/st_player_ratings/20260903T200725Z/results.json",
       "standard_error": null
     },
+    "strength_band_tertile_nested_loso_separation": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "2011-2025 (3734 games, 15 season blocks): season-block bootstrap 95% CI on strong-minus-slight held-out cover rate [0.0103, 0.0823], fully positive, probability_positive=0.995; but 2020-2025 (1503 games, 6 blocks) CI [-0.0215, 0.1244] crosses zero, probability_positive=0.865, so the served 6-season window alone is underpowered even though the larger population resolves positive",
+      "closing_ground": null,
+      "description": "Nested leave-one-season-out tertile band edges for the reader-facing Slight/Lean/Strong pick-probability words (STRENGTH_BAND_QUANTILES=(1/3,2/3)), graded on 2011-2025 extended population (3734 games) and served 2020-2025 population (1503 games)",
+      "effect": 4.44,
+      "effect_units": "accuracy_points",
+      "family": null,
+      "interval": [
+        1.03,
+        8.23
+      ],
+      "league": "nfl",
+      "notes": "CONFIDENCE_BAND_EDGES (0.50,0.52,0.55,0.58,0.62,1.0) was also checked and confirmed NOT reader-facing (CLI diagnostic only, cli_commands/prediction.py); its bands are not strictly monotone in either dataset but this has no card/board consequence. FIT_ITERATIONS=50 converges by iteration 4 (12x overprovisioned, harmless). PROBABILITY_EPSILON=1e-6 never binds in the 2020-2025 served window; binds on 1 of 3734 games (0.03%) in the larger 2011-2025 population, correctly clipping an extreme near-certain call.",
+      "plain_summary": "We checked whether the board's Slight/Lean/Strong wording actually tracks how often those picks win. On the bigger 15-season history it does for the top group: Strong picks clearly win more than Slight picks. The current fixed cutoffs already match what a season-by-season re-derivation would produce, so no wording change is needed; but the middle 'Lean' group barely differs from 'Slight' in win rate.",
+      "probability_positive": 0.995,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 15,
+      "sample_games": 3734,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/confidence_band_derivation/20260923T211436Z/report.json",
+      "standard_error": 1.84
+    },
     "sunday_alpha_selected_current_calibration_chrono_full_pool_v2": {
       "category": "modeling",
       "classification": "unresolved_below_power",

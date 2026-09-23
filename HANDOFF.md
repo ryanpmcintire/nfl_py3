@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-23T21:18:19.100772+00:00`
+Refreshed at: `2026-09-23T21:20:04.723058+00:00`
 
 ## Start here
 
@@ -21,16 +21,17 @@ Refreshed at: `2026-09-23T21:18:19.100772+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `ef95bf87bba8` — Index the Books now lane
-- Pending change set: 10 paths
-  - `M  docs/lanes/injury-scenario-producer.md`
+- Baseline commit: `80c7449edc01` — PER-10 unit 4: injury play-outcome table and out-of-season play rates
+- Pending change set: 11 paths
+  - `M  docs/lanes/fit-ridge-derivation.md`
+  - ` M docs/lanes/free-odds-sources.md`
+  - `M  registry/weak_signals.json`
   - ` M scripts/capture_scheduler.py`
-  - `A  scripts/injury_outcomes_table.py`
+  - `A  scripts/confidence_band_derivation.py`
   - `?? docs/lanes/base-model-recency.md`
   - `?? docs/lanes/market-move-decomposition.md`
   - `?? docs/lanes/positive-control-power.md`
   - `?? scripts/base_model_recency.py`
-  - `?? scripts/confidence_band_derivation.py`
   - `?? scripts/market_move_decomposition.py`
   - `?? scripts/positive_control_power.py`
 
