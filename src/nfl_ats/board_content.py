@@ -109,6 +109,7 @@ from nfl_ats.spread_explorer import (
     load_feature_table_for_forecast,
     widget_home_cover_probability,
 )
+from nfl_ats.tiebreaker_history import settled_tiebreakers
 
 _CONFIDENCE_FILL: dict[str, int] = {"slight": 1, "lean": 2, "strong": 3}
 
@@ -915,9 +916,9 @@ REFRESH_POLICY_NOTE = (
 TIEBREAKER_NOT_PUBLISHED_TEXT = "Tiebreaker not published for this week."
 
 TIEBREAKER_NUDGE_NOTE = (
-    "The total starts from the market's number, which has beaten our own total on its "
-    "own, and adds the model's small adjustment; the score is then the most likely final "
-    "that lands on the same side of the spread as our pick."
+    "The score rounds the model's projected margin and an adjusted market total to "
+    "whole points, keeping the projected winner and our spread pick. The betting "
+    "spread is the handicap used to grade the pick, not our predicted winning margin."
 )
 
 
@@ -951,7 +952,7 @@ class TiebreakerView:
         if self.implied_margin is None:
             return "--"
         favored = self.home_team if self.implied_margin >= 0 else self.away_team
-        return f"{favored} by {abs(self.implied_margin):.2f}"
+        return f"{favored} by {abs(self.implied_margin):.1f}"
 
     @property
     def guess_score_text(self) -> str:
@@ -2360,45 +2361,23 @@ def _build_prospective_scoreboard(
     )
 
 
-def _tiebreaker_season_error_text(artifacts_root: Path | None, *, season: float | None) -> str:
-
+def _tiebreaker_season_error_text(
+    artifacts_root: Path | None, *, season: float | None, outcomes: pd.DataFrame
+) -> str:
     if artifacts_root is None or season is None:
         return ""
-    path = Path(artifacts_root) / "prospective" / "tiebreaker_shade_decisions.parquet"
-    if not path.is_file():
+    rows = settled_tiebreakers(Path(artifacts_root), season=int(season), outcomes=outcomes)
+    if not rows:
         return ""
-    try:
-        rows = pd.read_parquet(path)
-    except (OSError, ValueError):
-        return ""
-    needed = {"season", "shaded_total", "actual_total", "market_total"}
-    if not needed.issubset(rows.columns):
-        return ""
-    rows = rows.loc[pd.to_numeric(rows["season"], errors="coerce").eq(float(season))]
-    our_errors: list[float] = []
-    market_errors: list[float] = []
-    for row in rows.to_dict("records"):
-        realised = _number(row.get("actual_total"))
-        published = _number(row.get("shaded_total"))
-        if realised is None or published is None:
-            continue
-        our_errors.append(abs(published - realised))
-        market = _number(row.get("market_total"))
-        if market is not None:
-            market_errors.append(abs(market - realised))
-    if not our_errors:
-        return ""
-    played = len(our_errors)
+    played = len(rows)
     game_word = "game" if played == 1 else "games"
-    ours = sum(our_errors) / played
-    text = (
-        f"Season so far: our combined-score guess has missed by "
-        f"{ours:.1f} points a game over {played} {game_word}"
+    ours = sum(abs(row.guessed_total - row.actual_total) for row in rows) / played
+    theirs = sum(abs(row.market_total - row.actual_total) for row in rows) / played
+    return (
+        f"Season through Week {max(row.week for row in rows)} ({played} {game_word}): "
+        f"our combined-score guess has missed by {ours:.1f} points a game; "
+        f"the sportsbook over/under line missed by {theirs:.1f}."
     )
-    if market_errors:
-        theirs = sum(market_errors) / len(market_errors)
-        text += f"; the sportsbook over/under line missed by {theirs:.1f}"
-    return text + "."
 
 
 def _build_pool_line_note(
@@ -3300,7 +3279,7 @@ def _load_tiebreaker_view(
         away_team=away,
         market_total=market_total,
         blended_total=blended_total,
-        implied_margin=_number(block.get("implied_margin")),
+        implied_margin=_number(block.get("lattice_centre_margin", block.get("implied_margin"))),
         guess_home=guess_home,
         guess_away=guess_away,
         note=TIEBREAKER_NUDGE_NOTE,
@@ -3613,7 +3592,7 @@ def load_board_content(
     tiebreaker_view = replace(
         tiebreaker_view,
         season_error_text=_tiebreaker_season_error_text(
-            artifacts_root, season=_number(artifacts.metadata.get("season"))
+            artifacts_root, season=_number(artifacts.metadata.get("season")), outcomes=outcomes
         ),
     )
 

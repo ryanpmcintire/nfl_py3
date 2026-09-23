@@ -642,7 +642,7 @@ def _tiebreaker_panel_html(view: TiebreakerView) -> str:
         body = (
             f'<p class="game-sub">{escape(view.matchup_text)}: market total '
             f"{escape(view.market_total_text)}, blended total "
-            f"{escape(view.blended_total_text)}, implied margin "
+            f"{escape(view.blended_total_text)}, projected margin "
             f"{escape(view.implied_margin_text)}{guess_line}.</p>"
             f'<p class="micro">{escape(view.note)}</p>' + season_line
         )

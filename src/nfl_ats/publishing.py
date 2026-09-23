@@ -76,6 +76,7 @@ from nfl_ats.tiebreaker import (
     tiebreaker_lineage_sources,
     tiebreaker_report,
 )
+from nfl_ats.tiebreaker_history import record_tiebreaker
 
 TIEBREAKER_ARTIFACT_FILENAME = "tiebreaker.json"
 
@@ -683,6 +684,8 @@ def publish_active_predictions(
         updated_readme, artifacts_root=artifacts_root, registry_root=registry_root
     )
     atomic_text(updated_readme, readme_path)
+    if tiebreaker_guess is not None:
+        record_tiebreaker(artifacts_root, tiebreaker_payload)
     return {
         "model_id": active["model_id"],
         "season": int(metadata["season"]),

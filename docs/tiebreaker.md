@@ -42,7 +42,9 @@ now uses it directly whenever a production model view exists:
 3. **Projected score** = `nfl_ats.score_lattice.pick_consistent_top_score`:
    candidates are every feasible final whose margin lies STRICTLY on the
    pick side of the spread line -- a push (`margin == spread_line`) or a
-   wrong-side final is never a candidate -- AND whose total lies within a
+   wrong-side final is never a candidate. For a nonzero projected margin,
+   candidates must also preserve its outright winner; rounding a narrow
+   projected win into a tie is not admissible. The total must lie within a
    total-proximity tolerance of the served total (1 point first, widened
    to 2 only when the 1-point window admits nothing). Among THOSE
    candidates, the one chosen is the one GEOMETRICALLY CLOSEST to the
@@ -677,3 +679,18 @@ both guesses are on the record before the deadline either way.
 - **`predicted_margin` is still what production centres on.** Nothing in this
   section changed a served number; the ledger accrues from this week's publish
   and the decision is revisited when it has rows.
+
+## Published season comparison
+
+The dashboard grades the latest saved score guess available before each game's
+pick deadline, using the final score and the market total saved with that same
+guess. Both mean absolute errors use the same completed games. The separate
+prospective shade experiment is not the publication record.
+
+Publication preserves each tiebreaker in
+`artifacts/published/tiebreakers/{season}-week-{week}/{publication-time}.json`.
+Historical forecast `tiebreaker.json` files remain readable for recovery. A guess
+written after its pick deadline is never substituted for the pre-deadline guess.
+The display distinguishes the model's continuous projected margin from the
+integer score margin and the betting handicap. The score is a rounded projection,
+not a claim about the single most likely final score.

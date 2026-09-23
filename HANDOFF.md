@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-23T11:27:23.020962+00:00`
+Refreshed at: `2026-09-23T12:40:10.724730+00:00`
 
 ## Start here
 
@@ -21,9 +21,24 @@ Refreshed at: `2026-09-23T11:27:23.020962+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `7f96e71d416b` — Fill Week 3 dashboard details and label missing quotes
-- Pending change set: 1 paths
+- Baseline commit: `35dae6c7f065` — Refresh handoff after Week 3 dashboard publication
+- Pending change set: 16 paths
+  - `M  CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - `A  docs/lanes/done/tiebreaker-score-history.md`
+  - `M  docs/model.html`
+  - `M  docs/tiebreaker.md`
+  - `M  src/nfl_ats/board_content.py`
+  - `M  src/nfl_ats/board_terminal.py`
+  - `M  src/nfl_ats/publishing.py`
+  - `M  src/nfl_ats/score_lattice.py`
+  - `A  src/nfl_ats/tiebreaker_history.py`
+  - `M  tests/test_board_content.py`
+  - `M  tests/test_public_board_wave2.py`
+  - `M  tiebreaker.json`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -43,7 +58,7 @@ The 52.35% figure is the distinct secondary close-grade historical classificatio
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 3** from model `429b12a7106c7e7d`, published `2026-09-23T11:00:14.441152+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 3** from model `429b12a7106c7e7d`, published `2026-09-23T12:23:27.517403+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

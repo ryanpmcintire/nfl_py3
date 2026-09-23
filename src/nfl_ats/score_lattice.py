@@ -297,6 +297,8 @@ def pick_consistent_top_score(
     side_admissible = (
         margin_grid > spread_line if pick_side == "HOME" else margin_grid < spread_line
     )
+    if centre_margin != 0.0:
+        side_admissible &= margin_grid * centre_margin > 0.0
     distance = np.sqrt((margin_grid - centre_margin) ** 2 + (total_grid - served_total) ** 2)
     for tolerance in total_tolerances:
         admissible = side_admissible & (np.abs(total_grid - served_total) <= tolerance)

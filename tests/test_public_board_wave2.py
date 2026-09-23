@@ -48,9 +48,9 @@ def test_tiebreaker_panel_renders_a_real_guess() -> None:
     assert "DEN at KC" in html
     assert "market total 43" in html
     assert "blended total 43.04" in html
-    assert "implied margin KC by 2.75" in html
+    assert "projected margin KC by 2.8" in html
     assert "guess KC 22 - DEN 19" in html
-    assert "starts from the market" in html
+    assert "betting spread is the handicap" in html
 
 
 def test_tiebreaker_panel_numbers_stay_collapsed_inside_details() -> None:
@@ -107,7 +107,7 @@ def test_tiebreaker_panel_omits_guess_score_when_not_supplied() -> None:
     )
     content = replace(build_fixture_content(), tiebreaker=view)
     html = board_terminal.render(content)
-    assert "implied margin NE by 3.00" in html
+    assert "projected margin NE by 3.0" in html
     assert ", guess" not in html
 
 

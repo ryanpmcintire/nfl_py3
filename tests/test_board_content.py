@@ -610,7 +610,7 @@ def test_load_tiebreaker_view_reads_the_persisted_sidecar(tmp_path: Path) -> Non
     assert view.matchup_text == "DEN at KC"
     assert view.market_total_text == "43"
     assert view.blended_total_text == "43.04"
-    assert view.implied_margin_text == "KC by 2.75"
+    assert view.implied_margin_text == "KC by 2.8"
     assert view.guess_score_text == "KC 22 - DEN 19"
     assert view.note == board_content.TIEBREAKER_NUDGE_NOTE
 
@@ -635,7 +635,7 @@ def test_load_tiebreaker_view_falls_back_to_a_metadata_block(tmp_path: Path) -> 
     view = board_content._load_tiebreaker_view(tmp_path, metadata)
     assert view.recorded is True
     assert view.matchup_text == "NE at SEA"
-    assert view.implied_margin_text == "NE by 3.00"
+    assert view.implied_margin_text == "NE by 3.0"
     assert view.guess_score_text == ""
 
 
