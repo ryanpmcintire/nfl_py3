@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-22T23:59:37.666481+00:00`
+Refreshed at: `2026-09-23T01:39:03.878060+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-09-22T23:59:37.666481+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `d25645160565` — Reject injury captures missing the current season
-- Pending change set: 21 paths
-  - ` M CURRENT_PREDICTIONS.md`
+- Baseline commit: `3be30802150f` — Keep week filtering inside the dashboard card
+- Pending change set: 50 paths
+  - `M  AGENTS.md`
+  - `M  CLAUDE.md`
+  - `M  CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
+  - `M  README.md`
   - `M  ROADMAP.md`
+  - `A  docs/agent_workflow.md`
   - `M  docs/findings.html`
   - `M  docs/history.html`
   - `M  docs/index.html`
   - `M  docs/lanes/README.md`
-  - `A  docs/lanes/done/dashboard-week-filter-repair.md`
-  - `M  docs/lanes/week3-lines-2026-09-22.md`
+  - `A  docs/lanes/done/agent-harness-hygiene.md`
+  - `A  docs/lanes/done/week-card-consistency.md`
+  - `A  docs/lanes/done/week3-lines-2026-09-22.md`
+  - `A  docs/lanes/gh-window-incident.md`
+  - `A  docs/lanes/news-trigger-refresh.md`
+  - `D  docs/lanes/week3-lines-2026-09-22.md`
+  - `A  docs/lanes/week3-research-recorders.md`
   - `M  docs/model.html`
-  - `M  src/nfl_ats/board_interactive_experience.js`
-  - `M  src/nfl_ats/board_week_navigation.css`
-  - `M  src/nfl_ats/board_week_navigation.js`
-  - `M  src/nfl_ats/board_week_navigation.py`
-  - ` M tiebreaker.json`
-  - `?? registry/experiments/margin-backtest/20260921T160806Z.json`
-  - `?? registry/experiments/margin-backtest/20260922T183842Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-02-20260921T161008Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-02-20260922T184009Z.json`
-  - `?? registry/experiments/waterfall-feed/20260921T161510Z.json`
-  - ...and 1 more
+  - `M  docs/timing_policy_audit.md`
+  - ...and 30 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -52,18 +52,18 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `3412097369e4e4ca`
+- Model ID: `429b12a7106c7e7d`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20260920T135435Z`)
+- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20260923T010507Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card applies this after the coach policy, while paired prospective tracking continues
-- Secondary close-grade historical classification: **1,093 / 2,091 (52.27%)**
-- Linked forecast: **2026 Week 2**, created `2026-09-22T18:40:09.166405+00:00`
+- Secondary close-grade historical classification: **1,103 / 2,107 (52.35%)**
+- Linked forecast: **2026 Week 3**, created `2026-09-23T01:16:08.696679+00:00`
 
-The 52.27% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
+The 52.35% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 2** from model `3412097369e4e4ca`, published `2026-09-22T18:43:28.216322+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 3** from model `429b12a7106c7e7d`, published `2026-09-23T01:08:21.200851+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

@@ -941,8 +941,8 @@ SCHEDULE: tuple[Job, ...] = (
     Job(
         "refresh_trigger_log_sun",
         "sun",
-        "18:00",
-        240,
+        "12:40",
+        10,
         [
             str(UV),
             "run",
@@ -951,13 +951,15 @@ SCHEDULE: tuple[Job, ...] = (
             str(REPO / "scripts" / "refresh_trigger_log.py"),
             "--scan",
             "--current",
+            "--dispatch",
+            "--trigger-source",
+            "refresh_trigger_log_sun",
         ],
         True,
-        "ENG-08 timing-policy instrumentation: reconstructs real non-clock "
-        "refresh triggers plus the week's fired clock checkpoints and appends "
-        "them, deadline-validated, to the read-only evidence log.",
-        added_on="2026-09-04",
-        catch_up=True,
+        "MKT-08 prospective Sunday news-trigger scan and refresh dispatch for "
+        "game-keyed, deadline-valid lineup, inactive, and line-move events.",
+        added_on="2026-09-22",
+        catch_up=False,
     ),
     Job(
         "backup_data",
@@ -2101,7 +2103,7 @@ def dry_command(command: list[str]) -> list[str]:
     if (
         len(stripped) >= 5
         and stripped[3] == "python"
-        and Path(stripped[4]).name == "refresh_lineup_forecast.py"
+        and Path(stripped[4]).name in {"refresh_lineup_forecast.py", "refresh_trigger_log.py"}
         and "--dry-run" not in stripped
     ):
         return [*stripped, "--dry-run"]

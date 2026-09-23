@@ -1,37 +1,32 @@
 # Timing-policy audit (MKT-08)
 
-> **Superseded in part, 2026-09-11.** The comparison this audit said could not
-> be scored has now been scored on the market archive rather than on prospective
-> ledger rows: `docs/refresh_timing_policy.md` measures the served late-week
-> follow rule held fixed at four different sets of refresh instants over
-> 2020-2025. The audit's own read-only command no longer exists —
-> `scripts/timing_policy_audit.py` was removed in the 2026-09-10 repository cut —
-> so the inventory below is a historical record of what the ledgers held on
-> 2026-09-02, not a command to re-run. What is still open is exactly the
-> prospective half the audit describes: a real news-triggered arm built from
-> post-lock refresh rows carrying non-default triggers.
+> **Updated 2026-09-22.** The archive comparison is recorded in
+> `docs/refresh_timing_policy.md`. The prospective bridge now exists for
+> game-keyed lineup, inactives, and line-move events. This audit remains open
+> until future events produce real decision rows that can be compared with the
+> fixed-clock arm.
 
 ## Status
 
-MKT-08 remains open. **[read: `ROADMAP.md`, MKT-08]** Its definition asks for
-a comparison of fixed weekly timestamps and news-triggered updates. The fixed
-side exists, but the source-triggered side does not yet have structured,
-observed decision rows.
+MKT-08 remains open for prospective measurement. **[read: `ROADMAP.md`,
+MKT-08]** Its definition asks for a comparison of fixed weekly timestamps and
+news-triggered updates. The source-triggered path is implemented, but it has no
+prospective decision rows yet.
 
 - **[read: `registry/experiments/`]** Five retained experiment artifacts cover
   fixed checkpoint families (`observed-movement-channel`,
   `movement-attribution`, and `reliability-movement`).
-- **[read: `scripts/capture_scheduler.py`]** Every current decision job is
-  dispatched by weekday and Eastern time. The Tuesday lock is dependency-gated
-  on the opener capture; refresh jobs remain clock-driven, including the
-  post-inactives passes.
-- **[read: `src/nfl_ats/pick_refresh.py`]** The played revision ledger records
-  a run ID and revision time, and since 2026-09-03 also structured
-  `trigger_type` (`clock_dispatch` default, `news_event` reserved),
-  `trigger_source` (scheduler job id, via `--trigger-source`), and
-  `trigger_observed_at_utc` (defaults to plan time), with legacy-row
-  backfill. Its free-text `reason` remains narration alongside the
-  machine-checkable fields, not instead of them.
+- **[read: `scripts/capture_scheduler.py`]** The Sunday 12:40 Eastern job scans
+  retained source captures and dispatches eligible news-event refreshes with
+  catch-up disabled. Existing fixed refresh jobs remain clock-driven.
+- **[read: `scripts/refresh_trigger_log.py`]** Historical backfill is blocked by
+  an activation watermark. Only a successful refresh writes a completion
+  receipt; failed dispatches remain retryable, and dry runs write nothing.
+- **[read: `src/nfl_ats/refresh_triggers.py`]** Only lineup changes, posted
+  inactives, and line moves are dispatchable. Injury news is excluded because
+  its current source lacks safe game identity.
+- **[read: `src/nfl_ats/pick_refresh.py`]** The event observation time is passed
+  explicitly into the existing pregame deadline and chronology checks.
 - **[measured: `python scripts/timing_policy_audit.py`, 2026-09-02]** The local
   paper-decision and five refresh ledgers contain zero rows before the 2026
   Week 1 lock. There is therefore no prospective fixed-versus-triggered
@@ -40,22 +35,17 @@ observed decision rows.
 This is an evidence-availability statement, not an ATS verdict. No experiment
 was run and no model or registry decision changed.
 
-## Read-only audit command
+## Read-only dispatch verification
 
 ```powershell
-.\.tools\uv.exe run --no-sync python scripts\timing_policy_audit.py
+$env:UV_CACHE_DIR='F:\Repos\nfl_py3\.tmp\uv-cache'
+.\.tools\uv.exe run --no-sync python scripts/refresh_trigger_log.py --scan --current --dispatch --dry-run --trigger-source refresh_trigger_log_sun
 ```
 
-The command emits JSON to stdout and performs no capture, forecast, ledger
-append, artifact write, or network request. It reads:
-
-- the decision schedule from `scripts/capture_scheduler.py`;
-- immutable capture directories for market, injury news/reports, weather,
-  referee assignments, and inactives;
-- `artifacts/clv_ledger/decisions.parquet`;
-- the played, injury-signal, injury-report, inactives, and referee refresh
-  ledgers under `artifacts/prospective/`; and
-- the three existing fixed-timestamp registry experiment families.
+The direct script command bypasses scheduler state and notifications. It scans
+retained inputs and reports eligible candidates without appending evidence,
+creating the activation state, writing a completion receipt, or invoking the
+refresh command.
 
 For each non-empty refresh ledger it fails closed on missing required columns
 or invalid timestamps, then reports these decision-time violations:

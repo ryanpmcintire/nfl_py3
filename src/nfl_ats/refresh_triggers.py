@@ -43,6 +43,10 @@ TRIGGER_SOURCES: frozenset[str] = frozenset(
     }
 )
 
+MKT08_DISPATCHABLE_SOURCES: frozenset[str] = frozenset(
+    {TRIGGER_INACTIVES_POSTED, TRIGGER_LINEUP_CHANGE, TRIGGER_LINE_MOVE}
+)
+
 CLOCK_CHECKPOINT_NAMES: tuple[str, ...] = (
     "refresh_thu",
     "refresh_sat",

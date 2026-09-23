@@ -441,6 +441,18 @@ def plan_weekly_run(
             ),
         ]
     )
+    steps.append(
+        WeeklyStep(
+            number=8,
+            name="waterfall-feed",
+            description=(
+                "rebuild the per-game attribution feed for the active model; "
+                "publish-board fails closed on a feed built for another model"
+            ),
+            command=("waterfall-feed",),
+            optional=False,
+        )
+    )
     publish_command = ["publish-predictions", "--with-board"]
     if record_decisions:
         publish_command.append("--record-decisions")
@@ -502,18 +514,6 @@ def plan_weekly_run(
                 ),
             )
         )
-    steps.append(
-        WeeklyStep(
-            number=14,
-            name="waterfall-feed",
-            description=(
-                "rebuild the per-game attribution feed for the active model; "
-                "publish-board fails closed on a feed built for another model"
-            ),
-            command=("waterfall-feed",),
-            optional=False,
-        )
-    )
     steps.append(
         WeeklyStep(
             number=15,

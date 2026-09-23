@@ -7,34 +7,34 @@ constructs every feature strictly from information available before kickoff,
 and evaluates model choices with nested chronological walk-forward tests.
 
 <!-- CURRENT_PREDICTIONS:START -->
-## Current ATS forecast: 2026 Week 2
+## Current ATS forecast: 2026 Week 3
 
 > **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 
-Active model: weak stack (market residual). Its distinct close-graded chronological 2018-2025 evaluation classified **1,093 of 2,091 non-push games correctly (52.27%)**. The 95% range was 50.10%-54.30%. The model's baseline comparison is the separate opener-graded accuracy rule documented in `docs/opener_evaluation.md`.
+Active model: weak stack (market residual). Its distinct close-graded chronological 2018-2025 evaluation classified **1,103 of 2,107 non-push games correctly (52.35%)**. The 95% range was 50.22%-54.46%. The model's baseline comparison is the separate opener-graded accuracy rule documented in `docs/opener_evaluation.md`.
 
 **Production policy active:** one calibrated probability combines the model, situational evidence and available line movement to choose each side.
 
-**Best Pick of the week (★):** DEN -2.5 in JAX at DEN. The pool scores one Best Pick per regular-season week. This pick was the star this card carried when the picks locked; once a game is past its deadline the star stays where the pool saw it.
+**Best Pick of the week (★):** CAR -2.5 in CAR at CLE. The pool scores one Best Pick per regular-season week. This pick was provisionally chosen because it has the highest estimated chance to cover among eligible games. Its estimated lead over the other picks is uncertain.
 
 | Date        | Matchup    | ATS prediction   | Cover chance   |
 |:------------|:-----------|:-----------------|:---------------|
-| Thu, Sep 17 | DET at BUF | BUF -4.5         | 54.1%          |
-| Sun, Sep 20 | CAR at ATL | CAR -1.5         | 54.4%          |
-| Sun, Sep 20 | CIN at HOU | CIN +2.5         | 53.3%          |
-| Sun, Sep 20 | CLE at TB  | TB -8.5          | 53.6%          |
-| Sun, Sep 20 | GB at NYJ  | NYJ +3.5         | 51.5%          |
-| Sun, Sep 20 | IND at KC  | IND +6.5         | 55.0%          |
-| Sun, Sep 20 | JAX at DEN | ★ DEN -2.5       | 60.3%          |
-| Sun, Sep 20 | LV at LAC  | LV +7.5          | 51.7%          |
-| Sun, Sep 20 | MIA at SF  | SF -13.5         | 59.8%          |
-| Sun, Sep 20 | MIN at CHI | MIN +5.5         | 54.5%          |
-| Sun, Sep 20 | NO at BAL  | NO +8.5          | 63.5%          |
-| Sun, Sep 20 | PHI at TEN | PHI -6.5         | 55.2%          |
-| Sun, Sep 20 | PIT at NE  | NE -4.5          | 57.2%          |
-| Sun, Sep 20 | SEA at ARI | SEA -4.5         | 50.8%          |
-| Sun, Sep 20 | WAS at DAL | DAL -3.5         | 53.2%          |
-| Mon, Sep 21 | NYG at LA  | LA -7.5          | 63.2%          |
+| Thu, Sep 24 | ATL at GB  | ATL +6.5         | 53.3%          |
+| Sun, Sep 27 | ARI at SF  | ARI +8.5         | 50.4%          |
+| Sun, Sep 27 | BAL at DAL | DAL +2.5         | 53.1%          |
+| Sun, Sep 27 | CAR at CLE | ★ CAR -2.5       | 61.4%          |
+| Sun, Sep 27 | CIN at PIT | CIN -3.5         | 57.1%          |
+| Sun, Sep 27 | HOU at IND | HOU -2.5         | 52.4%          |
+| Sun, Sep 27 | KC at MIA  | KC -10.5         | 55.7%          |
+| Sun, Sep 27 | LAC at BUF | LAC +7.5         | 51.7%          |
+| Sun, Sep 27 | LA at DEN  | LA -2.5          | 52.3%          |
+| Sun, Sep 27 | LV at NO   | NO -3.5          | 55.3%          |
+| Sun, Sep 27 | MIN at TB  | MIN -1.5         | 50.1%          |
+| Sun, Sep 27 | NE at JAX  | JAX -2.5         | 51.7%          |
+| Sun, Sep 27 | NYJ at DET | NYJ +6.5         | 51.6%          |
+| Sun, Sep 27 | SEA at WAS | WAS +6.5         | 50.6%          |
+| Sun, Sep 27 | TEN at NYG | TEN +3.5         | 50.7%          |
+| Mon, Sep 28 | PHI at CHI | CHI +3.5         | 53.0%          |
 
 [Open the standalone card](CURRENT_PREDICTIONS.md) for provenance and interpretation.
 <!-- CURRENT_PREDICTIONS:END -->
@@ -47,10 +47,10 @@ close. A close-graded number alone is never grounds to reject a candidate
 (see `AGENTS.md`); it is reported below only as the secondary figure it is.
 
 <!-- ACTIVE_MODEL_STATE:START -->
-Active model: `market_residual` with `weak_stack` features (`3412097369e4e4ca`), regressor `ridge`, ridge alpha `10.0`, calibration `none`.
+Active model: `market_residual` with `weak_stack` features (`429b12a7106c7e7d`), regressor `ridge`, ridge alpha `10.0`, calibration `none`.
 
 - **Opener-graded, probability-rule accuracy (the pool-relevant grade -- picks lock Tuesday against a frozen line):** **53.36%** on **1,537 paired games**, week-blocked 95% interval [50.76%, 55.90%].
-- Close-graded accuracy (secondary -- the market's sharpest, and least representative, decision point): **52.27%** (1,093 of 2,091 non-push games), week-blocked 95% interval [50.10%, 54.30%].
+- Close-graded accuracy (secondary -- the market's sharpest, and least representative, decision point): **52.35%** (1,103 of 2,107 non-push games), week-blocked 95% interval [50.22%, 54.46%].
 
 Neither figure is a game-specific probability, and neither is proof of a profitable or stable market edge (see `AGENTS.md`).
 <!-- ACTIVE_MODEL_STATE:END -->

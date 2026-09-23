@@ -114,13 +114,13 @@ def test_plan_is_the_seven_specified_steps_in_order(tmp_path: Path) -> None:
         "overlay-composition",
         "served-card-archive",
         "served-refresh-card",
+        "waterfall-feed",
         "publish-predictions",
         "drift-report",
-        "waterfall-feed",
         "publish-board",
     ]
-    assert [step.number for step in steps] == [1, 2, 3, 3, 4, 5, 6, 7, 7, 7, 7, 7, 7, 8, 13, 14, 15]
-    assert steps[-3].optional is True
+    assert [step.number for step in steps] == [1, 2, 3, 3, 4, 5, 6, 7, 7, 7, 7, 7, 7, 8, 8, 13, 15]
+    assert steps[-2].optional is True
     assert steps[-1].name == "publish-board"
     assert steps[-1].optional is False
     names = [step.name for step in steps]
@@ -273,9 +273,9 @@ def test_dry_run_prints_the_plan_and_runs_nothing(
         "overlay-composition",
         "served-card-archive",
         "served-refresh-card",
+        "waterfall-feed",
         "publish-predictions",
         "drift-report",
-        "waterfall-feed",
         "publish-board",
     ]
     assert payload["steps"][0]["command"][:4] == ["python", "-m", "nfl_ats", "ingest"]
@@ -312,9 +312,9 @@ def test_skip_ingest_marks_step_one_skipped(tmp_path: Path) -> None:
         "overlay-composition",
         "served-card-archive",
         "served-refresh-card",
+        "waterfall-feed",
         "publish-predictions",
         "drift-report",
-        "waterfall-feed",
         "publish-board",
     ]
     assert summary["steps"][0] == {
@@ -356,9 +356,9 @@ def test_run_executes_every_step_in_order(tmp_path: Path) -> None:
         "overlay-composition",
         "served-card-archive",
         "served-refresh-card",
+        "waterfall-feed",
         "publish-predictions",
         "drift-report",
-        "waterfall-feed",
         "publish-board",
     ]
     assert [step["status"] for step in summary["steps"]] == ["ok"] * 17
@@ -639,7 +639,7 @@ def test_prospective_steps_trail_the_publish_and_are_optional(tmp_path: Path) ->
     steps = plan_weekly_run(season=2026, week=1, data_root=data_root)
     names = [step.name for step in steps]
 
-    assert names[:14] == [
+    assert names[:15] == [
         "ingest",
         "build-features",
         "build-pbp-features",
@@ -653,12 +653,12 @@ def test_prospective_steps_trail_the_publish_and_are_optional(tmp_path: Path) ->
         "overlay-composition",
         "served-card-archive",
         "served-refresh-card",
+        "waterfall-feed",
         "publish-predictions",
     ]
-    assert names[14:] == [
+    assert names[15:] == [
         *PROSPECTIVE_STEPS,
         "drift-report",
-        "waterfall-feed",
         "publish-board",
     ]
     by_name = {step.name: step for step in steps}
@@ -667,7 +667,7 @@ def test_prospective_steps_trail_the_publish_and_are_optional(tmp_path: Path) ->
     assert by_name["served-refresh-card"].optional is True
     assert by_name["served-card-archive"].optional is True
     measurement_steps = {"served-refresh-card", "served-card-archive"}
-    assert not any(by_name[name].optional for name in names[:14] if name not in measurement_steps)
+    assert not any(by_name[name].optional for name in names[:15] if name not in measurement_steps)
 
     processed = data_root / "processed"
     assert by_name["build-weak-stack-features"].command == (
@@ -782,7 +782,7 @@ def test_missing_challenger_manifest_skips_the_tail_without_breaking_the_plan(
     (data_root / "processed" / "game_features_weak_stack.manifest.json").unlink()
 
     steps = plan_weekly_run(season=2026, week=1, data_root=data_root)
-    assert [step.name for step in steps][:14] == [
+    assert [step.name for step in steps][:15] == [
         "ingest",
         "build-features",
         "build-pbp-features",
@@ -796,9 +796,10 @@ def test_missing_challenger_manifest_skips_the_tail_without_breaking_the_plan(
         "overlay-composition",
         "served-card-archive",
         "served-refresh-card",
+        "waterfall-feed",
         "publish-predictions",
     ]
-    tail = steps[14]
+    tail = steps[15]
     assert tail.name == "build-weak-stack-features"
     assert tail.skipped and tail.optional
     assert "challenger evidence unavailable" in tail.notes[0]

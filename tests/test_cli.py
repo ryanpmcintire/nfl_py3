@@ -570,7 +570,14 @@ def test_publish_predictions_does_not_record_by_default(
 
     assert (
         cli.main(
-            ["publish-predictions", "--destination", str(destination), "--readme", str(readme)]
+            [
+                "publish-predictions",
+                "--destination",
+                str(destination),
+                "--readme",
+                str(readme),
+                "--no-board",
+            ]
         )
         == 0
     )
@@ -1164,6 +1171,7 @@ def test_publish_predictions_records_with_the_explicit_flag(
                 "--readme",
                 str(readme),
                 "--record-decisions",
+                "--no-board",
             ]
         )
         == 0
@@ -1323,6 +1331,7 @@ def test_publish_predictions_records_cleanly_when_a_challenger_is_deactivated(
             "--readme",
             str(readme),
             "--record-decisions",
+            "--no-board",
         ]
     )
     assert exit_code == 0

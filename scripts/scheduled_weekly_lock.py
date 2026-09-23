@@ -17,6 +17,7 @@ sys.path.insert(0, str(REPO))
 
 from nfl_ats.scheduled_lock import execute_scheduled_lock, resolve_lock_target  # noqa: E402
 from nfl_ats.snapshots import latest_snapshot, load_verified_snapshot  # noqa: E402
+from nfl_ats.weekly import _final_json_document  # noqa: E402
 from scripts.check_splash_board import PoolBoardMissing, require_captured_board  # noqa: E402
 from scripts.lockday_verify import verify  # noqa: E402
 
@@ -107,7 +108,7 @@ def _run_weekly(season: int, week: int, *, replace: bool = False) -> dict[str, A
             f"[full output: {_repo_relative(log_path)}]",
             log_path=log_path,
         )
-    return json.loads(proc.stdout)
+    return _final_json_document(proc.stdout)
 
 
 def _parse_args(argv: list[str] | None) -> argparse.Namespace:

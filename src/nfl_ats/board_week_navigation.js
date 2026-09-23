@@ -43,13 +43,13 @@
       if (selected && focus) row.focus();
     });
     panel.querySelector('.week-archive-detail').innerHTML = `
-      <div class="dive"><div class="dive-head"><div class="refined-matchup">
+      <div class="dive-panels"><div class="dive"><div class="dive-head"><div class="refined-matchup">
         <div><div class="match-label">THE MATCHUP</div><div class="teams"><span class="away">${escapeHTML(game.awayTeam)}</span><i>at</i><span class="home">${escapeHTML(game.homeTeam)}</span></div></div>
         <div class="cover-read"><strong>${escapeHTML(game.confidence)}</strong><small>published cover chance</small></div>
       </div><div class="original-pick"><div><div class="game-id">${game.bestPick ? '★ ' : ''}${escapeHTML(game.pickTeam)} ${escapeHTML(game.pickLine)}</div><div class="game-sub">Week ${week.week} · ${game.bestPick ? 'Best Pick of the week' : 'Published pick'}</div></div></div></div>
       <div class="week-saved-result"><span class="match-label">${game.status === 'Pending' ? 'RESULT' : 'FINAL'}</span><strong>${escapeHTML(game.score || 'Awaiting the final score')}</strong><span>${escapeHTML(game.status)}</span></div>
       <p class="week-saved-note">This is the pick and pool line saved with this week’s card.</p>
-      <div class="ball-actions"><button type="button" class="ball-button" data-week-step="-1">← Previous game</button><button type="button" class="ball-button" data-week-step="1">Next game →</button></div></div>`;
+      <div class="ball-actions"><button type="button" class="ball-button" data-week-step="-1">← Previous game</button><button type="button" class="ball-button" data-week-step="1">Next game →</button></div></div></div>`;
   };
   panels.forEach((panel, key) => {
     const week = data.weeks.find(item => item.key === key);

@@ -3,7 +3,7 @@
 A lane file is the state a fresh session needs to continue a task after the
 previous session was cleared. One file per task, named by a short slug. The
 session that works a lane updates it whenever a unit of work completes, and
-every response ends with a one-line clear verdict (AGENTS.md, Lanes and
+every final response ends with a one-line clear verdict (AGENTS.md, Lanes and
 clearing). The status line shows the most recently touched lane.
 
 A lane file has five short sections and stays under one page:
@@ -20,7 +20,9 @@ modified lane when the prompt just says to continue.
 
 ## Active
 
-- [week3-lines-2026-09-22](week3-lines-2026-09-22.md) - 2026-09-22: genuine locked FTPL spreads required before the Week 3 production forecast.
+- [week3-research-recorders](week3-research-recorders.md) - nine challenger records remain missing; all 16 served Week 3 paper decisions are complete.
+- [news-trigger-refresh](news-trigger-refresh.md) - MKT-08 dispatch implemented and verified; prospective comparison awaits new events.
+- [gh-window-incident](gh-window-incident.md) - prior runaway CLI windows remain a separate investigation; no gh commands used for this deployment.
 
 - [confidence-best-pick-unification](confidence-best-pick-unification.md) - shared calibrated selector published in `5fb88a2`; confidence reliability and within-week ranking research remains open
 
@@ -51,6 +53,9 @@ modified lane when the prompt just says to continue.
 
 ## Done
 
+- [week3-lines-2026-09-22](done/week3-lines-2026-09-22.md) - genuine pool lines, all 16 Week 3 picks, paper decisions, and generated dashboard completed.
+- [week-card-consistency](done/week-card-consistency.md) - Weeks 1-3 share seven columns and interactive game details, verified on desktop and mobile.
+- [agent-harness-hygiene](done/agent-harness-hygiene.md) - shared policy and conditional workflow consolidated; repeated local prompt injection removed.
 - [dashboard-week-filter-repair](done/dashboard-week-filter-repair.md) - 2026-09-22: filter only the weekly card; preserve the dashboard and interactive game details, verified on desktop and mobile.
 - [injury-current-season-capture](done/injury-current-season-capture.md) - 2026-09-22: failed current-season requests preserve existing data and leave no empty capture directory; broader Friday/Sunday acquisition remains open.
 - [Backlog triage and deployment](done/backlog-triage-2026-09-22.md) - completed batch deployed; scoped blockers and next-work pointers saved.

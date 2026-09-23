@@ -1347,15 +1347,29 @@ def _require_served_pick_probability() -> None:
     load_pick_probability_model(artifacts_root)
 
 
+def _utc_datetime(value: str) -> datetime:
+    parsed = datetime.fromisoformat(value)
+    if parsed.tzinfo is None or parsed.utcoffset() is None:
+        raise argparse.ArgumentTypeError("timestamp must include a UTC offset")
+    return parsed.astimezone(UTC)
+
+
 def _cmd_publish_predictions(args: argparse.Namespace) -> None:
     _require_served_pick_probability()
-    result = orchestrate_publish_predictions(parse_publish_predictions_request(args))
+    request = parse_publish_predictions_request(args)
+    result = orchestrate_publish_predictions(request)
     _print_json(result)
+    public_site = result.get("public_site")
+    if request.with_board and isinstance(public_site, dict) and public_site.get("written") is False:
+        raise SystemExit(1)
 
 
 def _cmd_publish_board(args: argparse.Namespace) -> None:
     _require_served_pick_probability()
-    _print_json(_write_public_site(args.site_destination or args.destination))
+    result = _write_public_site(args.site_destination or args.destination)
+    _print_json(result)
+    if result.get("written") is False:
+        raise SystemExit(1)
 
 
 def _cmd_refresh_picks(args: argparse.Namespace) -> None:
@@ -1408,6 +1422,7 @@ def _cmd_refresh_picks(args: argparse.Namespace) -> None:
             record_decisions=args.record_decisions,
             trigger_type=getattr(args, "trigger_type", "clock_dispatch"),
             trigger_source=getattr(args, "trigger_source", ""),
+            trigger_observed_at_utc=getattr(args, "trigger_observed_at_utc", None),
             renomination=renomination,
         )
     except Exception as error:
@@ -1684,6 +1699,12 @@ def register(
             "context (e.g. 'refresh_thu'). Stored on every appended "
             "pick-revision row."
         ),
+    )
+    refresh_picks.add_argument(
+        "--trigger-observed-at-utc",
+        type=_utc_datetime,
+        default=None,
+        help="MKT-08 UTC observation timestamp for the event that requested this refresh.",
     )
     refresh_picks.set_defaults(handler=_cmd_refresh_picks)
 

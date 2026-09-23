@@ -413,6 +413,10 @@ def _cmd_fit_pick_probability(args: argparse.Namespace) -> None:
         activate=not args.no_activate,
         market_move_feature_version=args.market_move_feature_version,
     )
+    if not args.no_activate and (artifacts_root / "active_signal_atlas.json").is_file():
+        from nfl_ats.signal_atlas import build_signal_atlas
+
+        build_signal_atlas(artifacts_root, _registry_root())
     _print_json(
         {
             "artifact_directory": str(directory),

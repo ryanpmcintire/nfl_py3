@@ -1016,6 +1016,24 @@
               "required": false,
               "help": "MKT-08 refresh provenance: the scheduler job id or invoking context (e.g. 'refresh_thu'). Stored on every appended pick-revision row.",
               "metavar": null
+            },
+            {
+              "action_class": "_StoreAction",
+              "option_strings": [
+                "--trigger-observed-at-utc"
+              ],
+              "dest": "trigger_observed_at_utc",
+              "nargs": null,
+              "const": null,
+              "default": null,
+              "type": {
+                "__type__": "callable",
+                "value": "nfl_ats.cli_commands.publishing._utc_datetime"
+              },
+              "choices": null,
+              "required": false,
+              "help": "MKT-08 UTC observation timestamp for the event that requested this refresh.",
+              "metavar": null
             }
           ],
           "subcommands": null

@@ -118,21 +118,22 @@ def _archive_markup(weeks: list[dict[str, Any]]) -> str:
     for week in weeks:
         rows: list[str] = []
         for index, game in enumerate(week["games"]):
-            featured = "Best pick" if game["bestPick"] else "Card pick"
             rows.append(
-                f'<tr class="game week-archive-row" data-archive-index="{index}" tabindex="0"'
+                f'<tr class="game week-archive-row{" is-best" if game["bestPick"] else ""}" '
+                f'data-archive-index="{index}" tabindex="0"'
                 f' aria-label="Inspect {html.escape(game["awayTeam"])} '
                 f'at {html.escape(game["homeTeam"])}">'
+                '<td class="kickoff" data-label="Kickoff">&mdash;</td>'
                 '<td class="matchup" data-label="Matchup">'
                 '<button type="button" class="week-game-link">'
                 f"{html.escape(game['awayTeam'])} at <b>{html.escape(game['homeTeam'])}</b>"
                 "</button></td>"
                 '<td class="pick" data-label="Pick">'
                 f"{html.escape(game['pickTeam'])} {html.escape(game['pickLine'])}</td>"
+                '<td class="market-now" data-label="Books now">&mdash;</td>'
                 f'<td class="prob" data-label="Cover chance">{html.escape(game["confidence"])}</td>'
-                f'<td data-label="Result">{html.escape(game["status"])}</td>'
-                f'<td data-label="Score">{html.escape(game["score"] or "—")}</td>'
-                f'<td data-label="Card">{featured}</td></tr>'
+                '<td class="flipline" data-label="Flips at">&mdash;</td>'
+                '<td class="conf" data-label="Confidence">&mdash;</td></tr>'
             )
         sections.append(
             f'<div class="week-grid week-saved-card" data-week-panel="{week["key"]}">'
@@ -141,11 +142,11 @@ def _archive_markup(weeks: list[dict[str, Any]]) -> str:
             f'<span class="sub">{len(week["games"])} games · select a game to inspect</span></div>'
             '<p class="week-saved-note">The picks and pool lines published for this week.</p>'
             '<div class="board-scroll"><table class="board"><thead><tr>'
-            "<th>Matchup</th><th>Pick</th><th>Cover chance</th><th>Result</th>"
-            "<th>Score</th><th>Card</th>"
+            "<th>Kickoff</th><th>Matchup</th><th>Pick</th><th>Books now</th>"
+            "<th>Cover chance</th><th>Flips at</th><th>Confidence</th>"
             f"</tr></thead><tbody>{''.join(rows)}</tbody></table></div></section>"
             '<section class="inspector-col"><div class="section-head">'
-            "<h2>Game room / Selected matchup</h2>"
+            "<h2>Game inspector</h2>"
             '<span class="sub">The published pick and final result</span></div>'
             '<div class="week-archive-detail" aria-live="polite"></div></section></div>'
         )

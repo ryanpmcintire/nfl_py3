@@ -9,8 +9,12 @@ def test_handoff_automation_policy_is_tracked() -> None:
     pre_commit = (root / ".githooks/pre-commit").read_text(encoding="utf-8")
     pre_push = (root / ".githooks/pre-push").read_text(encoding="utf-8")
     workflow = (root / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+    normalized_agents = " ".join(agents.split())
 
-    assert "Never ask the user to run the handoff command" in agents
+    assert (
+        "Standing authorization applies at verified clear stopping points; do not ask again."
+        in normalized_agents
+    )
     assert "nfl-ats handoff" in pre_commit
     assert "git add -- HANDOFF.md" in pre_commit
     assert "refs/heads/master" in pre_push
