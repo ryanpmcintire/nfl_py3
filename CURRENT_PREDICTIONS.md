@@ -1,8 +1,8 @@
 # NFL ATS predictions: 2026 Week 3
 
-Published from the synchronized weak stack model, 2026-09-23 12:23 UTC.
+Published from the synchronized weak stack model, 2026-09-23 16:16 UTC.
 
-<!-- publication: model_id=429b12a7106c7e7d published_at_utc=2026-09-23T12:23:27.517403+00:00 -->
+<!-- publication: model_id=d5da2c0670e17eba published_at_utc=2026-09-23T16:16:54.556408+00:00 -->
 
 > **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 
@@ -36,3 +36,9 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 **Source freshness: DEGRADED.** Complete: odds opener, injuries nflverse, injuries nflverse timestamps, inactives, projected lineups, referee assignments, player arrests, pfr transactions, airnow weather. Degraded (allowed fallback): odds refresh. Blocked: none. Not due yet: none. Not set up: injuries sportradar. Budgets, fallbacks and source states: `docs/source_freshness_policy.md`.
 
 `Cover chance` is the picked side's chance to cover. Cover chance is a fitted estimate, excluding ties. Across 1,503 past games with each season held out of fitting, strong estimates won 60% and slight estimates won 55%. These broad groups do not establish a large advantage for the single highest estimate.
+
+<!-- LATE_WEEK_REFRESH:START -->
+## Late-week refresh (as of 2026-09-23T16:18:50.728710+00:00)
+
+No pick changes since the Tuesday card (lineups_refresh).
+<!-- LATE_WEEK_REFRESH:END -->
