@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-23T10:33:15.587361+00:00`
+Refreshed at: `2026-09-23T10:33:59.221634+00:00`
 
 ## Start here
 
@@ -21,25 +21,9 @@ Refreshed at: `2026-09-23T10:33:15.587361+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `a506dbc8b759` — Refresh handoff after Week 3 publication
-- Pending change set: 17 paths
+- Baseline commit: `d53abafdf853` — Use the current card layout for archived weeks
+- Pending change set: 1 paths
   - `M  HANDOFF.md`
-  - `M  ROADMAP.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - `A  docs/lanes/done/archive-week-cards.md`
-  - `M  docs/model.html`
-  - `A  src/nfl_ats/board_archive.py`
-  - `M  src/nfl_ats/board_content.py`
-  - `M  src/nfl_ats/board_interactive.py`
-  - `M  src/nfl_ats/board_interactive_experience.js`
-  - `M  src/nfl_ats/board_interactive_layout.js`
-  - `M  src/nfl_ats/board_site.py`
-  - `M  src/nfl_ats/board_terminal.py`
-  - `M  src/nfl_ats/board_week_navigation.js`
-  - `M  src/nfl_ats/board_week_navigation.py`
-  - `M  tests/test_board_terminal.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
