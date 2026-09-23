@@ -71,5 +71,32 @@ MOD-20: one hierarchical model with every situational family as a shrunk term, j
   change of direction is structural (hierarchical shrinkage, interactions)
   or nothing.
 
+- Unit 4 PREDECLARED 2026-09-23 (before running): structural variant, not
+  another additive column. Hierarchical/partial-pooling logistic on the same
+  build_fit_population population: base terms model_logit,
+  market_move_toward_home, market_move_available, and composition_flag_sum
+  (shared weight mu) all at ridge=FIT_RIDGE=1e-3 (matches the served four-term
+  fit); PLUS 7 per-flag deviation columns (flag_coach, flag_division,
+  flag_arrests, flag_bye, flag_cold_visitor, flag_protection, flag_tank_zone),
+  each penalized at kappa*FIT_RIDGE, kappa the shrinkage-strength
+  hyperparameter (kappa->inf collapses deviations to 0, recovering exactly the
+  four-term base; kappa near 1 lets each flag float nearly freely). All
+  numeric columns standardized per fold (train mean/std). kappa grid
+  {1,3,10,30,100,300,1000,10000} fixed before running. Outer: LOSO over
+  2020-2025 (6 folds), same as units 1-3. Inner: nested LOSO over the 5
+  training seasons per outer fold, selecting kappa minimizing mean inner
+  held-out log loss (criterion fixed before seeing any outer result).
+  In-sample fit: full-population fit with kappa chosen the same way across
+  all 6 seasons, used only for the IS/OOS gap. Comparisons: hierarchical vs
+  four-term base (primary/decisive) and vs model-only (secondary), paired
+  accuracy points, week-block bootstrap reused from
+  `pooled_signal_second_fit.py` (season-week blocks, 2000 draws, seed
+  20260821). Looks = 2 top-line cells (vs base, vs model-only); kappa grid
+  search does not spend a look since it is chosen out-of-sample by nested
+  LOSO, never touching the outer test fold. Script:
+  `scripts/pooled_signal_fourth_fit_hierarchical.py`.
+  Script not yet run as of predeclaration timestamp; results to follow in a
+  separate close-out entry once the script has actually executed.
+
 ## Open
 - None yet.

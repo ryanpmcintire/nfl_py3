@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-23T17:12:31.473807+00:00`
+Refreshed at: `2026-09-23T17:16:31.403907+00:00`
 
 ## Start here
 
@@ -21,21 +21,24 @@ Refreshed at: `2026-09-23T17:12:31.473807+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `ab89753e41ab` — Refresh handoff after refit recorder repair
-- Pending change set: 13 paths
-  - `M  CURRENT_PREDICTIONS.md`
+- Baseline commit: `d12be4910aff` — Record Wednesday lineup refresh of the Week 3 card
+- Pending change set: 16 paths
   - `M  HANDOFF.md`
-  - `M  README.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `MM docs/index.html`
-  - `M  docs/model.html`
-  - `A  registry/experiments/margin-backtest/20260923T160903Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-03-20260923T161033Z.json`
-  - `A  registry/experiments/opener-evaluation/20260923T161403Z.json`
-  - `A  registry/experiments/waterfall-feed/20260923T161444Z.json`
-  - `M  tiebreaker.json`
-  - `?? docs/lanes/test-suite-reduction.md`
+  - `M  ROADMAP.md`
+  - ` M docs/index.html`
+  - `M  docs/lanes/README.md`
+  - `R  docs/lanes/lead64-headline-parser.md -> docs/lanes/done/lead64-headline-parser.md`
+  - `R  docs/lanes/line-move-target.md -> docs/lanes/done/line-move-target.md`
+  - `R  docs/lanes/market-derived-ratings.md -> docs/lanes/done/market-derived-ratings.md`
+  - `R  docs/lanes/serve-calibrated-probability.md -> docs/lanes/done/serve-calibrated-probability.md`
+  - `R  docs/lanes/sunday-gameday-2026-09-13.md -> docs/lanes/done/sunday-gameday-2026-09-13.md`
+  - `R  docs/lanes/sunday-readiness-2026-09-20.md -> docs/lanes/done/sunday-readiness-2026-09-20.md`
+  - `R  docs/lanes/week1-covers-settled.md -> docs/lanes/done/week1-covers-settled.md`
+  - `R  docs/lanes/week2-pool-board-lock.md -> docs/lanes/done/week2-pool-board-lock.md`
+  - `M  docs/lanes/pooled-signal-model.md`
+  - `A  docs/lanes/test-suite-reduction.md`
+  - `A  docs/test_suite_reduction_proposal.md`
+  - `?? scripts/pooled_signal_fourth_fit_hierarchical.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -77,7 +80,7 @@ the last published Markdown forecast but must rebuild or transfer local artifact
 
 ## Highest-priority work
 
-1. **Keep Sunday's card current, preserving locked games.** Continue from `docs/lanes/sunday-readiness-2026-09-20.md` and `docs/lanes/free-odds-sources.md`; reconcile the paper ledger and inspect the latest scheduled refresh before changing the forecast. Commit and push completed work at verified clear stopping points under the owner's standing authorization.
+1. **Keep Sunday's card current, preserving locked games.** Continue from `docs/lanes/done/sunday-readiness-2026-09-20.md` and `docs/lanes/free-odds-sources.md`; reconcile the paper ledger and inspect the latest scheduled refresh before changing the forecast. Commit and push completed work at verified clear stopping points under the owner's standing authorization.
 2. **Confidence calibration: bounded repair measured 2026-09-20.** The complete candidate replay and two predeclared out-of-season temperature repairs are saved in `docs/confidence_best_pick_sunday_matched.md` and `docs/confidence_top_calibration.md`. Chronological nominee Brier improvement +0.001040 [-0.027412,+0.030943], probability_positive 0.5227, accompanies unstable fitted temperatures and worse all-game Brier. The served probability is unchanged; 28 new cells remain unresolved, not closed. Acquire more timestamped nominees before another declared calibration comparison. State: `docs/lanes/confidence-best-pick-unification.md`. Do not restore a separate ranker or independent side-flip rules.
 3. **Continue from lane files with bounded reads and scoped delegation.** Follow `AGENTS.md` and the applicable procedures in `docs/agent_workflow.md`. Run the scheduler in operational sessions; harness maintenance and read-only work do not trigger operational jobs. Keep uncertainty distinct from research closure and the forced-pick decision. The historical priorities below are preserved context, superseded by these current items.
 

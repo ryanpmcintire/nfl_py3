@@ -65,10 +65,30 @@ passed / 9 skipped. `publish-predictions` and `publish-board` both ran.
 
 ## Next
 
-- Fold the calibrated probability into `pick_refresh.plan_refresh` so the
-  late-week ledger decides from the same number the card serves.
-- Re-run `nfl-ats fit-pick-probability` whenever the active model changes; add
-  it to the weekly run once the refresh path uses it.
+- Both prior Next items are done and committed (verified 2026-09-23, no code
+  change needed this session):
+  - `plan_refresh` folds in the calibrated probability at
+    `src/nfl_ats/pick_refresh.py:1150-1349`: when
+    `active_pick_probability_path(artifacts_root).is_file()`, it calls
+    `card_view.resolve_card_probabilities` (same composition/overlay path the
+    card uses, `card_view.py:417-461`) and sets both `new_prob` and `new_side`
+    (`CALIBRATED_PICK_SIDE_COLUMN`, `policy = PICK_PROBABILITY_POLICY`) from
+    it, disabling the late-week/rookie-crew/handle-follow rule overrides
+    whenever `served_probabilities is not None`. Landed in commit `5fb88a2`
+    "Unify calibrated picks and restore Sunday odds refresh".
+  - `nfl-ats fit-pick-probability` is wired into the weekly run as step 7
+    (`src/nfl_ats/weekly.py:401-407`, "fatal: publishing requires calibration
+    for the active model"), which the Tuesday `weekly_lock` scheduler job
+    (`scripts/capture_scheduler.py:446-465` -> `scripts/scheduled_weekly_lock.py`
+    -> `nfl-ats weekly-run`) runs. `load_pick_probability_model`
+    (`pick_probability.py:444-500`) fails closed if the artifact's
+    `active_model_id` doesn't match the active ATS model, so the pointer is
+    hard-keyed to the active model, not just re-fit on a schedule.
+  - Today's model change (16:10:33Z to `d5da2c0670e17eba`) already produced a
+    matching refit at 16:14:05Z: `artifacts/active_pick_probability.json`
+    `active_model_id` equals `artifacts/active_ats_model.json` `model_id`.
+- No open implementation task remains from this lane; only the Open items
+  below are unresolved.
 
 ## Open
 
