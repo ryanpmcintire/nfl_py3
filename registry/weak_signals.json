@@ -10584,6 +10584,62 @@
       "source": "docs/scaling_and_transfer.md (Transfer benchmark table, Group-of-Five walked forward 2018-2025)",
       "standard_error": null
     },
+    "cfb_transfer_logit_line_move_v4_2020_2025_subset": {
+      "category": "market",
+      "classification": "bounded_by_control",
+      "classification_evidence": "Season-block interval crosses zero (P+=0.2915), week-block agrees ([-0.0356,+0.0232], P+=0.354); point estimate flips sign vs the existing fixed-pooled-CFB-training registry cell (+0.0143 pts, P+=0.663) once CFB training is restricted to seasons strictly preceding each held-out NFL season -- a design-sensitivity finding, not a resolution in either direction; 44/1,503 picks differ from base, dead-even 22-22 both sides; reliability reused from Unit 2 (0.141), not zero; direct conversion-free line-move control on the same 1,503-game 2020-2025 population detects a 0.0654-point continuous-term effect with 80% power (artifacts/line_move_power_direct/20260923T215739Z); the season-block upper bound 0.0156 excludes it. Closes this point-in-time line-move variant only.",
+      "closing_ground": "positive_control_bound",
+      "description": "Same 3rd-term LOSO line-move cell as _all_graded, restricted to the 2020-2025 subset (n=1,503) for direct comparison against the existing cfb_transfer_logit_tuesday_line_move registry cell (interval [-0.0249,+0.0714], P+=0.663, fixed pooled 13-season CFB training set); this cell uses the point-in-time-restricted per-season CFB training design instead",
+      "effect": -0.005988023952095809,
+      "effect_units": "ats_points",
+      "family": "opener_error_transfer_v4",
+      "interval": [
+        -0.026244952893674293,
+        0.015643402571532423
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Looking only at the last six NFL seasons with a stricter, more realistic training setup, the college-football transfer signal's effect on line movement is too small and uncertain to call -- unresolved, not served, and it even leans slightly the other way than an earlier looser check found.",
+      "probability_positive": 0.2915,
+      "recorded_at": "2026-09-23",
+      "reliability": 0.14132263925353555,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/opener_error_transfer_unit4/20260923T221635Z/summary.json",
+      "standard_error": null
+    },
+    "cfb_transfer_logit_line_move_v4_all_graded": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block interval crosses zero and is nearly symmetric around 0 (P+=0.509); week-block interval agrees ([-0.0288,+0.0296], P+=0.493); only 180/3,234 picks differ from the Tuesday-only base, split 91-89; per-fold LOSO betas for cfb_transfer_logit are positive in all 13 folds (0.0131-0.0559) as in Unit 3's accuracy grading, but sign consistency alone is not an AGENTS.md closing ground while the aggregate interval crosses zero; reliability reused from Unit 2's pooled-set measurement (0.141), not zero, so no_split_half_reliability is not admissible",
+      "closing_ground": null,
+      "description": "CFB-trained opener-error logit (season-specific, point-in-time CFB training strictly preceding each held-out NFL season) added as a 3rd fitted term to a Tuesday-knowable-only base (model_logit + composition_flag_sum), LOSO by season, graded on close-minus-open line movement toward the pick (not accuracy), on the extended 2011-2025 NFL population restricted to the 13 seasons a preceding local CFB season exists for (2013-2025); 2013-2019 opens/closes sourced directly from data/processed/sbr_odds.parquet, 2020-2025 from the archived Tuesday open to close",
+      "effect": -0.00030921459492888067,
+      "effect_units": "ats_points",
+      "family": "opener_error_transfer_v4",
+      "interval": [
+        -0.028940978434370324,
+        0.026209065704122198
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Checked back to 2013 using real market data instead of a placeholder, the college-football transfer signal's effect on how far the line moves toward the pick comes out essentially exactly at zero -- no evidence either way, so the pick stays as it would be without it.",
+      "probability_positive": 0.509,
+      "recorded_at": "2026-09-23",
+      "reliability": 0.14132263925353555,
+      "sample_blocks": 13,
+      "sample_games": 3234,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/opener_error_transfer_unit4/20260923T221635Z/summary.json",
+      "standard_error": null
+    },
     "cfb_transfer_logit_tuesday_line_move": {
       "category": "modeling",
       "classification": "unresolved_below_power",

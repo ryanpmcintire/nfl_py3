@@ -387,29 +387,213 @@ nfl-ats weak-signals record --name opener_error_transfer_added_term_vs_base_v3_2
 
 ## Next
 
-Unit 2 is closed out for the run itself (widened CFB coverage + per-fold
-betas + in-sample fit, both delivered). Unit 3 is closed out for the run
-itself too (point-in-time-correct CFB training per NFL season, on the new
-2011-2025 extended population, both graded-population cuts delivered).
-**Immediate next step is mechanical: root runs all four `nfl-ats
-weak-signals record` commands above ((Unit 2 cells were already recorded 2026-09-23 as registry 7,000-7,001; v3 cells recorded, registry 7,021) two from Unit 2, family
-`opener_error_transfer_v2`; two from Unit 3, family
-`opener_error_transfer_v3`)** — including `--category market` and
-`--plain-summary` on the Unit 3 pair per this pass's instruction (the Unit 2
-commands predate that requirement and were left as originally written; root
-may add `--category market` to them too when recording if it wants uniform
-registry metadata). Beyond that, if a future session wants to push this
-further: (a) both gating cells (`_v2` on 1,503 games/6 folds, `_v3_all_graded`
-on 3,234 games/13 folds) are still zero-crossing even after a 13x CFB-widen
-and a 2.5x NFL-season widen — every LOSO fold's `cfb_transfer_logit` beta is
-now positive (new in Unit 3, not true of Unit 2's folds), which is worth
-tracking, but sign-per-fold consistency is not itself an AGENTS.md closing
-ground; (b) do not add the CFB-transfer term to `src/` on this evidence — the
-gating cell is unresolved, not positive, three times now under three
-different CFB training designs; (c) the remaining lever is more NFL seasons
-or a way to give the earliest folds (2013-2021) more than 48-389 CFB training
-games — CFB 2011 and earlier are not known to exist locally and were not
-checked this pass.
+- 2026-09-23 root: unit 4 cells recorded (registry 7,045): all-graded 2013-2025 unresolved; the 2020-2025 subset recorded bounded_by_control against the direct line-move control (0.0654-point MDE, same population), closing that point-in-time line-move variant only. Commands below are history.
+
+Units 2, 3, and 4 are each closed out for the run itself. **Immediate next
+step is mechanical: root runs the two Unit 4 `nfl-ats weak-signals record`
+commands in the "Unit 4 results" section above** (family
+`opener_error_transfer_v4`, source
+`artifacts/opener_error_transfer_unit4/20260923T221635Z/summary.json`,
+`--effect-units ats_points --category market`, both with `--plain-summary`
+per this pass's instruction). Unit 2 cells recorded 2026-09-23 as registry
+7,000-7,001; Unit 3 cells recorded, registry 7,021; Unit 4 cells not yet
+recorded as of this pass.
+
+Status across all four units, decision-relevant cells only, gating whether
+`cfb_transfer_logit` (the CFB-trained opener-error term) enters `src/`:
+accuracy-yardstick gating cells (`_v2` 1,503g/6 folds, `_v3_all_graded`
+3,234g/13 folds) both zero-crossing; line-move-yardstick gating cells (the
+pre-existing 2020-2025-only `cfb_transfer_logit_tuesday_line_move`, and this
+pass's `_v4_all_graded` 3,234g/13 folds and `_v4_2020_2025_subset`
+1,503g/6 folds) all three zero-crossing too, with `_v4_all_graded`'s P+=0.509
+about as flat a null as any cell in this family has produced and
+`_v4_2020_2025_subset` flipping sign (P+=0.29) versus the earlier fixed-pool
+line-move cell (P+=0.663) once CFB training is made point-in-time-correct.
+Every LOSO fold's `cfb_transfer_logit` beta is positive across both Unit 3
+(accuracy) and Unit 4 (line-move) under the point-in-time design — sign
+consistency is notable and worth tracking, but is not itself an AGENTS.md
+closing ground while every aggregate interval still crosses zero. Do not add
+the CFB-transfer term to `src/` on this evidence — no gating cell in this
+family (5 of them now, across two yardsticks and three CFB-training designs)
+has cleared zero-crossing. Remaining levers for a future unit, not run this
+pass: (a) a positive-control MDE comparison for the line-move yardstick
+itself (the accuracy yardstick already has one, in
+`docs/lanes/positive-control-power.md`); (b) more NFL seasons, or a source
+for CFB seasons before 2012, to thicken the earliest folds' 48-389-game CFB
+training sets; (c) reconciling why the line-move sign is sensitive to fixed
+vs. point-in-time CFB training on the 2020-2025 subset specifically — not
+yet investigated.
+
+## Unit 4 predeclaration (written before running scripts/opener_error_transfer_unit4.py)
+
+Root-assigned task (this pass): the college-trained opener-error term
+(`cfb_transfer_logit`, same 5 CFB features/training as Units 2-3) graded on
+paired **line movement toward the pick** (not accuracy) on 2020-2025 alone
+(registry cell `cfb_transfer_logit_tuesday_line_move`, interval
+[-0.0249,+0.0714], P+=0.663) just missed the matched positive-control bound
+(MDE 0.06535 continuous-feature accuracy-points bound from
+`docs/lanes/positive-control-power.md`) by 0.008 on its interval upper edge.
+Unit 4 widens that same line-move grading to 2013-2025 using real open/close
+pairs instead of accuracy, reusing Unit 3's point-in-time CFB-training rule
+and Tuesday-terms' line-move construction.
+
+Design, decided from data-coverage checks this pass (no results seen):
+
+- NFL population: `artifacts/extended_fit_population/20260923T205910Z/
+  population.parquet` (3,734 games), `home_team`/`away_team` re-joined from
+  `data/processed/game_features_weak_stack.parquet`, same as Unit 3. Opener
+  spread + line move by source: **season >= 2020** (`opener_source=tue_open`,
+  n=1,503) uses `build_fit_population`'s own `tue_open_home_spread` and its
+  already-computed `open_move` (archived Tuesday open to close), unchanged
+  from Units 1-3. **season 2013-2019** (n=1,731, all of Unit 3's
+  `sbr_proxy_discrete` rows in that range) now uses `data/processed/
+  sbr_odds.parquet`'s own `open_home_spread` as the SBR-proxy opener and
+  `close_home_spread - open_home_spread` as a real signed move — checked this
+  pass: 1,731/1,731 extended-population 2013-2019 game_ids match a
+  `sbr_odds.parquet` row with both `open_home_spread` and `close_home_spread`
+  present (100% coverage, no games lost). This replaces Unit 3's `open_move=
+  0.0` convention for those rows (which was a legitimate simplification for
+  Unit 3's accuracy-only target but cannot serve a line-move target — a real
+  move is required). Reuses the exact `open_home_spread`/`close_home_spread`
+  join pattern already precedented in `scripts/
+  roof_state_line_move_replication.py`'s `load_sbr_open_move` (dropna on both
+  columns, drop_duplicates on `game_id`, no filtering on `open_ambiguous`/
+  `close_ambiguous`, same as that precedent). `gameday` for the 2013-2019 rows
+  comes from `sbr_odds.parquet`'s own `game_date` column (no separate
+  gameday source needed). NFL 2011-2012 stay excluded (Unit 3's point-in-time
+  rule: no local CFB season precedes them); 2020 CFB gap unchanged from
+  Units 2-3.
+- Side effect, stated before running: because 2013-2019 now carries a real
+  signed move instead of 0, `attach_transfer_features`'s `prior_move_diff`
+  feature (used only as a CFB-transfer-model **input** feature during
+  scoring, not as the target) is now computed from real prior-game moves for
+  those seasons too, not zero-filled as in Unit 3. The CFB-side training
+  population and features are otherwise unchanged from Units 2-3.
+- Point-in-time CFB training: unchanged from Unit 3 — for held-out NFL season
+  Y, the CFB opener-error logit trains only on local CFB seasons strictly
+  `< Y` from the same 13-season pool (`{2012..2019} u {2021..2025}`, 2020
+  excluded as a genuine upstream gap). Graded NFL seasons: 2013-2025 (13
+  seasons), same set as Unit 3, since the CFB-availability rule is unchanged
+  and only the NFL-side open/move source changed.
+- Base = **Tuesday-knowable only**: `(model_logit, composition_flag_sum)` —
+  NOT Unit 3's four-term `FIT_FEATURES` base, because `FIT_FEATURES`
+  includes `market_move_toward_home`/`market_move_available`, built from
+  post-Tuesday sharp-book movement, which would contaminate a line-move
+  yardstick (per the CONTAMINATED finding already recorded from
+  `scripts/line_move_yardstick_paired_eval.py`, reused verbatim by
+  `scripts/tuesday_terms_line_move.py`'s `BASE_FEATURES`). Plus = base +
+  `cfb_transfer_logit` (3 features). Both refit LOSO per held-out graded NFL
+  season (standard leave-one-season-out logistic fit on `home_covered`,
+  needed only to get each model's >=0.5 pick direction for the line-move
+  sign — reuses `opener_error_transfer_unit3.loso_logit` unchanged).
+- Primary metric: `line_move_toward_pick` (signed close-minus-open toward
+  each side's own pick), `diff = plus_lm - base_lm`, via
+  `line_move_yardstick_paired_eval.cell_stats` (season-block bootstrap
+  primary, week-block secondary, both built into `cell_stats`), 2000 draws,
+  seed 20260923 — identical settings to the existing
+  `cfb_transfer_logit_tuesday_line_move` registry cell for direct
+  comparability. Accuracy (`plus_correct - base_correct`) reported as a
+  companion look only, same convention as `tuesday_terms_line_move.py`, not
+  decision-relevant.
+- Two cells to record, reported separately per the task's instruction:
+  `cfb_transfer_logit_line_move_v4_all_graded` (2013-2025, ~3,234 games,
+  13 seasons) and `cfb_transfer_logit_line_move_v4_2020_2025_subset`
+  (2020-2025, ~1,503 games, 6 seasons, for direct comparison against the
+  existing 2020-2025-only registry cell). Classification per AGENTS.md: a
+  zero-crossing interval is `unresolved_below_power`; a whole-interval wrong
+  sign is `refuted_mechanism`/`wrong_sign_resolved`; a positive-control MDE
+  comparison against the widened population is not computed this unit (would
+  be a follow-up, not predeclared here). New script
+  `scripts/opener_error_transfer_unit4.py`; artifact under
+  `artifacts/opener_error_transfer_unit4/<ts>/`. Run once, no re-runs after
+  seeing results.
+
+## Unit 4 results (run once, not yet recorded to the shared registry — root records)
+
+Ran `scripts/opener_error_transfer_unit4.py` once for real. Artifact
+`artifacts/opener_error_transfer_unit4/20260923T221635Z/` (`summary.json`,
+`per_game.csv`). `graded_meta`: graded seasons 2013-2025 (13 seasons,
+n=3,234), excluded 2011-2012 (no preceding local CFB season) — identical
+graded population to Unit 3, now with real 2013-2019 opens/moves from
+`sbr_odds.parquet` instead of Unit 3's proxy-open + zero-move convention.
+`look_count=7`.
+
+- `cfb_transfer_logit_line_move_v4_all_graded` (5th-term LOSO
+  `plus_lm - base_lm` on `line_move_toward_pick`, base = Tuesday-knowable
+  `model_logit + composition_flag_sum` only, all 13 graded seasons,
+  n=3,234): effect=**-0.000309** ats_points, season-block interval
+  [-0.02894, +0.02621] (P+=0.509), week-block interval [-0.02885, +0.02963]
+  (P+=0.493). Essentially exactly zero — 180/3,234 picks differ from base
+  (91-89 plus, 89-91 base on those); accuracy companion +0.0006 pts, interval
+  [-0.0070, +0.0072] (P+=0.551), also flat. **unresolved_below_power.**
+- `cfb_transfer_logit_line_move_v4_2020_2025_subset` (same LOSO predictions,
+  restricted to 2020-2025, n=1,503, for direct comparability with the
+  existing `cfb_transfer_logit_tuesday_line_move` registry cell): effect=
+  **-0.005988** ats_points, season-block interval [-0.02624, +0.01564]
+  (P+=0.2915), week-block interval [-0.03555, +0.02323] (P+=0.354). 44/1,503
+  picks differ (22-22 plus, 22-22 base — a dead-even split on the games that
+  move); accuracy companion 0.0 exactly, interval [-0.0127, +0.0107]
+  (P+=0.4905). **unresolved_below_power.** Point estimate is now negative
+  and P+ dropped from the existing registry cell's 0.663 to 0.29 — expected
+  under a design change, not a re-run of the same design: this unit's base
+  drops the two market-move FIT_FEATURES terms Unit 3 kept (irrelevant here
+  since that registry cell's base was already Tuesday-only) but, more
+  materially, every 2020-2025 fold's CFB training set here is point-in-time
+  restricted (only CFB seasons `< Y`), whereas the existing registry cell
+  used Unit 2's single fixed pooled 13-season CFB set for every fold. Both
+  designs still cross zero; the sign flip is a design-sensitivity finding,
+  not evidence against either point estimate individually.
+- Per-fold `cfb_transfer_logit` LOSO betas in the plus model: **positive in
+  all 13 folds** (0.0131 to 0.0559), consistent with Unit 3's accuracy-grading
+  finding of universal positive sign, now replicated on the line-move
+  yardstick too. CFB training-set size per fold unchanged from Unit 3 (48
+  games for NFL 2013 up to 3,443 for NFL 2025).
+- Records: `base_tuesday_only` 1710-1524, `base_plus_cfb_transfer`
+  1712-1522 (all-graded, n=3,234); both 838-665 (2020-2025 subset, n=1,503 —
+  the two models agree on 1,459/1,503 picks there).
+
+Decision implication unchanged from Units 1-3: no cell in this family
+supports adding the CFB-transfer term to `src/`. Extending the line-move
+yardstick back to 2013 with real (not proxy-zeroed) SBR opens/closes produces
+an all-graded effect indistinguishable from zero (P+=0.509, as close to a
+coin flip as any cell in this family) and a 2020-2025 subset that, under a
+point-in-time-correct CFB training design, now leans slightly negative
+(P+=0.29) rather than the existing registry cell's slight positive lean
+(P+=0.663) — both classify `unresolved_below_power`, and the sign
+sensitivity to the CFB-training design is itself worth carrying forward,
+not resolved here.
+
+Root: record these two cells with (exact commands, family
+`opener_error_transfer_v4`, source
+`artifacts/opener_error_transfer_unit4/20260923T221635Z/summary.json`):
+
+```
+nfl-ats weak-signals record --name cfb_transfer_logit_line_move_v4_all_graded \
+  --description "CFB-trained opener-error logit (season-specific, point-in-time CFB training strictly preceding each held-out NFL season) added as a 3rd fitted term to a Tuesday-knowable-only base (model_logit + composition_flag_sum), LOSO by season, graded on close-minus-open line movement toward the pick (not accuracy), on the extended 2011-2025 NFL population restricted to the 13 seasons a preceding local CFB season exists for (2013-2025); 2013-2019 opens/closes sourced directly from data/processed/sbr_odds.parquet, 2020-2025 from the archived Tuesday open to close" \
+  --source artifacts/opener_error_transfer_unit4/20260923T221635Z/summary.json \
+  --effect -0.00030921459492888067 --effect-units ats_points \
+  --classification unresolved_below_power --league nfl \
+  --season-start 2013 --season-end 2025 \
+  --interval-low -0.028940978434370324 --interval-high 0.026209065704122198 \
+  --probability-positive 0.509 --sample-games 3234 --sample-blocks 13 \
+  --reliability 0.14132263925353555 --family opener_error_transfer_v4 \
+  --category market \
+  --classification-evidence "Season-block interval crosses zero and is nearly symmetric around 0 (P+=0.509); week-block interval agrees ([-0.0288,+0.0296], P+=0.493); only 180/3,234 picks differ from the Tuesday-only base, split 91-89; per-fold LOSO betas for cfb_transfer_logit are positive in all 13 folds (0.0131-0.0559) as in Unit 3's accuracy grading, but sign consistency alone is not an AGENTS.md closing ground while the aggregate interval crosses zero; reliability reused from Unit 2's pooled-set measurement (0.141), not zero, so no_split_half_reliability is not admissible" \
+  --plain-summary "Checked back to 2013 using real market data instead of a placeholder, the college-football transfer signal's effect on how far the line moves toward the pick comes out essentially exactly at zero -- no evidence either way, so the pick stays as it would be without it."
+
+nfl-ats weak-signals record --name cfb_transfer_logit_line_move_v4_2020_2025_subset \
+  --description "Same 3rd-term LOSO line-move cell as _all_graded, restricted to the 2020-2025 subset (n=1,503) for direct comparison against the existing cfb_transfer_logit_tuesday_line_move registry cell (interval [-0.0249,+0.0714], P+=0.663, fixed pooled 13-season CFB training set); this cell uses the point-in-time-restricted per-season CFB training design instead" \
+  --source artifacts/opener_error_transfer_unit4/20260923T221635Z/summary.json \
+  --effect -0.005988023952095809 --effect-units ats_points \
+  --classification unresolved_below_power --league nfl \
+  --season-start 2020 --season-end 2025 \
+  --interval-low -0.026244952893674293 --interval-high 0.015643402571532423 \
+  --probability-positive 0.2915 --sample-games 1503 --sample-blocks 6 \
+  --reliability 0.14132263925353555 --family opener_error_transfer_v4 \
+  --category market \
+  --classification-evidence "Season-block interval crosses zero (P+=0.2915), week-block agrees ([-0.0356,+0.0232], P+=0.354); point estimate flips sign vs the existing fixed-pooled-CFB-training registry cell (+0.0143 pts, P+=0.663) once CFB training is restricted to seasons strictly preceding each held-out NFL season -- a design-sensitivity finding, not a resolution in either direction; 44/1,503 picks differ from base, dead-even 22-22 both sides; reliability reused from Unit 2 (0.141), not zero" \
+  --plain-summary "Looking only at the last six NFL seasons with a stricter, more realistic training setup, the college-football transfer signal's effect on line movement is too small and uncertain to call -- unresolved, not served, and it even leans slightly the other way than an earlier looser check found."
+```
 
 ## Open
 
