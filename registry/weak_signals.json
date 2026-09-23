@@ -158961,6 +158961,34 @@
       "source": "artifacts/schedule_flag_on_production/new_stadium/20260905T031856Z/results.json",
       "standard_error": null
     },
+    "news_trigger_resolution_cover_probability": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Bootstrap probability_positive=0.09425 for candidate beating baseline on accuracy (2000 draws, season/week blocks), interval [-3.179,0.488] touches the positive side so not wholly on the wrong side; exact_null_p=0.115 on 79 decisive games (32 candidate wins vs 47 baseline wins); Brier and log-loss improvements are near zero with probability_positive 0.506/0.512 (no signal). Sign not reversed with the whole interval on the wrong side (not refuted), no positive control run, so unresolved_below_power.",
+      "closing_ground": null,
+      "description": "news_trigger_value_shift (Friday-questionable resolution to actual play/inactive outcome, gated to resolutions visible before min(kickoff, Sunday 4pm ET), value-weighted via Unit 2's -0.320 points-per-unit slope) added as a 5th fitted term to the served 4-term LOSO logistic (model_logit, composition_flag_sum, market_move_toward_home, market_move_available), seasons 2020-2024, point-in-time injury data only, paired against the served 4-term baseline on the same held-out games.",
+      "effect": -1.2234910277324633,
+      "effect_units": "accuracy_points",
+      "family": null,
+      "interval": [
+        -3.1785864940022033,
+        0.4883019134920306
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Updating the injury picture once a questionable player's status is confirmed (played or sat) did not clearly help or hurt picks over 2020-2024; if anything it leaned toward hurting slightly, but not enough to call it settled.",
+      "probability_positive": 0.09425,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 89,
+      "sample_games": 1226,
+      "seasons": [
+        2020,
+        2024
+      ],
+      "source": "artifacts/news_trigger_historical/20260923T212553Z/summary.json",
+      "standard_error": 0.9459525447539588
+    },
     "nfl_lead44_lookahead_fade_on_production_full_archive": {
       "category": "schedule",
       "classification": "unresolved_below_power",

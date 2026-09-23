@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-23T21:24:46.524138+00:00`
+Refreshed at: `2026-09-23T21:27:14.839636+00:00`
 
 ## Start here
 
@@ -21,10 +21,19 @@ Refreshed at: `2026-09-23T21:24:46.524138+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `328f3e10c8e1` — Base model recency weighting: flat in the pick model, worse margins standalone
-- Pending change set: 3 paths
-  - `M  docs/lanes/market-move-decomposition.md`
-  - `?? docs/lanes/positive-control-power.md`
+- Baseline commit: `4294ab76a1b8` — Market-move decomposition unit 1: five arms measured, held for a reconstruction parity fix
+- Pending change set: 12 paths
+  - `M  docs/lanes/README.md`
+  - `R  docs/lanes/base-model-recency.md -> docs/lanes/done/base-model-recency.md`
+  - `R  docs/lanes/extended-population-regrade.md -> docs/lanes/done/extended-population-regrade.md`
+  - `R  docs/lanes/fit-ridge-derivation.md -> docs/lanes/done/fit-ridge-derivation.md`
+  - `R  docs/lanes/tuesday-terms-line-move.md -> docs/lanes/done/tuesday-terms-line-move.md`
+  - `M  docs/lanes/free-odds-sources.md`
+  - `M  docs/lanes/news-trigger-refresh.md`
+  - `A  docs/lanes/positive-control-power.md`
+  - `M  registry/weak_signals.json`
+  - ` M scripts/injury_scenario_producer.py`
+  - `A  scripts/news_trigger_historical.py`
   - `?? scripts/positive_control_power.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.

@@ -155,6 +155,77 @@ Replace the dead paid Odds API with current free NFL spreads for private persona
   tests/test_capture_scheduler.py` → 57 passed, 1 warning (pre-existing pytest-cache
   permission warning, unrelated). No test file added or edited (moratorium
   respected).
+## State (2026-09-23, public_only + market-move ingestion audit)
+
+- **Answered (1), no code change**: `board_content.py:3056` (`current = current_spread_quotes(quotes, as_of=now, public_only=True)`)
+  is a licensing rule, not a raw-quote-only rule, and it already governs
+  aggregated numbers too. The registry `config/source_policies.json` sets
+  `derived_publication` (not just `raw_redistribution`) to
+  `"private_research_only_with_attribution"` for `the_odds_gap_lineshop_private`
+  and `"private_research_only"` for `bovada_public_nfl` (both loaded/enforced
+  via `src/nfl_ats/source_policy.py`), versus `"aggregates_only"` for
+  `sbr_odds_archive` and `"allowed"` for `the_odds_api` in the same file. Both
+  private capture scripts stamp every row `"publication_scope":
+  "private_research_only"` (`scripts/capture_bovada_private.py:171`,
+  `scripts/capture_odds_gap_private.py:164`), and
+  `market_data.py:399-402` filters any quote whose `publication_scope` starts
+  `"private_"` when `public_only=True`. Since `derived_publication` for both
+  sources is scoped to private research (not `aggregates_only`/`allowed`), a
+  median-of-books "Books now" number sourced from these captures is **not**
+  permitted even with vendor names stripped — changed nothing, board stays as
+  is.
+- **Answered (2), no code change needed — already ingests today's captures**:
+  live serving path is `card_view.py:472` `market_move_toward_home(...,
+  feature_version=pick_probability.market_move_feature_version)` →
+  `pick_probability.py:677` `load_decision_quotes(data_root/"market"/"raw",
+  capture_kind=LIVE_CAPTURE_KIND)` → `sharp_book_movement_features.py:43`. The
+  currently active model pointer `artifacts/active_pick_probability.json`
+  (`activated_at_utc=2026-09-23T16:14:05Z`) sets
+  `market_move_feature_version="leader_median_through_sunday_prekick_v1"`
+  (`MARKET_MOVE_FEATURE_SUNDAY`), so `include_sunday=True` at serve time. That
+  matters because both private captures write
+  `bookmaker_last_update_utc=pd.NaT` and
+  `quote_timestamp_basis="capture_observed_utc"` (`capture_bovada_private.py:106-107`,
+  `capture_odds_gap_private.py:82-83`, book-specific update times are
+  unknowable from these sources); `sharp_book_movement_features.py:123-130`'s
+  eligibility filter only admits a NaT-`bookmaker_last_update_utc` row when
+  `include_sunday` is True — i.e. only the Sunday feature version accepts
+  private-source rows at all. Also confirmed `LEADER_BOOKS =
+  ("bovada","williamhill_us","mybookieag")` (`sharp_book_movement_features.py:24`)
+  is exactly the three private-capture books, by design.
+  **Measured** (`/tmp/check_market_move3.py`, ad hoc, not committed): loaded
+  real `data/market/raw` via `load_decision_quotes(..., capture_kind="live")`
+  (239,488 rows total; 154 Week-3 rows observed after 2026-09-21, all today's
+  `odds_private_wed` capture at `observed_at_utc=2026-09-23T21:18:1[69]Z`),
+  built a Week-3 games frame from those quotes, and called
+  `sharp_book_movement_features(quotes, games, include_sunday=True)` directly
+  (the same call `card_view.py` makes under the active Sunday-version model):
+  14/16 Week-3 games get `leader_books>=1`, `2026_03_ATL_GB` shows
+  `leader_books=3, leader_move_observed=True, leader_median_net_move=-1.5`
+  (real opener-to-Tuesday-capture movement), `2026_03_KC_MIA` shows
+  `leader_move_observed=True, leader_median_net_move=0.5`. Only
+  `2026_03_LA_DEN`/`2026_03_PHI_CHI` show `leader_books=0` because Odds
+  Gap/Bovada returned no row for those two games this capture cycle (matches
+  the pre-existing per-game gap already noted 2026-09-23 above, not a
+  regression). **The ingestion path already includes today's free mid-week
+  snapshot under the active model; no fix was made.**
+- No files were edited this session (research/verification only), so no
+  ruff/mypy/test run was needed; the training-side
+  `artifacts/sharp_weighted_follow/20260909T233606Z` /
+  `sharp_book_weighted_movement/spread_quotes.parquet` artifacts named in the
+  task are frozen historical fit inputs (`pick_probability_fit.py:122-153`,
+  `active_pick_probability.json: fitted_seasons=[2020..2025]`) used only to
+  fit coefficients leave-one-season-out — they are a separate concern from the
+  live per-game feature path verified above and correctly do not need today's
+  capture in them.
+
+## Next
+
+- None required from this audit; both open questions are resolved with no
+  code change. If Odds Gap keeps missing `2026_03_LA_DEN`/`2026_03_PHI_CHI`
+  past this week, that's a separate, pre-existing per-game coverage gap (not
+  the public_only or ingestion question) worth a future look.
+
 - **Root action required to activate**: the running scheduler daemon holds the old
   in-memory `SCHEDULE` tuple; per the existing pattern in this lane (2026-09-20
   entry), the daemon must be restarted once these edits are accepted so the new
