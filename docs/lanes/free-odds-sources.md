@@ -25,8 +25,94 @@ Replace the dead paid Odds API with current free NFL spreads for private persona
 
 ## Next
 
-- Sunday worker: confirm all 15 games have valid historical-to-current leader pairs, prevent the 15:00 Odds Gap Bovada scan from superseding the direct 15:20 Bovada quote, and honor actual 15:23 retrieval for point-in-time eligibility. Root: use only validated fitted signal, keep single versus three-book coverage in lineage, and perform one safe daemon restart. Board: render no private vendor raw quotes.
+- Run `.tools/uv.exe run --no-sync ruff format --check src/nfl_ats/market_data.py` and
+  `ruff check src/nfl_ats/market_data.py` (the 2026-09-23 session hit its 50-tool-call
+  cap immediately before this step; the edit itself follows the file's existing style
+  so risk is low, but it is unverified).
+- If ruff is clean: nothing else required for this unit; the fix is otherwise verified
+  (183 targeted tests passed). If ruff flags anything, fix in place and rerun the same
+  targeted test command below.
+- Then re-check `docs/lanes/odds-api-key-deactivated.md`: still nothing to do there
+  (owner declined re-subscribe; jobs stay disabled).
+
+## State (2026-09-23, this session)
+
+- **Measured**: bulk paid Odds API jobs are still disabled and have not been retried.
+  `scripts/capture_scheduler.py:488-521` shows `odds_wed_opener`, `odds_thu_tnf`,
+  `odds_sat` all with `enabled=False`. `data/scheduler_log.txt` has zero `odds_wed*`,
+  `odds_thu*`, `odds_fri*`, `odds_sat*` entries after 2026-09-18T20:34 (the last MISSED
+  row); no new 401s, matching `docs/lanes/odds-api-key-deactivated.md`'s "no
+  re-subscribe" decision. Nothing changed here; no action needed.
+- **Measured**: Week 3 2026 (the coming Sunday, kickoff week of Sep 27) has 16 games in
+  `data/market/raw`. 15 still carry only the dead paid API's Sep 8-13 opener as their
+  "current" line (no free capture has touched them yet); 1 (`2026_03_ATL_GB`) has a
+  real 3-book Odds Gap read from Tue 2026-09-22T21:02:14Z. All 16 have valid
+  `nflverse_game_id` mappings (verified via `data/market/raw/20260922T210214Z-odds-gap-private/quotes.parquet`,
+  0 null ids) — Sunday worker's item (1) is fine, not a bug; the free Sunday job
+  just has not run yet for this week.
+- **Fixed (item 2/3/4)**: `src/nfl_ats/market_data.py::current_spread_quotes` used to
+  pick, per game, only the row(s) tied for the single freshest `_quote_as_of`
+  (scan-aware) timestamp, discarding every other bookmaker's row outright. Verified
+  against the real 2026-09-20 Week-2 Sunday capture
+  (`data/market/raw/20260920T161336Z-odds-gap-private` + `.../20260920T161338Z`):
+  direct Bovada (`_quote_as_of`=`observed_at_utc`=16:13:38.43Z, no scan lag) always
+  narrowly beat Odds Gap's own Bovada mirror (`_quote_as_of`=`source_scan_at_utc`=
+  16:00:49.27Z, ~13 min self-reported lag), so the old code silently dropped Odds
+  Gap's live-retrieved Caesars/MyBookie rows too, reporting `bookmakers=1` for all 15
+  games even though a genuine 3-book read existed from the same capture cycle. Item
+  (2) (direct Bovada must win over the Odds Gap Bovada mirror) and item (3) (the
+  `as_of` eligibility filter uses `observed_at_utc`, real retrieval time, not
+  `source_scan_at_utc`) were already correct and are unchanged.
+  Fix: `current_spread_quotes` now picks the freshest scan-aware quote **per
+  (game, bookmaker)** instead of per game (`market_data.py` around line 419-427),
+  then keeps only bookmaker rows within `CURRENT_QUOTE_COVERAGE_WINDOW` (30 minutes,
+  new module constant near line 29) of the game's freshest quote before aggregating
+  the median/`bookmakers`/`bookmaker_label`. The 30-minute bound reuses
+  `scripts/capture_private_sunday_odds.py --max-age-minutes` default (its own
+  same-cycle recency threshold) rather than inventing a new constant, and stops old
+  the-odds-api books (days stale) from being blended into a "current" read — an
+  earlier no-window version of this fix was tried and rejected for exactly that
+  reason (see Tried).
+  **Verified** against real Sept 20 data: all 15 Week-2 games now correctly report
+  `bookmakers=3` (`Bovada, Caesars, MyBookie`) with `provider_label` =
+  `bovada_public_nfl, the_odds_gap_lineshop_private`; `DET_BUF` (no free-source data)
+  is untouched at `bookmakers=11` from `the-odds-api`; `as_of=2026-09-20T15:10Z`
+  still correctly sees only pre-15:10 data (item 3 unaffected).
+- **Confirmed (item 5)**: board already renders no private vendor raw quotes.
+  `board_content.py:3056` calls `current_spread_quotes(..., public_only=True)`; the
+  board only ever displays the aggregated `home_spread_line` number plus a plain
+  `market_now_book_label` (e.g. "Bovada" or "3 books") via
+  `board_terminal.py:871-878` — never a raw per-book quote. Unchanged.
+- Targeted verification run: `.tools/uv.exe run --no-sync pytest -q
+  tests/test_board_content.py tests/test_board_terminal.py tests/test_pick_refresh.py
+  tests/test_clv.py tests/test_odds_ingest_halves.py tests/test_refresh_triggers.py`
+  → 183 passed, 6 warnings (pre-existing, unrelated: bootstrap degeneracy, bitwise-`~`
+  deprecation, injury-snapshot fallback in an unrelated fixture, pytest cache
+  permission). No test file was added or edited (moratorium respected).
+  `ruff format --check` / `ruff check` on `src/nfl_ats/market_data.py` were queued as
+  the very next command when this session hit its 50-tool-call cap — **not yet run**.
+
+## Tried
+
+- (this session) A first version of the per-bookmaker fix had no time bound at all:
+  it merged each bookmaker's all-time latest quote regardless of age. Rejected after
+  reproducing against real data — it blended the dead paid API's Sep 8-13 book prices
+  (BetMGM, DraftKings, FanDuel, etc., 11 books) into the "current" line for every
+  Week-2 game alongside the fresh Bovada/Caesars/MyBookie read, which violates item
+  (3)'s point-in-time intent. Replaced with the 30-minute-windowed version above.
+- Sep 19 cached Action Network scoreboard does contain per-book spreads, correcting the prior "percentages only" claim. Its existing Saturday/Sunday public-betting jobs remain unchanged; no new Action request or odds normalization was made.
+- Private earlier Bovada read at 10:49 ET had 15 genuine Tuesday-to-Sunday pairs and six changed spreads; the later persisted capture is the authoritative current read. The Odds Gap API docs are at https://theoddsgap.com/api-docs; Bovada terms at https://www.bovada.lv/contents/terms_of_service_bvd.pdf.
+- Targeted market/pick/scheduler/trigger tests passed (123); scheduler dry argv tests passed (57). Ruff on edited odds modules passes. The full suite before concurrent root fixes had 4 failures, 38 errors, 4487 passes, 9 skips; root handles final suite.
 
 ## Open
 
+- ruff format/check on `src/nfl_ats/market_data.py` for this session's edit is
+  unverified — do this first in the next subtask.
 - Neither free source provides a confirmed book-specific quote update time. No public odds redistribution is authorized; sourced decisions and private analysis remain separate. ESPN stays blocked at HTTP 403. Public Action odds path needs distinct provenance/access review before adding it as a normalized feed.
+- The free Sunday capture job (`odds_private_sun`) has not run yet for the coming
+  Week 3 Sunday (Sep 27); 15 of 16 games still show only the stale paid-API opener as
+  "current". That is expected this early in the week, not a bug, but re-check after
+  the next Sunday run that the 3-book merge in `current_spread_quotes` behaves the
+  same way it did for Week 2.
+- No Odds API billing action needed; owner already declined re-subscribe
+  (`docs/lanes/odds-api-key-deactivated.md`).

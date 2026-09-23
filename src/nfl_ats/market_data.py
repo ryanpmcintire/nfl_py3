@@ -27,6 +27,8 @@ POOL_TIMEZONE = ZoneInfo("America/New_York")
 
 POOL_SPREAD_LOCK_ET = time(12, 0)
 
+CURRENT_QUOTE_COVERAGE_WINDOW = pd.Timedelta(minutes=30)
+
 OPENER_BASIS_POST_LOCK = "post_lock"
 OPENER_BASIS_PRE_LOCK_FALLBACK = "pre_lock_fallback"
 
@@ -421,11 +423,18 @@ def current_spread_quotes(
         home["_quote_as_of"] = scanned.where(scanned.notna(), home["observed_at_utc"])
     else:
         home["_quote_as_of"] = home["observed_at_utc"]
-    latest = home.groupby("nflverse_game_id")["_quote_as_of"].transform("max")
-    home = home.loc[home["_quote_as_of"].eq(latest)]
+    book_keys = ["nflverse_game_id", "bookmaker_key"]
+    book_latest = home.groupby(book_keys)["_quote_as_of"].transform("max")
+    home = home.loc[home["_quote_as_of"].eq(book_latest)]
+    home = (
+        home.sort_values("observed_at_utc").groupby(book_keys, as_index=False, sort=False).tail(1)
+    )
+    game_latest = home.groupby("nflverse_game_id")["_quote_as_of"].transform("max")
+    home = home.loc[home["_quote_as_of"].ge(game_latest - CURRENT_QUOTE_COVERAGE_WINDOW)]
     result = (
-        home.groupby(["nflverse_game_id", "commence_time_utc", "observed_at_utc"], as_index=False)
+        home.groupby(["nflverse_game_id", "commence_time_utc"], as_index=False)
         .agg(
+            observed_at_utc=("observed_at_utc", "max"),
             home_spread_line=("home_spread_line", "median"),
             bookmakers=("bookmaker_key", "nunique"),
             bookmaker_label=(

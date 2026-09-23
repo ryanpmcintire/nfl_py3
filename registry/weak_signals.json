@@ -41410,6 +41410,62 @@
       "source": "docs/injury_value_lost.md",
       "standard_error": null
     },
+    "injury_value_lost_margin_map_cover_probability": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Bootstrap probability_positive=0.28 for candidate beating baseline on accuracy (2000 draws, season/week blocks); exact_null_p=0.474 on 158 decisive games (74 candidate wins vs 84 baseline wins); brier/log-loss also cross zero (prob_positive 0.65/0.63). Sign not reversed (not refuted), no positive control run, so unresolved_below_power.",
+      "closing_ground": null,
+      "description": "value_lost_diff added as a 5th fitted term to the served 4-term LOSO logistic (model_logit, composition_flag_sum, market_move_toward_home, market_move_available), seasons 2020-2024, point-in-time injury data only, paired against the served 4-term baseline on the same held-out games.",
+      "effect": -0.8143,
+      "effect_units": "accuracy_points",
+      "family": null,
+      "interval": [
+        -3.6351,
+        1.9467
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Adding up injuries lost to value and folding that into the pick model did not clearly help or hurt picks over 2020-2024; the effect is too small to tell apart from noise yet.",
+      "probability_positive": 0.28,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 89,
+      "sample_games": 1228,
+      "seasons": [
+        2020,
+        2024
+      ],
+      "source": "artifacts/injury_value_margin_map/20260923T210029Z/summary.json",
+      "standard_error": 1.4155
+    },
+    "injury_value_lost_margin_slope": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Slope sign is resolved negative (prob_positive=0.0115, as expected: team that lost more value underperforms its opener) but the OOS margin-error improvement crosses zero (prob_positive=0.7135 MAE, 0.704 RMSE); not a refuted mechanism and no positive control run, so AGENTS.md leaves the practical-improvement claim unresolved_below_power.",
+      "closing_ground": null,
+      "description": "LOSO-by-season OLS of margin_vs_open on value_lost_diff (diff_injury_skill_epa_value_lost + diff_injury_defense_disruption_value_lost), 2020-2024, point-in-time injury data only. Per-fold slopes: 2020 -0.274, 2021 -0.373, 2022 -0.310, 2023 -0.302, 2024 -0.313 points per unit (5/5 negative). Pooled block-bootstrap slope -0.320 [-0.593,-0.038], probability positive=0.0115. OOS MAE 10.146->10.128, RMSE 13.039->13.025; bootstrap probability the MAE improvement is positive=0.7135.",
+      "effect": 0.0184,
+      "effect_units": "mae_improvement",
+      "family": null,
+      "interval": [
+        -0.0454,
+        0.0877
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The team that lost more value to injury tends to underperform the opening line by a little, in the expected direction, but the nudge is too small yet to reliably sharpen the final point-spread prediction.",
+      "probability_positive": 0.7135,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 89,
+      "sample_games": 1228,
+      "seasons": [
+        2020,
+        2024
+      ],
+      "source": "artifacts/injury_value_margin_map/20260923T210029Z/summary.json",
+      "standard_error": null
+    },
     "injury_value_lost_narrowed": {
       "category": "health",
       "classification": "unresolved_below_power",
