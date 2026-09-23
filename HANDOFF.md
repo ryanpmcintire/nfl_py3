@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-23T20:40:46.616287+00:00`
+Refreshed at: `2026-09-23T20:42:58.023733+00:00`
 
 ## Start here
 
@@ -21,11 +21,11 @@ Refreshed at: `2026-09-23T20:40:46.616287+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `86972b0a509d` — Record MOD-20 u5, MOD-22 u2-3, LEAD-65 fit gate, XLG-09 u2; explain the Confidence column
+- Baseline commit: `bc659fdbf7f2` — Record MOD-20 unit 6: fan-forum attention as a fitted term, unresolved
 - Pending change set: 3 paths
-  - `M  docs/lanes/pooled-signal-model.md`
-  - `M  registry/weak_signals.json`
-  - `A  scripts/pooled_signal_sixth_fit_new_family.py`
+  - `M  docs/lanes/README.md`
+  - `M  docs/lanes/lead65-protection-window-split.md`
+  - `?? docs/lanes/opener-population-backfill.md`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

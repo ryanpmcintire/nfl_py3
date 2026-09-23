@@ -32,7 +32,7 @@ modified lane when the prompt just says to continue.
 - [every-metric-every-experiment](every-metric-every-experiment.md) — ENG-46 implementation done 2026-09-16; backfilled-look accounting remains open (runner emits four metrics, backfill recorded, margin cells corrected same day, pool + findings read the margin family).
 - [lane-replay-dream-rsi](lane-replay-dream-rsi.md) — ENG-45, units 1-2 done 2026-09-16 (both unresolved); unit 3 not recommended
 - [conditional-signal-atlas](conditional-signal-atlas.md) - MOD-19: owner rejected the deployed Findings page as not useful and below expectations; original mockup is saved, feature remains unresolved, further implementation awaits a grounded direction.
-- [lead65-protection-window-split](lead65-protection-window-split.md) — gate folded into the fit loses (2026-09-23); the separate early-window overlay stays prospective; owner question open
+- [lead65-protection-window-split](lead65-protection-window-split.md) — decided 2026-09-23: served flag sum unchanged; week-gated variant stays a prospective challenger.
 - [lead59-archive-battery](lead59-archive-battery.md) — LEAD-59 src fix and battery re-run done, 23 cells recorded; open: type-trait binning with the archive on
 - [token-diet](token-diet.md) — session-startup token cost cut about 80%; remaining: trim the three 15 KB+ open ROADMAP rows (owner text) and decide whether `.claude/` hooks should be tracked
 - [odds-api-key-deactivated](odds-api-key-deactivated.md) — 2026-09-19: bulk odds captures failing HTTP 401 DEACTIVATED_KEY (billing); owner action needed before the next odds window
