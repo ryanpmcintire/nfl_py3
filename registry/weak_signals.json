@@ -48575,6 +48575,146 @@
       "source": "artifacts/line_move_target/20260916T192806Z",
       "standard_error": 0.00808
     },
+    "line_move_yardstick_v1_model_only_vs_always_favourite": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Clean comparison: neither side uses any post-opener information (raw model-only pick vs always-take-the-favourite). Interval spans zero and probability_positive is near 0.5, so this is unresolved_below_power, not a refuted mechanism (AGENTS.md: an interval crossing zero never closes a signal on its own) and not a positive control. Sign flips season to season (positive 2020/2024/2025, negative 2021/2022/2023) with no stable direction.",
+      "closing_ground": null,
+      "description": "Paired week/season-block bootstrap on line_move_toward_pick (opener->close move toward the pick, points), same 2020-2025 graded games used by the LOSO pick-probability fit.",
+      "effect": -0.0067,
+      "effect_units": "ats_points",
+      "family": "line_move_yardstick_v1",
+      "interval": [
+        -0.0757,
+        0.0698
+      ],
+      "league": "nfl",
+      "notes": "week-block 95% CI [-0.1326, 0.1140], week-block probability_positive 0.4385. Decisive games 557, decisive mean -0.018 pts, model-only wins 305-252 favourite wins. 12 pick'em games excluded. Per-season points: 2020 +0.092, 2021 -0.091, 2022 -0.106, 2023 -0.100, 2024 +0.048, 2025 +0.119. On this yardstick the raw model shows no distinguishable line-move edge over simply following the favourite, consistent with the owner's 2026-09-16 diagnosis that the served model adds little beyond line-following; remains open per AGENTS.md, not closed.",
+      "plain_summary": "On this low-variance opener-to-close yardstick, picking the model's raw favourite lands no differently than always picking the market's favourite -- the effect is a coin flip and swings sign by season.",
+      "probability_positive": 0.4205,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1491,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_move_yardstick/20260923T180055Z/results.json",
+      "standard_error": null
+    },
+    "line_move_yardstick_v1_opener_only_vs_always_favourite": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Uncontaminated substitute for served_vs_always_favourite, same opener-only LOSO refit as line_move_yardstick_v1_opener_only_vs_model_only. Interval crosses zero, probability_positive 0.719, unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Paired week/season-block bootstrap on line_move_toward_pick (opener->close move toward the pick, points), same 2020-2025 graded games used by the LOSO pick-probability fit.",
+      "effect": 0.0282,
+      "effect_units": "ats_points",
+      "family": "line_move_yardstick_v1",
+      "interval": [
+        -0.0582,
+        0.1272
+      ],
+      "league": "nfl",
+      "notes": "week-block 95% CI [-0.0985, 0.1593], week-block probability_positive 0.662. Decisive games 599, decisive mean +0.070 pts, opener-only wins 314-285 favourite wins. 12 pick'em games excluded. Per-season points: 2020 -0.050, 2021 +0.076, 2022 -0.037, 2023 -0.117, 2024 +0.071, 2025 +0.213.",
+      "plain_summary": "A pregame-only version of the calibrated pick shows a small, not-yet-resolved lean toward beating always-take-the-favourite on opener-to-close line movement.",
+      "probability_positive": 0.719,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1491,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_move_yardstick/20260923T180055Z/results.json",
+      "standard_error": null
+    },
+    "line_move_yardstick_v1_opener_only_vs_model_only": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Uncontaminated substitute for served_vs_model_only. opener_only_probability is a fresh LOSO logit refit of the same pipeline restricted to (model_logit, composition_flag_sum), dropping the two market-move terms so no post-opener information enters either side. Interval crosses zero (probability_positive 0.8805, leaning positive but not resolved), so unresolved_below_power; not a refuted mechanism and not a positive control.",
+      "closing_ground": null,
+      "description": "Paired week/season-block bootstrap on line_move_toward_pick (opener->close move toward the pick, points), same 2020-2025 graded games used by the LOSO pick-probability fit.",
+      "effect": 0.0436,
+      "effect_units": "ats_points",
+      "family": "line_move_yardstick_v1",
+      "interval": [
+        -0.0293,
+        0.1098
+      ],
+      "league": "nfl",
+      "notes": "week-block 95% CI [-0.0427, 0.1323], week-block probability_positive 0.8325. Decisive games (sides differ) only 323 of 1503 -- the reduced fit agrees with model-only on most games; decisive mean +0.203 pts, opener-only wins 151-172 model-only wins (model-only actually wins more decisive games despite the higher pooled mean, driven by size not count). Per-season points: 2020 -0.123, 2021 +0.167, 2022 +0.097, 2023 -0.017, 2024 +0.023, 2025 +0.103.",
+      "plain_summary": "Adding the pregame situational flags to the raw model, with no post-opener market-move term, leans toward a small opener-to-close edge over the raw model alone, but the interval still crosses zero.",
+      "probability_positive": 0.8805,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_move_yardstick/20260923T180055Z/results.json",
+      "standard_error": null
+    },
+    "line_move_yardstick_v1_served_vs_always_favourite": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "CONTAMINATED comparison for the same reason as line_move_yardstick_v1_served_vs_model_only: the served side's market-move term is built from post-opener information that overlaps the opener-to-close yardstick. 12 pick'em games (tue_open_home_spread == 0) excluded, always-favourite undefined there. Interval excludes zero but the mechanism is confounded, so unresolved_below_power; see opener_only_vs_always_favourite for the uncontaminated substitute.",
+      "closing_ground": null,
+      "description": "Paired week/season-block bootstrap on line_move_toward_pick (opener->close move toward the pick, points), same 2020-2025 graded games used by the LOSO pick-probability fit.",
+      "effect": 0.2217,
+      "effect_units": "ats_points",
+      "family": "line_move_yardstick_v1",
+      "interval": [
+        0.0414,
+        0.3777
+      ],
+      "league": "nfl",
+      "notes": "week-block 95% CI [0.0870, 0.3592], week-block probability_positive 0.9985. Decisive games 575, decisive mean +0.575 pts, served wins 347-228. Per-season points: 2020 -0.069, 2021 +0.142, 2022 -0.053, 2023 +0.366, 2024 +0.391, 2025 +0.475.",
+      "plain_summary": "Do not read this as the served pick beating always-take-the-favourite: the served pick's own inputs already include the post-opener line move that this test is scored on.",
+      "probability_positive": 0.9945,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1491,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_move_yardstick/20260923T180055Z/results.json",
+      "standard_error": null
+    },
+    "line_move_yardstick_v1_served_vs_model_only": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "CONTAMINATED comparison, not admissible for closing anything: the served four-term probability's FIT_FEATURES include market_move_toward_home/market_move_available (leader_median_through_sunday_prekick_v1), sharp-book movement measured after the opener and up through Sunday pre-kick. The served side is compared against a yardstick built from that same opener-to-close window, so the positive result is partly circular, not evidence the served combination adds pregame value. Interval excludes zero but the mechanism is confounded, so this stays unresolved_below_power; see opener_only_vs_model_only for the uncontaminated substitute.",
+      "closing_ground": null,
+      "description": "Paired week/season-block bootstrap on line_move_toward_pick (opener->close move toward the pick, points), same 2020-2025 graded games used by the LOSO pick-probability fit.",
+      "effect": 0.2362,
+      "effect_units": "ats_points",
+      "family": "line_move_yardstick_v1",
+      "interval": [
+        0.0579,
+        0.3772
+      ],
+      "league": "nfl",
+      "notes": "week-block 95% CI [0.1273, 0.3451], week-block probability_positive 1.0. Decisive games (sides differ) 409, decisive mean +0.868 pts, served wins 239-170. Per-season points: 2020 -0.141, 2021 +0.233, 2022 +0.065, 2023 +0.462, 2024 +0.368, 2025 +0.352.",
+      "plain_summary": "Do not read this as the served model beating a raw-model-only pick: the served pick's own inputs already include the post-opener line move that this test is scored on, so the two aren't independent.",
+      "probability_positive": 0.9945,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_move_yardstick/20260923T180055Z/results.json",
+      "standard_error": null
+    },
     "line_size_shrinkage_ak1_card_0_6p5_2020_2025": {
       "category": "modeling",
       "classification": "unresolved_below_power",

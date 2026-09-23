@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-23T17:55:16.245003+00:00`
+Refreshed at: `2026-09-23T18:04:29.126287+00:00`
 
 ## Start here
 
@@ -21,29 +21,15 @@ Refreshed at: `2026-09-23T17:55:16.245003+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `f98267250bd3` — Refresh handoff after spread explorer and ENG-47
-- Pending change set: 40 paths
+- Baseline commit: `13b4a23f8b8f` — Trim the test suite to durable contracts
+- Pending change set: 7 paths
   - `M  HANDOFF.md`
+  - ` M README.md`
   - ` M docs/index.html`
-  - `A  docs/lanes/done/test-suite-reduction.md`
-  - `D  docs/lanes/test-suite-reduction.md`
-  - `M  scripts/pooled_signal_fourth_fit_hierarchical.py`
-  - `M  tests/test_airnow_hourly_capture.py`
-  - `M  tests/test_apm_unit_feature.py`
-  - `M  tests/test_best_pick.py`
-  - `M  tests/test_best_pick_nomination.py`
-  - `M  tests/test_capture_observability.py`
-  - `M  tests/test_card_explanation.py`
-  - `M  tests/test_cfb.py`
-  - `M  tests/test_expected_lineup_loss_features.py`
-  - `M  tests/test_features.py`
-  - `M  tests/test_forecast_weather_features.py`
-  - `M  tests/test_inactives_capture.py`
-  - `M  tests/test_key_line_pick_read.py`
-  - `M  tests/test_odds_ingest_halves.py`
-  - `M  tests/test_officials_archive.py`
-  - `M  tests/test_officials_flag_features.py`
-  - ...and 20 more
+  - `M  docs/lanes/clv-metric-everywhere.md`
+  - `A  docs/lanes/done/midweek-model-activation.md`
+  - `M  registry/weak_signals.json`
+  - `A  scripts/line_move_yardstick_paired_eval.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
