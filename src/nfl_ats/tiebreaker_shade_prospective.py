@@ -23,7 +23,7 @@ LOGGER = logging.getLogger(__name__)
 
 def skip(reason: str) -> dict[str, Any]:
     LOGGER.warning("Prospective paired record skipped: %s", reason)
-    return {"recorded": 0, "skipped": True, "reason": reason}
+    return {"challenger_id": CHALLENGER_ID, "recorded": 0, "skipped": True, "reason": reason}
 
 
 def ledger_path(artifacts_root: Path) -> Path:

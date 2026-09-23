@@ -5,6 +5,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import cast
 
+import numpy as np
+import numpy.typing as npt
 import pandas as pd
 
 from nfl_ats.calibration import ResidualSmoothingMethod
@@ -42,6 +44,16 @@ class CardRefit:
                 result["home_cover_probability"], frame["game_id"], self.pick_overrides
             )
         return result
+
+
+SMOOTH_PROBABILITY_COLUMN = "home_cover_probability_smooth"
+
+
+def smooth_reference_probability(card: pd.DataFrame) -> npt.NDArray[np.float64] | None:
+
+    if SMOOTH_PROBABILITY_COLUMN not in card.columns:
+        return None
+    return pd.to_numeric(card[SMOOTH_PROBABILITY_COLUMN], errors="raise").to_numpy(dtype=float)
 
 
 def load_card_refit(

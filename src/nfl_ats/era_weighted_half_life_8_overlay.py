@@ -11,7 +11,7 @@ import pandas as pd
 
 from nfl_ats.active_model import load_active_ats_model
 from nfl_ats.calibration import ResidualSmoothingMethod, smoothed_home_cover_probability
-from nfl_ats.card_refit import CardRefit, load_card_refit
+from nfl_ats.card_refit import CardRefit, load_card_refit, smooth_reference_probability
 from nfl_ats.clv import refuse_if_outside_recording_lock_window
 from nfl_ats.data import DataContractError
 from nfl_ats.io import atomic_parquet
@@ -228,8 +228,9 @@ def apply_era_weighted_half_life_8_overlay(
             ridge_alpha=ridge_alpha,
             model_name=regressor,
         )
+        smooth_reference = smooth_reference_probability(group)
         uniform_predicted = (
-            card_refit.predict(uniform_model, aligned)
+            card_refit.predict(uniform_model, aligned, replay_served_pick=smooth_reference is None)
             if card_refit is not None
             else uniform_model.predict(aligned)
         )
@@ -244,7 +245,11 @@ def apply_era_weighted_half_life_8_overlay(
                 uniform_model.residuals, uniform_centers, spread, method=probability_method
             )
         )
-        supplied = group["home_cover_probability"].to_numpy(dtype=float)
+        supplied = (
+            group["home_cover_probability"].to_numpy(dtype=float)
+            if smooth_reference is None
+            else smooth_reference
+        )
         if not np.allclose(uniform_check, supplied, rtol=0.0, atol=1e-9):
             raise DataContractError(
                 f"Uniform-weight refit for season {season} week {week} does not "

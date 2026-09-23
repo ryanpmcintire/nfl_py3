@@ -11,6 +11,7 @@ import pandas as pd
 
 from nfl_ats.active_model import load_active_ats_model
 from nfl_ats.calibration import smoothed_home_cover_probability
+from nfl_ats.card_refit import smooth_reference_probability
 from nfl_ats.clv import refuse_if_outside_recording_lock_window
 from nfl_ats.data import DataContractError
 from nfl_ats.home_side_location import center_offsets_from_metadata
@@ -127,8 +128,10 @@ def apply_gaussian_mean_mapping_incumbent_overlay(
         gaussian_check = smoothed_home_cover_probability(
             model.residuals, centers, spread, method="gaussian_median"
         )
-        gaussian_check = apply_pick_overrides(gaussian_check, group_ids, pick_overrides)
-        supplied = group["home_cover_probability"].to_numpy(dtype=float)
+        supplied = smooth_reference_probability(group)
+        if supplied is None:
+            gaussian_check = apply_pick_overrides(gaussian_check, group_ids, pick_overrides)
+            supplied = group["home_cover_probability"].to_numpy(dtype=float)
         if not np.allclose(gaussian_check, supplied, rtol=0.0, atol=1e-9):
             raise DataContractError(
                 f"Refit median Gaussian probabilities for season {season} week {week} do not "
