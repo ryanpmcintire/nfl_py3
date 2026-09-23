@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-23T21:22:21.068479+00:00`
+Refreshed at: `2026-09-23T21:24:46.524138+00:00`
 
 ## Start here
 
@@ -21,11 +21,9 @@ Refreshed at: `2026-09-23T21:22:21.068479+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `722e22239aca` — Publish the board with current mid-week lines and book counts
-- Pending change set: 5 paths
-  - `A  docs/lanes/base-model-recency.md`
-  - `M  registry/weak_signals.json`
-  - `A  scripts/base_model_recency.py`
+- Baseline commit: `328f3e10c8e1` — Base model recency weighting: flat in the pick model, worse margins standalone
+- Pending change set: 3 paths
+  - `M  docs/lanes/market-move-decomposition.md`
   - `?? docs/lanes/positive-control-power.md`
   - `?? scripts/positive_control_power.py`
 
