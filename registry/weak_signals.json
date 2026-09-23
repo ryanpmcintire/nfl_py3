@@ -51543,6 +51543,146 @@
       "source": "artifacts/every_metric/20260916T152725Z",
       "standard_error": 0.018698989385951024
     },
+    "market_move_decomposition_a_all_books_median": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block interval [-0.135,0.996] does not lie wholly on one side of zero",
+      "closing_ground": null,
+      "description": "Replace the served leader-median Wednesday-to-deadline move with a_all_books_median in the four-term pick probability, LOSO 2020-2025; record 865-638 vs served 859-644, decisive 12-6 on 18; Brier 0.24543 vs 0.24539. Reconstruction parity with the served move exact (0.0 max diff).",
+      "effect": 0.39920159680638717,
+      "effect_units": "accuracy_points",
+      "family": "market_move_decomposition_v1",
+      "interval": [
+        -0.1345012540265975,
+        0.9960159362549801
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Using all books' line moves instead of the three leading books did not clearly beat the served line-move signal.",
+      "probability_positive": 0.8985,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/market_move_decomposition/20260923T214102Z/metadata.json",
+      "standard_error": null
+    },
+    "market_move_decomposition_b_early_window_tue_noon_thu": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block interval [-1.816,0.794] does not lie wholly on one side of zero",
+      "closing_ground": null,
+      "description": "Replace the served leader-median Wednesday-to-deadline move with b_early_window_tue_noon_thu in the four-term pick probability, LOSO 2020-2025; record 851-652 vs served 859-644, decisive 60-68 on 128; Brier 0.24587 vs 0.24539. Reconstruction parity with the served move exact (0.0 max diff).",
+      "effect": -0.5322687957418496,
+      "effect_units": "accuracy_points",
+      "family": "market_move_decomposition_v1",
+      "interval": [
+        -1.815766929359066,
+        0.793743078626799
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Using only the Tuesday-to-Thursday line move did not clearly beat the served line-move signal.",
+      "probability_positive": 0.207,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/market_move_decomposition/20260923T214102Z/metadata.json",
+      "standard_error": null
+    },
+    "market_move_decomposition_b_late_window_thu_cutoff": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block interval [-2.298,0.000] does not lie wholly on one side of zero",
+      "closing_ground": null,
+      "description": "Replace the served leader-median Wednesday-to-deadline move with b_late_window_thu_cutoff in the four-term pick probability, LOSO 2020-2025; record 841-662 vs served 859-644, decisive 34-52 on 86; Brier 0.24611 vs 0.24539. Reconstruction parity with the served move exact (0.0 max diff).",
+      "effect": -1.1976047904191618,
+      "effect_units": "accuracy_points",
+      "family": "market_move_decomposition_v1",
+      "interval": [
+        -2.29828510057035,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Using only the Thursday-to-deadline line move did not clearly beat the served line-move signal.",
+      "probability_positive": 0.0225,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/market_move_decomposition/20260923T214102Z/metadata.json",
+      "standard_error": null
+    },
+    "market_move_decomposition_c_key_number_crossing_count": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block interval [-2.279,0.660] does not lie wholly on one side of zero",
+      "closing_ground": null,
+      "description": "Replace the served leader-median Wednesday-to-deadline move with c_key_number_crossing_count in the four-term pick probability, LOSO 2020-2025; record 847-656 vs served 859-644, decisive 66-78 on 144; Brier 0.24631 vs 0.24539. Reconstruction parity with the served move exact (0.0 max diff).",
+      "effect": -0.7984031936127743,
+      "effect_units": "accuracy_points",
+      "family": "market_move_decomposition_v1",
+      "interval": [
+        -2.2792435188889475,
+        0.6596306068601583
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Counting key-number crossings instead of points moved did not clearly beat the served line-move signal.",
+      "probability_positive": 0.146,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/market_move_decomposition/20260923T214102Z/metadata.json",
+      "standard_error": null
+    },
+    "market_move_decomposition_d_move_across_3_and_7_separate": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block interval [-2.802,0.527] does not lie wholly on one side of zero",
+      "closing_ground": null,
+      "description": "Replace the served leader-median Wednesday-to-deadline move with d_move_across_3_and_7_separate in the four-term pick probability, LOSO 2020-2025; record 842-661 vs served 859-644, decisive 66-83 on 149; Brier 0.24695 vs 0.24539. Reconstruction parity with the served move exact (0.0 max diff).",
+      "effect": -1.1310711909514306,
+      "effect_units": "accuracy_points",
+      "family": "market_move_decomposition_v1",
+      "interval": [
+        -2.801961494703884,
+        0.5270615053223746
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Splitting the line move into moves across 3 and across 7 did not clearly beat the served line-move signal.",
+      "probability_positive": 0.0795,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/market_move_decomposition/20260923T214102Z/metadata.json",
+      "standard_error": null
+    },
     "market_updated_model__c1_vs_c0": {
       "category": "market",
       "classification": "unresolved_below_power",

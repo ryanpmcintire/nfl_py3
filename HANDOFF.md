@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-23T21:39:13.545072+00:00`
+Refreshed at: `2026-09-23T21:41:52.316237+00:00`
 
 ## Start here
 
@@ -21,13 +21,13 @@ Refreshed at: `2026-09-23T21:39:13.545072+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `e25217ffa5c4` — Positive-control power: minimum detectable effects; no reclassification at these sizes
+- Baseline commit: `d117c946e3a0` — Positive-control lane: duplicate run agrees; decision stands
 - Pending change set: 6 paths
   - ` M docs/lanes/injury-scenario-producer.md`
-  - ` M docs/lanes/market-move-decomposition.md`
-  - `M  docs/lanes/positive-control-power.md`
+  - `M  docs/lanes/market-move-decomposition.md`
+  - `M  registry/weak_signals.json`
   - ` M scripts/injury_scenario_producer.py`
-  - ` M scripts/market_move_decomposition.py`
+  - `M  scripts/market_move_decomposition.py`
   - `?? scripts/injury_scenario_grade.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.

@@ -8,6 +8,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
+import nfl_ats.pick_probability_fit as ppf
 from nfl_ats.pick_probability import FLAG_SUM_COLUMN, MOVE_AVAILABLE_COLUMN, MOVE_COLUMN
 from nfl_ats.pick_probability_fit import (
     FIT_RIDGE,
@@ -19,13 +20,18 @@ from nfl_ats.pick_probability_fit import (
     _standardisers,
     build_fit_population,
 )
-import nfl_ats.pick_probability_fit as ppf
-from nfl_ats.sharp_book_movement_features import LEADER_BOOKS, LEADERSHIP_WEIGHTS
+from nfl_ats.sharp_book_movement_features import (
+    LEADER_BOOKS,
+    LEADERSHIP_WEIGHTS,
+    sharp_book_movement_features,
+)
 
 REPO = Path(__file__).resolve().parents[1]
 ARTIFACTS_ROOT = REPO / "artifacts"
 DATA_ROOT = REPO / "data"
-QUOTES_CACHE = ARTIFACTS_ROOT / "sharp_book_weighted_movement" / "spread_quotes.parquet"
+FROZEN_ROOT = ARTIFACTS_ROOT / "experiments" / "sharp_book_movement"
+QUOTES_CACHE = FROZEN_ROOT / "quotes.parquet"
+KICKOFF_CACHE = FROZEN_ROOT / "kickoff.parquet"
 SERVED_PER_GAME = ARTIFACTS_ROOT / "sharp_weighted_follow" / "20260909T233611Z" / "per_game.parquet"
 
 OUTER_SEASONS = [2020, 2021, 2022, 2023, 2024, 2025]
@@ -36,34 +42,32 @@ BOOTSTRAP_SEED = 20260923
 EPS = 1e-6
 
 
-def _game_anchors(quotes: pd.DataFrame, population: pd.DataFrame) -> pd.DataFrame:
+def _game_anchors(kickoff: pd.DataFrame, population: pd.DataFrame) -> pd.DataFrame:
     ids = set(population.game_id.astype(str))
-    q = quotes.loc[quotes.nflverse_game_id.astype(str).isin(ids)]
-    commence = pd.to_datetime(
-        q.groupby("nflverse_game_id").commence_time_utc.min(), utc=True
+    games = (
+        kickoff.loc[kickoff.nflverse_game_id.astype(str).isin(ids)]
+        .rename(columns={"nflverse_game_id": "game_id"})
+        .copy()
     )
-    games = population[["game_id", "season", "week"]].drop_duplicates("game_id").copy()
     games["game_id"] = games["game_id"].astype(str)
-    games["commence_time_utc"] = games.game_id.map(commence)
-    games = games.loc[games.commence_time_utc.notna()].copy()
-    games["week_first_commence_utc"] = games.groupby(
-        ["season", "week"]
-    ).commence_time_utc.transform("min")
-    anchor = pd.to_datetime(games.week_first_commence_utc, utc=True).dt.tz_convert(
-        "America/New_York"
-    )
+    games["commence_time_utc"] = pd.to_datetime(games.commence_time_utc, utc=True)
+    games["week_first_commence_utc"] = pd.to_datetime(games.week_first_commence_utc, utc=True)
+    anchor = games.week_first_commence_utc.dt.tz_convert("America/New_York")
     local = anchor.dt.tz_localize(None).dt.normalize()
     sunday = local + pd.to_timedelta((6 - anchor.dt.weekday) % 7, unit="D")
 
     def _to_utc(naive: pd.Series, hours: float = 0.0) -> pd.Series:
-        return (naive + pd.Timedelta(hours=hours)).dt.tz_localize(
-            "America/New_York"
-        ).dt.tz_convert("UTC")
+        return (
+            (naive + pd.Timedelta(hours=hours))
+            .dt.tz_localize("America/New_York")
+            .dt.tz_convert("UTC")
+        )
 
     games["_monday"] = _to_utc(sunday - pd.Timedelta(days=6))
     games["_tuesday_noon"] = _to_utc(sunday - pd.Timedelta(days=5), hours=12.0)
     games["_wednesday"] = _to_utc(sunday - pd.Timedelta(days=4))
     games["_thursday"] = _to_utc(sunday - pd.Timedelta(days=3))
+    games["_sunday"] = _to_utc(sunday)
     deadline = _to_utc(sunday, hours=16.0)
     games["cutoff_utc"] = pd.concat([games.commence_time_utc, deadline], axis=1).min(axis=1)
     return games
@@ -82,15 +86,20 @@ def _eligible_quotes(quotes: pd.DataFrame, games: pd.DataFrame) -> pd.DataFrame:
         quotes.market.eq("spreads") & quotes.bookmaker_key.isin(ALL_BOOKS), sorted(needed)
     ].rename(columns={"nflverse_game_id": "game_id"})
     q["game_id"] = q["game_id"].astype(str)
-    q = q.merge(
-        games[["game_id", "cutoff_utc", "_monday"]], on="game_id", how="inner"
-    )
-    for column in ("observed_at_utc", "bookmaker_last_update_utc", "cutoff_utc", "_monday"):
+    q = q.merge(games[["game_id", "cutoff_utc", "_monday", "_sunday"]], on="game_id", how="inner")
+    for column in (
+        "observed_at_utc",
+        "bookmaker_last_update_utc",
+        "cutoff_utc",
+        "_monday",
+        "_sunday",
+    ):
         q[column] = pd.to_datetime(q[column], utc=True, errors="coerce")
     q["home_spread_line"] = pd.to_numeric(q.home_spread_line, errors="coerce")
     q = q.loc[
         q.observed_at_utc.lt(q.cutoff_utc)
         & q.observed_at_utc.ge(q._monday)
+        & q.observed_at_utc.lt(q._sunday)
         & q.bookmaker_last_update_utc.le(q.observed_at_utc)
         & np.isfinite(q.home_spread_line)
     ].copy()
@@ -106,9 +115,7 @@ def _asof_lines(eligible: pd.DataFrame, games: pd.DataFrame) -> pd.DataFrame:
         var_name="boundary",
         value_name="query_time",
     )
-    left = boundaries.merge(
-        pd.DataFrame({"bookmaker_key": ALL_BOOKS}), how="cross"
-    )
+    left = boundaries.merge(pd.DataFrame({"bookmaker_key": ALL_BOOKS}), how="cross")
     left["query_time"] = pd.to_datetime(left["query_time"], utc=True)
     left = left.sort_values("query_time")
     right = eligible.sort_values("observed_at_utc")
@@ -147,7 +154,12 @@ def _crossing(start: pd.Series, end: pd.Series, keys: tuple[float, ...]) -> pd.S
 
 
 def _median_crossing(
-    lines: pd.DataFrame, books: tuple[str, ...], start: str, end: str, keys: tuple[float, ...], bucket: bool
+    lines: pd.DataFrame,
+    books: tuple[str, ...],
+    start: str,
+    end: str,
+    keys: tuple[float, ...],
+    bucket: bool,
 ) -> pd.Series:
     subset = lines.loc[lines.bookmaker_key.isin(books)].copy()
     subset = subset.loc[subset[start].notna() & subset[end].notna()]
@@ -158,12 +170,14 @@ def _median_crossing(
     return subset.groupby("game_id").value.median()
 
 
-def _week_blocked_bootstrap(df: pd.DataFrame, value_fn: Any, samples: int, seed: int) -> dict[str, float]:
+def _week_blocked_bootstrap(
+    df: pd.DataFrame, value_fn: Any, samples: int, seed: int
+) -> dict[str, float]:
     blocks = list(df.groupby(["season", "week"]).groups.keys())
     rng = np.random.default_rng(seed)
     point = value_fn(df)
     draws = np.empty(samples, dtype=float)
-    grouped = {k: v for k, v in df.groupby(["season", "week"])}
+    grouped = {key: frame for key, frame in df.groupby(["season", "week"])}  # noqa: C416
     n_blocks = len(blocks)
     for i in range(samples):
         picks = rng.integers(0, n_blocks, size=n_blocks)
@@ -240,7 +254,9 @@ def _score_arm(
     decisive = frame.loc[(frame.arm_p >= 0.5) != (frame.served_p >= 0.5)]
     accuracy_boot = _week_blocked_bootstrap(
         frame,
-        lambda d: float((d.arm_correct.astype(float) - d.served_correct.astype(float)).mean()) * 100.0,
+        lambda d: (
+            float((d.arm_correct.astype(float) - d.served_correct.astype(float)).mean()) * 100.0
+        ),
         BOOTSTRAP_SAMPLES,
         BOOTSTRAP_SEED,
     )
@@ -259,7 +275,7 @@ def _score_arm(
     return {
         "name": name,
         "features": list(features),
-        "n_games": int(len(frame)),
+        "n_games": len(frame),
         "arm_accuracy": float(frame.arm_correct.mean()),
         "served_accuracy": float(frame.served_correct.mean()),
         "arm_record": f"{int(frame.arm_correct.sum())}-{int((~frame.arm_correct).sum())}",
@@ -268,9 +284,13 @@ def _score_arm(
         "served_brier": float(frame.served_brier.mean()),
         "arm_logloss": float(frame.arm_logloss.mean()),
         "served_logloss": float(frame.served_logloss.mean()),
-        "n_decisive": int(len(decisive)),
-        "arm_decisive_record": f"{int(decisive.arm_correct.sum())}-{int((~decisive.arm_correct).sum())}",
-        "served_decisive_record": f"{int(decisive.served_correct.sum())}-{int((~decisive.served_correct).sum())}",
+        "n_decisive": len(decisive),
+        "arm_decisive_record": (
+            f"{int(decisive.arm_correct.sum())}-{int((~decisive.arm_correct).sum())}"
+        ),
+        "served_decisive_record": (
+            f"{int(decisive.served_correct.sum())}-{int((~decisive.served_correct).sum())}"
+        ),
         "accuracy_points_bootstrap": accuracy_boot,
         "brier_improvement_bootstrap": brier_boot,
         "logloss_improvement_bootstrap": logloss_boot,
@@ -284,7 +304,8 @@ def main() -> None:
     population["game_id"] = population["game_id"].astype(str)
 
     quotes = pd.read_parquet(QUOTES_CACHE)
-    games = _game_anchors(quotes, population)
+    kickoff = pd.read_parquet(KICKOFF_CACHE)
+    games = _game_anchors(kickoff, population)
     eligible = _eligible_quotes(quotes, games)
     lines = _asof_lines(eligible, games)
 
@@ -294,10 +315,18 @@ def main() -> None:
         "recomputed_served"
     )
     parity = served_ref.merge(served_leader, on="game_id", how="inner")
-    parity_max_abs_diff = float(
-        (parity[MARKET_MOVE_COLUMN] - parity["recomputed_served"]).abs().max()
+    parity_diff = (parity[MARKET_MOVE_COLUMN] - parity["recomputed_served"]).abs()
+    parity_max_abs_diff = float(parity_diff.max())
+    parity_mean_abs_diff = float(parity_diff.mean())
+    parity_n = len(parity)
+    parity_n_off_gt_quarter_point = int((parity_diff > 0.25).sum())
+
+    true_exposure = sharp_book_movement_features(quotes, games.copy())
+    true_leader = true_exposure.set_index("game_id")["leader_median_net_move"]
+    true_parity = served_ref.merge(
+        true_leader.rename("true_function_served").reset_index(), on="game_id", how="inner"
     )
-    parity_n = int(len(parity))
+    true_parity_diff = (true_parity[MARKET_MOVE_COLUMN] - true_parity["true_function_served"]).abs()
 
     move_all_books = _median_points(lines, ALL_BOOKS, "_wednesday", "cutoff_utc")
     move_early = _median_points(lines, LEADER_BOOKS, "_tuesday_noon", "_thursday")
@@ -371,7 +400,13 @@ def main() -> None:
         _score_arm(
             "d_move_across_3_and_7_separate",
             d_frame,
-            ("model_logit", FLAG_SUM_COLUMN, "move_across_3", "move_across_7", MOVE_AVAILABLE_COLUMN),
+            (
+                "model_logit",
+                FLAG_SUM_COLUMN,
+                "move_across_3",
+                "move_across_7",
+                MOVE_AVAILABLE_COLUMN,
+            ),
             served_p,
         )
     )
@@ -392,13 +427,30 @@ def main() -> None:
         "parity_check": {
             "n_games_compared": parity_n,
             "max_abs_diff_points": parity_max_abs_diff,
+            "mean_abs_diff_points": parity_mean_abs_diff,
+            "n_games_off_gt_0_25_points": parity_n_off_gt_quarter_point,
+            "quotes_cache": str(QUOTES_CACHE),
+            "kickoff_cache": str(KICKOFF_CACHE),
+        },
+        "true_function_parity_check": {
+            "n_games_compared": len(true_parity),
+            "max_abs_diff_points": float(true_parity_diff.max()) if len(true_parity_diff) else None,
+            "mean_abs_diff_points": float(true_parity_diff.mean())
+            if len(true_parity_diff)
+            else None,
+            "note": (
+                "recomputed_served vs nfl_ats.sharp_book_movement_features called verbatim "
+                "on the same frozen quotes/kickoff cache"
+            ),
         },
         "fit_population_provenance": {k: str(v) for k, v in provenance.items()},
         "outer_seasons": OUTER_SEASONS,
-        "n_fit_population": int(len(population)),
+        "n_fit_population": len(population),
         "arms": arms,
     }
-    (out_dir / "metadata.json").write_text(json.dumps(payload, indent=2, default=str), encoding="utf-8")
+    (out_dir / "metadata.json").write_text(
+        json.dumps(payload, indent=2, default=str), encoding="utf-8"
+    )
     print(json.dumps({"out_dir": str(out_dir)}, indent=2))
     print(
         json.dumps(
