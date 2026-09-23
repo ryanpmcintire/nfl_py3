@@ -166064,6 +166064,34 @@
       "source": "scripts/pooled_signal_second_fit.py; tests/scratch/pooled_signal_second_fit.json",
       "standard_error": 1.9883
     },
+    "pooled_signal_sixth_fit_vs_four_term": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block interval [-0.336,+0.284] crosses zero; only 9 decisive games (4-5); no positive control",
+      "closing_ground": null,
+      "description": "MOD-20 unit 6: reddit_home_comment_ratio_elevated as a fifth fitted term on the served four-term base, LOSO 2020-2025, 1,503 games; -0.067 pts; OOS Brier 0.24544 vs 0.24539, logloss 0.68405 vs 0.68395; IS-OOS gap 0.07pt vs base 0.20pt",
+      "effect": -0.0665335994677312,
+      "effect_units": "accuracy_points",
+      "family": "pooled_signal_first_model_v1",
+      "interval": [
+        -0.33579583613163194,
+        0.28374370751144407
+      ],
+      "league": "nfl",
+      "notes": "Family chosen from prior evidence before fitting; 180 games without trailing coverage filled to 0",
+      "plain_summary": "Adding how busy a home team's fan forum was that week to the pick model changed almost nothing.",
+      "probability_positive": 0.2665,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_signal_sixth_fit/20260923T204014Z",
+      "standard_error": null
+    },
     "pooled_signal_third_fit_vs_four_term": {
       "category": "modeling",
       "classification": "unresolved_below_power",
