@@ -20,6 +20,8 @@ modified lane when the prompt just says to continue.
 
 ## Active
 
+- [opener-population-backfill](opener-population-backfill.md) - 2026-09-23: 2011-2025 fit population built (3,734 games, +2,231); discrete rebuild of 2011-2019 in progress.
+- [injury-scenario-producer](injury-scenario-producer.md) - PER-10, 2026-09-23: kernel deleted in the repo cut; fitting the injury-value-to-margin mapping out of season.
 - [week3-research-recorders](week3-research-recorders.md) - nine challenger records remain missing; all 16 served Week 3 paper decisions are complete.
 - [news-trigger-refresh](news-trigger-refresh.md) - MKT-08 dispatch implemented and verified; prospective comparison awaits new events.
 - [gh-window-incident](gh-window-incident.md) - prior runaway CLI windows remain a separate investigation; no gh commands used for this deployment.
