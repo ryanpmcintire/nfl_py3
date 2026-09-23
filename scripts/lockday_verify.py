@@ -49,6 +49,9 @@ from nfl_ats.specialist_absence_fade_refresh_overlay import (  # noqa: E402
 from nfl_ats.tiebreaker_shade_prospective import (  # noqa: E402
     load_decisions as load_tiebreaker_shade,
 )
+from nfl_ats.total_conditioned_lattice_challenger import (  # noqa: E402
+    load_decisions as load_total_conditioned_lattice,
+)
 
 
 def _parquet_ledger(relative: str) -> Any:
@@ -189,6 +192,13 @@ DEDICATED_LEDGERS: dict[str, dict[str, Any]] = {
             "is not reliably captured until a late-week refresh pass; zero at the Tuesday "
             "lock is expected"
         ),
+    },
+    "total_conditioned_key_number_lattice_v1": {
+        "ledger": "prospective/total_conditioned_lattice_decisions.parquet",
+        "loader": load_total_conditioned_lattice,
+        "written_by": "publish-predictions --record-decisions",
+        "recording_path": "publish/dedicated",
+        "wired": True,
     },
 }
 

@@ -19,68 +19,22 @@ from nfl_ats.mass_preserving_lattice import (
     tilted_atoms,
 )
 from nfl_ats.modeling import regular_season_rows
+from nfl_ats.total_conditioned_lattice_challenger import (
+    ATOM_TOLERANCE as _ATOM_TOLERANCE,
+)
+from nfl_ats.total_conditioned_lattice_challenger import (
+    CHALLENGER_POLICY,
+    TOTAL_BAND_EDGES,
+    TOTAL_BAND_LABELS,
+    total_band,
+    total_conditioned_read,
+)
 
 REPO = Path(__file__).resolve().parents[1]
 DATA_ROOT = REPO / "data"
 ARTIFACTS_ROOT = REPO / "artifacts"
 FEATURE_TABLE = DATA_ROOT / "processed" / "game_features_weak_stack.parquet"
 OUT_ROOT = ARTIFACTS_ROOT / "total_conditioned_lattice"
-
-TOTAL_BAND_EDGES = (42.5, 47.5)
-TOTAL_BAND_LABELS = ("low", "mid", "high")
-_ATOM_TOLERANCE = 1e-9
-CHALLENGER_POLICY = "discrete_conditional_non_push_total_band_v1"
-
-
-def total_band(value: float) -> str:
-    lo, hi = TOTAL_BAND_EDGES
-    if value < lo:
-        return TOTAL_BAND_LABELS[0]
-    if value <= hi:
-        return TOTAL_BAND_LABELS[1]
-    return TOTAL_BAND_LABELS[2]
-
-
-def total_conditioned_read(
-    pool_line: np.ndarray,
-    pool_margin: np.ndarray,
-    pool_total_band: np.ndarray,
-    target_band: str,
-    line: float,
-    point: float,
-    half_width: float = BAND_HALF_WIDTH,
-    min_band_games: int = MIN_BAND_GAMES,
-) -> tuple[MassPreservingRead, bool]:
-    mask_total = pool_total_band == target_band
-    band = half_width
-    while True:
-        selected = (np.abs(pool_line - line) <= band) & mask_total
-        if int(selected.sum()) >= min_band_games or band >= MAX_BAND:
-            break
-        band = min(band + BAND_STEP, MAX_BAND)
-    fallback = int(selected.sum()) < min_band_games
-    if fallback:
-        band = half_width
-        while True:
-            selected = np.abs(pool_line - line) <= band
-            if int(selected.sum()) >= min_band_games or band >= MAX_BAND:
-                break
-            band = min(band + BAND_STEP, MAX_BAND)
-    margins = pool_margin[selected]
-    values, counts = np.unique(margins, return_counts=True)
-    mass, theta = tilted_atoms(values, counts.astype(float), line, point)
-    is_push = np.abs(values - line) < _ATOM_TOLERANCE
-    read = MassPreservingRead(
-        cover=float(mass[values > line + _ATOM_TOLERANCE].sum()),
-        push=float(mass[is_push].sum()),
-        loss=float(mass[values < line - _ATOM_TOLERANCE].sum()),
-        theta=theta,
-        band=band,
-        band_games=int(selected.sum()),
-        atoms=int(values.size),
-        key_mass_3=float(mass[np.abs(np.abs(values) - 3.0) < _ATOM_TOLERANCE].sum()),
-    )
-    return read, fallback
 
 
 def three_way_outcome(result: float, line: float) -> int:

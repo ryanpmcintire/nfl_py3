@@ -146,6 +146,9 @@ from nfl_ats.third_down_reversion_fade_overlay import (
     record_third_down_reversion_fade_challenger_decisions,
 )
 from nfl_ats.tiebreaker_shade_prospective import record_tiebreaker_shade_decisions
+from nfl_ats.total_conditioned_lattice_challenger import (
+    record_total_conditioned_lattice_decisions,
+)
 from nfl_ats.turnover_luck_rebound_tilt_overlay import (
     record_turnover_luck_rebound_tilt_challenger_decisions,
 )
@@ -210,6 +213,7 @@ PUBLISH_CHALLENGER_RESULT_KEYS: dict[str, str] = {
     ),
     "tv_attention_fade_overlay": "tv_attention_fade_overlay_challenger_ledger",
     "rookie_prior_surplus_tilt_overlay": "rookie_prior_surplus_tilt_overlay_challenger_ledger",
+    "total_conditioned_key_number_lattice_v1": "total_conditioned_lattice_challenger_ledger",
 }
 
 REFRESH_CHALLENGER_RESULT_KEYS: dict[str, str] = {
@@ -547,6 +551,20 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
             )
         except Exception as error:
             result["low_total_div_home_dog_challenger_ledger"] = {
+                "recorded": 0,
+                "error": str(error),
+            }
+        try:
+            result["total_conditioned_lattice_challenger_ledger"] = (
+                record_total_conditioned_lattice_decisions(
+                    _artifacts_root(),
+                    _data_root(),
+                    forecast_artifact=request.record_from_forecast,
+                    replace_week=request.replace_week,
+                )
+            )
+        except Exception as error:
+            result["total_conditioned_lattice_challenger_ledger"] = {
                 "recorded": 0,
                 "error": str(error),
             }
@@ -1143,6 +1161,12 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
             "skipped": True,
             "reason": "pass --record-decisions to append the low-total divisional "
             "home-dog challenger's picks to the prospective challenger ledger",
+        }
+        result["total_conditioned_lattice_challenger_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "pass --record-decisions to append the total-conditioned key-number "
+            "lattice challenger's picks to the prospective challenger ledger",
         }
         result["rain_on_grass_dog_challenger_ledger"] = {
             "recorded": 0,

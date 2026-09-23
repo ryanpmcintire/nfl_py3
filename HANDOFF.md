@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-23T22:09:26.063823+00:00`
+Refreshed at: `2026-09-23T22:11:29.637797+00:00`
 
 ## Start here
 
@@ -21,21 +21,18 @@ Refreshed at: `2026-09-23T22:09:26.063823+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `3bd120428b28` — Regrade eight legacy Tuesday families on line movement
-- Pending change set: 13 paths
+- Baseline commit: `ebc1f7f82f2f` — Roof-state line-move lead does not replicate on 2011-2019
+- Pending change set: 10 paths
   - ` M artifacts/prospective/challengers.json`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/line-move-regrade-legacy.md`
-  - ` M docs/lanes/prospective-leads-2026-09-23.md`
+  - `M  docs/lanes/prospective-leads-2026-09-23.md`
   - ` M docs/model.html`
-  - `M  registry/weak_signals.json`
-  - ` M scripts/lockday_verify.py`
-  - `A  scripts/roof_state_line_move_replication.py`
-  - ` M scripts/total_conditioned_lattice.py`
-  - ` M src/nfl_ats/cli_commands/publishing.py`
-  - `?? src/nfl_ats/total_conditioned_lattice_challenger.py`
+  - `M  scripts/lockday_verify.py`
+  - `M  scripts/total_conditioned_lattice.py`
+  - `M  src/nfl_ats/cli_commands/publishing.py`
+  - `A  src/nfl_ats/total_conditioned_lattice_challenger.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
