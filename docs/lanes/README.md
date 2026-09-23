@@ -20,7 +20,7 @@ modified lane when the prompt just says to continue.
 
 ## Active
 
-- [opener-error-transfer](opener-error-transfer.md) - XLG-09, started 2026-09-23: college-trained opener-error model graded on NFL openers.
+- [opener-error-transfer](opener-error-transfer.md) - XLG-09 unit 1 done: college-trained term adds nothing measurable (-0.40 pts [-1.50,+0.26], P+ 0.33), unresolved.
 - [players-on-field-rating](players-on-field-rating.md) - MOD-22, started 2026-09-23: team strength as the sum of the players expected on the field.
 - [displayed-confidence-served-probability](displayed-confidence-served-probability.md) - 2026-09-23: replace the in-sample 12-cell displayed cover chance with the served fitted probability if it calibrates as well out of season.
 - [week3-research-recorders](week3-research-recorders.md) - nine challenger records remain missing; all 16 served Week 3 paper decisions are complete.
@@ -34,13 +34,6 @@ modified lane when the prompt just says to continue.
 - [pool-rank-card](pool-rank-card.md) — POOL-01, unit 1 measured 2026-09-16 (unresolved); unit 2 only with a fitted field
 - [every-metric-every-experiment](every-metric-every-experiment.md) — ENG-46 implementation done 2026-09-16; backfilled-look accounting remains open (runner emits four metrics, backfill recorded, margin cells corrected same day, pool + findings read the margin family).
 - [lane-replay-dream-rsi](lane-replay-dream-rsi.md) — ENG-45, units 1-2 done 2026-09-16 (both unresolved); unit 3 not recommended
-- [four-term-probability](four-term-probability.md) — MKT-18, owner directive: one shared flag weight (not nine) plus the model logit and the market move, LOSO 2020-2025; headline finding is a calibration ordering (M5's accuracy rises with its own confidence, M0's falls), M5 leans ahead of M1 on every metric (unresolved), the model term `a` is not distinguishable from zero in any fold while the flag weight and move both clear zero in nearly every fold — keeping the model term recommended anyway per rule (a); Best Pick tied exactly against the currently-served ranker
-- [joint-probability-model](joint-probability-model.md) — MKT-17, owner directive: base logit + all nine composition flags + market move fit as one joint logistic model, LOSO 2020-2025; raw model overconfident (fitted slope 0.135-0.424 on its own logit), flags jointly fit beat the card on log loss/Brier (intervals entirely positive) but the served flip chain (M1) reads an even cleaner win over the card, so the joint model does not beat what is served; recalibration alone is the supported change
-- [market-updated-model](market-updated-model.md) — owner directive 2026-09-14: the line move as a fitted term in the model's probability, out of season +2.00 vs the card [-2.10, +6.05] P+ 0.84, a dead heat with the hard rule's own out-of-season +2.13; flips concentrate in the near-50/50 band as the owner expected; next: fold the composition flags in as terms
-- [served-flip-rules-hold](served-flip-rules-hold.md) — 2026-09-14: inventory of the ten served rules that flip a side outright; line-move, handle and rookie-crew off, interim-HC and precip held (n 39 and 29-50), seven larger-sample flips still served pending the combined model
-- [handle-follow-override-defect](handle-follow-override-defect.md) - the fake 50.0% is fixed for future locks only (published weeks untouched); the leader-median override-distance measurement was redone from scratch, see leader-median-model-confidence
-- [leader-median-model-confidence](leader-median-model-confidence.md) — from-scratch redo, owner-ordered 2026-09-14: identical 61-49 confirmed and explained (a mathematical identity, not a defect); nested leave-one-season-out search finds the served rule's honest out-of-sample effect is +2.13 pts, and a confidence gate makes it worse, not better — no gate recommended
-- [best-pick-served-score-ranker](best-pick-served-score-ranker.md) - 2026-09-14: the star sits on the card's own most confident eligible pick only because that ranking has no fitted parameter; the +5.94 was 11-5 on 16 decisive weeks and is recorded as no evidence; the model's per-game confidence is uncalibrated (see joint-probability-model), so no ranker has a basis yet
 - [conditional-signal-atlas](conditional-signal-atlas.md) - MOD-19: owner rejected the deployed Findings page as not useful and below expectations; original mockup is saved, feature remains unresolved, further implementation awaits a grounded direction.
 - [lead65-protection-window-split](lead65-protection-window-split.md) — owner question 2026-09-13: measured: the tilt's edge is IN weeks 1-4 (P+ 0.977), weeks 5-18 a probable drag (P+ 0.099); next a week-gated paired challenger
 - [lead59-archive-battery](lead59-archive-battery.md) — LEAD-59 src fix and battery re-run done, 23 cells recorded; open: type-trait binning with the archive on
@@ -49,6 +42,7 @@ modified lane when the prompt just says to continue.
 
 ## Done
 
+- Superseded 2026-09-23 when the four-term fitted probability became the served side selector (2026-09-20); their open questions were about flip rules that no longer serve: [four-term-probability](done/four-term-probability.md), [joint-probability-model](done/joint-probability-model.md), [market-updated-model](done/market-updated-model.md), [served-flip-rules-hold](done/served-flip-rules-hold.md), [leader-median-model-confidence](done/leader-median-model-confidence.md), [handle-follow-override-defect](done/handle-follow-override-defect.md), [best-pick-served-score-ranker](done/best-pick-served-score-ranker.md).
 - [spread-explorer-discrete](done/spread-explorer-discrete.md) - 2026-09-23: spread explorer serves the discrete margin read.
 - [small-maintenance-2026-09-23.md](done/small-maintenance-2026-09-23.md) — roadmap scheduler guidance now matches the conditional workflow; lane-index and root README links verified.
 - [week3-lines-2026-09-22](done/week3-lines-2026-09-22.md) - genuine pool lines, all 16 Week 3 picks, paper decisions, and generated dashboard completed.

@@ -161145,6 +161145,146 @@
       "source": "artifacts/opener_evaluation/20260819T174244Z/per_game.parquet joined to data/processed/game_features_weak_stack.parquet on game_id (opener error mining battery, mined 2026-08-20; script in agent scratchpad, results in docs/opener_error_analysis.md)",
       "standard_error": 2.398083
     },
+    "opener_error_transfer_added_term_vs_base": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero (-1.50, 0.26), probability_positive=0.326; only 40 of 1,503 games flip pick vs base (17-23 for the plus model, 23-17 for base on those). Candidate Brier 0.24579/log-loss 0.68478 vs base 0.24539/0.68395 -- essentially flat, term does not sharpen calibration either. Reliability tables for base and plus are both well aligned bin-by-bin. No zero-crossing closure per AGENTS.md; this is the decision-relevant cell for whether the term joins the served probability, and it does not yet clear either direction.",
+      "closing_ground": null,
+      "description": "CFB-trained cover-probability logit added as a fifth fitted term inside the served four-term probability, refit LOSO per NFL season, vs the four-term base, paired accuracy points, Brier, log loss, reliability table.",
+      "effect": -0.39920159680638667,
+      "effect_units": "accuracy_points",
+      "family": "opener_error_transfer_v1",
+      "interval": [
+        -1.5013054830287142,
+        0.2626438413015239
+      ],
+      "league": "nfl",
+      "notes": "Family opener_error_transfer_v1, look_count=13 in this run (cfb_fit_ridge_linear_move, cfb_fit_logistic_cover, split_half_reliability_cfb_season_parity, target_a_cfb_vs_zero_mae, loso_base_four_term, loso_base_plus_cfb_transfer, loso_nfl_only_twin, cfb_direct_vs_base_4term, calibration_table_plus_oos_p, base_plus_cfb_transfer_vs_base_4term, nfl_only_twin_vs_base_4term, nfl_only_twin_vs_cfb_direct, calibration_table_base_oos_p). These 5 cells share one run and one NFL evaluation population (1,503 games, 2020-2025); correlated, not independent votes.",
+      "plain_summary": "Adding a college-football opener-mistake signal as a fifth ingredient to the real four-part model neither clearly helps nor clearly hurts yet -- the sample is too small to tell, so it stays off the card.",
+      "probability_positive": 0.325875,
+      "recorded_at": "2026-09-23",
+      "reliability": 0.4752335640250196,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/opener_error_transfer/20260923T192851Z/summary.json",
+      "standard_error": null
+    },
+    "opener_error_transfer_cfb_direct_vs_base": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Interval entirely below zero (upper -3.76 accuracy points): using the CFB-trained predictor standalone in place of the served four-term probability is resolved worse. On the 750 games where the two disagreed, CFB-direct went 323-427 and base went 427-323.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "CFB-trained cover-probability model (same 5 features) used directly as the pick source (not added as a term) vs the served four-term base probability, paired accuracy points, LOSO base.",
+      "effect": -6.91949434464405,
+      "effect_units": "accuracy_points",
+      "family": "opener_error_transfer_v1",
+      "interval": [
+        -10.982264665757157,
+        -3.764894775137716
+      ],
+      "league": "nfl",
+      "notes": "Family opener_error_transfer_v1, look_count=13 in this run (cfb_fit_ridge_linear_move, cfb_fit_logistic_cover, split_half_reliability_cfb_season_parity, target_a_cfb_vs_zero_mae, loso_base_four_term, loso_base_plus_cfb_transfer, loso_nfl_only_twin, cfb_direct_vs_base_4term, calibration_table_plus_oos_p, base_plus_cfb_transfer_vs_base_4term, nfl_only_twin_vs_base_4term, nfl_only_twin_vs_cfb_direct, calibration_table_base_oos_p). These 5 cells share one run and one NFL evaluation population (1,503 games, 2020-2025); correlated, not independent votes.",
+      "plain_summary": "Picking games purely off the college-football-trained model instead of the real four-part model loses meaningfully more picks -- it is not a stand-in for the served model.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-23",
+      "reliability": 0.4752335640250196,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/opener_error_transfer/20260923T192851Z/summary.json",
+      "standard_error": null
+    },
+    "opener_error_transfer_cfb_move_vs_zero": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Season-blocked bootstrap (6 NFL seasons, 4000 draws) interval entirely below zero (upper -0.0077): the CFB-trained move predictor is reliably worse than guessing zero move, not better. Resolved wrong sign for the hypothesis that the shared opener-setting mechanism yields a usable move-size prediction.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "CFB-trained ridge model (5 predeclared point-in-time features, Bovada 2021-2024) predicting NFL close-minus-open line move vs a naive zero-move guess, scored on the 1,503-game NFL opener population 2020-2025.",
+      "effect": -0.01809356317241273,
+      "effect_units": "mae_improvement",
+      "family": "opener_error_transfer_v1",
+      "interval": [
+        -0.03266525044866175,
+        -0.0076685985487706665
+      ],
+      "league": "nfl",
+      "notes": "Family opener_error_transfer_v1, look_count=13 in this run (cfb_fit_ridge_linear_move, cfb_fit_logistic_cover, split_half_reliability_cfb_season_parity, target_a_cfb_vs_zero_mae, loso_base_four_term, loso_base_plus_cfb_transfer, loso_nfl_only_twin, cfb_direct_vs_base_4term, calibration_table_plus_oos_p, base_plus_cfb_transfer_vs_base_4term, nfl_only_twin_vs_base_4term, nfl_only_twin_vs_cfb_direct, calibration_table_base_oos_p). These 5 cells share one run and one NFL evaluation population (1,503 games, 2020-2025); correlated, not independent votes.",
+      "plain_summary": "A model trained only on college-football opening-line mistakes does not predict how far an NFL line will move by kickoff -- guessing 'no move' beats it.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-23",
+      "reliability": 0.4752335640250196,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/opener_error_transfer/20260923T192851Z/summary.json",
+      "standard_error": null
+    },
+    "opener_error_transfer_nflonly_twin_vs_base": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Interval entirely below zero (upper -4.40 points): even fit on NFL data only, these 5 features alone underperform the four-term base by a resolved margin -- the shortfall seen training on CFB is feature-set poverty, not only a transfer loss.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "NFL-only-trained twin of the identical 5 features (standalone, not added), LOSO per NFL season, vs the four-term base, paired accuracy points -- isolates feature value from transfer value.",
+      "effect": -7.385229540918164,
+      "effect_units": "accuracy_points",
+      "family": "opener_error_transfer_v1",
+      "interval": [
+        -11.036339165545089,
+        -4.4008124576845
+      ],
+      "league": "nfl",
+      "notes": "Family opener_error_transfer_v1, look_count=13 in this run (cfb_fit_ridge_linear_move, cfb_fit_logistic_cover, split_half_reliability_cfb_season_parity, target_a_cfb_vs_zero_mae, loso_base_four_term, loso_base_plus_cfb_transfer, loso_nfl_only_twin, cfb_direct_vs_base_4term, calibration_table_plus_oos_p, base_plus_cfb_transfer_vs_base_4term, nfl_only_twin_vs_base_4term, nfl_only_twin_vs_cfb_direct, calibration_table_base_oos_p). These 5 cells share one run and one NFL evaluation population (1,503 games, 2020-2025); correlated, not independent votes.",
+      "plain_summary": "Even when the same five ingredients are trained fresh on NFL data only, on their own they still pick worse than the real four-part model.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/opener_error_transfer/20260923T192851Z/summary.json",
+      "standard_error": null
+    },
+    "opener_error_transfer_nflonly_vs_cfbdirect": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero (-6.12, 4.76), probability_positive=0.459, on 859 games where the two standalone models disagreed (426-433 vs 433-426). Cannot yet distinguish CFB-transfer-specific loss from generic feature-set loss.",
+      "closing_ground": null,
+      "description": "NFL-only-trained twin vs CFB-trained predictor, both standalone with the identical 5 features, paired accuracy points -- isolates whether CFB transfer specifically costs accuracy relative to fitting the same features on NFL data.",
+      "effect": -0.4657351962741141,
+      "effect_units": "accuracy_points",
+      "family": "opener_error_transfer_v1",
+      "interval": [
+        -6.118421052631584,
+        4.757205837882585
+      ],
+      "league": "nfl",
+      "notes": "Family opener_error_transfer_v1, look_count=13 in this run (cfb_fit_ridge_linear_move, cfb_fit_logistic_cover, split_half_reliability_cfb_season_parity, target_a_cfb_vs_zero_mae, loso_base_four_term, loso_base_plus_cfb_transfer, loso_nfl_only_twin, cfb_direct_vs_base_4term, calibration_table_plus_oos_p, base_plus_cfb_transfer_vs_base_4term, nfl_only_twin_vs_base_4term, nfl_only_twin_vs_cfb_direct, calibration_table_base_oos_p). These 5 cells share one run and one NFL evaluation population (1,503 games, 2020-2025); correlated, not independent votes.",
+      "plain_summary": "Whether the five ingredients work better learned from college football or learned fresh from the NFL is still unclear at this sample size.",
+      "probability_positive": 0.45875,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/opener_error_transfer/20260923T192851Z/summary.json",
+      "standard_error": null
+    },
     "opener_softness_fade_on_production": {
       "category": "market",
       "classification": "unresolved_below_power",

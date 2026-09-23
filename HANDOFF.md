@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-23T19:31:15.577796+00:00`
+Refreshed at: `2026-09-23T19:34:18.246000+00:00`
 
 ## Start here
 
@@ -21,27 +21,23 @@ Refreshed at: `2026-09-23T19:31:15.577796+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `eeba6478c585` — Measure the served card against line-following on line movement
-- Pending change set: 19 paths
-  - `M  ROADMAP.md`
+- Baseline commit: `52aa98b125c7` — Remove the in-sample displayed-confidence lookup; record MOD-22 unit 1; queue XLG-09
+- Pending change set: 15 paths
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
   - `M  docs/lanes/README.md`
-  - `A  docs/lanes/displayed-confidence-served-probability.md`
-  - `R  docs/lanes/spread-explorer-discrete.md -> docs/lanes/done/spread-explorer-discrete.md`
-  - `A  docs/lanes/players-on-field-rating.md`
-  - `M  docs/lanes/pool-rank-card.md`
+  - `R  docs/lanes/best-pick-served-score-ranker.md -> docs/lanes/done/best-pick-served-score-ranker.md`
+  - `R  docs/lanes/four-term-probability.md -> docs/lanes/done/four-term-probability.md`
+  - `R  docs/lanes/handle-follow-override-defect.md -> docs/lanes/done/handle-follow-override-defect.md`
+  - `R  docs/lanes/joint-probability-model.md -> docs/lanes/done/joint-probability-model.md`
+  - `R  docs/lanes/leader-median-model-confidence.md -> docs/lanes/done/leader-median-model-confidence.md`
+  - `R  docs/lanes/market-updated-model.md -> docs/lanes/done/market-updated-model.md`
+  - `R  docs/lanes/served-flip-rules-hold.md -> docs/lanes/done/served-flip-rules-hold.md`
+  - `A  docs/lanes/opener-error-transfer.md`
   - ` M docs/model.html`
   - `M  registry/weak_signals.json`
-  - `A  scripts/players_on_field_rating_eval.py`
-  - `M  src/nfl_ats/board_content.py`
-  - `M  src/nfl_ats/card_view.py`
-  - `M  src/nfl_ats/displayed_confidence.py`
-  - `M  src/nfl_ats/public_board.py`
-  - `M  src/nfl_ats/publishing.py`
-  - `?? docs/lanes/opener-error-transfer.md`
-  - `?? scripts/opener_error_transfer_eval.py`
+  - `A  scripts/opener_error_transfer_eval.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
