@@ -18,6 +18,7 @@ from line_move_yardstick_paired_eval import cell_stats  # noqa: E402
 from roof_state_screen import build_prediction_table as roof_state_prediction_table  # noqa: E402
 
 from nfl_ats.bye_edge_fade_overlay import bye_edge_flag_by_game  # noqa: E402
+from nfl_ats.coach_fade_overlay import year_one_by_game  # noqa: E402
 from nfl_ats.data import DataContractError  # noqa: E402
 from nfl_ats.division_revenge_tilt_overlay import division_revenge_side_by_game  # noqa: E402
 from nfl_ats.forecast_cold_visitor_tilt_overlay import (  # noqa: E402
@@ -318,7 +319,7 @@ def add_low_total_div_home_dog_term(
 
 def add_division_revenge_term(population: pd.DataFrame, schedule: pd.DataFrame) -> pd.DataFrame:
     flags = division_revenge_side_by_game(schedule)
-    flags = flags.drop_duplicates(subset="game_id")
+    flags = flags.drop_duplicates(subset="game_id")[["game_id", "revenge_home", "revenge_away"]]
     out = population.merge(flags, on="game_id", how="left")
     out["revenge_home"] = out["revenge_home"].fillna(False)
     out["revenge_away"] = out["revenge_away"].fillna(False)

@@ -1,299 +1,225 @@
 # Line-move regrade of legacy (pre-line-move-yardstick) registry families
 
-## State (2026-09-23, session 3 - BATCH 2 IN PROGRESS, hit 50-tool-call cap mid-edit)
-Batch 2 selection is DONE and predeclared (8 terms, same rule as batch 1,
-continued down the same ranked list). Code changes to
-`scripts/line_move_regrade_legacy.py` are MOSTLY done but **NOT YET
-ruff-clean and NOT YET RUN**. Do not re-derive the selection; do not
-re-read the whole registry; resume exactly at "Next" below.
-
-### The 8 batch-2 terms (selected, ratios from the SAME prior accuracy-points
-ranking rule as batch 1's RATIO_TABLE; full derivation and every exclusion
-reason in `Tried` below)
-1. `interim_playcaller_first_game_back_on_production` 0.979 offfield/coach —
-   `interim_playcaller_first_game_back_overlay.games_after_playcaller_change_flag_by_game`
-   + `load_counted_playcaller_change_events(REPO/"data")`
-2. `xlg06_rookie_prior_surplus_tilt_on_production` 0.955 onfield/roster —
-   `rookie_prior_surplus_tilt_overlay.rookie_prior_surplus_flags(REPO, games)`
-   (loads `scripts/xlg06_rookie_priors_screen.py` as a screen module, same
-   pattern as roof_state; loops per season/week — WATCH RUNTIME, this is the
-   heaviest of the 8, may need backgrounding)
-3. `forecast_cold_visitor_tilt_on_production` 0.847 environment/weather —
-   `forecast_cold_visitor_tilt_overlay.forecast_cold_visitor_flag_by_game`
-   (reuses the same `FORECAST_ARCHIVE` parquet as precip; also needs
-   `schedule["temp"]` for team climate history — NOT explicitly confirmed
-   present in `default_schedule()` this session, check on first run)
-4. `ats_streak_regress_on_production` 0.835 schedule —
-   `schedule_flag_features.derive_ats_streak_regress_features`
-5. `post_bye_new_playcaller_back_on_production` 0.835 offfield/coach —
-   `post_bye_new_playcaller_back_overlay.post_bye_new_oc_flag_by_game` +
-   `load_coordinator_history(REPO/"data")`
-6. `home_thursday_on_production` 0.719 schedule —
-   `schedule_flag_features.derive_home_thursday_features`
-7. `low_total_div_home_dog_on_production` 0.712 schedule — built inline in
-   the new `add_low_total_div_home_dog_term` from schedule's own
-   `div_game`/`total_line`/`spread_line`/`game_type` (mirrors
-   `low_total_div_home_dog_challenger.py`'s eligibility condition; term is
-   one-directional -1.0 when eligible, matching that challenger always
-   fading toward away, never toward home)
-8. `division_revenge_tilt_on_production` 0.573 onfield —
-   `division_revenge_tilt_overlay.division_revenge_side_by_game`
-
-Sign convention for the 4 home/away-signed terms (playcaller_change,
-post_bye_new_oc, division_revenge — all +1 home_flagged/-1 away_flagged/0
-else) was READ directly off each overlay's own merge logic except
-playcaller_change and post_bye_new_oc, where the +1/-1 assignment was
-INFERRED from the `BackFlip`/`backed_team` dataclass naming pattern (not
-read from the `apply_*_overlay` flip-mask lines themselves) — if either
-term's `variant_fold_coefficients` come out with an implausible sign,
-re-derive from `apply_interim_playcaller_first_game_back_overlay` /
-`apply_post_bye_new_playcaller_back_overlay`'s flip_mask logic before
-trusting the number.
-
 ## Goal
 Re-grade Tuesday-knowable legacy registry families on the line-move yardstick
-(finer than accuracy per docs/lanes/positive-control-power.md), then, for the
-one standout (roof_state_predicted_open), run an out-of-sample replication on
-2011-2019 to check whether the 2020-2025 reading holds up.
+(finer than accuracy per docs/lanes/positive-control-power.md).
 
-## State (2026-09-23, session 2 - BOTH UNITS COMPLETE)
-**Unit 1** (8 legacy terms, 2020-2025, n=1503 each): ran successfully.
-Results: `artifacts/line_move_regrade_legacy/20260923T220145Z/results.json`.
-All 8 terms' `error` field is null (no failed builders). Summary (line-move
-mean pts, season-block CI, season P+ / week P+, accuracy decisive record):
-- tank_zone_fade_tilt: -0.0143, [-0.0310,+0.0024], P+ .042/.256, 56-44
-- bye_edge_fade: -0.0086, [-0.0362,+0.0142], P+ .271/.267, 33-33
-- **roof_state_predicted_open: +0.0150, [+0.0029,+0.0312], P+ .9975/.827,
-  17-26** (only term with a wholly-positive season-block interval; week-block
-  crosses zero; accuracy companion decisive record is net negative)
-- precip_high_total_tilt: -0.0103, [-0.0306,+0.0069], P+ .151/.143, 12-15
-- week1_dog: +0.0040, [-0.0046,+0.0126], P+ .796/.775, 9-11
-- interim_hc_first_game_tilt: +0.0017, [-0.0050,+0.0114], P+ .603/.647, 4-5
-- division_dog: -0.0093, [-0.0560,+0.0326], P+ .354/.306, 48-49
-- deadline_integration_drag: -0.0073, [-0.0186,0.0000], P+ .000/.020, 5-7
+## State (2026-09-23, session 4 - hit 50-tool-call cap mid-edit, batch 2 fix
+DONE but unverified, batch 3 selection DONE but code NOT written)
 
-**Unit 2** (roof_state_predicted_open OOS replication, 2011-2019, SBR proxy
-open/close lines): ran successfully. New script
-`scripts/roof_state_line_move_replication.py` (ruff-clean, no --fix).
-Results: `artifacts/roof_state_line_move_replication/20260923T220802Z/results.json`.
+**division_revenge_tilt bug FOUND AND FIXED (root cause, not yet re-run).**
+`division_revenge_side_by_game(schedule)` returns its own `season` column.
+`add_division_revenge_term` merged the WHOLE flags frame (incl. `season`) onto
+`population` (which already has `season`), so pandas silently created
+`season_x`/`season_y` instead of erroring at merge time; the `KeyError:
+'season'` fired later inside `loso()`/`variant_report` when they referenced
+`frame["season"]`. Fix (APPLIED, on disk now) in
+`scripts/line_move_regrade_legacy.py`'s `add_division_revenge_term`: changed
+`flags = flags.drop_duplicates(subset="game_id")` to
+`flags = flags.drop_duplicates(subset="game_id")[["game_id", "revenge_home", "revenge_away"]]`
+— select only needed columns before merge, same pattern every other builder
+in the file already uses. **Not yet run to confirm** — no mechanism exists
+yet to grade it alone (see Next step 5).
 
-Key facts established before fitting:
-- 2011-2019 is exactly the SBR-proxy-warm-up-scorable window (500-game floor;
-  2009-2010 score zero weeks) — confirmed in docs/proxy_opener_replication.md,
-  reused here rather than re-derived.
-- `artifacts/extended_fit_population/20260923T205910Z/population.parquet`'s
-  2011-2019 rows already carry `opener_source=sbr_proxy_discrete`: their
-  `model_logit`/`home_covered` are already built and settled against the SBR
-  proxy open, so this replication's line-move grade (built from
-  `data/processed/sbr_odds.parquet` `close_home_spread - open_home_spread`)
-  and its accuracy companion are scored against the same instrument.
-- **Forecast-archive pre-2020 check (measured)**: the Tuesday-noon-cutoff
-  weather forecast archive does NOT exist pre-2020 (docs/forecast_archive_build.md:
-  the `tuesday_noon` cutoff's MOS model archive start measured at 2020-07-12,
-  confirmed absent 2015-09-01 and 2009-09-01). The `pool_decision` cutoff
-  archive (`data/raw/forecast_archive/pool_decision_2009_2025/forecasts.parquet`,
-  cutoff = min(kickoff, Sunday 16:00 ET)) DOES cover 2011-2019 (fetch_status
-  'ok' for ~250/season) and is what `roof_state_screen.build_prediction_table()`
-  already used for every season including the original 2020-2025 result, so
-  this replication reuses that same function unchanged, per the fallback
-  instruction. **Caveat that applies to BOTH the original result and this
-  replication equally, not newly introduced**: pool_decision is a near-kickoff
-  cutoff, not Tuesday-noon, so `predicted_open` is not demonstrated
-  Tuesday-actionable in either measurement.
-
-**Replication result**: paired_games=2231, roof_state_term_nonzero_rate=1.21%
-(vs original 1.86%). Line-move toward pick: mean **-0.00224** pts, season-block
-95% **[-0.0185, +0.0139]**, season P+ **0.386**; week-block 95%
-[-0.0300, +0.0250], week P+ 0.4285. **Sign flips negative and both intervals
-cross zero** — does not replicate the original's positive season-block
-reading. Accuracy companion: mean -0.0009, decisive record **30-32** (near
-coin flip, net negative), vs original's 17-26 (also net negative).
-
-**Multiplicity-adjusted reading of the ORIGINAL 8-look result** (computed in
-the same script, `multiplicity_adjusted_original_result` block): the original
-season-block P+ 0.9975 implies a two-sided p=0.005; Bonferroni-adjusted across
-8 looks = **0.040**, Sidak-adjusted = **0.0393** — both barely under 0.05, i.e.
-marginal even before the failed replication. The original's OWN week-block
-companion (P+ 0.827, implied p=0.346) is fully washed out by multiplicity:
-Bonferroni = 1.0, Sidak = 0.967.
-
-**Implication (inferred, stated plainly)**: the original roof_state
-season-block reading was the best of 8 predeclared looks, survives Bonferroni/
-Sidak only marginally (~0.04), fails entirely on its own week-block companion
-even before adjustment, and does not replicate out-of-sample on an independent
-9-season window with an independently-sourced line archive (sign flips,
-P+ drops from .9975 to .386, accuracy record stays net negative). Per AGENTS.md
-neither admissible closing ground applies to either result (neither interval
-sits wholly on the wrong side of zero, no positive control was run) — the
-correct classification for BOTH remains `unresolved_below_power`, not
-`wrong_sign_resolved` and not a promotion. This is a below-power negative
-signal, not evidence to serve or to declare a mechanism.
+**Batch 3 candidate research DONE (re-derived full ranking from
+`registry/weak_signals.json`), only 4 of 8 confirmed live-buildable within
+this session's budget.** Full reasoning, ranks, and exclusions below in
+Tried. Do not re-derive; resume at Next.
 
 ## Tried
-Full Unit-1 selection derivation (ranking method, exclusions, builder
-provenance) is preserved in git history of this file
-(`git log -- docs/lanes/line-move-regrade-legacy.md`, commit before this
-session) — not restated here to keep this file under one page; nothing there
-needs to be redone.
+Unit 1/2 (roof_state, 8-term batch 1) and batch-1/2 selection derivations:
+preserved in git history of this file (`git log -- docs/lanes/line-move-regrade-legacy.md`,
+commits before this session) — not restated, nothing there needs redoing.
 
-**Batch-2 selection derivation (session 3)**: re-ran the same ranking
-(`registry/weak_signals.json`, classification=unresolved_below_power,
+**Batch-3 ranking re-derivation (session 4)**: re-ran the SAME rule text as
+`SELECTION_RULE_BATCH2` (classification=unresolved_below_power,
 effect_units=accuracy_points, category in
-schedule/environment/health/offfield/onfield, one entry per family, ranked
-by max(|effect|/standard_error)) via scratch scripts in the scratchpad dir
-(not repo files, regenerate if needed — query logic: same filter as batch
-1's documented rule). Confirmed batch 1's 8 ranks (8, 11, 17, 29, 36, 38,
-41, 53 in the raw ranked list) match exactly. Walked further down applying
-the SAME documented exclusions (CFB-only, referee/crew, in-week-injury
-health, composite/pooled-atlas, ablations of served composition members)
-plus one clarification found this session: `player_arrests_back_side_policy`
-(ratio 2.163/1.566, ranks 9/30) is itself a LIVE served composition member
-(confirmed via its own `overlay_leave_one_out_2026_08_26` LOO-ablation
-registry entry existing), not a legacy accuracy-only family — excluded on
-that basis, consistent with the "ablations of composition members" rule.
-`apm_unit_feature.py` (ratio 1.590, rank 27) was inspected directly
-(`fit_unit_ratings` runs a play-by-play Ridge regression fitting adjusted
-plus-minus team ratings) and excluded as a fitted team-rating pipeline, same
-exclusion class as `graph_ratings_v2_team_stat`. `rookie_priors`/
-`rookie_priors_cover_rate`/`rookie_priors_per_season` (xlg06 family, ranks
-5/51/73) use a "screen"-module pattern
-(`scripts/xlg06_rookie_priors_screen.py`) structurally identical to
-`roof_state_screen` (already accepted in batch 1) — accepted, using the
-full-2020-2025-window variant (rank 73, ratio 0.955) rather than the
-2024-only cut (rank 5) or the differently-constructed `_cover_rate` variant
-(rank 51, no confirmed matching builder). `fluview_*` families skipped
-again (Tuesday-safety still unconfirmed, same caveat as batch 1's Open
-section). Confirmed via `grep ^def` that each of the 8 selected terms has an
-existing, real builder function in `src/nfl_ats` (no fresh construction);
-confirmed `rain_on_grass_dog_on_production` (ratio 0.567) and `coach_fade`
-(ratio 0.520/0.513) also have confirmed builders
-(`rain_on_grass_dog_challenger.py`, `coach_fade_overlay.py`) and are the
-next-best deprioritized backups if any of the 8 fails to rebuild — do not
-substitute silently, per the task's instruction; record the failure and
-report 7 instead if one of the 8 errors and there is no time to validate a
-backup.
+schedule/environment/health/offfield/onfield, one entry per family by max
+ratio) via a scratch script (not a repo file), but this time computed
+`standard_error` with the documented fallback `(interval_high-interval_low)/
+(2*1.96)` when the field is null — the earlier sessions' 81-family list
+apparently only used entries with a real non-null `standard_error`; applying
+the fallback yields **388** distinct families, a much bigger and differently
+ordered list. `division_revenge_tilt__week_in_season` (batch 2's own pick) is
+rank **253** at ratio **0.573** in this fuller list.
 
-Code changes made to `scripts/line_move_regrade_legacy.py` this session
-(all present in the file on disk right now):
-- Added `import argparse`.
-- Added imports for all 8 new builders (division_revenge_tilt_overlay,
-  forecast_cold_visitor_tilt_overlay, interim_playcaller_first_game_back_overlay,
-  post_bye_new_playcaller_back_overlay, rookie_prior_surplus_tilt_overlay,
-  plus 4 more names pulled into the existing schedule_flag_features import).
-  Import block was reordered/merged once already to fix ruff's I001
-  (un-sorted imports) — this fix IS applied and should be ruff-clean now.
-- Added `LOW_TOTAL_MAX = 42.0` module constant (mirrors
-  `low_total_div_home_dog_challenger.LOW_TOTAL_MAX`, not imported directly
-  since that module's flag function needs a full predictions frame with
-  `home_cover_probability`, which this script doesn't build until variant
-  scoring — term is built inline from schedule instead).
-- Added `SELECTION_RULE_BATCH2` and `RATIO_TABLE_BATCH2` constants (after
-  `RATIO_TABLE`).
-- Added all 8 `add_*_term` builder functions (after `add_deadline_drag_term`,
-  before `loso`): `add_playcaller_change_term`, `add_rookie_priors_term`,
-  `add_forecast_cold_visitor_term`, `add_ats_streak_regress_term`,
-  `add_post_bye_new_oc_term`, `add_home_thursday_term`,
-  `add_low_total_div_home_dog_term`, `add_division_revenge_term`.
-- Added `TERM_DECLARATIONS_BATCH2` tuple (after `TERM_DECLARATIONS`, batch 1
-  definitions untouched).
-- Added `--batch {1,2}` argparse flag to `main()`; selects
-  `term_declarations`/`selection_rule`/`ratio_table` accordingly; `results`
-  dict now includes a `"batch"` key; default (`--batch` omitted) still runs
-  batch 1 unchanged — batch-1 behavior is preserved.
+**Open discrepancy, NOT resolved, flag for orchestrator**: several
+high-ratio families rank well above anything batch 1 (topped at 2.218) or
+batch 2 (topped at 0.573) actually selected —
+`special_teams_return_top_quartile` (ratio 1.694, onfield, confirmed this
+session to have a real live builder
+`special_teams_return_flag_by_game_fail_open` in
+`special_teams_return_tilt_overlay.py`, no LOO-ablation composition-member
+entry found) and `hc_year_one_fade` (ratio 1.495, offfield — confirmed this
+session to be built by the SAME module as the `coach_fade` backup,
+`coach_fade_overlay.py`, `CHALLENGER_ID = "hc_year_one_fade_overlay"`,
+function `year_one_by_game`). Neither was picked by batch 1/2 for a reason
+not re-derivable this session (possibly the narrower raw list, possibly an
+unrecorded exclusion). This session deliberately did NOT include either —
+used the `coach_fade` identity/rank already fixed by the prior session's own
+backup designation (ratio ~0.52) rather than swapping in the higher-ranked
+`hc_year_one_fade` entry for the same module, and left
+`special_teams_return_top_quartile` out entirely pending review. Do not
+silently resolve this either way without orchestrator input.
 
-**Ruff status at cap time**: `ruff check scripts/line_move_regrade_legacy.py`
-(no --fix) was run once after the import-block edits and returned 3 errors:
-1 x I001 (import order) — FIXED by the import-block rewrite above, should
-now be clean; 2 x E501 (line too long, >100 chars) on the `def
-add_forecast_cold_visitor_term(...)` and `def
-add_low_total_div_home_dog_term(...)` signature lines (both were written as
-single-line signatures exceeding 100 cols). A fix for the FIRST one
-(wrapping `add_forecast_cold_visitor_term`'s signature onto 3 lines) was
-IN FLIGHT when the tool cap hit — the Edit call may or may not have applied;
-**check the file before re-editing** to avoid a duplicate/malformed edit.
-The SECOND (`add_low_total_div_home_dog_term`) signature has NOT been
-touched yet.
+Walking down from rank 253 (ratio 0.573) applying the SAME exclusion classes
+as batch 1/2's `SELECTION_RULE_BATCH2` text: referee/crew (`referee_battery_*`,
+`crew_second_meeting_*`, `penalty_crew_*`/`penalty_discipline`/`penalty_rate_*`);
+health category excluded as a block (consistent with zero health entries in
+either prior batch's actual `RATIO_TABLE` despite several qualifying by
+ratio); composite/pooled-atlas clusters (`*_battery`, `weather_interactions_*`,
+`weather_followup_*`, `forecast_weather_kn_*`) excluded under "not one
+rebuildable column" — this also explains why those clusters' much-higher
+ratios never appeared in batch 1/2 despite being available; fitted
+team-rating/team-style pipelines (`team_style_*`, `graph_*`, `apm_unit_*`,
+same class as the already-excluded `apm_unit_feature.py`); era-scope
+mismatches (`*_pre2011`, `*_pre2018` — population is ~2020-2025, n=1503,
+these have near-zero overlap); and **no confirmed live builder** — a large
+fraction of remaining high-ratio legacy families have NO matching `def` or
+module anywhere in current `src/nfl_ats` because their source files were
+deleted in the "Repository cut" commit `b7ed31d` (469,660 -> 216,083 Python
+lines). Confirmed via `git log -- src/nfl_ats/<file>.py` showing
+history-only files, e.g. `backup_tenure_flag_features.py` (backs
+`backup_tenure_gap_on_production`, ratio would've been high) is gone.
+Same "no builder found this session" outcome for: `kicker_change_underdog`,
+`divisional_rematch_blowout_winner_fade`, `venue_milestone_new_stadium_debut`
+(NOT the same as `derive_new_stadium_home_features`, which exists but has a
+different name/semantics — did not substitute), `ol_acute_overhaul_fade`,
+`qb_age_rookie_late_improvement`, `redzone_reversion_c2_rz_under_rebound`,
+`surface_familiarity_*`, `altitude_deficit_4000ft_era_2018_2025`,
+`travel_rest_eastbound_multizone`, `pick_conditioned_rest_mismatch_pre2018`,
+`bye_overvaluation` (all cuts), `special_teams_punt_net_bottom_quartile` /
+`special_teams_composite_edge_top_quartile` (different metrics than the one
+confirmed module covers).
+
+**The 4 confirmed batch-3 candidates, in rank order, each has a live
+Tuesday-safe standalone builder already in `src/nfl_ats`:**
+1. `suspension_return_rust_on_production` 0.572 offfield —
+   `transaction_flag_features.attach_suspension_return_rust_features(features,
+   schedule=schedule)` -> `SUSPENSION_RETURN_RUST_COLUMN`, already signed via
+   `_attach_qualifying_sides` (-1.0 home_qualifies / +1.0 away_qualifies /
+   0.0 else). Use the SAME `try/except DataContractError -> fill 0.0` pattern
+   already in `add_deadline_drag_term` (transaction data may not cover every
+   span).
+2. `rain_on_grass_dog_on_production` 0.567 environment —
+   `rain_on_grass_dog_challenger.rain_on_grass_flag_by_game(schedule,
+   forecasts)` (forecasts = `pd.read_parquet(FORECAST_ARCHIVE)`, same archive
+   precip/forecast_cold_visitor already use) returns one boolean
+   `rain_on_grass_flag`, NOT pre-split by side. Build the term the same way
+   batch 2's `add_low_total_div_home_dog_term` used `schedule["spread_line"]`
+   directly: +1.0 when flag true AND home is dog (spread_line<0), -1.0 when
+   flag true AND away is dog (spread_line>0), 0.0 else, `game_type=="REG"`
+   only. **Not verified against `apply_rain_on_grass_dog_tilt_overlay`'s own
+   flip-direction code** (this session read only its eligibility setup, not
+   the final sign assignment past line ~140 of
+   `rain_on_grass_dog_challenger.py`) — LOSO fit absorbs a wrong sign, but if
+   the fitted coefficient looks implausible, re-check that function before
+   trusting it.
+3. `dome_shootout_favorite_on_production` 0.525 schedule —
+   `schedule_flag_features.derive_dome_shootout_favorite_features(schedule,
+   default_opener_lines(schedule))` -> `dome_shootout_favorite_flag`, already
+   signed (+1.0 home favorite / -1.0 away favorite / 0.0 else) by
+   `oracle_derive_dome_shootout_favorite_features` under the hood (Tuesday-
+   safe via `decision_time_roof_schedule`, not the oracle roof). **Smoke-
+   tested live this session** standalone: ran in ~15s, 4902 rows, 31
+   home-favorite / 40 away-favorite / 4831 zero — works end to end.
+4. `coach_fade` 0.520/0.513 onfield — `coach_fade_overlay.year_one_by_game(
+   schedule)` returns `game_id, season, year_one_home, year_one_away` — MUST
+   select only `["game_id","year_one_home","year_one_away"]` before merging
+   (it also returns `season`; same collision bug as division_revenge_tilt
+   would reappear if not handled). Term: +1.0 home flagged / -1.0 away
+   flagged / 0.0 else (same pattern as tank_zone/bye_edge/division_revenge).
+
+Only 4 of the requested 8 confirmed within budget; ranks below coach_fade
+(<0.513) have not been examined at all this session.
+
+**Code state on disk right now (verify by reading before continuing):**
+- `add_division_revenge_term` fix: APPLIED.
+- `from nfl_ats.coach_fade_overlay import year_one_by_game` import: APPLIED
+  (inserted after the `bye_edge_fade_overlay` import, before
+  `from nfl_ats.data import DataContractError`).
+- A second Edit — adding `from nfl_ats.rain_on_grass_dog_challenger import
+  rain_on_grass_flag_by_game`; adding `default_opener_lines` and
+  `derive_dome_shootout_favorite_features` to the existing
+  `schedule_flag_features` import; adding `SUSPENSION_RETURN_RUST_COLUMN`
+  and `attach_suspension_return_rust_features` to the existing
+  `transaction_flag_features` import — was submitted but the tool-call cap's
+  PreToolUse hook blocked it before it ran. **Almost certainly NOT applied.**
+  Read the file first; do not blindly re-submit (risk of duplicate/malformed
+  edit if it partially landed).
+- NOT done at all yet: the 4 new `add_*_term` builder functions (bodies
+  fully specified above); `SELECTION_RULE_BATCH3` / `RATIO_TABLE_BATCH3`
+  constants; `TERM_DECLARATIONS_BATCH3` tuple; `--batch` argparse choices
+  still `(1, 2)` not `(1, 2, 3)`; no `--only <label>` filter flag exists yet
+  (needed to grade division_revenge_tilt alone within batch 2). Nothing run
+  this session — no new artifacts dir under
+  `artifacts/line_move_regrade_legacy/` from session 4.
 
 ## Next
+1. Read `scripts/line_move_regrade_legacy.py` lines ~1-65 to see exactly
+   what landed from the interrupted second import Edit; apply whichever of
+   the three additions (rain_on_grass import; schedule_flag_features
+   `default_opener_lines`+`derive_dome_shootout_favorite_features`;
+   transaction_flag_features `SUSPENSION_RETURN_RUST_COLUMN`+
+   `attach_suspension_return_rust_features`) are missing — exact names given
+   above, alphabetical placement matches existing style.
+2. Add the 4 builder functions (specs above) after `add_division_revenge_term`,
+   before `def loso`.
+3. Add `SELECTION_RULE_BATCH3` (state the rule + every exclusion actually
+   applied, per Tried above) and:
+   `RATIO_TABLE_BATCH3 = (("suspension_return_rust_on_production", 0.572, "offfield"), ("rain_on_grass_dog_on_production", 0.567, "environment"), ("dome_shootout_favorite_on_production", 0.525, "schedule"), ("coach_fade_on_production", 0.520, "onfield"))`
+   (4 entries only — document why not 8) after `RATIO_TABLE_BATCH2`.
+4. Add `TERM_DECLARATIONS_BATCH3` (4 dicts: label/term_columns/builder)
+   after `TERM_DECLARATIONS_BATCH2`.
+5. Add a reusable way to grade one term alone: `parser.add_argument("--batch",
+   type=int, choices=(1,2,3), default=1)`; `parser.add_argument("--only",
+   type=str, default=None)`; after selecting `term_declarations` for the
+   batch, if `args.only`: `term_declarations = tuple(d for d in
+   term_declarations if d["label"] == args.only)`. Include `args.only` in
+   the `results["command"]` string.
+6. `.tools/uv.exe run ruff check scripts/line_move_regrade_legacy.py` (NO
+   --fix) until 0 errors — watch E501 on new multi-arg def lines (wrap onto
+   3 lines like existing batch-2 style) and I001 import order.
+7. Run division_revenge_tilt alone first (cheap, validates the fix):
+   `.tools/uv.exe run python scripts/line_move_regrade_legacy.py --batch 2 --only division_revenge_tilt`
+   foreground, timeout. Confirm `error` is null; read
+   `line_move_toward_pick_cell` / `accuracy_companion_cell`.
+8. Run batch 3: `.tools/uv.exe run python scripts/line_move_regrade_legacy.py --batch 3`
+   foreground, timeout (none of the 4 builders loop per-season like
+   `rookie_priors` did, should be comparable to batch 1's runtime; background
+   only if it actually exceeds ~2 minutes).
+9. Read both results.json. Report each term's `line_move_toward_pick_cell`
+   (mean_points, season_block_interval, season/week P+) and
+   `accuracy_companion_cell` decisive record. Draft (do not run)
+   `nfl-ats weak-signals record` commands per term (flag pattern: `--effect-units
+   ats_points --classification unresolved_below_power --league nfl
+   --season-start 2020 --season-end 2025 --sample-blocks 6 --family
+   line_move_regrade_legacy_v3 --category <per RATIO_TABLE_BATCH3>
+   --plain-summary "..."`). Do not run without orchestrator authorization.
+10. Report the open discrepancy (special_teams_return_top_quartile /
+    hc_year_one_fade ranking above 0.573 unexplained) to the orchestrator as
+    an explicit open item — do not resolve it unilaterally.
 
-- 2026-09-23 root: batch 2 ran (artifacts/line_move_regrade_legacy/20260923T221920Z), 7 of 8 recorded (registry 7,052). Resolved wrong signs on line movement, season- and week-block intervals wholly negative: rookie_priors -0.046 [-0.062,-0.027] (decisive 32-56) and low_total_div_home_dog -0.048 [-0.075,-0.020] (24-38); the latter is also a live prospective challenger (src/nfl_ats/low_total_div_home_dog_challenger.py), so its paired tracking should be read with this historical wrong sign. division_revenge_tilt failed to rebuild (KeyError season); fix its builder join and grade it alone. Others unresolved.
-**Batch 2 (do this first, fresh agent, new 50-call budget):**
-1. Read `scripts/line_move_regrade_legacy.py` around `add_forecast_cold_visitor_term`
-   and `add_low_total_div_home_dog_term` to see current state (the first
-   signature fix may already be applied).
-2. Fix both E501s by wrapping each `def add_..._term(population: pd.DataFrame,
-   schedule: pd.DataFrame) -> pd.DataFrame:` onto 3 lines (open paren, two
-   params each on own line, closing paren + return type on its own line) —
-   same style already used elsewhere in the file.
-3. Run `.tools/uv.exe run ruff check scripts/line_move_regrade_legacy.py`
-   (NO --fix) until clean (0 errors). Fix anything else it reports; do not
-   change batch-1 code paths.
-4. Run once in the foreground with a timeout (expect longer than batch 1 —
-   the rookie_priors term loops per season/week; if it looks like it will
-   exceed a couple minutes, background it per the harness's normal handling,
-   do not kill it):
-   `.tools/uv.exe run python scripts/line_move_regrade_legacy.py --batch 2`
-5. Read the resulting `artifacts/line_move_regrade_legacy/<ts>/results.json`.
-   Check every term's `error` key FIRST. For any term with an error: record
-   the exact error, do NOT substitute a 9th term, and consider whether
-   `rain_on_grass_dog_on_production` (ratio 0.567,
-   `rain_on_grass_dog_challenger.py`) or `coach_fade` (ratio 0.520,
-   `coach_fade_overlay.py`) — both confirmed-builder backups named in
-   `Tried` above — should replace it (orchestrator adjudicates, do not
-   auto-substitute).
-6. For clean terms, pull `line_move_toward_pick_cell` (mean_points,
-   season_block_interval_low/high, season_block_probability_positive,
-   week_block_probability_positive) and `accuracy_companion_cell`'s decisive
-   record, same fields batch 1 used.
-7. Report the 8 (or fewer, if any failed) line-move deltas with season-block
-   interval and P+ to the orchestrator, plus draft
-   `nfl-ats weak-signals record` commands for each (same flag pattern as the
-   two commands already below: `--effect-units ats_points --classification
-   unresolved_below_power --league nfl --season-start 2020 --season-end 2025
-   --sample-blocks 6 --category <see per-term category in RATIO_TABLE_BATCH2>
-   --plain-summary "..."`). Do NOT run them without orchestrator
-   authorization.
-8. Once reported: this lane stays open (do not move to done/) until the
-   orchestrator has reviewed batch 2's numbers, since unit 1/unit 2's own
-   record commands (below) are also still unexecuted.
+**Units 1 and 2 record commands (still unexecuted, orchestrator-authorized
+only)** — unchanged from before this session, preserved in git history of
+this file if needed; re-fetch via `git log -p -- docs/lanes/line-move-regrade-legacy.md`
+(the two `nfl-ats weak-signals record` blocks for
+`roof_state_predicted_open_line_move_regrade_legacy` and
+`roof_state_predicted_open_line_move_replication_2011_2019`) rather than
+restating here to keep this file under one page.
 
-**Units 1 and 2 record commands** (orchestrator-authorized only; not run this
-session):
-
-1. Original (8-look) roof term, informational only if not already recorded
-   elsewhere — skip if this exact number was already recorded by a prior
-   session:
-```
-nfl-ats weak-signals record --name roof_state_predicted_open_line_move_regrade_legacy \
-  --description "Roof-state-predicted-open term added to Tuesday-knowable base, line-move-toward-pick grade, 2020-2025 LOSO" \
-  --source artifacts/line_move_regrade_legacy/20260923T220145Z/results.json \
-  --effect 0.01497 --effect-units ats_points --classification unresolved_below_power \
-  --league nfl --season-start 2020 --season-end 2025 \
-  --interval-low 0.002903 --interval-high 0.031162 --probability-positive 0.9975 \
-  --sample-games 1503 --sample-blocks 6 --category environment \
-  --plain-summary "Best of 8 legacy looks on line-move toward pick; season-block interval wholly positive but week-block crosses zero (P+ 0.827) and accuracy companion decisive record is 17-26."
-```
-
-2. Replication (2011-2019 SBR-proxy OOS), the primary new result:
-```
-nfl-ats weak-signals record --name roof_state_predicted_open_line_move_replication_2011_2019 \
-  --description "OOS replication of roof-state-predicted-open on 2011-2019 using SBR proxy open/close lines, line-move-toward-pick grade" \
-  --source artifacts/roof_state_line_move_replication/20260923T220802Z/results.json \
-  --effect -0.002241 --effect-units ats_points --classification unresolved_below_power \
-  --league nfl --season-start 2011 --season-end 2019 \
-  --interval-low -0.018494 --interval-high 0.013883 --probability-positive 0.386 \
-  --sample-games 2231 --sample-blocks 9 --category environment \
-  --plain-summary "Out-of-sample replication on an independent 9-season window with an independent (SBR proxy) line archive; sign flips negative, both season- and week-block intervals cross zero, accuracy companion decisive record 30-32. Does not replicate the 2020-2025 reading; multiplicity-adjusted original season-block p is only marginal (Bonferroni/Sidak ~0.04) and its own week-block companion is fully washed out (Bonferroni/Sidak ~0.97-1.0)."
-```
-
-Both commands' every numeric flag is read directly from the two results.json
-artifacts above (no hand-typed derived numbers beyond the source values).
-Orchestrator should verify by reading both JSON files before running.
-
-Once recorded: move this lane to `docs/lanes/done/`.
+Batch 2's 7 successful terms (rookie_priors, low_total_div_home_dog resolved
+wrong-sign negative; interim_playcaller/forecast_cold_visitor/ats_streak_
+regress/post_bye_new_oc/home_thursday unresolved) also still need their
+record commands drafted from `artifacts/line_move_regrade_legacy/20260923T221920Z/results.json`
+— not done in any session yet.
 
 ## Open
-None outstanding for this lane's scope. If a future session wants a
-split-half reliability check on the replication (per AGENTS.md's second
-admissible closing ground), that would need an 18th data source or a
-within-2011-2019 split and is not started here.
+- The ranking discrepancy above (special_teams_return_top_quartile,
+  hc_year_one_fade) needs orchestrator adjudication before any future batch
+  reuses this session's ranked-list methodology.
+- If a future session wants more than 4 batch-3 terms, ranks below
+  coach_fade (<0.513) are completely unexamined.
+- Split-half reliability check on the roof_state replication (AGENTS.md's
+  second admissible closing ground) still not started, needs an 18th data
+  source or a within-2011-2019 split.
