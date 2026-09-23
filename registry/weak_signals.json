@@ -165392,6 +165392,62 @@
       "source": "artifacts/pooled_signal/20260916T191645Z",
       "standard_error": 0.6454
     },
+    "pooled_signal_fourth_fit_vs_four_term": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Interval [-2.58,-0.60] accuracy points sits entirely below zero (P+ 0.0005) against the four-term base; per AGENTS.md a resolved wrong sign with the whole interval on the wrong side of zero is an admissible closing ground for this one structural variant; the pooled family stays open for other structural variants, only this hierarchical fit is refuted",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "MOD-20 unit 4: hierarchical/partial-pooling logistic (shared composition weight mu plus 7 per-flag deviations, shrinkage kappa selected by nested LOSO inner CV minimizing log loss) versus the four-term base, LOSO 2020-2025 opener grade, paired accuracy points",
+      "effect": -1.5303,
+      "effect_units": "accuracy_points",
+      "family": "pooled_signal_first_model_v1",
+      "interval": [
+        -2.5849,
+        -0.5984
+      ],
+      "league": "nfl",
+      "notes": "kappa (shrinkage strength on per-flag deviations) saturated the predeclared grid maximum (10000 of 1-10000) in all 6 outer LOSO folds and in the in-sample fit, meaning the nested inner-LOSO CV wanted more shrinkage than the grid offered, yet residual deviations still hurt OOS; decisive 29-52 on 81 of 1503 games; OOS accuracy hier 55.62% vs base 57.15% (model-only 53.36%); OOS Brier hier 0.2466 vs base 0.2454; OOS logloss hier 0.6865 vs base 0.6840; IS-OOS accuracy gap hier +0.86pt vs base +0.20pt; shared mu stable 0.23-0.29 across folds (matches base composition_flag_sum coefficient); per-flag deviations nonzero but modest (largest |mean| ~0.12 cold_visitor, ~0.09 division, ~0.08 bye); reliability table (5 quintile bins) shows hier OOS probabilities reasonably calibrated (predicted 0.397/0.460/0.488/0.529/0.603 vs observed 0.432/0.460/0.449/0.510/0.631); SE from 95pct bootstrap interval width / (2*1.96); grid not extended post-hoc after seeing the boundary hit, per no-in-sample-gate policy; 2 looks total for this unit",
+      "plain_summary": "Letting each situational flag drift from the group's average weight, with the drift shrunk by cross-validation, still did worse out of season than treating the flags as one simple sum -- the extra flexibility hurt, not helped.",
+      "probability_positive": 0.0005,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/pooled_signal_fourth_fit_hierarchical.py; tests/scratch/pooled_signal_fourth_fit.json",
+      "standard_error": 0.5068
+    },
+    "pooled_signal_fourth_fit_vs_model_only": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero (low -0.27); companion to the vs-four-term cell, which is the decision-relevant comparison and is resolved negative; no admissible closing ground applies here",
+      "closing_ground": null,
+      "description": "MOD-20 unit 4: hierarchical/partial-pooling logistic (shared composition weight mu plus 7 per-flag deviations, shrinkage kappa selected by nested LOSO inner CV) versus model-only, LOSO 2020-2025 opener grade, paired accuracy points",
+      "effect": 2.2621,
+      "effect_units": "accuracy_points",
+      "family": "pooled_signal_first_model_v1",
+      "interval": [
+        -0.2741,
+        4.9798
+      ],
+      "league": "nfl",
+      "notes": "Decisive first: hier wins 271, model wins 237 on 508 decisive games of 1503. OOS accuracy hier 55.62% vs model-only 53.36%; OOS Brier hier 0.2466 vs model 0.2517; OOS logloss hier 0.6865 vs model 0.6969. SE from 95pct bootstrap interval width / (2*1.96). 2 looks total for this unit (shared with the vs-four-term cell).",
+      "plain_summary": "The hierarchical combined model still beats the model alone out of season, by about two games per hundred, but the four-term base beats it -- so this variant does not replace the simpler served fit.",
+      "probability_positive": 0.9545,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/pooled_signal_fourth_fit_hierarchical.py; tests/scratch/pooled_signal_fourth_fit.json",
+      "standard_error": 1.3403
+    },
     "pooled_signal_second_fit_vs_four_term": {
       "category": "modeling",
       "classification": "unresolved_below_power",

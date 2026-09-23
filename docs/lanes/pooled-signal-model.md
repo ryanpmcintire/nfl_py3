@@ -4,99 +4,61 @@
 MOD-20: one hierarchical model with every situational family as a shrunk term, judged as a whole on line movement toward the pick and calibration at the opener; no cell resolved alone.
 
 ## State
-- 2026-09-16: queued by owner; ROADMAP row written.
-- Unit 1 inventory DONE 2026-09-16 (read-only grep/read): only 9 composition
-  flag columns are reproducibly computable point-in-time at the opener, via
-  `pick_probability.py:signed_composition_flags` (7 counted: coach, division,
-  arrests, bye, cold_visitor, protection, tank_zone; interim-HC and precip
-  hardcoded 0, owner-held). Registry has 6,582 signals / 198 family keys;
-  ~189 families have no reproducible column. The first pooled model on the
-  reproducible set is the four-term pick-probability fit, refit today on the
-  active model: `artifacts/pick_probability/20260916T163620Z/`
-  (pointer `artifacts/active_pick_probability.json`), LOSO 841-662 vs
-  model-only 819-684 on the same 1,503 games. Nothing committed.
+- 2026-09-16: queued by owner; ROADMAP row written. Population/pipeline: opener
+  `per_game.parquet` via `pick_probability_fit.build_fit_population`, LOSO
+  2020-2025, 1,503 graded games; margin base (`margin.py`/`features.py`) is a
+  separate pipeline, not used here.
+- Units 1-3 (2026-09-16 to 09-18, all committed/recorded, family
+  `pooled_signal_first_model_v1`): Unit 1 built the four-term base
+  (model_logit + composition_flag_sum [7 reproducible flags: coach, division,
+  arrests, bye, cold_visitor, protection, tank_zone] + market move + move
+  available) vs model-only, +1.464 pts [+0.130,+2.660] P+ 0.9815, recorded
+  unresolved_below_power. Units 2-3 grew the pool with 8 easy + 1 medium
+  additional columns; both additive variants lost to the four-term base
+  out-of-season (-0.13 and -0.33 pts, both intervals crossing/touching zero,
+  both unresolved_below_power) with larger IS-OOS overfit gaps. Standing read
+  after unit 3: growing the pool additively does not help; next direction is
+  structural. Scripts: `scripts/pooled_signal_paired_eval.py`,
+  `scripts/pooled_signal_second_fit.py`, `scripts/pooled_signal_third_fit.py`.
 
 ## Tried
-- Subagent inventory (verified): margin base is `margin.py` weak_stack on
-  `game_features.parquet` via `features.py:build_game_features`; the
-  pick-probability fit uses opener `per_game.parquet` + flags, not the game
-  features table.
+- Unit 4 (2026-09-23, parent-run, predeclared before running): structural
+  variant, not another additive column. Hierarchical/partial-pooling logistic
+  keeping the four-term base's 3 non-composition terms plus
+  composition_flag_sum as a shared weight mu (all ridge=FIT_RIDGE=1e-3), PLUS
+  the 7 individual flags as deviation columns penalized at kappa*FIT_RIDGE
+  (kappa->inf recovers exactly the four-term base). kappa grid
+  {1,3,10,30,100,300,1000,10000} fixed before running; selected per outer LOSO
+  fold by nested inner LOSO CV over the 5 training seasons, minimizing mean
+  held-out log loss (criterion fixed before seeing any outer result). Script:
+  `scripts/pooled_signal_fourth_fit_hierarchical.py`,
+  `tests/scratch/pooled_signal_fourth_fit.json`.
 
 ## Next
-- Unit 1 CLOSED 2026-09-16: paired interval computed
-  (`scripts/pooled_signal_paired_eval.py`,
-  `artifacts/pooled_signal/20260916T191645Z/`), +1.464 pts
-  [+0.130, +2.660], P+ 0.9815, decisive 274-252 on 526, positive in 5
-  of 6 seasons; recorded as the family's first cell
-  (`pooled_signal_calibrated_vs_model_only_loso`,
-   unresolved_below_power). Next: grow the reproducible feature set
-   before any second pooled fit. Committed in 786a569.
-- Unit 2 inventory DONE 2026-09-17 (subagent, read-only, 82 families
-  inspected): 15 candidate families for reproducible point-in-time opener
-  columns — 9 easy (spread_size_calibration, key_number_seven,
-  ats_streak_regress_on_production, post_ot_fatigue_on_production,
-  division_dog_on_production, low_total_div_home_dog_on_production,
-  roof_state, sept_heat_home_on_production, altitude_fourth_quarter),
-  5 medium (open_corner_wind_dog, snow_game_home_prep,
-  ol_rush_continuity, rookie_qb_debut_fade, backup_tenure_gap),
-  1 hard (officials_archive_battery — assignment timestamps missing).
-  Never-at-opener families listed by class (post-open moves, T-90
-  inactives, in-game, wrong population, process meta). No cells scored,
-  no looks spent. Next: build the easy columns, then the second pooled
-  fit.
-- Unit 2 DONE 2026-09-18 (subagent, parent-verified by rerun;
-  `scripts/pooled_signal_second_fit.py`, `tests/scratch/pooled_signal_second_fit.json`):
-  8 of 9 easy columns assembled from existing builders (roof_state dropped,
-  needs new snapshot history); joint ridge fit LOSO, same population and
-  bootstrap as unit 1. Full vs model-only +1.33 [-2.00, +4.54], P+ 0.788,
-  decisive 300-280 on 580; full vs four-term base -0.13 [-1.99, +1.74],
-  P+ 0.429, decisive 101-103 on 204. In-sample vs OOS gap +2.06 for full
-  vs +0.80 for base; OOS Brier/log loss favor base too. Reading: growing
-  the pool this way adds nothing out of season — the extra terms overfit.
-  Both cells recorded in family `pooled_signal_first_model_v1`,
-  unresolved_below_power (registry now 6,710; SEs approximated from
-  interval width, noted). 9 looks. Next: medium columns or a different
-  pooling structure; the easy-column direction is spent.
-- Unit 3 DONE 2026-09-18 (subagent, parent-verified by rerun;
-  `scripts/pooled_signal_third_fit.py`, `tests/scratch/pooled_signal_third_fit.json`):
-  only 1 of 5 mediums faithfully buildable (Tuesday wind-dog flag, frozen
-  venue list, Tue wind ≥ 15, 112 games; snow needs Tuesday precip that does
-  not exist; rookie/backup depth ungateable pre-Tuesday; continuity has no
-  pick direction). Full vs four-term base -0.33 [-0.74, +0.07], P+ 0.039,
-  decisive 4-9 on 13 — reaches above zero, so not a resolved wrong sign;
-  full vs model-only +1.13 [-1.57, +3.68], P+ 0.800, decisive 272-255 on
-  527. Both cells recorded in family `pooled_signal_first_model_v1`,
-  unresolved_below_power (registry now 6,712). 5 looks. Standing read after
-  three fits: the four-term pool is not improved by growing it; the next
-  change of direction is structural (hierarchical shrinkage, interactions)
-  or nothing.
-
-- Unit 4 PREDECLARED 2026-09-23 (before running): structural variant, not
-  another additive column. Hierarchical/partial-pooling logistic on the same
-  build_fit_population population: base terms model_logit,
-  market_move_toward_home, market_move_available, and composition_flag_sum
-  (shared weight mu) all at ridge=FIT_RIDGE=1e-3 (matches the served four-term
-  fit); PLUS 7 per-flag deviation columns (flag_coach, flag_division,
-  flag_arrests, flag_bye, flag_cold_visitor, flag_protection, flag_tank_zone),
-  each penalized at kappa*FIT_RIDGE, kappa the shrinkage-strength
-  hyperparameter (kappa->inf collapses deviations to 0, recovering exactly the
-  four-term base; kappa near 1 lets each flag float nearly freely). All
-  numeric columns standardized per fold (train mean/std). kappa grid
-  {1,3,10,30,100,300,1000,10000} fixed before running. Outer: LOSO over
-  2020-2025 (6 folds), same as units 1-3. Inner: nested LOSO over the 5
-  training seasons per outer fold, selecting kappa minimizing mean inner
-  held-out log loss (criterion fixed before seeing any outer result).
-  In-sample fit: full-population fit with kappa chosen the same way across
-  all 6 seasons, used only for the IS/OOS gap. Comparisons: hierarchical vs
-  four-term base (primary/decisive) and vs model-only (secondary), paired
-  accuracy points, week-block bootstrap reused from
-  `pooled_signal_second_fit.py` (season-week blocks, 2000 draws, seed
-  20260821). Looks = 2 top-line cells (vs base, vs model-only); kappa grid
-  search does not spend a look since it is chosen out-of-sample by nested
-  LOSO, never touching the outer test fold. Script:
-  `scripts/pooled_signal_fourth_fit_hierarchical.py`.
-  Script not yet run as of predeclaration timestamp; results to follow in a
-  separate close-out entry once the script has actually executed.
+- Unit 4 result: hierarchical **vs four-term base** -1.530 pts
+  [-2.585, -0.598], P+ 0.0005, decisive 29-52 on 81 of 1503 -- interval
+  entirely below zero. Recorded **refuted_mechanism** / closing ground
+  `wrong_sign_resolved` (`pooled_signal_fourth_fit_vs_four_term`) — this one
+  structural variant is closed, the pooled family stays open. Hierarchical vs
+  model-only +2.262 [-0.274,+4.980], P+ 0.9545, decisive 271-237 on 508,
+  recorded unresolved_below_power (`pooled_signal_fourth_fit_vs_model_only`,
+  companion, not decision-relevant alone). Registry now 6,983. 2 looks.
+  kappa saturated the predeclared grid max (10000) in all 6 outer folds and
+  in-sample — inner CV wanted more shrinkage than offered; not extended
+  post-hoc (no in-sample gates). OOS accuracy hier 55.62% vs base 57.15% vs
+  model-only 53.36%; OOS Brier 0.2466/0.2454/0.2517; logloss
+  0.6865/0.6840/0.6969; IS-OOS gap hier +0.86pt vs base +0.20pt. Shared mu
+  stable 0.23-0.29 across folds (matches base coefficient); per-flag
+  deviations nonzero but modest (largest |mean| ~0.12 cold_visitor).
+  Reliability (5 quintile bins) reasonably calibrated: predicted
+  0.397/0.460/0.488/0.529/0.603 vs observed 0.432/0.460/0.449/0.510/0.631.
+  Standing read after 4 fits: the served four-term base beats both growing
+  the pool (units 2-3) and hierarchically reweighting its own 7 flags (unit
+  4) out of season — do not ship any of these variants. Next: either close
+  "improve the base with these 7 flags" as exhausted, or try a variant that
+  is not a reparameterization of the same 7 flags (interaction terms between
+  composition and market-move, or a genuinely new reproducible family) before
+  another attempt.
 
 ## Open
 - None yet.

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-23T17:16:31.403907+00:00`
+Refreshed at: `2026-09-23T17:28:14.742855+00:00`
 
 ## Start here
 
@@ -21,24 +21,17 @@ Refreshed at: `2026-09-23T17:16:31.403907+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `d12be4910aff` — Record Wednesday lineup refresh of the Week 3 card
-- Pending change set: 16 paths
-  - `M  HANDOFF.md`
-  - `M  ROADMAP.md`
+- Baseline commit: `25c51e7bce1f` — Archive finished lanes and add the test suite reduction proposal
+- Pending change set: 9 paths
   - ` M docs/index.html`
-  - `M  docs/lanes/README.md`
-  - `R  docs/lanes/lead64-headline-parser.md -> docs/lanes/done/lead64-headline-parser.md`
-  - `R  docs/lanes/line-move-target.md -> docs/lanes/done/line-move-target.md`
-  - `R  docs/lanes/market-derived-ratings.md -> docs/lanes/done/market-derived-ratings.md`
-  - `R  docs/lanes/serve-calibrated-probability.md -> docs/lanes/done/serve-calibrated-probability.md`
-  - `R  docs/lanes/sunday-gameday-2026-09-13.md -> docs/lanes/done/sunday-gameday-2026-09-13.md`
-  - `R  docs/lanes/sunday-readiness-2026-09-20.md -> docs/lanes/done/sunday-readiness-2026-09-20.md`
-  - `R  docs/lanes/week1-covers-settled.md -> docs/lanes/done/week1-covers-settled.md`
-  - `R  docs/lanes/week2-pool-board-lock.md -> docs/lanes/done/week2-pool-board-lock.md`
   - `M  docs/lanes/pooled-signal-model.md`
-  - `A  docs/lanes/test-suite-reduction.md`
-  - `A  docs/test_suite_reduction_proposal.md`
-  - `?? scripts/pooled_signal_fourth_fit_hierarchical.py`
+  - `M  registry/weak_signals.json`
+  - `A  scripts/pooled_signal_fourth_fit_hierarchical.py`
+  - ` M src/nfl_ats/backtest.py`
+  - ` M src/nfl_ats/clv.py`
+  - ` M src/nfl_ats/spread_explorer.py`
+  - `?? docs/lanes/clv-metric-everywhere.md`
+  - `?? docs/lanes/spread-explorer-discrete.md`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
