@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-23T21:15:41.553801+00:00`
+Refreshed at: `2026-09-23T21:16:06.341040+00:00`
 
 ## Start here
 
@@ -21,17 +21,9 @@ Refreshed at: `2026-09-23T21:15:41.553801+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `d3626e944cfe` — PER-10 unit 3: research injury scenario mixture for Week 3, no pick changes
-- Pending change set: 14 paths
-  - `M  ROADMAP.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - `A  docs/lanes/done/ui20-books-now-count.md`
-  - `M  docs/model.html`
-  - `M  src/nfl_ats/board_content.py`
-  - `M  src/nfl_ats/board_terminal.py`
-  - `M  src/nfl_ats/board_terminal_style.css`
+- Baseline commit: `371923ed04ee` — Books now shows the book count, never a sportsbook name
+- Pending change set: 6 paths
+  - `M  docs/lanes/README.md`
   - `?? docs/lanes/base-model-recency.md`
   - `?? scripts/base_model_recency.py`
   - `?? scripts/confidence_band_derivation.py`
