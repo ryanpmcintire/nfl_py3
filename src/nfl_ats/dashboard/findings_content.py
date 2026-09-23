@@ -135,6 +135,7 @@ CHALLENGER_DISPLAY_NAMES: dict[str, str] = {
     "hc_year_one_fade_overlay": "Year-one coach fade",
     "best_pick_nomination_v2": "Best Pick with no spread limit",
     "best_pick_nomination_v3": "Best Pick v3 ranker",
+    "total_conditioned_key_number_lattice_v1": "Key numbers weighted by the game total",
     "best_pick_big_spread_eligibility": "Best-Pick big-spread eligibility",
     "injury_value_lost_tilt_overlay": "Injury value-lost tilt",
     "division_revenge_tilt_overlay": "Division-revenge tilt",
