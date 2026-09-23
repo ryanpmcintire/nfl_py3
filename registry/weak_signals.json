@@ -190526,6 +190526,62 @@
       "source": "artifacts/tiebreaker_total/20260910T043514Z/results.json",
       "standard_error": 0.758117
     },
+    "total_conditioned_key_number_lattice_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap (2000 draws, seed 20260923): 95% CI [-1.78, 1.05] points, P+ 0.269 (week-block CI [-2.58, 1.64], P+ 0.315) -- crosses zero both ways, not a resolved wrong sign. On the 285 games where the challenger disagreed with the served pick, the exact two-sided binomial test against a 50/50 null gives p=0.722 (challenger 139/285, 95% CI [42.8%, 54.7%]): no evidence either side wins the disagreement set more than chance. No admissible closing ground reached.",
+      "closing_ground": null,
+      "description": "Same challenger, paired forced-pick accuracy on decisive (non-push) games, 2020-2025",
+      "effect": -0.44,
+      "effect_units": "accuracy_points",
+      "family": "total_conditioned_lattice",
+      "interval": [
+        -1.78,
+        1.05
+      ],
+      "league": "nfl",
+      "notes": "Extended 2009-2025 window (reported only, not recorded): accuracy points +0.19 (sign flips vs primary's -0.44); not re-bootstrapped.",
+      "plain_summary": "Giving the key-number math a heads-up about the game's total didn't reliably change how often the forced pick was right. Our resampling checks give it only about 1-in-4 odds of actually helping, and on the games where it disagreed with the current approach it split almost exactly 50/50 (139-146 of 285) -- no real edge either way yet.",
+      "probability_positive": 0.269,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1582,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/total_conditioned_lattice_intervals/20260923T210335Z/summary.json",
+      "standard_error": 0.745
+    },
+    "total_conditioned_key_number_lattice_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap (2000 draws, seed 20260923) P+ 0.708 for log loss favors the challenger but the 95% interval [-0.00351, 0.01681] crosses zero; Brier moves the other way (P+ 0.034); forced-pick accuracy P+ 0.269 also favors served. The 285-game disagreement set is an exact coin flip (139/285 challenger, two-sided binomial p=0.722). Split-half reliability of the log-loss improvement is nominally low (Spearman-Brown r=0.050) but its Fisher-z 95% CI from only 6 season units is [-0.80, 0.82], so it cannot support the no_split_half_reliability closing ground. No whole-interval wrong sign, no positive control: unresolved, not closed.",
+      "closing_ground": null,
+      "description": "Discrete cover/push lattice additionally conditioned on the opening total (3 predeclared bands) vs the served discrete_conditional_non_push_v1 read, point=spread_line both arms, 2020-2025",
+      "effect": 0.00424,
+      "effect_units": "log_loss_improvement",
+      "family": "total_conditioned_lattice",
+      "interval": [
+        -0.00351,
+        0.01681
+      ],
+      "league": "nfl",
+      "notes": "Week-block bootstrap (107 season-week blocks) gives a consistent read: CI [-0.00425, 0.01822], P+ 0.678. Extended 2009-2025 window (reported only, not recorded): log loss improvement +0.00147.",
+      "plain_summary": "We tried giving the model's key-number math a heads-up about how high-scoring a game is expected to be, on top of the point spread it already uses. In resampling checks it nudged the probabilities in the right direction about 7 times in 10, but a stricter accuracy check leaned the other way -- still not a clear win or loss.",
+      "probability_positive": 0.708,
+      "recorded_at": "2026-09-23",
+      "reliability": 0.05,
+      "sample_blocks": 6,
+      "sample_games": 1615,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/total_conditioned_lattice_intervals/20260923T210335Z/summary.json",
+      "standard_error": 0.00558
+    },
     "totals_market_residual_blend": {
       "category": "market",
       "classification": "unresolved_below_power",

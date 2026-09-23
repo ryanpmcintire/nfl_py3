@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-23T21:03:05.968369+00:00`
+Refreshed at: `2026-09-23T21:07:16.768588+00:00`
 
 ## Start here
 
@@ -21,17 +21,19 @@ Refreshed at: `2026-09-23T21:03:05.968369+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `ecd88282f49b` — Grade Tuesday-knowable terms on line movement; fan-forum variant is a resolved wrong sign
-- Pending change set: 9 paths
-  - ` M docs/lanes/README.md`
-  - `M  docs/lanes/free-odds-sources.md`
-  - `M  docs/lanes/injury-scenario-producer.md`
+- Baseline commit: `6ac6a2eb4acb` — Keep every fresh book in the current Sunday line; fit injury value to margin points
+- Pending change set: 11 paths
+  - `M  docs/lanes/README.md`
+  - `RM docs/lanes/done/opener-error-transfer.md -> docs/lanes/opener-error-transfer.md`
+  - `A  docs/lanes/total-conditioned-lattice.md`
   - `M  registry/weak_signals.json`
-  - `A  scripts/injury_value_margin_map.py`
-  - `M  src/nfl_ats/market_data.py`
-  - `?? docs/lanes/total-conditioned-lattice.md`
-  - `?? scripts/total_conditioned_lattice.py`
-  - `?? scripts/total_conditioned_lattice_intervals.py`
+  - `A  scripts/total_conditioned_lattice.py`
+  - `A  scripts/total_conditioned_lattice_intervals.py`
+  - `?? docs/lanes/base-model-recency.md`
+  - `?? docs/lanes/extended-population-regrade.md`
+  - `?? scripts/base_model_recency.py`
+  - `?? scripts/extended_population_regrade.py`
+  - `?? scripts/fit_ridge_derivation.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
