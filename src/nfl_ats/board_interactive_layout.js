@@ -15,7 +15,8 @@ $('#board-h').textContent=window.BALL_CARD.weekLabel+' / The complete card';$('#
 const points=[['WR1',62,113],['LT1',200,135],['LG1',246,135],['C1',292,135],['RG1',338,135],['RT1',384,135],['TE1',442,125],['WR2',522,113],['WR3',470,192],['QB1',292,202],['RB1',234,250]];
 const colors={MIA:'#74d8c7',SEA:'#a7dba1',LV:'#c1c9d0',MIN:'#c3a3ed',BUF:'#82b9eb',HOU:'#80b6d0',KC:'#ebaa9b',PHI:'#7cc3b1'};
 $$('.dive-panel').forEach(panel=>{
- const dive=$('.dive',panel),head=$('.dive-head',panel),body=$('.dive-body',panel),lineups=$('.lineups-block',panel),row=$('table.board tr.game[data-game-id="'+panel.dataset.gameId+'"]');
+ const weekCard=panel.closest('.week-grid'),dive=$('.dive',panel),head=$('.dive-head',panel),body=$('.dive-body',panel),lineups=$('.lineups-block',panel),row=$('table.board tr.game[data-game-id="'+panel.dataset.gameId+'"]',weekCard);
+ if(!dive||!head||!body||!row)return;
  const rowPick=$('.pick',row).textContent.replace('★','').trim();const pickCode=(rowPick.match(/^[A-Z]+/)||[])[0];
  const teams=$$('.lineup-team',panel).filter(t=>$('.lineup-team-head b',t));const roster=teams.find(t=>$('.lineup-team-head b',t)?.textContent===pickCode)||teams[0];const team=roster?$('.lineup-team-head b',roster).textContent:pickCode;
  const field=document.createElement('div');field.className='merged-field';
@@ -39,8 +40,7 @@ $$('.dive-panel').forEach(panel=>{
  const why=head.nextElementSibling;why.after(tabs);tabs.after(field);
  const scenario=document.createElement('div');scenario.className='merged-scenario-link';scenario.innerHTML='<span>What would change this pick?</span><button type="button">Explore the spread ↗</button>';$('button',scenario).addEventListener('click',()=>{show('Why & spread');$('.adjuster-slider',panel)?.focus()});dive.append(scenario);show('Field');
 });
-// Preserve original row selection and add a useful mobile jump into the inspector.
-$$('table.board tr.game').forEach(row=>row.addEventListener('click',()=>{if(innerWidth<951)$('.inspector-col').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}));
+$$('table.board tr.game').forEach(row=>row.addEventListener('click',()=>{const inspector=$('.inspector-col',row.closest('.week-grid'));if(innerWidth<951&&inspector)inspector.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}));
 
 })();
 
@@ -49,10 +49,12 @@ $$('table.board tr.game').forEach(row=>row.addEventListener('click',()=>{if(inne
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
 $('.merged-kicker').textContent=window.BALL_CARD.weekLabel.toUpperCase()+' / THE CARD';$('.merged-intro h1').innerHTML='Everybody has a take.<br><em>Here’s the card.</em>';
 $('.merged-intro p').textContent='Every matchup. Every pick. The reasoning to back it up.';
-const hint=document.createElement('span');hint.className='refined-guide';hint.innerHTML='<b>↗</b> Select any game to open its playbook';$('.sort-toggle').append(hint);
+$$('.week-grid').forEach(card=>{const toolbar=$('.sort-toggle',card);if(!toolbar)return;const hint=document.createElement('span');hint.className='refined-guide';hint.innerHTML='<b>↗</b> Select any game to open its playbook';toolbar.append(hint)});
 $$('.dive-panel').forEach(panel=>{
  const head=$('.dive-head',panel), ids=panel.dataset.gameId.split('_'),away=ids[2],home=ids[3];
- const row=$('table.board tr.game[data-game-id="'+panel.dataset.gameId+'"]'),pct=$('.prob',row).textContent;
+ const row=$('table.board tr.game[data-game-id="'+panel.dataset.gameId+'"]',panel.closest('.week-grid'));
+ if(!head||!row)return;
+ const pct=$('.prob',row).textContent;
  const top=document.createElement('div');top.className='refined-matchup';top.innerHTML='<div><div class="match-label">THE MATCHUP</div><div class="teams"><span class="away"></span><i>at</i><span class="home"></span></div></div><div class="cover-read"><strong></strong><small>card cover score</small></div>';
  $('.away',top).textContent=away;$('.home',top).textContent=home;$('.cover-read strong',top).textContent=pct;
  const wrap=document.createElement('div');wrap.className='original-pick';while(head.firstChild)wrap.append(head.firstChild);head.append(top,wrap);

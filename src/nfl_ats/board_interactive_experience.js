@@ -1,4 +1,3 @@
-/* Interactive published board. Score scenarios never write to forecasts or result ledgers. */
 (() => {
   'use strict';
   const data = window.BALL_CARD;
@@ -8,11 +7,13 @@
   const games = new Map(data.games.map(g => [g.id, Object.freeze({ ...g })]));
   const scenarios = new Map();
   const signed = n => `${n > 0 ? '+' : n < 0 ? '−' : ''}${Math.abs(n)}`;
-  const pickText = g => `${g.pick} ${signed(g.spread)}`;
+  const hasSpread = g => Number.isFinite(g.spread);
+  const pickText = g => hasSpread(g) ? `${g.pick} ${signed(g.spread)}` : `${g.pick} · line unavailable`;
   const scoresValid = s => s && ['away', 'home'].every(k => Number.isInteger(s[k]) && s[k] >= 0 && s[k] <= 99);
   const element = (tag, className, text) => { const el = document.createElement(tag); if (className) el.className = className; if (text !== undefined) el.textContent = text; return el; };
   function grade(game, scores) {
     if (!scoresValid(scores)) return { outcome: 'INVALID', margin: null, adjusted: null };
+    if (!hasSpread(game)) return { outcome: 'UNAVAILABLE', margin: null, adjusted: null };
     const margin = game.pick === game.home ? scores.home - scores.away : scores.away - scores.home;
     const adjusted = margin + game.spread;
     return { outcome: adjusted > 0 ? 'COVER' : adjusted < 0 ? 'LOSS' : 'PUSH', margin, adjusted };
@@ -26,15 +27,15 @@
     card.dataset.outcome = result.outcome;
     card.dataset.source = scores && kind === 'demo' ? 'demo' : 'saved';
     if (scores && kind === 'demo') card.append(element('div', 'ball-receipt-demo', 'ILLUSTRATIVE RESULT · NOT A RECORDED GAME'));
-    card.append(element('div', 'ball-receipt-label', `WEEK ${String(data.week).padStart(2, '0')} / ${game.kickoff}${game.locks ? ` · ${game.locks}` : ''}`));
+    card.append(element('div', 'ball-receipt-label', `WEEK ${String(game.week ?? data.week).padStart(2, '0')} / ${game.kickoff}${game.locks ? ` · ${game.locks}` : ''}`));
     card.append(element('h3', '', `${game.away} at ${game.home}`));
-    card.append(element('p', 'ball-receipt-original', `Original pick: ${pickText(game)} · Cover chance: ${game.score}`));
-    const stamp = element('div', 'ball-receipt-outcome', result.outcome === 'PENDING' ? 'AWAITING A FINAL' : result.outcome);
+    card.append(element('p', 'ball-receipt-original', `Original pick: ${pickText(game)} · Cover chance: ${game.score && game.score !== '—' ? game.score : 'unavailable'}`));
+    const stamp = element('div', 'ball-receipt-outcome', result.outcome === 'PENDING' ? 'AWAITING A FINAL' : result.outcome === 'UNAVAILABLE' ? 'RESULT UNAVAILABLE' : result.outcome);
     stamp.dataset.outcome = result.outcome;
     card.append(stamp);
     if (scores) {
       card.append(element('div', 'ball-receipt-final', `${game.away} ${scores.away} — ${game.home} ${scores.home}`));
-      card.append(element('p', 'ball-receipt-original', result.outcome === 'PUSH' ? 'Exactly on the spread. Neither a cover nor a loss.' : `${result.outcome === 'COVER' ? 'Covers' : 'Misses'} by ${Math.abs(result.adjusted)} point${Math.abs(result.adjusted) === 1 ? '' : 's'}.`));
+      card.append(element('p', 'ball-receipt-original', result.outcome === 'UNAVAILABLE' ? 'The original spread was not saved, so this score cannot be graded.' : result.outcome === 'PUSH' ? 'Exactly on the spread. Neither a cover nor a loss.' : `${result.outcome === 'COVER' ? 'Covers' : 'Misses'} by ${Math.abs(result.adjusted)} point${Math.abs(result.adjusted) === 1 ? '' : 's'}.`));
     } else card.append(element('p', 'ball-receipt-original', 'The original pick stays here. A result appears only when a final score is available.'));
     const reason = element('div', 'ball-receipt-explanation');
     reason.append(element('b', '', 'THE ORIGINAL REASONING'), document.createTextNode(game.explanation));
@@ -82,10 +83,9 @@
   }
   window.BallExperience = { grade, receipt, games };
   if (document.body.dataset.interactivePage === 'history') { historyReceipts(); return; }
-  const inspector = $('.inspector-col');
-  if (!inspector) return;
+  if (!$('.inspector-col')) return;
+  const activeCard = () => $('#week-card > .week-grid') || $$('.week-grid').find(card => !card.closest('#week-archive')) || $('.week-grid');
 
-  // The chart uses the same Gaussian read as the saved spread slider, never the old empirical sweep.
   function modelProbability(widget, offset) {
     const d = widget.dataset, line = Number(d.cardLine) + offset;
     const z = (line - Number(d.center) - Number(d.mean)) / Number(d.std) / Math.SQRT2;
@@ -97,7 +97,9 @@
   function repairCurve(panel, game) {
     const widget = $('.ats-adjuster', panel), svg = $('svg.curve', panel);
     if (!widget || !svg) return;
-    const slider = $('.adjuster-slider', widget), lo = Number(slider.min), hi = Number(slider.max);
+    const slider = $('.adjuster-slider', widget);
+    if (!slider) return;
+    const lo = Number(slider.min), hi = Number(slider.max);
     const values = [];
     for (let offset = lo; offset <= hi + 1e-8; offset += .5) values.push({ offset, probability: modelProbability(widget, offset) });
     const min = Math.max(0, Math.min(...values.map(v => v.probability)) - .035), max = Math.min(1, Math.max(...values.map(v => v.probability)) + .035);
@@ -127,16 +129,20 @@
   const roomButtons = element('div', 'room-buttons'); roomUI.close.before(roomButtons); roomButtons.append(roomUI.close);
   for (const [text, dir] of [['← Previous', -1], ['Next →', 1]]) { const b = element('button', 'ball-button', text); b.type = 'button'; b.addEventListener('click', () => moveGame(dir)); roomButtons.insertBefore(b, roomUI.close); }
   let placeholder, returnFocus, oldX, oldY, oldOverflow;
-  function selectedPanel() { return $('.dive-panel:not([hidden])', inspector); }
+  const activeInspector = () => $('.inspector-col', roomBody) || $('.inspector-col', activeCard());
+  function selectedPanel() { return $('.dive-panel:not([hidden])', activeInspector()); }
   function selectedGame() { return games.get(selectedPanel().id); }
   function syncRoom() { const panel = selectedPanel(); const isField = panel.dataset.ballTab === 'field' || !panel.dataset.ballTab; roomUI.dialog.classList.toggle('room-overview', isField); $('.ball-dialog-top h2', roomUI.dialog).textContent = `${selectedGame().away} at ${selectedGame().home} / Game room`; }
   function openRoom() {
     if (roomUI.dialog.open) return;
+    const inspector = activeInspector();
     returnFocus = document.activeElement; oldX = scrollX; oldY = scrollY; oldOverflow = document.body.style.overflow;
     placeholder = element('div', 'ball-room-placeholder', 'This matchup is open in the game room.'); placeholder.style.height = `${inspector.getBoundingClientRect().height}px`;
     inspector.before(placeholder); roomBody.append(inspector); document.body.style.overflow = 'hidden'; syncRoom(); roomUI.dialog.showModal(); roomUI.close.focus();
   }
-  roomUI.dialog.addEventListener('close', () => { if (!placeholder) return; placeholder.replaceWith(inspector); placeholder = null; document.body.style.overflow = oldOverflow; returnFocus?.focus({ preventScroll: true }); window.scrollTo(oldX, oldY); });
+  function restoreRoom() { if (!placeholder) return; placeholder.replaceWith($('.inspector-col', roomBody)); placeholder = null; document.body.style.overflow = oldOverflow; returnFocus?.focus({ preventScroll: true }); window.scrollTo(oldX, oldY); }
+  function closeRoom() { restoreRoom(); if (roomUI.dialog.open) roomUI.dialog.close(); }
+  roomUI.dialog.addEventListener('close', restoreRoom);
   function tab(panel, key, focus = false) {
     const nodes = { field: $('.merged-field', panel), analysis: $('.dive-body', panel), lineups: $('.lineups-block', panel), score: $('.ball-score-lab', panel) };
     Object.entries(nodes).forEach(([k, n]) => n?.classList.toggle('merged-view-hidden', k !== key));
@@ -158,6 +164,7 @@
       const r = grade(game, scores); result.dataset.outcome = r.outcome; preview.disabled = !valid;
       if (!valid) { $('strong', result).textContent = 'CHECK THE SCORES'; $('p', result).textContent = 'Use whole-number scores from 0 to 99 for both teams.'; chart.replaceChildren(); return; }
       scenarios.set(game.id, scores); $('strong', result).textContent = r.outcome;
+      if (r.outcome === 'UNAVAILABLE') { $('p', result).textContent = 'The original spread was not saved, so this score cannot be graded.'; chart.replaceChildren(); return; }
       const football = r.margin > 0 ? `${game.pick} wins by ${r.margin}` : r.margin < 0 ? `${game.pick} loses by ${-r.margin}` : 'The game finishes tied';
       $('p', result).textContent = `${football}. ${pickText(game)} ${r.outcome === 'PUSH' ? 'lands exactly on the spread.' : `${r.outcome === 'COVER' ? 'covers' : 'misses'} by ${Math.abs(r.adjusted)} point${Math.abs(r.adjusted) === 1 ? '' : 's'}.`}`;
       const range = Math.max(14, Math.ceil((Math.abs(game.spread) + 1) / 7) * 7, Math.ceil((Math.abs(r.margin) + 1) / 7) * 7), x = v => 30 + (v + range) / (2 * range) * 480, boundary = x(-game.spread);
@@ -187,18 +194,18 @@
       if (matchup) row.setAttribute('aria-label', `${matchup}. Open game room`);
     }
   });
-  const keyboardHint = element('p', 'ball-keyboard-hint'); keyboardHint.innerHTML = '<kbd>↑</kbd> <kbd>↓</kbd> switch games &nbsp; <kbd>Enter</kbd> game room &nbsp; <kbd>Esc</kbd> return'; $('.board-col .sort-toggle').after(keyboardHint);
-  function moveGame(direction) { const order = $$('table.board tr.game').map(r => r.dataset.gameId), index = order.indexOf(selectedPanel().id); window.atsSelectGame(order[(index + direction + order.length) % order.length]); }
+  $$('.board-col .sort-toggle').forEach(toggle => { const keyboardHint = element('p', 'ball-keyboard-hint'); keyboardHint.innerHTML = '<kbd>↑</kbd> <kbd>↓</kbd> switch games &nbsp; <kbd>Enter</kbd> game room &nbsp; <kbd>Esc</kbd> return'; toggle.after(keyboardHint); });
+  function moveGame(direction) { const order = $$('table.board tr.game', activeCard()).map(r => r.dataset.gameId), index = order.indexOf(selectedPanel().id); window.atsSelectGame(order[(index + direction + order.length) % order.length]); }
   document.addEventListener('keydown', event => {
     if (event.defaultPrevented || event.ctrlKey || event.metaKey || event.altKey) return;
     if (receiptUI.dialog.open) return;
     if (roomUI.dialog.open) { if (event.key === 'Escape') { event.preventDefault(); roomUI.dialog.close(); } return; }
     const nativeControl = event.target.closest('input,textarea,select,button,a,summary,[contenteditable="true"],[role="tablist"],.stadium-stage'); if (nativeControl) return;
-    if (document.body.dataset.weekLiveVisible === 'false') return;
+    if (!activeCard()?.querySelector('table.board tr.game')) return;
     if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(event.key)) return;
     if (event.key === 'Enter') { const row = event.target.closest('table.board tr.game'); if (!row) return; event.preventDefault(); window.atsSelectGame(row.dataset.gameId); openRoom(); return; }
     event.preventDefault(); moveGame(event.key === 'ArrowUp' || event.key === 'ArrowLeft' ? -1 : 1);
   });
-  inspector.addEventListener('ball:gamechange', () => { if (roomUI.dialog.open) syncRoom(); });
-  Object.assign(window.BallExperience, { openRoom, tab, openReceipt, modelProbability });
+  $$('.inspector-col').forEach(inspector => inspector.addEventListener('ball:gamechange', () => { if (roomUI.dialog.open) syncRoom(); }));
+  Object.assign(window.BallExperience, { openRoom, closeRoom, tab, openReceipt, modelProbability });
 })();

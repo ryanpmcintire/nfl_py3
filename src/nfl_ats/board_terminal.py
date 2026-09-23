@@ -91,12 +91,16 @@ _DIVE_SCRIPT = """
   }
 
   function selectGame(gameId) {
-    document.querySelectorAll('.dive-panel').forEach(function (panel) {
+    var target = document.getElementById(gameId);
+    if (!target) return;
+    var card = target.closest('.week-grid') || document;
+    card.querySelectorAll('.dive-panel').forEach(function (panel) {
       panel.hidden = panel.dataset.gameId !== gameId;
     });
-    document.querySelectorAll('table.board tr.game').forEach(function (row) {
+    card.querySelectorAll('table.board tr.game').forEach(function (row) {
       row.classList.toggle('is-selected', row.dataset.gameId === gameId);
     });
+    target.closest('.inspector-col').dispatchEvent(new Event('ball:gamechange'));
   }
   // Exposed so the shared ticker script (_TICKER_SCRIPT) can select a game
   // by id too, without needing a second copy of this logic or a
@@ -801,7 +805,7 @@ def _default_game_id(content: BoardContent) -> str:
     return ""
 
 
-def _board_section(content: BoardContent) -> str:
+def _board_section(content: BoardContent, *, archived: bool = False) -> str:
 
     policy = content.policy
     if policy.rich_narrative:
@@ -914,15 +918,7 @@ def _board_section(content: BoardContent) -> str:
         "Flips at</abbr></th><th>Confidence</th>"
         "</tr></thead><tbody>" + "".join(rows) + "</tbody></table>"
     )
-    return (
-        '<section aria-labelledby="board-h" class="board-col"><div class="section-head">'
-        f'<h2 id="board-h">{escape(content.week_label)} board &middot; forced picks</h2>'
-        f'<span class="sub">{len(content.games)} games &middot; every pool card played '
-        "&middot; click a row to inspect</span>"
-        "</div>"
-        f"{_board_sort_toggle_html()}"
-        f"{column_guide}"
-        f'<div class="board-scroll">{table}</div>'
+    details = (
         f"{_confidence_legend_html(content)}"
         f"{_best_pick_note_html(content)}"
         f"{_injury_state_html(content)}"
@@ -934,7 +930,21 @@ def _board_section(content: BoardContent) -> str:
             if content.pick_lock_note
             else ""
         )
-        + f"{_source_policy_panel_html(content.source_policy)}</section>"
+        + _source_policy_panel_html(content.source_policy)
+        if not archived
+        else '<p class="week-saved-note">Original picks and pool lines, with final results. '
+        "Cover chances are the estimates saved with those picks.</p>"
+    )
+    return (
+        '<section aria-labelledby="board-h" class="board-col"><div class="section-head">'
+        f'<h2 id="board-h">{escape(content.week_label)} board &middot; forced picks</h2>'
+        f'<span class="sub">{len(content.games)} games &middot; every pool card played '
+        "&middot; click a row to inspect</span>"
+        "</div>"
+        f"{_board_sort_toggle_html()}"
+        f"{column_guide}"
+        f'<div class="board-scroll">{table}</div>'
+        f"{details}</section>"
     )
 
 
@@ -1248,7 +1258,7 @@ def _dive_panel_html(
     )
 
 
-def _inspector_section(content: BoardContent) -> str:
+def _inspector_section(content: BoardContent, *, archived: bool = False) -> str:
 
     if not content.dives:
         return ""
@@ -1263,7 +1273,7 @@ def _inspector_section(content: BoardContent) -> str:
             explanation_text=(
                 row_by_id[dive.game_id].explanation_text if dive.game_id in row_by_id else ""
             ),
-            is_last_game=dive.game_id == last_game_id,
+            is_last_game=dive.game_id == last_game_id and not archived,
         )
         for dive in content.dives
     )
@@ -1473,6 +1483,17 @@ def _week_timeline_panel(content: BoardContent) -> str:
     )
 
 
+def render_week_card(content: BoardContent, *, archived: bool = False) -> str:
+    key = f"{content.season}-{content.week}"
+    sections = _board_section(content, archived=archived) + _inspector_section(
+        content, archived=archived
+    )
+    if archived:
+        for name in ("board-h", "dive-h"):
+            sections = sections.replace(f'"{name}"', f'"{name}-{key}"')
+    return f'<div class="week-grid" data-week-panel="{key}">{sections}</div>'
+
+
 def render(content: BoardContent, *, page: str = PICKS_PAGE) -> str:
 
     body = (
@@ -1489,10 +1510,7 @@ def render(content: BoardContent, *, page: str = PICKS_PAGE) -> str:
         + _pool_line_note_html(content)
         + _headline_section(content.headline)
         + _week_timeline_panel(content)
-        + '<div class="week-grid">'
-        + _board_section(content)
-        + _inspector_section(content)
-        + "</div>"
+        + render_week_card(content)
         + _week_changes_section(content)
         + _rival_rules_section(content)
         + _findings_teaser_section(content)

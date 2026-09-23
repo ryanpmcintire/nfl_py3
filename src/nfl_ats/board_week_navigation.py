@@ -9,6 +9,9 @@ from typing import Any, cast
 
 import pandas as pd
 
+from nfl_ats import board_terminal
+from nfl_ats.board_archive import build_archived_boards
+from nfl_ats.board_content import BoardContent
 from nfl_ats.board_site_content import HistoryPickRow, SiteContent
 from nfl_ats.market_data_halves import current_week_kickoff_window
 from nfl_ats.splash_lines import load_splash_capture
@@ -113,44 +116,20 @@ def _readiness(
     }
 
 
-def _archive_markup(weeks: list[dict[str, Any]]) -> str:
-    sections: list[str] = []
-    for week in weeks:
-        rows: list[str] = []
-        for index, game in enumerate(week["games"]):
-            rows.append(
-                f'<tr class="game week-archive-row{" is-best" if game["bestPick"] else ""}" '
-                f'data-archive-index="{index}" tabindex="0"'
-                f' aria-label="Inspect {html.escape(game["awayTeam"])} '
-                f'at {html.escape(game["homeTeam"])}">'
-                '<td class="kickoff" data-label="Kickoff">&mdash;</td>'
-                '<td class="matchup" data-label="Matchup">'
-                '<button type="button" class="week-game-link">'
-                f"{html.escape(game['awayTeam'])} at <b>{html.escape(game['homeTeam'])}</b>"
-                "</button></td>"
-                '<td class="pick" data-label="Pick">'
-                f"{html.escape(game['pickTeam'])} {html.escape(game['pickLine'])}</td>"
-                '<td class="market-now" data-label="Books now">&mdash;</td>'
-                f'<td class="prob" data-label="Cover chance">{html.escape(game["confidence"])}</td>'
-                '<td class="flipline" data-label="Flips at">&mdash;</td>'
-                '<td class="conf" data-label="Confidence">&mdash;</td></tr>'
-            )
-        sections.append(
-            f'<div class="week-grid week-saved-card" data-week-panel="{week["key"]}">'
-            '<section class="board-col"><div class="section-head">'
-            f"<h2>Week {week['week']} / The complete card</h2>"
-            f'<span class="sub">{len(week["games"])} games · select a game to inspect</span></div>'
-            '<p class="week-saved-note">The picks and pool lines published for this week.</p>'
-            '<div class="board-scroll"><table class="board"><thead><tr>'
-            "<th>Kickoff</th><th>Matchup</th><th>Pick</th><th>Books now</th>"
-            "<th>Cover chance</th><th>Flips at</th><th>Confidence</th>"
-            f"</tr></thead><tbody>{''.join(rows)}</tbody></table></div></section>"
-            '<section class="inspector-col"><div class="section-head">'
-            "<h2>Game inspector</h2>"
-            '<span class="sub">The published pick and final result</span></div>'
-            '<div class="week-archive-detail" aria-live="polite"></div></section></div>'
-        )
-    return f'<template id="week-archive">{"".join(sections)}</template>'
+def archive_boards(
+    content: SiteContent, data_root: Path | None, generated_at: datetime
+) -> tuple[BoardContent, ...]:
+    resolved_data_root = data_root or Path(os.environ.get("NFL_ATS_DATA_DIR", "data"))
+    try:
+        current = _current_week(resolved_data_root, generated_at)
+    except (OSError, ValueError, KeyError):
+        return ()
+    return build_archived_boards(content, resolved_data_root, current)
+
+
+def _archive_markup(boards: tuple[BoardContent, ...]) -> str:
+    cards = "".join(board_terminal.render_week_card(board, archived=True) for board in boards)
+    return f'<div id="week-archive" hidden>{cards}</div>'
 
 
 def enhance(
@@ -159,6 +138,7 @@ def enhance(
     *,
     data_root: Path | None = None,
     generated_at: datetime | None = None,
+    archived_boards: tuple[BoardContent, ...] | None = None,
 ) -> str:
     now = (generated_at or datetime.now(UTC)).astimezone(UTC)
     resolved_data_root = data_root or Path(os.environ.get("NFL_ATS_DATA_DIR", "data"))
@@ -236,7 +216,11 @@ def enhance(
         '<p id="week-selection-status" aria-live="polite">'
         f"{current[0]} · Week {current[1]} · Current week</p></section>"
     )
-    archive = _archive_markup(weeks)
+    archive = _archive_markup(
+        archived_boards
+        if archived_boards is not None
+        else build_archived_boards(content, resolved_data_root, current)
+    )
     data_json = json.dumps(payload, separators=(",", ":")).replace("</", "<\\/")
     data_node = f'<script id="week-navigation-data" type="application/json">{data_json}</script>'
     module_path = Path(__file__).parent

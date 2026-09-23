@@ -23,57 +23,31 @@
   );
   const weekChip = record?.querySelector('.record-chip');
   const liveRecord = weekChip?.textContent;
-  const panels = new Map(Array.from(document.getElementById('week-archive').content.children).map(panel => [panel.dataset.weekPanel, panel]));
+  const archive = document.getElementById('week-archive');
+  const panels = new Map();
+  Array.from(archive?.children || []).forEach(panel => {
+    if (panel.dataset.weekPanel) panels.set(panel.dataset.weekPanel, panel);
+    panel.remove();
+  });
+  archive?.remove();
   const options = new Set(Array.from(select.options).map(option => option.value));
   const originalTitle = document.title;
-  const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
   const weekLabel = key => {
     const [season, week] = key.split('-');
     return `${season} · Week ${week}`;
   };
-  const selectArchivedGame = (panel, week, index, focus = false) => {
-    const game = week.games[index];
-    if (!game) return;
-    panel.dataset.selectedIndex = String(index);
-    panel.querySelectorAll('[data-archive-index]').forEach(row => {
-      const selected = Number(row.dataset.archiveIndex) === index;
-      row.classList.toggle('is-selected', selected);
-      if (selected) row.setAttribute('aria-current', 'true');
-      else row.removeAttribute('aria-current');
-      if (selected && focus) row.focus();
-    });
-    panel.querySelector('.week-archive-detail').innerHTML = `
-      <div class="dive-panels"><div class="dive"><div class="dive-head"><div class="refined-matchup">
-        <div><div class="match-label">THE MATCHUP</div><div class="teams"><span class="away">${escapeHTML(game.awayTeam)}</span><i>at</i><span class="home">${escapeHTML(game.homeTeam)}</span></div></div>
-        <div class="cover-read"><strong>${escapeHTML(game.confidence)}</strong><small>published cover chance</small></div>
-      </div><div class="original-pick"><div><div class="game-id">${game.bestPick ? '★ ' : ''}${escapeHTML(game.pickTeam)} ${escapeHTML(game.pickLine)}</div><div class="game-sub">Week ${week.week} · ${game.bestPick ? 'Best Pick of the week' : 'Published pick'}</div></div></div></div>
-      <div class="week-saved-result"><span class="match-label">${game.status === 'Pending' ? 'RESULT' : 'FINAL'}</span><strong>${escapeHTML(game.score || 'Awaiting the final score')}</strong><span>${escapeHTML(game.status)}</span></div>
-      <p class="week-saved-note">This is the pick and pool line saved with this week’s card.</p>
-      <div class="ball-actions"><button type="button" class="ball-button" data-week-step="-1">← Previous game</button><button type="button" class="ball-button" data-week-step="1">Next game →</button></div></div></div>`;
+  const selections = new Map();
+  const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
+  const selectedGameId = panel => panel?.querySelector('table.board tr.game.is-selected[data-game-id]')?.dataset.gameId || panel?.querySelector('.dive-panel:not([hidden])')?.dataset.gameId;
+  const chooseGame = (key, panel) => {
+    if (!panel) return null;
+    const ids = new Set(Array.from(panel.querySelectorAll('table.board tr.game[data-game-id]'), row => row.dataset.gameId));
+    const remembered = selections.get(key);
+    if (ids.has(remembered)) return remembered;
+    const selected = selectedGameId(panel);
+    if (ids.has(selected)) return selected;
+    return panel.querySelector('table.board tr.game.is-best[data-game-id]')?.dataset.gameId || panel.querySelector('table.board tr.game[data-game-id]')?.dataset.gameId;
   };
-  panels.forEach((panel, key) => {
-    const week = data.weeks.find(item => item.key === key);
-    panel.addEventListener('click', event => {
-      const row = event.target.closest('[data-archive-index]');
-      if (row) selectArchivedGame(panel, week, Number(row.dataset.archiveIndex));
-      const step = event.target.closest('[data-week-step]');
-      if (step) {
-        const direction = Number(step.dataset.weekStep);
-        const index = (Number(panel.dataset.selectedIndex) + direction + week.games.length) % week.games.length;
-        selectArchivedGame(panel, week, index);
-        panel.querySelector(`[data-week-step="${direction}"]`).focus();
-      }
-    });
-    panel.addEventListener('keydown', event => {
-      const row = event.target.closest('[data-archive-index]');
-      if (!row || !['ArrowDown', 'ArrowUp', 'Enter', ' '].includes(event.key)) return;
-      event.preventDefault();
-      const direction = event.key === 'ArrowDown' ? 1 : event.key === 'ArrowUp' ? -1 : 0;
-      const index = (Number(row.dataset.archiveIndex) + direction + week.games.length) % week.games.length;
-      selectArchivedGame(panel, week, index, true);
-    });
-    selectArchivedGame(panel, week, Math.max(0, week.games.findIndex(game => game.bestPick)));
-  });
   const pending = document.createElement('div');
   pending.className = 'week-grid week-pending-card';
   pending.innerHTML = `<section class="board-col"><div class="section-head"><h2>Week ${data.current.week} / The complete card</h2><span class="sub">Current week</span></div><div class="week-pending-message"><span class="match-label">WEEK ${data.current.week}</span><h3>Picks are on the way</h3><p>${escapeHTML(data.readiness.message)}</p>${data.published ? '<button type="button" class="ball-button" data-latest-card>View the latest published card</button>' : ''}</div></section>`;
@@ -87,11 +61,18 @@
     const key = options.has(requestedKey) ? requestedKey : data.current.key;
     const isCurrent = key === data.current.key;
     const hasLiveCard = data.published?.key === key;
+    const outgoing = slot.querySelector('.week-grid[data-week-panel]');
+    const outgoingId = selectedGameId(outgoing);
+    if (outgoing?.dataset.weekPanel && outgoingId) selections.set(outgoing.dataset.weekPanel, outgoingId);
+    window.BallExperience?.closeRoom();
     document.querySelectorAll('dialog[open]').forEach(dialog => dialog.close());
     document.body.dataset.weekLiveVisible = String(hasLiveCard);
     select.value = key;
     current.disabled = isCurrent;
-    slot.replaceChildren(hasLiveCard ? live : panels.get(key) || pending);
+    const panel = hasLiveCard ? live : panels.get(key);
+    slot.replaceChildren(panel || pending);
+    const gameId = chooseGame(key, panel);
+    if (gameId && window.atsSelectGame) window.atsSelectGame(gameId);
     weeklyNotes.forEach(node => { node.hidden = !hasLiveCard; });
     readiness.hidden = true;
     const week = data.weeks.find(item => item.key === key);

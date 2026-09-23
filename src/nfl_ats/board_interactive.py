@@ -4,7 +4,10 @@ import json
 import re
 from datetime import datetime
 from pathlib import Path
+from typing import cast
 from zoneinfo import ZoneInfo
+
+import pandas as pd
 
 from nfl_ats.board_content import BoardContent, GameRow
 
@@ -56,12 +59,16 @@ def card_payload(board: BoardContent) -> dict[str, object]:
         games.append(
             {
                 "id": game.game_id,
+                "season": board.season,
+                "week": board.week,
                 "away": game.away,
                 "home": game.home,
                 "pick": game.pick_team,
-                "spread": -game.market_spread
-                if game.pick_team == game.home
-                else game.market_spread,
+                "spread": (
+                    (-game.market_spread if game.pick_team == game.home else game.market_spread)
+                    if pd.notna(game.market_spread)
+                    else None
+                ),
                 "score": game.probability_text,
                 "kickoff": f"{game.weekday_name}, {game.gameday:%B} {game.gameday.day}",
                 "locks": game.lock_text,
@@ -79,11 +86,22 @@ def card_payload(board: BoardContent) -> dict[str, object]:
     }
 
 
-def enhance(document: str, *, page: str, board: BoardContent) -> str:
+def enhance(
+    document: str,
+    *,
+    page: str,
+    board: BoardContent,
+    archived_boards: tuple[BoardContent, ...] = (),
+) -> str:
     key = "week" if page == "index.html" else Path(page).stem
-    payload = json.dumps(card_payload(board), ensure_ascii=True, allow_nan=False).replace(
-        "<", "\\u003c"
-    )
+    card = card_payload(board)
+    if page == "index.html":
+        card["games"] = [
+            game
+            for week_board in (board, *archived_boards)
+            for game in cast(list[object], card_payload(week_board)["games"])
+        ]
+    payload = json.dumps(card, ensure_ascii=True, allow_nan=False).replace("<", "\\u003c")
     document = document.replace("</head>", f"<style>{_STYLE}</style>\n</head>", 1)
     document = document.replace("<body>", f'<body data-interactive-page="{key}">', 1)
     return document.replace(

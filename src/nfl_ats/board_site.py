@@ -25,6 +25,7 @@ def build_site(
         require_fresh_arrest_overlay=require_fresh_arrest_overlay,
     )
 
+    archives = board_week_navigation.archive_boards(content, data_root, generated)
     pages = {
         board_terminal.PICKS_PAGE: board_terminal.render(content.board),
         board_terminal.MODEL_PAGE: board_terminal.render_model_page(content.model),
@@ -32,7 +33,9 @@ def build_site(
         board_terminal.FINDINGS_PAGE: board_terminal.render_findings_page(content.findings),
     }
     enhanced = {
-        page: board_interactive.enhance(document, page=page, board=content.board)
+        page: board_interactive.enhance(
+            document, page=page, board=content.board, archived_boards=archives
+        )
         for page, document in pages.items()
     }
     enhanced[board_terminal.PICKS_PAGE] = board_week_navigation.enhance(
@@ -40,6 +43,7 @@ def build_site(
         content,
         data_root=data_root,
         generated_at=generated,
+        archived_boards=archives,
     )
     return enhanced
 

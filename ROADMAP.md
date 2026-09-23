@@ -835,6 +835,14 @@ gets measured is recorded through both registries with
 - **Measured verification:** Ruff format/check, mypy and full pytest passed (4,529 passed, 9 skipped); JavaScript syntax, diff whitespace and `publish-board` passed. Rendered index diff +130/-93; other three pages each +2/-2. No new tests or research-only runtime assertions.
 - Repair and remaining acquisition work are saved in `docs/lanes/done/dashboard-week-filter-repair.md` and `docs/lanes/week3-lines-2026-09-22.md`.
 
+### Past weeks share the current card layout
+
+Weeks 1 and 2 now use the current week's board, game inspector, tabs, game room,
+score scenarios, and receipts. Week switching restores each week's selection.
+**Measured:** all 32 saved picks and probabilities remain unchanged; missing historical details
+stay unavailable. Published pages were reviewed on desktop and mobile, and the
+88 existing board tests pass. See `docs/lanes/done/archive-week-cards.md`.
+
 ## Recommended execution order
 
 1. **Keep Sunday's card current, preserving locked games.** Continue from

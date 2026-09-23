@@ -4,6 +4,7 @@ import os
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass, field, replace
 from datetime import UTC, date, datetime, timedelta
+from math import isnan
 from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo
@@ -306,13 +307,15 @@ class GameRow:
     @property
     def pick_spread_text(self) -> str:
 
+        if isnan(self.market_spread):
+            return "—"
         sign = -1.0 if self.pick_team == self.home else 1.0
         value = self.market_spread * sign
         return "pick'em" if value == 0 else f"{value:+g}"
 
     @property
     def probability_text(self) -> str:
-        return f"{self.pick_probability:.1%}"
+        return "—" if isnan(self.pick_probability) else f"{self.pick_probability:.1%}"
 
     @property
     def spread_magnitude(self) -> float:

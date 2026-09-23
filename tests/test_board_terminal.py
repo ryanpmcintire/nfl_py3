@@ -441,7 +441,7 @@ def test_week_grid_holds_the_board_and_inspector_columns_in_order() -> None:
 
     content = build_fixture_content()
     html = board_terminal.render(content)
-    grid_index = html.index('<div class="week-grid">')
+    grid_index = html.index('<div class="week-grid"')
     board_index = html.index('aria-labelledby="board-h"')
     inspector_index = html.index('aria-labelledby="dive-h"')
     assert grid_index < board_index < inspector_index
