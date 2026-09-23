@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 import sys
 from datetime import UTC, datetime
 from pathlib import Path
@@ -18,18 +19,35 @@ from roof_state_screen import build_prediction_table as roof_state_prediction_ta
 
 from nfl_ats.bye_edge_fade_overlay import bye_edge_flag_by_game  # noqa: E402
 from nfl_ats.data import DataContractError  # noqa: E402
+from nfl_ats.division_revenge_tilt_overlay import division_revenge_side_by_game  # noqa: E402
+from nfl_ats.forecast_cold_visitor_tilt_overlay import (  # noqa: E402
+    forecast_cold_visitor_flag_by_game,
+)
 from nfl_ats.forecast_weather_kn_precip_high_total_tilt_overlay import (  # noqa: E402
     precip_high_total_flag_by_game,
 )
 from nfl_ats.interim_hc_first_game_tilt_overlay import (  # noqa: E402
     interim_first_game_flag_by_game_fail_open,
 )
+from nfl_ats.interim_playcaller_first_game_back_overlay import (  # noqa: E402
+    games_after_playcaller_change_flag_by_game,
+    load_counted_playcaller_change_events,
+)
 from nfl_ats.pick_probability_fit import build_fit_population  # noqa: E402
+from nfl_ats.post_bye_new_playcaller_back_overlay import (  # noqa: E402
+    load_coordinator_history,
+    post_bye_new_oc_flag_by_game,
+)
+from nfl_ats.rookie_prior_surplus_tilt_overlay import rookie_prior_surplus_flags  # noqa: E402
 from nfl_ats.schedule_flag_features import (  # noqa: E402
+    ATS_STREAK_REGRESS_COLUMN,
     DIVISION_DOG_COLUMN,
+    HOME_THURSDAY_COLUMN,
     WEEK1_DOG_COLUMN,
     default_schedule,
+    derive_ats_streak_regress_features,
     derive_division_dog_features,
+    derive_home_thursday_features,
     derive_week1_dog_features,
 )
 from nfl_ats.tank_zone_fade_tilt_overlay import tank_zone_flag_by_game  # noqa: E402
@@ -39,6 +57,7 @@ from nfl_ats.transaction_flag_features import (  # noqa: E402
 )
 
 BASE_FEATURES = ("model_logit", "composition_flag_sum")
+LOW_TOTAL_MAX = 42.0
 BOOTSTRAP_DRAWS = 2000
 BOOTSTRAP_SEED = 20260923
 FORECAST_ARCHIVE = (
@@ -75,6 +94,34 @@ RATIO_TABLE = (
     ("week1_dog_on_production", 1.473, "schedule"),
     ("interim_hc_first_game_tilt__week_in_season_weeks_5_12_2020_2025", 1.449, "onfield/coach"),
     ("division_dog_on_production", 1.338, "schedule"),
+)
+
+SELECTION_RULE_BATCH2 = (
+    "Batch 2 (2026-09-23, same predeclared rule as batch 1): continue down the SAME "
+    "|effect|/standard_error ranking over classification=unresolved_below_power, "
+    "effect_units=accuracy_points, category in schedule/environment/health/offfield/onfield, "
+    "one entry per family, starting immediately after the 8 batch-1 families. Same exclusions: "
+    "CFB-only/benchmark-transfer, referee/crew families, health families depending on in-week "
+    "injury/practice-report data, composite/pooled-atlas entries (not one rebuildable column), "
+    "ablations of already-served composition members, fitted team-rating pipelines (e.g. "
+    "apm_unit_feature's play-by-play ridge fit, same class of exclusion as graph_ratings_v2), "
+    "families already graded on line movement (batch 1's 8 plus the done lane's 5), and any "
+    "family with no confirmed standalone rebuildable NFL feature builder in src/nfl_ats. "
+    "player_arrests_back_side_policy (ratio 2.163/1.566) skipped: confirmed a live served "
+    "composition member via its own overlay_leave_one_out_2026_08_26 LOO-ablation entry, not a "
+    "legacy accuracy-only family. fluview_* families skipped again: Tuesday-safety of the CDC "
+    "surveillance release timing still not confirmed. Of the remainder, take the next 8 by ratio."
+)
+
+RATIO_TABLE_BATCH2 = (
+    ("interim_playcaller_first_game_back_on_production", 0.979, "offfield/coach"),
+    ("xlg06_rookie_prior_surplus_tilt_on_production", 0.955, "onfield/roster"),
+    ("forecast_cold_visitor_tilt_on_production", 0.847, "environment/weather-forecast"),
+    ("ats_streak_regress_on_production", 0.835, "schedule"),
+    ("post_bye_new_playcaller_back_on_production", 0.835, "offfield/coach"),
+    ("home_thursday_on_production", 0.719, "schedule"),
+    ("low_total_div_home_dog_on_production", 0.712, "schedule"),
+    ("division_revenge_tilt_on_production", 0.573, "onfield"),
 )
 
 
@@ -183,6 +230,104 @@ def add_deadline_drag_term(population: pd.DataFrame, schedule: pd.DataFrame) -> 
     return out
 
 
+def add_playcaller_change_term(population: pd.DataFrame, schedule: pd.DataFrame) -> pd.DataFrame:
+    events = load_counted_playcaller_change_events(REPO / "data")
+    flags = games_after_playcaller_change_flag_by_game(schedule, events)
+    flags = flags.drop_duplicates(subset="game_id")
+    out = population.merge(flags, on="game_id", how="left")
+    out["home_flagged"] = out["home_flagged"].fillna(False)
+    out["away_flagged"] = out["away_flagged"].fillna(False)
+    out["playcaller_change_term"] = np.where(
+        out["home_flagged"], 1.0, np.where(out["away_flagged"], -1.0, 0.0)
+    )
+    return out
+
+
+def add_rookie_priors_term(population: pd.DataFrame, schedule: pd.DataFrame) -> pd.DataFrame:
+    games = schedule[["game_id", "season", "week", "home_team", "away_team"]].copy()
+    games["game_id"] = games["game_id"].astype(str)
+    flags = rookie_prior_surplus_flags(REPO, games)
+    flags = flags.drop_duplicates(subset="game_id")[["game_id", "flag"]]
+    out = population.merge(flags, on="game_id", how="left")
+    out["flag"] = out["flag"].fillna(0.0)
+    out["rookie_priors_term"] = out["flag"].astype(float)
+    return out
+
+
+def add_forecast_cold_visitor_term(
+    population: pd.DataFrame, schedule: pd.DataFrame
+) -> pd.DataFrame:
+    forecasts = pd.read_parquet(FORECAST_ARCHIVE)
+    flags = forecast_cold_visitor_flag_by_game(schedule, forecasts)
+    flags = flags.drop_duplicates(subset="game_id")[["game_id", "forecast_cold_visitor_flag"]]
+    out = population.merge(flags, on="game_id", how="left")
+    out["forecast_cold_visitor_flag"] = out["forecast_cold_visitor_flag"].fillna(False)
+    out["forecast_cold_visitor_term"] = out["forecast_cold_visitor_flag"].astype(float)
+    return out
+
+
+def add_ats_streak_regress_term(population: pd.DataFrame, schedule: pd.DataFrame) -> pd.DataFrame:
+    derived = derive_ats_streak_regress_features(schedule)
+    derived = derived.drop_duplicates(subset="game_id")
+    out = population.merge(derived, on="game_id", how="left")
+    out[ATS_STREAK_REGRESS_COLUMN] = out[ATS_STREAK_REGRESS_COLUMN].fillna(0.0)
+    return out
+
+
+def add_post_bye_new_oc_term(population: pd.DataFrame, schedule: pd.DataFrame) -> pd.DataFrame:
+    coordinator_history = load_coordinator_history(REPO / "data")
+    flags = post_bye_new_oc_flag_by_game(schedule, coordinator_history)
+    flags = flags.drop_duplicates(subset="game_id")[["game_id", "home_flagged", "away_flagged"]]
+    out = population.merge(flags, on="game_id", how="left")
+    out["home_flagged"] = out["home_flagged"].fillna(False)
+    out["away_flagged"] = out["away_flagged"].fillna(False)
+    out["post_bye_new_oc_term"] = np.where(
+        out["home_flagged"], 1.0, np.where(out["away_flagged"], -1.0, 0.0)
+    )
+    return out
+
+
+def add_home_thursday_term(population: pd.DataFrame, schedule: pd.DataFrame) -> pd.DataFrame:
+    derived = derive_home_thursday_features(schedule)
+    derived = derived.drop_duplicates(subset="game_id")
+    out = population.merge(derived, on="game_id", how="left")
+    out[HOME_THURSDAY_COLUMN] = out[HOME_THURSDAY_COLUMN].fillna(0.0)
+    return out
+
+
+def add_low_total_div_home_dog_term(
+    population: pd.DataFrame, schedule: pd.DataFrame
+) -> pd.DataFrame:
+    cols = ["game_id", "div_game", "total_line", "spread_line", "game_type"]
+    sched = schedule[cols].copy()
+    sched["game_id"] = sched["game_id"].astype(str)
+    div_game = pd.to_numeric(sched["div_game"], errors="coerce").eq(1.0)
+    total_line = pd.to_numeric(sched["total_line"], errors="coerce")
+    spread_line = pd.to_numeric(sched["spread_line"], errors="coerce")
+    low_total = total_line.notna() & total_line.le(LOW_TOTAL_MAX)
+    home_dog = spread_line.notna() & spread_line.lt(0.0)
+    reg = sched["game_type"].astype(str).eq("REG")
+    eligible = div_game & low_total & home_dog & reg
+    sched["low_total_div_home_dog_term"] = np.where(eligible, -1.0, 0.0)
+    out = population.merge(
+        sched[["game_id", "low_total_div_home_dog_term"]], on="game_id", how="left"
+    )
+    out["low_total_div_home_dog_term"] = out["low_total_div_home_dog_term"].fillna(0.0)
+    return out
+
+
+def add_division_revenge_term(population: pd.DataFrame, schedule: pd.DataFrame) -> pd.DataFrame:
+    flags = division_revenge_side_by_game(schedule)
+    flags = flags.drop_duplicates(subset="game_id")
+    out = population.merge(flags, on="game_id", how="left")
+    out["revenge_home"] = out["revenge_home"].fillna(False)
+    out["revenge_away"] = out["revenge_away"].fillna(False)
+    out["division_revenge_term"] = np.where(
+        out["revenge_home"], 1.0, np.where(out["revenge_away"], -1.0, 0.0)
+    )
+    return out
+
+
 def loso(frame: pd.DataFrame, features: tuple[str, ...]) -> tuple[np.ndarray, dict]:
     frame = frame.reset_index(drop=True)
     x_cols = list(features)
@@ -257,6 +402,49 @@ TERM_DECLARATIONS = (
     },
 )
 
+TERM_DECLARATIONS_BATCH2 = (
+    {
+        "label": "playcaller_change",
+        "term_columns": ("playcaller_change_term",),
+        "builder": add_playcaller_change_term,
+    },
+    {
+        "label": "rookie_priors",
+        "term_columns": ("rookie_priors_term",),
+        "builder": add_rookie_priors_term,
+    },
+    {
+        "label": "forecast_cold_visitor_tilt",
+        "term_columns": ("forecast_cold_visitor_term",),
+        "builder": add_forecast_cold_visitor_term,
+    },
+    {
+        "label": "ats_streak_regress",
+        "term_columns": (ATS_STREAK_REGRESS_COLUMN,),
+        "builder": add_ats_streak_regress_term,
+    },
+    {
+        "label": "post_bye_new_oc",
+        "term_columns": ("post_bye_new_oc_term",),
+        "builder": add_post_bye_new_oc_term,
+    },
+    {
+        "label": "home_thursday",
+        "term_columns": (HOME_THURSDAY_COLUMN,),
+        "builder": add_home_thursday_term,
+    },
+    {
+        "label": "low_total_div_home_dog",
+        "term_columns": ("low_total_div_home_dog_term",),
+        "builder": add_low_total_div_home_dog_term,
+    },
+    {
+        "label": "division_revenge_tilt",
+        "term_columns": ("division_revenge_term",),
+        "builder": add_division_revenge_term,
+    },
+)
+
 
 def variant_report(
     declaration: dict, population: pd.DataFrame, schedule: pd.DataFrame, seed: int, draws: int
@@ -314,6 +502,19 @@ def variant_report(
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--batch", type=int, choices=(1, 2), default=1)
+    args = parser.parse_args()
+
+    if args.batch == 2:
+        term_declarations = TERM_DECLARATIONS_BATCH2
+        selection_rule = SELECTION_RULE_BATCH2
+        ratio_table = RATIO_TABLE_BATCH2
+    else:
+        term_declarations = TERM_DECLARATIONS
+        selection_rule = SELECTION_RULE
+        ratio_table = RATIO_TABLE
+
     now = datetime.now(UTC)
     population, provenance = build_fit_population(REPO / "artifacts", REPO / "data")
     population = population.dropna(subset=["open_move"]).reset_index(drop=True)
@@ -322,7 +523,7 @@ def main() -> int:
     schedule["game_id"] = schedule["game_id"].astype(str)
 
     reports = []
-    for declaration in TERM_DECLARATIONS:
+    for declaration in term_declarations:
         try:
             reports.append(
                 variant_report(declaration, population, schedule, BOOTSTRAP_SEED, BOOTSTRAP_DRAWS)
@@ -331,13 +532,14 @@ def main() -> int:
             reports.append({"label": declaration["label"], "error": f"{type(exc).__name__}: {exc}"})
 
     results = {
-        "command": "python scripts/line_move_regrade_legacy.py",
+        "command": f"python scripts/line_move_regrade_legacy.py --batch {args.batch}",
         "created_at_utc": now.isoformat(),
         "unit": "Tuesday-terms line-move regrade, legacy registry families",
-        "selection_rule": SELECTION_RULE,
+        "batch": args.batch,
+        "selection_rule": selection_rule,
         "predeclared_ratio_table": [
             {"registry_name": name, "prior_abs_effect_over_se": ratio, "category": cat}
-            for name, ratio, cat in RATIO_TABLE
+            for name, ratio, cat in ratio_table
         ],
         "base_population_games": len(population),
         "seed": BOOTSTRAP_SEED,

@@ -258,6 +258,34 @@
       "source": "artifacts/schedule_flag_on_production/ats_streak_regress/20260905T041624Z/results.json",
       "standard_error": null
     },
+    "ats_streak_regress_tuesday_line_move_legacy_b2": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block interval [-0.0538,0.0076], P+ 0.131",
+      "closing_ground": null,
+      "description": "ats_streak_regress_line_move_toward_pick: legacy family term added to the Tuesday-knowable base (model_logit + composition_flag_sum), LOSO 2020-2025, graded on close-minus-open line move toward the pick; decisive 9-12 on 21; week-block interval [-0.0447,0.0047]; accuracy companion -0.27 pts",
+      "effect": -0.018296739853626082,
+      "effect_units": "ats_points",
+      "family": "line_move_regrade_legacy_v2",
+      "interval": [
+        -0.053820598006644516,
+        0.0076481835564053535
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Re-checked an older situational signal on how the line moves after Tuesday; it did not move the line toward our picks.",
+      "probability_positive": 0.1305,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_move_regrade_legacy/20260923T221920Z/results.json",
+      "standard_error": null
+    },
     "attention_battery_attention_gap_dog": {
       "category": "attention",
       "classification": "unresolved_below_power",
@@ -31725,6 +31753,34 @@
       "source": "scripts/signal_atlas.py; registry/split_library.json v1",
       "standard_error": 0.6372
     },
+    "forecast_cold_visitor_tilt_tuesday_line_move_legacy_b2": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block interval [-0.0177,0.0390], P+ 0.599",
+      "closing_ground": null,
+      "description": "forecast_cold_visitor_tilt_line_move_toward_pick: legacy family term added to the Tuesday-knowable base (model_logit + composition_flag_sum), LOSO 2020-2025, graded on close-minus-open line move toward the pick; decisive 20-24 on 44; week-block interval [-0.0170,0.0268]; accuracy companion +0.47 pts",
+      "effect": 0.004657351962741184,
+      "effect_units": "ats_points",
+      "family": "line_move_regrade_legacy_v2",
+      "interval": [
+        -0.01765489673550966,
+        0.0389819587628866
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Re-checked an older situational signal on how the line moves after Tuesday; it did not move the line toward our picks.",
+      "probability_positive": 0.599,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_move_regrade_legacy/20260923T221920Z/results.json",
+      "standard_error": null
+    },
     "forecast_weather_dome_team_outdoors_cold": {
       "category": "environment",
       "classification": "unresolved_below_power",
@@ -40400,6 +40456,34 @@
         2021
       ],
       "source": "artifacts/schedule_flag_on_production/home_thursday/20260905T023529Z/results.json",
+      "standard_error": null
+    },
+    "home_thursday_tuesday_line_move_legacy_b2": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block interval [-0.0279,0.0336], P+ 0.480",
+      "closing_ground": null,
+      "description": "home_thursday_line_move_toward_pick: legacy family term added to the Tuesday-knowable base (model_logit + composition_flag_sum), LOSO 2020-2025, graded on close-minus-open line move toward the pick; decisive 22-26 on 48; week-block interval [-0.0274,0.0275]; accuracy companion +0.80 pts",
+      "effect": 0.00033266799733865603,
+      "effect_units": "ats_points",
+      "family": "line_move_regrade_legacy_v2",
+      "interval": [
+        -0.027906976744186046,
+        0.03359173126614987
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Re-checked an older situational signal on how the line moves after Tuesday; it did not move the line toward our picks.",
+      "probability_positive": 0.4805,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_move_regrade_legacy/20260923T221920Z/results.json",
       "standard_error": null
     },
     "illness_away_active_ge1": {
@@ -51653,6 +51737,34 @@
         2021
       ],
       "source": "artifacts/schedule_flag_on_production/low_total_div_dog/20260905T032318Z/results.json",
+      "standard_error": null
+    },
+    "low_total_div_home_dog_tuesday_line_move_legacy_b2": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Season-block interval [-0.0751,-0.0203], P+ 0.000",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "low_total_div_home_dog_line_move_toward_pick: legacy family term added to the Tuesday-knowable base (model_logit + composition_flag_sum), LOSO 2020-2025, graded on close-minus-open line move toward the pick; decisive 24-38 on 62; week-block interval [-0.0868,-0.0080]; accuracy companion -0.07 pts",
+      "effect": -0.04790419161676647,
+      "effect_units": "ats_points",
+      "family": "line_move_regrade_legacy_v2",
+      "interval": [
+        -0.07506527415143603,
+        -0.02027972027972028
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Re-checked an older situational signal on how the line moves after Tuesday; it did not move the line toward our picks.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_move_regrade_legacy/20260923T221920Z/results.json",
       "standard_error": null
     },
     "margins__direct_ats_fair_margin_market_logistic_market_ridge__accuracy_backfill": {
@@ -165787,6 +165899,34 @@
       "source": "artifacts/playcaller_change_leads/screen_results.json",
       "standard_error": null
     },
+    "playcaller_change_tuesday_line_move_legacy_b2": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block interval [-0.0145,0.0014], P+ 0.072",
+      "closing_ground": null,
+      "description": "playcaller_change_line_move_toward_pick: legacy family term added to the Tuesday-knowable base (model_logit + composition_flag_sum), LOSO 2020-2025, graded on close-minus-open line move toward the pick; decisive 5-4 on 9; week-block interval [-0.0218,0.0061]; accuracy companion -0.13 pts",
+      "effect": -0.005988023952095809,
+      "effect_units": "ats_points",
+      "family": "line_move_regrade_legacy_v2",
+      "interval": [
+        -0.014496613211370347,
+        0.0013550135501355014
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Re-checked an older situational signal on how the line moves after Tuesday; it did not move the line toward our picks.",
+      "probability_positive": 0.0725,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_move_regrade_legacy/20260923T221920Z/results.json",
+      "standard_error": null
+    },
     "player_arrests_back_side_policy__spread_band_long_2020_2025": {
       "category": "onfield",
       "classification": "unresolved_below_power",
@@ -167015,6 +167155,34 @@
       ],
       "source": "scripts/pooled_signal_third_fit.py; tests/scratch/pooled_signal_third_fit.json",
       "standard_error": 1.5955
+    },
+    "post_bye_new_oc_tuesday_line_move_legacy_b2": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block interval [-0.0116,0.0342], P+ 0.863",
+      "closing_ground": null,
+      "description": "post_bye_new_oc_line_move_toward_pick: legacy family term added to the Tuesday-knowable base (model_logit + composition_flag_sum), LOSO 2020-2025, graded on close-minus-open line move toward the pick; decisive 36-28 on 64; week-block interval [-0.0152,0.0411]; accuracy companion +0.07 pts",
+      "effect": 0.01330671989354624,
+      "effect_units": "ats_points",
+      "family": "line_move_regrade_legacy_v2",
+      "interval": [
+        -0.01160541586073501,
+        0.034210526315789476
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Re-checked an older situational signal on how the line moves after Tuesday; it did not move the line toward our picks.",
+      "probability_positive": 0.8625,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_move_regrade_legacy/20260923T221920Z/results.json",
+      "standard_error": null
     },
     "post_ot_fatigue_on_production": {
       "category": "schedule",
@@ -173087,6 +173255,34 @@
         2021
       ],
       "source": "artifacts/officials_flags_on_production/rookie_underdog/20260905T104625Z/results.json",
+      "standard_error": null
+    },
+    "rookie_priors_tuesday_line_move_legacy_b2": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Season-block interval [-0.0624,-0.0274], P+ 0.000",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "rookie_priors_line_move_toward_pick: legacy family term added to the Tuesday-knowable base (model_logit + composition_flag_sum), LOSO 2020-2025, graded on close-minus-open line move toward the pick; decisive 32-56 on 88; week-block interval [-0.0912,-0.0040]; accuracy companion -0.40 pts",
+      "effect": -0.04624085163007319,
+      "effect_units": "ats_points",
+      "family": "line_move_regrade_legacy_v2",
+      "interval": [
+        -0.06241731682496608,
+        -0.0273840206185567
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Re-checked an older situational signal on how the line moves after Tuesday; it did not move the line toward our picks.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_move_regrade_legacy/20260923T221920Z/results.json",
       "standard_error": null
     },
     "rookie_qb_debut_fade_on_production": {
