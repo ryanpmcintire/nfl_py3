@@ -33,16 +33,22 @@ modified lane when the prompt just says to continue.
 - [confidence-best-pick-unification](confidence-best-pick-unification.md) - shared calibrated selector published in `5fb88a2`; confidence reliability and within-week ranking research remains open
 
 
-- [pooled-signal-model](pooled-signal-model.md) — MOD-20, units 1-5 recorded; unit 5 interactions -0.40 pts unresolved; next: a genuinely new family, not a reparameterisation
+- [pooled-signal-model](pooled-signal-model.md) — MOD-20, units 1-6 recorded; unit 6 (reddit attention term) -0.07 pts [-0.34,+0.28] P+ 0.27 unresolved, served four-term base still wins after 6 fits
 - [pool-rank-card](pool-rank-card.md) — POOL-01, unit 1 measured 2026-09-16 (unresolved); unit 2 only with a fitted field
 - [every-metric-every-experiment](every-metric-every-experiment.md) — ENG-46 implementation done 2026-09-16; backfilled-look accounting remains open (runner emits four metrics, backfill recorded, margin cells corrected same day, pool + findings read the margin family).
 - [lane-replay-dream-rsi](lane-replay-dream-rsi.md) — ENG-45, units 1-2 done 2026-09-16 (both unresolved); unit 3 not recommended
 - [conditional-signal-atlas](conditional-signal-atlas.md) - MOD-19: owner rejected the deployed Findings page as not useful and below expectations; original mockup is saved, feature remains unresolved, further implementation awaits a grounded direction.
 - [lead65-protection-window-split](lead65-protection-window-split.md) — decided 2026-09-23: served flag sum unchanged; week-gated variant stays a prospective challenger.
-- [lead59-archive-battery](lead59-archive-battery.md) — LEAD-59 src fix and battery re-run done, 23 cells recorded; open: type-trait binning with the archive on
+- [lead59-archive-battery](lead59-archive-battery.md) — LEAD-59 src fix and battery re-run done, 23 cells recorded; type-trait binning measured 2026-09-23 (2 cells, both unresolved_below_power, archive unreachable pre-2015), record commands queued for the root
 - [token-diet](token-diet.md) — session-startup token cost cut about 80%; remaining: trim the three 15 KB+ open ROADMAP rows (owner text) and decide whether `.claude/` hooks should be tracked
 - [odds-api-key-deactivated](odds-api-key-deactivated.md) — 2026-09-19: bulk odds captures failing HTTP 401 DEACTIVATED_KEY (billing); owner action needed before the next odds window
 - [total-conditioned-lattice](total-conditioned-lattice.md) — total-banded key-number lattice measured 2026-09-23 vs served discrete read, mixed sign across metrics/seasons, unresolved_below_power; two `weak-signals record` commands queued for the root
+- [line-move-regrade-legacy](line-move-regrade-legacy.md) — 2026-09-23: batch 1 (8 legacy terms) measured, roof_state_predicted_open best-of-8 fails OOS replication on 2011-2019; batch 2 partial, 7/8 recorded (rookie_priors, low_total_div_home_dog resolved wrong-sign); division_revenge_tilt builder failing, batch-1/2 record commands queued for the root.
+- [prospective-leads-2026-09-23](prospective-leads-2026-09-23.md) — 2026-09-23: total_conditioned_key_number_lattice_v1 registered and live-dry-run verified as a prospective challenger; all-books median market move dropped (does not beat the served move, P+ 0.22).
+- [clv-metric-everywhere](clv-metric-everywhere.md) — ENG-47, 2026-09-23: line-move-toward-pick yardstick now emitted everywhere opener-evaluation runs; paired eval (5 cells) all unresolved_below_power.
+- [scheduler-once-timeout](scheduler-once-timeout.md) — fixed and committed `786a569`: `--once` defers to a live daemon via a file lock, scheduler suites green.
+- [statistical-audit-2026-09-15](statistical-audit-2026-09-15.md) — owner-requested audit across six areas (model selection, leakage/chronology, in-sample constants, inference machinery, calibration, reported-number framing); findings recorded, closed.
+- [sunday-market-probability](sunday-market-probability.md) — activated 2026-09-20 as `leader_median_through_sunday_prekick_v1`; six unresolved metric/protocol cells recorded under `sunday_market_probability_fixed_v1`.
 
 ## Done
 
