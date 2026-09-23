@@ -25,6 +25,8 @@ Replace the dead paid Odds API with current free NFL spreads for private persona
 
 ## Next
 
+- 2026-09-23 18:55 ET root: capture daemon restarted (new PIDs 21792/29628, 181 enabled jobs); odds_private_wed/fri/sat are live. Nothing pending on the owner.
+
 - Root: restart the capture scheduler daemon so the new `odds_private_wed`/
   `odds_private_fri`/`odds_private_sat` windows go live (see "Root action
   required to activate" below); confirm with `--status` that all three show a
