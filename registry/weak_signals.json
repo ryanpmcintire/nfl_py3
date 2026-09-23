@@ -161509,6 +161509,62 @@
       "source": "artifacts/opener_error_transfer/20260923T202410Z/summary.json",
       "standard_error": null
     },
+    "opener_error_transfer_added_term_vs_base_v3_2020_2025_subset": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero (P+=0.77) on the 2020-2025 subset of the point-in-time-correct population; directionally consistent with Unit 2's _v2 cell (+0.133 pts, P+=0.76) though not identical (base/plus LOSO folds here are drawn from all 13 graded NFL seasons, not just these 6); reliability reused from Unit 2 (0.141), not zero",
+      "closing_ground": null,
+      "description": "Same 5th-term LOSO cell as _all_graded, restricted to the 2020-2025 subset (n=1,503) used by Units 1-2, for direct comparability",
+      "effect": 0.26613439787092075,
+      "effect_units": "accuracy_points",
+      "family": "opener_error_transfer_v3",
+      "interval": [
+        -0.5315614617940168,
+        0.8748317631224856
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Looking only at the last six NFL seasons (the same window used before), the college-football transfer signal again nudges toward helping the pick, but the range of plausible outcomes still includes no effect at all -- unresolved, not served.",
+      "probability_positive": 0.7735,
+      "recorded_at": "2026-09-23",
+      "reliability": 0.14132263925353555,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/opener_error_transfer_unit3/20260923T210810Z/summary.json",
+      "standard_error": null
+    },
+    "opener_error_transfer_added_term_vs_base_v3_all_graded": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero (P+=0.67) on the 13-season point-in-time-correct population (NFL 2011-2012 excluded, no local CFB season precedes them); per-fold LOSO betas for cfb_transfer_logit are positive in all 13 folds (0.0187-0.0629) but an order of magnitude smaller than the stable base four-term coefficients (0.20-0.25); early folds train the CFB model on very few games (48 for NFL 2013, up to 389 through the 2020 CFB gap) before Bovada coverage widens training from 2022 on; reliability reused from Unit 2's pooled-set measurement (0.141), not zero, so no_split_half_reliability is not admissible",
+      "closing_ground": null,
+      "description": "CFB-trained opener-error logit (season-specific, point-in-time CFB training strictly preceding each held-out NFL season) added as a 5th fitted term to the served four-term NFL pick probability, LOSO by season, vs the four-term base, on the extended 2011-2025 NFL population restricted to the 13 seasons a preceding local CFB season exists for (2013-2025)",
+      "effect": 0.12368583797155441,
+      "effect_units": "accuracy_points",
+      "family": "opener_error_transfer_v3",
+      "interval": [
+        -0.45931266748014443,
+        0.6838882411666622
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "We tested whether a model trained on college football's own opening-line errors helps predict which side covers the NFL opener, now checked back to 2013 instead of just 2020. The extra signal points the right direction almost every year, but it is still too small and too noisy to say for sure it helps -- so the pick stays exactly as it would be without it.",
+      "probability_positive": 0.669375,
+      "recorded_at": "2026-09-23",
+      "reliability": 0.14132263925353555,
+      "sample_blocks": 13,
+      "sample_games": 3234,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/opener_error_transfer_unit3/20260923T210810Z/summary.json",
+      "standard_error": null
+    },
     "opener_error_transfer_cfb_direct_vs_base": {
       "category": "modeling",
       "classification": "refuted_mechanism",

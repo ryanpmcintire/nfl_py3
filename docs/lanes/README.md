@@ -20,6 +20,7 @@ modified lane when the prompt just says to continue.
 
 ## Active
 
+- [opener-error-transfer](opener-error-transfer.md) - XLG-09 units 1-3, 2026-09-23: point-in-time-correct CFB training on the extended 2011-2025 NFL population still reads unresolved_below_power (+0.12 pts all-graded, +0.27 pts on 2020-2025); four record commands (v2 + v3) queued for the root.
 - [opener-population-backfill](opener-population-backfill.md) - 2026-09-23: 2011-2025 fit population built (3,734 games, +2,231); discrete rebuild of 2011-2019 in progress.
 - [injury-scenario-producer](injury-scenario-producer.md) - PER-10, 2026-09-23: kernel deleted in the repo cut; fitting the injury-value-to-margin mapping out of season.
 - [week3-research-recorders](week3-research-recorders.md) - nine challenger records remain missing; all 16 served Week 3 paper decisions are complete.
@@ -43,7 +44,6 @@ modified lane when the prompt just says to continue.
 ## Done
 
 - [players-on-field-rating](done/players-on-field-rating.md) - MOD-22 units 1-3, 2026-09-23: four fitted terms unresolved, Tuesday availability change not reconstructible; family open, cached construct exhausted.
-- [opener-error-transfer](done/opener-error-transfer.md) - XLG-09 units 1-2, 2026-09-23: widened CFB transfer term +0.13 pts, P+ 0.76, unresolved; not served.
 - [ui20-confidence-column-guide](done/ui20-confidence-column-guide.md) - 2026-09-23: Confidence column hover help and Column guide entry published.
 - Superseded 2026-09-23 when the four-term fitted probability became the served side selector (2026-09-20); their open questions were about flip rules that no longer serve: [four-term-probability](done/four-term-probability.md), [joint-probability-model](done/joint-probability-model.md), [market-updated-model](done/market-updated-model.md), [served-flip-rules-hold](done/served-flip-rules-hold.md), [leader-median-model-confidence](done/leader-median-model-confidence.md), [handle-follow-override-defect](done/handle-follow-override-defect.md), [best-pick-served-score-ranker](done/best-pick-served-score-ranker.md).
 - [displayed-confidence-served-probability](done/displayed-confidence-served-probability.md) - 2026-09-23: in-sample lookup removed; the card shows the served fitted probability.
