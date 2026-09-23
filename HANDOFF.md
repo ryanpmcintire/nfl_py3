@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-23T21:20:52.341300+00:00`
+Refreshed at: `2026-09-23T21:21:33.954821+00:00`
 
 ## Start here
 
@@ -21,12 +21,12 @@ Refreshed at: `2026-09-23T21:20:52.341300+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `759666db76df` — Slight/Lean/Strong: held-out cover rates separate strong from slight on 2011-2025
+- Baseline commit: `74fbb68ed271` — Capture the free Sunday line sources on Wednesday, Friday and Saturday too
 - Pending change set: 8 paths
-  - `M  docs/lanes/free-odds-sources.md`
-  - `A  docs/lanes/market-move-decomposition.md`
-  - `M  scripts/capture_scheduler.py`
-  - `A  scripts/market_move_decomposition.py`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - `M  docs/model.html`
   - `?? docs/lanes/base-model-recency.md`
   - `?? docs/lanes/positive-control-power.md`
   - `?? scripts/base_model_recency.py`
