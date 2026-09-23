@@ -3069,7 +3069,7 @@ def _market_now_by_game(data_root: Path, *, now: datetime) -> dict[str, tuple[fl
         value = _number(row.get("home_spread_line"))
         books = int(_number(row.get("bookmakers")) or 0)
         if game_id and value is not None:
-            label = str(row.get("bookmaker_label") or "") if books == 1 else f"{books} books"
+            label = "1 book" if books == 1 else f"{books} books"
             result[game_id] = (value, books, label)
     return result
 

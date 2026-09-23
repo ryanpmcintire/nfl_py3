@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-23T21:13:18.620836+00:00`
+Refreshed at: `2026-09-23T21:15:41.553801+00:00`
 
 ## Start here
 
@@ -21,15 +21,22 @@ Refreshed at: `2026-09-23T21:13:18.620836+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `a630fa9aa5fd` — XLG-09 unit 3: college transfer term on 2013-2025 NFL games, unresolved
-- Pending change set: 7 paths
-  - `M  docs/lanes/injury-scenario-producer.md`
-  - `A  scripts/injury_scenario_producer.py`
-  - ` M src/nfl_ats/board_content.py`
-  - ` M src/nfl_ats/board_terminal.py`
-  - ` M src/nfl_ats/board_terminal_style.css`
+- Baseline commit: `d3626e944cfe` — PER-10 unit 3: research injury scenario mixture for Week 3, no pick changes
+- Pending change set: 14 paths
+  - `M  ROADMAP.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - `A  docs/lanes/done/ui20-books-now-count.md`
+  - `M  docs/model.html`
+  - `M  src/nfl_ats/board_content.py`
+  - `M  src/nfl_ats/board_terminal.py`
+  - `M  src/nfl_ats/board_terminal_style.css`
   - `?? docs/lanes/base-model-recency.md`
   - `?? scripts/base_model_recency.py`
+  - `?? scripts/confidence_band_derivation.py`
+  - `?? scripts/market_move_decomposition.py`
+  - `?? scripts/positive_control_power.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

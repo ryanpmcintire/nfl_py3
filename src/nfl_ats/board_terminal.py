@@ -890,8 +890,8 @@ def _board_section(content: BoardContent, *, archived: bool = False) -> str:
 
     market_help = (
         "The latest line captured today before kickoff, written for the picked side. "
-        "The source appears below the line. The pool's own line is the one in the Pick "
-        "column and does not move. No quote means there is no current public quote."
+        "How many books agree appears below the line. The pool's own line is the one in "
+        "the Pick column and does not move. No quote means there is no current public quote."
     )
     market_status = ""
     if not archived:
