@@ -818,6 +818,90 @@
       "source": "artifacts/backup_tenure_flag_on_production/20260905T163658Z/results.json",
       "standard_error": null
     },
+    "base_model_recency_fourterm_combined_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval [-1.00,+1.13] crosses zero",
+      "closing_ground": null,
+      "description": "Same challenger as model_logit inside the served four-term pick-probability fit, LOSO 2020-2025: 860-643 vs 859-644, decisive 29-28 on 57",
+      "effect": 0.0665,
+      "effect_units": "accuracy_points",
+      "family": "base_model_recency_v1",
+      "interval": [
+        -0.9974,
+        1.1258
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Inside the full pick model, the recent-season version picks almost exactly the same games.",
+      "probability_positive": 0.5385,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/base_model_recency/20260923T211631Z/metadata.json",
+      "standard_error": null
+    },
+    "base_model_recency_standalone_opener_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-block interval [-3.06,+0.47] crosses zero",
+      "closing_ground": null,
+      "description": "Season-recency-weighted base margin model, half-life chosen by inner walk-forward per fold (2020/2022/2023 unweighted, 2021 half-life 2, 2024-2025 half-life 4), vs the served unweighted model, standalone opener discrete read",
+      "effect": -1.2641,
+      "effect_units": "accuracy_points",
+      "family": "base_model_recency_v1",
+      "interval": [
+        -3.0648,
+        0.4664
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Weighting recent seasons more in the base model did not pick better on its own.",
+      "probability_positive": 0.071,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/base_model_recency/20260923T211631Z/metadata.json",
+      "standard_error": null
+    },
+    "base_model_recency_standalone_opener_margin_mae": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Week-block interval [-1.357,-0.806] wholly on the wrong side; matches docs/era_weighting_screen.md opener-grade direction; closes this nested half-life-2/4/8 variant only",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Same nested season-recency challenger, margin mean absolute error vs the served model: 11.27 vs 10.19 points",
+      "effect": -1.0789,
+      "effect_units": "mae_improvement",
+      "family": "base_model_recency_v1",
+      "interval": [
+        -1.3571,
+        -0.8055
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Weighting recent seasons more made the base model's score predictions clearly worse, so this version is ruled out.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/base_model_recency/20260923T211631Z/metadata.json",
+      "standard_error": null
+    },
     "bayesian_team_leaked_strength_on_production_opener": {
       "category": "modeling",
       "classification": "unresolved_below_power",

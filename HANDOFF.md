@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-23T21:21:33.954821+00:00`
+Refreshed at: `2026-09-23T21:22:21.068479+00:00`
 
 ## Start here
 
@@ -21,15 +21,12 @@ Refreshed at: `2026-09-23T21:21:33.954821+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `74fbb68ed271` — Capture the free Sunday line sources on Wednesday, Friday and Saturday too
-- Pending change set: 8 paths
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - `M  docs/model.html`
-  - `?? docs/lanes/base-model-recency.md`
+- Baseline commit: `722e22239aca` — Publish the board with current mid-week lines and book counts
+- Pending change set: 5 paths
+  - `A  docs/lanes/base-model-recency.md`
+  - `M  registry/weak_signals.json`
+  - `A  scripts/base_model_recency.py`
   - `?? docs/lanes/positive-control-power.md`
-  - `?? scripts/base_model_recency.py`
   - `?? scripts/positive_control_power.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
