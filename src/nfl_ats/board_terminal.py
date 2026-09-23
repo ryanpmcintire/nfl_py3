@@ -820,7 +820,9 @@ def _board_section(content: BoardContent, *, archived: bool = False) -> str:
         for game in day_games:
             pick_text = f"{escape(game.pick_team)} {escape(game.pick_spread_text)}"
             market_text = (
-                "No quote" if not archived and game.market_now is None else game.market_now_text
+                "No public line"
+                if not archived and game.market_now is None
+                else game.market_now_text
             )
             if game.is_best:
                 pick_cell = (
@@ -891,20 +893,22 @@ def _board_section(content: BoardContent, *, archived: bool = False) -> str:
     market_help = (
         "The latest line captured today before kickoff, written for the picked side. "
         "How many books agree appears below the line. The pool's own line is the one in "
-        "the Pick column and does not move. No quote means there is no current public quote."
+        "the Pick column and does not move. No public line means the books we check this week "
+        "do not allow their numbers to be shown here; the pick still uses how those lines moved."
     )
     market_status = ""
     if not archived:
         missing_quotes = sum(game.market_now is None for game in content.games)
         if missing_quotes:
             coverage = (
-                "Current book lines are unavailable."
+                "Current book lines are checked but cannot be shown here."
                 if missing_quotes == len(content.games)
-                else f"Current book lines are unavailable for {missing_quotes} games."
+                else f"Current book lines cannot be shown here for {missing_quotes} games."
             )
             market_status = (
                 f'<p class="policy-note"><b>Books now:</b> {coverage} '
-                "Picks and cover chances use the pool lines shown in the Pick column.</p>"
+                "Picks are graded at the pool lines in the Pick column and still use how the books "
+                "have moved since Tuesday.</p>"
             )
     probability_help = (
         "The fitted chance this side covers, excluding a tie at the spread. Situational "
