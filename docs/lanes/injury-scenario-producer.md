@@ -171,7 +171,119 @@ and still blocked on this being resolved with more power or accepted as
 permanently small; do not restore `injury_scenarios.py` on the strength of
 this unit alone.
 
-## Open
-No Week 3 comparison was produced this session — blocked as above, no
-code was written. `ruff` was not run (nothing changed under `src/` or
-`scripts/`).
+## Unit 3 (2026-09-23, second session): built and ran, ruff not yet clean
+
+Built `scripts/injury_scenario_producer.py` (research-only, vendors kernel
+logic, no `src/` or served-path writes). Ran once for real:
+`.tools/uv.exe run python scripts/injury_scenario_producer.py`. Output
+`artifacts/injury_scenario_producer/20260923T211155Z/` (`summary.json`,
+`week3_scenario_comparison.csv`).
+
+Design (deviations from the literal Unit-3 ask, forced by data reality,
+disclosed):
+- No 2026 game yet has a `report_status` (Q/D/O) in the latest injury
+  snapshot (`data/raw/nflverse_injuries/20260923T203033Z/injuries.parquet`,
+  season 2026 week 3, all 22 rows `report_status=NaN`) — too early in the
+  week (Tue). Used `practice_status` (DNP=0.25, Limited=0.10 sit
+  probability, matching `nfl_ats.availability.fixed_unavailability`'s own
+  practice-only fallback branch) as the borderline signal in place of Q/D.
+- Did NOT fit fresh historical designation play rates
+  (`build_season_lagged_availability_rates` needs an outcomes join of
+  injuries x snap counts x games; no consolidated historical snap-counts
+  table exists in `data/processed` and no caller of that function exists
+  anywhere in the repo — it and `injury_scenarios.py` were both orphaned).
+  Used the practice-status fallback severities above as the per-player sit
+  probability instead of a fresh fit. This is the single biggest gap vs.
+  the literal ask — flagged, not hidden.
+- Per-player value-if-out: no per-player decomposition of
+  `injury_skill_epa_value_lost`/`injury_defense_disruption_value_lost`
+  exists outside the full feature builder. Allocated each side's already-
+  served aggregate value-lost equally in severity-weighted proportion
+  across that side's borderline players (self-consistent: expected
+  scenario value_lost_diff equals the served baseline).
+- Pairwise coupling: applied the measured per-unit excess multiplier
+  (`docs/absence_pairwise_dependence.md` section 8: OFF_OL 1.192, OFF_SKILL
+  1.235, DEF_FRONT 1.175, DEF_SECONDARY 1.245) once per co-sitting pair
+  sharing a unit within a scenario subset, then renormalized.
+- Margin-center shift: `FITTED_SLOPE_PER_UNIT_VALUE_LOST_DIFF = -0.320`
+  (Unit 2's pooled block-bootstrap slope, itself `unresolved_below_power`
+  on practical OOS improvement — used here as a research point estimate,
+  not a served constant).
+- Discrete distribution reuse: shifting the center by `delta` and reading
+  cover probability at the served `spread_line` is algebraically identical
+  to keeping the center fixed and reading at `line_offset = -delta` in the
+  production `line_sweep.parquet` for the active model
+  (`artifacts/margin_predictions/2026-week-03-20260923T161033Z/line_sweep.parquet`,
+  `method="market_residual"`, column `home_cover_probability`, policy
+  `discrete_conditional_non_push_v1` — confirmed this equals the served
+  `home_cover_probability` at `line_offset=0` for every game checked). This
+  reuses the served discrete margin distribution exactly, satisfying
+  AGENTS.md's "Margins are multimodal" without needing the raw residual
+  array. Offsets are linearly interpolated on the 0.5-step sweep grid and
+  clamped at +/-4.0 (no game needed clamping this run).
+
+Result (16 games, `artifacts/injury_scenario_producer/20260923T211155Z/summary.json`):
+only 1 of 16 games (`2026_03_ATL_GB`) has any borderline (DNP/Limited)
+player yet — 14 games have zero injury-report rows at all for week 3 this
+early (Tuesday), 1 game (ARI@SF) has rows but all "Full Participation".
+ATL@GB: 10 borderline players on GB (home), 2 on ATL (away), 4,096
+enumerated joint scenarios, `base_value_lost_diff=0.0481`,
+`served_home_cover_probability=0.428377`,
+`scenario_mixed_home_cover_probability=0.429536`, shift **+0.116
+percentage points** (well under 1 pt), pick side unchanged (away/ATL both
+ways). **No game showed a shift over 1 point and no game showed a pick-side
+difference this run** — an honest null, not a data gap, for the 1 game
+with real injury data; the other 15 are nulls by data absence, not by the
+mixture math. One data-quality note (not corrected, out of scope): the raw
+snapshot lists Tua Tagovailoa and Michael Penix Jr. under `team=ATL`
+(both Miami/unrelated), but both are `Full Participation` (severity 0) so
+this did not affect the result.
+
+Data coverage for a later out-of-season grade of the mixture: **3,886
+historical games (seasons 2010-2024)** in
+`data/processed/game_features_player_value.parquet` have both sides'
+`*_injury_observed_at` populated (pregame-attested, point-in-time safe) —
+the same population Unit 2 scoped from, so the margin-slope and
+value-lost-diff inputs already exist for all of them. What is still
+missing for a real historical grade of the SCENARIO MIXTURE specifically
+(not just the point-estimate slope) is per-player historical
+report/practice status joined to actual play/sit outcomes for those same
+3,886 games — i.e. exactly the outcomes table (injuries x snap counts x
+games) that `build_availability_outcomes` needs and that has no
+consolidated processed artifact yet.
+
+## Open / unfinished this call (ruff not clean, cap hit)
+`ruff check scripts/injury_scenario_producer.py` reported 10 E501
+line-too-long errors. Two were fixed in this session (removed a redundant
+ternary at the old line ~173; wrapped `fitted_slope_source`). The edit
+wrapping `coupling_source` (old lines ~225-227) was IN FLIGHT when the
+50-tool-call cap hit and did NOT apply — the file on disk right now still
+has the long `coupling_source` line and likely 1-2 other unseen E501s from
+the same `ruff check` run (only the tail of that output was read). The
+computed artifact `artifacts/injury_scenario_producer/20260923T211155Z/`
+is already correct and complete (ruff cleanliness does not affect
+already-computed numbers); only the script's style is unfinished.
+
+## Next
+1. Finish ruff: `.tools/uv.exe run ruff check scripts/injury_scenario_producer.py`,
+   fix remaining E501s (wrap `coupling_source` string and any others it
+   reports), re-run until clean.
+2. Re-run the script once more after ruff fixes purely to confirm the
+   output is byte-identical (formatting-only changes should not change
+   any number) and note the new timestamp artifact if one is produced;
+   the 20260923T211155Z artifact already stands as the real result either
+   way.
+3. Record both Unit 2 signals with `weak-signals record` (commands are
+   already fully assembled above, unrun, root's job) before any write-up
+   calls this settled.
+4. If a real historical grade of the mixture (not just the slope) is
+   wanted later: build the outcomes table
+   (`nfl_ats.availability.build_availability_outcomes` needs injuries +
+   snap-counts-with-gsis-ids + games; no consolidated snap-counts parquet
+   exists in `data/processed` today) and fit
+   `build_season_lagged_availability_rates` for real, then re-run this
+   producer against a completed season's Q/D-reported snapshots (once
+   report_status exists, unlike this week's Tuesday snapshot) and grade
+   scenario-mixed vs served cover probability against actual results.
+5. Do not restore `injury_scenarios.py` into `src/` on the strength of
+   this unit; it stays vendored in the research script only.

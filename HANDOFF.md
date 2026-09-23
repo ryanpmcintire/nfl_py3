@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-23T21:10:28.188636+00:00`
+Refreshed at: `2026-09-23T21:13:18.620836+00:00`
 
 ## Start here
 
@@ -21,13 +21,13 @@ Refreshed at: `2026-09-23T21:10:28.188636+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `a5ca534f50bf` — Derive the four-term fit ridge out of season: same picks as the served constant
+- Baseline commit: `a630fa9aa5fd` — XLG-09 unit 3: college transfer term on 2013-2025 NFL games, unresolved
 - Pending change set: 7 paths
-  - `M  docs/lanes/README.md`
-  - `M  docs/lanes/opener-error-transfer.md`
-  - `M  registry/weak_signals.json`
-  - `A  scripts/opener_error_transfer_unit3.py`
+  - `M  docs/lanes/injury-scenario-producer.md`
+  - `A  scripts/injury_scenario_producer.py`
   - ` M src/nfl_ats/board_content.py`
+  - ` M src/nfl_ats/board_terminal.py`
+  - ` M src/nfl_ats/board_terminal_style.css`
   - `?? docs/lanes/base-model-recency.md`
   - `?? scripts/base_model_recency.py`
 
