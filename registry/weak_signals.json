@@ -161173,6 +161173,34 @@
       "source": "artifacts/opener_error_transfer/20260923T192851Z/summary.json",
       "standard_error": null
     },
+    "opener_error_transfer_added_term_vs_base_v2": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero (P+=0.76); per-fold LOSO betas for cfb_transfer_logit flip sign across the 6 NFL seasons (-0.0098,+0.0009,-0.0084,-0.0405,-0.0236,+0.0135), an order of magnitude smaller than the stable base four-term coefficients; in-sample-minus-OOS accuracy gap -0.00067 (no overfitting); split-half reliability 0.141, not zero, so no_split_half_reliability is not admissible either",
+      "closing_ground": null,
+      "description": "CFB-trained opener-error logit (13-season, 4301-game, two-book widened training set) added as a 5th fitted term to the served four-term NFL pick probability, LOSO by season, vs the four-term base",
+      "effect": 0.13306719893546592,
+      "effect_units": "accuracy_points",
+      "family": "opener_error_transfer_v2",
+      "interval": [
+        -0.20215633423180668,
+        0.4745762711864443
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.759875,
+      "recorded_at": "2026-09-23",
+      "reliability": 0.14132263925353555,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/opener_error_transfer/20260923T202410Z/summary.json",
+      "standard_error": null
+    },
     "opener_error_transfer_cfb_direct_vs_base": {
       "category": "modeling",
       "classification": "refuted_mechanism",
@@ -161283,6 +161311,34 @@
         2025
       ],
       "source": "artifacts/opener_error_transfer/20260923T192851Z/summary.json",
+      "standard_error": null
+    },
+    "opener_error_transfer_nflonly_vs_cfbdirect_v2": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero (P+=0.58), wide because it compares two already-noisy standalone predictors; cannot yet separate a CFB-transfer-specific cost from a generic feature-set cost; in-sample-minus-OOS accuracy gap +0.018 (no overfitting)",
+      "closing_ground": null,
+      "description": "NFL-only-trained 5-feature twin vs CFB-trained-direct on the same features, widened CFB (13-season, 4301-game) population; isolates transfer cost from feature-set cost",
+      "effect": 0.39920159680638667,
+      "effect_units": "accuracy_points",
+      "family": "opener_error_transfer_v2",
+      "interval": [
+        -4.317897371714641,
+        4.48493342676945
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.581875,
+      "recorded_at": "2026-09-23",
+      "reliability": 0.14132263925353555,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/opener_error_transfer/20260923T202410Z/summary.json",
       "standard_error": null
     },
     "opener_softness_fade_on_production": {
@@ -163718,6 +163774,34 @@
       "source": "tests/scratch/lanes/pbp08_ol_rush_continuity_split_20260917.py; registry/split_library.json v1; artifacts/opener_evaluation/20260913T113943Z",
       "standard_error": 1.2643
     },
+    "pbp08_protection_mismatch_early_window_interaction_v1_fit_2020_2025": {
+      "category": "onfield",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "95% paired week-blocked bootstrap interval [-2.87, -0.06] is entirely negative; P+ 0.022; decisive 35-57 on 92, exact p 0.028; resolved wrong sign for this fit-level hypothesis (protection pulled out of flag_sum and refit as its own term interacted with an early-window indicator degrades LOSO OOS accuracy vs the served single flag_sum term), despite a stable positive per-fold coefficient (0.76-0.95 across all 6 seasons); closes only this reweighting-in-the-fit variant, not the card-level early-window finding or the live prospective overlay",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Served four-term pick-probability fit with the protection-mismatch member removed from flag_sum and refit as its own term interacted with an early-window (week<=4) indicator, LOSO by season, vs the served unmodified flag_sum. LEAD-65 unit.",
+      "effect": -1.4637391882900865,
+      "effect_units": "accuracy_points",
+      "family": "pbp08_protection_mismatch_gated_flag_sum_fit",
+      "interval": [
+        -2.8735632183908044,
+        -0.06159191408718486
+      ],
+      "league": "nfl",
+      "notes": "look 2 of 2 predeclared in docs/lanes/lead65-protection-window-split.md; reliability not remeasured this session",
+      "plain_summary": null,
+      "probability_positive": 0.02225,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/lead65_gated_flag_in_fit/20260923T202315Z/summary.json",
+      "standard_error": null
+    },
     "pbp08_protection_mismatch_early_window_v1_2020_2025": {
       "category": "onfield",
       "classification": "unresolved_below_power",
@@ -163745,6 +163829,34 @@
       ],
       "source": "tests/scratch/lanes/pbp08_week_gated_variant_20260917.py; artifacts/opener_evaluation/20260913T113943Z",
       "standard_error": 0.4476
+    },
+    "pbp08_protection_mismatch_gated_flag_sum_v1_fit_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "95% paired week-blocked bootstrap interval [-2.19, 0.53] crosses zero; P+ 0.111; decisive 34-47 on 81, exact p 0.182; not a resolved wrong sign",
+      "closing_ground": null,
+      "description": "Served four-term pick-probability fit (model_logit, flag_sum, move_toward_home, move_available), LOSO by season, with flag_sum's protection-mismatch member gated to weeks<=4 vs the served unmodified flag_sum. LEAD-65 unit.",
+      "effect": -0.8649367930805056,
+      "effect_units": "accuracy_points",
+      "family": "pbp08_protection_mismatch_gated_flag_sum_fit",
+      "interval": [
+        -2.193548387096774,
+        0.5323489567050633
+      ],
+      "league": "nfl",
+      "notes": "look 1 of 2 predeclared in docs/lanes/lead65-protection-window-split.md; reliability not remeasured this session",
+      "plain_summary": null,
+      "probability_positive": 0.11149999999999999,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/lead65_gated_flag_in_fit/20260923T202315Z/summary.json",
+      "standard_error": null
     },
     "pbp08_protection_mismatch_tilt__spread_band_long_2020_2025": {
       "category": "onfield",
@@ -165532,6 +165644,62 @@
       "source": "artifacts/players_on_field_rating/20260923T191937Z/summary.json",
       "standard_error": null
     },
+    "players_on_field_rating_residual_unpriced_pick_probability_term": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval crosses zero; only 54 decisive games (23-31, exact-null p 0.341); per-fold coefficient sign-flips once, 2022 near-zero -0.033, other 5 folds positive 0.085 to 0.800, magnitude unstable",
+      "closing_ground": null,
+      "description": "diff_lineup_total residualised on tue_open_home_spread (OLS fit on LOSO training seasons only, applied to held-out season) added as 5th fitted term to the served pick-probability model, LOSO by season, MOD-22 unit 2 look a",
+      "effect": -0.5322687957418496,
+      "effect_units": "accuracy_points",
+      "family": "players_on_field_rating_v1",
+      "interval": [
+        -2.0412909349786417,
+        0.840472818925878
+      ],
+      "league": "nfl",
+      "notes": "reliability inherited from PER-09 split-half of the underlying season-lagged RAPM ratings (min 0.154 defense), not remeasured this session",
+      "plain_summary": null,
+      "probability_positive": 0.25875,
+      "recorded_at": "2026-09-23",
+      "reliability": 0.154,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/players_on_field_rating_unit2/20260923T202320Z/summary.json",
+      "standard_error": null
+    },
+    "players_on_field_rating_unseen_interaction_pick_probability_term": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval crosses zero; only 23 decisive games (9-14, exact-null p 0.405); per-fold coefficient sign-flips once, 2021 -0.415, other 5 folds positive 0.098 to 0.637",
+      "closing_ground": null,
+      "description": "diff_lineup_total x (1 - market_move_available) interaction added as 5th fitted term to the served pick-probability model, LOSO by season, MOD-22 unit 2 look b",
+      "effect": -0.33266799733865604,
+      "effect_units": "accuracy_points",
+      "family": "players_on_field_rating_v1",
+      "interval": [
+        -1.1414123645757024,
+        0.2793639125747327
+      ],
+      "league": "nfl",
+      "notes": "reliability inherited from PER-09 split-half of the underlying season-lagged RAPM ratings (min 0.154 defense), not remeasured this session",
+      "plain_summary": null,
+      "probability_positive": 0.1505,
+      "recorded_at": "2026-09-23",
+      "reliability": 0.154,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/players_on_field_rating_unit2/20260923T202320Z/summary.json",
+      "standard_error": null
+    },
     "pol09_best_pick_composed_v1_tiebreak_dispersion_vs_alphabetical": {
       "category": "modeling",
       "classification": "unresolved_below_power",
@@ -165727,6 +165895,62 @@
       ],
       "source": "artifacts/pooled_signal/20260916T191645Z",
       "standard_error": 0.6454
+    },
+    "pooled_signal_fifth_fit_vs_four_term": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block interval [-1.0366,+0.2505] and week-block interval [-1.1494,+0.3336] both cross zero; not a resolved wrong sign; no positive control run; unresolved_below_power is the only admissible classification",
+      "closing_ground": null,
+      "description": "MOD-20 unit 5: four-term base plus two predeclared interaction terms (flag_sum x move_toward_home, model_logit x move_available), LOSO 2020-2025, vs the four-term base on the same 1,503 games; -0.399 accuracy points, decisive 24-30 on 54. OOS Brier 0.2457 vs 0.2454, logloss 0.6845 vs 0.6840; IS-OOS gap smaller for interaction (+0.13pt) than base (+0.20pt). model_logit x move_available stable negative across folds; flag_sum x move_toward_home small and sign-unstable. Line-move-toward-pick cell 0.001 pts, P+ 0.496, indistinguishable from zero.",
+      "effect": -0.39920159680638717,
+      "effect_units": "accuracy_points",
+      "family": "pooled_signal_first_model_v1",
+      "interval": [
+        -1.0365922024972396,
+        0.2505450254080643
+      ],
+      "league": "nfl",
+      "notes": "Unit 5, predeclared before fitting: not a reparameterisation of the 7 composition flags. 2 looks this unit. Season-block bootstrap primary per predeclaration; week-block secondary agrees.",
+      "plain_summary": null,
+      "probability_positive": 0.0645,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/pooled_signal_fifth_fit_interactions.py; artifacts/pooled_signal_fifth_fit/20260923T202505Z/results.json; docs/lanes/pooled-signal-model.md",
+      "standard_error": null
+    },
+    "pooled_signal_fifth_fit_vs_model_only": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Companion vs-model-only read, not decision-relevant (that is vs the four-term base, which crossed zero); per unit 1-4 convention recorded unresolved_below_power regardless of this cell's own P+",
+      "closing_ground": null,
+      "description": "MOD-20 unit 5 companion: interaction fit vs model-only picks, LOSO 2020-2025, same 1,503 games; +3.393 accuracy points, week-block [+0.664,+6.206], P+ 0.993, decisive 272-221 on 493.",
+      "effect": 3.3932135728542914,
+      "effect_units": "accuracy_points",
+      "family": "pooled_signal_first_model_v1",
+      "interval": [
+        0.6639776216538749,
+        6.205825573472631
+      ],
+      "league": "nfl",
+      "notes": "Companion, not decision-relevant alone; see pooled_signal_fifth_fit_vs_four_term.",
+      "plain_summary": null,
+      "probability_positive": 0.993,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/pooled_signal_fifth_fit_interactions.py; artifacts/pooled_signal_fifth_fit/20260923T202505Z/results.json; docs/lanes/pooled-signal-model.md",
+      "standard_error": null
     },
     "pooled_signal_fourth_fit_vs_four_term": {
       "category": "modeling",

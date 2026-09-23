@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-23T19:37:36.897926+00:00`
+Refreshed at: `2026-09-23T20:29:51.835579+00:00`
 
 ## Start here
 
@@ -21,14 +21,29 @@ Refreshed at: `2026-09-23T19:37:36.897926+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `caa19e4c6165` — Record XLG-09 unit 1; archive lanes superseded by the served fitted probability
-- Pending change set: 6 paths
-  - ` M docs/findings.html`
-  - ` M docs/history.html`
-  - ` M docs/index.html`
-  - `M  docs/lanes/pool-rank-card.md`
-  - ` M docs/model.html`
-  - `A  scripts/pool_field_share_fit.py`
+- Baseline commit: `d3b513fded0a` — POOL-01: fit the pool's real field share on Weeks 1-2 and replay rank
+- Pending change set: 22 paths
+  - `M  ROADMAP.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - `M  docs/lanes/README.md`
+  - `D  docs/lanes/displayed-confidence-served-probability.md`
+  - `A  docs/lanes/done/displayed-confidence-served-probability.md`
+  - `A  docs/lanes/done/opener-error-transfer.md`
+  - `A  docs/lanes/done/players-on-field-rating.md`
+  - `A  docs/lanes/done/ui20-confidence-column-guide.md`
+  - `M  docs/lanes/lead65-protection-window-split.md`
+  - `D  docs/lanes/opener-error-transfer.md`
+  - `D  docs/lanes/players-on-field-rating.md`
+  - `M  docs/lanes/pooled-signal-model.md`
+  - `M  docs/model.html`
+  - `M  registry/weak_signals.json`
+  - `A  scripts/lead65_gated_flag_in_fit.py`
+  - `A  scripts/opener_error_transfer_unit2.py`
+  - `A  scripts/players_on_field_rating_unit2.py`
+  - `A  scripts/players_on_field_rating_unit3.py`
+  - ...and 2 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

@@ -919,11 +919,16 @@ def _board_section(content: BoardContent, *, archived: bool = False) -> str:
         else "The adverse line where the card first changes sides. A held pick stays on "
         "this side through the explored edge."
     )
+    confidence_help = (
+        "Slight, Lean or Strong: how firmly the cover chance clears this pick's own "
+        "three-way split. The note below the table gives the exact cutoffs."
+    )
     column_guide = (
         '<details class="board-column-guide"><summary>Column guide</summary><dl>'
         f"<dt>Books now</dt><dd>{escape(market_help)}</dd>"
         f"<dt>Cover chance</dt><dd>{escape(probability_help)}</dd>"
         f"<dt>Flips at</dt><dd>{escape(flip_help)}</dd>"
+        f"<dt>Confidence</dt><dd>{escape(confidence_help)}</dd>"
         "</dl></details>"
     )
     table = (
@@ -932,7 +937,8 @@ def _board_section(content: BoardContent, *, archived: bool = False) -> str:
         f'<th><abbr title="{escape(market_help)}">Books now</abbr></th>'
         f'<th><abbr title="{escape(probability_help)}">Cover chance</abbr></th>'
         f'<th><abbr title="{escape(flip_help)}">'
-        "Flips at</abbr></th><th>Confidence</th>"
+        "Flips at</abbr></th>"
+        f'<th><abbr title="{escape(confidence_help)}">Confidence</abbr></th>'
         "</tr></thead><tbody>" + "".join(rows) + "</tbody></table>"
     )
     details = (

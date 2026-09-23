@@ -54,6 +54,8 @@ LEAD-65 states what the read implies for the served rule.
 
 ## Next
 
+- 2026-09-23 root: this unit's cells are recorded (registry 7,003); the commands below are history.
+
 - Decision implication first: on the forced-pick card, firing the tilt in
   weeks 5-18 is more likely to cost than to help (probability_positive
   0.099), so a week-gated variant (fire only when the window spans the
@@ -95,8 +97,69 @@ LEAD-65 states what the read implies for the served rule.
   mechanism without identifying a high-continuity marginal. Recorded under
   family `pbp08_protection_mismatch__continuity`, unresolved_below_power.
 
+- Predeclared 2026-09-23 (this unit, before running): two looks at whether the
+  served four-term fitted pick probability
+  (`src/nfl_ats/pick_probability_fit.py`, FIT_FEATURES = model_logit,
+  flag_sum, move_toward_home, move_available) should have its
+  `composition_flag_sum` term recomputed so the protection-mismatch member
+  only counts when its window spans the offseason (weeks<=4), vs the served
+  unmodified flag_sum, both fit LOSO by season 2020-2025 on the played card.
+  Mechanism: the card-level marginal (recorded above) shows the tilt is a
+  net positive contributor in weeks 1-4 and a probable drag weeks 5-18; the
+  hypothesis is that gating or reweighting that one member inside the fitted
+  composite would recover some of that split at the probability level, not
+  just the card-flip level already tracked by the prospective overlay.
+  Look 1: gate the member inside flag_sum (same equal weight as the other
+  six counted flags, just zeroed outside weeks<=4). Look 2: pull the member
+  out of flag_sum entirely and add it as its own fitted term interacted with
+  an early-window indicator (5-term fit).
+- DONE 2026-09-23 (this unit): `scripts/lead65_gated_flag_in_fit.py`, run
+  once, `artifacts/lead65_gated_flag_in_fit/20260923T202315Z/` (summary.json,
+  per_game.parquet). 1,503 graded games, 107 season-week blocks, paired
+  week-blocked bootstrap, 2000 draws, seed 20260923, 95% interval, comparing
+  each variant's LOSO out-of-season probability against the served LOSO
+  out-of-season probability (both from the same four/five-term ridge-logit
+  refit machinery as `pick_probability_fit.py`).
+  - Look 1 `gated_flag_sum_v1`: -0.86 accuracy points, 95% [-2.19, +0.53],
+    P+ 0.111, decisive 34-47 on 81 (exact p 0.182). Brier improvement
+    -0.0002 [-0.0017, +0.0012] P+ 0.43; log loss -0.0003 P+ 0.44 (both cross
+    zero). IS/OOS accuracy gap tiny (variant -0.13 pts, served +0.20 pts;
+    neither shows overfitting). Per-fold `gated_flag_sum` coefficient stable,
+    0.25-0.31 across all 6 seasons (served `composition_flag_sum` was
+    0.24-0.30). Crosses zero -> unresolved_below_power.
+  - Look 2 `protection_early_interaction_v1`: -1.46 accuracy points, 95%
+    [-2.87, -0.06], P+ 0.022, decisive 35-57 on 92 (exact p 0.028) -> whole
+    interval on the wrong side of zero, a RESOLVED wrong sign for this
+    specific fit-level hypothesis. Brier +0.0004 P+ 0.68 and log loss +0.001
+    P+ 0.69 both cross zero (accuracy and calibration disagree in direction,
+    neither calibration read is significant). IS/OOS gap: variant +0.80 pts
+    (mild overfit vs served's +0.20 pts). The `protection_early_interaction`
+    coefficient itself is large, stable, and positive every fold (0.76-0.95,
+    all 6 seasons), i.e. the fit does want to weight the early-window signal
+    heavily on its own -- but the added degree of freedom against thinner
+    per-fold early-window coverage still makes the whole composite's LOSO
+    calibration worse, not better. -> refuted_mechanism, closing ground
+    `wrong_sign_resolved` (closes only this reweighting-in-the-fit variant,
+    not the card-level early-window finding recorded earlier in this lane,
+    and not the live prospective overlay challenger).
+  - Implication for the served flag_sum: do not change it. Both ways of
+    folding the offseason-window gate into the fitted composite make the
+    LOSO fit worse on the played card, one of them by a resolved margin.
+    The place the early-window gate keeps earning its value is the
+    card-level pick rule already live as
+    `pbp08_protection_mismatch_early_window_overlay.py` (prospective,
+    paired, not fitted) -- this unit is evidence to keep that separation,
+    not merge the gate into `pick_probability_fit.py`. A src change is the
+    root's call, but this measurement argues against one.
+
 ## Open
 
 - Whether the week-gated variant should replace the served tilt before a
   season of paired tracking (owner; a served-rule change mid-week needs
   `publish-predictions --record-decisions --replace-week`).
+- Root: run the two record commands below to close out this unit.
+  ```
+  nfl-ats weak-signals record --name pbp08_protection_mismatch_gated_flag_sum_v1_fit_2020_2025 --family pbp08_protection_mismatch_gated_flag_sum_fit --league nfl --season-start 2020 --season-end 2025 --effect -0.8649367930805056 --effect-units accuracy_points --interval-low -2.193548387096774 --interval-high 0.5323489567050633 --probability-positive 0.11149999999999999 --sample-games 1503 --sample-blocks 107 --classification unresolved_below_power --category onfield --source artifacts/lead65_gated_flag_in_fit/20260923T202315Z/summary.json --classification-evidence "95% paired week-blocked bootstrap interval [-2.19, 0.53] crosses zero; P+ 0.111; decisive 34-47 on 81, exact p 0.182; not a resolved wrong sign" --description "Served four-term pick-probability fit (model_logit, flag_sum, move_toward_home, move_available), LOSO by season, with flag_sum's protection-mismatch member gated to weeks<=4 vs the served unmodified flag_sum. LEAD-65 unit." --notes "look 1 of 2 predeclared in docs/lanes/lead65-protection-window-split.md; reliability not remeasured this session"
+
+  nfl-ats weak-signals record --name pbp08_protection_mismatch_early_window_interaction_v1_fit_2020_2025 --family pbp08_protection_mismatch_gated_flag_sum_fit --league nfl --season-start 2020 --season-end 2025 --effect -1.4637391882900865 --effect-units accuracy_points --interval-low -2.8735632183908044 --interval-high -0.06159191408718486 --probability-positive 0.02225 --sample-games 1503 --sample-blocks 107 --classification refuted_mechanism --closing-ground wrong_sign_resolved --category onfield --source artifacts/lead65_gated_flag_in_fit/20260923T202315Z/summary.json --classification-evidence "95% paired week-blocked bootstrap interval [-2.87, -0.06] is entirely negative; P+ 0.022; decisive 35-57 on 92, exact p 0.028; resolved wrong sign for this fit-level hypothesis (protection pulled out of flag_sum and refit as its own term interacted with an early-window indicator degrades LOSO OOS accuracy vs the served single flag_sum term), despite a stable positive per-fold coefficient (0.76-0.95 across all 6 seasons); closes only this reweighting-in-the-fit variant, not the card-level early-window finding or the live prospective overlay" --description "Served four-term pick-probability fit with the protection-mismatch member removed from flag_sum and refit as its own term interacted with an early-window (week<=4) indicator, LOSO by season, vs the served unmodified flag_sum. LEAD-65 unit." --notes "look 2 of 2 predeclared in docs/lanes/lead65-protection-window-split.md; reliability not remeasured this session"
+  ```

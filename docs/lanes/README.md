@@ -20,9 +20,6 @@ modified lane when the prompt just says to continue.
 
 ## Active
 
-- [opener-error-transfer](opener-error-transfer.md) - XLG-09 unit 1 done: college-trained term adds nothing measurable (-0.40 pts [-1.50,+0.26], P+ 0.33), unresolved.
-- [players-on-field-rating](players-on-field-rating.md) - MOD-22, started 2026-09-23: team strength as the sum of the players expected on the field.
-- [displayed-confidence-served-probability](displayed-confidence-served-probability.md) - 2026-09-23: replace the in-sample 12-cell displayed cover chance with the served fitted probability if it calibrates as well out of season.
 - [week3-research-recorders](week3-research-recorders.md) - nine challenger records remain missing; all 16 served Week 3 paper decisions are complete.
 - [news-trigger-refresh](news-trigger-refresh.md) - MKT-08 dispatch implemented and verified; prospective comparison awaits new events.
 - [gh-window-incident](gh-window-incident.md) - prior runaway CLI windows remain a separate investigation; no gh commands used for this deployment.
@@ -30,19 +27,23 @@ modified lane when the prompt just says to continue.
 - [confidence-best-pick-unification](confidence-best-pick-unification.md) - shared calibrated selector published in `5fb88a2`; confidence reliability and within-week ranking research remains open
 
 
-- [pooled-signal-model](pooled-signal-model.md) — MOD-20, unit 1 done 2026-09-16 (first pooled fit recorded, unresolved); next: grow the reproducible feature set
+- [pooled-signal-model](pooled-signal-model.md) — MOD-20, units 1-5 recorded; unit 5 interactions -0.40 pts unresolved; next: a genuinely new family, not a reparameterisation
 - [pool-rank-card](pool-rank-card.md) — POOL-01, unit 1 measured 2026-09-16 (unresolved); unit 2 only with a fitted field
 - [every-metric-every-experiment](every-metric-every-experiment.md) — ENG-46 implementation done 2026-09-16; backfilled-look accounting remains open (runner emits four metrics, backfill recorded, margin cells corrected same day, pool + findings read the margin family).
 - [lane-replay-dream-rsi](lane-replay-dream-rsi.md) — ENG-45, units 1-2 done 2026-09-16 (both unresolved); unit 3 not recommended
 - [conditional-signal-atlas](conditional-signal-atlas.md) - MOD-19: owner rejected the deployed Findings page as not useful and below expectations; original mockup is saved, feature remains unresolved, further implementation awaits a grounded direction.
-- [lead65-protection-window-split](lead65-protection-window-split.md) — owner question 2026-09-13: measured: the tilt's edge is IN weeks 1-4 (P+ 0.977), weeks 5-18 a probable drag (P+ 0.099); next a week-gated paired challenger
+- [lead65-protection-window-split](lead65-protection-window-split.md) — gate folded into the fit loses (2026-09-23); the separate early-window overlay stays prospective; owner question open
 - [lead59-archive-battery](lead59-archive-battery.md) — LEAD-59 src fix and battery re-run done, 23 cells recorded; open: type-trait binning with the archive on
 - [token-diet](token-diet.md) — session-startup token cost cut about 80%; remaining: trim the three 15 KB+ open ROADMAP rows (owner text) and decide whether `.claude/` hooks should be tracked
 - [odds-api-key-deactivated](odds-api-key-deactivated.md) — 2026-09-19: bulk odds captures failing HTTP 401 DEACTIVATED_KEY (billing); owner action needed before the next odds window
 
 ## Done
 
+- [players-on-field-rating](done/players-on-field-rating.md) - MOD-22 units 1-3, 2026-09-23: four fitted terms unresolved, Tuesday availability change not reconstructible; family open, cached construct exhausted.
+- [opener-error-transfer](done/opener-error-transfer.md) - XLG-09 units 1-2, 2026-09-23: widened CFB transfer term +0.13 pts, P+ 0.76, unresolved; not served.
+- [ui20-confidence-column-guide](done/ui20-confidence-column-guide.md) - 2026-09-23: Confidence column hover help and Column guide entry published.
 - Superseded 2026-09-23 when the four-term fitted probability became the served side selector (2026-09-20); their open questions were about flip rules that no longer serve: [four-term-probability](done/four-term-probability.md), [joint-probability-model](done/joint-probability-model.md), [market-updated-model](done/market-updated-model.md), [served-flip-rules-hold](done/served-flip-rules-hold.md), [leader-median-model-confidence](done/leader-median-model-confidence.md), [handle-follow-override-defect](done/handle-follow-override-defect.md), [best-pick-served-score-ranker](done/best-pick-served-score-ranker.md).
+- [displayed-confidence-served-probability](done/displayed-confidence-served-probability.md) - 2026-09-23: in-sample lookup removed; the card shows the served fitted probability.
 - [spread-explorer-discrete](done/spread-explorer-discrete.md) - 2026-09-23: spread explorer serves the discrete margin read.
 - [small-maintenance-2026-09-23.md](done/small-maintenance-2026-09-23.md) — roadmap scheduler guidance now matches the conditional workflow; lane-index and root README links verified.
 - [week3-lines-2026-09-22](done/week3-lines-2026-09-22.md) - genuine pool lines, all 16 Week 3 picks, paper decisions, and generated dashboard completed.
