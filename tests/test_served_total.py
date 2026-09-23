@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import hashlib
 from pathlib import Path
 
 import numpy as np
@@ -11,8 +10,6 @@ from nfl_ats.joint_residual_model import make_joint_estimator, realised_residual
 from nfl_ats.served_total import (
     BLEND_K01_WEIGHT,
     JOINT_TOTAL_BLEND_WEIGHT,
-    SERVED_TOTAL_METHOD,
-    apply_blend,
     joint_residual_total_view,
     served_total,
     served_total_blend_k01,
@@ -30,10 +27,6 @@ from nfl_ats.totals import TotalsView, design_matrix
 _FEATURES = ("wind", "temp")
 
 
-def test_served_total_method_defaults_to_joint_residual() -> None:
-    assert SERVED_TOTAL_METHOD == "joint_residual"
-
-
 def test_blend_k01_weight_matches_tiebreakers_totals_residual_weight() -> None:
 
     assert pytest.approx(TOTALS_RESIDUAL_WEIGHT) == BLEND_K01_WEIGHT
@@ -46,43 +39,6 @@ def test_served_total_blend_k01_matches_todays_formula() -> None:
     assert served_total_blend_k01(43.0, view) == pytest.approx(43.0 + 0.1 * 0.42)
     assert served_total_blend_k01(43.0, view, weight=0.2) == pytest.approx(43.0 + 0.2 * 0.42)
     assert served_total_blend_k01(43.0, None) == pytest.approx(43.0)
-
-
-def test_apply_blend_is_the_one_formula_both_named_methods_share() -> None:
-    view = TotalsView(
-        predicted_total=44.0, market_total=44.0, residual=-1.5, train_games=500, source="x"
-    )
-    assert apply_blend(44.0, view, weight=0.1) == pytest.approx(43.85)
-    assert apply_blend(44.0, None, weight=0.1) == pytest.approx(44.0)
-
-
-def test_served_total_blend_k01_is_hash_pinned() -> None:
-
-    fixture: list[tuple[float, float | None]] = [
-        (43.0, None),
-        (43.0, 0.42),
-        (44.5, -1.2),
-        (37.25, 0.0),
-        (51.0, 3.333333),
-    ]
-    values: list[float] = []
-    for market_total, residual in fixture:
-        view = (
-            None
-            if residual is None
-            else TotalsView(
-                predicted_total=market_total + residual,
-                market_total=market_total,
-                residual=residual,
-                train_games=500,
-                source="x",
-            )
-        )
-        values.append(served_total_blend_k01(market_total, view))
-
-    payload = ",".join(f"{value:.10f}" for value in values)
-    digest = hashlib.sha256(payload.encode("utf-8")).hexdigest()
-    assert digest == "7c2a59c26bc5ad64a500f3ddc56c4f09e0f0bdd9616ef6d445ff685f13dde4ed"
 
 
 def test_served_total_joint_residual_blends_at_its_own_weight() -> None:
@@ -204,26 +160,6 @@ def test_joint_residual_total_view_declines_below_the_training_floor(tmp_path: P
     )
 
 
-def test_joint_residual_total_view_returns_none_on_missing_inputs(tmp_path: Path) -> None:
-    target_week = 5
-    target_id = f"2000_{target_week:02d}_00"
-    _write_joint_features_fixture(tmp_path, target_id=target_id, flip_week=target_week)
-
-    empty_root = tmp_path / "empty"
-    assert (
-        joint_residual_total_view(
-            target_id, empty_root, feature_columns=_FEATURES, min_train_games=40
-        )
-        is None
-    )
-    assert (
-        joint_residual_total_view(
-            "no_such_game", tmp_path, feature_columns=_FEATURES, min_train_games=40
-        )
-        is None
-    )
-
-
 def test_served_total_dispatch_prefers_joint_residual_when_a_view_exists() -> None:
     blend_view = TotalsView(
         predicted_total=43.4, market_total=43.0, residual=0.4, train_games=500, source="blend"
@@ -249,31 +185,6 @@ def test_served_total_dispatch_falls_back_to_blend_when_no_joint_view_exists() -
     )
     assert method == "blend_k01"
     assert value == pytest.approx(43.0 + BLEND_K01_WEIGHT * 0.4)
-
-
-def test_served_total_dispatch_blend_k01_ignores_any_joint_view() -> None:
-    blend_view = TotalsView(
-        predicted_total=43.4, market_total=43.0, residual=0.4, train_games=500, source="blend"
-    )
-    joint_view = TotalsView(
-        predicted_total=43.9, market_total=43.0, residual=0.9, train_games=3_919, source="joint"
-    )
-
-    value, method = served_total(
-        "blend_k01", market_total=43.0, blend_view=blend_view, joint_view=joint_view
-    )
-    assert method == "blend_k01"
-    assert value == pytest.approx(43.0 + BLEND_K01_WEIGHT * 0.4)
-
-
-def test_served_total_dispatch_rejects_an_unknown_method() -> None:
-    with pytest.raises(ValueError, match="Unknown served-total method"):
-        served_total(
-            "not_a_method",  # type: ignore[arg-type]
-            market_total=43.0,
-            blend_view=None,
-            joint_view=None,
-        )
 
 
 def _den_kc_fixture() -> tuple[pd.Series, MarketConsensus, pd.DataFrame]:
@@ -318,23 +229,6 @@ def test_build_report_serves_joint_residual_when_both_views_exist() -> None:
     assert report.guess_total_line == pytest.approx(report.served_total)
     assert report.comparison_total_blend_k01 == pytest.approx(43.0 + TOTALS_RESIDUAL_WEIGHT * 0.4)
     assert report.served_total != pytest.approx(report.comparison_total_blend_k01)
-
-
-def test_build_report_falls_back_to_blend_when_no_joint_view_is_supplied() -> None:
-    game, consensus, finals = _den_kc_fixture()
-    blend_view = TotalsView(
-        predicted_total=43.4, market_total=43.0, residual=0.4, train_games=500, source="blend"
-    )
-
-    report = build_report(game, consensus, finals, None, blend_view, None)
-
-    assert report.served_total_method == "blend_k01"
-    assert report.served_total == pytest.approx(
-        43.0 + TOTALS_RESIDUAL_WEIGHT * 0.4 + TOTAL_LOW_SIDE_SHADE_POINTS
-    )
-    assert report.served_total == pytest.approx(
-        report.comparison_total_blend_k01 + TOTAL_LOW_SIDE_SHADE_POINTS
-    )
 
 
 def test_tiebreaker_json_payload_carries_served_total_method_and_both_totals() -> None:

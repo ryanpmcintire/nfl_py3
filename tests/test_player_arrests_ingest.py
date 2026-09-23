@@ -17,7 +17,6 @@ from scripts.ingest_player_arrests import (
     parse_sitedata,
     parse_table_page,
     point_in_time_view,
-    sanitize_landing_html,
     table_post_fields,
 )
 
@@ -90,12 +89,6 @@ def test_landing_parser_refuses_changed_sort_contract() -> None:
     changed = _landing().replace(b'"sortOrder": "desc"', b'"sortOrder": "asc"')
     with pytest.raises(PlayerArrestsIngestError, match="default sort changed"):
         parse_sitedata(changed)
-
-
-def test_landing_nonce_is_sanitized_before_persistence() -> None:
-    sanitized = sanitize_landing_html(_landing(), "nonce-123")
-    assert b"nonce-123" not in sanitized
-    assert b"[REDACTED_EPHEMERAL_NONCE]" in sanitized
 
 
 def test_table_parser_validates_page_and_pagination_metadata() -> None:

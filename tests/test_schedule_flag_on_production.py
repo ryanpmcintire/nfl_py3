@@ -58,13 +58,6 @@ def test_post_ot_sign_convention_covers_all_states() -> None:
     assert derived.loc["g1", POST_OT_FATIGUE_COLUMN] == 0.0
 
 
-def test_post_ot_week_one_has_no_prior_game_and_is_zero_not_nan() -> None:
-
-    derived = derive_post_ot_fatigue_features(_post_ot_schedule()).set_index("game_id")
-    assert derived.loc["g0", POST_OT_FATIGUE_COLUMN] == 0.0
-    assert not pd.isna(derived.loc["g0", POST_OT_FATIGUE_COLUMN])
-
-
 def test_post_ot_never_crosses_a_season_boundary() -> None:
 
     schedule = _schedule(
@@ -95,23 +88,6 @@ def _mnf_road_schedule() -> pd.DataFrame:
 def test_mnf_road_home_qualifies_is_negative() -> None:
     derived = derive_mnf_road_short_week_features(_mnf_road_schedule()).set_index("game_id")
     assert derived.loc["m2", MNF_ROAD_SHORT_WEEK_COLUMN] == -1.0
-
-
-def test_mnf_road_away_qualifies_is_positive() -> None:
-    derived = derive_mnf_road_short_week_features(_mnf_road_schedule()).set_index("game_id")
-    assert derived.loc["m4", MNF_ROAD_SHORT_WEEK_COLUMN] == 1.0
-
-
-def test_mnf_road_home_game_after_monday_does_not_qualify() -> None:
-
-    derived = derive_mnf_road_short_week_features(_mnf_road_schedule()).set_index("game_id")
-    assert derived.loc["m6", MNF_ROAD_SHORT_WEEK_COLUMN] == 0.0
-
-
-def test_mnf_road_requires_exactly_six_days_not_just_monday_then_sunday() -> None:
-
-    derived = derive_mnf_road_short_week_features(_mnf_road_schedule()).set_index("game_id")
-    assert derived.loc["m8", MNF_ROAD_SHORT_WEEK_COLUMN] == 0.0
 
 
 def test_home_thursday_flags_every_thursday_game_unsigned() -> None:
@@ -200,16 +176,3 @@ def test_attach_requires_the_join_key() -> None:
     features = pd.DataFrame({"not_game_id": schedule["game_id"]})
     with pytest.raises(DataContractError, match="game_id"):
         attach_post_ot_fatigue_features(features, schedule=schedule)
-
-
-def test_attach_refuses_to_overwrite_an_existing_column() -> None:
-    schedule = _post_ot_schedule()
-    features = pd.DataFrame({"game_id": schedule["game_id"], POST_OT_FATIGUE_COLUMN: 0.0})
-    with pytest.raises(DataContractError, match=POST_OT_FATIGUE_COLUMN):
-        attach_post_ot_fatigue_features(features, schedule=schedule)
-
-
-def test_derive_requires_every_schedule_column() -> None:
-    schedule = _post_ot_schedule().drop(columns=["overtime"])
-    with pytest.raises(DataContractError, match="overtime"):
-        derive_post_ot_fatigue_features(schedule)

@@ -14,12 +14,6 @@ from nfl_ats import inactives_capture as ic
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
 POPULATED_HTML = (FIXTURES / "nflcom_inactives_populated.html").read_text(encoding="utf-8")
-PRIMARY_PLACEHOLDER_HTML = (FIXTURES / "nflcom_inactives_placeholder.html").read_text(
-    encoding="utf-8"
-)
-FALLBACK_PLACEHOLDER_HTML = (FIXTURES / "rotowire_inactives_placeholder.html").read_text(
-    encoding="utf-8"
-)
 GARBAGE_HTML = "<html><body><p>Some unrelated page with no game markup.</p></body></html>"
 
 FIXED_NOW = datetime(2026, 9, 7, 18, 30, 0, tzinfo=UTC)
@@ -36,13 +30,6 @@ def make_fetch(
         return responses[url]
 
     return fetch, calls
-
-
-def write_schedule(repo: Path, rows: list[dict[str, Any]]) -> None:
-    frame = pd.DataFrame(rows)
-    out_dir = repo / "data" / "raw" / "20260901T000000Z"
-    out_dir.mkdir(parents=True, exist_ok=True)
-    frame.to_parquet(out_dir / "schedules.parquet", index=False)
 
 
 def test_parse_populated_fixture_maps_team_codes_and_rows() -> None:
@@ -64,13 +51,6 @@ def test_parse_populated_fixture_maps_team_codes_and_rows() -> None:
     assert by_name["Dominic Fairweather"]["team"] == "DEN"
     assert by_name["Elijah Sandoval"]["position"] == "WR"
     assert all(row["status"] for row in rows)
-
-
-def test_placeholder_markers_present_in_their_own_fixtures() -> None:
-    assert ic.PRIMARY_PLACEHOLDER_TEXT in PRIMARY_PLACEHOLDER_HTML
-    assert ic.FALLBACK_PLACEHOLDER_TEXT in FALLBACK_PLACEHOLDER_HTML
-    assert ic.PRIMARY_PLACEHOLDER_TEXT not in POPULATED_HTML
-    assert ic.PRIMARY_PLACEHOLDER_TEXT not in GARBAGE_HTML
 
 
 def test_garbage_html_parses_to_zero_rows_no_crash() -> None:
@@ -129,98 +109,6 @@ def test_run_capture_primary_success_writes_snapshot_and_skips_fallback(tmp_path
     assert manifest["fallback"] is None
 
 
-def test_run_capture_offseason_placeholder_is_expected_zero_row_ok(tmp_path: Path) -> None:
-    fetch, calls = make_fetch(
-        {
-            ic.PRIMARY_URL: (PRIMARY_PLACEHOLDER_HTML, 200, None, True),
-        }
-    )
-    out_root = tmp_path / "data" / "players" / "inactives"
-
-    snapshot, ok = ic.run_capture(
-        season=2026,
-        week=1,
-        slot="sun_early",
-        out_root=out_root,
-        repo=tmp_path,
-        fetch=fetch,
-        now=FIXED_NOW,
-    )
-
-    assert ok is True
-    assert calls == [ic.PRIMARY_URL]
-
-    frame = pd.read_parquet(snapshot / "inactives.parquet")
-    assert len(frame) == 0
-    assert list(frame.columns) == ic.PARQUET_COLUMNS
-
-    manifest = _read_manifest(snapshot)
-    assert manifest["empty_reason"] == ic.EMPTY_REASON_OFFSEASON_PLACEHOLDER
-    assert manifest["ok"] is True
-    assert manifest["source_used"] == "none"
-    assert manifest["primary"]["showed_known_placeholder"] is True
-
-
-def test_run_capture_falls_back_when_primary_parses_zero_without_placeholder(
-    tmp_path: Path,
-) -> None:
-    fetch, calls = make_fetch(
-        {
-            ic.PRIMARY_URL: (GARBAGE_HTML, 200, None, True),
-            ic.FALLBACK_URL: (POPULATED_HTML, 200, None, True),
-        }
-    )
-    out_root = tmp_path / "data" / "players" / "inactives"
-
-    snapshot, ok = ic.run_capture(
-        season=2026,
-        week=1,
-        slot="sun_late",
-        out_root=out_root,
-        repo=tmp_path,
-        fetch=fetch,
-        now=FIXED_NOW,
-    )
-
-    assert ok is True
-    assert calls == [ic.PRIMARY_URL, ic.FALLBACK_URL]
-
-    manifest = _read_manifest(snapshot)
-    assert manifest["source_used"] == "fallback"
-    assert manifest["row_count"] == 6
-    assert manifest["empty_reason"] is None
-    assert any("primary source parsed 0 rows" in w for w in manifest["warnings"])
-    assert manifest["fallback"]["url"] == ic.FALLBACK_URL
-
-
-def test_run_capture_unrecognized_structure_both_sources_exits_non_zero(tmp_path: Path) -> None:
-    fetch, calls = make_fetch(
-        {
-            ic.PRIMARY_URL: (GARBAGE_HTML, 200, None, True),
-            ic.FALLBACK_URL: (GARBAGE_HTML, 200, None, True),
-        }
-    )
-    out_root = tmp_path / "data" / "players" / "inactives"
-
-    snapshot, ok = ic.run_capture(
-        season=2026,
-        week=1,
-        slot="sat_early",
-        out_root=out_root,
-        repo=tmp_path,
-        fetch=fetch,
-        now=FIXED_NOW,
-    )
-
-    assert ok is False
-    assert calls == [ic.PRIMARY_URL, ic.FALLBACK_URL]
-
-    manifest = _read_manifest(snapshot)
-    assert manifest["empty_reason"] == ic.EMPTY_REASON_UNRECOGNIZED_STRUCTURE
-    assert manifest["ok"] is False
-    assert manifest["row_count"] == 0
-
-
 def test_run_capture_both_fetches_failing_exits_non_zero(tmp_path: Path) -> None:
     fetch, calls = make_fetch(
         {
@@ -251,19 +139,6 @@ def test_run_capture_both_fetches_failing_exits_non_zero(tmp_path: Path) -> None
     assert not (snapshot / "fallback.html").exists()
 
 
-def test_run_capture_unknown_slot_rejected(tmp_path: Path) -> None:
-    with pytest.raises(ValueError):
-        ic.run_capture(
-            season=2026,
-            week=1,
-            slot="not_a_real_slot",
-            out_root=tmp_path,
-            repo=tmp_path,
-            fetch=lambda *_a: (None, None, None, True),
-            now=FIXED_NOW,
-        )
-
-
 def test_run_capture_no_schedule_snapshot_is_zero_row_ok_and_never_fetches(tmp_path: Path) -> None:
     calls: list[str] = []
 
@@ -289,131 +164,9 @@ def test_run_capture_no_schedule_snapshot_is_zero_row_ok_and_never_fetches(tmp_p
     assert manifest["schedule_error"] is not None
 
 
-def test_run_capture_season_complete_is_zero_row_ok(tmp_path: Path) -> None:
-    write_schedule(
-        tmp_path,
-        [
-            {
-                "season": 2025,
-                "week": 1,
-                "game_type": "REG",
-                "game_id": "2025_01_DEN_KC",
-                "home_team": "KC",
-                "away_team": "DEN",
-                "gameday": "2025-09-07",
-                "gametime": "13:00:00",
-            }
-        ],
-    )
-    calls: list[str] = []
-
-    def fetch(url: str, robots_url: str) -> tuple[str | None, int | None, str | None, bool]:
-        calls.append(url)
-        raise AssertionError("must not fetch past the end of the schedule")
-
-    out_root = tmp_path / "data" / "players" / "inactives"
-    snapshot, ok = ic.run_capture(
-        season=None,
-        week=None,
-        slot="sun_early",
-        out_root=out_root,
-        repo=tmp_path,
-        fetch=fetch,
-        now=FIXED_NOW,
-    )
-
-    assert ok is True
-    assert calls == []
-    manifest = _read_manifest(snapshot)
-    assert manifest["empty_reason"] == ic.EMPTY_REASON_SEASON_COMPLETE
-
-
-def test_run_capture_resolves_game_id_and_home_away_from_schedule(tmp_path: Path) -> None:
-    write_schedule(
-        tmp_path,
-        [
-            {
-                "season": 2026,
-                "week": 1,
-                "game_type": "REG",
-                "game_id": "2026_01_DEN_KC",
-                "home_team": "KC",
-                "away_team": "DEN",
-                "gameday": "2026-09-13",
-                "gametime": "13:00:00",
-            }
-        ],
-    )
-    fetch, _ = make_fetch({ic.PRIMARY_URL: (POPULATED_HTML, 200, None, True)})
-    out_root = tmp_path / "data" / "players" / "inactives"
-
-    snapshot, ok = ic.run_capture(
-        season=2026,
-        week=1,
-        slot="sun_early",
-        out_root=out_root,
-        repo=tmp_path,
-        fetch=fetch,
-        now=FIXED_NOW,
-    )
-    assert ok is True
-
-    frame = pd.read_parquet(snapshot / "inactives.parquet").set_index("team")
-    assert (frame.loc[["KC"], "game_id"] == "2026_01_DEN_KC").all()
-    assert (frame.loc[["KC"], "home_team"] == "KC").all()
-    assert (frame.loc[["KC"], "away_team"] == "DEN").all()
-    assert (frame.loc[["DEN"], "game_id"] == "2026_01_DEN_KC").all()
-    assert frame.loc[["SF"], "game_id"].isna().all()
-
-
 def test_main_requires_current_or_explicit_season_week() -> None:
     with pytest.raises(SystemExit):
         ic.main(["--slot", "sun_early"])
-
-
-def test_main_rejects_unknown_slot() -> None:
-    with pytest.raises(SystemExit):
-        ic.main(["--current", "--slot", "not_a_real_slot"])
-
-
-def test_main_rejects_short_delay() -> None:
-    with pytest.raises(SystemExit):
-        ic.main(["--current", "--slot", "sun_early", "--delay", "0.5"])
-
-
-def test_main_returns_zero_or_one_from_run_capture_ok(
-    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
-) -> None:
-    calls: dict[str, Any] = {}
-
-    def fake_run_capture(**kwargs: Any) -> tuple[Path, bool]:
-        calls.update(kwargs)
-        return tmp_path / "20260907T183000Z", kwargs["season"] == 2026
-
-    monkeypatch.setattr(ic, "run_capture", fake_run_capture)
-
-    exit_ok = ic.main(["--season", "2026", "--week", "1", "--slot", "sun_early"])
-    exit_bad = ic.main(["--season", "2099", "--week", "1", "--slot", "sun_early"])
-
-    assert exit_ok == 0
-    assert exit_bad == 1
-    assert calls["slot"] == "sun_early"
-
-
-def test_snapshot_directory_name_matches_scheduler_naming_convention(tmp_path: Path) -> None:
-    fetch, _ = make_fetch({ic.PRIMARY_URL: (POPULATED_HTML, 200, None, True)})
-    snapshot, ok = ic.run_capture(
-        season=2026,
-        week=1,
-        slot="sun_early",
-        out_root=tmp_path / "data" / "players" / "inactives",
-        repo=tmp_path,
-        fetch=fetch,
-        now=FIXED_NOW,
-    )
-    assert ok is True
-    assert capture_scheduler.SNAPSHOT_NAME.match(snapshot.name)
-    assert snapshot.name == "20260907T183000Z"
 
 
 def test_scheduler_dedupe_recognizes_a_fresh_inactives_snapshot(

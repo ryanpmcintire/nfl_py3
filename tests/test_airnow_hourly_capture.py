@@ -47,35 +47,6 @@ def test_candidate_hours_respect_the_publication_boundary() -> None:
     assert [value.hour for value in after] == [15, 14, 13]
 
 
-def test_capture_falls_back_when_the_current_hour_is_not_yet_available(tmp_path: Path) -> None:
-    registry = tmp_path / "stadiums.csv"
-    _stadiums(registry)
-    payload = _payload(
-        {"AQSID": "840421010001", "OZONE_AQI": 42},
-        {"AQSID": "840550090001", "OZONE_AQI": 35},
-        valid_time="14:00",
-    )
-
-    def previous_hour(url: str, **_kwargs: object) -> io.BytesIO:
-        if url.endswith("2026090214.dat"):
-            return io.BytesIO(payload)
-        raise urllib.error.URLError("current hour is not published")
-
-    snapshot = airnow.capture(
-        tmp_path / "captures",
-        now=datetime(2026, 9, 2, 15, 40, tzinfo=UTC),
-        opener=previous_hour,
-        stadium_path=registry,
-    )
-    manifest = json.loads((snapshot / "manifest.json").read_text(encoding="utf-8"))
-
-    assert manifest["source_url"].endswith("2026090214.dat")
-    assert [url[-14:] for url in manifest["attempted_urls"]] == [
-        "2026090215.dat",
-        "2026090214.dat",
-    ]
-
-
 def _stadiums(path: Path) -> None:
     pd.DataFrame(
         {

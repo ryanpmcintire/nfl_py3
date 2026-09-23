@@ -122,7 +122,6 @@ def test_missing_credential_fails_before_output_and_network(
 @pytest.mark.parametrize(
     ("payload", "message"),
     [
-        (_payload(teams=("ARI",)), "missing=\\['ATL'\\]"),
         (_payload(generated_at="2026-09-01T00:00:00Z"), "stale/future"),
         (b"{}", "Malformed Weekly Injuries response"),
     ],

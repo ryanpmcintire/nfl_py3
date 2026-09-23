@@ -26,7 +26,7 @@ DEVIATION_TERMS = (
     "flag_protection",
     "flag_tank_zone",
 )
-ALL_TERMS = BASE_TERMS + (SHARED_TERM,) + DEVIATION_TERMS
+ALL_TERMS = (*BASE_TERMS, SHARED_TERM, *DEVIATION_TERMS)
 KAPPA_GRID = (1.0, 3.0, 10.0, 30.0, 100.0, 300.0, 1000.0, 10000.0)
 BOOTSTRAP_DRAWS = 2000
 BOOTSTRAP_SEED = 20260821
@@ -61,7 +61,9 @@ def fit_hierarchical(train, kappa, ridge_base):
     means, stds = base_fit.standardisers(train, list(ALL_TERMS))
     design = base_fit.design_matrix(train, list(ALL_TERMS), means, stds)
     penalties = ridge_vector(ridge_base, kappa)
-    beta = fit_logit_grouped(design, train["home_covered"].astype(float).to_numpy(), penalties, FIT_ITERATIONS)
+    beta = fit_logit_grouped(
+        design, train["home_covered"].astype(float).to_numpy(), penalties, FIT_ITERATIONS
+    )
     return beta, means, stds
 
 
@@ -130,7 +132,9 @@ def in_sample_fit(population, ridge_base, grid):
 
 
 def reliability_table(probs, truth, bins):
-    frame = pd.DataFrame({"prob": np.asarray(probs, dtype=float), "truth": truth.to_numpy(dtype=float)})
+    frame = pd.DataFrame(
+        {"prob": np.asarray(probs, dtype=float), "truth": truth.to_numpy(dtype=float)}
+    )
     frame["bin"] = pd.qcut(frame["prob"], bins, duplicates="drop")
     grouped = frame.groupby("bin", observed=True).agg(
         predicted_mean=("prob", "mean"), observed_rate=("truth", "mean"), games=("truth", "size")
@@ -162,7 +166,9 @@ def main(argv=None):
     )
 
     hier_oos, hier_folds = outer_loso(population, FIT_RIDGE, KAPPA_GRID)
-    hier_insample, is_kappa, is_inner_scores, is_natural = in_sample_fit(population, FIT_RIDGE, KAPPA_GRID)
+    hier_insample, is_kappa, is_inner_scores, is_natural = in_sample_fit(
+        population, FIT_RIDGE, KAPPA_GRID
+    )
 
     scored = population.copy()
     scored["base_oos_prob"] = base_oos

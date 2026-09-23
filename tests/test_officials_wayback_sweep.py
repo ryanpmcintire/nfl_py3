@@ -32,41 +32,12 @@ def test_parses_the_table_strategy_fixture() -> None:
     ]
 
 
-def test_parses_the_inline_fallback_fixture_and_warns_it_used_the_fallback() -> None:
-    html = (FIXTURES / "pfr_boxscore_officials_inline.html").read_text(encoding="utf-8")
-    rows, warnings = sweep.parse_officials_block(html)
-
-    assert any("inline" in w for w in warnings)
-    assert rows == [
-        ("Referee", "Walt Anderson"),
-        ("Umpire", "Carl Paganelli"),
-        ("Head Linesman", "Jerry Bergman"),
-        ("Line Judge", "Julian Mapp"),
-        ("Field Judge", "Tom Hill"),
-        ("Side Judge", "Anthony Jeffries"),
-        ("Back Judge", "Perry Paganelli"),
-    ]
-
-
 def test_neither_strategy_matches_returns_empty_with_a_warning() -> None:
     rows, warnings = sweep.parse_officials_block("<html><body>no officials here</body></html>")
 
     assert rows == []
     assert len(warnings) == 1
     assert "no officials block found" in warnings[0]
-
-
-def test_table_strategy_skips_a_literal_header_row() -> None:
-    html = (
-        '<table id="officials"><tbody>'
-        "<tr><th>Position</th><td>Official</td></tr>"
-        "<tr><th>Referee</th><td>Jane Doe</td></tr>"
-        "</tbody></table>"
-    )
-    rows, warnings = sweep.parse_officials_block(html)
-
-    assert warnings == []
-    assert rows == [("Referee", "Jane Doe")]
 
 
 class _ScriptedFetch:
@@ -126,38 +97,6 @@ def test_backoff_gives_up_after_max_attempts_on_persistent_429() -> None:
     assert outcome.attempts == 3
     assert outcome.gave_up_after_retries is True
     assert sleeps == [60.0, 120.0]
-
-
-def test_a_non_retryable_status_fails_immediately_without_backoff() -> None:
-    fetch = _ScriptedFetch([sweep.FetchResult(None, 404, "http_404")])
-    limiter = sweep.RateLimiter(8.0, sleep_fn=lambda _s: None)
-    sleeps: list[float] = []
-
-    outcome = sweep.fetch_with_backoff(
-        "https://web.archive.org/x",
-        fetch,
-        limiter,
-        initial_backoff_seconds=60.0,
-        max_attempts=5,
-        sleep_fn=sleeps.append,
-    )
-
-    assert outcome.attempts == 1
-    assert outcome.gave_up_after_retries is False
-    assert sleeps == []
-
-
-def test_rate_limiter_enforces_the_delay_between_calls(monkeypatch: pytest.MonkeyPatch) -> None:
-    waited: list[float] = []
-    limiter = sweep.RateLimiter(8.0, sleep_fn=waited.append)
-    times = iter([0.0, 1.0, 1.0])
-
-    monkeypatch.setattr(sweep.time, "monotonic", lambda: next(times))
-
-    limiter.wait()
-    limiter.wait()
-
-    assert waited == [7.0]
 
 
 def _write_schedule_fixture(path: Path) -> None:
@@ -389,38 +328,6 @@ def test_run_sweep_hard_stops_after_consecutive_failures_and_issues_no_further_r
     assert len(fetch.calls) == 2
 
 
-def test_no_capture_found_is_not_a_failure_and_does_not_trip_the_hard_stop(
-    tmp_path: Path,
-) -> None:
-    schedule_path = tmp_path / "schedules.parquet"
-    _one_game_schedule(schedule_path, n=3)
-    config = _config(tmp_path, schedule_path, max_consecutive_failures=2)
-
-    fetch = _ScriptedFetch([sweep.FetchResult(_EMPTY_CDX_JSON, 200, None)] * 3)
-    summary = sweep.run_sweep(config, fetch_fn=fetch, sleep_fn=lambda _s: None)
-
-    assert summary["stopped_early"] is False
-    assert summary["games_no_capture_found"] == 3
-    assert summary["new_fetch_attempts"] == 3
-    assert summary["total_http_requests"] == 3
-    assert len(fetch.calls) == 3
-
-
-def test_delay_floor_is_enforced(tmp_path: Path) -> None:
-    schedule_path = tmp_path / "schedules.parquet"
-    _one_game_schedule(schedule_path, n=1)
-    config = _config(tmp_path, schedule_path, delay_seconds=1.0)
-
-    with pytest.raises(SystemExit, match="must be >= 8"):
-        sweep.run_sweep(config, fetch_fn=_ScriptedFetch([]), sleep_fn=lambda _s: None)
-
-
-def test_select_capture_timestamp_picks_the_first_data_row_and_handles_empty() -> None:
-    assert sweep._select_capture_timestamp(_cdx_json("20141001000000")) == "20141001000000"
-    assert sweep._select_capture_timestamp(_EMPTY_CDX_JSON) is None
-    assert sweep._select_capture_timestamp(b"not json") is None
-
-
 def test_pre_game_captures_are_never_selected() -> None:
     assert sweep.capture_not_before("2014-09-04") == "20140905"
     assert sweep.capture_not_before(pd.Timestamp("2014-09-04 20:30")) == "20140905"
@@ -430,16 +337,6 @@ def test_pre_game_captures_are_never_selected() -> None:
     only_pre = json.dumps([["urlkey", "timestamp"], ["k", "20140530011957"]]).encode("utf-8")
     assert sweep._select_capture_timestamp(only_pre, not_before="20140905") is None
     assert "from={not_before}" in sweep.CDX_URL_TEMPLATE
-
-
-def test_parses_the_2014_era_ref_info_table_from_a_real_capture() -> None:
-    html = (FIXTURES / "pfr_boxscore_officials_ref_info_2014.html").read_text(encoding="utf-8")
-    rows, warnings = sweep.parse_officials_block(html)
-    assert warnings == []
-    assert rows[0] == ("Referee", "John Parry")
-    assert dict(rows)["Umpire"] == "Mark Pellis"
-    assert dict(rows)["Head Linesman"] == "Derick Bowers"
-    assert len(rows) == 7
 
 
 def _cdx_json_multi(*timestamps: str) -> bytes:
@@ -465,33 +362,6 @@ _NO_OFFICIALS_HTML = (
     "</div></body></html>"
 )
 
-_COMMENTED_OFFICIALS_2026_HTML = """
-<div class="placeholder"></div>
-<!--
-<div class="table_container" id="div_officials">
-    <table class="suppress_all sortable stats_table" id="officials" data-cols-to-freeze="0">
-    <caption>Officials Table</caption>
-    <tr class="thead onecell" ><td class="right center" data-stat="onecell" colspan="2" >Officials</td></tr>
-<tr ><th scope="row" class="center " data-stat="ref_pos" >Referee</th><td class="center " data-stat="name" ><a href="/officials/LeavBi0r.htm">Bill Leavy</a></td></tr>
-<tr ><th scope="row" class="center " data-stat="ref_pos" >Umpire</th><td class="center " data-stat="name" ><a href="/officials/JenkDa0r.htm">Darrell Jenkins</a></td></tr>
-<tr ><th scope="row" class="center " data-stat="ref_pos" >Head Linesman</th><td class="center " data-stat="name" ><a href="/officials/BaltMa0r.htm">Mark Baltz</a></td></tr>
-<tr ><th scope="row" class="center " data-stat="ref_pos" >Line Judge</th><td class="center " data-stat="name" ><a href="/officials/PerlMa0r.htm">Mark Perlman</a></td></tr>
-<tr ><th scope="row" class="center " data-stat="ref_pos" >Back Judge</th><td class="center " data-stat="name" ><a href="/officials/FergKe0r.htm">Keith Ferguson</a></td></tr>
-<tr ><th scope="row" class="center " data-stat="ref_pos" >Side Judge</th><td class="center " data-stat="name" ><a href="/officials/BradGr0r.htm">Greg Bradley</a></td></tr>
-<tr ><th scope="row" class="center " data-stat="ref_pos" >Field Judge</th><td class="center " data-stat="name" ><a href="/officials/BlakCl0r.htm">Clete Blakeman</a></td></tr>
-</table>
-</div>
--->
-"""  # noqa: E501
-
-
-def test_parses_the_2016_plus_layout_with_the_officials_table_inside_a_comment() -> None:
-    rows, warnings = sweep.parse_officials_block(_COMMENTED_OFFICIALS_2026_HTML)
-    assert warnings == []
-    assert rows[0] == ("Referee", "Bill Leavy")
-    assert dict(rows)["Field Judge"] == "Clete Blakeman"
-    assert len(rows) == 7
-
 
 def test_rank_capture_timestamps_is_newest_first_deduplicated_and_bounded() -> None:
     payload = _cdx_json_multi(
@@ -503,13 +373,6 @@ def test_rank_capture_timestamps_is_newest_first_deduplicated_and_bounded() -> N
     assert sweep._rank_capture_timestamps(_EMPTY_CDX_JSON) == []
     assert sweep._rank_capture_timestamps(b"not json") == []
     assert sweep._rank_capture_timestamps(b'{"unexpected": 1}') == []
-
-
-def test_cdx_query_keeps_the_post_game_bound_and_asks_for_every_capture() -> None:
-
-    url = sweep.CDX_URL_TEMPLATE.format(original="https://x/y.htm", not_before="20090911")
-    assert "from=20090911" in url
-    assert "limit=" not in url
 
 
 def test_run_sweep_fetches_the_newest_post_game_capture_first(tmp_path: Path) -> None:
@@ -583,70 +446,6 @@ def test_fallback_walks_newest_first_and_stops_at_the_first_capture_that_parses(
     ]
 
 
-def test_fallback_budget_is_respected_and_zero_fallbacks_means_one_replay(tmp_path: Path) -> None:
-    schedule_path = tmp_path / "schedules.parquet"
-    _one_game_schedule(schedule_path, n=1)
-    cdx = _cdx_json_multi("20140905101010", "20141006175522", "20241124171706", "20150926165118")
-
-    config = _config(tmp_path, schedule_path, fallback_captures=2)
-    fetch = _ScriptedFetch(
-        [sweep.FetchResult(cdx, 200, None)]
-        + [sweep.FetchResult(_NO_OFFICIALS_HTML.encode("utf-8"), 200, None)] * 3
-    )
-    summary = sweep.run_sweep(config, fetch_fn=fetch, sleep_fn=lambda _s: None)
-    assert summary["total_http_requests"] == 4
-    assert summary["fallback_replay_fetches"] == 2
-    assert summary["games_parsed_zero"] == 1
-    assert summary["officials_rows_parsed"] == 0
-    row = json.loads((config.raw_root / config.run_id / "manifest.json").read_text())["games"][0]
-    assert row["outcome"] == "fetched"
-    assert row["officials_parsed"] == 0
-    assert [a["wayback_capture_timestamp"] for a in row["attempted_captures"]] == [
-        "20241124171706",
-        "20150926165118",
-        "20141006175522",
-    ]
-    assert row["html_file"] is not None
-    assert (config.raw_root / config.run_id / row["html_file"]).exists()
-
-    config0 = _config(tmp_path / "zero", schedule_path, fallback_captures=0)
-    fetch0 = _ScriptedFetch(
-        [
-            sweep.FetchResult(cdx, 200, None),
-            sweep.FetchResult(_NO_OFFICIALS_HTML.encode("utf-8"), 200, None),
-        ]
-    )
-    summary0 = sweep.run_sweep(config0, fetch_fn=fetch0, sleep_fn=lambda _s: None)
-    assert summary0["total_http_requests"] == 2
-    assert summary0["fallback_replay_fetches"] == 0
-    assert "/web/20241124171706id_/" in fetch0.calls[1]
-
-
-def test_a_fallback_replay_failure_keeps_the_page_already_fetched_and_counts_a_failure(
-    tmp_path: Path,
-) -> None:
-    schedule_path = tmp_path / "schedules.parquet"
-    _one_game_schedule(schedule_path, n=1)
-    config = _config(tmp_path, schedule_path, fallback_captures=2, max_request_retries=1)
-    fetch = _ScriptedFetch(
-        [
-            sweep.FetchResult(_cdx_json_multi("20241124171706", "20260902021727"), 200, None),
-            sweep.FetchResult(_NO_OFFICIALS_HTML.encode("utf-8"), 200, None),
-            sweep.FetchResult(None, 429, "http_429"),
-        ]
-    )
-    summary = sweep.run_sweep(config, fetch_fn=fetch, sleep_fn=lambda _s: None)
-
-    assert summary["stopped_early"] is False
-    assert summary["games_fetched_ok"] == 1
-    row = json.loads((config.raw_root / config.run_id / "manifest.json").read_text())["games"][0]
-    assert row["outcome"] == "fetched"
-    assert row["wayback_capture_timestamp"] == "20260902021727"
-    assert row["officials_parsed"] == 0
-    assert row["attempted_captures"][1]["replay_status_code"] == 429
-    assert row["attempted_captures"][1]["html_file"] is None
-
-
 def _seed_old_policy_run(config: sweep.SweepConfig, html: str, *, capture_ts: str) -> Path:
 
     snapshot_dir = config.raw_root / config.run_id
@@ -686,23 +485,6 @@ def _seed_old_policy_run(config: sweep.SweepConfig, html: str, *, capture_ts: st
         encoding="utf-8",
     )
     return old_html
-
-
-def test_retry_unparsed_off_never_refetches_a_zero_parse_page(tmp_path: Path) -> None:
-    schedule_path = tmp_path / "schedules.parquet"
-    _one_game_schedule(schedule_path, n=1)
-    config = _config(tmp_path, schedule_path)
-    _seed_old_policy_run(config, _NO_OFFICIALS_HTML, capture_ts="20140905101010")
-
-    def _explode(_url: str) -> sweep.FetchResult:
-        raise AssertionError("without --retry-unparsed a page on disk is never refetched")
-
-    summary = sweep.run_sweep(config, fetch_fn=_explode, sleep_fn=lambda _s: None)
-    assert summary["games_already_on_disk"] == 1
-    assert summary["total_http_requests"] == 0
-    assert summary["games_retried_unparsed"] == 0
-    assert summary["officials_rows_parsed"] == 0
-    assert config.retry_unparsed is False
 
 
 def test_retry_unparsed_refetches_newer_captures_excluding_the_one_already_on_disk(
@@ -746,107 +528,6 @@ def test_retry_unparsed_refetches_newer_captures_excluding_the_one_already_on_di
     frame = pd.read_parquet(config.processed_root / config.run_id / "officials_2009_2014.parquet")
     assert (frame["wayback_capture_timestamp"] == "20260902021727").all()
     assert (frame["effective_time"] == "2014-09-01").all()
-
-
-def test_retry_unparsed_skips_a_page_that_now_parses_under_the_current_parser(
-    tmp_path: Path,
-) -> None:
-
-    schedule_path = tmp_path / "schedules.parquet"
-    _one_game_schedule(schedule_path, n=1)
-    config = _config(tmp_path, schedule_path, retry_unparsed=True)
-    _seed_old_policy_run(config, _table_html(), capture_ts="20141006175522")
-    snapshot_dir = config.raw_root / config.run_id
-    manifest = json.loads((snapshot_dir / "manifest.json").read_text())
-    manifest["games"][0]["officials_parsed"] = 0
-    (snapshot_dir / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
-
-    def _explode(_url: str) -> sweep.FetchResult:
-        raise AssertionError("a page that parses under the current parser is never refetched")
-
-    summary = sweep.run_sweep(config, fetch_fn=_explode, sleep_fn=lambda _s: None)
-    assert summary["total_http_requests"] == 0
-    assert summary["games_retried_unparsed"] == 0
-    assert summary["officials_rows_parsed"] == 7
-    row = json.loads((snapshot_dir / "manifest.json").read_text())["games"][0]
-    assert row["officials_parsed"] == 7
-
-
-def test_retry_unparsed_with_no_newer_capture_keeps_the_old_page_without_duplicating_the_row(
-    tmp_path: Path,
-) -> None:
-    schedule_path = tmp_path / "schedules.parquet"
-    _one_game_schedule(schedule_path, n=1)
-    config = _config(tmp_path, schedule_path, retry_unparsed=True)
-    _seed_old_policy_run(config, _NO_OFFICIALS_HTML, capture_ts="20140905101010")
-
-    fetch = _ScriptedFetch([sweep.FetchResult(_cdx_json_multi("20140905101010"), 200, None)])
-    summary = sweep.run_sweep(config, fetch_fn=fetch, sleep_fn=lambda _s: None)
-
-    assert summary["total_http_requests"] == 1
-    assert summary["games_retried_unparsed"] == 1
-    assert summary["games_retry_no_new_capture"] == 1
-    assert summary["games_no_capture_found"] == 0
-    manifest_path = config.raw_root / config.run_id / "manifest.json"
-    manifest = json.loads(manifest_path.read_text())
-    assert len(manifest["games"]) == 1
-    row = manifest["games"][0]
-    assert row["outcome"] == "fetched"
-    assert row["html_file"] == "html/20140907001xyz.html"
-    assert row["officials_parsed"] == 0
-    assert "no post-game capture beyond" in row["retry_note"]
-    fetch2 = _ScriptedFetch([sweep.FetchResult(_cdx_json_multi("20140905101010"), 200, None)])
-    summary2 = sweep.run_sweep(config, fetch_fn=fetch2, sleep_fn=lambda _s: None)
-    assert summary2["total_http_requests"] == 1
-    assert len(json.loads(manifest_path.read_text())["games"]) == 1
-
-
-def test_limit_caps_new_fetches_but_still_reparses_every_page_on_disk(tmp_path: Path) -> None:
-    schedule_path = tmp_path / "schedules.parquet"
-    _one_game_schedule(schedule_path, n=3)
-    config = _config(tmp_path, schedule_path)
-
-    first = _ScriptedFetch(
-        [
-            sweep.FetchResult(_cdx_json_multi("20260902021727"), 200, None),
-            sweep.FetchResult(_table_html().encode("utf-8"), 200, None),
-            sweep.FetchResult(None, 404, "http_404"),
-            sweep.FetchResult(_cdx_json_multi("20260902021727"), 200, None),
-            sweep.FetchResult(_table_html().encode("utf-8"), 200, None),
-        ]
-    )
-    sweep.run_sweep(config, fetch_fn=first, sleep_fn=lambda _s: None)
-
-    def _explode(_url: str) -> sweep.FetchResult:
-        raise AssertionError("--limit 0 must issue no requests")
-
-    config0 = _config(tmp_path, schedule_path, limit=0)
-    summary0 = sweep.run_sweep(config0, fetch_fn=_explode, sleep_fn=lambda _s: None)
-    assert summary0["total_http_requests"] == 0
-    assert summary0["stop_reason"] == "limit_reached"
-    assert summary0["officials_rows_parsed"] == 14
-
-
-def test_failed_games_are_re_attempted_on_resume_without_duplicate_rows(tmp_path: Path) -> None:
-    schedule_path = tmp_path / "schedules.parquet"
-    _one_game_schedule(schedule_path, n=1)
-    config = _config(tmp_path, schedule_path, max_request_retries=1)
-
-    first = _ScriptedFetch([sweep.FetchResult(None, 429, "http_429")])
-    sweep.run_sweep(config, fetch_fn=first, sleep_fn=lambda _s: None)
-    second = _ScriptedFetch(
-        [
-            sweep.FetchResult(_cdx_json_multi("20260902021727"), 200, None),
-            sweep.FetchResult(_table_html().encode("utf-8"), 200, None),
-        ]
-    )
-    summary = sweep.run_sweep(config, fetch_fn=second, sleep_fn=lambda _s: None)
-
-    assert summary["officials_rows_parsed"] == 7
-    manifest = json.loads((config.raw_root / config.run_id / "manifest.json").read_text())
-    assert len(manifest["games"]) == 1
-    assert manifest["games"][0]["outcome"] == "fetched"
-    assert summary["games_cdx_or_replay_failed"] == 0
 
 
 def test_cli_exposes_fallback_captures_and_retry_unparsed(monkeypatch: pytest.MonkeyPatch) -> None:

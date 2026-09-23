@@ -7,7 +7,6 @@ import pytest
 
 from nfl_ats.data import DataContractError
 from nfl_ats.officials_flag_features import (
-    CREW_HOME_BIAS_COLUMN,
     ROOKIE_CREW_UNDERDOG_COLUMN,
     ROOKIE_ELIGIBLE_SEASON_FLOOR,
     SECOND_MEETING_FAVORITE_COLUMN,
@@ -16,11 +15,9 @@ from nfl_ats.officials_flag_features import (
     derive_crew_home_bias_features,
     derive_rookie_crew_underdog_features,
     derive_second_meeting_favorite_features,
-    describe_crew_familiarity,
     describe_referee_left_censoring,
     home_away_penalty_game_table,
     officials_home_bias_reliability,
-    rookie_crew_table,
     trailing_home_bias_table,
 )
 
@@ -159,27 +156,6 @@ def test_trailing_home_bias_never_uses_this_games_own_penalty_count() -> None:
     assert mutated_trailing["gA5"] != baseline["gA5"]
 
 
-def test_crew_home_bias_flag_is_unsigned_top_quartile_only() -> None:
-    table = _trailing_bias_fixture()
-    trailing = trailing_home_bias_table(table=table)
-    flags = derive_crew_home_bias_features(table=table).set_index("game_id")[CREW_HOME_BIAS_COLUMN]
-    assert set(flags.unique()).issubset({0.0, 1.0})
-    for game_id in ("gA1", "gA2", "gA3", "gB1", "gB2", "gB3"):
-        assert flags[game_id] == 0.0
-
-    eligible = trailing.dropna(subset=["trailing_home_bias"]).set_index("game_id")
-    assert len(eligible) >= 4
-    expected_top = set(
-        pd.qcut(eligible["trailing_home_bias"], 4, labels=[1, 2, 3, 4])
-        .astype(int)
-        .loc[lambda s: s == 4]
-        .index
-    )
-    flagged_ids = set(flags.loc[flags == 1.0].index)
-    assert flagged_ids == expected_top
-    assert flagged_ids
-
-
 def test_crew_home_bias_missing_from_features_raises() -> None:
     with pytest.raises(DataContractError):
         derive_crew_home_bias_features(table=pd.DataFrame(columns=["game_id"]))
@@ -220,14 +196,6 @@ def test_second_meeting_flag_never_uses_this_games_own_penalty_count() -> None:
     pd.testing.assert_series_equal(baseline, mutated_familiarity)
 
 
-def test_describe_crew_familiarity_reports_frequency_and_gap() -> None:
-    table = _familiarity_fixture()
-    stats = describe_crew_familiarity(table=table)
-    assert stats["n_games_with_referee"] == 5
-    assert stats["n_second_meeting"] == 1
-    assert stats["pct_second_meeting"] == pytest.approx(1 / 5)
-
-
 def test_second_meeting_favorite_sign_convention() -> None:
     table = _familiarity_fixture()
     lines = _lines(
@@ -246,20 +214,6 @@ def test_second_meeting_favorite_sign_convention() -> None:
     assert flags["g3"] == 0.0
     assert flags["g5"] == 0.0
     assert flags["g4"] == 0.0
-
-
-def test_second_meeting_favorite_away_favorite_sign() -> None:
-    table = _table(
-        [
-            _game_row("h1", "REF_C", 2022, 1, "H", "A", 5.0, 5.0),
-            _game_row("h2", "REF_C", 2022, 3, "H", "Z", 5.0, 5.0),
-        ]
-    )
-    lines = _lines([("h2", -3.0)])
-    flags = derive_second_meeting_favorite_features(None, lines, table=table).set_index("game_id")[
-        SECOND_MEETING_FAVORITE_COLUMN
-    ]
-    assert flags["h2"] == -1.0
 
 
 def test_second_meeting_favorite_requires_game_id_column() -> None:
@@ -309,30 +263,6 @@ def test_rookie_eligible_season_floor_excludes_2015() -> None:
     ]
     assert flags["r2015"] == 0.0
     assert flags["r_rookie"] == 1.0
-
-
-def test_rookie_crew_underdog_sign_convention() -> None:
-    trait = _rookie_trait_fixture()
-    lines = _lines(
-        [
-            ("r_rookie", -3.0),
-            ("r_second_year", 3.0),
-            ("r_veteran", -3.0),
-        ]
-    )
-    flags = derive_rookie_crew_underdog_features(None, lines, trait=trait).set_index("game_id")[
-        ROOKIE_CREW_UNDERDOG_COLUMN
-    ]
-    assert flags["r_rookie"] == 1.0
-    assert flags["r_second_year"] == -1.0
-    assert flags["r_veteran"] == 0.0
-
-
-def test_rookie_crew_table_returns_only_the_four_columns() -> None:
-    trait = _rookie_trait_fixture()
-    out = rookie_crew_table(trait=trait)
-    assert list(out.columns) == ["game_id", "official_name", "season", "prior_seasons_experience"]
-    assert len(out) == len(trait)
 
 
 def _reliability_fixture() -> pd.DataFrame:

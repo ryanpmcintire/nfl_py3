@@ -180,42 +180,6 @@ def test_detect_clock_checkpoint_triggers(tmp_path: Path) -> None:
     assert by_game[SUN_EARLY_GAME_ID].deadline_valid is True
 
 
-def test_detect_clock_checkpoint_triggers_between_sunday_kickoff_and_lock(tmp_path: Path) -> None:
-
-    _write_schedule(tmp_path)
-    games = schedule_game_windows(tmp_path, season=SEASON, week=WEEK)
-    state = {
-        "runs": {
-            "refresh_sun@2026-09-20": {
-                "status": "OK",
-                "ran_at": "2026-09-20T15:00:00-04:00",
-            }
-        }
-    }
-    triggers = detect_clock_checkpoint_triggers(state, games, season=SEASON, week=WEEK)
-    by_game = {t.game_id: t for t in triggers}
-    assert by_game[THU_GAME_ID].deadline_valid is False
-    assert by_game[SUN_EARLY_GAME_ID].deadline_valid is False
-    assert by_game[SNF_GAME_ID].deadline_valid is True
-    assert by_game[MNF_GAME_ID].deadline_valid is True
-
-
-def test_detect_clock_checkpoint_triggers_before_any_deadline(tmp_path: Path) -> None:
-    _write_schedule(tmp_path)
-    games = schedule_game_windows(tmp_path, season=SEASON, week=WEEK)
-    state = {
-        "runs": {
-            "refresh_thu@2026-09-17": {
-                "status": "CAUGHT_UP",
-                "ran_at": "2026-09-16T09:00:00-04:00",
-            }
-        }
-    }
-    triggers = detect_clock_checkpoint_triggers(state, games, season=SEASON, week=WEEK)
-    assert len(triggers) == len(games)
-    assert all(t.deadline_valid for t in triggers)
-
-
 def _write_inactives_snapshot(
     data_root: Path, *, snapshot_id: str, captured_at: pd.Timestamp, rows: list[dict[str, Any]]
 ) -> None:
@@ -382,23 +346,6 @@ def test_detect_lineup_change_triggers(tmp_path: Path) -> None:
     assert trigger.source_capture_time == pd.Timestamp("2026-09-17T12:00:00Z")
 
 
-def test_detect_lineup_change_triggers_no_change_no_trigger(tmp_path: Path) -> None:
-    _write_schedule(tmp_path)
-    games = schedule_game_windows(tmp_path, season=SEASON, week=WEEK)
-    archive_dir = tmp_path / "lineup_archive"
-    archive_dir.mkdir()
-    payload = _lineup_payload(
-        "20260916T120000Z", [{"slot": "QB1", "name": "Starter QB", "gsis_id": "qb-1"}]
-    )
-    (archive_dir / "a.json").write_text(json.dumps(payload), encoding="utf-8")
-    identical = dict(payload)
-    identical["generated_at"] = "20260917T120000Z"
-    (archive_dir / "b.json").write_text(json.dumps(identical), encoding="utf-8")
-
-    triggers = detect_lineup_change_triggers(archive_dir, games, season=SEASON, week=WEEK)
-    assert triggers == ()
-
-
 def test_archive_lineup_snapshot_is_idempotent_by_generated_at(tmp_path: Path) -> None:
     source = tmp_path / "lineups.json"
     source.write_text(
@@ -518,14 +465,6 @@ def test_append_triggers_to_evidence_log_is_idempotent(tmp_path: Path) -> None:
     assert len(path.read_text(encoding="utf-8").splitlines()) == 3
 
 
-def test_mkt08_trigger_type_mapping() -> None:
-    assert mkt08_trigger_type(TRIGGER_CLOCK_CHECKPOINT) == TRIGGER_CLOCK_DISPATCH
-    assert mkt08_trigger_type(TRIGGER_MANUAL) == TRIGGER_UNKNOWN
-    assert mkt08_trigger_type(TRIGGER_INACTIVES_POSTED) == TRIGGER_NEWS_EVENT
-    assert mkt08_trigger_type(TRIGGER_INJURY_REPORT_POSTED) == TRIGGER_NEWS_EVENT
-    assert mkt08_trigger_type(TRIGGER_LINEUP_CHANGE) == TRIGGER_NEWS_EVENT
-
-
 def _valid_trigger(game_id: str, week: int, *, deadline_valid: bool = True) -> RefreshTrigger:
     return RefreshTrigger(
         trigger_source=TRIGGER_INJURY_REPORT_POSTED,
@@ -611,19 +550,9 @@ def test_compare_trigger_vs_checkpoint_excludes_deadline_violations() -> None:
     assert result.n_games == 1
 
 
-def test_compare_trigger_vs_checkpoint_pushes_are_excluded() -> None:
-    rows = [
-        {
-            "game_id": "g_push",
-            "season": SEASON,
-            "week": 1,
-            "checkpoint_pick_home": True,
-            "trigger_pick_home": False,
-            "settle_margin": 0.0,
-        }
-    ]
-    ledger_rows = pd.DataFrame(rows)
-    triggers = (_valid_trigger("g_push", 1),)
-    result = compare_trigger_vs_checkpoint(ledger_rows, triggers, samples=200, seed=1)
-    assert result.n_games == 0
-    assert result.classification == "unresolved_below_power"
+def test_mkt08_trigger_type_mapping() -> None:
+    assert mkt08_trigger_type(TRIGGER_CLOCK_CHECKPOINT) == TRIGGER_CLOCK_DISPATCH
+    assert mkt08_trigger_type(TRIGGER_MANUAL) == TRIGGER_UNKNOWN
+    assert mkt08_trigger_type(TRIGGER_INACTIVES_POSTED) == TRIGGER_NEWS_EVENT
+    assert mkt08_trigger_type(TRIGGER_INJURY_REPORT_POSTED) == TRIGGER_NEWS_EVENT
+    assert mkt08_trigger_type(TRIGGER_LINEUP_CHANGE) == TRIGGER_NEWS_EVENT

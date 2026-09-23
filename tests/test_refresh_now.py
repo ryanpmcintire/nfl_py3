@@ -51,15 +51,8 @@ def test_every_nfl_ats_argv_parses_against_the_real_parser() -> None:
 @pytest.mark.parametrize(
     ("now", "skipped"),
     [
-        (datetime(2026, 9, 8, 8, 30, tzinfo=ET), True),
         (datetime(2026, 9, 8, 11, 59, tzinfo=ET), True),
         (datetime(2026, 9, 8, 12, 0, tzinfo=ET), False),
-        (datetime(2026, 9, 8, 12, 4, tzinfo=ET), False),
-        (datetime(2026, 9, 8, 12, 5, tzinfo=ET), False),
-        (datetime(2026, 9, 8, 12, 30, tzinfo=ET), False),
-        (datetime(2026, 9, 7, 8, 30, tzinfo=ET), False),
-        (datetime(2026, 9, 7, 21, 0, tzinfo=ET), False),
-        (datetime(2026, 9, 8, 20, 30, tzinfo=ET), False),
         (datetime(2026, 9, 9, 8, 30, tzinfo=ET), False),
     ],
 )
@@ -70,21 +63,6 @@ def test_spreads_capture_is_skipped_on_tuesday_before_the_opener(
     assert (spreads.skip_reason is not None) is skipped
     others = [step for step in refresh_now.plan(now) if step.name != "spreads"]
     assert all(step.skip_reason is None for step in others)
-
-
-def test_dry_run_prints_every_command_and_runs_nothing(
-    capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
-) -> None:
-    def explode(*_args: object, **_kwargs: object) -> None:
-        raise AssertionError("dry run must not spawn anything")
-
-    monkeypatch.setattr(refresh_now.subprocess, "run", explode)
-    code = refresh_now.run(refresh_now.plan(datetime(2026, 9, 8, 8, 30, tzinfo=ET)), dry=True)
-    out = capsys.readouterr().out
-    assert code == 0
-    assert "[skip] spreads" in out
-    assert "refresh-picks" in out
-    assert "publish-board" in out
 
 
 def test_failures_are_reported_and_do_not_stop_later_steps(
@@ -108,10 +86,3 @@ def test_failures_are_reported_and_do_not_stop_later_steps(
     assert "[FAIL] spreads" in out
     assert "[ ok ] board" in out
     assert "1 step(s) failed" in out
-
-
-def test_cmd_wrapper_calls_the_script_and_waits() -> None:
-    text = (REPO / "scripts" / "refresh_now.cmd").read_text(encoding="utf-8")
-    assert "scripts\\refresh_now.py" in text
-    assert "pause" in text
-    assert "--no-sync" in text

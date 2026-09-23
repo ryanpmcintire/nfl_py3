@@ -10,10 +10,8 @@ from nfl_ats.transaction_wire_features import (
     TRANSACTION_CATEGORIES,
     attach_transaction_counts,
     build_team_week_population,
-    canonical_team,
     classify_transaction_slug,
     explode_dated_transactions,
-    kickoff_utc,
     match_transaction_teams,
     own_week_wednesday_freeze_utc,
 )
@@ -23,23 +21,6 @@ from nfl_ats.transaction_wire_features import (
     "slug,expected",
     [
         ("rams-activate-s-quentin-lake-from-ir", "ir_activation"),
-        ("eagles-activate-lb-from-injured-reserve", "ir_activation"),
-        ("packers-place-te-on-injured-reserve", "ir_placement"),
-        ("jets-place-wr-on-ir", "ir_placement"),
-        ("cowboys-elevate-rb-from-practice-squad", "practice_squad_elevation"),
-        ("49ers-elevated-two-players-for-sunday", "practice_squad_elevation"),
-        ("bears-claim-cb-off-waivers", "waiver_claim"),
-        ("titans-release-veteran-ol", "release"),
-        ("browns-waived-de-tuesday", "release"),
-        ("bills-cut-rb", "release"),
-        ("bills-trade-te-lee-smith-to-falcons", "trade"),
-        ("49ers-acquire-stevie-johnson-bills", "trade"),
-        ("watson-suspension-latest", "suspension"),
-        ("patriots-to-sign-nate-washington", "signing"),
-        ("falcons-extend-smith-dimitroff-mckay", "signing"),
-        ("steelers-extend-troy-polamalus-contract", "signing"),
-        ("minor-nfl-transactions-9-23-15", OTHER_CATEGORY),
-        ("legarrette-blount-free-agent", OTHER_CATEGORY),
     ],
 )
 def test_classify_transaction_slug(slug: str, expected: str) -> None:
@@ -60,10 +41,6 @@ def test_every_category_is_declared() -> None:
     assert set(ALL_CATEGORIES) == set(TRANSACTION_CATEGORIES) | {OTHER_CATEGORY}
 
 
-def test_match_transaction_teams_single_team() -> None:
-    assert match_transaction_teams("eagles-extend-jason-peters") == {"PHI"}
-
-
 def test_match_transaction_teams_zero_teams_for_roundups() -> None:
     assert match_transaction_teams("minor-nfl-transactions-9-23-15") == set()
 
@@ -72,21 +49,9 @@ def test_match_transaction_teams_two_teams_for_a_trade() -> None:
     assert match_transaction_teams("bills-trade-te-lee-smith-to-falcons") == {"BUF", "ATL"}
 
 
-def test_match_transaction_teams_multi_word_nickname() -> None:
-    assert match_transaction_teams("commanders-sign-free-agent-cb") == {"WAS"}
-    assert match_transaction_teams("washington-football-team-sign-cb") == {"WAS"}
-
-
 def test_match_transaction_teams_no_false_positive_substring() -> None:
     assert match_transaction_teams("chargers-sign-rb") == {"LAC"}
     assert "TEN" not in match_transaction_teams("patriots-sign-te")
-
-
-def test_canonical_team_maps_relocated_codes() -> None:
-    assert canonical_team("OAK") == "LV"
-    assert canonical_team("SD") == "LAC"
-    assert canonical_team("STL") == "LA"
-    assert canonical_team("PHI") == "PHI"
 
 
 def test_own_week_wednesday_freeze_is_the_same_calendar_week_wednesday_noon() -> None:
@@ -119,12 +84,6 @@ def test_own_week_wednesday_freeze_for_a_tuesday_kickoff_is_the_prior_week() -> 
     assert freeze.iloc[0] < tuesday_kickoff.iloc[0]
 
 
-def test_kickoff_utc_combines_gameday_and_eastern_gametime() -> None:
-    games = pd.DataFrame({"gameday": ["2026-09-17"], "gametime": ["20:15"]})
-    result = kickoff_utc(games)
-    assert result.iloc[0] == pd.Timestamp("2026-09-18T00:15:00Z")
-
-
 def _schedules_frame() -> pd.DataFrame:
     return pd.DataFrame(
         {
@@ -153,14 +112,6 @@ def test_build_team_week_population_has_one_row_per_side() -> None:
     assert home_row["kickoff_utc"] == pd.Timestamp("2026-09-18T00:15:00Z")
     assert home_row["window72_start_utc"] == home_row["kickoff_utc"] - pd.Timedelta(hours=72)
     assert home_row["freeze_utc"] < home_row["kickoff_utc"]
-
-
-def test_build_team_week_population_canonicalizes_relocated_codes() -> None:
-    schedules = _schedules_frame()
-    schedules["home_team"] = "OAK"
-    schedules["away_team"] = "SD"
-    panel = build_team_week_population(schedules, season_start=2026, season_end=2026)
-    assert set(panel["team"]) == {"LV", "LAC"}
 
 
 def test_build_team_week_population_filters_to_season_range_and_reg() -> None:

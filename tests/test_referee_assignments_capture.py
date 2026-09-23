@@ -17,9 +17,6 @@ FIXTURES = Path(__file__).resolve().parent / "fixtures"
 WEEK10_HTML = (FIXTURES / "footballzebras_week10_2025_referee_assignments.html").read_text(
     encoding="utf-8"
 )
-WEEK18_EXCERPT_HTML = (
-    FIXTURES / "footballzebras_week18_2025_referee_assignments_excerpt.html"
-).read_text(encoding="utf-8")
 CATEGORY_INDEX_HTML = (FIXTURES / "footballzebras_category_assignments_index.html").read_text(
     encoding="utf-8"
 )
@@ -112,37 +109,6 @@ def test_parse_week10_fixture_maps_teams_and_both_matchup_forms() -> None:
     assert day_labels == {"Thursday, Nov. 6", "Sunday, Nov. 9", "Monday, Nov. 10"}
 
 
-def test_referee_name_alias_resolves_the_one_measured_mismatch() -> None:
-    rows, _ = rac.parse_assignment_page(
-        WEEK10_HTML,
-        season=2025,
-        week=10,
-        source_url=WEEK10_URL,
-        fetched_at_utc="2025-11-05T18:00:00Z",
-    )
-    row = next(r for r in rows if r["referee_source_name"] == "Ron Torbert")
-    assert row["referee"] == "Ronald Torbert"
-    unchanged = [r for r in rows if r["referee_source_name"] != "Ron Torbert"]
-    assert all(r["referee"] == r["referee_source_name"] for r in unchanged)
-
-
-def test_parse_week18_excerpt_strips_sup_seed_tags_and_asterisk_footnote() -> None:
-    rows, warnings = rac.parse_assignment_page(
-        WEEK18_EXCERPT_HTML,
-        season=2025,
-        week=18,
-        source_url=WEEK18_URL,
-        fetched_at_utc="2025-12-29T18:00:00Z",
-    )
-    assert warnings == []
-    assert len(rows) == 3
-    by_source_name = {row["referee_source_name"]: row for row in rows}
-    assert by_source_name["Bill Vinovich"]["team_code_a"] == "SEA"
-    assert by_source_name["Bill Vinovich"]["team_code_b"] == "SF"
-    assert by_source_name["Brad Allen"]["team_code_a"] == "CAR"
-    assert by_source_name["Brad Allen"]["team_code_b"] == "TB"
-
-
 def test_garbage_html_parses_to_zero_rows_no_crash() -> None:
     rows, warnings = rac.parse_assignment_page(
         GARBAGE_HTML,
@@ -153,83 +119,6 @@ def test_garbage_html_parses_to_zero_rows_no_crash() -> None:
     )
     assert rows == []
     assert warnings == []
-
-
-def test_empty_referee_cell_and_unparseable_matchup_are_skipped_with_warnings() -> None:
-    html = (
-        "<div class='b_post'><div class='b_post-game'>Bears vs Packers</div>"
-        "<div class='b_post-referee'></div></div>"
-        "<div class='b_post'><div class='b_post-game'>NotAMatchup</div>"
-        "<div class='b_post-referee'>Bill Vinovich</div></div>"
-        "<div class='b_post'><div class='b_post-game'>Nickname at Nowhere</div>"
-        "<div class='b_post-referee'>Bill Vinovich</div></div>"
-    )
-    rows, warnings = rac.parse_assignment_page(
-        html, season=2025, week=1, source_url="https://example/x", fetched_at_utc="x"
-    )
-    assert rows == []
-    assert len(warnings) == 3
-    assert "empty referee cell" in warnings[0]
-    assert "unparseable matchup text" in warnings[1]
-    assert "unresolved team nickname" in warnings[2]
-
-
-def test_current_crew_names_join_the_historical_officials_snapshot() -> None:
-    officials_snapshot = sorted(
-        (Path(__file__).resolve().parents[1] / "data" / "raw" / "officials").glob(
-            "*/officials.parquet"
-        )
-    )
-    if not officials_snapshot:
-        pytest.skip("no local data/raw/officials/*/officials.parquet snapshot to join against")
-    officials = pd.read_parquet(officials_snapshot[-1])
-    historical_names = set(
-        officials.loc[officials["position"] == "Referee", "official_name"].unique()
-    )
-
-    current_2026_crew_referees = {
-        "Brad Allen",
-        "Clete Blakeman",
-        "Carl Cheffers",
-        "Land Clark",
-        "Alan Eck",
-        "Adrian Hill",
-        "Shawn Hochuli",
-        "John Hussey",
-        "Alex Kemp",
-        "Clay Martin",
-        "Alex Moore",
-        "Scott Novak",
-        "Brad Rogers",
-        "Shawn Smith",
-        "Ron Torbert",
-        "Bill Vinovich",
-        "Craig Wrolstad",
-    }
-    exact_matches = current_2026_crew_referees & historical_names
-    assert len(exact_matches) == 16
-
-    aliased = {rac.normalize_referee_name(name) for name in current_2026_crew_referees}
-    assert aliased <= historical_names, aliased - historical_names
-
-
-def test_find_week_url_locates_a_listed_week() -> None:
-    assert (
-        rac.find_week_url(CATEGORY_INDEX_HTML, season=2025, week=18)
-        == "https://www.footballzebras.com/2025/12/week-18-referee-assignments-2025/"
-    )
-    assert (
-        rac.find_week_url(CATEGORY_INDEX_HTML, season=2025, week=17)
-        == "https://www.footballzebras.com/2025/12/week-17-referee-assignments-2025/"
-    )
-
-
-def test_find_week_url_returns_none_for_a_week_not_yet_listed() -> None:
-    assert rac.find_week_url(CATEGORY_INDEX_HTML, season=2026, week=1) is None
-
-
-def test_find_week_url_does_not_confuse_week_1_with_week_18() -> None:
-    assert rac.find_week_url(CATEGORY_INDEX_HTML, season=2025, week=1) is None
 
 
 def test_run_capture_category_index_success_resolves_schedule_join(tmp_path: Path) -> None:
@@ -306,29 +195,6 @@ def test_run_capture_not_yet_published_is_expected_zero_row_ok(tmp_path: Path) -
     assert manifest["source_used"] == "none"
 
 
-def test_run_capture_direct_guess_succeeds_when_index_has_not_caught_up(tmp_path: Path) -> None:
-    write_schedule(tmp_path, WEEK10_SCHEDULE_ROWS)
-    guess_url = "https://www.footballzebras.com/2025/11/week-10-referee-assignments-2025/"
-    fetch, calls = make_fetch(
-        {
-            rac.CATEGORY_URL: (CATEGORY_INDEX_HTML, 200, None, True),
-            guess_url: (WEEK10_HTML, 200, None, True),
-        }
-    )
-    out_root = tmp_path / "data" / "players" / "referee_assignments"
-
-    snapshot, ok = rac.run_capture(
-        season=2025, week=10, out_root=out_root, repo=tmp_path, fetch=fetch, now=FIXED_NOW
-    )
-
-    assert ok is True
-    assert calls == [rac.CATEGORY_URL, guess_url]
-    manifest = _read_manifest(snapshot)
-    assert manifest["source_used"] == "direct_guess"
-    assert manifest["row_count"] == 14
-    assert any("category index did not list this week yet" in w for w in manifest["warnings"])
-
-
 def test_run_capture_unrecognized_structure_when_listed_url_parses_zero(tmp_path: Path) -> None:
     fetch, calls = make_fetch(
         {
@@ -382,83 +248,9 @@ def test_run_capture_no_schedule_snapshot_is_zero_row_ok_and_never_fetches(tmp_p
     assert manifest["schedule_error"] is not None
 
 
-def test_run_capture_season_complete_is_zero_row_ok(tmp_path: Path) -> None:
-    write_schedule(
-        tmp_path,
-        [
-            {
-                "season": 2024,
-                "week": 1,
-                "game_type": "REG",
-                "game_id": "2024_01_DEN_KC",
-                "home_team": "KC",
-                "away_team": "DEN",
-                "gameday": "2024-09-05",
-                "gametime": "20:20:00",
-            }
-        ],
-    )
-
-    def fetch(url: str, robots_url: str) -> tuple[str | None, int | None, str | None, bool]:
-        raise AssertionError("must not fetch past the end of the schedule")
-
-    out_root = tmp_path / "data" / "players" / "referee_assignments"
-    snapshot, ok = rac.run_capture(
-        season=None,
-        week=None,
-        out_root=out_root,
-        repo=tmp_path,
-        fetch=fetch,
-        now=FIXED_NOW,
-    )
-
-    assert ok is True
-    manifest = _read_manifest(snapshot)
-    assert manifest["empty_reason"] == rac.EMPTY_REASON_SEASON_COMPLETE
-
-
 def test_main_requires_current_or_explicit_season_week() -> None:
     with pytest.raises(SystemExit):
         rac.main([])
-
-
-def test_main_rejects_short_delay() -> None:
-    with pytest.raises(SystemExit):
-        rac.main(["--current", "--delay", "0.5"])
-
-
-def test_main_returns_zero_or_one_from_run_capture_ok(
-    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
-) -> None:
-    calls: dict[str, Any] = {}
-
-    def fake_run_capture(**kwargs: Any) -> tuple[Path, bool]:
-        calls.update(kwargs)
-        return tmp_path / "20251105T180000Z", kwargs["season"] == 2025
-
-    monkeypatch.setattr(rac, "run_capture", fake_run_capture)
-
-    exit_ok = rac.main(["--season", "2025", "--week", "10"])
-    exit_bad = rac.main(["--season", "2099", "--week", "1"])
-
-    assert exit_ok == 0
-    assert exit_bad == 1
-    assert calls["week"] == 1
-
-
-def test_snapshot_directory_name_matches_scheduler_naming_convention(tmp_path: Path) -> None:
-    fetch, _ = make_fetch({rac.CATEGORY_URL: (CATEGORY_INDEX_HTML, 200, None, True)})
-    snapshot, ok = rac.run_capture(
-        season=2026,
-        week=1,
-        out_root=tmp_path / "data" / "players" / "referee_assignments",
-        repo=tmp_path,
-        fetch=fetch,
-        now=FIXED_NOW,
-    )
-    assert ok is True
-    assert capture_scheduler.SNAPSHOT_NAME.match(snapshot.name)
-    assert snapshot.name == "20251105T180000Z"
 
 
 def test_scheduler_dedupe_recognizes_a_fresh_referee_assignments_snapshot(

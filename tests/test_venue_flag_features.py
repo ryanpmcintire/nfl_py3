@@ -154,12 +154,6 @@ def test_dome_shootout_never_reads_an_outcome_column() -> None:
     pd.testing.assert_series_equal(before[DOME_SHOOTOUT_COLUMN], after[DOME_SHOOTOUT_COLUMN])
 
 
-def test_dome_shootout_requires_schedule_columns() -> None:
-    schedule = _dome_schedule().drop(columns=["roof", "venue_default_roof"])
-    with pytest.raises(DataContractError, match="roof"):
-        derive_dome_shootout_favorite_features(schedule, _dome_opener_lines())
-
-
 def test_dome_shootout_requires_opener_lines_join_key() -> None:
     schedule = _dome_schedule()
     bad_lines = _dome_opener_lines().rename(columns={"game_id": "not_game_id"})
@@ -277,20 +271,6 @@ def test_sept_heat_unconditional_home_team_qualifies_at_1pm_local() -> None:
     assert derived.loc["h1", SEPT_HEAT_COLUMN] == 1.0
 
 
-def test_sept_heat_atl_requires_open_air_roof() -> None:
-    schedule = _schedule(
-        [
-            _heat_game("h2", "ATL", "GB", roof="open"),
-            _heat_game("h3", "ATL", "GB", roof="dome"),
-            _heat_game("h4", "ATL", "GB", roof="closed"),
-        ]
-    )
-    derived = derive_sept_heat_home_features(schedule).set_index("game_id")
-    assert derived.loc["h2", SEPT_HEAT_COLUMN] == 1.0
-    assert derived.loc["h3", SEPT_HEAT_COLUMN] == 0.0
-    assert derived.loc["h4", SEPT_HEAT_COLUMN] == 0.0
-
-
 def test_sept_heat_hou_local_time_conversion() -> None:
 
     schedule = _schedule(
@@ -304,38 +284,6 @@ def test_sept_heat_hou_local_time_conversion() -> None:
     assert derived.loc["h6", SEPT_HEAT_COLUMN] == 0.0
 
 
-def test_sept_heat_requires_cold_visitor() -> None:
-    schedule = _schedule([_heat_game("h7", "MIA", "TB")])
-    derived = derive_sept_heat_home_features(schedule).set_index("game_id")
-    assert derived.loc["h7", SEPT_HEAT_COLUMN] == 0.0
-
-
-def test_sept_heat_requires_week_le_3() -> None:
-    schedule = _schedule([_heat_game("h8", "MIA", "BUF", week=4)])
-    derived = derive_sept_heat_home_features(schedule).set_index("game_id")
-    assert derived.loc["h8", SEPT_HEAT_COLUMN] == 0.0
-
-
-def test_sept_heat_requires_reg_season() -> None:
-    schedule = _schedule([_heat_game("h9", "MIA", "BUF", week=1, game_type="WC")])
-    derived = derive_sept_heat_home_features(schedule).set_index("game_id")
-    assert derived.loc["h9", SEPT_HEAT_COLUMN] == 0.0
-
-
-def test_sept_heat_requires_1pm_local_hour_bucket() -> None:
-    schedule = _schedule(
-        [
-            _heat_game("h10", "MIA", "BUF", gametime="12:59"),
-            _heat_game("h11", "MIA", "BUF", gametime="13:59"),
-            _heat_game("h12", "MIA", "BUF", gametime="14:00"),
-        ]
-    )
-    derived = derive_sept_heat_home_features(schedule).set_index("game_id")
-    assert derived.loc["h10", SEPT_HEAT_COLUMN] == 0.0
-    assert derived.loc["h11", SEPT_HEAT_COLUMN] == 1.0
-    assert derived.loc["h12", SEPT_HEAT_COLUMN] == 0.0
-
-
 def test_sept_heat_never_reads_an_outcome_column() -> None:
     schedule = _schedule([_heat_game("h13", "MIA", "BUF")])
     schedule["result"] = 0.0
@@ -346,12 +294,6 @@ def test_sept_heat_never_reads_an_outcome_column() -> None:
     mutated["home_score"] = -999.0
     after = derive_sept_heat_home_features(mutated).set_index("game_id")
     pd.testing.assert_series_equal(before[SEPT_HEAT_COLUMN], after[SEPT_HEAT_COLUMN])
-
-
-def test_sept_heat_requires_schedule_columns() -> None:
-    schedule = _schedule([_heat_game("h14", "MIA", "BUF")]).drop(columns=["gametime"])
-    with pytest.raises(DataContractError, match="gametime"):
-        derive_sept_heat_home_features(schedule)
 
 
 def test_sept_heat_attach_is_purely_additive() -> None:

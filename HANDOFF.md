@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-23T17:42:37.606478+00:00`
+Refreshed at: `2026-09-23T17:55:16.245003+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-09-23T17:42:37.606478+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `df535bddee76` — Serve the discrete margin read in the spread explorer; add line move toward the pick
-- Pending change set: 164 paths
+- Baseline commit: `f98267250bd3` — Refresh handoff after spread explorer and ENG-47
+- Pending change set: 40 paths
   - `M  HANDOFF.md`
-  - ` M docs/lanes/test-suite-reduction.md`
-  - `D  tests/_card_refit_test_kit.py`
-  - ` M tests/test_airnow_hourly_capture.py`
-  - `D  tests/test_anytime.py`
-  - ` M tests/test_apm_unit_feature.py`
-  - `D  tests/test_assistant_battery.py`
-  - `D  tests/test_assistant_golden.py`
-  - `D  tests/test_assistant_js_parity.py`
-  - `D  tests/test_attribution_waterfall.py`
-  - `D  tests/test_availability.py`
-  - `D  tests/test_backup_data.py`
-  - `D  tests/test_backup_qb_fade_overlay.py`
-  - ` M tests/test_best_pick.py`
-  - `D  tests/test_best_pick_big_spread_challenger.py`
-  - `D  tests/test_best_pick_composed_rule_eval.py`
-  - `D  tests/test_board_assistant.py`
-  - `D  tests/test_board_assistant_lineups.py`
-  - `D  tests/test_board_content_coverage.py`
-  - `D  tests/test_board_content_season_and_flips.py`
-  - ...and 144 more
+  - ` M docs/index.html`
+  - `A  docs/lanes/done/test-suite-reduction.md`
+  - `D  docs/lanes/test-suite-reduction.md`
+  - `M  scripts/pooled_signal_fourth_fit_hierarchical.py`
+  - `M  tests/test_airnow_hourly_capture.py`
+  - `M  tests/test_apm_unit_feature.py`
+  - `M  tests/test_best_pick.py`
+  - `M  tests/test_best_pick_nomination.py`
+  - `M  tests/test_capture_observability.py`
+  - `M  tests/test_card_explanation.py`
+  - `M  tests/test_cfb.py`
+  - `M  tests/test_expected_lineup_loss_features.py`
+  - `M  tests/test_features.py`
+  - `M  tests/test_forecast_weather_features.py`
+  - `M  tests/test_inactives_capture.py`
+  - `M  tests/test_key_line_pick_read.py`
+  - `M  tests/test_odds_ingest_halves.py`
+  - `M  tests/test_officials_archive.py`
+  - `M  tests/test_officials_flag_features.py`
+  - ...and 20 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

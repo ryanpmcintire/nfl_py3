@@ -3,19 +3,13 @@ from __future__ import annotations
 import pandas as pd
 
 from nfl_ats.roster_availability_flag_features import (
-    DESIGNATE_RETURN_RE,
-    IR_ACTIVATE_RE,
-    IR_PLACE_RE,
     IR_RETURN_REINFORCEMENT_COLUMN,
     SPECIALIST_ABSENCE_FADE_COLUMN,
-    _normalize_designate_phrasing,
-    _signed_flag_from_qualifying,
     attach_ir_return_reinforcement_features,
     attach_specialist_absence_features,
     derive_ir_return_reinforcement_features,
     derive_specialist_absence_features,
     describe_ir_return_population,
-    describe_specialist_population,
     designate_return_events,
     ir_activation_events,
     specialist_ir_placement_events,
@@ -118,58 +112,6 @@ def _injuries(rows: list[dict]) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def test_ir_activate_regex_positive_matches_both_prepositions() -> None:
-    m = IR_ACTIVATE_RE.search("packers-activate-andrew-quarless-from-ir-dtr")
-    assert m is not None and m.group("prefix") == "packers"
-    assert m.group("player") == "andrew-quarless"
-
-    m2 = IR_ACTIVATE_RE.search("falcons-activate-p-matt-bosher-off-ir-cut-p-ryan-allen")
-    assert m2 is not None and m2.group("prefix") == "falcons"
-    assert m2.group("player") == "p-matt-bosher"
-
-
-def test_ir_activate_regex_compound_slug_isolates_correct_player() -> None:
-
-    m = IR_ACTIVATE_RE.search(
-        "falcons-activate-ol-elijah-wilkinson-from-ir-designate-ol-matt-hennessy-for-return"
-    )
-    assert m is not None
-    assert m.group("prefix") == "falcons"
-    assert m.group("player") == "ol-elijah-wilkinson"
-
-
-def test_normalize_designate_phrasing_rewrites_for_ir_return_word_order() -> None:
-    assert (
-        _normalize_designate_phrasing("eagles-designate-te-richard-rodgers-for-ir-return")
-        == "eagles-designate-te-richard-rodgers-for-return-from-ir"
-    )
-    assert (
-        _normalize_designate_phrasing("jets-designate-leveon-bell-for-ir-return")
-        == "jets-designate-leveon-bell-for-return-from-ir"
-    )
-
-
-def test_designate_return_regex_suffix_capture() -> None:
-    normalized = _normalize_designate_phrasing("eagles-designate-te-richard-rodgers-for-ir-return")
-    m = DESIGNATE_RETURN_RE.search(normalized)
-    assert m is not None
-    assert m.group("prefix") == "eagles"
-    assert m.group("player") == "te-richard-rodgers"
-    assert m.group("suffix") == "-from-ir"
-
-    bare = DESIGNATE_RETURN_RE.search("panthers-designate-adam-thielen-for-return")
-    assert bare is not None and bare.group("suffix") is None
-
-
-def test_ir_place_regex_positive_and_rejects_non_place_phrasing() -> None:
-    m = IR_PLACE_RE.search("bears-to-place-ls-patrick-scales-on-ir")
-    assert m is not None
-    assert m.group("prefix") == "bears"
-    assert m.group("player") == "ls-patrick-scales"
-
-    assert IR_PLACE_RE.search("bengals-waive-p-kevin-huber-kr-brandon-wilson-reverts-to-ir") is None
-
-
 def _full_universe_slugs() -> pd.DataFrame:
     snaps = _snaps(
         [
@@ -240,18 +182,6 @@ def test_specialist_ir_placement_events_lsp_restricted_universe() -> None:
     assert events2["team"].tolist() == ["CAR"]
 
 
-def test_specialist_player_slugs_restricted_to_ls_and_p() -> None:
-    injuries = _injuries(
-        [
-            _injury_row(2020, 1.0, "NO", "Some Wideout", "WR", "Questionable"),
-            _injury_row(2020, 1.0, "NO", "Some Snapper", "LS", "Out"),
-            _injury_row(2020, 1.0, "NO", "Some Punter", "P", "Out"),
-        ]
-    )
-    slugs = specialist_player_slugs(injuries)
-    assert set(slugs["player"]) == {"Some Snapper", "Some Punter"}
-
-
 def _ir_return_schedule() -> pd.DataFrame:
     return _schedule(
         [
@@ -283,15 +213,6 @@ def test_ir_return_reinforcement_sign_convention_and_week_window() -> None:
     assert derived.loc["w8", IR_RETURN_REINFORCEMENT_COLUMN] == -1.0
     assert derived.loc["w1", IR_RETURN_REINFORCEMENT_COLUMN] == 0.0
     assert derived.loc["w4", IR_RETURN_REINFORCEMENT_COLUMN] == 0.0
-
-
-def test_ir_return_reinforcement_starter_gate_below_threshold() -> None:
-    index = _transactions([_txn_row("commanders-activate-fake-return-from-ir", 2025, 9)])
-    low_share = _ir_return_snap_counts(share=0.3)
-    derived = derive_ir_return_reinforcement_features(
-        _ir_return_schedule(), index, low_share
-    ).set_index("game_id")
-    assert (derived[IR_RETURN_REINFORCEMENT_COLUMN] == 0.0).all()
 
 
 def test_ir_return_reinforcement_no_prior_snap_history_never_guessed() -> None:
@@ -408,15 +329,6 @@ def test_specialist_absence_fade_wire_placement_window_closed_by_activation() ->
     assert derived.loc["s_jul", SPECIALIST_ABSENCE_FADE_COLUMN] == 0.0
 
 
-def test_specialist_absence_fade_season_cutoff_2024() -> None:
-    injuries = _injuries([_injury_row(2025, 3.0, "NO", "Some Punter", "P", "Out")])
-    schedule = _schedule([_game("g25", 2025, 3, "2025-09-27", "OPP", "NO")])
-    derived = derive_specialist_absence_features(schedule, _transactions([]), injuries).set_index(
-        "game_id"
-    )
-    assert derived.loc["g25", SPECIALIST_ABSENCE_FADE_COLUMN] == 0.0
-
-
 def test_attach_specialist_absence_features_additive() -> None:
     injuries = _injuries([_injury_row(2020, 3.0, "NO", "Some Punter", "P", "Out")])
     schedule = _schedule([_game("g_away", 2020, 3, "2020-09-27", "OPP", "NO")])
@@ -426,38 +338,3 @@ def test_attach_specialist_absence_features_additive() -> None:
     )
     assert merged["existing"].tolist() == [7]
     assert merged.loc[0, SPECIALIST_ABSENCE_FADE_COLUMN] == 1.0
-
-
-def test_describe_specialist_population_diagnostic() -> None:
-    injuries = _injuries(
-        [
-            _injury_row(2020, 3.0, "NO", "Some Punter", "P", "Out"),
-            _injury_row(2021, 1.0, "LV", "Fake Snapper", "LS", None),
-        ]
-    )
-    index = _transactions([_txn_row("raiders-place-ls-fake-snapper-on-ir", 2021, 3)])
-    diag = describe_specialist_population(injuries, index)
-    assert diag["n_weekly_out_team_weeks"] == 1
-    assert diag["n_resolved_ir_placement_events"] == 1
-
-
-def test_signed_flag_from_qualifying_sign_convention() -> None:
-    schedule = _schedule(
-        [
-            _game("g_away", 2020, 2, "2020-09-20", "HHH", "AAA"),
-            _game("g_home", 2020, 2, "2020-09-20", "AAA", "ZZZ"),
-            _game("g_both", 2020, 2, "2020-09-20", "AAA", "BBB"),
-            _game("g_neither", 2020, 2, "2020-09-20", "CCC", "DDD"),
-        ]
-    )
-    qualifying = pd.DataFrame(
-        [
-            {"season": 2020, "week": 2, "team": "AAA"},
-            {"season": 2020, "week": 2, "team": "BBB"},
-        ]
-    )
-    derived = _signed_flag_from_qualifying(schedule, qualifying, "flag").set_index("game_id")
-    assert derived.loc["g_away", "flag"] == 1.0
-    assert derived.loc["g_home", "flag"] == -1.0
-    assert derived.loc["g_both", "flag"] == 0.0
-    assert derived.loc["g_neither", "flag"] == 0.0

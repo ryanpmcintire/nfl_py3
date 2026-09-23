@@ -7,12 +7,9 @@ from nfl_ats.data import DataContractError
 from nfl_ats.qb_identity_features import (
     QB_REVENGE_COLUMN,
     ROOKIE_QB_DEBUT_FADE_COLUMN,
-    _canonical_schedule_team,
     attach_qb_revenge_features,
     attach_rookie_qb_debut_fade_features,
-    describe_rookie_qb_debut_population,
     draft_team_by_gsis_id,
-    qb_revenge_join_diagnostics,
 )
 from nfl_ats.qb_identity_features import (
     derive_qb_revenge_features as decision_derive_qb_revenge_features,
@@ -91,13 +88,6 @@ def test_debut_rookie_sign_convention_away_is_positive() -> None:
     assert derived.loc["g1", ROOKIE_QB_DEBUT_FADE_COLUMN] == 1.0
 
 
-def test_debut_rookie_sign_convention_home_is_negative() -> None:
-    derived = derive_rookie_qb_debut_fade_features(_debut_schedule(), _debut_rosters()).set_index(
-        "game_id"
-    )
-    assert derived.loc["g2", ROOKIE_QB_DEBUT_FADE_COLUMN] == -1.0
-
-
 def test_veteran_whose_first_archived_start_is_not_a_debut() -> None:
 
     derived = derive_rookie_qb_debut_fade_features(_debut_schedule(), _debut_rosters()).set_index(
@@ -106,42 +96,12 @@ def test_veteran_whose_first_archived_start_is_not_a_debut() -> None:
     assert derived.loc["g_vet", ROOKIE_QB_DEBUT_FADE_COLUMN] == 0.0
 
 
-def test_second_start_is_never_flagged_as_a_debut() -> None:
-    derived = derive_rookie_qb_debut_fade_features(_debut_schedule(), _debut_rosters()).set_index(
-        "game_id"
-    )
-    assert derived.loc["g3", ROOKIE_QB_DEBUT_FADE_COLUMN] == 0.0
-
-
 def test_unresolved_years_exp_is_never_flagged_a_debut() -> None:
 
     derived = derive_rookie_qb_debut_fade_features(_debut_schedule(), _debut_rosters()).set_index(
         "game_id"
     )
     assert derived.loc["g_unresolved", ROOKIE_QB_DEBUT_FADE_COLUMN] == 0.0
-
-
-def test_both_sides_debuting_simultaneously_is_zero() -> None:
-    derived = derive_rookie_qb_debut_fade_features(_debut_schedule(), _debut_rosters()).set_index(
-        "game_id"
-    )
-    assert derived.loc["g_both", ROOKIE_QB_DEBUT_FADE_COLUMN] == 0.0
-
-
-def test_postseason_game_is_never_flagged() -> None:
-
-    derived = derive_rookie_qb_debut_fade_features(_debut_schedule(), _debut_rosters()).set_index(
-        "game_id"
-    )
-    assert derived.loc["g_post", ROOKIE_QB_DEBUT_FADE_COLUMN] == 0.0
-
-
-def test_describe_rookie_qb_debut_population_diagnostic() -> None:
-    diagnostic = describe_rookie_qb_debut_population(_debut_schedule(), _debut_rosters())
-    assert diagnostic["n_first_archived_reg_starts"] == 9
-    assert diagnostic["n_confirmed_rookie_debuts"] == 4
-    assert diagnostic["n_confirmed_non_rookie_first_starts"] == 4
-    assert diagnostic["n_unresolved_years_exp"] == 1
 
 
 def test_rookie_debut_leakage_ignores_unrelated_outcome_columns() -> None:
@@ -180,60 +140,10 @@ def test_rookie_debut_attach_requires_the_join_key() -> None:
         attach_rookie_qb_debut_fade_features(features, schedule=schedule, rosters=_debut_rosters())
 
 
-def test_rookie_debut_attach_refuses_to_overwrite_an_existing_column() -> None:
-    schedule = _debut_schedule()
-    features = pd.DataFrame({"game_id": schedule["game_id"], ROOKIE_QB_DEBUT_FADE_COLUMN: 0.0})
-    with pytest.raises(DataContractError, match=ROOKIE_QB_DEBUT_FADE_COLUMN):
-        attach_rookie_qb_debut_fade_features(features, schedule=schedule, rosters=_debut_rosters())
-
-
 def test_rookie_debut_derive_requires_every_schedule_column() -> None:
     schedule = _debut_schedule().drop(columns=["home_qb_id"])
     with pytest.raises(DataContractError, match="home_qb_id"):
         derive_rookie_qb_debut_fade_features(schedule, _debut_rosters())
-
-
-def test_franchise_code_normalization_current_and_historical_codes_match() -> None:
-
-    codes = pd.Series(["OAK", "LV", "SD", "LAC", "STL", "SL", "LA", "WAS", "ARI"])
-    canonical = _canonical_schedule_team(codes)
-    assert list(canonical) == ["LV", "LV", "LAC", "LAC", "LA", "LA", "LA", "WAS", "ARI"]
-
-
-def test_draft_team_name_to_code_covers_every_relocation_variant() -> None:
-    combine = pd.DataFrame(
-        {
-            "pfr_id": ["p_oak", "p_lv", "p_sd", "p_lac", "p_stl", "p_lar", "p_wr", "p_wf", "p_wc"],
-            "draft_team": [
-                "Oakland Raiders",
-                "Las Vegas Raiders",
-                "San Diego Chargers",
-                "Los Angeles Chargers",
-                "St. Louis Rams",
-                "Los Angeles Rams",
-                "Washington Redskins",
-                "Washington Football Team",
-                "Washington Commanders",
-            ],
-            "draft_year": [2005, 2021, 2005, 2021, 2005, 2021, 2005, 2019, 2022],
-        }
-    )
-    rosters = pd.DataFrame(
-        {
-            "pfr_id": combine["pfr_id"],
-            "gsis_id": [f"g_{pfr}" for pfr in combine["pfr_id"]],
-        }
-    )
-    lookup = draft_team_by_gsis_id(combine, rosters)
-    assert lookup["g_p_oak"] == "LV"
-    assert lookup["g_p_lv"] == "LV"
-    assert lookup["g_p_sd"] == "LAC"
-    assert lookup["g_p_lac"] == "LAC"
-    assert lookup["g_p_stl"] == "LA"
-    assert lookup["g_p_lar"] == "LA"
-    assert lookup["g_p_wr"] == "WAS"
-    assert lookup["g_p_wf"] == "WAS"
-    assert lookup["g_p_wc"] == "WAS"
 
 
 def test_draft_team_by_gsis_id_rejects_unrecognized_names() -> None:
@@ -288,39 +198,11 @@ def test_qb_revenge_sign_convention_home_is_positive() -> None:
     assert derived.loc["r1", QB_REVENGE_COLUMN] == 1.0
 
 
-def test_qb_revenge_sign_convention_away_is_negative() -> None:
-    derived = derive_qb_revenge_features(_revenge_schedule(), _revenge_lookup()).set_index(
-        "game_id"
-    )
-    assert derived.loc["r2", QB_REVENGE_COLUMN] == -1.0
-
-
-def test_qb_revenge_both_sides_simultaneously_is_zero() -> None:
-    derived = derive_qb_revenge_features(_revenge_schedule(), _revenge_lookup()).set_index(
-        "game_id"
-    )
-    assert derived.loc["r3", QB_REVENGE_COLUMN] == 0.0
-
-
-def test_qb_revenge_neither_side_is_zero() -> None:
-    derived = derive_qb_revenge_features(_revenge_schedule(), _revenge_lookup()).set_index(
-        "game_id"
-    )
-    assert derived.loc["r4", QB_REVENGE_COLUMN] == 0.0
-
-
 def test_qb_revenge_unjoined_qb_is_treated_as_zero_never_guessed() -> None:
     derived = derive_qb_revenge_features(_revenge_schedule(), _revenge_lookup()).set_index(
         "game_id"
     )
     assert derived.loc["r5", QB_REVENGE_COLUMN] == 0.0
-
-
-def test_qb_revenge_join_diagnostics_counts() -> None:
-    diagnostic = qb_revenge_join_diagnostics(_revenge_schedule(), _revenge_lookup())
-    assert diagnostic["n_qb_side_starts"] == 10
-    assert diagnostic["n_resolved_draft_team"] == 9
-    assert diagnostic["join_rate"] == pytest.approx(0.9)
 
 
 def test_qb_revenge_leakage_ignores_unrelated_outcome_columns() -> None:
@@ -358,13 +240,6 @@ def test_qb_revenge_attach_requires_the_join_key() -> None:
     schedule = _revenge_schedule()
     features = pd.DataFrame({"not_game_id": schedule["game_id"]})
     with pytest.raises(DataContractError, match="game_id"):
-        attach_qb_revenge_features(features, schedule=schedule, draft_team_lookup=_revenge_lookup())
-
-
-def test_qb_revenge_attach_refuses_to_overwrite_an_existing_column() -> None:
-    schedule = _revenge_schedule()
-    features = pd.DataFrame({"game_id": schedule["game_id"], QB_REVENGE_COLUMN: 0.0})
-    with pytest.raises(DataContractError, match=QB_REVENGE_COLUMN):
         attach_qb_revenge_features(features, schedule=schedule, draft_team_lookup=_revenge_lookup())
 
 

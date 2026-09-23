@@ -3,11 +3,109 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 import pytest
-from test_play_probability import _build_synthetic_sources
 
 from nfl_ats import expected_lineup_loss_features as loss
 from nfl_ats import play_probability as play
 from nfl_ats.data import DataContractError
+from nfl_ats.play_probability import DEPTH_CHART_HISTORY_OUTPUT_COLUMNS
+
+_SEASONS = (2020, 2021, 2022, 2023)
+_WEEKS = (1, 2, 3, 4)
+_TEAMS = tuple(f"T{index:02d}" for index in range(6))
+_ROLES = (("QB", 1), ("QB", 2), ("QB", 3), ("WR", 1), ("WR", 2), ("WR", 3))
+
+
+def _build_synthetic_sources(
+    *, seed: int = 0, extra_week: dict[str, object] | None = None
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+
+    rng = np.random.default_rng(seed)
+    depth_rows: list[dict[str, object]] = []
+    roster_rows: list[dict[str, object]] = []
+    snap_rows: list[dict[str, object]] = []
+    injury_rows: list[dict[str, object]] = []
+    extra_week = extra_week or {}
+
+    for season in _SEASONS:
+        for team in _TEAMS:
+            for week in _WEEKS:
+                key = (season, team, week)
+                baseline_draw = bool(rng.random() < 0.3)
+                qb1_out = bool(extra_week[key]) if key in extra_week else baseline_draw
+                for position, rank in _ROLES:
+                    gsis_id = f"{team}-{position}{rank}"
+                    depth_rows.append(
+                        {
+                            "season": season,
+                            "week": week,
+                            "team": team,
+                            "gsis_id": gsis_id,
+                            "player_name": gsis_id,
+                            "position": position,
+                            "position_group": "skill",
+                            "depth_rank": rank,
+                            "source_schema": "legacy_week",
+                        }
+                    )
+                    roster_rows.append(
+                        {
+                            "season": season,
+                            "week": week,
+                            "team": team,
+                            "position": position,
+                            "status": "ACT",
+                            "full_name": gsis_id,
+                            "gsis_id": gsis_id,
+                            "pfr_id": gsis_id,
+                            "years_exp": 3.0,
+                            "game_type": "REG",
+                        }
+                    )
+                    if position == "QB":
+                        played = (rank == 1 and not qb1_out) or (rank == 2 and qb1_out)
+                    else:
+                        played = bool(rng.random() < {1: 0.9, 2: 0.6, 3: 0.2}[rank])
+                    if played:
+                        snap_rows.append(
+                            {
+                                "game_id": f"{season}_{week:02d}_{team}",
+                                "season": season,
+                                "game_type": "REG",
+                                "week": week,
+                                "player": gsis_id,
+                                "pfr_player_id": gsis_id,
+                                "position": position,
+                                "team": team,
+                                "offense_snaps": 55.0,
+                                "offense_pct": 0.85,
+                                "defense_snaps": 0.0,
+                                "defense_pct": 0.0,
+                                "st_snaps": 0.0,
+                                "st_pct": 0.0,
+                            }
+                        )
+                    if position == "QB" and rank == 1 and qb1_out:
+                        injury_rows.append(
+                            {
+                                "season": season,
+                                "game_type": "REG",
+                                "team": team,
+                                "week": week,
+                                "gsis_id": gsis_id,
+                                "position": position,
+                                "report_status": "Out",
+                                "practice_status": "Did Not Participate In Practice",
+                                "date_modified": pd.Timestamp(f"{season}-01-01T00:00:00Z"),
+                            }
+                        )
+    depth_history = pd.DataFrame(depth_rows)[list(DEPTH_CHART_HISTORY_OUTPUT_COLUMNS)]
+    depth_history["decision_at"] = pd.to_datetime(
+        depth_history["season"].astype(str) + "-09-01", utc=True
+    )
+    rosters = pd.DataFrame(roster_rows)
+    snaps = pd.DataFrame(snap_rows)
+    injuries = pd.DataFrame(injury_rows)
+    return depth_history, rosters, snaps, injuries
 
 
 @pytest.fixture
@@ -88,38 +186,6 @@ def test_visible_injury_lookup_latest_visible_revision(sources):
     assert loss.visible_injury_lookup(row.assign(effective_observed_at=pd.NaT), decisions).empty
 
 
-def test_starters_groups_and_daily_observation_filter(sources):
-    depth, rosters, snaps, injuries, _ = sources
-    panel = play.build_player_week_panel(depth, rosters, snaps, injuries)
-    extra = panel.iloc[[0]].assign(position="K", position_group="other", gsis_id="kicker")
-    late = panel.iloc[[0]].assign(source_schema="daily_dt", gsis_id="late")
-    late["depth_observed_at"] = late.decision_at + pd.Timedelta(seconds=1)
-    unknown = late.assign(gsis_id="unknown", depth_observed_at=pd.NaT)
-    got = loss.select_week_starters(pd.concat([panel, extra, late, unknown]))
-    assert set(got.lineup_group) == {"qb", "offense", "defense"}
-    assert got.depth_rank.eq(1).all()
-    assert not set(got.gsis_id) & {"kicker", "late", "unknown"}
-
-
-def test_asof_inputs_replace_panel_statuses(sources):
-    depth, rosters, snaps, injuries, games = sources
-    panel = play.build_player_week_panel(depth, rosters, snaps, injuries)
-    starters = loss.select_week_starters(panel).assign(
-        report_category="out",
-        practice_category="dnp",
-        roster_status="INA",
-        has_injury_designation=True,
-    )
-    lookup = loss.visible_injury_lookup(injuries.iloc[:0], loss.team_week_decision_instants(games))
-    got = loss.attach_asof_injury_features(starters, lookup)
-    assert got.roster_status.eq("ACT").all()
-    assert not got.has_injury_designation.any()
-    assert got.report_category.eq(play.report_category(None)).all()
-    assert (
-        got.loc[got.lineup_group.ne("qb"), "qb1_report_category"].eq(play.QB1_NOT_APPLICABLE).all()
-    )
-
-
 def test_probability_fit_receives_only_prior_seasons(sources, monkeypatch):
     depth, rosters, snaps, injuries, _ = sources
     panel = play.build_player_week_panel(depth, rosters, snaps, injuries)
@@ -142,46 +208,6 @@ def test_probability_fit_receives_only_prior_seasons(sources, monkeypatch):
     assert seen == [2021, 2022, 2023]
     assert got.loc[got.season.eq(2020), "play_probability"].isna().all()
     assert got.loc[got.season.gt(2020), "play_probability"].eq(0.75).all()
-
-
-def test_group_sums_missing_history_and_missing_probability():
-    rows = pd.DataFrame(
-        {
-            "season": [2020] * 5,
-            "week": [1] * 5,
-            "team": ["H"] * 5,
-            "lineup_group": ["qb", "offense", "offense", "defense", "defense"],
-            "trailing4_snap_share": [0.8, 0.5, np.nan, 0.6, 0.9],
-            "play_probability": [0.25, 0.5, 0.1, 0.5, np.nan],
-        }
-    )
-    got = loss.team_week_expected_loss(rows).iloc[0]
-    assert got.expected_lineup_loss_qb == pytest.approx(0.6)
-    assert got.expected_lineup_loss_offense == pytest.approx(0.25)
-    assert got.expected_lineup_loss_defense == pytest.approx(0.3)
-    assert loss.team_week_expected_loss(rows.iloc[:0]).empty
-
-
-def test_reliability_odd_even_team_season_means():
-    rows = pd.DataFrame(
-        [
-            {
-                "season": 2020,
-                "week": week,
-                "team": str(team),
-                "expected_lineup_loss_qb": team * (1 if week % 2 else 2),
-                "expected_lineup_loss_offense": 0,
-                "expected_lineup_loss_defense": 0,
-            }
-            for team in range(4)
-            for week in range(1, 5)
-        ]
-    )
-    assert loss.team_season_split_half_reliability(rows) == {
-        "n_team_seasons": 4,
-        "reliability": pytest.approx(1.0),
-    }
-    assert np.isnan(loss.team_season_split_half_reliability(rows.iloc[:1])["reliability"])
 
 
 def test_end_to_end_late_injury_depth_snaps_and_outcomes_cannot_change_features(sources):

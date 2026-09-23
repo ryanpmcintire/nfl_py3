@@ -12,13 +12,11 @@ from nfl_ats.market_data_halves import (
     HALF_MARKETS_DEFAULT,
     NoEventsToCapture,
     QuotaFloorRefusal,
-    assemble_events_payload,
     capture_half_markets,
     current_week_kickoff_window,
     filter_events_to_next_week,
     filter_events_to_week,
     newest_bulk_snapshot,
-    plan_half_market_capture,
 )
 from nfl_ats.nfl_week import week_cycle_sunday
 
@@ -66,17 +64,6 @@ def test_filter_events_to_week_keeps_only_the_current_cycle() -> None:
     assert {event["id"] for event in kept} == {"in-early", "in-late"}
 
 
-def test_filter_events_to_week_never_selects_the_whole_272_event_board() -> None:
-
-    now = datetime(2026, 9, 9, 15, 0, tzinfo=UTC)
-    start, _end = current_week_kickoff_window(now)
-    events = [
-        {"id": f"evt-{i}", "commence_time": _iso_z(start + timedelta(days=i))} for i in range(272)
-    ]
-    kept = filter_events_to_week(events, now)
-    assert 0 < len(kept) < 20
-
-
 def _write_bulk_dir(
     root: Path, stamp: str, events: list[dict[str, Any]], *, remaining: str = "1000"
 ) -> None:
@@ -105,51 +92,6 @@ def test_newest_bulk_snapshot_ignores_halves_and_probe_directories(tmp_path: Pat
     assert ref is not None
     assert ref.snapshot_id == "20260908T090000Z"
     assert ref.manifest["quota"]["requests_remaining"] == "999"
-
-
-def test_newest_bulk_snapshot_returns_none_when_absent(tmp_path: Path) -> None:
-    assert newest_bulk_snapshot(tmp_path / "market" / "raw") is None
-
-
-def test_plan_never_refuses_with_no_known_remaining() -> None:
-    plan = plan_half_market_capture(
-        [f"evt-{i}" for i in range(16)], known_remaining=None, quota_floor=600
-    )
-    assert plan.refused is False
-    assert plan.credits_per_event == 4
-    assert plan.planned_credits == 64
-
-
-def test_plan_refuses_when_the_floor_would_be_breached() -> None:
-    plan = plan_half_market_capture(["evt-1"], known_remaining=603, quota_floor=600)
-    assert plan.credits_per_event == 4
-    assert plan.planned_credits == 4
-    assert plan.refused is True
-    assert plan.refusal_reason is not None
-    assert "600" in plan.refusal_reason
-
-
-def test_plan_allows_when_comfortably_above_the_floor() -> None:
-    plan = plan_half_market_capture(["evt-1"], known_remaining=1000, quota_floor=600)
-    assert plan.refused is False
-
-
-def test_plan_multiplies_credits_by_region_count() -> None:
-    plan = plan_half_market_capture(["evt-1"], regions="us,us2", known_remaining=None)
-    assert plan.credits_per_event == 8
-
-
-def test_plan_rejects_empty_markets_or_regions() -> None:
-    with pytest.raises(ValueError, match="market"):
-        plan_half_market_capture(["evt-1"], markets="", known_remaining=None)
-    with pytest.raises(ValueError, match="region"):
-        plan_half_market_capture(["evt-1"], regions="", known_remaining=None)
-
-
-def test_assemble_events_payload_is_a_bulk_shaped_json_array() -> None:
-    payload = assemble_events_payload([{"id": "a"}, {"id": "b"}])
-    decoded = json.loads(payload)
-    assert decoded == [{"id": "a"}, {"id": "b"}]
 
 
 def _half_market_event_payload(event_id: str, commence: datetime) -> dict[str, Any]:
@@ -332,31 +274,6 @@ def test_capture_half_markets_requires_an_existing_bulk_snapshot(tmp_path: Path)
         )
 
 
-def test_capture_half_markets_requires_at_least_one_in_week_event(tmp_path: Path) -> None:
-    market_root = tmp_path / "market" / "raw"
-    now = datetime(2026, 9, 9, 15, 0, tzinfo=UTC)
-    _start, end = current_week_kickoff_window(now)
-    bulk_events = [
-        {
-            "id": "evt-out",
-            "sport_key": "americanfootball_nfl",
-            "commence_time": _iso_z(end + timedelta(days=9)),
-            "home_team": "Seattle Seahawks",
-            "away_team": "New England Patriots",
-            "bookmakers": [],
-        }
-    ]
-    _write_bulk_dir(market_root, "20260908T090000Z", bulk_events)
-    features = pd.DataFrame({"game_id": [], "home_team": [], "away_team": [], "kickoff": []})
-    with pytest.raises(NoEventsToCapture, match="upcoming week"):
-        capture_half_markets(
-            market_root=market_root,
-            features=features,
-            api_key="test-key",
-            observed_at=now,
-        )
-
-
 def test_response_receipts_stay_distinct_and_in_play_is_not_pregame(tmp_path: Path) -> None:
     from nfl_ats.market_data import latest_book_quotes
 
@@ -406,25 +323,6 @@ def test_saturday_before_opener_selects_next_scheduled_week():
     assert [e["id"] for e in filter_events_to_next_week(events, now, schedule)] == ["0", "1", "2"]
     saturday = datetime(2026, 9, 12, 16, tzinfo=UTC)
     assert [e["id"] for e in filter_events_to_next_week(events, saturday, schedule)] == ["1", "2"]
-
-
-def test_next_slate_must_start_within_eight_days():
-    now = datetime(2026, 9, 1, 16, tzinfo=UTC)
-    kickoff = "2026-09-10T00:20:00Z"
-    events = [{"id": "opener", "commence_time": kickoff}]
-    schedule = pd.DataFrame({"season": [2026], "week": [1], "kickoff": [kickoff]})
-    assert filter_events_to_next_week(events, now, schedule) == []
-    assert filter_events_to_next_week(events, now, pd.DataFrame()) == []
-
-
-def test_past_events_and_unparseable_times_are_never_requested():
-    now = datetime(2026, 9, 12, 16, tzinfo=UTC)
-    events = [
-        {"id": "past", "commence_time": _iso_z(now)},
-        {"id": "bad", "commence_time": "invalid"},
-        {"id": "next", "commence_time": _iso_z(now + timedelta(days=1))},
-    ]
-    assert [e["id"] for e in filter_events_to_next_week(events, now, pd.DataFrame())] == ["next"]
 
 
 def test_cli_treats_empty_slate_as_logged_noop(

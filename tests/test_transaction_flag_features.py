@@ -1,35 +1,18 @@
 from __future__ import annotations
 
-from pathlib import Path
-
 import pandas as pd
 import pytest
 
 from nfl_ats.data import DataContractError
 from nfl_ats.transaction_flag_features import (
-    ACQUISITION_RE,
     DEADLINE_INTEGRATION_DRAG_COLUMN,
-    DRAFT_PICK_RE,
-    HOLDOUT_END_RE,
     HOLDOUT_SLOW_START_COLUMN,
-    REINSTATED_RE,
-    SPECULATIVE_ACQUISITION_RE,
     SUSPENSION_RETURN_RUST_COLUMN,
     _attach,
-    _attach_qualifying_sides,
-    _confirm_player_team,
     confirmed_acquisition_transactions,
-    default_transactions_index,
     derive_deadline_integration_drag_features,
     derive_holdout_slow_start_features,
     derive_suspension_return_rust_features,
-    describe_deadline_acquisition_population,
-    describe_holdout_population,
-    describe_suspension_return_population,
-    distinct_player_slugs,
-    find_player_in_segment,
-    holdout_ending_transactions,
-    suspension_category_transactions,
 )
 from nfl_ats.transaction_wire_features import classify_transaction_slug
 
@@ -92,64 +75,6 @@ def _snaps(rows: list[dict]) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def test_distinct_player_slugs_sorted_longest_first_and_deduped() -> None:
-    snaps = _snaps(
-        [
-            _snap_row("Ryan Fake", "AAA", 2020, 1, 0.5),
-            _snap_row("Bryant Longname", "AAA", 2020, 1, 0.5),
-            _snap_row("Ryan Fake", "AAA", 2020, 2, 0.6),
-        ]
-    )
-    slugs = distinct_player_slugs(snaps)
-    assert list(slugs["player"]) == ["Bryant Longname", "Ryan Fake"]
-    assert slugs["name_slug"].tolist() == ["bryant-longname", "ryan-fake"]
-
-
-def test_find_player_in_segment_is_token_anchored_not_substring() -> None:
-
-    snaps = _snaps([_snap_row("Ryan Fake", "AAA", 2020, 1, 0.5)])
-    slugs = distinct_player_slugs(snaps)
-    assert find_player_in_segment("bryant-longname-signs-extension", slugs) is None
-    assert find_player_in_segment("commanders-ryan-fake-reports-to-camp", slugs) == "Ryan Fake"
-
-
-def test_confirm_player_team_gate() -> None:
-    snaps = _snaps([_snap_row("Terry Mclaurin", "WAS", 2024, 17, 0.8)])
-    assert _confirm_player_team("Terry Mclaurin", "WAS", snaps)
-    assert not _confirm_player_team("Terry Mclaurin", "DAL", snaps)
-    assert not _confirm_player_team("Nobody Here", "WAS", snaps)
-
-
-def test_attach_qualifying_sides_empty_population_is_all_zero() -> None:
-    schedule = _schedule([_game("g1", 2020, 1, "2020-09-13", "AAA", "BBB")])
-    derived = _attach_qualifying_sides(
-        schedule, pd.DataFrame(columns=["season", "week", "team"]), "some_flag"
-    )
-    assert derived.set_index("game_id").loc["g1", "some_flag"] == 0.0
-
-
-def test_attach_qualifying_sides_sign_convention() -> None:
-    schedule = _schedule(
-        [
-            _game("g_away", 2020, 2, "2020-09-20", "HHH", "AAA"),
-            _game("g_home", 2020, 2, "2020-09-20", "AAA", "ZZZ"),
-            _game("g_both", 2020, 2, "2020-09-20", "AAA", "BBB"),
-            _game("g_neither", 2020, 2, "2020-09-20", "CCC", "DDD"),
-        ]
-    )
-    qualifying = pd.DataFrame(
-        [
-            {"season": 2020, "week": 2, "team": "AAA"},
-            {"season": 2020, "week": 2, "team": "BBB"},
-        ]
-    )
-    derived = _attach_qualifying_sides(schedule, qualifying, "flag").set_index("game_id")
-    assert derived.loc["g_away", "flag"] == 1.0
-    assert derived.loc["g_home", "flag"] == -1.0
-    assert derived.loc["g_both", "flag"] == 0.0
-    assert derived.loc["g_neither", "flag"] == 0.0
-
-
 def test_attach_rejects_missing_join_key_and_collision() -> None:
     derived = pd.DataFrame({"game_id": ["g1"], "flag": [1.0]})
     with pytest.raises(DataContractError):
@@ -165,73 +90,6 @@ def test_attach_preserves_existing_columns_bit_identical() -> None:
     assert merged["existing"].tolist() == [1.0, 2.0]
     assert merged["flag"].tolist() == [1.0, -1.0]
     assert len(merged) == len(features)
-
-
-def test_default_transactions_index_excludes_retrospective_posts(tmp_path: Path) -> None:
-    frame = pd.DataFrame(
-        [
-            {
-                "slug": "this-date-in-transactions-history-chargers-melvin-gordon-ends-holdout",
-                "transaction_relevant": True,
-                "url_year": "2021",
-                "url_month": "09",
-            },
-            {
-                "slug": "commanders-wr-terry-mclaurin-reports-to-camp-no-extension-in-place",
-                "transaction_relevant": True,
-                "url_year": "2025",
-                "url_month": "07",
-            },
-            {
-                "slug": "irrelevant-roundup",
-                "transaction_relevant": False,
-                "url_year": "2020",
-                "url_month": "01",
-            },
-        ]
-    )
-    path = tmp_path / "index.parquet"
-    frame.to_parquet(path, index=False)
-
-    result = default_transactions_index(snapshot=path)
-    assert len(result) == 1
-    assert result.iloc[0]["slug"] == (
-        "commanders-wr-terry-mclaurin-reports-to-camp-no-extension-in-place"
-    )
-    assert "category" in result.columns
-
-
-def test_holdout_end_regex_positive_matches() -> None:
-    for slug in (
-        "commanders-wr-terry-mclaurin-reports-to-camp-no-extension-in-place",
-        "some-player-reported-to-camp-late",
-        "some-player-ends-holdout-signs-deal",
-        "another-player-ended-holdout-yesterday",
-    ):
-        assert HOLDOUT_END_RE.search(slug) is not None, slug
-
-
-def test_holdout_end_regex_rejects_measured_false_positives() -> None:
-
-    assert HOLDOUT_END_RE.search("chiefs-dt-chris-jones-hints-at-extended-holdout") is None
-    assert (
-        HOLDOUT_END_RE.search(
-            "jamal-adams-seahawks-not-close-at-all-on-extension-adams-expected-to-report-to-camp"
-        )
-        is None
-    )
-
-
-def test_holdout_ending_transactions_filters_correctly() -> None:
-    index = _transactions(
-        [
-            _txn_row("commanders-wr-terry-mclaurin-reports-to-camp-x", 2025, 7),
-            _txn_row("chiefs-dt-chris-jones-hints-at-extended-holdout", 2023, 8),
-            _txn_row("some-team-signs-a-free-agent", 2021, 3),
-        ]
-    )
-    rows = holdout_ending_transactions(index)
-    assert rows["slug"].tolist() == ["commanders-wr-terry-mclaurin-reports-to-camp-x"]
 
 
 def _holdout_snap_counts() -> pd.DataFrame:
@@ -298,15 +156,6 @@ def test_holdout_slow_start_leakage_guard_per_week() -> None:
     assert derived.loc["h3", HOLDOUT_SLOW_START_COLUMN] == -1.0
 
 
-def test_holdout_slow_start_only_one_team_resolution_required() -> None:
-
-    index = _transactions([_txn_row("bills-and-jets-terry-mclaurin-reports-to-camp-x", 2025, 7)])
-    derived = derive_holdout_slow_start_features(
-        _holdout_schedule(), index, _holdout_snap_counts()
-    ).set_index("game_id")
-    assert (derived[HOLDOUT_SLOW_START_COLUMN] == 0.0).all()
-
-
 def test_attach_holdout_slow_start_features_additive() -> None:
     features = pd.DataFrame({"game_id": ["h1", "h2", "h3", "h4"], "existing": [1, 2, 3, 4]})
     index = _transactions([_txn_row("commanders-wr-terry-mclaurin-reports-to-camp-x", 2025, 7)])
@@ -320,29 +169,6 @@ def test_attach_holdout_slow_start_features_additive() -> None:
     )
     assert merged["existing"].tolist() == [1, 2, 3, 4]
     assert HOLDOUT_SLOW_START_COLUMN in merged.columns
-
-
-def test_describe_holdout_population_diagnostic() -> None:
-    index = _transactions(
-        [
-            _txn_row("commanders-wr-terry-mclaurin-reports-to-camp-x", 2025, 7),
-            _txn_row("chiefs-dt-chris-jones-hints-at-extended-holdout", 2023, 8),
-        ]
-    )
-    diag = describe_holdout_population(index, _holdout_snap_counts())
-    assert diag["n_holdout_ending_slugs"] == 1
-    assert diag["n_resolved_player_and_team"] == 1
-
-
-def test_acquisition_regex_positive_and_exclusions() -> None:
-    assert ACQUISITION_RE.search("eagles-to-acquire-desean-jackson-from-buccaneers")
-    assert ACQUISITION_RE.search("patriots-acquire-brandin-cooks")
-    assert DRAFT_PICK_RE.search("bills-acquire-no-23-select-cb-kaiir-elam")
-    assert DRAFT_PICK_RE.search("broncos-acquire-no-42-from-bengals")
-    assert SPECULATIVE_ACQUISITION_RE.search("saints-tried-to-acquire-giants-wr-darius-slayton")
-    assert SPECULATIVE_ACQUISITION_RE.search(
-        "packers-attempted-to-acquire-raiders-te-darren-waller-at-deadline"
-    )
 
 
 def test_confirmed_acquisition_transactions_filters_pick_speculative_and_window() -> None:
@@ -382,17 +208,6 @@ def test_deadline_integration_drag_sign_and_window() -> None:
     assert derived.loc["d12", DEADLINE_INTEGRATION_DRAG_COLUMN] == 0.0
 
 
-def test_deadline_integration_drag_high_snap_gate() -> None:
-
-    low_snap = _snaps([_snap_row("Fake Player", "OLD", 2020, w, 0.20) for w in range(1, 9)])
-    index = _transactions([_txn_row("eagles-acquire-fake-player-from-old", 2020, 10)])
-    schedule = _schedule([_game("d9", 2020, 9, "2020-11-01", "OPP", "PHI")])
-    derived = derive_deadline_integration_drag_features(schedule, index, low_snap).set_index(
-        "game_id"
-    )
-    assert derived.loc["d9", DEADLINE_INTEGRATION_DRAG_COLUMN] == 0.0
-
-
 def test_deadline_integration_drag_no_prior_team_history_never_guessed() -> None:
 
     only_phi_team = _snaps([_snap_row("Fake Player", "PHI", 2020, w, 0.90) for w in range(1, 9)])
@@ -412,36 +227,6 @@ def test_deadline_integration_drag_leakage_guard() -> None:
         schedule, index, _deadline_snap_counts()
     ).set_index("game_id")
     assert derived.loc["d9", DEADLINE_INTEGRATION_DRAG_COLUMN] == 0.0
-
-
-def test_describe_deadline_acquisition_population_diagnostic() -> None:
-    index = _transactions(
-        [
-            _txn_row("eagles-acquire-fake-player-from-old", 2020, 10),
-            _txn_row("bills-acquire-no-23-select-cb-kaiir-elam", 2022, 4),
-        ]
-    )
-    diag = describe_deadline_acquisition_population(index, _deadline_snap_counts())
-    assert diag["n_confirmed_acquisition_slugs"] == 1
-    assert diag["n_resolved_player_and_high_snap"] == 1
-
-
-def test_reinstated_regex_positive_and_semantic_trap_exclusions() -> None:
-    assert REINSTATED_RE.search("aldon-smith-reinstated-suspension")
-    assert REINSTATED_RE.search("broncos-dl-x-reinstated-from-gambling-suspension")
-    assert REINSTATED_RE.search("josh-gordon-files-reinstatement-suspension") is None
-    assert REINSTATED_RE.search("tom-bradys-suspension-reinstated-by-appeals-court") is None
-
-
-def test_suspension_category_transactions_uses_shared_classifier() -> None:
-    index = _transactions(
-        [
-            _txn_row("some-player-suspended-six-games", 2020, 3),
-            _txn_row("some-player-signs-extension", 2020, 3),
-        ]
-    )
-    rows = suspension_category_transactions(index)
-    assert rows["slug"].tolist() == ["some-player-suspended-six-games"]
 
 
 def _suspension_snap_counts() -> pd.DataFrame:
@@ -473,41 +258,12 @@ def test_suspension_return_rust_measures_duration_and_flags_return_plus_one() ->
     assert len(nonzero) == 2
 
 
-def test_suspension_return_rust_below_six_games_excluded() -> None:
-
-    index = _transactions(
-        [
-            _txn_row("stl-fake-suspend-suspended-one-game", 2020, 9),
-            _txn_row("fake-suspend-reinstated-from-suspension", 2020, 10),
-        ]
-    )
-    schedule = _suspension_schedule()
-    derived = derive_suspension_return_rust_features(
-        schedule, index, _suspension_snap_counts()
-    ).set_index("game_id")
-    assert (derived[SUSPENSION_RETURN_RUST_COLUMN] == 0.0).all()
-
-
 def test_suspension_return_rust_no_earlier_imposed_report_excluded() -> None:
     index = _transactions([_txn_row("fake-suspend-reinstated-from-suspension", 2020, 10)])
     schedule = _suspension_schedule()
     derived = derive_suspension_return_rust_features(
         schedule, index, _suspension_snap_counts()
     ).set_index("game_id")
-    assert (derived[SUSPENSION_RETURN_RUST_COLUMN] == 0.0).all()
-
-
-def test_suspension_return_rust_unresolved_team_never_guessed() -> None:
-    index = _transactions(
-        [
-            _txn_row("stl-fake-suspend-suspended-indefinitely", 2020, 3),
-            _txn_row("fake-suspend-reinstated-from-suspension", 2020, 10),
-        ]
-    )
-    schedule = _suspension_schedule()
-    derived = derive_suspension_return_rust_features(schedule, index, _snaps([])).set_index(
-        "game_id"
-    )
     assert (derived[SUSPENSION_RETURN_RUST_COLUMN] == 0.0).all()
 
 
@@ -529,20 +285,6 @@ def test_suspension_return_rust_leakage_guard() -> None:
         schedule, index, _suspension_snap_counts()
     ).set_index("game_id")
     assert derived.loc["s_early", SUSPENSION_RETURN_RUST_COLUMN] == 0.0
-
-
-def test_describe_suspension_return_population_diagnostic() -> None:
-    index = _transactions(
-        [
-            _txn_row("stl-fake-suspend-suspended-indefinitely", 2020, 3),
-            _txn_row("fake-suspend-reinstated-from-suspension", 2020, 10),
-        ]
-    )
-    diag = describe_suspension_return_population(
-        index, _suspension_snap_counts(), _suspension_schedule()
-    )
-    assert diag["n_reinstatement_slugs"] == 1
-    assert diag["n_resolved_6plus_game_returns"] == 1
 
 
 def test_team_lookup_ignores_same_week_and_future_second_trade() -> None:

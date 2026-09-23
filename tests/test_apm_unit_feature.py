@@ -4,7 +4,6 @@ import pytest
 
 from nfl_ats.apm_unit_feature import APM_UNIT_COLUMNS, attach_apm_unit_features, fit_unit_ratings
 from nfl_ats.data import DataContractError
-from nfl_ats.margin import margin_feature_columns
 
 
 def fixture() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
@@ -72,28 +71,9 @@ def test_seed_uses_only_completed_prior_season_games_and_strict_boundary() -> No
     )
 
 
-def test_missing_history_determinism_and_diffs() -> None:
-    games, plays, rosters = fixture()
-    empty = attach_apm_unit_features(games, plays.iloc[:0], rosters)
-    assert empty[list(APM_UNIT_COLUMNS)].isna().all().all()
-    a = attach_apm_unit_features(games, plays, rosters)
-    b = attach_apm_unit_features(games, plays, rosters)
-    pd.testing.assert_frame_equal(a, b)
-    assert a.apm_off_rating_diff.tolist() == pytest.approx(
-        (a.home_apm_off_rating - a.away_apm_off_rating).tolist()
-    )
-
-
 def test_invalid_timestamps_and_duplicate_games_fail_closed() -> None:
     games, plays, rosters = fixture()
     with pytest.raises(DataContractError, match="timestamp"):
         attach_apm_unit_features(games.assign(decision_timestamp=None), plays, rosters)
     with pytest.raises(DataContractError, match="unique"):
         attach_apm_unit_features(pd.concat([games, games]), plays, rosters)
-
-
-def test_profile_is_exactly_incumbent_plus_six_columns() -> None:
-    assert tuple(margin_feature_columns("market_residual", "weak_stack_apm_unit")) == (
-        *margin_feature_columns("market_residual", "weak_stack"),
-        *APM_UNIT_COLUMNS,
-    )

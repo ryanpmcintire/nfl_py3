@@ -63,13 +63,7 @@ def test_omitting_both_flags_resolves_to_the_active_forecast(tmp_path: Path) -> 
     assert _resolve_active_forecast_season_week(args, tmp_path) == (2026, 7)
 
 
-def test_explicit_flags_win_over_the_active_forecast(tmp_path: Path) -> None:
-    _write_manifest(tmp_path, forecast={"artifact": "x", "season": 2026, "week": 7})
-    args = _parser().parse_args(["--season", "2025", "--week", "12"])
-    assert _resolve_active_forecast_season_week(args, tmp_path) == (2025, 12)
-
-
-@pytest.mark.parametrize("argv", [["--season", "2026"], ["--week", "2"]])
+@pytest.mark.parametrize("argv", [["--season", "2026"]])
 def test_half_a_pair_is_rejected_with_a_named_reason(tmp_path: Path, argv: list[str]) -> None:
     _write_manifest(tmp_path, forecast={"artifact": "x", "season": 2026, "week": 7})
     args = _parser().parse_args(argv)

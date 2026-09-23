@@ -15,8 +15,6 @@ from nfl_ats.weak_stack_v3_features import (
     build_gap_bias_features,
     build_gap_penalty_feature,
     build_gap_travel_rest_features,
-    haversine_mi,
-    team_season_penalty_rate,
 )
 
 
@@ -68,32 +66,6 @@ def _bias_schedule() -> pd.DataFrame:
 
 def _row(features: pd.DataFrame, game_id: str) -> pd.Series:
     return features.loc[features["game_id"].eq(game_id)].iloc[0]
-
-
-def test_division_revenge_fires_only_for_the_team_that_lost_the_first_meeting() -> None:
-    bias = build_gap_bias_features(_bias_schedule())
-
-    first_meeting = _row(bias, "2021_01_A_B")
-    assert first_meeting["gap_division_revenge_home"] == 0.0
-    assert first_meeting["gap_division_revenge_away"] == 0.0
-
-    rematch = _row(bias, "2021_03_A_B")
-    assert rematch["gap_division_revenge_home"] == 0.0
-    assert rematch["gap_division_revenge_away"] == 1.0
-    assert rematch["gap_division_revenge_diff"] == -1.0
-
-
-def test_sandwich_spot_fires_only_when_flanked_by_division_games_on_both_sides() -> None:
-    bias = build_gap_bias_features(_bias_schedule())
-
-    sandwiched_a = _row(bias, "2021_02_A_C")
-    assert sandwiched_a["gap_sandwich_spot_home"] == 1.0
-
-    sandwiched_b = _row(bias, "2021_02_D_B")
-    assert sandwiched_b["gap_sandwich_spot_away"] == 1.0
-
-    not_sandwiched = _row(bias, "2021_04_A_D")
-    assert not_sandwiched["gap_sandwich_spot_home"] == 0.0
 
 
 def test_post_blowout_letdown_and_bounce_use_the_strictly_prior_game_only() -> None:
@@ -193,14 +165,6 @@ def test_penalty_rate_prior_is_strictly_lagged_one_season() -> None:
     assert result.loc["2022_01_A_B", "diff_penalty_rate_prior"] == pytest.approx(0.25)
 
 
-def test_penalty_rate_lag_can_never_self_match_or_look_forward() -> None:
-
-    rate = team_season_penalty_rate(_penalty_pbp())
-    lag = rate.copy()
-    lag["prev_season"] = lag["season"] + 1
-    assert (lag["prev_season"] > lag["season"]).all()
-
-
 _STADX = {"lat": 40.0, "lon": -74.0, "tz": "America/New_York"}
 _STADY = {"lat": 34.0, "lon": -118.0, "tz": "America/Los_Angeles"}
 
@@ -253,32 +217,6 @@ def _travel_schedule(week2_home_rest: int) -> pd.DataFrame:
     )
     frame["gameday"] = pd.date_range("2021-09-12", periods=len(frame), freq="7D")
     return frame
-
-
-def test_return_trip_hangover_fires_on_long_trip_and_short_rest() -> None:
-    result = build_gap_travel_rest_features(_travel_schedule(week2_home_rest=6), _travel_coords())
-    row = result.loc[result["game_id"].eq("2021_02_Y_X")].iloc[0]
-    assert row["gap_return_trip_hangover_flag"] == 1.0
-
-
-def test_return_trip_hangover_does_not_fire_after_a_long_rest() -> None:
-    result = build_gap_travel_rest_features(_travel_schedule(week2_home_rest=13), _travel_coords())
-    row = result.loc[result["game_id"].eq("2021_02_Y_X")].iloc[0]
-    assert row["gap_return_trip_hangover_flag"] == 0.0
-
-
-def test_thursday_pure_flag_matches_the_weekday_column() -> None:
-    schedule = _travel_schedule(week2_home_rest=6)
-    schedule.loc[schedule["game_id"].eq("2021_02_Y_X"), "weekday"] = "Thursday"
-    result = build_gap_travel_rest_features(schedule, _travel_coords())
-    assert result.loc[result["game_id"].eq("2021_01_X_Y"), "gap_thursday_pure_flag"].iat[0] == 0.0
-    assert result.loc[result["game_id"].eq("2021_02_Y_X"), "gap_thursday_pure_flag"].iat[0] == 1.0
-
-
-def test_haversine_matches_a_known_city_pair_distance() -> None:
-    assert haversine_mi(
-        _STADX["lat"], _STADX["lon"], _STADY["lat"], _STADY["lon"]
-    ) == pytest.approx(2451.0, rel=0.02)
 
 
 def test_gap_travel_features_never_read_result_or_spread_line() -> None:

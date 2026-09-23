@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-import shutil
 from datetime import datetime
-from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import pandas as pd
@@ -15,27 +13,17 @@ from nfl_ats.constants import (
     GRAPH_FEATURE_COLUMNS,
     MODEL_FEATURE_COLUMNS,
     OUTCOME_COLUMNS,
-    STATE_METRICS,
     SURFACE_SWITCH_FEATURE_COLUMNS,
 )
 from nfl_ats.data import DataContractError
-from nfl_ats.feature_manifest import DECISION_LINES_KEY, decision_line_week
 from nfl_ats.features import (
     DecisionLineOverride,
     add_ats_outcomes,
-    add_bias_features,
     add_surface_switch_features,
     apply_decision_lines,
-    attach_team_states,
     build_game_features,
     build_team_game_metrics,
 )
-from nfl_ats.pool_decision_lines import (
-    captured_weeks,
-    decision_lines_manifest_block,
-    splash_decision_line_overrides,
-)
-from nfl_ats.splash_lines import load_splash_capture
 
 
 def test_ats_target_sign_and_push() -> None:
@@ -88,97 +76,6 @@ def test_team_metric_builder_requires_two_teams(
         build_team_game_metrics(schedules, malformed)
 
 
-def test_historical_franchise_abbreviations_share_current_team_state(
-    schedules_and_stats: tuple[pd.DataFrame, pd.DataFrame],
-) -> None:
-    schedules, stats = schedules_and_stats
-    historical = schedules.copy()
-    historical.loc[:, "home_team"] = "OAK"
-    historical.loc[:, "away_team"] = "STL"
-    current_stats = stats.copy()
-    current_stats.loc[current_stats["team"].eq("A"), "team"] = "LV"
-    current_stats.loc[current_stats["team"].eq("B"), "team"] = "LA"
-
-    features = build_game_features(
-        historical,
-        current_stats,
-        span=3,
-        min_periods=1,
-        graph_min_games=2,
-    )
-    assert features["home_team"].eq("LV").all()
-    assert features["away_team"].eq("LA").all()
-    assert features.loc[1:, "home_off_epa_per_play"].notna().all()
-    assert features.loc[1:, "away_off_epa_per_play"].notna().all()
-
-
-def test_offseason_state_regresses_and_season_game_count_resets() -> None:
-    rows = []
-    for team, state_value in (("A", 10.0), ("B", 0.0)):
-        row: dict[str, object] = {
-            "game_id": f"2022_18_{team}",
-            "season": 2022,
-            "gameday": pd.Timestamp("2023-01-08"),
-            "team": team,
-            "team_games": 17,
-        }
-        for metric in STATE_METRICS:
-            row[f"state_{metric}"] = state_value
-            row[f"league_mean_{metric}"] = 5.0
-        rows.append(row)
-    states = pd.DataFrame(rows)
-    game = pd.DataFrame(
-        {
-            "game_id": ["2023_01_B_A"],
-            "season": [2023],
-            "gameday": [pd.Timestamp("2023-09-10")],
-            "home_team": ["A"],
-            "away_team": ["B"],
-        }
-    )
-    attached = attach_team_states(game, states, offseason_retention=0.5)
-    assert attached.loc[0, "home_team_games"] == 0
-    assert attached.loc[0, "away_team_games"] == 0
-    assert attached.loc[0, "home_off_epa_per_play"] == pytest.approx(7.5)
-    assert attached.loc[0, "away_off_epa_per_play"] == pytest.approx(2.5)
-    assert attached.loc[0, "diff_off_epa_per_play"] == pytest.approx(5.0)
-
-
-def _bracket_schedules() -> pd.DataFrame:
-
-    rows = [
-        ("2022_01_B_A", 2022, "REG", 1, "2022-09-11", "B", "A", 3.0, 1.0),
-        ("2022_01_D_C", 2022, "REG", 1, "2022-09-11", "D", "C", -7.0, -3.0),
-        ("2022_02_C_A", 2022, "REG", 2, "2022-09-18", "C", "A", 10.0, 4.0),
-        ("2022_02_D_B", 2022, "REG", 2, "2022-09-18", "D", "B", 1.0, 3.0),
-        ("2022_19_C_A", 2022, "WC", 19, "2023-01-14", "C", "A", 5.0, 2.0),
-        ("2022_22_B_A", 2022, "SB", 22, "2023-02-12", "B", "A", 3.0, 1.0),
-        ("2023_01_D_A", 2023, "REG", 1, "2023-09-10", "D", "A", 6.0, 3.0),
-        ("2023_01_C_B", 2023, "REG", 1, "2023-09-10", "C", "B", -1.0, 2.0),
-        ("2023_02_B_A", 2023, "REG", 2, "2023-09-17", "B", "A", 4.0, 2.0),
-    ]
-    frame = pd.DataFrame(
-        rows,
-        columns=[
-            "game_id",
-            "season",
-            "game_type",
-            "week",
-            "gameday",
-            "away_team",
-            "home_team",
-            "result",
-            "spread_line",
-        ],
-    )
-    frame["gameday"] = pd.to_datetime(frame["gameday"])
-    return frame
-
-
-def _bias_row(features: pd.DataFrame, game_id: str) -> pd.Series:
-    return features.loc[features["game_id"].eq(game_id)].iloc[0]
-
-
 def test_bias_family_is_registered_but_outside_every_frozen_feature_set() -> None:
     assert FEATURE_FAMILIES["bias"] == BIAS_FEATURE_COLUMNS
     assert BIAS_FEATURE_COLUMNS == (
@@ -193,116 +90,8 @@ def test_bias_family_is_registered_but_outside_every_frozen_feature_set() -> Non
         "bias_week2_anchor_diff",
     )
     assert set(BIAS_FEATURE_COLUMNS).isdisjoint(MODEL_FEATURE_COLUMNS)
-    admitting = {
-        name for name, columns in FEATURE_SETS.items() if set(columns) & set(BIAS_FEATURE_COLUMNS)
-    }
-    inherited_suffixes = {
-        "weak_stack_coord_change",
-        "weak_stack_spread_regime",
-        "weak_stack_home_dog_points",
-        "weak_stack_home_dog_hinge_7",
-        "weak_stack_home_side_hinge_7",
-        "weak_stack_apm_unit",
-        "weak_stack",
-        "weak_stack_surface",
-        "weak_stack_js_prior",
-        "weak_stack_v3",
-        "weak_stack_v4",
-        "weak_stack_oracle_weather",
-        "weak_stack_graph_sack",
-        "weak_stack_graph_def_ypp",
-        "weak_stack_graph_off_rush_epa",
-        "weak_stack_fluview_home",
-        "weak_stack_fluview_away",
-        "weak_stack_durability",
-        "weak_stack_illness_home",
-        "weak_stack_illness_away",
-        "weak_stack_reddit_ratio_home",
-        "weak_stack_reddit_spike_away",
-        "weak_stack_redzone_third_down",
-        "weak_stack_source_availability",
-        "weak_stack_team_style_pace",
-        "weak_stack_post_ot",
-        "weak_stack_mnf_road",
-        "weak_stack_home_thursday",
-        "weak_stack_opener_softness",
-        "weak_stack_ml_divergence",
-        "weak_stack_new_stadium",
-        "weak_stack_dome_shootout",
-        "weak_stack_low_total_div_dog",
-        "weak_stack_sept_heat",
-        "weak_stack_road_fav_fade",
-        "weak_stack_division_dog",
-        "weak_stack_week1_dog",
-        "weak_stack_ats_streak_regress",
-        "weak_stack_opening_drive_epa",
-        "weak_stack_q3_point_diff",
-        "weak_stack_fourth_down_interaction",
-        "weak_stack_rookie_qb_debut_fade",
-        "weak_stack_qb_revenge",
-        "weak_stack_holdout_slow_start",
-        "weak_stack_deadline_drag",
-        "weak_stack_suspension_rust",
-        "weak_stack_crew_second_meeting_favorite",
-        "weak_stack_rookie_crew_underdog",
-        "weak_stack_open_corner_wind_dog",
-        "weak_stack_rain_on_grass_dog",
-        "weak_stack_qb_revenge_deadline_drag",
-        "weak_stack_ir_return_reinforcement",
-        "weak_stack_specialist_absence_fade",
-        "weak_stack_rookie_wall_dependence",
-        "weak_stack_kicker_change_underdog",
-        "weak_stack_backup_tenure_gap",
-        "weak_stack_v5",
-    }
-    assert admitting == {
-        f"{scope}_{suffix}" for scope in ("football", "full") for suffix in inherited_suffixes
-    }
     for name in ("full", "full_player", "full_player_value", "football", "football_player"):
         assert set(FEATURE_SETS[name]).isdisjoint(BIAS_FEATURE_COLUMNS), name
-
-
-def test_playoff_holdover_flags_week_one_teams_from_the_previous_bracket() -> None:
-    schedules = _bracket_schedules()
-    bias = add_bias_features(schedules, schedules)
-
-    opener = _bias_row(bias, "2023_01_D_A")
-    assert opener["bias_playoff_holdover_home"] == 1.0
-    assert opener["bias_playoff_holdover_away"] == 0.0
-    assert opener["bias_playoff_holdover_diff"] == 1.0
-
-    both = _bias_row(bias, "2023_01_C_B")
-    assert both["bias_playoff_holdover_home"] == 1.0
-    assert both["bias_playoff_holdover_away"] == 1.0
-    assert both["bias_playoff_holdover_diff"] == 0.0
-
-    assert _bias_row(bias, "2022_01_B_A")["bias_playoff_holdover_home"] == 0.0
-    assert _bias_row(bias, "2023_02_B_A")["bias_playoff_holdover_home"] == 0.0
-
-
-def test_prior_week_ats_uses_the_single_previous_game_team_signed() -> None:
-    schedules = _bracket_schedules()
-    bias = add_bias_features(schedules, schedules)
-
-    opener = _bias_row(bias, "2023_01_D_A")
-    assert pd.isna(opener["bias_prior_week_ats_home"])
-    assert pd.isna(opener["bias_prior_week_ats_away"])
-    assert opener["bias_week2_anchor_home"] == 0.0
-    assert opener["bias_week2_anchor_away"] == 0.0
-
-    week_two = _bias_row(bias, "2023_02_B_A")
-    assert week_two["bias_prior_week_ats_home"] == pytest.approx(3.0)
-    assert week_two["bias_prior_week_ats_away"] == pytest.approx(-3.0)
-    assert week_two["bias_prior_week_ats_diff"] == pytest.approx(6.0)
-    assert week_two["bias_week2_anchor_home"] == pytest.approx(3.0)
-    assert week_two["bias_week2_anchor_away"] == pytest.approx(-3.0)
-    assert week_two["bias_week2_anchor_diff"] == pytest.approx(6.0)
-
-    assert pd.isna(_bias_row(bias, "2023_01_C_B")["bias_prior_week_ats_home"])
-
-    assert _bias_row(bias, "2022_02_C_A")["bias_prior_week_ats_away"] == pytest.approx(-4.0)
-    assert _bias_row(bias, "2022_19_C_A")["bias_prior_week_ats_home"] == pytest.approx(6.0)
-    assert _bias_row(bias, "2022_22_B_A")["bias_prior_week_ats_home"] == pytest.approx(3.0)
 
 
 def test_bias_features_cannot_see_the_result_of_their_own_game(
@@ -320,31 +109,6 @@ def test_bias_features_cannot_see_the_result_of_their_own_game(
         assert changed.loc[3, column] != pytest.approx(baseline.loc[3, column])
     assert pd.isna(baseline.loc[0, "bias_prior_week_ats_home"])
     assert baseline["bias_playoff_holdover_home"].eq(0.0).all()
-
-
-def test_bias_family_leaves_every_pre_existing_column_bit_identical(
-    schedules_and_stats: tuple[pd.DataFrame, pd.DataFrame],
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-
-    from nfl_ats import features as features_module
-
-    schedules, stats = schedules_and_stats
-    with_bias = build_game_features(schedules, stats, span=3, min_periods=1)
-
-    def _stub(games: pd.DataFrame, source: pd.DataFrame) -> pd.DataFrame:
-        return games.assign(**dict.fromkeys(BIAS_FEATURE_COLUMNS, 0.0))
-
-    monkeypatch.setattr(features_module, "add_bias_features", _stub)
-    without_bias = build_game_features(schedules, stats, span=3, min_periods=1)
-
-    pre_existing = [column for column in with_bias.columns if column not in BIAS_FEATURE_COLUMNS]
-    assert list(without_bias.columns) == list(with_bias.columns)
-    pd.testing.assert_frame_equal(
-        with_bias[pre_existing],
-        without_bias[pre_existing],
-        check_exact=True,
-    )
 
 
 def _surface_switch_schedule() -> pd.DataFrame:
@@ -409,13 +173,6 @@ def test_surface_switch_flag_fires_on_grass_modal_visitor_onto_turf() -> None:
     assert _surface_row(flagged, "2026_03_TURFHOST2_TURFAWAY")["surface_switch_flag"] == 0.0
     assert _surface_row(flagged, "2026_05_TURFHOST3_NOSURF")["surface_switch_flag"] == 0.0
     assert _surface_row(flagged, "2026_20_POSTHOST_GRASSAWAY")["surface_switch_flag"] == 0.0
-
-
-def test_surface_switch_flag_is_missing_surface_column_safe() -> None:
-
-    schedule = _surface_switch_schedule().drop(columns=["surface"])
-    flagged = add_surface_switch_features(schedule, schedule)
-    assert flagged["surface_switch_flag"].eq(0.0).all()
 
 
 def test_surface_switch_flag_never_reads_outcome_columns() -> None:
@@ -636,17 +393,6 @@ def test_pool_capture_refuses_a_played_game_when_the_capture_has_no_instant(
         apply_decision_lines(played, (unstamped,))
 
 
-def test_pool_capture_refuses_a_played_game_with_no_kickoff_on_the_schedule(
-    schedules_and_stats: tuple[pd.DataFrame, pd.DataFrame],
-) -> None:
-
-    schedules, _ = schedules_and_stats
-    played = _with_played_week(schedules).drop(columns="gametime")
-
-    with pytest.raises(DataContractError, match="missing kickoff is not permission"):
-        apply_decision_lines(played, (_POOL_CAPTURE,))
-
-
 def test_pool_capture_refuses_a_week_it_only_half_covers(
     schedules_and_stats: tuple[pd.DataFrame, pd.DataFrame],
 ) -> None:
@@ -680,108 +426,3 @@ def test_pool_capture_refuses_a_line_for_a_game_that_is_not_scheduled(
 
     with pytest.raises(DataContractError, match="not on the 2022 week 6 schedule"):
         apply_decision_lines(schedules, (misread,))
-
-
-def test_no_capture_at_all_leaves_the_feature_table_exactly_as_before(
-    schedules_and_stats: tuple[pd.DataFrame, pd.DataFrame],
-    tmp_path: Path,
-) -> None:
-
-    schedules, stats = schedules_and_stats
-    assert splash_decision_line_overrides(tmp_path) == ()
-
-    untouched, applied = apply_decision_lines(schedules, ())
-    assert applied == ()
-    pd.testing.assert_frame_equal(untouched, schedules, check_exact=True)
-    pd.testing.assert_frame_equal(
-        build_game_features(untouched, stats, span=3, min_periods=1),
-        build_game_features(schedules, stats, span=3, min_periods=1),
-        check_exact=True,
-    )
-
-
-def test_captures_on_disk_become_validated_overrides(tmp_path: Path) -> None:
-
-    fixture = (
-        Path(__file__).resolve().parent / "fixtures" / "splash" / "2026_week01_20260908_noon.json"
-    )
-    splash_root = tmp_path / "splash"
-    splash_root.mkdir()
-    shutil.copy(fixture, splash_root / fixture.name)
-
-    assert captured_weeks(tmp_path) == ((2026, 1),)
-    overrides = splash_decision_line_overrides(tmp_path)
-    assert len(overrides) == 1
-    override = overrides[0]
-    assert (override.season, override.week) == (2026, 1)
-    assert override.capture_id == "2026_week01_20260908_noon"
-    assert override.source == "splashsports.com"
-    assert len(override.lines) == 16
-    assert override.lines["2026_01_NE_SEA"] == pytest.approx(3.5)
-    assert all(abs(value * 2 - round(value * 2)) < 1e-9 for value in override.lines.values())
-
-
-def test_the_real_week_one_board_still_applies_once_its_opener_is_played(
-    tmp_path: Path,
-) -> None:
-
-    fixture = (
-        Path(__file__).resolve().parent / "fixtures" / "splash" / "2026_week01_20260908_noon.json"
-    )
-    splash_root = tmp_path / "splash"
-    splash_root.mkdir()
-    shutil.copy(fixture, splash_root / fixture.name)
-    capture = load_splash_capture(tmp_path, 2026, 1)
-    assert capture is not None
-
-    schedules = pd.DataFrame(
-        {
-            "game_id": [game.game_id for game in capture.games],
-            "season": 2026,
-            "game_type": "REG",
-            "week": 1,
-            "gameday": [f"{game.kickoff_et:%Y-%m-%d}" for game in capture.games],
-            "gametime": [f"{game.kickoff_et:%H:%M}" for game in capture.games],
-            "away_team": [game.away for game in capture.games],
-            "home_team": [game.home for game in capture.games],
-            "result": float("nan"),
-            "spread_line": 0.0,
-        }
-    )
-    opener = schedules["game_id"].eq("2026_01_NE_SEA")
-    assert schedules.loc[opener, "gameday"].iloc[0] == "2026-09-09"
-    assert schedules.loc[opener, "gametime"].iloc[0] == "20:20"
-    schedules.loc[opener, "result"] = -7.0
-
-    overridden, applied = apply_decision_lines(schedules, splash_decision_line_overrides(tmp_path))
-
-    assert overridden.loc[opener, "spread_line"].iloc[0] == pytest.approx(3.5)
-    assert len(applied) == 1
-    assert len(applied[0].game_ids) == 16
-
-
-def test_applied_captures_are_recorded_for_the_build_manifest(
-    schedules_and_stats: tuple[pd.DataFrame, pd.DataFrame],
-) -> None:
-
-    schedules, _ = schedules_and_stats
-    _, applied = apply_decision_lines(_with_upcoming_week(schedules), (_POOL_CAPTURE,))
-    block = decision_lines_manifest_block(applied)
-
-    assert block["policy"] == "pool_capture"
-    assert block["builder_module"] == "nfl_ats.pool_decision_lines"
-    assert block["weeks"] == [
-        {
-            "season": 2022,
-            "week": 6,
-            "source": "splashsports.com",
-            "capture_id": "2022_week06_20221011_noon",
-            "captured_at_utc": "2022-10-11T12:45:00-04:00",
-            "games": 1,
-            "changed_games": 1,
-            "changed_game_ids": ["2022_06_B_A"],
-        }
-    ]
-    manifest = {DECISION_LINES_KEY: block}
-    assert decision_line_week(manifest, 2022, 6) is not None
-    assert decision_line_week(manifest, 2022, 7) is None

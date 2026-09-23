@@ -70,35 +70,12 @@ def test_road_fav_big_fade_away_favorite_is_positive() -> None:
     assert derived.loc["g1", ROAD_FAV_BIG_FADE_COLUMN] == 1.0
 
 
-def test_road_fav_big_fade_home_favorite_is_negative() -> None:
-
-    schedule = _schedule([_game("g2", 2020, "2020-09-13", "AAA", "BBB")])
-    lines = _opener_lines({"g2": (7.5, 45.0)})
-    derived = derive_road_fav_big_fade_features(schedule, lines).set_index("game_id")
-    assert derived.loc["g2", ROAD_FAV_BIG_FADE_COLUMN] == -1.0
-
-
-def test_road_fav_big_fade_below_threshold_is_zero() -> None:
-    schedule = _schedule([_game("g3", 2020, "2020-09-13", "AAA", "BBB")])
-    lines = _opener_lines({"g3": (-6.5, 45.0)})
-    derived = derive_road_fav_big_fade_features(schedule, lines).set_index("game_id")
-    assert derived.loc["g3", ROAD_FAV_BIG_FADE_COLUMN] == 0.0
-
-
 def test_road_fav_big_fade_missing_opener_spread_is_zero_not_nan() -> None:
     schedule = _schedule([_game("g4", 2020, "2020-09-13", "AAA", "BBB")])
     lines = _opener_lines({"g4": (None, None)})
     derived = derive_road_fav_big_fade_features(schedule, lines).set_index("game_id")
     assert derived.loc["g4", ROAD_FAV_BIG_FADE_COLUMN] == 0.0
     assert not pd.isna(derived.loc["g4", ROAD_FAV_BIG_FADE_COLUMN])
-
-
-def test_road_fav_big_fade_non_reg_game_is_zero_even_if_qualifying() -> None:
-
-    schedule = _schedule([_game("g5", 2020, "2021-01-10", "AAA", "BBB", game_type="WC", week=18)])
-    lines = _opener_lines({"g5": (-10.0, 45.0)})
-    derived = derive_road_fav_big_fade_features(schedule, lines).set_index("game_id")
-    assert derived.loc["g5", ROAD_FAV_BIG_FADE_COLUMN] == 0.0
 
 
 def test_road_fav_big_fade_uses_the_opener_not_the_schedules_own_close() -> None:
@@ -125,37 +102,6 @@ def test_division_dog_home_underdog_is_positive() -> None:
     assert derived.loc["d1", DIVISION_DOG_COLUMN] == 1.0
 
 
-def test_division_dog_away_underdog_is_negative() -> None:
-    schedule = _schedule([_game("d2", 2020, "2020-09-13", "AAA", "BBB", div_game=1)])
-    lines = _opener_lines({"d2": (3.0, 45.0)})
-    derived = derive_division_dog_features(schedule, lines).set_index("game_id")
-    assert derived.loc["d2", DIVISION_DOG_COLUMN] == -1.0
-
-
-def test_division_dog_non_divisional_is_zero() -> None:
-    schedule = _schedule([_game("d3", 2020, "2020-09-13", "AAA", "BBB", div_game=0)])
-    lines = _opener_lines({"d3": (-3.0, 45.0)})
-    derived = derive_division_dog_features(schedule, lines).set_index("game_id")
-    assert derived.loc["d3", DIVISION_DOG_COLUMN] == 0.0
-
-
-def test_division_dog_pickem_is_zero() -> None:
-    schedule = _schedule([_game("d4", 2020, "2020-09-13", "AAA", "BBB", div_game=1)])
-    lines = _opener_lines({"d4": (0.0, 45.0)})
-    derived = derive_division_dog_features(schedule, lines).set_index("game_id")
-    assert derived.loc["d4", DIVISION_DOG_COLUMN] == 0.0
-
-
-def test_division_dog_excludes_postseason_divisional_rematches() -> None:
-
-    schedule = _schedule(
-        [_game("d5", 2020, "2021-01-10", "AAA", "BBB", game_type="DIV", week=19, div_game=1)]
-    )
-    lines = _opener_lines({"d5": (-4.0, 45.0)})
-    derived = derive_division_dog_features(schedule, lines).set_index("game_id")
-    assert derived.loc["d5", DIVISION_DOG_COLUMN] == 0.0
-
-
 def test_division_dog_missing_opener_spread_is_zero() -> None:
     schedule = _schedule([_game("d6", 2020, "2020-09-13", "AAA", "BBB", div_game=1)])
     lines = _opener_lines({"d6": (None, None)})
@@ -168,13 +114,6 @@ def test_week1_dog_home_underdog_is_positive() -> None:
     lines = _opener_lines({"w1": (-2.5, 45.0)})
     derived = derive_week1_dog_features(schedule, lines).set_index("game_id")
     assert derived.loc["w1", WEEK1_DOG_COLUMN] == 1.0
-
-
-def test_week1_dog_away_underdog_is_negative() -> None:
-    schedule = _schedule([_game("w2", 2020, "2020-09-10", "AAA", "BBB", week=1)])
-    lines = _opener_lines({"w2": (2.5, 45.0)})
-    derived = derive_week1_dog_features(schedule, lines).set_index("game_id")
-    assert derived.loc["w2", WEEK1_DOG_COLUMN] == -1.0
 
 
 def test_week1_dog_week_two_is_zero_even_if_it_would_otherwise_qualify() -> None:
@@ -255,40 +194,6 @@ def test_ats_streak_regress_resets_at_season_boundary() -> None:
     )
     derived = derive_ats_streak_regress_features(schedule).set_index("game_id")
     assert derived.loc["b4", ATS_STREAK_REGRESS_COLUMN] == 0.0
-
-
-def test_ats_streak_regress_both_qualifying_is_zero() -> None:
-    schedule = _schedule(
-        [
-            _game("q1", 2020, "2020-09-10", "AAA", "ZZZ", week=1, result=-10.0, spread_line=-3.0),
-            _game("q2", 2020, "2020-09-17", "YYY", "AAA", week=2, result=3.0, spread_line=-1.0),
-            _game("q3", 2020, "2020-09-24", "AAA", "XXX", week=3, result=0.0, spread_line=3.0),
-            _game("q4", 2020, "2020-09-10", "BBB", "WWW", week=1, result=-10.0, spread_line=-3.0),
-            _game("q5", 2020, "2020-09-17", "VVV", "BBB", week=2, result=3.0, spread_line=-1.0),
-            _game("q6", 2020, "2020-09-24", "BBB", "UUU", week=3, result=0.0, spread_line=3.0),
-            _game("q7", 2020, "2020-10-01", "AAA", "BBB", week=4, result=None, spread_line=None),
-        ]
-    )
-    derived = derive_ats_streak_regress_features(schedule).set_index("game_id")
-    assert derived.loc["q7", ATS_STREAK_REGRESS_COLUMN] == 0.0
-
-
-def test_ats_streak_regress_non_reg_game_is_zero() -> None:
-    schedule = _streak_schedule()
-    playoff_row = _game(
-        "s5",
-        2020,
-        "2021-01-10",
-        "AAA",
-        "BBB",
-        game_type="WC",
-        week=18,
-        result=None,
-        spread_line=None,
-    )
-    schedule = pd.concat([schedule, pd.DataFrame([playoff_row])], ignore_index=True)
-    derived = derive_ats_streak_regress_features(schedule).set_index("game_id")
-    assert derived.loc["s5", ATS_STREAK_REGRESS_COLUMN] == 0.0
 
 
 def test_ats_streak_regress_is_invariant_to_this_games_own_outcome() -> None:

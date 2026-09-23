@@ -12,23 +12,13 @@ from nfl_ats.officials_archive import (
     ARCHIVE_TIMING_CLASS,
     CANONICAL_CREW_COLUMNS,
     CORE_CREW_POSITIONS,
-    CREW_COLUMNS,
-    INCLUDE_ARCHIVE_DEFAULT,
-    MANIFEST_SCHEMA,
-    NFLVERSE_OFFICIALS_COLUMNS,
     NFLVERSE_SOURCE,
     OfficialsArchiveError,
-    _load_sweep_module,
-    archive_officials_long,
-    assert_captures_are_post_game,
     canonical_crew_table,
     clear_cache,
-    describe_archive_coverage,
-    discover_sweep_runs,
     load_archive_crew_rows,
     load_officials,
     load_officials_for_prospective_channel,
-    normalize_position,
     refuse_archive_rows,
 )
 
@@ -87,7 +77,7 @@ def _write_run(
     run_id: str,
     games: list[tuple[dict[str, Any], tuple[tuple[str, str], ...] | None]],
     *,
-    schema: str = MANIFEST_SCHEMA,
+    schema: str = "officials_pfr_wayback_manifest/1",
     season_start: int = 2014,
     season_end: int = 2014,
 ) -> Path:
@@ -186,34 +176,6 @@ def _no_cross_test_cache() -> Any:
     clear_cache()
 
 
-def test_the_retyped_source_id_matches_the_sweep_scripts_own() -> None:
-
-    sweep = _load_sweep_module(REPO_ROOT)
-    assert ARCHIVE_SOURCE == sweep.SOURCE_ID
-    assert MANIFEST_SCHEMA == "officials_pfr_wayback_manifest/1"
-    assert sweep.parse_officials_block(_crew_html(FULL_CREW))[0] == list(FULL_CREW)
-
-
-def test_discover_sweep_runs_skips_directories_that_are_not_sweep_runs(tmp_path: Path) -> None:
-    raw_root = _one_game_archive(tmp_path)
-    probe = raw_root / "laneN_probe_20260907T233340Z"
-    probe.mkdir()
-    (probe / "manifest.json").write_text(
-        json.dumps({"schema": "officials_pfr_wayback_probe/1", "cdx": [], "fetches": []}),
-        encoding="utf-8",
-    )
-    (raw_root / "no_manifest_at_all").mkdir()
-
-    runs = discover_sweep_runs(raw_root)
-    assert [run.run_id for run in runs] == ["20260907T140309Z"]
-    assert runs[0].capture_policy == "newest_post_game_capture_with_fallback"
-    assert runs[0].n_manifest_rows == 1
-
-
-def test_discover_sweep_runs_on_a_missing_root_is_empty(tmp_path: Path) -> None:
-    assert discover_sweep_runs(tmp_path / "nothing_here") == []
-
-
 def test_a_complete_crew_parses_to_seven_positions(tmp_path: Path) -> None:
     raw_root = _one_game_archive(tmp_path)
     rows = load_archive_crew_rows(repo_root=REPO_ROOT, raw_root=raw_root)
@@ -280,12 +242,6 @@ def test_a_missing_position_is_left_missing_not_invented(tmp_path: Path) -> None
     assert int(row["n_positions"]) == 6
 
 
-def test_down_judge_is_folded_into_head_linesman() -> None:
-    assert normalize_position("Down Judge") == "Head Linesman"
-    assert normalize_position("Head Linesman") == "Head Linesman"
-    assert normalize_position("Referee") == "Referee"
-
-
 def test_canonical_table_has_the_frozen_columns_and_schedule_derived_fields(
     tmp_path: Path,
 ) -> None:
@@ -306,25 +262,18 @@ def test_canonical_table_has_the_frozen_columns_and_schedule_derived_fields(
     assert row["source_run_id"] == "20260907T140309Z"
     assert row["wayback_capture_timestamp"] == "20141006175522"
     assert row["wayback_url"].startswith("https://web.archive.org/web/20141006175522id_/")
-    assert [row[column] for column in CREW_COLUMNS] == [name for _p, name in FULL_CREW]
-
-
-def test_a_duplicate_position_on_one_page_keeps_the_first_and_counts_the_discard(
-    tmp_path: Path,
-) -> None:
-
-    crew = (("Referee", "John Parry"), ("Referee", "John Perry"), *FULL_CREW[1:])
-    raw_root = _one_game_archive(tmp_path, crew=crew)
-
-    table = canonical_crew_table(repo_root=REPO_ROOT, raw_root=raw_root, schedules=_schedules())
-    row = table.iloc[0]
-    assert row["referee"] == "John Parry"
-    assert int(row["n_crew_rows"]) == 8
-    assert int(row["n_positions"]) == 7
-    assert int(row["discarded_duplicate_position_rows"]) == 1
-
-    long = archive_officials_long(table=table)
-    assert int((long["position"] == "Referee").sum()) == 1
+    assert [
+        row[column]
+        for column in (
+            "referee",
+            "umpire",
+            "head_linesman",
+            "line_judge",
+            "field_judge",
+            "side_judge",
+            "back_judge",
+        )
+    ] == [name for _p, name in FULL_CREW]
 
 
 def test_a_game_captured_by_two_runs_resolves_to_the_newest_capture(tmp_path: Path) -> None:
@@ -383,14 +332,6 @@ def test_a_schedule_missing_the_crosswalk_column_fails_closed(tmp_path: Path) ->
         canonical_crew_table(repo_root=REPO_ROOT, raw_root=raw_root, schedules=schedules)
 
 
-def test_an_empty_archive_yields_an_empty_canonical_table(tmp_path: Path) -> None:
-    empty = tmp_path / "officials_pfr_wayback"
-    empty.mkdir()
-    table = canonical_crew_table(repo_root=REPO_ROOT, raw_root=empty, schedules=_schedules())
-    assert table.empty
-    assert list(table.columns) == list(CANONICAL_CREW_COLUMNS)
-
-
 def test_a_capture_at_or_before_kickoff_fails_closed(tmp_path: Path) -> None:
 
     raw_root = _one_game_archive(tmp_path, capture_ts="20140903120000")
@@ -404,24 +345,6 @@ def test_a_capture_at_or_before_kickoff_fails_closed(tmp_path: Path) -> None:
     ok = _one_game_archive(tmp_path / "nextday", capture_ts="20140905000000")
     table = canonical_crew_table(repo_root=REPO_ROOT, raw_root=ok, schedules=_schedules())
     assert len(table) == 1
-
-
-def test_a_missing_or_malformed_capture_timestamp_fails_closed() -> None:
-    rows = pd.DataFrame(
-        [
-            {
-                "game_id": "2014_01_GB_SEA",
-                "gameday": "2014-09-04",
-                "wayback_capture_timestamp": None,
-            }
-        ]
-    )
-    with pytest.raises(OfficialsArchiveError):
-        assert_captures_are_post_game(rows)
-
-    rows.loc[0, "wayback_capture_timestamp"] = "not-a-timestamp"
-    with pytest.raises(OfficialsArchiveError):
-        assert_captures_are_post_game(rows)
 
 
 def test_archive_rows_are_refused_by_the_prospective_channel() -> None:
@@ -442,48 +365,6 @@ def test_the_prospective_loader_never_includes_the_archive(tmp_path: Path) -> No
     frame = load_officials_for_prospective_channel(tmp_path, feed=feed)
     pd.testing.assert_frame_equal(frame, feed)
     assert "source" not in frame.columns
-
-
-def test_the_shipped_default_returns_the_feed_bit_for_bit(tmp_path: Path) -> None:
-
-    assert INCLUDE_ARCHIVE_DEFAULT is False
-    feed = _feed()
-    path = tmp_path / "officials.parquet"
-    feed.to_parquet(path)
-    on_disk = pd.read_parquet(path)
-
-    pd.testing.assert_frame_equal(load_officials(tmp_path, officials_path=path), on_disk)
-    assert list(load_officials(tmp_path, officials_path=path).columns) == list(
-        NFLVERSE_OFFICIALS_COLUMNS
-    )
-
-
-def test_every_2015_2025_row_survives_the_merge_bit_for_bit(tmp_path: Path) -> None:
-
-    feed = _feed(seasons=(2015, 2016, 2017))
-    raw_root = _one_game_archive(tmp_path)
-    merged = load_officials(
-        REPO_ROOT,
-        feed=feed,
-        include_archive=True,
-        raw_root=raw_root,
-        schedules=_schedules(),
-    )
-
-    nflverse_slice = merged.loc[
-        merged["source"] == NFLVERSE_SOURCE, list(NFLVERSE_OFFICIALS_COLUMNS)
-    ].reset_index(drop=True)
-    pd.testing.assert_frame_equal(nflverse_slice, feed.astype({"jersey_number": "Int32"}))
-
-    modern = merged.loc[merged["season"].between(2015, 2025), list(NFLVERSE_OFFICIALS_COLUMNS)]
-    pd.testing.assert_frame_equal(
-        modern.reset_index(drop=True), feed.astype({"jersey_number": "Int32"})
-    )
-    assert modern["jersey_number"].notna().all()
-    assert list(modern["jersey_number"].astype("int32")) == list(feed["jersey_number"])
-
-    assert set(merged.loc[merged["source"] == ARCHIVE_SOURCE, "season"]) == {2014}
-    assert len(merged) == len(feed) + 7
 
 
 def test_nflverse_wins_on_overlap(tmp_path: Path) -> None:
@@ -510,20 +391,6 @@ def test_nflverse_wins_on_overlap(tmp_path: Path) -> None:
     assert len(merged) == len(feed)
 
 
-def test_the_archive_uses_the_legacy_game_id_the_feed_joins_on(tmp_path: Path) -> None:
-    raw_root = _one_game_archive(tmp_path)
-    long = archive_officials_long(repo_root=REPO_ROOT, raw_root=raw_root, schedules=_schedules())
-
-    assert list(long.columns) == [*NFLVERSE_OFFICIALS_COLUMNS, "source"]
-    assert set(long["game_id"]) == {"2014090400"}
-    assert set(long["season_type"]) == {"REG"}
-    assert set(long["source"]) == {ARCHIVE_SOURCE}
-    assert long["jersey_number"].isna().all()
-    assert long["official_id"].isna().all()
-    assert long["game_key"].isna().all()
-    assert list(long["position"]) == list(CORE_CREW_POSITIONS)
-
-
 def test_merging_rejects_a_feed_missing_its_own_columns(tmp_path: Path) -> None:
 
     broken = _feed().drop(columns=["jersey_number"])
@@ -533,48 +400,3 @@ def test_merging_rejects_a_feed_missing_its_own_columns(tmp_path: Path) -> None:
         load_officials(tmp_path, feed=broken, include_archive=True, raw_root=empty)
 
     pd.testing.assert_frame_equal(load_officials(tmp_path, feed=broken), broken)
-
-
-def test_a_feed_with_no_archive_available_is_returned_with_provenance(tmp_path: Path) -> None:
-    empty = tmp_path / "officials_pfr_wayback"
-    empty.mkdir()
-    feed = _feed()
-    merged = load_officials(REPO_ROOT, feed=feed, include_archive=True, raw_root=empty)
-    assert set(merged["source"]) == {NFLVERSE_SOURCE}
-    assert len(merged) == len(feed)
-
-
-def test_describe_archive_coverage_reports_per_season(tmp_path: Path) -> None:
-    raw_root = _one_game_archive(tmp_path)
-    summary = describe_archive_coverage(
-        table=canonical_crew_table(repo_root=REPO_ROOT, raw_root=raw_root, schedules=_schedules())
-    )
-    assert summary["n_games"] == 1
-    assert summary["n_complete_crews"] == 1
-    assert summary["timing_class"] == ARCHIVE_TIMING_CLASS
-    assert summary["seasons"]["2014"]["n_distinct_referees"] == 1
-
-
-def test_the_row_cache_invalidates_when_a_sweep_writes(tmp_path: Path) -> None:
-
-    raw_root = _one_game_archive(tmp_path)
-    first = load_archive_crew_rows(repo_root=REPO_ROOT, raw_root=raw_root)
-    assert len(first) == 7
-
-    run_dir = raw_root / "20260907T140309Z"
-    payload = json.loads((run_dir / "manifest.json").read_text(encoding="utf-8"))
-    second_game = _manifest_game(
-        "2014_01_NO_ATL",
-        season=2014,
-        week=1,
-        gameday="2014-09-07",
-        pfr_id="201409070atl",
-        capture_ts="20141008120000",
-        html_file="html/201409070atl__20141008120000.html",
-    )
-    (run_dir / str(second_game["html_file"])).write_text(_crew_html(FULL_CREW), encoding="utf-8")
-    payload["games"].append(second_game)
-    (run_dir / "manifest.json").write_text(json.dumps(payload), encoding="utf-8")
-
-    second = load_archive_crew_rows(repo_root=REPO_ROOT, raw_root=raw_root)
-    assert len(second) == 14

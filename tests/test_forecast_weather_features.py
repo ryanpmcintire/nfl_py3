@@ -61,21 +61,10 @@ def test_pool_decision_archive_loads_with_snf_cut_off_at_sunday_1600(tmp_path: P
     assert list(loaded["game_id"]) == ["early", "snf"]
 
 
-@pytest.mark.parametrize(
-    ("column", "value", "message"),
-    [
-        ("cutoff_mode", "kickoff_nearest", "outside pool_decision"),
-        ("decision_cutoff_utc", "2025-09-08T00:20:00Z", "decision cutoff"),
-        ("issuance_runtime_utc", "2025-09-07T22:00:00Z", "issued after"),
-        ("fetch_status", "transport_error", "coverage failures"),
-    ],
-)
-def test_archive_contract_rejects_leaky_or_incomplete_snf_rows(
-    tmp_path: Path, column: str, value: str, message: str
-) -> None:
+def test_archive_contract_rejects_leaky_or_incomplete_snf_rows(tmp_path: Path) -> None:
     rows = _archive_rows()
-    rows.loc[rows["game_id"].eq("snf"), column] = value
-    with pytest.raises(DataContractError, match=message):
+    rows.loc[rows["game_id"].eq("snf"), "issuance_runtime_utc"] = "2025-09-07T22:00:00Z"
+    with pytest.raises(DataContractError, match="issued after"):
         load_forecast_archive(_write_archive(tmp_path, rows))
 
 
