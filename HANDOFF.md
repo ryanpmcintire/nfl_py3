@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-23T21:38:22.450718+00:00`
+Refreshed at: `2026-09-23T21:39:13.545072+00:00`
 
 ## Start here
 
@@ -21,15 +21,13 @@ Refreshed at: `2026-09-23T21:38:22.450718+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `64c314ca89d0` — Grade inactive-time news historically (unresolved); tidy the lane index
-- Pending change set: 8 paths
-  - `M  HANDOFF.md`
+- Baseline commit: `e25217ffa5c4` — Positive-control power: minimum detectable effects; no reclassification at these sizes
+- Pending change set: 6 paths
   - ` M docs/lanes/injury-scenario-producer.md`
   - ` M docs/lanes/market-move-decomposition.md`
   - `M  docs/lanes/positive-control-power.md`
   - ` M scripts/injury_scenario_producer.py`
   - ` M scripts/market_move_decomposition.py`
-  - `A  scripts/positive_control_power.py`
   - `?? scripts/injury_scenario_grade.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.

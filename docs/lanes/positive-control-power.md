@@ -253,6 +253,48 @@ mde_table and per-cell grid detail, and proceed with Next steps 1-4 above
 under 250 words). Do not re-run the simulation — it already finished
 successfully; only the read-and-compare step remains.
 
+SESSION 3 (2026-09-23, final): read
+artifacts/positive_control_power/20260923T213416Z/results.json (the
+completed full run — 200 sims/point, 400 bootstrap draws, fit-iterations 20).
+Final MDE table (accuracy points at 80% power):
+  served_2020_2025__binary_p03 = 1.914
+  served_2020_2025__binary_p10 = 2.949
+  served_2020_2025__binary_p50 = 4.928
+  served_2020_2025__continuous_std = 4.188
+  extended_2011_2025__binary_p03 = 1.530
+  extended_2011_2025__binary_p10 = 2.010
+  extended_2011_2025__binary_p50 = 3.250
+  extended_2011_2025__continuous_std = 2.582
+(extended MDEs are all tighter than served's despite more games because the
+15-block LOSO refits more often; both scale sub-linearly with prevalence and
+supra-linearly with |coefficient|, as expected for a logistic DGP.)
+
+Compared all 13 Open registry cells against this table (qualifies iff
+max(abs(interval_low), interval_high) < matched MDE for the cell's matched
+population/prevalence bucket). 11 of 13 qualify for
+bounded_by_control/positive_control_bound; 2 do not apply (fifth_fit_vs_
+model_only already excludes zero — not a bounded_by_control candidate at
+all; log_loss cell is in different units, no MDE available). Full exact
+`--replace` commands (preserving every original registry field, only
+classification/closing_ground/classification_evidence changed) for all 11
+qualifying cells, each individually cited against its matched MDE with the
+population/prevalence-mismatch caveats stated inline, are drafted in
+artifacts/positive_control_power/20260923T213416Z/flip_commands.md. NOT RUN
+(out of scope). Cell 11 (total_conditioned_key_number_lattice_accuracy) is
+flagged inside that file as the weakest-fit application — it's a paired
+challenger-model accuracy comparison, not a single injected term, so the
+added-term harness's MDE is a looser analogy there than for the other 10;
+recommend a dedicated model-swap positive control before treating it as
+final, not just re-running numbers.
+
+Next: owner/orchestrator decides whether to run any of the 11 drafted
+--replace commands (this agent was out of scope to execute them). No
+further computation needed — the harness, results, and command drafts are
+all on disk. This lane can move to docs/lanes/done/ once the owner has
+acted on (or explicitly declined) the drafted commands.
+
 ## Root decision 2026-09-23
 
 The 11 drafted bounded_by_control reclassifications are NOT run. The minimum detectable effects (1.5-4.9 accuracy points at 80% power) are 2-10x the plausible size of these terms (every point estimate today sits between -1.5 and +0.3 points), so they bound only implausibly large effects; AGENTS.md closes a line only for a control able to detect an effect of the size in question. The table stands as the evaluator's resolution: single added-term accuracy tests on 1,503 or 3,734 games cannot resolve realistic effects; prefer the line-move yardstick and larger populations. A cell may be reclassified only when its hypothesized size is at or above the matched MDE.
+
+- Superseded by "Root decision 2026-09-23" above: the drafted commands are not run; nothing here awaits review.
