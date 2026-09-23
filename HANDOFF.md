@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-23T21:27:14.839636+00:00`
+Refreshed at: `2026-09-23T21:38:22.450718+00:00`
 
 ## Start here
 
@@ -21,20 +21,16 @@ Refreshed at: `2026-09-23T21:27:14.839636+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `4294ab76a1b8` — Market-move decomposition unit 1: five arms measured, held for a reconstruction parity fix
-- Pending change set: 12 paths
-  - `M  docs/lanes/README.md`
-  - `R  docs/lanes/base-model-recency.md -> docs/lanes/done/base-model-recency.md`
-  - `R  docs/lanes/extended-population-regrade.md -> docs/lanes/done/extended-population-regrade.md`
-  - `R  docs/lanes/fit-ridge-derivation.md -> docs/lanes/done/fit-ridge-derivation.md`
-  - `R  docs/lanes/tuesday-terms-line-move.md -> docs/lanes/done/tuesday-terms-line-move.md`
-  - `M  docs/lanes/free-odds-sources.md`
-  - `M  docs/lanes/news-trigger-refresh.md`
-  - `A  docs/lanes/positive-control-power.md`
-  - `M  registry/weak_signals.json`
+- Baseline commit: `64c314ca89d0` — Grade inactive-time news historically (unresolved); tidy the lane index
+- Pending change set: 8 paths
+  - `M  HANDOFF.md`
+  - ` M docs/lanes/injury-scenario-producer.md`
+  - ` M docs/lanes/market-move-decomposition.md`
+  - `M  docs/lanes/positive-control-power.md`
   - ` M scripts/injury_scenario_producer.py`
-  - `A  scripts/news_trigger_historical.py`
-  - `?? scripts/positive_control_power.py`
+  - ` M scripts/market_move_decomposition.py`
+  - `A  scripts/positive_control_power.py`
+  - `?? scripts/injury_scenario_grade.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

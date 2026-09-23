@@ -64,7 +64,43 @@ Tried
   2011-2025 regrade (commit cdb761d) did not write registry rows under those
   name stems.
 
-Next (session 2, 2026-09-23 17:16-17:2x local — pick up here)
+Session 2 result (2026-09-23 17:34): full run finished at elapsed_s=1058.3,
+artifacts/positive_control_power/20260923T213416Z/results.json. MDE table
+(accuracy points at 80% power):
+served_2020_2025 (n=1503, 6 season blocks): binary_p03=1.914, binary_p10=2.949,
+binary_p50=4.928, continuous_std=4.188
+extended_2011_2025 (n=3734, 15 season blocks): binary_p03=1.530,
+binary_p10=2.010, binary_p50=3.250, continuous_std=2.582
+Matched all 13 Open cells to their MDE and drafted --replace commands for the
+11 that qualify (interval excludes the matched MDE in the helpful direction)
+into artifacts/positive_control_power/20260923T213416Z/flip_commands.md — NOT
+run. pooled_signal_fifth_fit_vs_model_only excluded (already excludes zero,
+not a bounded_by_control candidate). total_conditioned_key_number_lattice_log_loss
+marked not applicable (log_loss_improvement units, no MDE for that unit).
+Qualifying: lead59_dpi_tilt_pass_heavy_favorite_fit_term,
+lead59_holding_tilt_run_heavy_fit_term,
+opener_error_transfer_added_term_vs_base_v3_2020_2025_subset,
+opener_error_transfer_added_term_vs_base_v3_all_graded (approximate
+population match caveat), players_on_field_rating_diff_divergence_
+pick_probability_term, players_on_field_rating_diff_lineup_total_
+pick_probability_term, players_on_field_rating_residual_unpriced_
+pick_probability_term, players_on_field_rating_unseen_interaction_
+pick_probability_term, pooled_signal_fifth_fit_vs_four_term,
+pooled_signal_sixth_fit_vs_four_term, total_conditioned_key_number_
+lattice_accuracy (approximate population match caveat). lead59_* cells used
+the season-block MDE as a conservative proxy for their real week-block
+(107-block) interval, per the caveat already on file.
+Registry rows for all 13 cells currently store interval_low/interval_high
+= None (only probability_positive is populated) — the drafted commands add
+the interval numbers the lane read from each source artifact, so --replace
+would newly populate those fields, not just flip classification.
+This unit (positive-control power measurement + reclassification drafting)
+is COMPLETE. Nothing further to do here unless the owner decides to run the
+flip_commands.md commands (explicitly out of scope/not authorized this
+session) or build a week-block harness for the lead59_* cells specifically
+(flagged as future work, not blocking).
+
+Next (session 2, 2026-09-23 17:16-17:2x local — superseded by the result above, kept for provenance)
 0. The SAME background job from session 1 (started 17:16:36 local, PIDs
    uv=36516/python=35448,37792 confirmed alive via
    `powershell Get-Process -Id 36516`) is still running — it was NOT killed
@@ -202,3 +238,21 @@ and the CLI flag contract are all captured above or on disk, and the
 background computation (once it finishes or is re-run) writes its own
 artifact independent of this chat. A fresh agent can resume purely from this
 lane file.
+
+UPDATE (post-cap notification): background job b7b8ggx1e reported completed
+(exit code 0) via task notification after this agent had already hit its
+50-tool-call cap and handed back HOLD. This agent could not spend further
+tool calls to read the result (hook restricts to lane-file writes only past
+the cap), so a FRESH agent must be the one to: tail/read
+C:\Users\Ryan\AppData\Local\Temp\positive_control_power_run.log (should now
+have 48 lines, one per (cell, coefficient) grid point, ending with the
+summary JSON line containing "artifact" and "mde_table"), then open the
+named artifacts/positive_control_power/<ts>/results.json for the full
+mde_table and per-cell grid detail, and proceed with Next steps 1-4 above
+(match the 13 registry cells to their MDE, draft flip_commands.md, report
+under 250 words). Do not re-run the simulation — it already finished
+successfully; only the read-and-compare step remains.
+
+## Root decision 2026-09-23
+
+The 11 drafted bounded_by_control reclassifications are NOT run. The minimum detectable effects (1.5-4.9 accuracy points at 80% power) are 2-10x the plausible size of these terms (every point estimate today sits between -1.5 and +0.3 points), so they bound only implausibly large effects; AGENTS.md closes a line only for a control able to detect an effect of the size in question. The table stands as the evaluator's resolution: single added-term accuracy tests on 1,503 or 3,734 games cannot resolve realistic effects; prefer the line-move yardstick and larger populations. A cell may be reclassified only when its hypothesized size is at or above the matched MDE.
