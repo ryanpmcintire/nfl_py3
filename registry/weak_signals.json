@@ -24277,6 +24277,34 @@
       "source": "scripts/ffc_adp_divergence_screen.py; artifacts/ffc_adp_divergence_screen/20260822T130232Z/results.json; docs/ffc_adp_divergence_screen.md",
       "standard_error": null
     },
+    "fit_ridge_nested_loso_vs_served": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap 95% CI [-0.3415, +0.0829] points crosses zero; P+ 0.134; 15 season blocks; 2020-2025 nested and served picks identical (859-644)",
+      "closing_ground": null,
+      "description": "Nested leave-one-season-out ridge selection for the four-term pick-probability fit vs the served fixed FIT_RIDGE=1e-3, graded on the 2011-2025 extended population (3,734 games); on 2020-2025 the nested choice makes identical picks",
+      "effect": -0.1071,
+      "effect_units": "accuracy_points",
+      "family": "fit_ridge_derivation_v1",
+      "interval": [
+        -0.3415,
+        0.0829
+      ],
+      "league": "nfl",
+      "notes": "FIT_RIDGE, FIT_ITERATIONS, PROBABILITY_EPSILON, CONFIDENCE_BAND_EDGES, STRENGTH_BAND_QUANTILES and equal flag weights all landed in 6131b6d with no logged search.",
+      "plain_summary": "Choosing the pick model's smoothing strength from held-out seasons instead of the fixed value picks the same games; the fixed value stays.",
+      "probability_positive": 0.134,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 15,
+      "sample_games": 3734,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/fit_ridge_derivation/20260923T210622Z/report.json",
+      "standard_error": 0.1095
+    },
     "fluview_away_market_elevated": {
       "category": "health",
       "classification": "unresolved_below_power",

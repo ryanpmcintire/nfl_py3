@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-23T21:09:04.260943+00:00`
+Refreshed at: `2026-09-23T21:09:50.755699+00:00`
 
 ## Start here
 
@@ -21,16 +21,15 @@ Refreshed at: `2026-09-23T21:09:04.260943+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `870c004e6d54` — Total-conditioned key-number lattice: better log loss and push calibration, unresolved
-- Pending change set: 9 paths
-  - `A  docs/lanes/extended-population-regrade.md`
+- Baseline commit: `cdb761d26d49` — Regrade Tuesday terms on 2011-2025 population: all three unresolved
+- Pending change set: 8 paths
+  - ` M docs/lanes/README.md`
+  - `A  docs/lanes/fit-ridge-derivation.md`
   - ` M docs/lanes/opener-error-transfer.md`
   - `M  registry/weak_signals.json`
-  - `A  scripts/extended_population_regrade.py`
+  - `A  scripts/fit_ridge_derivation.py`
   - `?? docs/lanes/base-model-recency.md`
-  - `?? docs/lanes/fit-ridge-derivation.md`
   - `?? scripts/base_model_recency.py`
-  - `?? scripts/fit_ridge_derivation.py`
   - `?? scripts/opener_error_transfer_unit3.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
