@@ -9,6 +9,9 @@ grade at the opener, and what restricts opener-evaluation to 2020+.
 
 ## State
 Unit 1 DONE (read-only; no new artifact written; nothing served changed).
+Unit 3 DONE (discrete-read rebuild; see Next for detail); this is now the
+current-best extended population artifact:
+`artifacts/extended_fit_population/20260923T205910Z/`.
 
 Unit 2 DONE. Predeclared and built: `scripts/extended_fit_population.py` (new,
 ruff format+check clean), run once for real,
@@ -136,17 +139,59 @@ so it was not attempted under this unit's read-only/cheap-only brief.
   (`data/pbp/raw/20260817T184927Z`).
 
 ## Next
-Unit 2 shipped `artifacts/extended_fit_population/20260923T205041Z/`
-(population.parquet + summary.json) via `scripts/extended_fit_population.py`.
-If a future unit wants to close the smooth-vs-discrete gap: rebuild
-2011-2019's `model_logit` with the actual `DiscretePushReader` +
-`serve_discrete_three_way` lattice (mirroring `opener_pick_evaluation`'s
-loop, keyed to `sbr_odds.parquet`'s `open_home_spread` instead of
-`tue_open_home_spread`, including `fit_home_side_offsets`) rather than the
-preserved smooth artifact reused this unit; re-run the same LOSO sanity look
-after; decide whether the -0.46pt wash changes with the discrete read. This
-was scoped out as its own unit (real new engineering, not a rerun), same
-conclusion Unit 1 already reached for the harder version of this ask.
+Unit 2 shipped `artifacts/extended_fit_population/20260923T205041Z/` (smooth
+2011-2019 `model_logit`, superseded by Unit 3 for that column).
+
+Unit 3 DONE. Closed the smooth-vs-discrete gap flagged in Unit 2's Open.
+Predeclared and built `scripts/extended_fit_population_discrete.py` (new,
+ruff format+check clean), run once for real,
+`artifacts/extended_fit_population/20260923T205910Z/population.parquet` +
+`summary.json`. Same 3,734 games (2011-2025), same source split (2,231
+`sbr_proxy_discrete` / 1,503 `tue_open`).
+
+**What changed**: `_walk_forward_discrete_open` is a new function mirroring
+`opener_pick_evaluation`'s at-open branch only (clv.py:1978) --
+`DiscretePushReader.for_week`/`prior_pool` (mass_preserving_lattice.py),
+`serve_discrete_three_way`, and `fit_home_side_offsets`/`prior_rows_before`
+under `HOME_SIDE_OFFSET_SERVED` (home_side_location.py), walk-forward by
+season/week using only `completed` rows before each week's cutoff, same as
+production. For 2011-2019 it settles at `sbr_era_opener_eval`'s matched SBR
+proxy open (`proxy_open_home_spread` from the preserved
+`artifacts/sbr_era_opener_eval/20260819T233013Z/scored.parquet`, season<=2019,
+already schedule-matched by that prior session) instead of `tue_open_home_spread`.
+The 2020-2025 rows are untouched (still the served `build_fit_population`
+output).
+
+**Reproduction check (measured this run)**: ran the same
+`_walk_forward_discrete_open` on the 2020-2025 games using their REAL archived
+`tue_open_home_spread` (sourced from the served `per_game.parquet` at
+`artifacts/opener_evaluation/20260923T172849Z/`, `feature_table_sha256`
+confirmed byte-identical to `data/processed/game_features_weak_stack.parquet`
+via direct sha256 check) and compared to the served
+`home_cover_probability_at_open` column: **1,537/1,537 games compared, max
+abs diff 0.0030, mean abs diff 0.000024** -- effectively exact, the residual
+is floating-point/solver-order noise, not a logic or data-source mismatch.
+Trusted before applying the same function to 2011-2019.
+
+**Sanity look re-run (reported, not recorded)**, same four-term ridge-logit
+LOSO as Unit 2, now on the discrete-read population:
+- Extended 2011-2025 LOSO, overall: 53.40% (n=3,734).
+- Extended 2011-2025 LOSO, graded ONLY on 2020-2025 held-out folds: **56.89%**
+  (n=1,503).
+- Served-equivalent (2020-2025-only training/LOSO): **57.15%** (n=1,503,
+  unchanged from Unit 2, since 2020-2025 rows are identical).
+Adding the 2,231 pre-2020 discrete-read games to training reads **-0.26 pts**
+on the identical 2020-2025 held-out games vs training on 2020-2025 alone --
+still a wash within noise (Unit 2's smooth-read version read -0.46 pts; the
+discrete read moves the wash by 0.2 pts, same conclusion: no resolved gain or
+loss at this game count). No registry write; this is a look, not a closed
+signal.
+
+If a future unit wants to go further: decide whether to promote this
+population as the standing MOD-20/underpowered-signal input (currently still
+a challenger/sanity artifact, never served), or extend `market_move` to
+pre-2020 (the one served term still 0/unavailable for all 2,231 sbr_proxy
+rows, flagged unresolved in Unit 2's Open, unchanged by this unit).
 
 ## Open
 - SBR archive ceiling is season 2021-22 (0 rows beyond); 2007-2008 has zero
@@ -158,10 +203,13 @@ conclusion Unit 1 already reached for the harder version of this ask.
   transcription remains genuinely unknown (SBR publishes no provenance
   mechanism) — a residual risk any future extension inherits, not resolved
   here.
-- Unit 2's 2011-2019 `model_logit` is the SMOOTH margin-model probability
-  (pre-dates the discrete lattice), not `BASE_PROBABILITY_POLICY`; fine for
-  this challenger/sanity artifact (never served), not fine to promote toward
-  serving without rebuilding at the discrete read (see Next).
+- RESOLVED by Unit 3: 2011-2019 `model_logit` is now the discrete
+  `BASE_PROBABILITY_POLICY` read (`artifacts/extended_fit_population/
+  20260923T205910Z/`), not the smooth Unit 2 proxy. Still a challenger/sanity
+  artifact, never served -- promotion is a separate future decision.
+- `market_move` is still 0/unavailable for all 2,231 pre-2020 rows in both
+  the smooth and discrete populations (no pre-2020 sharp-book archive exists
+  anywhere in this repo); unresolved, not attempted by Unit 3.
 - `scripts/sbr_era_opener_eval.py` / `scripts/proxy_opener_replication.py`
   no longer exist in the tracked tree (removed in the 2026-09-10 repository
   cut, `b7ed31d`); only their artifact outputs survive. A future discrete

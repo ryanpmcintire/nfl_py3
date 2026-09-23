@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-23T20:56:55.903383+00:00`
+Refreshed at: `2026-09-23T21:01:07.415766+00:00`
 
 ## Start here
 
@@ -21,13 +21,16 @@ Refreshed at: `2026-09-23T20:56:55.903383+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `c9674d9e9f91` — Build the 2011-2025 fit population; record PER-10 and nominee-count audits
-- Pending change set: 7 paths
-  - `M  docs/lanes/lead59-archive-battery.md`
-  - `M  registry/weak_signals.json`
-  - `A  scripts/lead59_type_trait_bins.py`
+- Baseline commit: `93ba72d163f9` — LEAD-59: referee type-trait bins as fitted terms, both unresolved
+- Pending change set: 10 paths
+  - ` M docs/lanes/README.md`
+  - ` M docs/lanes/injury-scenario-producer.md`
+  - `M  docs/lanes/opener-population-backfill.md`
+  - `A  scripts/extended_fit_population_discrete.py`
   - ` M src/nfl_ats/market_data.py`
+  - `?? docs/lanes/total-conditioned-lattice.md`
   - `?? docs/lanes/tuesday-terms-line-move.md`
+  - `?? scripts/injury_value_margin_map.py`
   - `?? scripts/total_conditioned_lattice.py`
   - `?? scripts/tuesday_terms_line_move.py`
 
