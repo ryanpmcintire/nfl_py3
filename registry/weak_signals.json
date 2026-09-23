@@ -51739,6 +51739,34 @@
       "source": "artifacts/market_move_decomposition/20260923T214102Z/metadata.json",
       "standard_error": null
     },
+    "market_move_decomposition_e_all_books_median_active_window": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval [-0.59,+0.33] crosses zero; Brier and log loss favor served (P+ 0.25, 0.26); direction opposite the legacy-window all-books arm",
+      "closing_ground": null,
+      "description": "All 12 tracked books' median move over the active Sunday-inclusive window (leader_median_through_sunday_prekick_v1) vs the served 3-leader-book median, four-term fit LOSO 2020-2025; parity with build_fit_population exact (0.0 over 799 games); decisive 6-8 on 14",
+      "effect": -0.13,
+      "effect_units": "accuracy_points",
+      "family": "market_move_decomposition_v1",
+      "interval": [
+        -0.59,
+        0.33
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Using all tracked sportsbooks instead of the three leading books, on the window the live model uses, did not beat the served line-move signal.",
+      "probability_positive": 0.2215,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/market_move_decomposition/20260923T214756Z/metadata.json",
+      "standard_error": null
+    },
     "market_updated_model__c1_vs_c0": {
       "category": "market",
       "classification": "unresolved_below_power",

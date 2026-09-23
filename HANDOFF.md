@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-23T21:47:41.976205+00:00`
+Refreshed at: `2026-09-23T21:50:38.377036+00:00`
 
 ## Start here
 
@@ -21,11 +21,11 @@ Refreshed at: `2026-09-23T21:47:41.976205+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `ae479c8275fc` — PER-10 unit 5: injury scenario mixture graded 2020-2024, unresolved
+- Baseline commit: `b49cb76793eb` — Line-move yardstick resolves effects 7-18x smaller than accuracy; adopt it first for Tuesday terms
 - Pending change set: 3 paths
-  - `M  docs/lanes/positive-control-power.md`
-  - `A  scripts/line_move_power.py`
-  - `?? scripts/market_move_all_books_active.py`
+  - `M  docs/lanes/market-move-decomposition.md`
+  - `M  registry/weak_signals.json`
+  - `A  scripts/market_move_all_books_active.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

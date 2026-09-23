@@ -71,6 +71,104 @@ LOSO by season 2020-2025, week-blocked bootstrap (2000 draws,
 `probability_positive`). Family name for `weak-signals`:
 `market_move_decomposition`.
 
+## Unit 3 (this session, 2026-09-23): all-books median on the ACTIVE
+Sunday-inclusive window
+
+**Note on the stale text below:** the "mid-fix" narrative in the old State
+section (and the pre-fix 20260923T212214Z numbers) is leftover prose from
+before commit `6533e24`; registry/weak_signals.json confirms **Unit 1's five
+arms ARE already recorded** (`unresolved_below_power`, all-books-median arm
+effect +0.399 pts, `probability_positive` 0.8985 — matches the +0.40 [-0.13,
++1.00] P+0.90 figure this lane's brief already cites). Not rewriting that
+section; treat the registry as ground truth over the prose below it.
+
+**Scope**: the served fit's active pick probability
+(`artifacts/active_pick_probability.json`) uses
+`market_move_feature_version = leader_median_through_sunday_prekick_v1`
+(`MARKET_MOVE_FEATURE_SUNDAY`), which Unit 1 did not test — Unit 1 compared
+against the LEGACY (`leader_median_pre_sunday_v1`, `include_sunday=False`)
+construction only. `_market_move_table`
+(`pick_probability_fit.py:122-153`) does not compute the Sunday version live;
+for `MARKET_MOVE_FEATURE_SUNDAY` it reads the frozen
+`artifacts/sunday_market_probability/20260920_fixed/market_move.parquet`
+verbatim (sha256-checked). That file was built by
+`scripts/sunday_market_probability_eval.py` from
+`artifacts/sharp_book_weighted_movement/spread_quotes.parquet`
+(`decision_label == "intraday_hourly"`, seasons 2023-2025 only, 799 games),
+via a bespoke `sunday_move()` window — LEADER_BOOKS only, Wednesday to
+`min(kickoff, Sunday 12:45pm ET)` — used ONLY where the game was already
+`market_move_available` under the legacy construction AND the legacy
+reconstruction matched the population's stored legacy value within 1e-9
+(`eligible`); otherwise the legacy value is carried through unchanged. This
+hybrid, not a clean `sharp_book_movement_features(..., include_sunday=True)`
+call, is what `build_fit_population(market_move_feature_version=
+leader_median_through_sunday_prekick_v1)` actually returns today. (Calling
+the real `sharp_book_movement_features(..., include_sunday=True)` on the
+OTHER frozen cache from Unit 1, `artifacts/experiments/sharp_book_movement/
+quotes.parquet`, would return all-zero moves for every game: that cache has
+no `snapshot_timestamp_utc`, and `include_sunday=True` makes
+`snapshot_timestamp_utc < cutoff_utc` a mandatory filter term — NaT compares
+False everywhere, so eligible quotes drop to zero. This is a live
+train/serve note, not this unit's concern.)
+
+**Script**: `scripts/market_move_all_books_active.py` (new, imports shared
+`_score_arm`/`_loso_predict`/`_week_blocked_bootstrap` from
+`market_move_decomposition.py` as `mmd`). `ruff check` clean (no `--fix`
+used after the initial import-order pass). Ran once in the foreground:
+`.tools/uv.exe run --no-sync python scripts/market_move_all_books_active.py`
+→ `artifacts/market_move_decomposition/20260923T214756Z/metadata.json`.
+
+**Parity (measured)**: reconstructed the active version from raw quotes
+(replicating `sunday_move()` plus the legacy-eligibility blend) and compared
+against `build_fit_population(market_move_feature_version=
+leader_median_through_sunday_prekick_v1)`'s `market_move_toward_home` column,
+799 exposed games: **max_abs_diff_points = 0.0, mean_abs_diff_points = 0.0**
+(exact). Reconstruction confirmed correct before grading, per the task's
+requirement.
+
+**Arm `e_all_books_median_active_window`** (12-book median, same
+Wednesday-to-`min(kickoff, Sun 12:45pm ET)` window/eligibility as the active
+version, `MOVE_AVAILABLE` = has-a-value under this window for any game, not
+gated by legacy exposure) vs served (active, 3-leader-book), four-term fit,
+LOSO 2020-2025, 1503 games, week-blocked bootstrap (2000 draws):
+- Accuracy: arm 57.29% (861-642) vs served 57.42% (863-640); paired delta
+  **-0.133 accuracy points, 95% CI [-0.59, +0.33], probability_positive =
+  0.2215**.
+- Decisive games (14 where arm and served disagree): arm 6-8, served 8-6.
+- Brier: served lower (arm-minus-served comparison via `served-arm` = -0.00016
+  [-0.00061, +0.00028], P+ 0.248, i.e. served favored).
+- Log loss: served lower likewise (-0.00032 [-0.00125, +0.00059], P+ 0.2575).
+
+**Implication for the served move**: on the window the model already serves
+(Sunday-inclusive), switching from 3 leader books to all 12 books does NOT
+help — direction is opposite Unit 1's legacy-window all-books result
+(+0.40 pts, P+0.90 there vs -0.13 pts, P+0.22 here). The interval spans zero
+both ways (not wrong-sign-resolved), so this closes nothing per AGENTS.md;
+classification is `unresolved_below_power`. Read together with Unit 1: the
+all-books-median edge Unit 1 found appears specific to the legacy
+(Sunday-excluded) window, not a property of "more books" in general — worth
+naming as a caveat if Unit 1's finding is ever proposed for serving.
+
+**Draft record command (root runs)**:
+```
+nfl-ats weak-signals record \
+  --family market_move_decomposition \
+  --name e_all_books_median_active_window \
+  --description "All 12 tracked books' median spread-line move over the ACTIVE Sunday-inclusive window (leader_median_through_sunday_prekick_v1: Wed-open through min(kickoff, Sun 12:45pm ET), same window/eligibility build_fit_population uses for the served active version) vs the served 3-leader-book median, four-term fit LOSO 2020-2025, 1503 games. Reconstruction parity vs build_fit_population(market_move_feature_version=leader_median_through_sunday_prekick_v1): max/mean abs diff 0.0 over 799 exposed games. Decisive record: arm 6-8 vs served 8-6 on 14 decisive games." \
+  --source artifacts/market_move_decomposition/20260923T214756Z/metadata.json \
+  --effect -0.13 \
+  --effect-units accuracy_points \
+  --interval-low -0.59 \
+  --interval-high 0.33 \
+  --probability-positive 0.2215 \
+  --sample-games 1503 \
+  --classification unresolved_below_power \
+  --classification-evidence "interval crosses zero [-0.59,+0.33]; not wrong-sign-resolved; no positive control run at this effect size" \
+  --category market \
+  --plain-summary "Using all 12 tracked sportsbooks instead of just the 3 leader books, on the same Sunday-inclusive window the active model already serves, did not beat the leader-book version - the estimate is slightly negative and the interval straddles zero." \
+  --notes "Split-half reliability not measured (same gap as Unit 1's five arms). Brier improvement -0.00016 [-0.00061,+0.00028] P+ 0.248; log-loss improvement -0.00032 [-0.00125,+0.00059] P+ 0.2575, both favoring served. Direction opposite Unit 1's legacy-window all-books result (+0.40 pts, P+0.90) - the all-books edge looks specific to the Sunday-excluded window."
+```
+
 ## State (mid-fix — script edited but NOT rerun; do not trust the 20260923T212214Z
 numbers below, they are the pre-fix run kept only for reference)
 
@@ -142,63 +240,38 @@ deliberately so nobody records stale numbers.
 
 ## Next
 
-1. **Finish ruff cleanup first.** Run
-   `uv run --no-sync ruff check scripts/market_move_decomposition.py` (or
-   `.tools/uv.exe run --no-sync ruff check scripts/market_move_decomposition.py`
-   on Windows). As of this handoff it likely still flags: the
-   `"true_function_parity_check": {...}` dict (3 long lines: n_games_compared/
-   max_abs_diff_points/mean_abs_diff_points/note — wrap the same way the
-   `parity_check` dict just above it was already wrapped, ternaries in
-   parens, note string split into a tuple of literals) and the
-   `(out_dir / "metadata.json").write_text(json.dumps(payload, indent=2,
-   default=str), encoding="utf-8")` line (~104 chars, split the call across
-   lines). Iterate `ruff check --fix` + manual wraps to 0 errors. No `#`
-   comments anywhere (repo-wide rule).
-2. **Run the script once**: `.tools/uv.exe run --no-sync python
-   scripts/market_move_decomposition.py` (Windows) from `F:\Repos\nfl_py3`.
-   Read the new `artifacts/market_move_decomposition/<run_id>/metadata.json`.
-   Check `parity_check.max_abs_diff_points`, `.mean_abs_diff_points`,
-   `.n_games_off_gt_0_25_points`, and `true_function_parity_check.max_abs_diff_points`
-   (should be exactly 0 or within float noise, since it calls the production
-   function verbatim on the frozen cache — if this one alone is not ~0, the
-   archived `sharp_weighted_follow/20260909T233611Z/per_game.parquet` was
-   built from different source files than the currently-committed frozen
-   cache; compare against the sha256 values recorded in
-   `docs/sharp_weighted_follow.md` before concluding anything).
-3. **If both parity checks are ~0** (expected): pull the 5 arms' `arm_accuracy`,
-   `served_accuracy`, `arm_brier`/`served_brier`, `arm_logloss`/`served_logloss`,
-   `n_decisive`, `arm_decisive_record`/`served_decisive_record`, and the three
-   `*_bootstrap` blocks (`estimate`/`lower`/`upper`/`probability_positive`)
-   from the new metadata.json, and REPLACE the results table and all five
-   `nfl-ats weak-signals record` commands below with the new numbers (same
-   format as the deleted pre-fix table: effect units `accuracy_points` in
-   points not fractions, `--category market`, `--plain-summary`, decisive
-   record in `--description`; real flags per last session's `--help` check:
-   `--name --description --source --effect --effect-units --classification
-   --interval-low --interval-high --probability-positive --sample-games
-   --reliability --family --classification-evidence --plain-summary
-   --category --notes` — no `--sample-blocks`, `--signal-id`,
-   `--n-decisive`, or `--decisive-record` flags exist). Classification stays
-   `unresolved_below_power` unless an interval now sits entirely on one side
-   of zero (check freshly — do not assume the old verdict carries over
-   unchanged). Do not rerun the arms a second time after seeing numbers
-   (predeclared, single-run discipline, matches this family's existing
-   convention).
-4. **If parity is not ~0 after the fix**: name exactly which of the two
-   checks failed and why (see Next item 2's diagnostic branch), and mark all
-   five arms not recordable — do not record approximate numbers, per the
-   original task's fallback instruction.
-5. Only after every arm is (re-)recorded, note for the root/owner: given
-   every arm underperformed the served construction on accuracy and decisive
-   record in the pre-fix run, the working expectation is the fix moves point
-   estimates but is unlikely to flip the direction — confirm this expectation
-   against the new numbers rather than assuming it.
+1. **[SUPERSEDED — done]** Items 1-5 below this line (ruff cleanup, rerun,
+   pull numbers, record 5 arms) describe Unit 1 and are already complete:
+   `registry/weak_signals.json` holds all 5 `market_move_decomposition` arms
+   (`unresolved_below_power`, all-books-median effect +0.399 pts P+ 0.8985,
+   matching this lane's own Goal/brief figures), confirmed by this session
+   via direct registry read. Ignore items 2-5's instructions; they are kept
+   only as a record of what Unit 1 did. Do not rerun Unit 1's arms.
+2. **Root: run the Unit 3 record command** printed in the "Unit 3" section
+   above (`e_all_books_median_active_window`, effect -0.13 accuracy points
+   [-0.59, +0.33], P+ 0.2215, source
+   `artifacts/market_move_decomposition/20260923T214756Z/metadata.json`).
+   That is the only outstanding `weak-signals record` call in this lane.
+3. Optional hygiene, non-blocking: the old "State"/"Tried" prose below (the
+   "mid-fix... NOT DONE" text, pre-fix 20260923T212214Z run) is stale —
+   superseded by the Unit 3 section's note and by the registry. Could be
+   trimmed in a future pass; not required before closing this lane.
+4. If a future unit wants to reconcile the train/serve mismatch noted in
+   Unit 3 (the active feature version's frozen training data uses a
+   Wed-to-Sun-12:45pm-ET window with a legacy-exposure fallback, while live
+   serving via `market_move_toward_home()` calls
+   `sharp_book_movement_features(..., include_sunday=True)` with cutoff =
+   kickoff and a `snapshot_timestamp_utc` requirement) — flag it as a new,
+   separate predeclared look; it is a distinct question from Unit 3's
+   all-books-vs-leader-books comparison.
 
 ## Open
 
-- No `weak-signals record` command has been run yet by any subagent in this
-  lane (task scope: draft/verify commands, root runs them).
-  `--reliability` (split-half) is unmeasured for all five arms; AGENTS.md
+- Unit 3's `e_all_books_median_active_window` arm has not been recorded yet
+  (command is in Next item 2; root runs it). Unit 1's five arms ARE
+  recorded — see Next item 1.
+  `--reliability` (split-half) is unmeasured for all five Unit-1 arms AND
+  for the Unit 3 arm; AGENTS.md
   marks it decisive for later adjudication — the root should add it or record
   `--notes` saying it is missing.
 - The diff-then-sum-per-quote-update method production actually uses (see
