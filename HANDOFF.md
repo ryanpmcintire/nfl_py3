@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-23T21:07:16.768588+00:00`
+Refreshed at: `2026-09-23T21:09:04.260943+00:00`
 
 ## Start here
 
@@ -21,19 +21,17 @@ Refreshed at: `2026-09-23T21:07:16.768588+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `6ac6a2eb4acb` — Keep every fresh book in the current Sunday line; fit injury value to margin points
-- Pending change set: 11 paths
-  - `M  docs/lanes/README.md`
-  - `RM docs/lanes/done/opener-error-transfer.md -> docs/lanes/opener-error-transfer.md`
-  - `A  docs/lanes/total-conditioned-lattice.md`
+- Baseline commit: `870c004e6d54` — Total-conditioned key-number lattice: better log loss and push calibration, unresolved
+- Pending change set: 9 paths
+  - `A  docs/lanes/extended-population-regrade.md`
+  - ` M docs/lanes/opener-error-transfer.md`
   - `M  registry/weak_signals.json`
-  - `A  scripts/total_conditioned_lattice.py`
-  - `A  scripts/total_conditioned_lattice_intervals.py`
+  - `A  scripts/extended_population_regrade.py`
   - `?? docs/lanes/base-model-recency.md`
-  - `?? docs/lanes/extended-population-regrade.md`
+  - `?? docs/lanes/fit-ridge-derivation.md`
   - `?? scripts/base_model_recency.py`
-  - `?? scripts/extended_population_regrade.py`
   - `?? scripts/fit_ridge_derivation.py`
+  - `?? scripts/opener_error_transfer_unit3.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

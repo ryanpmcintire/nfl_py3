@@ -24025,6 +24025,90 @@
       "source": "artifacts/every_metric/20260916T152725Z",
       "standard_error": 0.0008564761876496957
     },
+    "extended_population_composition_flags_separate": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "2020-2025-only held-out subgrade reads -1.863 pts, CI [-3.955,0.129], P+ 0.031 -- close to but not fully on the negative side (upper bound +0.129), so wrong_sign_resolved's whole-interval bar is not met; pooling in the 2011-2019 games washes the negative read down to -0.214, P+ 0.378",
+      "closing_ground": null,
+      "description": "6 composition members (coach/division/arrests/bye/protection/tank_zone; cold_visitor dropped, no pre-2020 coverage) entered separately instead of summed, 2011-2025 fit population (3,734 games, 15-season LOSO), one joint look",
+      "effect": -0.214,
+      "effect_units": "accuracy_points",
+      "family": "extended_population_regrade_2011_2025",
+      "interval": [
+        -1.625,
+        1.175
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Letting the model weigh each of six situational flags on its own, instead of adding them into one combined score, made no reliable difference across 15 years of games, though the newest six years alone still lean slightly worse.",
+      "probability_positive": 0.378,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 260,
+      "sample_games": 3734,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/extended_population_regrade/20260923T210646Z/summary.json",
+      "standard_error": 0.707
+    },
+    "extended_population_reddit_home_comment_ratio": {
+      "category": "attention",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Pooled 15-season effect is negative (P+ 0.228) while the 2020-2025-only held-out subgrade is positive (+0.133 pts, P+ 0.672) -- sign is not stable across grading slices, no resolution either way",
+      "closing_ground": null,
+      "description": "reddit_home_comment_ratio_elevated added as a 5th fitted term, 2011-2025 fit population (3,734 games, 15-season LOSO)",
+      "effect": -0.268,
+      "effect_units": "accuracy_points",
+      "family": "extended_population_regrade_2011_2025",
+      "interval": [
+        -1.002,
+        0.396
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Adding how lopsided the home team's Reddit comment traffic is as a fifth input made no reliable difference, and it even flipped direction depending on which years were graded.",
+      "probability_positive": 0.228,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 260,
+      "sample_games": 3734,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/extended_population_regrade/20260923T210646Z/summary.json",
+      "standard_error": 0.348
+    },
+    "extended_population_week_gated_protection_flag_sum": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "CI crosses zero on both the pooled 15-season grade and the 2020-2025-only held-out subgrade (-1.00 pts, CI [-2.32,0.33], P+ 0.070); 2.5x the games did not resolve LEAD-65's prior below-power read",
+      "closing_ground": null,
+      "description": "Week<=4-gated protection-mismatch flag sum vs served composition_flag_sum, 2011-2025 fit population (3,734 games, 15-season LOSO)",
+      "effect": -0.08,
+      "effect_units": "accuracy_points",
+      "family": "extended_population_regrade_2011_2025",
+      "interval": [
+        -0.966,
+        0.899
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Limiting the protection-mismatch flag to only count in the first month of a season, instead of all season, made no measurable difference once the model saw 15 years of games instead of 6.",
+      "probability_positive": 0.434,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 260,
+      "sample_games": 3734,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/extended_population_regrade/20260923T210646Z/summary.json",
+      "standard_error": 0.487
+    },
     "ffc_adp_cellA_highadp_underdog_back_ppr_w14": {
       "category": "attention",
       "classification": "unresolved_below_power",
