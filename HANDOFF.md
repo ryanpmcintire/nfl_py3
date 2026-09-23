@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-23T22:59:52.687145+00:00`
+Refreshed at: `2026-09-23T23:00:06.105076+00:00`
 
 ## Start here
 
@@ -21,10 +21,9 @@ Refreshed at: `2026-09-23T22:59:52.687145+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `d39e0971f0a5` — Books now says the line is not public instead of No quote
-- Pending change set: 2 paths
-  - `M  docs/model.html`
-  - `M  src/nfl_ats/dashboard/findings_content.py`
+- Baseline commit: `3499a7ea6b6c` — Give the total-conditioned lattice challenger a reader-facing name
+- Pending change set: 1 paths
+  - `M  docs/lanes/free-odds-sources.md`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

@@ -25,6 +25,8 @@ Replace the dead paid Odds API with current free NFL spreads for private persona
 
 ## Next
 
+- 2026-09-23 root: Books now reads "No public line" with an explanation (d39e097). Only publishable current-line sources are the_odds_api (key deactivated) and espn_scoreboard_pickcenter (HTTP 403, jobs disabled by policy); Bovada and Odds Gap are private_research_only in config/source_policies.json. A number returns to the board only when a publishable source is live.
+
 - 2026-09-23 18:55 ET root: capture daemon restarted (new PIDs 21792/29628, 181 enabled jobs); odds_private_wed/fri/sat are live. Nothing pending on the owner.
 
 - Root: restart the capture scheduler daemon so the new `odds_private_wed`/
