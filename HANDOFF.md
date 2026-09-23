@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-23T21:01:07.415766+00:00`
+Refreshed at: `2026-09-23T21:02:26.434549+00:00`
 
 ## Start here
 
@@ -21,18 +21,18 @@ Refreshed at: `2026-09-23T21:01:07.415766+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `93ba72d163f9` — LEAD-59: referee type-trait bins as fitted terms, both unresolved
+- Baseline commit: `3f24ebf59209` — Rebuild 2011-2019 fit population with the served discrete read
 - Pending change set: 10 paths
   - ` M docs/lanes/README.md`
+  - ` M docs/lanes/free-odds-sources.md`
   - ` M docs/lanes/injury-scenario-producer.md`
-  - `M  docs/lanes/opener-population-backfill.md`
-  - `A  scripts/extended_fit_population_discrete.py`
+  - `A  docs/lanes/tuesday-terms-line-move.md`
+  - `M  registry/weak_signals.json`
+  - `A  scripts/tuesday_terms_line_move.py`
   - ` M src/nfl_ats/market_data.py`
   - `?? docs/lanes/total-conditioned-lattice.md`
-  - `?? docs/lanes/tuesday-terms-line-move.md`
   - `?? scripts/injury_value_margin_map.py`
   - `?? scripts/total_conditioned_lattice.py`
-  - `?? scripts/tuesday_terms_line_move.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

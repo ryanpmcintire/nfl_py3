@@ -10472,6 +10472,34 @@
       "source": "docs/scaling_and_transfer.md (Transfer benchmark table, Group-of-Five walked forward 2018-2025)",
       "standard_error": null
     },
+    "cfb_transfer_logit_tuesday_line_move": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "College-transfer opener-error logit (opener_error_transfer_unit2.py) added to Tuesday-knowable base, LOSO 2020-2025, line-move yardstick",
+      "effect": 0.0143,
+      "effect_units": "ats_points",
+      "family": null,
+      "interval": [
+        -0.0249,
+        0.0714
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The CFB-trained opener-error transfer term leans positive on the line-move yardstick but the interval still crosses zero.",
+      "probability_positive": 0.663,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/tuesday_terms_line_move/20260923T205836Z/results.json",
+      "standard_error": null
+    },
     "cfb_travel_rest_eastbound_multizone": {
       "category": "schedule",
       "classification": "unresolved_below_power",
@@ -18855,6 +18883,62 @@
         2025
       ],
       "source": "artifacts/altitude_screen/20260821T182533Z/results.json",
+      "standard_error": null
+    },
+    "diff_divergence_tuesday_line_move": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "diff_divergence added to Tuesday-knowable base, LOSO 2020-2025, line-move yardstick",
+      "effect": -0.0206,
+      "effect_units": "ats_points",
+      "family": null,
+      "interval": [
+        -0.0586,
+        0.0113
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Lineup-rating divergence does not yet move the line toward the pick more than the base model does.",
+      "probability_positive": 0.1325,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/tuesday_terms_line_move/20260923T205836Z/results.json",
+      "standard_error": null
+    },
+    "diff_lineup_total_tuesday_line_move": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "diff_lineup_total added to Tuesday-knowable base (model_logit+composition_flag_sum), LOSO 2020-2025, graded on close-minus-open line move toward the pick",
+      "effect": -0.01,
+      "effect_units": "ats_points",
+      "family": null,
+      "interval": [
+        -0.0233,
+        0.0027
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Player-lineup-strength gap does not yet move the Tuesday-to-close line toward the pick more than the base model does.",
+      "probability_positive": 0.0555,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/tuesday_terms_line_move/20260923T205836Z/results.json",
       "standard_error": null
     },
     "displayed_confidence_brier_0_6p5_2020_2025": {
@@ -168444,6 +168528,34 @@
       "source": "artifacts/reddit_attention_opener_confirmation/20260902T173438Z/results.json",
       "standard_error": null
     },
+    "reddit_home_comment_ratio_elevated_tuesday_line_move": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Season-block interval [-0.0261,-0.0021] wholly below zero; week-block also wholly negative (P+ 0.018); accuracy companion wholly negative; decisive 4-14 on line move. Closes this Tuesday-base variant only; the four-term-base cell (pooled_signal_sixth_fit_vs_four_term) stays unresolved and the 2011-2025 regrade re-tests the term.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "reddit_home_comment_ratio_elevated added to the Tuesday-knowable base (model_logit+composition_flag_sum), LOSO 2020-2025, graded on close-minus-open line move toward the pick; accuracy companion -0.80 pts [-1.23,-0.39]",
+      "effect": -0.013,
+      "effect_units": "ats_points",
+      "family": "tuesday_terms_line_move_v1",
+      "interval": [
+        -0.0261,
+        -0.0021
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Adding fan-forum buzz to the Tuesday pick made the line move away from our picks, so this version is ruled out.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/tuesday_terms_line_move/20260923T205836Z/results.json",
+      "standard_error": null
+    },
     "reddit_home_spike_fade": {
       "category": "attention",
       "classification": "unresolved_below_power",
@@ -194488,6 +194600,34 @@
         2021
       ],
       "source": "artifacts/schedule_flag_on_production/week1_dog/20260905T040525Z/results.json",
+      "standard_error": null
+    },
+    "week_gated_protection_flag_sum_tuesday_line_move": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Protection-mismatch flag zeroed after week 4, added to Tuesday-knowable base, LOSO 2020-2025, line-move yardstick",
+      "effect": -0.0086,
+      "effect_units": "ats_points",
+      "family": null,
+      "interval": [
+        -0.032,
+        0.0045
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Gating the protection flag to weeks 1-4 does not yet move the line toward the pick more than the ungated base.",
+      "probability_positive": 0.3425,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/tuesday_terms_line_move/20260923T205836Z/results.json",
       "standard_error": null
     },
     "whole_number_line_model_diagnosis_v1_wn_d0_gap_off_pool_minus_half_2020_2025": {
