@@ -162,6 +162,18 @@ def summarize_predictions(predictions: pd.DataFrame) -> dict[str, Any]:
             if not paired.empty:
                 model_margin_errors = (paired.iloc[:, 0] - paired.iloc[:, 1]).abs()
 
+    line_move_values: pd.Series | None = None
+    line_move_pushes = 0
+    line_move_no_close = 0
+    if {"tue_open_home_spread", "close_home_spread", "pick"}.issubset(predictions.columns):
+        opener_line = pd.to_numeric(predictions["tue_open_home_spread"], errors="coerce")
+        close_line = pd.to_numeric(predictions["close_home_spread"], errors="coerce")
+        direction = predictions["pick"].map({"HOME": 1.0, "AWAY": -1.0})
+        raw_move = direction * (close_line - opener_line)
+        line_move_no_close = int(raw_move.isna().sum())
+        line_move_values = raw_move.dropna()
+        line_move_pushes = int((line_move_values == 0.0).sum())
+
     return {
         "games_scored": len(predictions),
         "games_evaluated": len(evaluated),
@@ -183,6 +195,16 @@ def summarize_predictions(predictions: pd.DataFrame) -> dict[str, Any]:
         ),
         "market_margin_mae": float(ats_margin.abs().mean()),
         "market_margin_rmse": float(np.sqrt(np.square(ats_margin).mean())),
+        "line_move_toward_pick_mean": (
+            float(line_move_values.mean())
+            if line_move_values is not None and len(line_move_values)
+            else None
+        ),
+        "line_move_toward_pick_games": (
+            int(line_move_values.size) if line_move_values is not None else 0
+        ),
+        "line_move_toward_pick_pushes": line_move_pushes,
+        "line_move_toward_pick_no_close": line_move_no_close,
         "bets": len(wagered),
         "bet_coverage": float(len(wagered) / len(predictions)),
         "wins": wins,

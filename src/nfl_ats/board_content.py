@@ -107,6 +107,7 @@ from nfl_ats.spread_explorer import (
     SpreadExplorerGameParams,
     compute_spread_explorer_params,
     load_feature_table_for_forecast,
+    spread_explorer_home_cover_probability,
     widget_home_cover_probability,
 )
 from nfl_ats.tiebreaker_history import settled_tiebreakers
@@ -2599,11 +2600,19 @@ def _build_cover_curve(
         pick_is_home = game.pick_team == game.home
         points = []
         for offset in _COVER_CURVE_FALLBACK_OFFSETS:
-            home_probability = widget_home_cover_probability(
-                params.card_line + offset, params.center, params.residual_mean, params.residual_std
-            )
-            if offset == 0.0 and params.key_line_pinned:
-                home_probability = params.card_home_cover_probability
+            if params.discrete_reader is not None:
+                home_probability = spread_explorer_home_cover_probability(
+                    params, params.card_line + offset
+                )
+            else:
+                home_probability = widget_home_cover_probability(
+                    params.card_line + offset,
+                    params.center,
+                    params.residual_mean,
+                    params.residual_std,
+                )
+                if offset == 0.0 and params.key_line_pinned:
+                    home_probability = params.card_home_cover_probability
             points.append(
                 CoverCurvePoint(
                     offset=offset,
@@ -2661,11 +2670,12 @@ def _flip_line(
             if not SPREAD_EXPLORER_MIN_LINE <= line <= SPREAD_EXPLORER_MAX_LINE:
                 continue
             raw_is_home = (
-                widget_home_cover_probability(
+                spread_explorer_home_cover_probability(params, line)
+                if params.discrete_reader is not None
+                else widget_home_cover_probability(
                     line, params.center, params.residual_mean, params.residual_std
                 )
-                >= 0.5
-            )
+            ) >= 0.5
             if played_is_home(raw_is_home, line) != pick_is_home:
                 return round(line, 1), False, "model"
         return None, True, None

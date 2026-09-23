@@ -54,7 +54,7 @@ BootstrapBlock = Literal["week", "season"]
 
 CACHE_DISABLED_ENV = "NFL_ATS_DISABLE_EVAL_CACHE"
 _PAIRING_CACHE_VERSION = "1"
-_OPENER_EVAL_CACHE_VERSION = "2-discrete-conditional"
+_OPENER_EVAL_CACHE_VERSION = "3-line-move-toward-pick"
 
 
 def evaluation_cache_root() -> Path | None:
@@ -2214,6 +2214,9 @@ def opener_pick_evaluation(
     result["open_move"] = result["close_home_spread"] - result["tue_open_home_spread"]
 
     result["pick_home_at_open"] = result["residual_at_open"].gt(0.0)
+    result["line_move_toward_pick"] = (
+        np.where(result["pick_home_at_open"], 1.0, -1.0) * result["open_move"]
+    )
     result["pick_home_at_close"] = result["residual_at_close"].gt(0.0)
     result["correct_at_open"] = pick_correct(result["pick_home_at_open"], result["margin_vs_open"])
     result["correct_at_close"] = pick_correct(
@@ -2257,6 +2260,7 @@ OPENER_EVALUATION_METRIC_COLUMNS: tuple[str, ...] = (
     "correct_at_close_probability_rule",
     "correct_at_open_probability_rule_raw",
     "correct_at_close_probability_rule_raw",
+    "line_move_toward_pick",
 )
 
 
@@ -2331,6 +2335,19 @@ def opener_evaluation_metrics(scored: pd.DataFrame) -> dict[str, float]:
                 ),
             }
         )
+    if "line_move_toward_pick" in scored.columns:
+        raw_move = pd.to_numeric(scored["line_move_toward_pick"], errors="coerce")
+        valid_move = raw_move.dropna()
+        metrics.update(
+            {
+                "line_move_toward_pick_mean": (
+                    float(valid_move.mean()) if len(valid_move) else float("nan")
+                ),
+                "line_move_toward_pick_games": int(valid_move.size),
+                "line_move_toward_pick_pushes": int((valid_move == 0.0).sum()),
+                "line_move_toward_pick_no_close": int(raw_move.isna().sum()),
+            }
+        )
     return metrics
 
 
@@ -2352,10 +2369,13 @@ def opener_evaluation_metric_draws(
     wanted = [*names]
     with_probability = set(probability_names).issubset(available)
     with_raw = set(raw_names).issubset(available)
+    with_line_move = "line_move_toward_pick" in available
     if with_probability:
         wanted.extend(probability_names)
     if with_raw:
         wanted.extend(raw_names)
+    if with_line_move:
+        wanted.append("line_move_toward_pick")
     columns: dict[str, npt.NDArray[np.float64]] = {}
     for name in wanted:
         series = scored[name]
@@ -2419,6 +2439,17 @@ def opener_evaluation_metric_draws(
                     "close_accuracy_probability_rule_raw": _compacted_mean(
                         close_raw[~np.isnan(close_raw)]
                     ),
+                }
+            )
+        if with_line_move:
+            line_move = columns["line_move_toward_pick"][positions]
+            line_move_valid = ~np.isnan(line_move)
+            metrics.update(
+                {
+                    "line_move_toward_pick_mean": _compacted_mean(line_move[line_move_valid]),
+                    "line_move_toward_pick_games": int(line_move_valid.sum()),
+                    "line_move_toward_pick_pushes": int((line_move[line_move_valid] == 0.0).sum()),
+                    "line_move_toward_pick_no_close": int((~line_move_valid).sum()),
                 }
             )
         return metrics

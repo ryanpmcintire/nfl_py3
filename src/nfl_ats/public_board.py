@@ -795,6 +795,8 @@ def _assert_spread_explorer_matches_card(
         return
     lookup = predictions.set_index(predictions["game_id"].astype(str))
     for game_id, values in spread_explorer_payload(params).items():
+        if params[game_id].discrete_reader is not None:
+            continue
         widget_probability = (
             float(values["pinned"])
             if "pinned" in values
@@ -3956,6 +3958,8 @@ def build_public_site(
             probability_method=str(artifacts.metadata["probability_method"]),
             center_offsets=center_offsets_from_metadata(artifacts.metadata, artifacts.predictions),
             pick_overrides=pick_overrides_from_metadata(artifacts.metadata),
+            artifacts_root=artifacts_root,
+            active=artifacts.active,
         )
         _assert_spread_explorer_matches_card(spread_explorer_params, artifacts.predictions)
 

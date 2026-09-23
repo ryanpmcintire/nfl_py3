@@ -14,7 +14,12 @@ from nfl_ats.calibration import smoothed_home_cover_probability
 from nfl_ats.data import DataContractError
 from nfl_ats.key_line_pick_read import apply_pick_overrides
 from nfl_ats.margin import _three_way_probabilities
-from nfl_ats.mass_preserving_lattice import DiscretePushReader, residual_location
+from nfl_ats.mass_preserving_lattice import (
+    BASE_PROBABILITY_POLICY,
+    DiscretePushReader,
+    fit_production_discrete_push_reader,
+    residual_location,
+)
 from nfl_ats.outcomes import fit_margin_models_for_week
 
 SPREAD_EXPLORER_MIN_LINE = -20.0
@@ -45,6 +50,47 @@ class SpreadExplorerGameParams:
     card_line: float
     card_home_cover_probability: float
     key_line_pinned: bool = False
+    discrete_reader: DiscretePushReader | None = None
+    discrete_point: float | None = None
+
+
+def _discrete_group_flag(group: pd.DataFrame) -> bool:
+
+    if "base_probability_policy" not in group.columns:
+        return False
+    flags = group["base_probability_policy"].astype(str) == BASE_PROBABILITY_POLICY
+    if bool(flags.any()) and not bool(flags.all()):
+        raise DataContractError(
+            "predictions mixes discrete-lattice and legacy probability policies within "
+            "one spread-explorer build -- refusing an inconsistent widget"
+        )
+    return bool(flags.all())
+
+
+def _rebuild_discrete_reader(
+    features: pd.DataFrame,
+    artifacts_root: Path | None,
+    active: Mapping[str, Any] | None,
+    *,
+    season: int,
+    week: int,
+) -> DiscretePushReader:
+
+    if artifacts_root is None:
+        raise DataContractError(
+            f"season {season} week {week} was served through the discrete lattice policy "
+            f"({BASE_PROBABILITY_POLICY}) but no artifacts_root was supplied to rebuild its "
+            "reader -- refusing to fall back to a Gaussian spread-explorer widget"
+        )
+    production = fit_production_discrete_push_reader(
+        features, artifacts_root, dict(active) if active else None, season=season, week=week
+    )
+    if production.reader is None:
+        raise DataContractError(
+            f"Could not rebuild the discrete lattice reader for season {season} week {week}: "
+            f"{production.error or 'no prior-game pool was available'}"
+        )
+    return production.reader
 
 
 def load_feature_table_for_forecast(metadata: Mapping[str, Any], data_root: Path) -> pd.DataFrame:
@@ -75,6 +121,8 @@ def compute_spread_explorer_params(
     probability_method: str = "gaussian",
     center_offsets: Mapping[str, float] | None = None,
     pick_overrides: Mapping[str, float] | None = None,
+    artifacts_root: Path | None = None,
+    active: Mapping[str, Any] | None = None,
 ) -> dict[str, SpreadExplorerGameParams]:
 
     if probability_method not in ("gaussian", "gaussian_median"):
@@ -133,15 +181,34 @@ def compute_spread_explorer_params(
                 dtype=float,
             )
         spread = aligned["spread_line"].to_numpy(dtype=float)
-
-        gaussian_check = smoothed_home_cover_probability(
-            model.residuals, centers, spread, method=probability_method
-        )
-        expected = apply_pick_overrides(gaussian_check, group_ids, pick_overrides)
         supplied = group["home_cover_probability"].to_numpy(dtype=float)
+
+        is_discrete = _discrete_group_flag(group)
+        reader: DiscretePushReader | None = None
+        points = centers
+        if is_discrete:
+            reader = _rebuild_discrete_reader(
+                features, artifacts_root, active, season=season, week=week
+            )
+            location = residual_location(model.residuals, probability_method)
+            points = centers + location
+            discrete_check = np.array(
+                [
+                    reader.read(float(line), float(point)).home_cover_probability
+                    for line, point in zip(spread, points, strict=True)
+                ],
+                dtype=float,
+            )
+            expected = apply_pick_overrides(discrete_check, group_ids, pick_overrides)
+        else:
+            gaussian_check = smoothed_home_cover_probability(
+                model.residuals, centers, spread, method=probability_method
+            )
+            expected = apply_pick_overrides(gaussian_check, group_ids, pick_overrides)
         if not np.allclose(expected, supplied, rtol=0.0, atol=1e-9):
+            policy_name = BASE_PROBABILITY_POLICY if is_discrete else "Gaussian"
             raise DataContractError(
-                f"Refit Gaussian probabilities for season {season} week {week} do not "
+                f"Refit {policy_name} probabilities for season {season} week {week} do not "
                 "reproduce the supplied card's home_cover_probability -- the feature "
                 "table or configuration has drifted from the one that produced this "
                 "card; refusing to build a spread-explorer widget that could disagree "
@@ -155,8 +222,8 @@ def compute_spread_explorer_params(
         )
         std = float(np.std(model.residuals, ddof=1))
         rows_by_id = {str(row["game_id"]): row for _, row in group.iterrows()}
-        for game_id, center, line, probability in zip(
-            group_ids, centers, spread, supplied, strict=True
+        for game_id, center, line, probability, point in zip(
+            group_ids, centers, spread, supplied, points, strict=True
         ):
             row = rows_by_id[game_id]
             params[game_id] = SpreadExplorerGameParams(
@@ -169,6 +236,8 @@ def compute_spread_explorer_params(
                 card_line=float(line),
                 card_home_cover_probability=float(probability),
                 key_line_pinned=bool(pick_overrides and game_id in pick_overrides),
+                discrete_reader=reader,
+                discrete_point=float(point) if is_discrete else None,
             )
     return params
 
@@ -196,6 +265,33 @@ def widget_home_cover_probability(line: float, center: float, mean: float, std: 
     z = (threshold - mean) / (std * math.sqrt(2.0))
     cdf = 0.5 * (1.0 + _erf_abramowitz_stegun(z))
     return 1.0 - cdf
+
+
+def spread_explorer_three_way_probability(
+    params: SpreadExplorerGameParams, line: float
+) -> tuple[float, float, float]:
+
+    if params.discrete_reader is not None and params.discrete_point is not None:
+        read = params.discrete_reader.read(
+            line, params.discrete_point, conditioning_line=params.card_line
+        )
+        if params.key_line_pinned and math.isclose(
+            line, params.card_line, rel_tol=0.0, abs_tol=1e-9
+        ):
+            pinned = params.card_home_cover_probability
+            return pinned, read.push, max(0.0, 1.0 - pinned - read.push)
+        return read.three_way()
+    home = widget_home_cover_probability(
+        line, params.center, params.residual_mean, params.residual_std
+    )
+    return home, 0.0, 1.0 - home
+
+
+def spread_explorer_home_cover_probability(params: SpreadExplorerGameParams, line: float) -> float:
+
+    cover, _push, loss = spread_explorer_three_way_probability(params, line)
+    total = cover + loss
+    return cover / total if total > 0 else 0.5
 
 
 def spread_explorer_payload(
@@ -245,6 +341,8 @@ def compute_spread_explorer_distribution(
     probability_method: str = "gaussian",
     center_offsets: Mapping[str, float] | None = None,
     pick_overrides: Mapping[str, float] | None = None,
+    artifacts_root: Path | None = None,
+    active: Mapping[str, Any] | None = None,
 ) -> SpreadExplorerGameDistribution:
 
     missing = sorted(_REQUIRED_PREDICTION_COLUMNS.difference(predictions.columns))
@@ -291,20 +389,30 @@ def compute_spread_explorer_distribution(
     line = float(target_rows["spread_line"].iloc[0])
     supplied = float(row["home_cover_probability"])
 
-    check = float(
-        smoothed_home_cover_probability(
-            model.residuals,
-            np.array([center]),
-            np.array([line]),
-            method=probability_method,  # type: ignore[arg-type]
-        )[0]
-    )
+    is_discrete = str(row.get("base_probability_policy", "")) == BASE_PROBABILITY_POLICY
+    if is_discrete:
+        reader = _rebuild_discrete_reader(
+            features, artifacts_root, active, season=season, week=week
+        )
+        point = center + residual_location(model.residuals, probability_method)
+        check = reader.read(line, point).home_cover_probability
+        policy_name = BASE_PROBABILITY_POLICY
+    else:
+        check = float(
+            smoothed_home_cover_probability(
+                model.residuals,
+                np.array([center]),
+                np.array([line]),
+                method=probability_method,  # type: ignore[arg-type]
+            )[0]
+        )
+        policy_name = repr(probability_method)
     pinned = bool(pick_overrides and str(game_id) in pick_overrides)
     if pinned:
         check = float(apply_pick_overrides([check], [str(game_id)], pick_overrides)[0])
     if not math.isclose(check, supplied, rel_tol=0.0, abs_tol=1e-9):
         raise DataContractError(
-            f"Refit {probability_method!r} probability for season {season} week {week} game "
+            f"Refit {policy_name} probability for season {season} week {week} game "
             f"{game_id!r} does not reproduce the supplied card's home_cover_probability -- the "
             "feature table or configuration has drifted from the one that produced this card; "
             "refusing to answer a spread query that could disagree with the published pick"
@@ -351,7 +459,9 @@ __all__ = [
     "compute_spread_explorer_distribution",
     "compute_spread_explorer_params",
     "load_feature_table_for_forecast",
+    "spread_explorer_home_cover_probability",
     "spread_explorer_payload",
     "spread_explorer_three_way",
+    "spread_explorer_three_way_probability",
     "widget_home_cover_probability",
 ]
