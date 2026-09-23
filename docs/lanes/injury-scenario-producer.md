@@ -287,3 +287,80 @@ already-computed numbers); only the script's style is unfinished.
    scenario-mixed vs served cover probability against actual results.
 5. Do not restore `injury_scenarios.py` into `src/` on the strength of
    this unit; it stays vendored in the research script only.
+
+## Unit 4 (2026-09-23, third session): historical outcomes table built, run once
+
+Built `scripts/injury_outcomes_table.py` (ruff clean). Reused existing
+production infrastructure rather than reimplementing: `nfl_ats.availability`
+already has `build_availability_outcomes`, `build_season_lagged_availability_rates`,
+`score_availability_rates`, `summarize_availability_scores` (previously called
+only from the orphaned `_cmd_build_learned_availability_features` CLI path,
+per `grep`; no consolidated historical output existed). Sources: latest
+consolidated player snapshot `data/players/raw/20260923T204548Z/`
+(injuries/rosters/snap_counts, via `latest_player_snapshot` +
+`load_player_snapshot`), games/kickoff from `data/processed/game_features.parquet`
+(2009-2026). Decision cutoff 24h before kickoff (same constant as the one
+existing caller). Rate scheme is **season-lagged / earlier-seasons-only**
+(expanding window, matches the task's "other/earlier seasons only" and the
+one existing served-feature caller), not a two-sided LOSO — this is a reuse
+choice, not a new design.
+
+Ran once for real: `.tools/uv.exe run python scripts/injury_outcomes_table.py`.
+Output table: `data/processed/injury_play_outcomes.parquet` (67,989 rows, 20
+columns: game_id, season, week, team, gsis_id, position, report_category,
+practice_category, position_group, played, unavailable, fixed_unavailability,
+observed_at_is_proxy, report_status, practice_status, decision_observed_at,
+offense_pct, defense_pct, st_pct, snap_share). Summary:
+`artifacts/injury_outcomes_table/20260923T211644Z/summary.json` +
+`cell_calibration.csv` in the same directory.
+
+**Coverage deviation from the literal ask, disclosed**: seasons **2013-2025**
+(13 seasons), not 2010-2025. The injuries snapshot itself goes back to 2009,
+but `build_availability_outcomes` inner-joins to snap-count seasons to know
+whether a player actually played, and nflverse snap-count data starts 2013
+(confirmed: `snap_counts.parquet` season min is 2013) — this is a source-data
+floor, not a code choice. 3,406 games, 5,495 unique players. 63,077 of 67,989
+rows are scorable against a fitted rate (2013 itself has no earlier season to
+train on and is dropped from scoring, 4,912 rows, same expanding-window edge
+case the existing rate-fit code already handles).
+
+**Calibration, fitted (season-lagged) vs fallback (`fixed_unavailability`),
+63,077 scored player-games**: Brier 0.0867 (fitted) vs 0.0912 (fixed) —
+fitted is better overall. Classification accuracy 0.8827 (fitted) vs 0.8761
+(fixed). Biggest single-cell fix: `questionable`+`dnp` (2,701 obs) — fixed
+predicts 0.65 play probability, actual is 0.421 (fixed overpredicts playing
+by 23pp); fitted predicts 0.356, much closer. `questionable`+`limited`
+(10,437 obs) fixed 0.65 vs actual 0.681, fitted 0.678, also closer. Caveat,
+not hidden: in a few **sparse** cells fixed's hard 0/1 assignment beats
+fitted — e.g. `out`+`full` (n=200, actual play rate 0.0) fixed correctly
+predicts 0.0, fitted predicts 0.166; `out`+`none` (n=51, actual 0.0) fixed
+0.0, fitted 0.361. These are rare designation/practice combinations
+(player ruled out but reported full practice, or no practice status logged)
+where the season-lagged rate is noisy; full per-cell table is in
+`cell_calibration.csv`.
+
+## Next
+1. If the producer (`scripts/injury_scenario_producer.py`) is revisited, its
+   per-player `practice_severity()` ad hoc fallback (DNP=0.25, Limited=0.10,
+   the same values as `fixed_unavailability`'s practice-only branch) should
+   switch to `nfl_ats.availability.resolve_unavailability()` fed by
+   `build_season_lagged_availability_rates` fit on this unit's
+   `injury_play_outcomes.parquet` (keyed off `report_category`+
+   `practice_category`, optionally `position_group`) — `resolve_unavailability`
+   already falls back to `fixed_unavailability` when a season/cell has no
+   fitted rate, which is the safe integration path given the sparse-cell
+   caveat above (do not use the raw fitted rate unguarded on rare cells).
+   This also lets the producer use `report_category` (Q/D/O) once a season
+   is far enough along to have it, not just practice status.
+2. This same table now closes the last remaining Unit-3 gap ("no
+   consolidated historical outcomes to grade the scenario mixture itself
+   against"): `injury_play_outcomes.parquet` spans 2013-2025 / 3,406 games
+   and can be joined against `game_features_player_value.parquet`'s
+   point-in-time population (2020-2024 intersection, per Unit 2) to grade
+   scenario-mixed vs served cover probability on real outcomes, not just the
+   margin-slope point estimate.
+3. Not yet run: no `weak-signals record` for this unit — it is an outcomes
+   table + calibration measurement of an auxiliary rate fit, not itself a
+   pick-probability signal decision. If a fitted rate from this table is
+   later wired into a served or research pick path, that wiring is the
+   decision point requiring a record.
