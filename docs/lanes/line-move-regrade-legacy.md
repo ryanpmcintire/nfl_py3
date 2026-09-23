@@ -4,27 +4,34 @@
 Re-grade Tuesday-knowable legacy registry families on the line-move yardstick
 (finer than accuracy per docs/lanes/positive-control-power.md).
 
-## State (2026-09-23, session 4 - hit 50-tool-call cap mid-edit, batch 2 fix
-DONE but unverified, batch 3 selection DONE but code NOT written)
+## State (2026-09-23, session 5 - all code written, ruff clean, both runs
+executed successfully, record commands drafted, NOT run)
 
-**division_revenge_tilt bug FOUND AND FIXED (root cause, not yet re-run).**
-`division_revenge_side_by_game(schedule)` returns its own `season` column.
-`add_division_revenge_term` merged the WHOLE flags frame (incl. `season`) onto
-`population` (which already has `season`), so pandas silently created
-`season_x`/`season_y` instead of erroring at merge time; the `KeyError:
-'season'` fired later inside `loso()`/`variant_report` when they referenced
-`frame["season"]`. Fix (APPLIED, on disk now) in
-`scripts/line_move_regrade_legacy.py`'s `add_division_revenge_term`: changed
-`flags = flags.drop_duplicates(subset="game_id")` to
-`flags = flags.drop_duplicates(subset="game_id")[["game_id", "revenge_home", "revenge_away"]]`
-— select only needed columns before merge, same pattern every other builder
-in the file already uses. **Not yet run to confirm** — no mechanism exists
-yet to grade it alone (see Next step 5).
+**Session 5 summary**: finished the 3 pending imports (rain_on_grass_dog_challenger,
+schedule_flag_features DOME_SHOOTOUT_COLUMN/default_opener_lines/
+derive_dome_shootout_favorite_features, transaction_flag_features
+SUSPENSION_RETURN_RUST_COLUMN/attach_suspension_return_rust_features), added
+the 4 batch-3 builder functions, `SELECTION_RULE_BATCH3`/`RATIO_TABLE_BATCH3`,
+`TERM_DECLARATIONS_BATCH3`, `--batch` now `choices=(1,2,3)`, added `--only`
+filter. `ruff check` (no --fix) passes clean. Ran
+`--batch 2 --only division_revenge_tilt` (confirms the session-4 merge fix —
+`error: null`) and `--batch 3` (all 4 terms `error: null`, 1503 paired_games
+each, matching base population). Results below. Record commands drafted at
+end of Next, NOT executed (no registry-write authorization given).
+
+**division_revenge_tilt bug FOUND, FIXED, AND CONFIRMED (session 5).** Root
+cause: `division_revenge_side_by_game(schedule)` returns its own `season`
+column; `add_division_revenge_term` merged the WHOLE flags frame (incl.
+`season`) onto `population` (which already has `season`), so pandas silently
+created `season_x`/`season_y` instead of erroring at merge time. Fix: select
+only `["game_id", "revenge_home", "revenge_away"]` before merging, same
+pattern every other builder in the file uses. `--batch 2 --only
+division_revenge_tilt` now runs with `error: null` — results in Results below.
 
 **Batch 3 candidate research DONE (re-derived full ranking from
 `registry/weak_signals.json`), only 4 of 8 confirmed live-buildable within
-this session's budget.** Full reasoning, ranks, and exclusions below in
-Tried. Do not re-derive; resume at Next.
+budget — all 4 coded and run in session 5.** Full reasoning, ranks, and
+exclusions below in Tried. Do not re-derive.
 
 ## Tried
 Unit 1/2 (roof_state, 8-term batch 1) and batch-1/2 selection derivations:
@@ -133,72 +140,65 @@ Tuesday-safe standalone builder already in `src/nfl_ats`:**
 Only 4 of the requested 8 confirmed within budget; ranks below coach_fade
 (<0.513) have not been examined at all this session.
 
-**Code state on disk right now (verify by reading before continuing):**
-- `add_division_revenge_term` fix: APPLIED.
-- `from nfl_ats.coach_fade_overlay import year_one_by_game` import: APPLIED
-  (inserted after the `bye_edge_fade_overlay` import, before
-  `from nfl_ats.data import DataContractError`).
-- A second Edit — adding `from nfl_ats.rain_on_grass_dog_challenger import
-  rain_on_grass_flag_by_game`; adding `default_opener_lines` and
-  `derive_dome_shootout_favorite_features` to the existing
-  `schedule_flag_features` import; adding `SUSPENSION_RETURN_RUST_COLUMN`
-  and `attach_suspension_return_rust_features` to the existing
-  `transaction_flag_features` import — was submitted but the tool-call cap's
-  PreToolUse hook blocked it before it ran. **Almost certainly NOT applied.**
-  Read the file first; do not blindly re-submit (risk of duplicate/malformed
-  edit if it partially landed).
-- NOT done at all yet: the 4 new `add_*_term` builder functions (bodies
-  fully specified above); `SELECTION_RULE_BATCH3` / `RATIO_TABLE_BATCH3`
-  constants; `TERM_DECLARATIONS_BATCH3` tuple; `--batch` argparse choices
-  still `(1, 2)` not `(1, 2, 3)`; no `--only <label>` filter flag exists yet
-  (needed to grade division_revenge_tilt alone within batch 2). Nothing run
-  this session — no new artifacts dir under
-  `artifacts/line_move_regrade_legacy/` from session 4.
+**Code state on disk right now**: all of the above is APPLIED and confirmed
+by a passing `ruff check` and two successful runs (session 5) — nothing
+pending from session 4's interrupted edit.
+
+## Results (session 5, measured this session)
+
+`division_revenge_tilt` (batch 2, merge-fix run,
+`artifacts/line_move_regrade_legacy/20260923T224035Z/results.json`, 1503 paired games):
+line-move mean **-0.0539 pts**, season-block interval **[-0.1149, -0.0118]**
+P+ **0.00**, week-block interval **[-0.1005, -0.0200]** P+ **0.00** — both
+block types entirely negative (accuracy companion -0.004 pts, P+ 0.1435).
+
+Batch 3 (`artifacts/line_move_regrade_legacy/20260923T224045Z/results.json`,
+1503 paired games each, all `error: null`):
+- `suspension_return_rust_on_production`: mean **+0.0077**, season
+  **[-0.0140, 0.0380]** P+ 0.648, week **[-0.0076, 0.0248]** P+ 0.808.
+- `rain_on_grass_dog_on_production`: mean **+0.0057**, season
+  **[-0.0038, 0.0159]** P+ 0.865, week **[-0.0027, 0.0168]** P+ 0.877.
+- `dome_shootout_favorite_on_production`: mean **-0.0060**, season
+  **[-0.0139, 0.0000]** P+ 0.0105, week **[-0.0162, 0.0020]** P+ 0.0755.
+- `coach_fade_on_production`: mean **-0.0156**, season **[-0.0201, -0.0119]**
+  P+ 0.00, week **[-0.0372, 0.0043]** P+ 0.0635 — season block wholly
+  negative but week block crosses zero, so this one does NOT meet the
+  wrong-sign-resolved bar on both block types; stays unresolved.
 
 ## Next
-1. Read `scripts/line_move_regrade_legacy.py` lines ~1-65 to see exactly
-   what landed from the interrupted second import Edit; apply whichever of
-   the three additions (rain_on_grass import; schedule_flag_features
-   `default_opener_lines`+`derive_dome_shootout_favorite_features`;
-   transaction_flag_features `SUSPENSION_RETURN_RUST_COLUMN`+
-   `attach_suspension_return_rust_features`) are missing — exact names given
-   above, alphabetical placement matches existing style.
-2. Add the 4 builder functions (specs above) after `add_division_revenge_term`,
-   before `def loso`.
-3. Add `SELECTION_RULE_BATCH3` (state the rule + every exclusion actually
-   applied, per Tried above) and:
-   `RATIO_TABLE_BATCH3 = (("suspension_return_rust_on_production", 0.572, "offfield"), ("rain_on_grass_dog_on_production", 0.567, "environment"), ("dome_shootout_favorite_on_production", 0.525, "schedule"), ("coach_fade_on_production", 0.520, "onfield"))`
-   (4 entries only — document why not 8) after `RATIO_TABLE_BATCH2`.
-4. Add `TERM_DECLARATIONS_BATCH3` (4 dicts: label/term_columns/builder)
-   after `TERM_DECLARATIONS_BATCH2`.
-5. Add a reusable way to grade one term alone: `parser.add_argument("--batch",
-   type=int, choices=(1,2,3), default=1)`; `parser.add_argument("--only",
-   type=str, default=None)`; after selecting `term_declarations` for the
-   batch, if `args.only`: `term_declarations = tuple(d for d in
-   term_declarations if d["label"] == args.only)`. Include `args.only` in
-   the `results["command"]` string.
-6. `.tools/uv.exe run ruff check scripts/line_move_regrade_legacy.py` (NO
-   --fix) until 0 errors — watch E501 on new multi-arg def lines (wrap onto
-   3 lines like existing batch-2 style) and I001 import order.
-7. Run division_revenge_tilt alone first (cheap, validates the fix):
-   `.tools/uv.exe run python scripts/line_move_regrade_legacy.py --batch 2 --only division_revenge_tilt`
-   foreground, timeout. Confirm `error` is null; read
-   `line_move_toward_pick_cell` / `accuracy_companion_cell`.
-8. Run batch 3: `.tools/uv.exe run python scripts/line_move_regrade_legacy.py --batch 3`
-   foreground, timeout (none of the 4 builders loop per-season like
-   `rookie_priors` did, should be comparable to batch 1's runtime; background
-   only if it actually exceeds ~2 minutes).
-9. Read both results.json. Report each term's `line_move_toward_pick_cell`
-   (mean_points, season_block_interval, season/week P+) and
-   `accuracy_companion_cell` decisive record. Draft (do not run)
-   `nfl-ats weak-signals record` commands per term (flag pattern: `--effect-units
-   ats_points --classification unresolved_below_power --league nfl
-   --season-start 2020 --season-end 2025 --sample-blocks 6 --family
-   line_move_regrade_legacy_v3 --category <per RATIO_TABLE_BATCH3>
-   --plain-summary "..."`). Do not run without orchestrator authorization.
-10. Report the open discrepancy (special_teams_return_top_quartile /
-    hc_year_one_fade ranking above 0.573 unexplained) to the orchestrator as
-    an explicit open item — do not resolve it unilaterally.
+
+- 2026-09-23 root: division revenge (b2) and batch 3 recorded (registry 7,057). Division revenge is a resolved wrong sign on both blockings (-0.054 [-0.115,-0.012]). coach_fade stays unresolved (season block negative, week block crosses zero). Batch 4 = special_teams_return_top_quartile and hc_year_one_fade (skipped by an unrecoverable ranking discrepancy). Draft commands below are history.
+1. **Orchestrator decision needed on `division_revenge_tilt`**: both season-
+   and week-block intervals are wholly negative (P+ 0.00 both). Per
+   AGENTS.md this is the shape of an admissible `wrong_sign_resolved` closing
+   ground, but naming the mechanism is a research call this session did not
+   make — draft below uses `unresolved_below_power` per the orchestrator's
+   given flag template; re-draft as `wrong_sign_resolved` with a named
+   mechanism and `--closing-ground` only if the orchestrator confirms.
+2. Draft `nfl-ats weak-signals record` commands (NOT run, no registry-write
+   authorization given this session):
+
+```
+nfl-ats weak-signals record --effect-units ats_points --classification unresolved_below_power --league nfl --season-start 2020 --season-end 2025 --sample-blocks 6 --family line_move_regrade_legacy_v2 --category onfield --plain-summary "Division-revenge tilt line-move regrade (merge-bug fixed this session): mean line move -0.054 pts/game toward the pick; season-block interval [-0.115,-0.012] P+ 0.00; week-block interval [-0.100,-0.020] P+ 0.00 -- both intervals fall entirely on the negative side."
+
+nfl-ats weak-signals record --effect-units ats_points --classification unresolved_below_power --league nfl --season-start 2020 --season-end 2025 --sample-blocks 6 --family line_move_regrade_legacy_v3 --category offfield --plain-summary "Suspension-return-rust line-move regrade: mean +0.008 pts/game toward the pick; season-block interval [-0.014,0.038] P+ 0.648; week-block interval [-0.008,0.025] P+ 0.808."
+
+nfl-ats weak-signals record --effect-units ats_points --classification unresolved_below_power --league nfl --season-start 2020 --season-end 2025 --sample-blocks 6 --family line_move_regrade_legacy_v3 --category environment --plain-summary "Rain-on-grass-dog line-move regrade: mean +0.006 pts/game toward the pick; season-block interval [-0.004,0.016] P+ 0.865; week-block interval [-0.003,0.017] P+ 0.877."
+
+nfl-ats weak-signals record --effect-units ats_points --classification unresolved_below_power --league nfl --season-start 2020 --season-end 2025 --sample-blocks 6 --family line_move_regrade_legacy_v3 --category schedule --plain-summary "Dome-shootout-favorite line-move regrade: mean -0.006 pts/game toward the pick; season-block interval [-0.014,0.000] P+ 0.011; week-block interval [-0.016,0.002] P+ 0.076."
+
+nfl-ats weak-signals record --effect-units ats_points --classification unresolved_below_power --league nfl --season-start 2020 --season-end 2025 --sample-blocks 6 --family line_move_regrade_legacy_v3 --category onfield --plain-summary "Coach-fade (year-one HC) line-move regrade: mean -0.016 pts/game toward the pick; season-block interval [-0.020,-0.012] P+ 0.00; week-block interval [-0.037,0.004] P+ 0.064 -- season block alone is wholly negative, week block crosses zero."
+```
+
+3. Report the open discrepancy (special_teams_return_top_quartile /
+   hc_year_one_fade ranking above 0.573 unexplained, see Tried/Open below)
+   to the orchestrator as an explicit open item — do not resolve it
+   unilaterally.
+4. Batch 2's 7 successful terms (rookie_priors, low_total_div_home_dog,
+   interim_playcaller, forecast_cold_visitor, ats_streak_regress,
+   post_bye_new_oc, home_thursday) still need record commands drafted from
+   `artifacts/line_move_regrade_legacy/20260923T221920Z/results.json` — not
+   done in any session yet, unrelated to this session's scope.
 
 **Units 1 and 2 record commands (still unexecuted, orchestrator-authorized
 only)** — unchanged from before this session, preserved in git history of
@@ -207,12 +207,6 @@ this file if needed; re-fetch via `git log -p -- docs/lanes/line-move-regrade-le
 `roof_state_predicted_open_line_move_regrade_legacy` and
 `roof_state_predicted_open_line_move_replication_2011_2019`) rather than
 restating here to keep this file under one page.
-
-Batch 2's 7 successful terms (rookie_priors, low_total_div_home_dog resolved
-wrong-sign negative; interim_playcaller/forecast_cold_visitor/ats_streak_
-regress/post_bye_new_oc/home_thursday unresolved) also still need their
-record commands drafted from `artifacts/line_move_regrade_legacy/20260923T221920Z/results.json`
-— not done in any session yet.
 
 ## Open
 - The ranking discrepancy above (special_teams_return_top_quartile,

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-23T22:38:05.279676+00:00`
+Refreshed at: `2026-09-23T22:43:26.793660+00:00`
 
 ## Start here
 
@@ -21,8 +21,8 @@ Refreshed at: `2026-09-23T22:38:05.279676+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `ad5178010634` — Roadmap and lane index carry today's results
-- Pending change set: 8 paths
+- Baseline commit: `107359c212ed` — Line-move regrade: fix the division revenge join; batch 3 selection recorded
+- Pending change set: 9 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M artifacts/prospective/challengers.json`
   - ` M docs/findings.html`
@@ -30,6 +30,7 @@ Refreshed at: `2026-09-23T22:38:05.279676+00:00`
   - ` M docs/index.html`
   - `M  docs/lanes/line-move-regrade-legacy.md`
   - ` M docs/model.html`
+  - `M  registry/weak_signals.json`
   - `M  scripts/line_move_regrade_legacy.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.

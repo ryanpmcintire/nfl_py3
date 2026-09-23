@@ -39,22 +39,28 @@ from nfl_ats.post_bye_new_playcaller_back_overlay import (  # noqa: E402
     load_coordinator_history,
     post_bye_new_oc_flag_by_game,
 )
+from nfl_ats.rain_on_grass_dog_challenger import rain_on_grass_flag_by_game  # noqa: E402
 from nfl_ats.rookie_prior_surplus_tilt_overlay import rookie_prior_surplus_flags  # noqa: E402
 from nfl_ats.schedule_flag_features import (  # noqa: E402
     ATS_STREAK_REGRESS_COLUMN,
     DIVISION_DOG_COLUMN,
+    DOME_SHOOTOUT_COLUMN,
     HOME_THURSDAY_COLUMN,
     WEEK1_DOG_COLUMN,
+    default_opener_lines,
     default_schedule,
     derive_ats_streak_regress_features,
     derive_division_dog_features,
+    derive_dome_shootout_favorite_features,
     derive_home_thursday_features,
     derive_week1_dog_features,
 )
 from nfl_ats.tank_zone_fade_tilt_overlay import tank_zone_flag_by_game  # noqa: E402
 from nfl_ats.transaction_flag_features import (  # noqa: E402
     DEADLINE_INTEGRATION_DRAG_COLUMN,
+    SUSPENSION_RETURN_RUST_COLUMN,
     attach_deadline_integration_drag_features,
+    attach_suspension_return_rust_features,
 )
 
 BASE_FEATURES = ("model_logit", "composition_flag_sum")
@@ -123,6 +129,38 @@ RATIO_TABLE_BATCH2 = (
     ("home_thursday_on_production", 0.719, "schedule"),
     ("low_total_div_home_dog_on_production", 0.712, "schedule"),
     ("division_revenge_tilt_on_production", 0.573, "onfield"),
+)
+
+SELECTION_RULE_BATCH3 = (
+    "Batch 3 (2026-09-23, session 4): re-derived the ranking with the SAME predeclared rule text "
+    "as batch 2 (classification=unresolved_below_power, effect_units=accuracy_points, category in "
+    "schedule/environment/health/offfield/onfield, one entry per family by max ratio), but this "
+    "time filled standard_error with the documented fallback (interval_high-interval_low)/(2*1.96) "
+    "when the stored field is null, which changes the ranked list to 388 families instead of the "
+    "narrower list batch 1/2 used (division_revenge_tilt, batch 2's own pick, is rank 253 at ratio "
+    "0.573 in this fuller list). Walking down from rank 253 with the SAME exclusion classes as "
+    "batch 1/2 (referee/crew families; health as a block; composite/pooled-atlas clusters, not one "
+    "rebuildable column; fitted team-rating/team-style pipelines; era-scope mismatches with near-"
+    "zero overlap on the ~2020-2025 population) only 4 candidates had a confirmed live standalone "
+    "Tuesday-safe builder still present in src/nfl_ats within this session's budget: a large share "
+    "of the remaining high-ratio legacy families have no matching module because their source "
+    "files were deleted in the repository-cut commit b7ed31d. Two higher-ratio families with "
+    "confirmed live builders were deliberately NOT included and are flagged to the orchestrator "
+    "instead of graded: special_teams_return_top_quartile (ratio 1.694, onfield) and "
+    "hc_year_one_fade (ratio 1.495, offfield, same module as the already-served coach_fade "
+    "backup) both rank above every "
+    "family batch 1/2 actually selected and neither was picked by those batches for a reason not "
+    "re-derivable this session; grading them now without resolving why they were skipped would "
+    "risk silently overriding an earlier exclusion. This batch keeps coach_fade at its existing "
+    "batch-fixed identity/rank (~0.52) rather than swapping in hc_year_one_fade. Only 4 of the "
+    "nominal 8-per-batch cadence graded; ranks below coach_fade (<0.513) are unexamined."
+)
+
+RATIO_TABLE_BATCH3 = (
+    ("suspension_return_rust_on_production", 0.572, "offfield"),
+    ("rain_on_grass_dog_on_production", 0.567, "environment"),
+    ("dome_shootout_favorite_on_production", 0.525, "schedule"),
+    ("coach_fade_on_production", 0.520, "onfield"),
 )
 
 
@@ -329,6 +367,66 @@ def add_division_revenge_term(population: pd.DataFrame, schedule: pd.DataFrame) 
     return out
 
 
+def add_suspension_return_rust_term(
+    population: pd.DataFrame, schedule: pd.DataFrame
+) -> pd.DataFrame:
+    features = population[["game_id"]].copy()
+    features["game_id"] = features["game_id"].astype(str)
+    try:
+        attached = attach_suspension_return_rust_features(features, schedule=schedule)
+    except DataContractError:
+        attached = features.copy()
+        attached[SUSPENSION_RETURN_RUST_COLUMN] = 0.0
+    attached = attached.drop_duplicates(subset="game_id")
+    out = population.merge(attached, on="game_id", how="left")
+    out[SUSPENSION_RETURN_RUST_COLUMN] = out[SUSPENSION_RETURN_RUST_COLUMN].fillna(0.0)
+    return out
+
+
+def add_rain_on_grass_dog_term(population: pd.DataFrame, schedule: pd.DataFrame) -> pd.DataFrame:
+    forecasts = pd.read_parquet(FORECAST_ARCHIVE)
+    flags = rain_on_grass_flag_by_game(schedule, forecasts)
+    flags = flags.drop_duplicates(subset="game_id")[["game_id", "rain_on_grass_flag"]]
+    cols = ["game_id", "spread_line", "game_type"]
+    sched = schedule[cols].copy()
+    sched["game_id"] = sched["game_id"].astype(str)
+    sched = sched.merge(flags, on="game_id", how="left")
+    sched["rain_on_grass_flag"] = sched["rain_on_grass_flag"].fillna(False)
+    spread_line = pd.to_numeric(sched["spread_line"], errors="coerce")
+    reg = sched["game_type"].astype(str).eq("REG")
+    home_dog = sched["rain_on_grass_flag"] & spread_line.notna() & spread_line.lt(0.0) & reg
+    away_dog = sched["rain_on_grass_flag"] & spread_line.notna() & spread_line.gt(0.0) & reg
+    sched["rain_on_grass_dog_term"] = np.where(home_dog, 1.0, np.where(away_dog, -1.0, 0.0))
+    out = population.merge(sched[["game_id", "rain_on_grass_dog_term"]], on="game_id", how="left")
+    out["rain_on_grass_dog_term"] = out["rain_on_grass_dog_term"].fillna(0.0)
+    return out
+
+
+def add_dome_shootout_favorite_term(
+    population: pd.DataFrame, schedule: pd.DataFrame
+) -> pd.DataFrame:
+    opener_lines = default_opener_lines(schedule)
+    derived = derive_dome_shootout_favorite_features(schedule, opener_lines)
+    derived = derived.drop_duplicates(subset="game_id")[["game_id", DOME_SHOOTOUT_COLUMN]]
+    out = population.merge(derived, on="game_id", how="left")
+    out[DOME_SHOOTOUT_COLUMN] = out[DOME_SHOOTOUT_COLUMN].fillna(0.0)
+    return out
+
+
+def add_coach_fade_term(population: pd.DataFrame, schedule: pd.DataFrame) -> pd.DataFrame:
+    flags = year_one_by_game(schedule)
+    flags = flags.drop_duplicates(subset="game_id")[
+        ["game_id", "year_one_home", "year_one_away"]
+    ]
+    out = population.merge(flags, on="game_id", how="left")
+    out["year_one_home"] = out["year_one_home"].fillna(False)
+    out["year_one_away"] = out["year_one_away"].fillna(False)
+    out["coach_fade_term"] = np.where(
+        out["year_one_home"], 1.0, np.where(out["year_one_away"], -1.0, 0.0)
+    )
+    return out
+
+
 def loso(frame: pd.DataFrame, features: tuple[str, ...]) -> tuple[np.ndarray, dict]:
     frame = frame.reset_index(drop=True)
     x_cols = list(features)
@@ -446,6 +544,29 @@ TERM_DECLARATIONS_BATCH2 = (
     },
 )
 
+TERM_DECLARATIONS_BATCH3 = (
+    {
+        "label": "suspension_return_rust_on_production",
+        "term_columns": (SUSPENSION_RETURN_RUST_COLUMN,),
+        "builder": add_suspension_return_rust_term,
+    },
+    {
+        "label": "rain_on_grass_dog_on_production",
+        "term_columns": ("rain_on_grass_dog_term",),
+        "builder": add_rain_on_grass_dog_term,
+    },
+    {
+        "label": "dome_shootout_favorite_on_production",
+        "term_columns": (DOME_SHOOTOUT_COLUMN,),
+        "builder": add_dome_shootout_favorite_term,
+    },
+    {
+        "label": "coach_fade_on_production",
+        "term_columns": ("coach_fade_term",),
+        "builder": add_coach_fade_term,
+    },
+)
+
 
 def variant_report(
     declaration: dict, population: pd.DataFrame, schedule: pd.DataFrame, seed: int, draws: int
@@ -504,10 +625,15 @@ def variant_report(
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--batch", type=int, choices=(1, 2), default=1)
+    parser.add_argument("--batch", type=int, choices=(1, 2, 3), default=1)
+    parser.add_argument("--only", type=str, default=None)
     args = parser.parse_args()
 
-    if args.batch == 2:
+    if args.batch == 3:
+        term_declarations = TERM_DECLARATIONS_BATCH3
+        selection_rule = SELECTION_RULE_BATCH3
+        ratio_table = RATIO_TABLE_BATCH3
+    elif args.batch == 2:
         term_declarations = TERM_DECLARATIONS_BATCH2
         selection_rule = SELECTION_RULE_BATCH2
         ratio_table = RATIO_TABLE_BATCH2
@@ -515,6 +641,11 @@ def main() -> int:
         term_declarations = TERM_DECLARATIONS
         selection_rule = SELECTION_RULE
         ratio_table = RATIO_TABLE
+
+    if args.only:
+        term_declarations = tuple(
+            d for d in term_declarations if d["label"] == args.only
+        )
 
     now = datetime.now(UTC)
     population, provenance = build_fit_population(REPO / "artifacts", REPO / "data")
@@ -533,7 +664,10 @@ def main() -> int:
             reports.append({"label": declaration["label"], "error": f"{type(exc).__name__}: {exc}"})
 
     results = {
-        "command": f"python scripts/line_move_regrade_legacy.py --batch {args.batch}",
+        "command": (
+            f"python scripts/line_move_regrade_legacy.py --batch {args.batch}"
+            + (f" --only {args.only}" if args.only else "")
+        ),
         "created_at_utc": now.isoformat(),
         "unit": "Tuesday-terms line-move regrade, legacy registry families",
         "batch": args.batch,
