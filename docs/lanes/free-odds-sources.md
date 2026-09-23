@@ -25,15 +25,16 @@ Replace the dead paid Odds API with current free NFL spreads for private persona
 
 ## Next
 
-- Run `.tools/uv.exe run --no-sync ruff format --check src/nfl_ats/market_data.py` and
-  `ruff check src/nfl_ats/market_data.py` (the 2026-09-23 session hit its 50-tool-call
-  cap immediately before this step; the edit itself follows the file's existing style
-  so risk is low, but it is unverified).
-- If ruff is clean: nothing else required for this unit; the fix is otherwise verified
-  (183 targeted tests passed). If ruff flags anything, fix in place and rerun the same
-  targeted test command below.
-- Then re-check `docs/lanes/odds-api-key-deactivated.md`: still nothing to do there
-  (owner declined re-subscribe; jobs stay disabled).
+- Root: restart the capture scheduler daemon so the new `odds_private_wed`/
+  `odds_private_fri`/`odds_private_sat` windows go live (see "Root action
+  required to activate" below); confirm with `--status` that all three show a
+  future window instead of "window predates job".
+- After the next real Wed/Fri/Sat run: spot-check `current_spread_quotes`
+  again mid-week (not right after a manual exercise) to confirm the 3-book
+  merge holds up under the daemon's own timing, same as it did for the manual
+  run today.
+- `docs/lanes/odds-api-key-deactivated.md`: still nothing to do there (owner
+  declined re-subscribe; paid jobs stay disabled).
 
 ## State (2026-09-23, this session)
 
@@ -106,13 +107,59 @@ Replace the dead paid Odds API with current free NFL spreads for private persona
 
 ## Open
 
-- ruff format/check on `src/nfl_ats/market_data.py` for this session's edit is
-  unverified — do this first in the next subtask.
 - Neither free source provides a confirmed book-specific quote update time. No public odds redistribution is authorized; sourced decisions and private analysis remain separate. ESPN stays blocked at HTTP 403. Public Action odds path needs distinct provenance/access review before adding it as a normalized feed.
-- The free Sunday capture job (`odds_private_sun`) has not run yet for the coming
-  Week 3 Sunday (Sep 27); 15 of 16 games still show only the stale paid-API opener as
-  "current". That is expected this early in the week, not a bug, but re-check after
-  the next Sunday run that the 3-book merge in `current_spread_quotes` behaves the
-  same way it did for Week 2.
 - No Odds API billing action needed; owner already declined re-subscribe
   (`docs/lanes/odds-api-key-deactivated.md`).
+
+## State (2026-09-23, mid-week free capture unit)
+
+- **Fixed the Tue-Sun gap**: `scripts/capture_scheduler.py` (right after the
+  `odds_private_sun` job, ~line 810) now schedules three more free jobs reusing
+  the same `PRIVATE_SUNDAY_ODDS_CAPTURE` command (`scripts/capture_private_sunday_odds.py`,
+  same Bovada + Odds Gap private sources, same point-in-time lineage
+  `observed_at_utc`/`source_scan_at_utc`, same private/public manifest scoping):
+  `odds_private_wed` (wed 18:00, grace 90), `odds_private_fri` (fri 12:30, grace
+  90), `odds_private_sat` (sat 10:00, grace 90), `added_on="2026-09-23"`,
+  `enabled=True`, `season_guarded=False`. Times/grace mirror the already-justified
+  but now-disabled paid `odds_wed_opener`/`odds_fri_1230`/`odds_sat_1000` slots
+  (same file, ~line 488 and ~line 544) so the rationale (post-opener, Friday
+  injury-designation moves, pre-Sunday state) carries over without duplicating it.
+- **Measured, ruff format/check clean**: `.tools/uv.exe run --no-sync ruff format
+  --check scripts/capture_scheduler.py` and `ruff check scripts/capture_scheduler.py`
+  both pass ("1 file already formatted" / "All checks passed!"). Also re-verified
+  the prior session's leftover item: same two commands on `src/nfl_ats/market_data.py`
+  pass clean (no edit was needed there this session).
+- **Measured, `--status` shows all three new jobs**: `python scripts/capture_scheduler.py
+  --status | grep odds_private` lists `odds_private_wed`, `odds_private_fri`,
+  `odds_private_sat` all `yes` (enabled), `added 2026-09-23 (window predates job) |
+  NEVER RUN` before the manual exercise below.
+- **Measured, ran the capture for real (free sources only)**:
+  `python scripts/capture_scheduler.py --run-job odds_private_wed` →
+  `MANUAL-RUN OK odds_private_wed`, Bovada captured 19 games / 76 quotes to
+  `data/market/raw/20260923T211819Z` (observed 2026-09-23T21:18:19.128Z), Odds Gap
+  captured alongside it (same cycle). A follow-up `--run-job odds_private_fri --dry`
+  seconds later correctly returned `captured: false, reason: recent_private_capture,
+  age_minutes: 0.7` for both sources — the shared 30-minute per-source age guard in
+  `capture_private_sunday_odds.py:53-60` de-dupes correctly across the new
+  Wed/Fri/Sat slots exactly as it already did across weeks for the Sunday-only slot.
+- **Measured, `current_spread_quotes` now serves Week 3**: `load_quote_history(Path("data/market/raw"), since=...)`
+  + `current_spread_quotes(quotes, as_of=now)` filtered to `2026_03_*` returns all
+  16 Week 3 games with `observed_at_utc=2026-09-23T21:18:19.128Z`: 14 games at
+  `bookmakers=3` (`Bovada, Caesars, MyBookie`, `provider_label=bovada_public_nfl,
+  the_odds_gap_lineshop_private`) and 2 (`2026_03_LA_DEN`, `2026_03_PHI_CHI`) at
+  `bookmakers=1` (Bovada-only, Odds Gap apparently missing/unmatched for those two
+  games this cycle — not investigated further, matches the existing per-game
+  eligibility logic, not a regression). Zero Week 3 games are left on the stale
+  paid-API opener after this run.
+- **Measured, no regression**: `.tools/uv.exe run --no-sync pytest -q
+  tests/test_capture_scheduler.py` → 57 passed, 1 warning (pre-existing pytest-cache
+  permission warning, unrelated). No test file added or edited (moratorium
+  respected).
+- **Root action required to activate**: the running scheduler daemon holds the old
+  in-memory `SCHEDULE` tuple; per the existing pattern in this lane (2026-09-20
+  entry), the daemon must be restarted once these edits are accepted so the new
+  Wed/Fri/Sat windows are picked up live (e.g. `start_capture_scheduler.cmd` /
+  whatever the daemon's documented restart command is in `docs/agent_workflow.md`).
+  This session did not restart the daemon or touch `data/scheduler_log.txt`'s live
+  process — only manual `--run-job`/`--dry` exercises, per subagent scope (root owns
+  restarts/publication).

@@ -807,6 +807,29 @@ SCHEDULE: tuple[Job, ...] = (
         season_guarded=False,
         added_on="2026-09-20",
     ),
+    *(
+        Job(
+            name,
+            day,
+            at,
+            90,
+            PRIVATE_SUNDAY_ODDS_CAPTURE,
+            True,
+            "2026-09-23: the free Sunday-only slot left every Tue-Sat Books-now read "
+            "on the stale paid-API opener, and the served pick's market-move term "
+            "needs real mid-week snapshots too. Same private Bovada/Odds Gap sources, "
+            "script, and per-source 30-minute age guard as odds_private_sun, just run "
+            "again at the same times the retired odds_wed_opener/odds_fri_1230/"
+            "odds_sat_1000 paid slots already justified for line-moving windows.",
+            season_guarded=False,
+            added_on="2026-09-23",
+        )
+        for name, day, at in (
+            ("odds_private_wed", "wed", "18:00"),
+            ("odds_private_fri", "fri", "12:30"),
+            ("odds_private_sat", "sat", "10:00"),
+        )
+    ),
     Job(
         "injuries_wed",
         "wed",
