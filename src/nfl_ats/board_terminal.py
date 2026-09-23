@@ -819,6 +819,9 @@ def _board_section(content: BoardContent, *, archived: bool = False) -> str:
         rows.append(f'<tr class="grp"><td colspan="7">{escape(day)}</td></tr>')
         for game in day_games:
             pick_text = f"{escape(game.pick_team)} {escape(game.pick_spread_text)}"
+            market_text = (
+                "No quote" if not archived and game.market_now is None else game.market_now_text
+            )
             if game.is_best:
                 pick_cell = (
                     f'<span class="star">&#9733;</span>{pick_text}'
@@ -866,7 +869,8 @@ def _board_section(content: BoardContent, *, archived: bool = False) -> str:
                 f'<td class="pick" data-label="Pick">{pick_cell}</td>'
                 f'<td class="market-now" '
                 f'data-label="{escape(game.market_now_book_label or "Books now")}" '
-                f'title="{escape(game.market_move_text)}">{escape(game.market_now_text)}'
+                f'title="{escape(game.market_move_text)}">'
+                f"{escape(market_text)}"
                 + (
                     f'<span class="market-source">{escape(game.market_now_book_label)}</span>'
                     if game.market_now is not None and game.market_now_book_label
@@ -887,8 +891,21 @@ def _board_section(content: BoardContent, *, archived: bool = False) -> str:
     market_help = (
         "The latest line captured today before kickoff, written for the picked side. "
         "The source appears below the line. The pool's own line is the one in the Pick "
-        "column and does not move."
+        "column and does not move. No quote means there is no current public quote."
     )
+    market_status = ""
+    if not archived:
+        missing_quotes = sum(game.market_now is None for game in content.games)
+        if missing_quotes:
+            coverage = (
+                "Current book lines are unavailable."
+                if missing_quotes == len(content.games)
+                else f"Current book lines are unavailable for {missing_quotes} games."
+            )
+            market_status = (
+                f'<p class="policy-note"><b>Books now:</b> {coverage} '
+                "Picks and cover chances use the pool lines shown in the Pick column.</p>"
+            )
     probability_help = (
         "The fitted chance this side covers, excluding a tie at the spread. Situational "
         "evidence is included in this one number."
@@ -943,6 +960,7 @@ def _board_section(content: BoardContent, *, archived: bool = False) -> str:
         "</div>"
         f"{_board_sort_toggle_html()}"
         f"{column_guide}"
+        f"{market_status}"
         f'<div class="board-scroll">{table}</div>'
         f"{details}</section>"
     )

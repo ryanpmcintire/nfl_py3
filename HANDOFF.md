@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-23T10:33:59.221634+00:00`
+Refreshed at: `2026-09-23T11:26:11.672565+00:00`
 
 ## Start here
 
@@ -21,9 +21,17 @@ Refreshed at: `2026-09-23T10:33:59.221634+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `d53abafdf853` — Use the current card layout for archived weeks
-- Pending change set: 1 paths
+- Baseline commit: `2c623e17a022` — Refresh handoff after archive layout publication
+- Pending change set: 9 paths
+  - `M  CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - `A  docs/lanes/done/week3-dashboard-completeness.md`
+  - `M  docs/model.html`
+  - `M  src/nfl_ats/board_terminal.py`
+  - `M  tiebreaker.json`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -43,7 +51,7 @@ The 52.35% figure is the distinct secondary close-grade historical classificatio
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 3** from model `429b12a7106c7e7d`, published `2026-09-23T01:08:21.200851+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 3** from model `429b12a7106c7e7d`, published `2026-09-23T11:00:14.441152+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 
