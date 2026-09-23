@@ -382,3 +382,105 @@ The 11 drafted bounded_by_control reclassifications are NOT run. The minimum det
 
 ## Root decision 2026-09-23 (unit 2)
 Line-move MDE at 80% power on 2020-2025: 0.08-0.21 line-move points, about 0.27-0.70 accuracy-point equivalents (3.305 accuracy points per line-move point, measured), 7-18x finer than the accuracy yardstick (1.9-4.9). Decision: every Tuesday-knowable term is graded first on paired line movement toward the pick with the Tuesday-knowable base (scripts/tuesday_terms_line_move.py pattern), accuracy as the companion. The four unresolved Tuesday line-move cells (docs/lanes/done/tuesday-terms-line-move.md) exclude effects at the continuous MDE (0.163 points); they are not reclassified yet because the accuracy conversion rests on one synthetic outcome model. Next: a second control that injects the effect directly into the real move series without the conversion, then reclassify cells whose interval excludes that MDE.
+
+## Unit 3 (second, conversion-free line-move control) 2026-09-23 session 4
+
+New script scripts/line_move_power_direct.py (ruff-clean), imports shared
+helpers (season_block_bootstrap, synth_term, standardize, mde_from_grid,
+PREVALENCE_CASES, TARGET_POWER) from line_move_power.py rather than
+duplicating them. Design, deliberately different from unit 2 to be
+conversion-free:
+- The base model (model_logit, composition_flag_sum) is LOSO-refit exactly
+  ONCE against the REAL, unmodified 2020-2025 home_covered outcomes (no
+  synthetic Bernoulli draw anywhere in the script -> literally satisfies "no
+  synthetic cover outcomes"). Its real out-of-fold logit is deterministic and
+  reused for every simulation.
+- Per simulation: draw a synthetic term (binary at 3/10/50% prevalence, or
+  standard-normal continuous). Its only effect is (a) a known additive
+  coef_points shift added directly to the REAL open_move series
+  (synthetic_move = real_open_move + coef_points * standardized_term, same
+  construction as units 1/2) and (b) a matched shift to the real base logit,
+  coef_logit = coef_points / logistic_scale, where logistic_scale =
+  margin_sd_points_empirical * sqrt(3)/pi -- a closed-form variance match
+  between a logistic distribution and a Normal(0, margin_sd_points), and
+  margin_sd_points_empirical is the plain standard deviation of the real
+  population's margin_vs_open column (a descriptive statistic of ONE
+  variable, not a regression slope fit between two variables the way unit
+  2's points_per_base_logit_sd_empirical was -- this is the conversion-free
+  distinction). Measured margin_sd_points_empirical = 12.9696 points.
+- The variant "pick" is a deterministic threshold (variant_logit >= 0), never
+  a re-drawn outcome -- no per-sim LOSO refit of a noise regressor is needed
+  or done (that would only measure noise since a term uncorrelated with real
+  outcomes would fit to ~0; this design sidesteps that by applying the known
+  declared shift directly to the real fitted logit instead of asking a
+  second model to discover it).
+- diff_line_move = sign(variant_pick)*synthetic_move - sign(base_pick)*
+  synthetic_move; same season_block_bootstrap paired stat as units 1/2;
+  detection = interval_low > 0; same mde_from_grid interpolation, reported
+  ONLY in line-move points (no accuracy-point conversion computed or
+  reported at all, per the "no accuracy conversion" instruction).
+
+Smoke test --sims 10 --draws 60 --grid 0.01,0.05,0.2,0.5 (2.3s) confirmed
+mechanics (detection rises with coefficient) and margin_sd_points_empirical=
+12.97 sanity-checks close to the commonly-cited ~13.5-point NFL margin SD.
+Full run --sims 150 --draws 300 --fit-iterations 20 (defaults) --grid
+0.05,0.1,0.2,0.35,0.5,0.65,0.85, run in the foreground, 20.6s total:
+artifacts/line_move_power_direct/20260923T215739Z/results.json (games=1503,
+games_scored=1503, season_blocks=6, seasons 2020-2025 -- exact population
+match to the four registry cells below).
+
+MDE at 80% power, line-move points (all four interpolated cleanly, no
+boundary notes):
+  binary_p03 = 0.05337
+  binary_p10 = 0.07289
+  binary_p50 = 0.06286
+  continuous_std = 0.06535
+
+Comparison with unit 2's MDE (same served_2020_2025 population, same units):
+  unit 2 (synthetic-outcome, OLS-derived conversion): binary_p03=0.080,
+  binary_p10=0.086, binary_p50=0.212, continuous_std=0.163
+  unit 3 (direct, conversion-free): binary_p03=0.053, binary_p10=0.073,
+  binary_p50=0.063, continuous_std=0.065
+Unit 3 is tighter (more sensitive) than unit 2 across all four cells --
+consistent with unit 3 having one fewer layer of injected randomness (no
+synthetic-outcome resampling noise). Both controls agree on the qualitative,
+decision-relevant finding: the line-move yardstick resolves effects on the
+order of 0.05-0.2 points at 80% power on 1,503 games, roughly an order of
+magnitude finer than the accuracy yardstick (1.9-4.9 accuracy points, unit
+1) -- this corroborates unit 2's finding with an independent mechanism, so
+the root decision (prefer the line-move read) does not rest on one synthetic
+outcome model alone anymore.
+
+Registry check: the four unresolved *_tuesday_line_move cells (reddit one
+excluded per instruction) are all continuous/count-type terms --
+diff_divergence and diff_lineup_total are continuous lineup-rating
+differences (players_on_field_rating_eval.py), cfb_transfer_logit is a
+continuous transfer logit (opener_error_transfer_unit2.py), and
+week_gated_protection_flag_sum is gated_flag_sum = composition_flag_sum
+(FLAG_SUM_COLUMN, a multi-flag COUNT, confirmed via
+src/nfl_ats/pick_probability.py:79) minus a protection flag after week 4 --
+a modified count, not a single 0/1 flag -- so all four are matched against
+continuous_std = 0.06535, not a binary bucket. All four have n=1503 games, 6
+season blocks (exact match to this harness's population). Qualification:
+max(abs(interval_low), interval_high) < 0.06535.
+  cfb_transfer_logit_tuesday_line_move: interval [-0.0249, 0.0714] -> max
+    0.0714 > 0.06535 -> DOES NOT QUALIFY (close call, exceeds by 0.008).
+  diff_divergence_tuesday_line_move: interval [-0.0586, 0.0113] -> max
+    0.0586 < 0.06535 -> QUALIFIES.
+  diff_lineup_total_tuesday_line_move: interval [-0.0233, 0.0027] -> max
+    0.0233 < 0.06535 -> QUALIFIES.
+  week_gated_protection_flag_sum_tuesday_line_move: interval [-0.032,
+    0.0045] -> max 0.032 < 0.06535 -> QUALIFIES.
+
+Exact --replace commands for the 3 qualifying cells (every original field
+preserved, only classification/closing-ground/classification-evidence
+changed, `weak-signals record --help` checked this session for the current
+flag set) are drafted in
+artifacts/line_move_power_direct/20260923T215739Z/flip_commands.md. NOT RUN
+(out of scope this session; no registry writes, no commits).
+
+Next: owner/orchestrator decides whether to run the 3 drafted commands (and
+whether cfb_transfer_logit_tuesday_line_move's near-miss, 0.0714 vs MDE
+0.0654, warrants a slightly larger run to tighten the boundary rather than
+leaving it unresolved_below_power). This unit is COMPLETE; nothing further
+to compute here.

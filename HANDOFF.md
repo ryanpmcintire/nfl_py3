@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-23T21:52:27.397548+00:00`
+Refreshed at: `2026-09-23T22:01:07.407408+00:00`
 
 ## Start here
 
@@ -21,10 +21,18 @@ Refreshed at: `2026-09-23T21:52:27.397548+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `cf4074d23ecf` — All-books move on the active Sunday window: no gain over the three leader books
-- Pending change set: 2 paths
+- Baseline commit: `51f9b90d0a47` — Register the total-conditioned lattice as a prospective challenger
+- Pending change set: 10 paths
   - ` M artifacts/prospective/challengers.json`
-  - `A  docs/lanes/prospective-leads-2026-09-23.md`
+  - `M  docs/lanes/positive-control-power.md`
+  - ` M docs/lanes/prospective-leads-2026-09-23.md`
+  - `M  registry/weak_signals.json`
+  - `A  scripts/line_move_power_direct.py`
+  - ` M scripts/total_conditioned_lattice.py`
+  - ` M src/nfl_ats/cli_commands/publishing.py`
+  - `?? docs/lanes/line-move-regrade-legacy.md`
+  - `?? scripts/line_move_regrade_legacy.py`
+  - `?? src/nfl_ats/total_conditioned_lattice_challenger.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
