@@ -375,7 +375,12 @@ def latest_book_quotes(quotes: pd.DataFrame, *, before_kickoff: bool = True) -> 
     return history.sort_values("observed_at_utc").groupby(keys, as_index=False).tail(1)
 
 
-def current_spread_quotes(quotes: pd.DataFrame, *, as_of: datetime | None = None) -> pd.DataFrame:
+def current_spread_quotes(
+    quotes: pd.DataFrame,
+    *,
+    as_of: datetime | None = None,
+    coverage_window: pd.Timedelta = CURRENT_QUOTE_COVERAGE_WINDOW,
+) -> pd.DataFrame:
     columns = [
         "nflverse_game_id",
         "commence_time_utc",
@@ -420,7 +425,7 @@ def current_spread_quotes(quotes: pd.DataFrame, *, as_of: datetime | None = None
         home.sort_values("observed_at_utc").groupby(book_keys, as_index=False, sort=False).tail(1)
     )
     game_latest = home.groupby("nflverse_game_id")["_quote_as_of"].transform("max")
-    home = home.loc[home["_quote_as_of"].ge(game_latest - CURRENT_QUOTE_COVERAGE_WINDOW)]
+    home = home.loc[home["_quote_as_of"].ge(game_latest - coverage_window)]
     result = (
         home.groupby(["nflverse_game_id", "commence_time_utc"], as_index=False)
         .agg(

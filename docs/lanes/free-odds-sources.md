@@ -17,7 +17,11 @@ odds sources.
 - Books now shows one number when every captured book agrees, otherwise the
   lowest-to-highest range for the picked side (e.g. `CAR -3 to -2.5`), with the
   book count underneath. The move label uses the book average rounded to the half
-  point. Lines captured in the last 48 hours count. The model's input stays the
+  point. The range renders as two bold numbers joined by a short bar on one line
+  (`mn-range` in `board_terminal_style.css`), and the column widths were rebalanced
+  so it does not wrap. The board counts books whose latest line falls within 6
+  hours of the newest (`coverage_window`); the model keeps the 30-minute window.
+  Lines captured in the last 48 hours count. The model's input stays the
   median (`pick_refresh.py`, `home_spread_line`).
 - `odds_private_wed/fri/sat` are enabled again next to `odds_private_sun`. The
   daemon was restarted (pid 33320, code and schedule current).

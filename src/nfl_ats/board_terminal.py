@@ -805,6 +805,38 @@ def _default_game_id(content: BoardContent) -> str:
     return ""
 
 
+def _market_now_html(game: GameRow, market_text: str, move_cls: str) -> str:
+    if game.market_now is None:
+        main = f'<span class="mn-line">{escape(market_text)}</span>'
+    elif (
+        game.market_now_low is not None
+        and game.market_now_high is not None
+        and game.market_now_low != game.market_now_high
+    ):
+        sign = -1.0 if game.pick_team == game.home else 1.0
+        low, high = sorted((game.market_now_low * sign, game.market_now_high * sign))
+
+        def number(value: float) -> str:
+            return "pk" if value == 0 else f"{value:+g}"
+
+        main = (
+            f'<span class="mn-line"><span class="mn-team">{escape(game.pick_team)}</span>'
+            f'<span class="mn-range" aria-label="between {number(low)} and {number(high)}">'
+            f"<b>{number(low)}</b><i></i><b>{number(high)}</b></span></span>"
+        )
+    else:
+        main = f'<span class="mn-line">{escape(market_text)}</span>'
+    details = []
+    if game.market_now is not None and game.market_now_book_label:
+        details.append(f'<span class="market-source">{escape(game.market_now_book_label)}</span>')
+    if game.market_move_label:
+        details.append(
+            f'<span class="market-move{move_cls}">{escape(game.market_move_label)}</span>'
+        )
+    sub = f'<span class="mn-sub">{"".join(details)}</span>' if details else ""
+    return main + sub
+
+
 def _board_section(content: BoardContent, *, archived: bool = False) -> str:
 
     policy = content.policy
@@ -870,18 +902,7 @@ def _board_section(content: BoardContent, *, archived: bool = False) -> str:
                 f'<td class="market-now" '
                 f'data-label="{escape(game.market_now_book_label or "Books now")}" '
                 f'title="{escape(game.market_move_text)}">'
-                f"{escape(market_text)}"
-                + (
-                    f'<span class="market-source">{escape(game.market_now_book_label)}</span>'
-                    if game.market_now is not None and game.market_now_book_label
-                    else ""
-                )
-                + (
-                    f'<span class="market-move{_move_cls}">{escape(game.market_move_label)}</span>'
-                    if game.market_move_label
-                    else ""
-                )
-                + "</td>"
+                f"{_market_now_html(game, market_text, _move_cls)}</td>"
                 f'<td class="prob" data-label="Cover chance">{escape(game.probability_text)}</td>'
                 f'<td class="flipline" data-label="Flips at">{_flip_line_html(game)}</td>'
                 f'<td class="conf" data-label="Confidence">{conf_cell}</td>'

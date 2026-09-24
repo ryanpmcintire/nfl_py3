@@ -3066,7 +3066,7 @@ def _market_now_by_game(
         )
         if quotes.empty:
             return {}
-        current = current_spread_quotes(quotes, as_of=now)
+        current = current_spread_quotes(quotes, as_of=now, coverage_window=pd.Timedelta(hours=6))
     except Exception:
         return {}
     if current.empty:

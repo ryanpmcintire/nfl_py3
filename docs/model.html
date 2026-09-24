@@ -274,8 +274,13 @@
 table.board td.kickoff .lock{display:block;font-size:9px;color:var(--text-faint);margin-top:2px;white-space:nowrap}
 table.board td.kickoff .lock-countdown{display:block;font-size:9px;color:var(--text-faint);margin-top:2px;white-space:nowrap}
 table.board td.kickoff .lock-countdown:empty{display:none}
-.market-now .market-source{display:block;font-size:9px;color:var(--text-faint);margin-top:2px;white-space:nowrap}
-.market-now .market-move{display:block;font-size:9px;color:var(--text-faint);margin-top:2px;white-space:nowrap}
+.market-now .mn-line{display:flex;align-items:center;gap:7px;white-space:nowrap}
+.market-now .mn-team{color:var(--text-dim)}
+.market-now .mn-range{display:inline-flex;align-items:center;gap:5px;color:var(--text)}
+.market-now .mn-range b{font-weight:600}
+.market-now .mn-range i{display:inline-block;width:14px;height:2px;border-radius:1px;background:var(--text-faint);opacity:.7}
+.market-now .mn-sub{display:block;margin-top:4px}
+.market-now .market-source,.market-now .market-move{display:block;font-size:9px;color:var(--text-faint);margin-top:1px;white-space:nowrap}
 .market-now .market-move.against{color:var(--red)}
 
   td.flipline .flip-none{ color:var(--text-faint); }
@@ -866,14 +871,15 @@ table.board td.kickoff .lock-countdown:empty{display:none}
     .board-col table.board{ table-layout:fixed; }
     .board-col table.board td{ white-space:normal; overflow-wrap:anywhere; min-width:0; }
     .board-col table.board th{ white-space:normal; }
-    .board-col table.board th:nth-child(1){ width:13%; }
-    .board-col table.board th:nth-child(2){ width:13%; }
-    .board-col table.board th:nth-child(3){ width:16%; }
-    .board-col table.board th:nth-child(4){ width:10%; }
-    .board-col table.board th:nth-child(5){ width:12%; }
-    .board-col table.board th:nth-child(6){ width:18%; }
+    .board-col table.board th:nth-child(1){ width:14%; }
+    .board-col table.board th:nth-child(2){ width:11%; }
+    .board-col table.board th:nth-child(3){ width:15%; }
+    .board-col table.board th:nth-child(4){ width:19%; }
+    .board-col table.board th:nth-child(5){ width:9%; }
+    .board-col table.board th:nth-child(6){ width:14%; }
     .board-col table.board th:nth-child(7){ width:18%; }
     .board-col table.board td.kickoff, .board-col table.board td.kickoff .lock{ white-space:normal; }
+    .board-col table.board td.market-now{ white-space:nowrap; overflow-wrap:normal; }
     .board-col .meter{ flex-wrap:wrap; }
   }
   .week-grid > section{ margin-top:0; }
