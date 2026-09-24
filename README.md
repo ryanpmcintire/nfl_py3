@@ -15,25 +15,25 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 
 **Production policy active:** one calibrated probability combines the model, situational evidence and available line movement to choose each side.
 
-**Best Pick of the week (★):** CAR -2.5 in CAR at CLE. The pool scores one Best Pick per regular-season week. This pick was provisionally chosen because it has the highest estimated chance to cover among eligible games. Its estimated lead over the other picks is uncertain.
+**Best Pick of the week (★):** ATL +6.5 in ATL at GB. The pool scores one Best Pick per regular-season week. This pick was provisionally chosen because it has the highest estimated chance to cover among eligible games. Its estimated lead over the other picks is uncertain.
 
 | Date        | Matchup    | ATS prediction   | Cover chance   |
 |:------------|:-----------|:-----------------|:---------------|
-| Thu, Sep 24 | ATL at GB  | ATL +6.5         | 53.3%          |
-| Sun, Sep 27 | ARI at SF  | ARI +8.5         | 50.4%          |
-| Sun, Sep 27 | BAL at DAL | DAL +2.5         | 53.1%          |
-| Sun, Sep 27 | CAR at CLE | ★ CAR -2.5       | 61.4%          |
-| Sun, Sep 27 | CIN at PIT | CIN -3.5         | 57.1%          |
-| Sun, Sep 27 | HOU at IND | HOU -2.5         | 52.4%          |
-| Sun, Sep 27 | KC at MIA  | KC -10.5         | 55.7%          |
-| Sun, Sep 27 | LAC at BUF | LAC +7.5         | 51.7%          |
+| Thu, Sep 24 | ATL at GB  | ★ ATL +6.5       | 60.6%          |
+| Sun, Sep 27 | ARI at SF  | SF -8.5          | 50.5%          |
+| Sun, Sep 27 | BAL at DAL | DAL +2.5         | 54.0%          |
+| Sun, Sep 27 | CAR at CLE | CAR -2.5         | 60.5%          |
+| Sun, Sep 27 | CIN at PIT | CIN -3.5         | 56.3%          |
+| Sun, Sep 27 | HOU at IND | HOU -2.5         | 51.6%          |
+| Sun, Sep 27 | KC at MIA  | KC -10.5         | 52.1%          |
+| Sun, Sep 27 | LAC at BUF | LAC +7.5         | 50.8%          |
 | Sun, Sep 27 | LA at DEN  | LA -2.5          | 52.3%          |
-| Sun, Sep 27 | LV at NO   | NO -3.5          | 55.3%          |
-| Sun, Sep 27 | MIN at TB  | MIN -1.5         | 50.1%          |
-| Sun, Sep 27 | NE at JAX  | JAX -2.5         | 51.7%          |
-| Sun, Sep 27 | NYJ at DET | NYJ +6.5         | 51.6%          |
-| Sun, Sep 27 | SEA at WAS | WAS +6.5         | 50.6%          |
-| Sun, Sep 27 | TEN at NYG | TEN +3.5         | 50.7%          |
+| Sun, Sep 27 | LV at NO   | NO -3.5          | 56.2%          |
+| Sun, Sep 27 | MIN at TB  | TB +1.5          | 50.7%          |
+| Sun, Sep 27 | NE at JAX  | JAX -2.5         | 52.6%          |
+| Sun, Sep 27 | NYJ at DET | NYJ +6.5         | 50.7%          |
+| Sun, Sep 27 | SEA at WAS | WAS +6.5         | 51.5%          |
+| Sun, Sep 27 | TEN at NYG | NYG -3.5         | 50.1%          |
 | Mon, Sep 28 | PHI at CHI | CHI +3.5         | 53.0%          |
 
 [Open the standalone card](CURRENT_PREDICTIONS.md) for provenance and interpretation.
@@ -47,7 +47,7 @@ close. A close-graded number alone is never grounds to reject a candidate
 (see `AGENTS.md`); it is reported below only as the secondary figure it is.
 
 <!-- ACTIVE_MODEL_STATE:START -->
-Active model: `market_residual` with `weak_stack` features (`d5da2c0670e17eba`), regressor `ridge`, ridge alpha `10.0`, calibration `none`.
+Active model: `market_residual` with `weak_stack` features (`b71c8c0b711611ec`), regressor `ridge`, ridge alpha `10.0`, calibration `none`.
 
 - **Opener-graded, probability-rule accuracy (the pool-relevant grade -- picks lock Tuesday against a frozen line):** **53.36%** on **1,537 paired games**, week-blocked 95% interval [50.76%, 55.90%].
 - Close-graded accuracy (secondary -- the market's sharpest, and least representative, decision point): **52.35%** (1,103 of 2,107 non-push games), week-blocked 95% interval [50.22%, 54.46%].
