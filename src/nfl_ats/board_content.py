@@ -230,6 +230,7 @@ class GameRow:
     market_now_low: float | None = None
     market_now_high: float | None = None
     qb_note: str | None = None
+    qb_practice_flag: tuple[str, str] | None = None
 
     @property
     def market_now_text(self) -> str:
@@ -3195,6 +3196,57 @@ def _quarterback_notes(artifacts_root: Path, ordered: pd.DataFrame) -> dict[str,
     return notes
 
 
+def _quarterback_practice_flags(
+    artifacts_root: Path, ordered: pd.DataFrame
+) -> dict[str, tuple[str, str]]:
+    try:
+        payload = read_json(artifacts_root / "lineups" / "current" / "lineups.json")
+    except (OSError, ValueError):
+        return {}
+    games = payload.get("games") if isinstance(payload, Mapping) else None
+    if not isinstance(games, Mapping):
+        return {}
+    flags: dict[str, tuple[str, str]] = {}
+    for _, row in ordered.iterrows():
+        game_id = str(row["game_id"])
+        block = games.get(game_id)
+        if not isinstance(block, Mapping):
+            continue
+        labels: list[str] = []
+        sentences: list[str] = []
+        for side in ("away", "home"):
+            team_block = block.get(side)
+            if not isinstance(team_block, Mapping):
+                continue
+            team = str(team_block.get("team") or row.get(f"{side}_team") or "")
+            quarterbacks = [
+                player
+                for player in team_block.get("players") or []
+                if isinstance(player, Mapping) and str(player.get("position")) == "QB"
+            ]
+            if not quarterbacks:
+                continue
+            starter = min(
+                quarterbacks,
+                key=lambda p: int(_number(p.get("listed_depth") or p.get("depth")) or 99),
+            )
+            status = str(starter.get("injury_status") or "").lower()
+            if "did not participate" in status:
+                labels.append(f"{team} QB1 missed practice")
+                sentences.append(f"{starter.get('name')} ({team}) did not practice")
+            elif "limited participation" in status:
+                labels.append(f"{team} QB1 limited")
+                sentences.append(f"{starter.get('name')} ({team}) was limited in practice")
+        if labels:
+            flags[game_id] = (
+                " · ".join(labels),
+                "Latest practice report: "
+                + "; ".join(sentences)
+                + ". No game status has been issued yet.",
+            )
+    return flags
+
+
 def _played_side_explanation(explanation: str, *, pick_team: str, model_team: str) -> str:
     if pick_team == model_team:
         return explanation
@@ -3617,6 +3669,7 @@ def load_board_content(
     )
     market_now_by_game = _market_now_by_game(resolved_data_root, now=generated)
     qb_notes = _quarterback_notes(artifacts_root, ordered)
+    qb_practice_flags = _quarterback_practice_flags(artifacts_root, ordered)
     best_pick_ranking, best_pick_ranking_as_of = load_best_pick_ranking(
         artifacts_root, season=season_number, week=week_number, now=generated
     )
@@ -3728,6 +3781,7 @@ def load_board_content(
                 market_now_low=market_now[3] if market_now is not None else None,
                 market_now_high=market_now[4] if market_now is not None else None,
                 qb_note=qb_notes.get(game_id),
+                qb_practice_flag=qb_practice_flags.get(game_id),
             )
         )
 

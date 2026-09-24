@@ -866,6 +866,12 @@ def _board_section(content: BoardContent, *, archived: bool = False) -> str:
                 pick_cell += (
                     f'<span class="best-flag" title="{escape(game.qb_note)}">QB1 out</span>'
                 )
+            elif game.qb_practice_flag:
+                flag_label, flag_title = game.qb_practice_flag
+                pick_cell += (
+                    f'<span class="best-flag" title="{escape(flag_title)}">'
+                    f"{escape(flag_label)}</span>"
+                )
             row_classes = ["game"]
             if game.is_best:
                 row_classes.append("is-best")
