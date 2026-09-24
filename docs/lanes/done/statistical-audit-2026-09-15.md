@@ -115,6 +115,9 @@ are measured unless labelled otherwise.
   against a market baseline anywhere found this session.
 
 ## Next
+2026-09-24 decided from rules and later lanes, no owner input needed: findings 1-2 are superseded (the four-term fitted probability replaced the flip chain on 2026-09-20; done/four-term-probability); finding 4 is fixed (done/displayed-confidence-served-probability); finding 3 is already required by AGENTS.md (decisive-game record before every headline) and applies to every new write-up. Remaining findings 5-8 are standing context, not actions. Lane closed.
+
+History:
 Owner decision on which findings to act on. The cheapest high-value fixes:
 report the decisive-game record beside every overlay headline; replace the
 displayed-confidence floor with a served-side that follows the one probability;

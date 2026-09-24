@@ -330,6 +330,16 @@ class GameRow:
         return "—" if isnan(self.pick_probability) else f"{self.pick_probability:.1%}"
 
     @property
+    def coin_flip_gap_text(self) -> str:
+        if isnan(self.pick_probability):
+            return ""
+        gap = round((self.pick_probability - 0.5) * 100, 1)
+        if gap <= 0:
+            return "Even money, a true coin flip."
+        unit = "point" if gap == 1 else "points"
+        return f"{gap:g} {unit} above a coin flip"
+
+    @property
     def spread_magnitude(self) -> float:
         return abs(self.market_spread)
 

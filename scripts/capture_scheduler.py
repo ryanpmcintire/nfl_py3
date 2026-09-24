@@ -2102,6 +2102,9 @@ def notify_after_job(job: Job, status: str, detail: str, stdout: str) -> None:
     payload = parse_job_json(stdout)
     if payload is None:
         return
+    best_pick_ledger = payload.get("best_pick_refresh_ledger")
+    if isinstance(best_pick_ledger, dict) and job.name.startswith("refresh_sun"):
+        log(f"BEST-PICK-LEDGER {job.name}: {json.dumps(best_pick_ledger, default=str)[:300]}")
     changes = [game for game in payload.get("changed_picks", []) if game.get("eligible", True)]
     if not changes:
         return

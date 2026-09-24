@@ -158401,6 +158401,34 @@
       "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP1\\cells.json",
       "standard_error": 4.58546040097
     },
+    "mod18_spread_regime_extended_2011_2025": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero (P+=0.259, negative point estimate); the large-spread deficit this unit was chartered to test does NOT replicate on the wider window (large-spread bucket 53.70% vs small-spread 53.34%, base four-term LOSO) so there is less mechanism to fit here than the served-population read suggested; per-fold coefficients sign-stable across all 15 seasons; in-sample-minus-OOS accuracy gap +0.0032",
+      "closing_ground": null,
+      "description": "same two spread-size terms fit on the extended 2011-2025 discrete-read population (artifacts/extended_fit_population/20260923T205910Z), LOSO by season, vs the four-term base; also used to check whether the served-population large-spread deficit replicates on more games",
+      "effect": -0.26780931976432276,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_regime",
+      "interval": [
+        -1.0543310387294587,
+        0.5595235402853109
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.259,
+      "recorded_at": "2026-09-24",
+      "reliability": null,
+      "sample_blocks": 15,
+      "sample_games": 3734,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/mod18_spread_regime/20260924T183858Z/summary.json",
+      "standard_error": null
+    },
     "mod18_spread_regime_opener_v1_c1_2020_2025": {
       "category": "modeling",
       "classification": "unresolved_below_power",
@@ -158540,6 +158568,34 @@
       ],
       "source": "scratchpad laneH/results.json (2026-09-07); scripts/spread_regime_opener_eval.py; docs/spread_regime_program.md",
       "standard_error": 1.7200242149826575
+    },
+    "mod18_spread_regime_served_2020_2025": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero (P+=0.336, negative point estimate); per-fold LOSO coefficients are sign-stable across all 6 seasons (abs_open_spread always positive, interaction always negative) so this is not a noise-flip artifact, it is a stable term that still loses the paired accuracy comparison (decisive-game record 68-72 vs base 72-68); in-sample-minus-OOS accuracy gap -0.0047 rules out overfitting as the explanation",
+      "closing_ground": null,
+      "description": "abs opener spread + its interaction with model_logit added as 2 fitted terms to the served four-term NFL pick probability, LOSO by season, vs the four-term base, on the served 2020-2025 fit population",
+      "effect": -0.26613439787092075,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_regime",
+      "interval": [
+        -1.314965560425807,
+        0.692041522491349
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.336125,
+      "recorded_at": "2026-09-24",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod18_spread_regime/20260924T183858Z/summary.json",
+      "standard_error": null
     },
     "motivation_ladder_elim_visitor_alive_host": {
       "category": "schedule",

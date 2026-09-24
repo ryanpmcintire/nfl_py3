@@ -11,6 +11,7 @@ from zoneinfo import ZoneInfo
 from nfl_ats.capture_freshness import (
     newest_json_field_instant,
     newest_snapshot_instant,
+    newest_snapshot_manifest_row_count,
 )
 from nfl_ats.player_arrests_back_side_overlay import MAX_SNAPSHOT_AGE
 from nfl_ats.public_board import humanize_identifier
@@ -397,6 +398,7 @@ class SourceObservation:
     source_id: str
     observed_at: datetime | None
     detail: str = ""
+    row_count: int | None = None
 
 
 @dataclass(frozen=True)
@@ -517,7 +519,7 @@ def _evaluate_one(
             )
         if policy.source_id == "inactives" and first_kickoff is not None:
             due = _as_utc(first_kickoff) - timedelta(minutes=90)
-            if observation.observed_at is None and now < due:
+            if (observation.observed_at is None or observation.row_count == 0) and now < due:
                 return SourceState(
                     policy.source_id,
                     NOT_DUE,
@@ -527,6 +529,18 @@ def _evaluate_one(
                     policy.fallback,
                     observation.detail,
                     due.isoformat(),
+                )
+            if observation.row_count == 0 and now >= due:
+                return SourceState(
+                    policy.source_id,
+                    policy.on_absent,
+                    "latest snapshot has 0 rows past the T-90 window -- the source "
+                    "did not report real inactives, treated as a failed capture, "
+                    "not a complete one",
+                    None,
+                    budget,
+                    policy.fallback,
+                    observation.detail,
                 )
     if observation.observed_at is None:
         return SourceState(
@@ -634,8 +648,12 @@ def observe_from_disk(
         if root is None:
             continue
         target = root / policy.location.relative_path
+        row_count: int | None = None
         if policy.location.kind == "snapshot_dir":
-            instant = newest_snapshot_instant(target)
+            if source_id == "inactives":
+                instant, row_count = newest_snapshot_manifest_row_count(target)
+            else:
+                instant = newest_snapshot_instant(target)
             detail = f"newest snapshot dir under {policy.location.relative_path}"
         else:
             instant = newest_json_field_instant(target, policy.location.json_key)
@@ -644,7 +662,7 @@ def observe_from_disk(
                 if policy.location.json_key
                 else policy.location.relative_path
             )
-        observations.append(SourceObservation(source_id, instant, detail))
+        observations.append(SourceObservation(source_id, instant, detail, row_count))
     return tuple(observations)
 
 

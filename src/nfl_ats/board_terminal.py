@@ -909,7 +909,9 @@ def _board_section(content: BoardContent, *, archived: bool = False) -> str:
                 f'data-label="{escape(game.market_now_book_label or "Books now")}" '
                 f'title="{escape(game.market_move_text)}">'
                 f"{_market_now_html(game, market_text, _move_cls)}</td>"
-                f'<td class="prob" data-label="Cover chance">{escape(game.probability_text)}</td>'
+                f'<td class="prob" data-label="Cover chance" '
+                f'title="{escape(game.coin_flip_gap_text, quote=True)}">'
+                f"{escape(game.probability_text)}</td>"
                 f'<td class="flipline" data-label="Flips at">{_flip_line_html(game)}</td>'
                 f'<td class="conf" data-label="Confidence">{conf_cell}</td>'
                 "</tr>"

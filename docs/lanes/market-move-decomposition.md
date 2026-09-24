@@ -247,7 +247,7 @@ deliberately so nobody records stale numbers.
    matching this lane's own Goal/brief figures), confirmed by this session
    via direct registry read. Ignore items 2-5's instructions; they are kept
    only as a record of what Unit 1 did. Do not rerun Unit 1's arms.
-2. **Root: run the Unit 3 record command** printed in the "Unit 3" section
+2. **[DONE, verified 2026-09-24: registry already holds `market_move_decomposition_e_all_books_median_active_window`]** Root: run the Unit 3 record command printed in the "Unit 3" section
    above (`e_all_books_median_active_window`, effect -0.13 accuracy points
    [-0.59, +0.33], P+ 0.2215, source
    `artifacts/market_move_decomposition/20260923T214756Z/metadata.json`).
@@ -267,7 +267,7 @@ deliberately so nobody records stale numbers.
 
 ## Open
 
-- Unit 3's `e_all_books_median_active_window` arm has not been recorded yet
+- (Resolved 2026-09-24: recorded as `market_move_decomposition_e_all_books_median_active_window`.) Unit 3's `e_all_books_median_active_window` arm has not been recorded yet
   (command is in Next item 2; root runs it). Unit 1's five arms ARE
   recorded — see Next item 1.
   `--reliability` (split-half) is unmeasured for all five Unit-1 arms AND

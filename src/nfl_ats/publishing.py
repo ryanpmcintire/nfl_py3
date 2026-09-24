@@ -308,8 +308,8 @@ def _tiebreaker_json_payload(
         "implied_margin": guess.guess_home - guess.guess_away,
         "pick_side": guess.pick_side,
         "lattice_centre_margin": (
-            guess.model_view.predicted_margin
-            if guess.model_view is not None
+            guess.lattice_centre_margin
+            if guess.lattice_centre_margin is not None
             else guess.guess_margin
         ),
         "pick_spread_line": guess.pick_spread_line,

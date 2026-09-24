@@ -20,12 +20,12 @@ modified lane when the prompt just says to continue.
 
 ## Active
 
-- [market-move-decomposition](market-move-decomposition.md) - 2026-09-23: five alternative line-move constructions measured; held until the rebuild matches the served move.
+- [mod18-spread-regime](mod18-spread-regime.md) - 2026-09-24: MOD-18 Unit 1 measured; served large-spread deficit shrinks and does not replicate on 2011-2025; fitted spread-size candidate unresolved_below_power both windows (P+ 0.34, 0.26); two record commands queued for the root.
+- [market-move-decomposition](market-move-decomposition.md) - 2026-09-24: all arms recorded (Unit 3 all-books active-window arm unresolved, P+ 0.22); only an optional train/serve window reconciliation look remains.
 - [positive-control-power](positive-control-power.md) - 2026-09-23: minimum detectable effect harness; decides which unresolved cells are bounded by a control.
 - [free-odds-sources](free-odds-sources.md) - 2026-09-24: Books now shows posted lines (one number or a low-to-high range); no-publication rule removed; mid-week captures back on; direct Bovada capture fixed (v2 endpoint).
 - [opener-error-transfer](opener-error-transfer.md) - XLG-09 units 1-3, 2026-09-23: point-in-time-correct CFB training on the extended 2011-2025 NFL population still reads unresolved_below_power (+0.12 pts all-graded, +0.27 pts on 2020-2025); four record commands (v2 + v3) queued for the root.
 - [opener-population-backfill](opener-population-backfill.md) - 2026-09-23: 2011-2025 fit population built (3,734 games, +2,231); discrete rebuild of 2011-2019 in progress.
-- [injury-scenario-producer](injury-scenario-producer.md) - PER-10, 2026-09-23: kernel deleted in the repo cut; fitting the injury-value-to-margin mapping out of season.
 - [week3-research-recorders](week3-research-recorders.md) - nine challenger records remain missing; all 16 served Week 3 paper decisions are complete.
 - [news-trigger-refresh](news-trigger-refresh.md) - MKT-08 dispatch implemented and verified; prospective comparison awaits new events.
 - [gh-window-incident](gh-window-incident.md) - prior runaway CLI windows remain a separate investigation; no gh commands used for this deployment.
@@ -37,7 +37,7 @@ modified lane when the prompt just says to continue.
 - [pool-rank-card](pool-rank-card.md) — POOL-01, unit 1 measured 2026-09-16 (unresolved); unit 2 only with a fitted field
 - [every-metric-every-experiment](every-metric-every-experiment.md) — ENG-46 implementation done 2026-09-16; backfilled-look accounting remains open (runner emits four metrics, backfill recorded, margin cells corrected same day, pool + findings read the margin family).
 - [lane-replay-dream-rsi](lane-replay-dream-rsi.md) — ENG-45, units 1-2 done 2026-09-16 (both unresolved); unit 3 not recommended
-- [conditional-signal-atlas](conditional-signal-atlas.md) - MOD-19: owner rejected the deployed Findings page as not useful and below expectations; original mockup is saved, feature remains unresolved, further implementation awaits a grounded direction.
+- [conditional-signal-atlas](conditional-signal-atlas.md) - MOD-19: next unit fills the approved mockup's signal rail with already-measured split families from the atlas registry; no unmeasured families.
 - [lead65-protection-window-split](lead65-protection-window-split.md) — decided 2026-09-23: served flag sum unchanged; week-gated variant stays a prospective challenger.
 - [lead59-archive-battery](lead59-archive-battery.md) — LEAD-59 src fix and battery re-run done, 23 cells recorded; type-trait binning measured 2026-09-23 (2 cells, both unresolved_below_power, archive unreachable pre-2015), record commands queued for the root
 - [token-diet](token-diet.md) — session-startup token cost cut about 80%; remaining: trim the three 15 KB+ open ROADMAP rows (owner text) and decide whether `.claude/` hooks should be tracked
@@ -46,11 +46,12 @@ modified lane when the prompt just says to continue.
 - [prospective-leads-2026-09-23](prospective-leads-2026-09-23.md) — 2026-09-23: total_conditioned_key_number_lattice_v1 registered and live-dry-run verified as a prospective challenger; all-books median market move dropped (does not beat the served move, P+ 0.22).
 - [clv-metric-everywhere](clv-metric-everywhere.md) — ENG-47, 2026-09-23: line-move-toward-pick yardstick now emitted everywhere opener-evaluation runs; paired eval (5 cells) all unresolved_below_power.
 - [scheduler-once-timeout](scheduler-once-timeout.md) — fixed and committed `786a569`: `--once` defers to a live daemon via a file lock, scheduler suites green.
-- [statistical-audit-2026-09-15](statistical-audit-2026-09-15.md) — owner-requested audit across six areas (model selection, leakage/chronology, in-sample constants, inference machinery, calibration, reported-number framing); findings recorded, closed.
 - [sunday-market-probability](sunday-market-probability.md) — activated 2026-09-20 as `leader_median_through_sunday_prekick_v1`; six unresolved metric/protocol cells recorded under `sunday_market_probability_fixed_v1`.
 
 ## Done
 
+- [statistical-audit-2026-09-15](done/statistical-audit-2026-09-15.md) - closed 2026-09-24: flip-chain and lookup findings superseded by the four-term probability and served-probability display; decisive-record rule lives in AGENTS.md.
+- [injury-scenario-producer](done/injury-scenario-producer.md) - PER-10 closed 2026-09-24: margin mapping fit and scenario mixture graded; both cells recorded unresolved_below_power; kernel stays out of src/.
 - [odds-api-key-deactivated](done/odds-api-key-deactivated.md) - closed: owner cancelled The Odds API on purpose (2026-09-19); paid jobs disabled; current odds come from free sources (free-odds-sources lane). Never raise it as an owner action.
 - [base-model-recency](done/base-model-recency.md) - 2026-09-23: recent-season weighting flat in the pick model; standalone margins resolved worse.
 - [extended-population-regrade](done/extended-population-regrade.md) - 2026-09-23: three Tuesday terms on 2011-2025, all unresolved.

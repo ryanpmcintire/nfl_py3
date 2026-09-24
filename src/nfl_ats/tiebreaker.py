@@ -99,6 +99,7 @@ class TiebreakerReport:
     consistency_note: str = ""
     low_side_shade_points: float = 0.0
     low_side_shade_source: str = ""
+    lattice_centre_margin: float | None = None
 
     @property
     def served_total(self) -> float:
@@ -402,16 +403,21 @@ def build_report(
     pick_cover_probability: float | None = None
     pick_push_probability: float | None = None
     consistency_note = ""
+    lattice_centre_margin: float | None = None
     if model_view is not None and (published_pick_side is not None or model_view.residual != 0.0):
         import nfl_ats.score_lattice as score_lattice_module
+        from nfl_ats.lattice_centre_challenger import challenger_centre
 
         pick_side = published_pick_side or ("HOME" if model_view.residual > 0.0 else "AWAY")
         if pick_side not in {"HOME", "AWAY"}:
             raise TiebreakerConsistencyError("Invalid published pick side")
         pick_spread_line = model_view.forecast_line
+        lattice_centre_margin = challenger_centre(
+            model_view.predicted_margin, pick_spread_line, pick_side
+        ).centre
         try:
             lattice = score_lattice_module.score_lattice(
-                finals, model_view.predicted_margin, guess_total_line
+                finals, lattice_centre_margin, guess_total_line
             )
         except ValueError as error:
             raise TiebreakerConsistencyError(
@@ -423,7 +429,7 @@ def build_report(
             pick_side=pick_side,
             spread_line=pick_spread_line,
             served_total=guess_total_line,
-            centre_margin=model_view.predicted_margin,
+            centre_margin=lattice_centre_margin,
         )
         if chosen is None:
             raise TiebreakerConsistencyError(
@@ -431,7 +437,7 @@ def build_report(
                 f"{pick_spread_line:g} both sits within a total-proximity tolerance of "
                 f"the served total {guess_total_line:.2f} AND lands within the "
                 "score-lattice hard guard (3 points of the centre "
-                f"({model_view.predicted_margin:.2f}, {guess_total_line:.2f}) on both axes) "
+                f"({lattice_centre_margin:.2f}, {guess_total_line:.2f}) on both axes) "
                 "-- refusing to publish a tail-score tiebreaker guess"
             )
         guess_home, guess_away, _cell_probability, total_tolerance = chosen
@@ -508,6 +514,7 @@ def build_report(
         implied_score_mae=implied_mae,
         low_side_shade_points=TOTAL_LOW_SIDE_SHADE_POINTS,
         low_side_shade_source=TOTAL_LOW_SIDE_SHADE_SOURCE,
+        lattice_centre_margin=lattice_centre_margin,
     )
 
 

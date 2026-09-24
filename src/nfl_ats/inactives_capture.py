@@ -336,7 +336,7 @@ def run_capture(
     fallback_robots_ok: bool | None = None
     fallback_sha: str | None = None
     fallback_showed_placeholder = False
-    need_fallback = not rows and empty_reason != EMPTY_REASON_OFFSEASON_PLACEHOLDER
+    need_fallback = not rows
 
     if need_fallback:
         fallback_html, fallback_status, fallback_error, fallback_robots_ok = fetch_fn(

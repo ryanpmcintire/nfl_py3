@@ -18,6 +18,9 @@ Match the approved Findings mockup with an interactive explorer backed by measur
 The earlier card/filter implementation was the wrong interpretation of the reference. The legacy independent-flip atlas is not the source of this comparison. This repair changes presentation and interaction only.
 
 ## Next
+2026-09-24 decided from the saved mockup and the splits rule (memory: signals are tested in splits): the gap is data, not direction. Next unit fills the mockup's signal rail with families that already have measured paired full/reduced splits in `registry/conditional_signal_atlas.json`, adds no unmeasured families, and keeps the approved layout. The mockup at `docs/design/mockups/conditional-signal-atlas.png` is the spec.
+
+History:
 Resolve the gap between the original intended use, the saved mockup and the available data before further implementation. Do not automatically extend signal families, redesign the page, remove the tab or treat the prior options menu as an owner decision. No new direction has been agreed.
 
 ## Open

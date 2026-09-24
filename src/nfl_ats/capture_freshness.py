@@ -149,6 +149,35 @@ def newest_snapshot_instant(root: Path) -> datetime | None:
     return newest
 
 
+def newest_snapshot_manifest_row_count(root: Path) -> tuple[datetime | None, int | None]:
+
+    if not root.is_dir():
+        return None, None
+    newest: datetime | None = None
+    newest_dir: Path | None = None
+    for child in root.iterdir():
+        if not child.is_dir():
+            continue
+        match = _SNAPSHOT_NAME.match(child.name) or _FORECAST_NAME.match(child.name)
+        if not match:
+            continue
+        stamp = _parse_timestamp(match.group(1))
+        if stamp is not None and (newest is None or stamp > newest):
+            newest = stamp
+            newest_dir = child
+    if newest is None or newest_dir is None:
+        return newest, None
+    manifest_path = newest_dir / "manifest.json"
+    if not manifest_path.is_file():
+        return newest, None
+    try:
+        payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return newest, None
+    row_count = payload.get("row_count") if isinstance(payload, dict) else None
+    return newest, row_count if isinstance(row_count, int) else None
+
+
 def newest_json_field_instant(path: Path, field: str) -> datetime | None:
 
     if not path.is_file():
