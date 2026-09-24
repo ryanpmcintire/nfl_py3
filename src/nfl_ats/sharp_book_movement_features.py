@@ -123,8 +123,7 @@ def sharp_book_movement_features(
             & (
                 q.bookmaker_last_update_utc.le(q.observed_at_utc)
                 | (
-                    include_sunday
-                    & q.bookmaker_last_update_utc.isna()
+                    q.bookmaker_last_update_utc.isna()
                     & q.quote_timestamp_basis.eq("capture_observed_utc")
                 )
             )
@@ -217,7 +216,9 @@ def late_week_follow_frame(
     observed = pd.to_datetime(q.observed_at_utc, utc=True, errors="coerce")
     snapshot = pd.to_datetime(q.snapshot_timestamp_utc, utc=True, errors="coerce")
     updated = pd.to_datetime(q.bookmaker_last_update_utc, utc=True, errors="coerce")
-    safe = observed.lt(now_ts) & snapshot.lt(now_ts) & updated.le(observed)
+    basis = q.get("quote_timestamp_basis", pd.Series("", index=q.index)).astype("string")
+    self_timed = updated.isna() & basis.eq("capture_observed_utc")
+    safe = observed.lt(now_ts) & snapshot.lt(now_ts) & (updated.le(observed) | self_timed)
     refused = int((~safe).sum())
     q = q.loc[safe].copy()
     exposure = sharp_book_movement_features(q, games.copy())

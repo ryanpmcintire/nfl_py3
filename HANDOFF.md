@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-24T19:58:03.563920+00:00`
+Refreshed at: `2026-09-24T19:59:14.340397+00:00`
 
 ## Start here
 
@@ -21,24 +21,21 @@ Refreshed at: `2026-09-24T19:58:03.563920+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `a2f81121361b` — Record atlas families and extended-training result
-- Pending change set: 17 paths
+- Baseline commit: `d01fb35b58ef` — Second-half challenger names its skip instead of reading every game absent
+- Pending change set: 14 paths
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
   - ` M docs/lanes/conditional-signal-atlas.md`
-  - `A  docs/lanes/lead61-second-half-channel.md`
-  - `M  docs/lanes/pool-rank-card.md`
-  - ` M docs/lanes/week3-research-recorders.md`
+  - `M  docs/lanes/week3-research-recorders.md`
   - ` M docs/model.html`
   - ` M registry/conditional_signal_atlas.json`
   - ` M scripts/conditional_signal_atlas.py`
-  - ` M scripts/lockday_verify.py`
+  - `M  scripts/lockday_verify.py`
   - ` M src/nfl_ats/board_interactive_layout.js`
   - ` M src/nfl_ats/board_terminal.py`
   - ` M src/nfl_ats/board_terminal_style.css`
-  - `M  src/nfl_ats/half_line_refresh_overlay.py`
-  - ` M src/nfl_ats/sharp_book_movement_features.py`
+  - `M  src/nfl_ats/sharp_book_movement_features.py`
   - ` M src/nfl_ats/signal_atlas.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.

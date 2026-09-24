@@ -21,6 +21,9 @@ from nfl_ats.cli_commands.publishing import (  # noqa: E402
     REFRESH_CHALLENGER_RESULT_KEYS,
 )
 from nfl_ats.clv import load_paper_decisions  # noqa: E402
+from nfl_ats.consensus_movement_refresh_overlay import (  # noqa: E402
+    LEDGER_NAME as CONSENSUS_MOVEMENT_LEDGER,
+)
 from nfl_ats.crew_tilt_refresh_overlay import (  # noqa: E402
     load_crew_tilt_refresh_decisions,
 )
@@ -32,6 +35,9 @@ from nfl_ats.inactives_refresh_overlay import (  # noqa: E402
     load_inactives_refresh_overlay_decisions,
 )
 from nfl_ats.injury_signal_refresh_tilt import load_injury_signal_decisions  # noqa: E402
+from nfl_ats.late_week_follow_no_sunday_blackout_overlay import (  # noqa: E402
+    LEDGER_NAME as SUNDAY_BLACKOUT_LEDGER,
+)
 from nfl_ats.late_week_move_follow_refresh_overlay import (  # noqa: E402
     LEDGER_NAME as LATE_WEEK_LEDGER,
 )
@@ -113,6 +119,63 @@ DEDICATED_LEDGERS: dict[str, dict[str, Any]] = {
         "wired": True,
         "legitimately_empty": (
             "records only on a late-week refresh pass; zero at the Tuesday lock is expected"
+        ),
+    },
+    "late_week_follow_no_news_veto_off_incumbent": {
+        "ledger": f"prospective/{LATE_WEEK_LEDGER}",
+        "loader": _parquet_ledger(f"prospective/{LATE_WEEK_LEDGER}"),
+        "written_by": "refresh-picks --record-decisions",
+        "recording_path": "refresh/dedicated",
+        "wired": True,
+        "legitimately_empty": (
+            "the news-veto-off arm shares the served row's news_veto_off_challenger_id "
+            "metadata column in this ledger and records only on a late-week refresh pass; "
+            "zero at the Tuesday lock is expected"
+        ),
+    },
+    "late_week_leader_median_follow_0_5_off_incumbent": {
+        "ledger": f"prospective/{LATE_WEEK_LEDGER}",
+        "loader": _parquet_ledger(f"prospective/{LATE_WEEK_LEDGER}"),
+        "written_by": "refresh-picks --record-decisions",
+        "recording_path": "refresh/dedicated",
+        "wired": True,
+        "legitimately_empty": (
+            "the 0.5-off-threshold arm shares the served row's off_threshold_challenger_id "
+            "metadata column in this ledger and records only on a late-week refresh pass; "
+            "zero at the Tuesday lock is expected"
+        ),
+    },
+    "late_week_leader_median_follow_flat_1_0_off_incumbent": {
+        "ledger": f"prospective/{LATE_WEEK_LEDGER}",
+        "loader": _parquet_ledger(f"prospective/{LATE_WEEK_LEDGER}"),
+        "written_by": "refresh-picks --record-decisions",
+        "recording_path": "refresh/dedicated",
+        "wired": True,
+        "legitimately_empty": (
+            "the flat-1.0-threshold arm shares the served row's flat_threshold_challenger_id "
+            "metadata column in this ledger and records only on a late-week refresh pass; "
+            "zero at the Tuesday lock is expected"
+        ),
+    },
+    "consensus_movement_1_0_off_incumbent": {
+        "ledger": f"prospective/{CONSENSUS_MOVEMENT_LEDGER}",
+        "loader": _parquet_ledger(f"prospective/{CONSENSUS_MOVEMENT_LEDGER}"),
+        "written_by": "refresh-picks --record-decisions",
+        "recording_path": "refresh/dedicated",
+        "wired": True,
+        "legitimately_empty": (
+            "records only on a late-week refresh pass; zero at the Tuesday lock is expected"
+        ),
+    },
+    "late_week_follow_no_sunday_blackout": {
+        "ledger": f"prospective/{SUNDAY_BLACKOUT_LEDGER}",
+        "loader": _parquet_ledger(f"prospective/{SUNDAY_BLACKOUT_LEDGER}"),
+        "written_by": "refresh-picks --record-decisions",
+        "recording_path": "refresh/dedicated",
+        "wired": True,
+        "legitimately_empty": (
+            "records only on a late-week refresh pass, and only once Sunday-day book "
+            "movement exists; zero on an earlier pass is expected"
         ),
     },
     "injury_signal_refresh_tilt": {
