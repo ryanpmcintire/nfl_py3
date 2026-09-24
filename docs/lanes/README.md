@@ -41,7 +41,6 @@ modified lane when the prompt just says to continue.
 - [lead65-protection-window-split](lead65-protection-window-split.md) — decided 2026-09-23: served flag sum unchanged; week-gated variant stays a prospective challenger.
 - [lead59-archive-battery](lead59-archive-battery.md) — LEAD-59 src fix and battery re-run done, 23 cells recorded; type-trait binning measured 2026-09-23 (2 cells, both unresolved_below_power, archive unreachable pre-2015), record commands queued for the root
 - [token-diet](token-diet.md) — session-startup token cost cut about 80%; remaining: trim the three 15 KB+ open ROADMAP rows (owner text) and decide whether `.claude/` hooks should be tracked
-- [odds-api-key-deactivated](odds-api-key-deactivated.md) — 2026-09-19: bulk odds captures failing HTTP 401 DEACTIVATED_KEY (billing); owner action needed before the next odds window
 - [total-conditioned-lattice](total-conditioned-lattice.md) — total-banded key-number lattice measured 2026-09-23 vs served discrete read, mixed sign across metrics/seasons, unresolved_below_power; two `weak-signals record` commands queued for the root
 - [line-move-regrade-legacy](line-move-regrade-legacy.md) — 2026-09-23: batch 1 (8 legacy terms) measured, roof_state_predicted_open best-of-8 fails OOS replication on 2011-2019; batch 2 partial, 7/8 recorded (rookie_priors, low_total_div_home_dog resolved wrong-sign); division_revenge_tilt builder failing, batch-1/2 record commands queued for the root.
 - [prospective-leads-2026-09-23](prospective-leads-2026-09-23.md) — 2026-09-23: total_conditioned_key_number_lattice_v1 registered and live-dry-run verified as a prospective challenger; all-books median market move dropped (does not beat the served move, P+ 0.22).
@@ -52,6 +51,7 @@ modified lane when the prompt just says to continue.
 
 ## Done
 
+- [odds-api-key-deactivated](done/odds-api-key-deactivated.md) - closed: owner cancelled The Odds API on purpose (2026-09-19); paid jobs disabled; current odds come from free sources (free-odds-sources lane). Never raise it as an owner action.
 - [base-model-recency](done/base-model-recency.md) - 2026-09-23: recent-season weighting flat in the pick model; standalone margins resolved worse.
 - [extended-population-regrade](done/extended-population-regrade.md) - 2026-09-23: three Tuesday terms on 2011-2025, all unresolved.
 - [fit-ridge-derivation](done/fit-ridge-derivation.md) - 2026-09-23: fit constants traced; nested ridge picks the same games; Strong beats Slight on 2011-2025.

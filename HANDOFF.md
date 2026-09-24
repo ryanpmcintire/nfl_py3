@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-24T10:28:29.170944+00:00`
+Refreshed at: `2026-09-24T10:38:02.552088+00:00`
 
 ## Start here
 
@@ -21,13 +21,14 @@ Refreshed at: `2026-09-24T10:28:29.170944+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `ba0e2bb971a0` — Disable the mid-week private odds captures; the source policy allows Sunday only
-- Pending change set: 12 paths
+- Baseline commit: `9b39f31ddd16` — Record the owner directive: show the average book line on the board
+- Pending change set: 13 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - ` M README.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
+  - `M  docs/lanes/README.md`
+  - `R  docs/lanes/odds-api-key-deactivated.md -> docs/lanes/done/odds-api-key-deactivated.md`
   - `M  docs/lanes/free-odds-sources.md`
   - ` M docs/model.html`
   - ` M tiebreaker.json`

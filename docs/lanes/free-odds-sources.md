@@ -50,7 +50,7 @@ Replace the dead paid Odds API with current free NFL spreads for private persona
 
 - 2026-09-23 19:01 ET root: odds_private_wed/fri/sat disabled (config/source_policies.json limits Bovada and Odds Gap to a bounded Sunday pre-kickoff capture, no external publication); daemon reloaded. The one manual Wednesday capture (20260923T211819Z) already ran and fed the Wednesday refresh that moved ARI@SF, MIN@TB, TEN@NYG; those picks stay as recorded. Books now shows a number again only when a publishable source (the_odds_api or ESPN pickcenter) is live.
 
-- 2026-09-23 root: Books now reads "No public line" with an explanation (d39e097). Only publishable current-line sources are the_odds_api (key deactivated) and espn_scoreboard_pickcenter (HTTP 403, jobs disabled by policy); Bovada and Odds Gap are private_research_only in config/source_policies.json. A number returns to the board only when a publishable source is live.
+- 2026-09-23 root: Books now reads "No public line" with an explanation (d39e097). Only publishable current-line sources are the_odds_api (cancelled by owner decision, never renewed) and espn_scoreboard_pickcenter (HTTP 403, jobs disabled by policy); Bovada and Odds Gap are private_research_only in config/source_policies.json. A number returns to the board only when a publishable source is live.
 
 - 2026-09-23 18:55 ET root: capture daemon restarted (new PIDs 21792/29628, 181 enabled jobs); odds_private_wed/fri/sat are live. Nothing pending on the owner.
 
@@ -62,7 +62,7 @@ Replace the dead paid Odds API with current free NFL spreads for private persona
   again mid-week (not right after a manual exercise) to confirm the 3-book
   merge holds up under the daemon's own timing, same as it did for the manual
   run today.
-- `docs/lanes/odds-api-key-deactivated.md`: still nothing to do there (owner
+- `docs/lanes/done/odds-api-key-deactivated.md`: still nothing to do there (owner
   declined re-subscribe; paid jobs stay disabled).
 
 ## State (2026-09-23, this session)
@@ -71,7 +71,7 @@ Replace the dead paid Odds API with current free NFL spreads for private persona
   `scripts/capture_scheduler.py:488-521` shows `odds_wed_opener`, `odds_thu_tnf`,
   `odds_sat` all with `enabled=False`. `data/scheduler_log.txt` has zero `odds_wed*`,
   `odds_thu*`, `odds_fri*`, `odds_sat*` entries after 2026-09-18T20:34 (the last MISSED
-  row); no new 401s, matching `docs/lanes/odds-api-key-deactivated.md`'s "no
+  row); no new 401s, matching `docs/lanes/done/odds-api-key-deactivated.md`'s "no
   re-subscribe" decision. Nothing changed here; no action needed.
 - **Measured**: Week 3 2026 (the coming Sunday, kickoff week of Sep 27) has 16 games in
   `data/market/raw`. 15 still carry only the dead paid API's Sep 8-13 opener as their
@@ -138,7 +138,7 @@ Replace the dead paid Odds API with current free NFL spreads for private persona
 
 - Neither free source provides a confirmed book-specific quote update time. No public odds redistribution is authorized; sourced decisions and private analysis remain separate. ESPN stays blocked at HTTP 403. Public Action odds path needs distinct provenance/access review before adding it as a normalized feed.
 - No Odds API billing action needed; owner already declined re-subscribe
-  (`docs/lanes/odds-api-key-deactivated.md`).
+  (`docs/lanes/done/odds-api-key-deactivated.md`).
 
 ## State (2026-09-23, mid-week free capture unit)
 

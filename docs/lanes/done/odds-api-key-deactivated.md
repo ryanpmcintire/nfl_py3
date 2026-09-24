@@ -1,5 +1,7 @@
 # Odds API key deactivated
 
+CLOSED. The owner cancelled the subscription deliberately and will not renew it. This is not an open item or an owner action; current odds come from free sources (`docs/lanes/free-odds-sources.md`).
+
 ## Goal
 
 Restore the Tuesday/Wednesday/Thursday/Friday/Saturday odds captures. Done when
