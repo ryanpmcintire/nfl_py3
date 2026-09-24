@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-24T10:38:02.552088+00:00`
+Refreshed at: `2026-09-24T10:38:26.476542+00:00`
 
 ## Start here
 
@@ -21,15 +21,13 @@ Refreshed at: `2026-09-24T10:38:02.552088+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `9b39f31ddd16` — Record the owner directive: show the average book line on the board
-- Pending change set: 13 paths
+- Baseline commit: `f59e10ff0e4f` — Close the Odds API lane: the owner cancelled the subscription on purpose
+- Pending change set: 11 paths
   - ` M CURRENT_PREDICTIONS.md`
+  - `M  HANDOFF.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/README.md`
-  - `R  docs/lanes/odds-api-key-deactivated.md -> docs/lanes/done/odds-api-key-deactivated.md`
-  - `M  docs/lanes/free-odds-sources.md`
   - ` M docs/model.html`
   - ` M tiebreaker.json`
   - `?? registry/experiments/margin-backtest/20260924T005342Z.json`
