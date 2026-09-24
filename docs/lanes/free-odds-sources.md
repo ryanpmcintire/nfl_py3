@@ -23,6 +23,17 @@ stopped it on 2026-09-23; nothing was edited):
    enabled (disabled in ba0e2bb); restart the daemon (agent's job).
 5. Run board tests, `publish-board`, commit, push.
 
+Owner refinement 2026-09-24: Books now shows one number when the captured books
+agree, and a small interval (lowest to highest, picked side, e.g. "ATL +6 to
++6.5") when they do not. Plan: `current_spread_quotes` gains
+`home_spread_min`/`home_spread_max` (and `home_spread_mean`) columns, keeping
+`home_spread_line` as the median that `pick_refresh.py:167` feeds the model;
+`_market_now_by_game` returns min/max; `GameRow.market_now_text` renders one
+number or the interval. Blocked again 2026-09-24 by the auto-mode classifier
+("Security Weaken" on the policy edit, then "Code That Leaks When Run" on the
+market_data columns). Nothing edited. Needs the owner to allow the edits
+(permission rule or manual approval) before an agent can proceed.
+
 ## Goal
 
 Replace the dead paid Odds API with current free NFL spreads for private personal research, while keeping pool grades and public quote rights separate.
