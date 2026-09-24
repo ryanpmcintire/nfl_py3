@@ -92,3 +92,7 @@ Fixed. Root cause was two bugs, both fixed and verified this session.
 ## Open
 - None. Both bugs are fixed, minimally, with no test files added
   (moratorium respected) and no comments added to touched `.py` files.
+
+## Root follow-up 2026-09-24 15:10 ET
+- Measured: live `report_for_publication` at 15:08 ET reads inactives `not_due` (due 22:45 UTC), but the card written by the 15:00 refresh_thu still printed "inactives complete". The card's freshness line comes from a different evaluation path or instant; check it after the 19:15 refresh_thu_inactives_primetime run (expect complete with rows > 0, or degraded if RotoWire's markup does not parse).
+- Scheduler restarted 15:03 ET (pid 28808) to load the BEST-PICK-LEDGER logging.

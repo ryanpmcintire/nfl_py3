@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-24T18:52:42.947976+00:00`
+Refreshed at: `2026-09-24T19:04:53.050133+00:00`
 
 ## Start here
 
@@ -21,29 +21,15 @@ Refreshed at: `2026-09-24T18:52:42.947976+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `a7bf8ce997fa` — Rows flag a starting QB who missed or was limited in practice
-- Pending change set: 26 paths
-  - `M  ROADMAP.md`
-  - ` M docs/findings.html`
-  - ` M docs/history.html`
-  - ` M docs/index.html`
-  - `M  docs/lanes/README.md`
-  - `M  docs/lanes/conditional-signal-atlas.md`
-  - `R  docs/lanes/injury-scenario-producer.md -> docs/lanes/done/injury-scenario-producer.md`
-  - `R  docs/lanes/statistical-audit-2026-09-15.md -> docs/lanes/done/statistical-audit-2026-09-15.md`
-  - `A  docs/lanes/inactives-capture-empty.md`
-  - `A  docs/lanes/lead53-sunday-renomination.md`
-  - `A  docs/lanes/lead64-friday-designations.md`
-  - `M  docs/lanes/market-move-decomposition.md`
-  - `A  docs/lanes/mod17-unified-served-numbers.md`
-  - `A  docs/lanes/mod18-spread-regime.md`
-  - `A  docs/lanes/ui20-2026-09-24.md`
-  - ` M docs/model.html`
-  - `M  registry/weak_signals.json`
-  - `M  scripts/capture_scheduler.py`
-  - `A  scripts/mod18_spread_regime.py`
-  - `M  src/nfl_ats/board_content.py`
-  - ...and 6 more
+- Baseline commit: `24849a811dca` — Fix empty inactives capture, align tiebreaker with the served pick, measure spread-size terms
+- Pending change set: 7 paths
+  - `M  CURRENT_PREDICTIONS.md`
+  - `M  HANDOFF.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - `M  docs/lanes/inactives-capture-empty.md`
+  - `M  docs/model.html`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

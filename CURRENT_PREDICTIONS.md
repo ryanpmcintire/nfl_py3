@@ -38,9 +38,9 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 `Cover chance` is the picked side's chance to cover. Cover chance is a fitted estimate, excluding ties. Across 1,503 past games with each season held out of fitting, strong estimates won 60% and slight estimates won 55%. These broad groups do not establish a large advantage for the single highest estimate.
 
 <!-- LATE_WEEK_REFRESH:START -->
-## Late-week refresh (as of 2026-09-24T16:23:02.642151+00:00)
+## Late-week refresh (as of 2026-09-24T19:00:47.136785+00:00)
 
-2 picks changed since the Tuesday card (lineups_refresh), recomputed with current data but scored at the frozen Tuesday grading line. Only games whose deadline (their own kickoff, or that week's Sunday 4:00 PM ET if earlier) had not yet passed were eligible. "Policy" identifies the probability rule recorded for that revision. `four_term_pick_probability_v1` combines the model, situational evidence and available line movement into the same calibrated chance shown on the card. Earlier revisions retain their original policy labels. Where this table and the picks table above disagree, the side here is the one being played.
+2 picks changed since the Tuesday card (thursday_afternoon), recomputed with current data but scored at the frozen Tuesday grading line. Only games whose deadline (their own kickoff, or that week's Sunday 4:00 PM ET if earlier) had not yet passed were eligible. "Policy" identifies the probability rule recorded for that revision. `four_term_pick_probability_v1` combines the model, situational evidence and available line movement into the same calibrated chance shown on the card. Earlier revisions retain their original policy labels. Where this table and the picks table above disagree, the side here is the one being played.
 
 | Matchup   | Previous pick   | New pick   | Model estimate   | Policy                        |
 |:----------|:----------------|:-----------|:-----------------|:------------------------------|
