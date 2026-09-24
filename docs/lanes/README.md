@@ -20,6 +20,10 @@ modified lane when the prompt just says to continue.
 
 ## Active
 
+- [inactives-capture-empty](inactives-capture-empty.md) - 2026-09-24: RotoWire fallback now parses (150 rows on an archived page); check the first live T-90 manifest tonight (ATL at GB) and Sunday.
+- [lead53-sunday-renomination](lead53-sunday-renomination.md) - 2026-09-24: ranks on the served four-term probability; after Sun 10:00 ET grep BEST-PICK-LEDGER in data/scheduler_log.txt for the Week 3 pairing.
+- [lead64-friday-designations](lead64-friday-designations.md) - 2026-09-24: headline designations lead the official file but only n=3 checkable; not wired; rerun the join after more weeks now that inactives capture works.
+- [pol10-prospective-2026](pol10-prospective-2026.md) - 2026-09-24: prospective scorecard (card 24-8, Best Pick 1-1, n=32); rerun scripts/prospective_scorecard_2026.py after each graded week.
 - [mod18-spread-regime](mod18-spread-regime.md) - 2026-09-24: MOD-18 Unit 1 measured; served large-spread deficit shrinks and does not replicate on 2011-2025; fitted spread-size candidate unresolved_below_power both windows (P+ 0.34, 0.26); two record commands queued for the root.
 - [market-move-decomposition](market-move-decomposition.md) - 2026-09-24: all arms recorded (Unit 3 all-books active-window arm unresolved, P+ 0.22); only an optional train/serve window reconciliation look remains.
 - [positive-control-power](positive-control-power.md) - 2026-09-23: minimum detectable effect harness; decides which unresolved cells are bounded by a control.
@@ -50,6 +54,13 @@ modified lane when the prompt just says to continue.
 
 ## Done
 
+- [card-freshness-and-log-labels](done/card-freshness-and-log-labels.md) - 2026-09-24: refresh passes rewrite the card's freshness line; no follow-rule log label.
+- [four-term-extended-training](done/four-term-extended-training.md) - 2026-09-24: 2011-2025 training does not beat served 2020-2025 training (-0.27 pts, P+ 0.25); recorded.
+- [publish-predictions-preservation](done/publish-predictions-preservation.md) - 2026-09-24: same-week republish keeps the late-week refresh block; inactive challengers skip by name.
+- [ui20-2026-09-24](done/ui20-2026-09-24.md) - 2026-09-24: Cover chance tooltip states distance from a coin flip.
+- [lead61-second-half-channel](done/lead61-second-half-channel.md) - 2026-09-24: no free second-half source; challenger skips by name.
+- [mod17-unified-served-numbers](done/mod17-unified-served-numbers.md) - 2026-09-24: tiebreaker lattice centres on the served side.
+- [coordinator-adjudication-2026](done/coordinator-adjudication-2026.md) - 2026-09-24: in-season scan covers 2026; weekly coordinators_tue re-run adjudicates any 2026 edit.
 - [statistical-audit-2026-09-15](done/statistical-audit-2026-09-15.md) - closed 2026-09-24: flip-chain and lookup findings superseded by the four-term probability and served-probability display; decisive-record rule lives in AGENTS.md.
 - [injury-scenario-producer](done/injury-scenario-producer.md) - PER-10 closed 2026-09-24: margin mapping fit and scenario mixture graded; both cells recorded unresolved_below_power; kernel stays out of src/.
 - [odds-api-key-deactivated](done/odds-api-key-deactivated.md) - closed: owner cancelled The Odds API on purpose (2026-09-19); paid jobs disabled; current odds come from free sources (free-odds-sources lane). Never raise it as an owner action.

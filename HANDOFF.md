@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-24T20:26:20.523032+00:00`
+Refreshed at: `2026-09-24T20:26:53.611092+00:00`
 
 ## Start here
 
@@ -21,13 +21,16 @@ Refreshed at: `2026-09-24T20:26:20.523032+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `f0339b4466b0` — Findings signal list carries every served term across two splits
-- Pending change set: 5 paths
-  - `A  docs/lanes/publish-predictions-preservation.md`
-  - `M  scripts/lockday_verify.py`
-  - `M  src/nfl_ats/cli_commands/publishing.py`
-  - `M  src/nfl_ats/publishing.py`
-  - `M  tests/test_cli.py`
+- Baseline commit: `542a8835c75f` — Republishing a week keeps its late-week refresh section
+- Pending change set: 8 paths
+  - `M  docs/lanes/README.md`
+  - `R  docs/lanes/card-freshness-and-log-labels.md -> docs/lanes/done/card-freshness-and-log-labels.md`
+  - `R  docs/lanes/coordinator-adjudication-2026.md -> docs/lanes/done/coordinator-adjudication-2026.md`
+  - `R  docs/lanes/four-term-extended-training.md -> docs/lanes/done/four-term-extended-training.md`
+  - `R  docs/lanes/lead61-second-half-channel.md -> docs/lanes/done/lead61-second-half-channel.md`
+  - `R  docs/lanes/mod17-unified-served-numbers.md -> docs/lanes/done/mod17-unified-served-numbers.md`
+  - `R  docs/lanes/publish-predictions-preservation.md -> docs/lanes/done/publish-predictions-preservation.md`
+  - `R  docs/lanes/ui20-2026-09-24.md -> docs/lanes/done/ui20-2026-09-24.md`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
