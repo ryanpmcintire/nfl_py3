@@ -76,6 +76,14 @@ _SECTION_SPLIT_CANDIDATES = (
     re.compile(r'<section class="nfl-o-inactives-report__unit">'),
 )
 
+_ROTOWIRE_TEAM_HEADER = re.compile(
+    r'<div class="bg-concrete border-tb"[^>]*>(.*?)</div>', re.DOTALL
+)
+_ROTOWIRE_TEAM_LIST = re.compile(r'<ul class="list is-small[^"]*"[^>]*>(.*?)</ul>', re.DOTALL)
+_ROTOWIRE_LIST_ITEM = re.compile(r"<li>(.*?)</li>", re.DOTALL)
+_ROTOWIRE_POSITION = re.compile(r"<span[^>]*>([^<]*)</span>")
+_ROTOWIRE_PLAYER_LINK = re.compile(r"<a[^>]*>([^<]*)</a>")
+
 FetchFn = Callable[[str, str], tuple[str | None, int | None, str | None, bool]]
 
 
@@ -219,6 +227,53 @@ def _parse_shared_design_system(
     return rows, warnings
 
 
+def _parse_rotowire_grid(
+    html_text: str,
+    *,
+    season: int,
+    week: int,
+    source_url: str,
+    fetched_at_utc: str,
+) -> tuple[list[dict[str, Any]], list[str]]:
+
+    warnings: list[str] = []
+    headers = list(_ROTOWIRE_TEAM_HEADER.finditer(html_text))
+    lists = list(_ROTOWIRE_TEAM_LIST.finditer(html_text))
+    if not headers or not lists:
+        return [], warnings
+    if len(headers) != len(lists):
+        warnings.append(f"team header/list count mismatch on {source_url}")
+
+    rows: list[dict[str, Any]] = []
+    for header_match, list_match in zip(headers, lists, strict=False):
+        team_name = strip_html(header_match.group(1))
+        nickname = team_name.rsplit(" ", 1)[-1].casefold() if team_name else ""
+        code = NICKNAME_TO_CODE.get(nickname, "")
+        if not code:
+            warnings.append(f"unresolved team {team_name!r} in a {source_url} section")
+            continue
+        for item_html in _ROTOWIRE_LIST_ITEM.findall(list_match.group(1)):
+            name_match = _ROTOWIRE_PLAYER_LINK.search(item_html)
+            player = strip_html(name_match.group(1)) if name_match else ""
+            if not player:
+                continue
+            position_match = _ROTOWIRE_POSITION.search(item_html)
+            position = strip_html(position_match.group(1)) if position_match else ""
+            rows.append(
+                {
+                    "season": season,
+                    "week": week,
+                    "team": code,
+                    "player_name": player,
+                    "position": position or None,
+                    "status": "Inactive",
+                    "source_url": source_url,
+                    "fetched_at_utc": fetched_at_utc,
+                }
+            )
+    return rows, warnings
+
+
 def _schedule_lookup(repo: Path, season: int, week: int) -> dict[str, tuple[str, str, str]]:
 
     hits = sorted((repo / "data" / "raw").glob("*/schedules.parquet"))
@@ -350,7 +405,7 @@ def run_capture(
                 if empty_reason is None:
                     empty_reason = EMPTY_REASON_OFFSEASON_PLACEHOLDER
             else:
-                fb_rows, fb_warnings = _parse_shared_design_system(
+                fb_rows, fb_warnings = _parse_rotowire_grid(
                     fallback_html,
                     season=resolved_season,
                     week=resolved_week,
@@ -361,11 +416,12 @@ def run_capture(
                 if fb_rows:
                     rows = fb_rows
                     source_used = "fallback"
-                    warnings.append(
-                        "primary source parsed 0 rows without showing its known "
-                        "placeholder text -- its guessed markup structure likely "
-                        "needs fixing against real in-season data"
-                    )
+                    if primary_html is not None and not primary_showed_placeholder:
+                        warnings.append(
+                            "primary source parsed 0 rows without showing its known "
+                            "placeholder text -- its markup structure likely needs "
+                            "fixing against real in-season data"
+                        )
 
     ok = True
     if not rows and empty_reason is None:

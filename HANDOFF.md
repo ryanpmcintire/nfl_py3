@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-24T19:04:53.050133+00:00`
+Refreshed at: `2026-09-24T19:44:10.375229+00:00`
 
 ## Start here
 
@@ -21,15 +21,21 @@ Refreshed at: `2026-09-24T19:04:53.050133+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `24849a811dca` — Fix empty inactives capture, align tiebreaker with the served pick, measure spread-size terms
-- Pending change set: 7 paths
-  - `M  CURRENT_PREDICTIONS.md`
-  - `M  HANDOFF.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
+- Baseline commit: `cb31da8181e4` — Publish Thursday refresh and coin-flip tooltip; refresh handoff
+- Pending change set: 13 paths
+  - ` M docs/index.html`
+  - ` M docs/lanes/conditional-signal-atlas.md`
+  - `A  docs/lanes/coordinator-adjudication-2026.md`
   - `M  docs/lanes/inactives-capture-empty.md`
-  - `M  docs/model.html`
+  - `A  docs/lanes/pol10-prospective-2026.md`
+  - ` M scripts/capture_scheduler.py`
+  - ` M scripts/ingest_coordinator_history.py`
+  - `A  scripts/prospective_scorecard_2026.py`
+  - ` M src/nfl_ats/cli_commands/publishing.py`
+  - `M  src/nfl_ats/inactives_capture.py`
+  - ` M src/nfl_ats/pick_refresh.py`
+  - ` M src/nfl_ats/signal_atlas.py`
+  - `?? docs/lanes/card-freshness-and-log-labels.md`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
