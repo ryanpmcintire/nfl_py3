@@ -34105,6 +34105,62 @@
       "source": "artifacts/four_term_extended_training/20260924T195332Z/summary.json",
       "standard_error": null
     },
+    "four_term_nonlinear_gbt_vs_served": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Whole season-block interval below zero (P+ 0.0001); decisive games served 110-91 on 201; Brier and log loss worse (P+ of worse 0.94); shallow trees on these four inputs lose out of season",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Gradient-boosted trees (depth 2, 100 iterations, lr 0.05, leaf 50, fixed a priori) on the same four served inputs vs the served ridge logistic, LOSO 2020-2025, 1,503 opener-graded games",
+      "effect": -1.264,
+      "effect_units": "accuracy_points",
+      "family": "four_term_nonlinear_check_v1",
+      "interval": [
+        -2.527,
+        -0.349
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "A tree model on the same four inputs picked worse than the current fitted probability out of season.",
+      "probability_positive": 0.000125,
+      "recorded_at": "2026-09-24",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/four_term_nonlinear_check/20260924T202959Z/summary.json",
+      "standard_error": null
+    },
+    "four_term_pairwise_interactions_vs_served": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero; decisive games served 36-34 on 70; Brier interval crosses zero",
+      "closing_ground": null,
+      "description": "Served ridge logistic plus the six pairwise interactions of its four standardized terms (ridge fixed), LOSO 2020-2025 vs the served base on 1,503 games",
+      "effect": -0.133,
+      "effect_units": "accuracy_points",
+      "family": "four_term_nonlinear_check_v1",
+      "interval": [
+        -0.944,
+        0.47
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Adding interactions between the four inputs did not pick better; the difference is within noise.",
+      "probability_positive": 0.3925,
+      "recorded_at": "2026-09-24",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/four_term_nonlinear_check/20260924T202959Z/summary.json",
+      "standard_error": null
+    },
     "four_term_probability_v1__best_pick_m5_star_vs_a0_incumbent": {
       "category": "modeling",
       "classification": "unresolved_below_power",
