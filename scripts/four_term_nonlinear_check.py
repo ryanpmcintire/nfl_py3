@@ -289,9 +289,7 @@ def week3_2026_pick_check(
     frame["n1_home_probability"] = n1_model.predict_proba(
         frame[list(FIT_FEATURES)].astype(float).to_numpy()
     )[:, n1_positive_index]
-    frame["n2_home_probability"] = predict_logit(
-        frame, N2_FEATURES, n2_beta, n2_means, n2_stds
-    )
+    frame["n2_home_probability"] = predict_logit(frame, N2_FEATURES, n2_beta, n2_means, n2_stds)
     frame["base_pick_home"] = frame["base_home_probability"].ge(0.5)
     frame["n1_pick_home"] = frame["n1_home_probability"].ge(0.5)
     frame["n2_pick_home"] = frame["n2_home_probability"].ge(0.5)
@@ -345,8 +343,8 @@ def main() -> None:
     for label in ("base", "n1", "n2"):
         col = f"{label}_oos_p"
         scored[f"{label}_pick_home"] = scored[col].ge(0.5)
-        scored[f"{label}_correct"] = scored[f"{label}_pick_home"].astype(float).eq(
-            scored["home_covered"]
+        scored[f"{label}_correct"] = (
+            scored[f"{label}_pick_home"].astype(float).eq(scored["home_covered"])
         )
 
     base_metrics = prob_metrics(scored["base_oos_p"].to_numpy(), scored["home_covered"].to_numpy())

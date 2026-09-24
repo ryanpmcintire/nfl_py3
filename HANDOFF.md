@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-24T20:31:42.740079+00:00`
+Refreshed at: `2026-09-24T20:31:58.890695+00:00`
 
 ## Start here
 
@@ -21,11 +21,11 @@ Refreshed at: `2026-09-24T20:31:42.740079+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `69f69ebf9c77` — Index today's lanes; close finished ones
+- Baseline commit: `f171b453124a` — Nonlinear fits of the four served terms do not beat the logistic
 - Pending change set: 3 paths
-  - `A  docs/lanes/four-term-nonlinear-check.md`
-  - `M  registry/weak_signals.json`
-  - `A  scripts/four_term_nonlinear_check.py`
+  - `M  docs/lanes/README.md`
+  - `R  docs/lanes/four-term-nonlinear-check.md -> docs/lanes/done/four-term-nonlinear-check.md`
+  - `M  scripts/four_term_nonlinear_check.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

@@ -55,6 +55,7 @@ modified lane when the prompt just says to continue.
 ## Done
 
 - [card-freshness-and-log-labels](done/card-freshness-and-log-labels.md) - 2026-09-24: refresh passes rewrite the card's freshness line; no follow-rule log label.
+- [four-term-nonlinear-check](done/four-term-nonlinear-check.md) - 2026-09-24: trees on the four served terms resolved worse (-1.26 pts, wrong sign); interactions unresolved.
 - [four-term-extended-training](done/four-term-extended-training.md) - 2026-09-24: 2011-2025 training does not beat served 2020-2025 training (-0.27 pts, P+ 0.25); recorded.
 - [publish-predictions-preservation](done/publish-predictions-preservation.md) - 2026-09-24: same-week republish keeps the late-week refresh block; inactive challengers skip by name.
 - [ui20-2026-09-24](done/ui20-2026-09-24.md) - 2026-09-24: Cover chance tooltip states distance from a coin flip.
