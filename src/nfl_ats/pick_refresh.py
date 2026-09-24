@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 from collections import Counter
 from collections.abc import Mapping
 from dataclasses import dataclass, field
@@ -1917,6 +1918,32 @@ def _refresh_section_markdown(
     return heading + star + intro + table + "\n"
 
 
+_SOURCE_FRESHNESS_LINE_PATTERN = re.compile(r"^\*\*Source freshness:.*$", re.MULTILINE)
+
+
+def _refreshed_source_freshness_line(
+    text: str,
+    result: RefreshResult,
+    data_root: Path | None,
+    artifacts_root: Path | None,
+) -> str:
+    if data_root is None and artifacts_root is None:
+        return text
+    if not _SOURCE_FRESHNESS_LINE_PATTERN.search(text):
+        return text
+    from nfl_ats.source_freshness_policy import report_for_publication
+
+    try:
+        live_report = report_for_publication(
+            data_root=data_root,
+            artifacts_root=artifacts_root,
+            now=result.computed_at_utc,
+        )
+    except Exception:
+        return text
+    return _SOURCE_FRESHNESS_LINE_PATTERN.sub(live_report.summary_line(), text, count=1)
+
+
 def append_refresh_to_card(
     destination: Path,
     result: RefreshResult,
@@ -1924,6 +1951,8 @@ def append_refresh_to_card(
     note: str = "",
     renomination: SundayRenomination | None = None,
     ledger_latest: Mapping[str, Mapping[str, Any]] | None = None,
+    data_root: Path | None = None,
+    artifacts_root: Path | None = None,
 ) -> None:
 
     if not destination.is_file():
@@ -1932,6 +1961,7 @@ def append_refresh_to_card(
             "run `nfl-ats publish-predictions` first."
         )
     text = destination.read_text(encoding="utf-8")
+    text = _refreshed_source_freshness_line(text, result, data_root, artifacts_root)
     section = _refresh_section_markdown(result, note, renomination, ledger_latest)
     block = f"{LATE_WEEK_REFRESH_START}\n{section.rstrip()}\n{LATE_WEEK_REFRESH_END}"
     if LATE_WEEK_REFRESH_START in text or LATE_WEEK_REFRESH_END in text:

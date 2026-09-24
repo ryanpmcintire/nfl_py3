@@ -1542,6 +1542,8 @@ def _cmd_refresh_picks(args: argparse.Namespace) -> None:
                 note=args.note,
                 renomination=renomination,
                 ledger_latest=ledger_latest,
+                data_root=_data_root(),
+                artifacts_root=_artifacts_root(),
             )
             card: dict[str, Any] = {
                 "written": True,

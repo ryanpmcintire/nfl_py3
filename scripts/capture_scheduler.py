@@ -2084,7 +2084,10 @@ def describe_pick_change(game: dict[str, Any]) -> str:
     delta = game.get("movement_delta")
     followed = game.get("new_pick_side") != game.get("model_only_pick_side")
     if policy and delta is not None and followed:
-        reason = f"; line moved {float(delta):.1f} toward {now.split()[0]}, follow rule"
+        reason = (
+            f"; line moved {float(delta):.1f} toward {now.split()[0]}, "
+            "one fitted input to the probability"
+        )
     matchup = f"{game['away_team']} at {game['home_team']}"
     return f"{matchup}: was {was}, now {now} ({probability:.0%}{reason})"
 
