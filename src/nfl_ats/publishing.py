@@ -50,7 +50,12 @@ from nfl_ats.lineage import (
 )
 from nfl_ats.margin import margin_feature_columns
 from nfl_ats.pick_probability import PickProbabilityModel, landing_rate_sentence
-from nfl_ats.pick_refresh import load_pick_revisions, served_best_pick
+from nfl_ats.pick_refresh import (
+    LATE_WEEK_REFRESH_END,
+    LATE_WEEK_REFRESH_START,
+    load_pick_revisions,
+    served_best_pick,
+)
 from nfl_ats.player_arrests_back_side_overlay import (
     ArrestOverlayResult,
     arrest_overlay_disclosure_note,
@@ -656,6 +661,21 @@ def publish_active_predictions(
         atomic_json(source_report.to_metadata(), forecast_dir / "source_policy.json")
 
     atomic_json(source_report.to_metadata(), destination.parent / "source_policy.json")
+
+    existing_late_week_block: str | None = None
+    if destination.is_file():
+        existing_text = destination.read_text(encoding="utf-8")
+        week_marker = f"# NFL ATS predictions: {metadata['season']} Week {metadata['week']}"
+        if (
+            week_marker in existing_text
+            and existing_text.count(LATE_WEEK_REFRESH_START) == 1
+            and existing_text.count(LATE_WEEK_REFRESH_END) == 1
+        ):
+            start_index = existing_text.index(LATE_WEEK_REFRESH_START)
+            end_index = existing_text.index(LATE_WEEK_REFRESH_END) + len(LATE_WEEK_REFRESH_END)
+            existing_late_week_block = existing_text[start_index:end_index]
+    if existing_late_week_block is not None:
+        detail = detail.rstrip() + "\n\n" + existing_late_week_block + "\n"
 
     atomic_text(detail, destination)
     readme_section = (

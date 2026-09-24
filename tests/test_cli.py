@@ -687,8 +687,10 @@ def test_publish_challenger_result_map_covers_live_active_registry() -> None:
         in entry.get("weekly_recording_command", "")
     }
 
-    assert set(cli.PUBLISH_CHALLENGER_RESULT_KEYS) == expected
-    assert len(set(cli.PUBLISH_CHALLENGER_RESULT_KEYS.values())) == len(expected)
+    assert expected <= set(cli.PUBLISH_CHALLENGER_RESULT_KEYS)
+    assert len(set(cli.PUBLISH_CHALLENGER_RESULT_KEYS.values())) == len(
+        cli.PUBLISH_CHALLENGER_RESULT_KEYS
+    )
 
 
 def _seed_pick_probability(
@@ -1253,6 +1255,25 @@ def test_publish_predictions_records_cleanly_when_a_challenger_is_deactivated(
     destination = tmp_path / "CURRENT_PREDICTIONS.md"
     readme = tmp_path / "README.md"
     readme.write_text("x", encoding="utf-8")
+    registry_dir = tmp_path / "artifacts" / "prospective"
+    registry_dir.mkdir(parents=True, exist_ok=True)
+    (registry_dir / "challengers.json").write_text(
+        json.dumps(
+            {
+                "challengers": [
+                    {
+                        "challenger_id": "backup_qb_fade_overlay",
+                        "status": "DEACTIVATED_STRUCTURAL_NO_OP",
+                    },
+                    {
+                        "challenger_id": "gaussian_mean_mapping_incumbent",
+                        "status": "DEACTIVATED_STRUCTURAL_NO_OP",
+                    },
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
 
     def fake_publish(
         artifacts_root: Path,
@@ -1338,7 +1359,8 @@ def test_publish_predictions_records_cleanly_when_a_challenger_is_deactivated(
     payload = _last_json(capsys.readouterr().out)
 
     assert payload["backup_qb_fade_challenger_ledger"]["recorded"] == 0
-    assert "DEACTIVATED_STRUCTURAL_NO_OP" in payload["backup_qb_fade_challenger_ledger"]["error"]
+    assert payload["backup_qb_fade_challenger_ledger"]["skipped"] is True
+    assert "DEACTIVATED_STRUCTURAL_NO_OP" in payload["backup_qb_fade_challenger_ledger"]["reason"]
     assert payload["clv_ledger"] == {"recorded": 1}
     assert payload["overlay_challenger_ledger"] == {"recorded": 1}
     assert payload["ecdf_mapping_incumbent_challenger_ledger"] == {"recorded": 1}
@@ -1347,7 +1369,7 @@ def test_publish_predictions_records_cleanly_when_a_challenger_is_deactivated(
 
     if mean_refuses:
         assert payload["gaussian_mean_mapping_incumbent_challenger_ledger"]["recorded"] == 0
-        assert "error" in payload["gaussian_mean_mapping_incumbent_challenger_ledger"]
+        assert payload["gaussian_mean_mapping_incumbent_challenger_ledger"]["skipped"] is True
     else:
         assert payload["gaussian_mean_mapping_incumbent_challenger_ledger"] == {"recorded": 1}
 

@@ -41,6 +41,7 @@ from nfl_ats.consensus_movement_refresh_overlay import (
 )
 from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES
 from nfl_ats.crew_tilt_refresh_overlay import record_crew_tilt_refresh_overlay
+from nfl_ats.data import DataContractError
 from nfl_ats.deadline_drag_challenger import record_deadline_drag_challenger_decisions
 from nfl_ats.division_revenge_tilt_overlay import record_division_revenge_tilt_challenger_decisions
 from nfl_ats.ecdf_mapping_incumbent_overlay import (
@@ -122,6 +123,7 @@ from nfl_ats.prospective import (
     record_movement_rule_composed_challenger_decisions,
     record_nflcom_refresh_out2_starters_challenger_decisions,
 )
+from nfl_ats.prospective_scoring import ACTIVE_CHALLENGER_STATUS, find_challenger
 from nfl_ats.publishing import publish_active_predictions
 from nfl_ats.qb_revenge_deadline_drag_stack_challenger import (
     record_qb_revenge_deadline_drag_stack_challenger_decisions,
@@ -157,6 +159,7 @@ from nfl_ats.veteran_rest_back_overlay import record_veteran_rest_back_overlay_d
 
 PUBLISH_CHALLENGER_RESULT_KEYS: dict[str, str] = {
     "tiebreaker_low_side_shade": "tiebreaker_shade_ledger",
+    "backup_qb_fade_overlay": "backup_qb_fade_challenger_ledger",
     "tiebreaker_lattice_centre": "lattice_centre_challenger_ledger",
     "weak_stack_deadline_drag": "deadline_drag_challenger_ledger",
     "weak_stack_expected_lineup_loss": "expected_lineup_loss_challenger_ledger",
@@ -296,6 +299,29 @@ def collect_failed_recorders(
             {"challenger_id": challenger_id, "result_key": result_key, "error": str(error)}
         )
     return sorted(failures, key=lambda failure: failure["challenger_id"])
+
+
+def reclassify_inactive_challengers(
+    result: dict[str, Any], result_keys: dict[str, str], artifacts_root: Path
+) -> None:
+
+    for challenger_id, result_key in result_keys.items():
+        entry = result.get(result_key)
+        if not isinstance(entry, dict) or not entry.get("error"):
+            continue
+        try:
+            status = str(find_challenger(artifacts_root, challenger_id).get("status"))
+        except (FileNotFoundError, DataContractError, ValueError, KeyError):
+            continue
+        if status != ACTIVE_CHALLENGER_STATUS:
+            result[result_key] = {
+                "recorded": 0,
+                "skipped": True,
+                "reason": (
+                    f"challenger registered as {status!r}; only {ACTIVE_CHALLENGER_STATUS} "
+                    "challengers have picks recorded"
+                ),
+            }
 
 
 def _site_directory(destination: Path) -> Path:
@@ -1042,6 +1068,7 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                 "recorded": 0,
                 "error": str(error),
             }
+        reclassify_inactive_challengers(result, PUBLISH_CHALLENGER_RESULT_KEYS, _artifacts_root())
         result["failed_recorders"] = collect_failed_recorders(
             result, PUBLISH_CHALLENGER_RESULT_KEYS
         )
@@ -1530,6 +1557,7 @@ def _cmd_refresh_picks(args: argparse.Namespace) -> None:
         )
     except Exception as error:
         result["late_week_follow_no_sunday_blackout_overlay"] = {"recorded": 0, "error": str(error)}
+    reclassify_inactive_challengers(result, REFRESH_CHALLENGER_RESULT_KEYS, _artifacts_root())
     result["failed_recorders"] = collect_failed_recorders(result, REFRESH_CHALLENGER_RESULT_KEYS)
     recorded_change = bool(args.record_decisions and plan.changed_games)
     if args.publish_card or recorded_change:

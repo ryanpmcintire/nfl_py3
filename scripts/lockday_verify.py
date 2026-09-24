@@ -76,6 +76,11 @@ DEDICATED_LEDGERS: dict[str, dict[str, Any]] = {
         "written_by": "publish-predictions --record-decisions",
         "recording_path": "publish/dedicated",
         "wired": True,
+        "legitimately_empty": (
+            "the served tiebreaker total permanently carries the -1.0 low-side shade "
+            "(TOTAL_LOW_SIDE_SHADE_POINTS in tiebreaker.py), so this challenger's served and "
+            "shaded arms can never pair -- see docs/tiebreaker.md's 2026-09-10 section"
+        ),
     },
     "tiebreaker_lattice_centre": {
         "ledger": "prospective/lattice_centre_decisions.parquet",
