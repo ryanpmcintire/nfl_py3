@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-24T19:45:51.495465+00:00`
+Refreshed at: `2026-09-24T19:47:07.956132+00:00`
 
 ## Start here
 
@@ -21,19 +21,15 @@ Refreshed at: `2026-09-24T19:45:51.495465+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `b2e6f996f289` — Parse RotoWire inactives for real; add 2026 prospective scorecard
-- Pending change set: 12 paths
+- Baseline commit: `9cd8f3938686` — Refresh passes rewrite the card's source-freshness line; drop the follow-rule log label
+- Pending change set: 8 paths
   - ` M docs/index.html`
-  - `A  docs/lanes/card-freshness-and-log-labels.md`
   - ` M docs/lanes/conditional-signal-atlas.md`
-  - ` M docs/lanes/coordinator-adjudication-2026.md`
+  - `M  docs/lanes/coordinator-adjudication-2026.md`
   - ` M docs/lanes/week3-research-recorders.md`
   - ` M registry/conditional_signal_atlas.json`
-  - `M  scripts/capture_scheduler.py`
   - ` M scripts/conditional_signal_atlas.py`
-  - ` M scripts/ingest_coordinator_history.py`
-  - `M  src/nfl_ats/cli_commands/publishing.py`
-  - `M  src/nfl_ats/pick_refresh.py`
+  - `M  scripts/ingest_coordinator_history.py`
   - ` M src/nfl_ats/signal_atlas.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.

@@ -384,7 +384,9 @@ def league_capture(
     stopped = None
     jobs = [(year, team, "preseason") for year in range(2009, 2027) for team in TEAM_NAMES]
     if inseason:
-        jobs += [(year, team, "inseason") for year in range(2022, 2026) for team in TEAM_NAMES]
+        completed = schedules.loc[schedules.home_score.notna() & schedules.away_score.notna()]
+        inseason_seasons = sorted(s for s in completed.season.unique() if s >= 2022)
+        jobs += [(year, team, "inseason") for year in inseason_seasons for team in TEAM_NAMES]
     for season, team, mode in jobs:
         start = f"{season}-09-01T00:00:00Z"
         title = historical_title(team, season)
@@ -397,7 +399,11 @@ def league_capture(
             games = schedules.loc[
                 schedules.season.eq(season)
                 & (schedules.home_team.eq(team) | schedules.away_team.eq(team))
+                & schedules.home_score.notna()
+                & schedules.away_score.notna()
             ]
+            if games.empty:
+                continue
             cutoff = (pd.Timestamp(games.gameday.max()) + pd.Timedelta(days=1)).strftime(
                 "%Y-%m-%dT00:00:00Z"
             )
@@ -578,7 +584,7 @@ def audit_capture(destination: Path) -> dict[str, Any]:
             )
     changes = []
     for (season, team, role), group in history.loc[
-        history.season.between(2022, 2025) & history.role.isin(["OC", "DC"])
+        history.season.ge(2022) & history.role.isin(["OC", "DC"])
     ].groupby(["season", "team", "role"]):
         group = group.sort_values("effective_observed_at").drop_duplicates("revision_id")
         previous = None
