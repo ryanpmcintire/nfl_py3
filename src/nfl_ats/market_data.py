@@ -355,14 +355,7 @@ def load_quote_history(root: Path, *, since: pd.Timestamp | None = None) -> pd.D
         manifest_path = path.parent / "manifest.json"
         if not manifest_path.is_file():
             continue
-        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         frame = pd.read_parquet(path)
-        frame["publication_scope"] = manifest.get(
-            "publication_scope",
-            "derived_allowed"
-            if manifest.get("provider") == ODDS_API_PROVIDER
-            else "private_research_only",
-        )
         frames.append(frame)
     if not frames:
         return pd.DataFrame(columns=QUOTE_COLUMNS)
@@ -382,24 +375,21 @@ def latest_book_quotes(quotes: pd.DataFrame, *, before_kickoff: bool = True) -> 
     return history.sort_values("observed_at_utc").groupby(keys, as_index=False).tail(1)
 
 
-def current_spread_quotes(
-    quotes: pd.DataFrame, *, as_of: datetime | None = None, public_only: bool = False
-) -> pd.DataFrame:
+def current_spread_quotes(quotes: pd.DataFrame, *, as_of: datetime | None = None) -> pd.DataFrame:
     columns = [
         "nflverse_game_id",
         "commence_time_utc",
         "observed_at_utc",
         "home_spread_line",
+        "home_spread_mean",
+        "home_spread_min",
+        "home_spread_max",
         "bookmakers",
         "bookmaker_label",
         "provider_label",
     ]
     if quotes.empty:
         return pd.DataFrame(columns=columns)
-    if public_only:
-        if "publication_scope" not in quotes.columns:
-            return pd.DataFrame(columns=columns)
-        quotes = quotes.loc[~quotes["publication_scope"].astype(str).str.startswith("private_")]
     home = quotes.loc[
         quotes["market"].eq("spreads")
         & quotes["outcome_side"].eq("HOME")
@@ -436,6 +426,9 @@ def current_spread_quotes(
         .agg(
             observed_at_utc=("observed_at_utc", "max"),
             home_spread_line=("home_spread_line", "median"),
+            home_spread_mean=("home_spread_line", "mean"),
+            home_spread_min=("home_spread_line", "min"),
+            home_spread_max=("home_spread_line", "max"),
             bookmakers=("bookmaker_key", "nunique"),
             bookmaker_label=(
                 "bookmaker_title",

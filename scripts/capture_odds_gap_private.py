@@ -161,7 +161,6 @@ def capture(features_path: Path) -> dict[str, Any]:
             "quote_timestamp_semantics": (
                 "retrieved_observed_source_scan_separate_book_update_unknown"
             ),
-            "publication_scope": "private_research_only",
             "attribution": "https://theoddsgap.com",
         },
         provider=SOURCE,

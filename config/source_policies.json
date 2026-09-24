@@ -74,12 +74,9 @@
       "acquisition_allowed": true,
       "raw_retention": "private_local_only",
       "raw_redistribution": "prohibited",
-      "derived_publication": "private_research_only_with_attribution",
+      "derived_publication": "aggregates_only",
       "conditions": [
-        "personal_ai_assistant_research_only",
-        "bounded_sunday_pre_kickoff_capture",
         "no_sustained_polling_or_bulk_scraping",
-        "no_external_feed_repackaging",
         "attribute_theoddsgap_com",
         "source_scan_timestamp_required"
       ]
@@ -91,14 +88,10 @@
       "acquisition_allowed": true,
       "raw_retention": "private_local_only",
       "raw_redistribution": "prohibited",
-      "derived_publication": "private_research_only",
+      "derived_publication": "aggregates_only",
       "conditions": [
-        "personal_research_sunday_pre_kickoff_capture_only",
         "public_unauthenticated_endpoint_only",
-        "bounded_sunday_pre_kickoff_capture",
-        "capture_timestamp_required",
-        "single_book_bovada_label_required",
-        "no_external_quote_publication"
+        "capture_timestamp_required"
       ]
     },
     "espn_scoreboard_pickcenter": {

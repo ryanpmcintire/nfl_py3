@@ -22,7 +22,7 @@ modified lane when the prompt just says to continue.
 
 - [market-move-decomposition](market-move-decomposition.md) - 2026-09-23: five alternative line-move constructions measured; held until the rebuild matches the served move.
 - [positive-control-power](positive-control-power.md) - 2026-09-23: minimum detectable effect harness; decides which unresolved cells are bounded by a control.
-- [free-odds-sources](free-odds-sources.md) - 2026-09-23: three-book current line fixed; free Wed/Fri/Sat captures added (daemon restart pending); board and move-term ingestion under check.
+- [free-odds-sources](free-odds-sources.md) - 2026-09-24: Books now shows posted lines (one number or a low-to-high range); no-publication rule removed; mid-week captures back on; direct Bovada capture needs a fix.
 - [opener-error-transfer](opener-error-transfer.md) - XLG-09 units 1-3, 2026-09-23: point-in-time-correct CFB training on the extended 2011-2025 NFL population still reads unresolved_below_power (+0.12 pts all-graded, +0.27 pts on 2020-2025); four record commands (v2 + v3) queued for the root.
 - [opener-population-backfill](opener-population-backfill.md) - 2026-09-23: 2011-2025 fit population built (3,734 games, +2,231); discrete rebuild of 2011-2019 in progress.
 - [injury-scenario-producer](injury-scenario-producer.md) - PER-10, 2026-09-23: kernel deleted in the repo cut; fitting the injury-value-to-margin mapping out of season.

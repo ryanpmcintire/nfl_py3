@@ -820,9 +820,7 @@ def _board_section(content: BoardContent, *, archived: bool = False) -> str:
         for game in day_games:
             pick_text = f"{escape(game.pick_team)} {escape(game.pick_spread_text)}"
             market_text = (
-                "No public line"
-                if not archived and game.market_now is None
-                else game.market_now_text
+                "No quote" if not archived and game.market_now is None else game.market_now_text
             )
             if game.is_best:
                 pick_cell = (
@@ -891,19 +889,20 @@ def _board_section(content: BoardContent, *, archived: bool = False) -> str:
             )
 
     market_help = (
-        "The latest line captured today before kickoff, written for the picked side. "
-        "How many books agree appears below the line. The pool's own line is the one in "
-        "the Pick column and does not move. No public line means the books we check this week "
-        "do not allow their numbers to be shown here; the pick still uses how those lines moved."
+        "The latest line captured in the last two days, written for the picked side. "
+        "One number means every book we check agrees; a range runs from the lowest to the "
+        "highest book. How many books were checked appears below the line. The pool's own "
+        "line is the one in the Pick column and does not move. No quote means no book has "
+        "posted a line in the last two days."
     )
     market_status = ""
     if not archived:
         missing_quotes = sum(game.market_now is None for game in content.games)
         if missing_quotes:
             coverage = (
-                "Current book lines are checked but cannot be shown here."
+                "No book has posted a line in the last two days."
                 if missing_quotes == len(content.games)
-                else f"Current book lines cannot be shown here for {missing_quotes} games."
+                else f"No book has posted a line in the last two days for {missing_quotes} games."
             )
             market_status = (
                 f'<p class="policy-note"><b>Books now:</b> {coverage} '

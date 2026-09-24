@@ -227,6 +227,8 @@ class GameRow:
     market_now: float | None = None
     market_now_books: int = 0
     market_now_book_label: str = ""
+    market_now_low: float | None = None
+    market_now_high: float | None = None
     qb_note: str | None = None
 
     @property
@@ -234,6 +236,15 @@ class GameRow:
         if self.market_now is None:
             return "—"
         sign = -1.0 if self.pick_team == self.home else 1.0
+        if (
+            self.market_now_low is not None
+            and self.market_now_high is not None
+            and self.market_now_low != self.market_now_high
+        ):
+            low, high = sorted((self.market_now_low * sign, self.market_now_high * sign))
+            low_text = "pk" if low == 0 else f"{low:+g}"
+            high_text = "pk" if high == 0 else f"{high:+g}"
+            return f"{self.pick_team} {low_text} to {high_text}"
         value = self.market_now * sign
         return f"{self.pick_team} pick'em" if value == 0 else f"{self.pick_team} {value:+g}"
 
@@ -242,8 +253,8 @@ class GameRow:
         if self.market_now is None:
             return ""
         sign = -1.0 if self.pick_team == self.home else 1.0
-        delta = (self.market_now - self.market_spread) * sign
-        if abs(delta) < 0.25:
+        delta = round((self.market_now - self.market_spread) * sign * 2) / 2
+        if delta == 0:
             return "unchanged since the pool line"
         return f"{abs(delta):g} {'toward' if delta < 0 else 'against'} {self.pick_team}"
 
@@ -252,8 +263,8 @@ class GameRow:
         if self.market_now is None:
             return ""
         sign = -1.0 if self.pick_team == self.home else 1.0
-        delta = (self.market_now - self.market_spread) * sign
-        if abs(delta) < 0.25:
+        delta = round((self.market_now - self.market_spread) * sign * 2) / 2
+        if delta == 0:
             return "unchanged"
         abs_d = abs(delta)
         word = (
@@ -3043,7 +3054,9 @@ def _build_refresh_lines(
 _KNOWN_SOURCE_POLICY_CARD_STATES = {COMPLETE, DEGRADED, BLOCKED}
 
 
-def _market_now_by_game(data_root: Path, *, now: datetime) -> dict[str, tuple[float, int, str]]:
+def _market_now_by_game(
+    data_root: Path, *, now: datetime
+) -> dict[str, tuple[float, int, str, float, float]]:
     from nfl_ats.market_data import current_spread_quotes, load_quote_history
 
     try:
@@ -3053,24 +3066,23 @@ def _market_now_by_game(data_root: Path, *, now: datetime) -> dict[str, tuple[fl
         )
         if quotes.empty:
             return {}
-        current = current_spread_quotes(quotes, as_of=now, public_only=True)
+        current = current_spread_quotes(quotes, as_of=now)
     except Exception:
         return {}
     if current.empty:
         return {}
-    eastern = ZoneInfo("America/New_York")
     observed = pd.to_datetime(current["observed_at_utc"], utc=True, errors="coerce")
-    current = current.loc[
-        observed.dt.tz_convert(eastern).dt.date.eq(now.astimezone(eastern).date())
-    ]
-    result: dict[str, tuple[float, int, str]] = {}
+    current = current.loc[observed.ge(pd.Timestamp(now) - pd.Timedelta(hours=48))]
+    result: dict[str, tuple[float, int, str, float, float]] = {}
     for _, row in current.iterrows():
         game_id = str(row.get("nflverse_game_id") or "")
-        value = _number(row.get("home_spread_line"))
+        value = _number(row.get("home_spread_mean"))
+        low = _number(row.get("home_spread_min"))
+        high = _number(row.get("home_spread_max"))
         books = int(_number(row.get("bookmakers")) or 0)
-        if game_id and value is not None:
+        if game_id and value is not None and low is not None and high is not None:
             label = "1 book" if books == 1 else f"{books} books"
-            result[game_id] = (value, books, label)
+            result[game_id] = (value, books, label, low, high)
     return result
 
 
@@ -3713,6 +3725,8 @@ def load_board_content(
                 market_now=market_now[0] if market_now is not None else None,
                 market_now_books=market_now[1] if market_now is not None else 0,
                 market_now_book_label=market_now[2] if market_now is not None else "",
+                market_now_low=market_now[3] if market_now is not None else None,
+                market_now_high=market_now[4] if market_now is not None else None,
                 qb_note=qb_notes.get(game_id),
             )
         )

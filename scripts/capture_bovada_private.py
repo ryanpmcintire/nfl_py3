@@ -168,7 +168,6 @@ def capture(features_path: Path) -> dict[str, Any]:
             "capture_kind": "live",
             "book_scope": "single_book_bovada",
             "quote_timestamp_semantics": "book_update_unknown_capture_time_observed",
-            "publication_scope": "private_research_only",
         },
         provider=SOURCE,
     )
