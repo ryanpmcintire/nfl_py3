@@ -1019,12 +1019,25 @@ table.board td.kickoff .lock-countdown:empty{display:none}
   }
   body[data-interactive-page="findings"] .atlas-signal-choice{
     display:flex;
+    width:100%;
     gap:11px;
     align-items:flex-start;
     margin-top:16px;
     padding:14px 12px;
-    border:1px solid #8f6c32;
+    border:1px solid #30383b;
     border-radius:3px;
+    background:transparent;
+    color:#c7cdcf;
+    font:inherit;
+    text-align:left;
+    cursor:pointer;
+  }
+  body[data-interactive-page="findings"] .atlas-signal-choice:hover{
+    border-color:#4a5458;
+    background:#1c2124;
+  }
+  body[data-interactive-page="findings"] .atlas-signal-choice[aria-current="true"]{
+    border-color:#8f6c32;
     background:#252117;
     color:#f4e6c8;
   }
@@ -1033,6 +1046,9 @@ table.board td.kickoff .lock-countdown:empty{display:none}
     min-width:3px;
     height:34px;
     border-radius:2px;
+    background:transparent;
+  }
+  body[data-interactive-page="findings"] .atlas-signal-choice[aria-current="true"] .atlas-signal-mark{
     background:#d9a64a;
   }
   body[data-interactive-page="findings"] .atlas-signal-choice strong,
@@ -1094,9 +1110,18 @@ table.board td.kickoff .lock-countdown:empty{display:none}
     color:#768084;
     font-size:15px;
   }
-  body[data-interactive-page="findings"] .atlas-tabs .is-active{
+  body[data-interactive-page="findings"] .atlas-tabs button{
     align-self:stretch;
+    padding:0;
     padding-top:10px;
+    border:0;
+    border-bottom:2px solid transparent;
+    background:none;
+    color:inherit;
+    font:inherit;
+    cursor:pointer;
+  }
+  body[data-interactive-page="findings"] .atlas-tabs .is-active{
     border-bottom:2px solid #d9a64a;
     color:#f0dfbd;
     font-weight:700;
@@ -1474,6 +1499,9 @@ table.board td.kickoff .lock-countdown:empty{display:none}
     body[data-interactive-page="findings"] .atlas-tabs{
       display:block;
       padding-bottom:12px;
+    }
+    body[data-interactive-page="findings"] .atlas-tabs button{
+      display:block;
     }
     body[data-interactive-page="findings"] .atlas-tabs .is-active{
       display:inline-block;
@@ -2733,30 +2761,47 @@ const rows=$$('tbody tr',table);if(rows.length<12)return;
 const search=document.createElement('label');search.className='reader-search';search.textContent='Find an entry';const input=document.createElement('input');input.type='search';input.placeholder='Search names or descriptions';input.setAttribute('aria-label','Search table '+(index+1));search.append(input);table.closest('.board-scroll')?.before(search);input.addEventListener('input',()=>{const q=input.value.toLowerCase().trim();rows.forEach(r=>r.hidden=!r.textContent.toLowerCase().includes(q))});
 });
 if(page==='findings'){
-const rows=$$('[data-atlas-context]');
-const seasonDetails=document.getElementById('atlas-seasons');
-function selectContext(row){
- const context=row.dataset.atlasContext;
- rows.forEach(button=>button.setAttribute('aria-pressed',String(button===row)));
- $$('[data-atlas-detail]').forEach(panel=>{panel.hidden=panel.dataset.atlasDetail!==context});
- $$('[data-atlas-seasons]').forEach(panel=>{panel.hidden=panel.dataset.atlasSeasons!==context});
+const panels=$$('[data-atlas-family]');
+const railButtons=$$('[data-atlas-signal]');
+function activePanel(){return panels.find(p=>!p.hasAttribute('hidden'))||panels[0]}
+function showFamily(signal,split){
+ const family=signal+'__'+split;
+ panels.forEach(p=>{if(p.dataset.atlasFamily===family){p.removeAttribute('hidden')}else{p.setAttribute('hidden','')}});
+ railButtons.forEach(b=>b.setAttribute('aria-current',String(b.dataset.atlasSignal===signal)));
 }
-rows.forEach((row,index)=>{
- row.addEventListener('click',()=>selectContext(row));
- row.addEventListener('keydown',event=>{
-  const offsets={ArrowDown:1,ArrowRight:1,ArrowUp:-1,ArrowLeft:-1};
-  if(!(event.key in offsets)&&event.key!=='Home'&&event.key!=='End')return;
-  event.preventDefault();
-  const next=event.key==='Home'?0:event.key==='End'?rows.length-1:(index+offsets[event.key]+rows.length)%rows.length;
-  selectContext(rows[next]);rows[next].focus();
- });
-});
-$$('[data-atlas-explore-seasons]').forEach(button=>button.addEventListener('click',()=>{
- if(!seasonDetails)return;
- seasonDetails.open=true;
- seasonDetails.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'start'});
- $('summary',seasonDetails)?.focus({preventScroll:true});
+railButtons.forEach(btn=>btn.addEventListener('click',()=>{
+ const panel=activePanel();
+ showFamily(btn.dataset.atlasSignal,panel?panel.dataset.atlasSplit:'week_in_season');
 }));
+panels.forEach(panel=>{
+ const rows=$$('[data-atlas-context]',panel);
+ function selectContext(row){
+  const context=row.dataset.atlasContext;
+  rows.forEach(button=>button.setAttribute('aria-pressed',String(button===row)));
+  $$('[data-atlas-detail]',panel).forEach(p=>{p.hidden=p.dataset.atlasDetail!==context});
+  $$('[data-atlas-seasons]',panel).forEach(p=>{p.hidden=p.dataset.atlasSeasons!==context});
+ }
+ rows.forEach((row,index)=>{
+  row.addEventListener('click',()=>selectContext(row));
+  row.addEventListener('keydown',event=>{
+   const offsets={ArrowDown:1,ArrowRight:1,ArrowUp:-1,ArrowLeft:-1};
+   if(!(event.key in offsets)&&event.key!=='Home'&&event.key!=='End')return;
+   event.preventDefault();
+   const next=event.key==='Home'?0:event.key==='End'?rows.length-1:(index+offsets[event.key]+rows.length)%rows.length;
+   selectContext(rows[next]);rows[next].focus();
+  });
+ });
+ const seasonDetails=panel.querySelector('[data-atlas-season-explorer]');
+ $$('[data-atlas-explore-seasons]',panel).forEach(button=>button.addEventListener('click',()=>{
+  if(!seasonDetails)return;
+  seasonDetails.open=true;
+  seasonDetails.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'start'});
+  $('summary',seasonDetails)?.focus({preventScroll:true});
+ }));
+ $$('[data-atlas-split]',panel).forEach(btn=>btn.addEventListener('click',()=>{
+  showFamily(panel.dataset.atlasSignalOwner,btn.dataset.atlasSplit);
+ }));
+});
 }
 if(page==='model'){
 const stats=document.getElementById('stats-h').closest('section');

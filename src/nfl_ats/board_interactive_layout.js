@@ -141,30 +141,47 @@ const rows=$$('tbody tr',table);if(rows.length<12)return;
 const search=document.createElement('label');search.className='reader-search';search.textContent='Find an entry';const input=document.createElement('input');input.type='search';input.placeholder='Search names or descriptions';input.setAttribute('aria-label','Search table '+(index+1));search.append(input);table.closest('.board-scroll')?.before(search);input.addEventListener('input',()=>{const q=input.value.toLowerCase().trim();rows.forEach(r=>r.hidden=!r.textContent.toLowerCase().includes(q))});
 });
 if(page==='findings'){
-const rows=$$('[data-atlas-context]');
-const seasonDetails=document.getElementById('atlas-seasons');
-function selectContext(row){
- const context=row.dataset.atlasContext;
- rows.forEach(button=>button.setAttribute('aria-pressed',String(button===row)));
- $$('[data-atlas-detail]').forEach(panel=>{panel.hidden=panel.dataset.atlasDetail!==context});
- $$('[data-atlas-seasons]').forEach(panel=>{panel.hidden=panel.dataset.atlasSeasons!==context});
+const panels=$$('[data-atlas-family]');
+const railButtons=$$('[data-atlas-signal]');
+function activePanel(){return panels.find(p=>!p.hasAttribute('hidden'))||panels[0]}
+function showFamily(signal,split){
+ const family=signal+'__'+split;
+ panels.forEach(p=>{if(p.dataset.atlasFamily===family){p.removeAttribute('hidden')}else{p.setAttribute('hidden','')}});
+ railButtons.forEach(b=>b.setAttribute('aria-current',String(b.dataset.atlasSignal===signal)));
 }
-rows.forEach((row,index)=>{
- row.addEventListener('click',()=>selectContext(row));
- row.addEventListener('keydown',event=>{
-  const offsets={ArrowDown:1,ArrowRight:1,ArrowUp:-1,ArrowLeft:-1};
-  if(!(event.key in offsets)&&event.key!=='Home'&&event.key!=='End')return;
-  event.preventDefault();
-  const next=event.key==='Home'?0:event.key==='End'?rows.length-1:(index+offsets[event.key]+rows.length)%rows.length;
-  selectContext(rows[next]);rows[next].focus();
- });
-});
-$$('[data-atlas-explore-seasons]').forEach(button=>button.addEventListener('click',()=>{
- if(!seasonDetails)return;
- seasonDetails.open=true;
- seasonDetails.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'start'});
- $('summary',seasonDetails)?.focus({preventScroll:true});
+railButtons.forEach(btn=>btn.addEventListener('click',()=>{
+ const panel=activePanel();
+ showFamily(btn.dataset.atlasSignal,panel?panel.dataset.atlasSplit:'week_in_season');
 }));
+panels.forEach(panel=>{
+ const rows=$$('[data-atlas-context]',panel);
+ function selectContext(row){
+  const context=row.dataset.atlasContext;
+  rows.forEach(button=>button.setAttribute('aria-pressed',String(button===row)));
+  $$('[data-atlas-detail]',panel).forEach(p=>{p.hidden=p.dataset.atlasDetail!==context});
+  $$('[data-atlas-seasons]',panel).forEach(p=>{p.hidden=p.dataset.atlasSeasons!==context});
+ }
+ rows.forEach((row,index)=>{
+  row.addEventListener('click',()=>selectContext(row));
+  row.addEventListener('keydown',event=>{
+   const offsets={ArrowDown:1,ArrowRight:1,ArrowUp:-1,ArrowLeft:-1};
+   if(!(event.key in offsets)&&event.key!=='Home'&&event.key!=='End')return;
+   event.preventDefault();
+   const next=event.key==='Home'?0:event.key==='End'?rows.length-1:(index+offsets[event.key]+rows.length)%rows.length;
+   selectContext(rows[next]);rows[next].focus();
+  });
+ });
+ const seasonDetails=panel.querySelector('[data-atlas-season-explorer]');
+ $$('[data-atlas-explore-seasons]',panel).forEach(button=>button.addEventListener('click',()=>{
+  if(!seasonDetails)return;
+  seasonDetails.open=true;
+  seasonDetails.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'start'});
+  $('summary',seasonDetails)?.focus({preventScroll:true});
+ }));
+ $$('[data-atlas-split]',panel).forEach(btn=>btn.addEventListener('click',()=>{
+  showFamily(panel.dataset.atlasSignalOwner,btn.dataset.atlasSplit);
+ }));
+});
 }
 if(page==='model'){
 const stats=document.getElementById('stats-h').closest('section');

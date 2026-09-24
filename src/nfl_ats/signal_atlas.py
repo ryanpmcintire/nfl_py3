@@ -16,10 +16,21 @@ from nfl_ats.pick_probability_fit import FIT_FEATURES, FIT_RIDGE, _fit_logit
 
 ATLAS_POINTER = "active_signal_atlas.json"
 LABELS = {
-    "overall": "All weeks",
+    "overall": "All games",
     "weeks_1_4": "Weeks 1-4",
     "weeks_5_12": "Weeks 5-12",
     "weeks_13_18": "Weeks 13-18",
+    "short": "Spread 7 or less",
+    "long": "Spread 7.5 or more",
+}
+SIGNAL_LABELS = {
+    "composition_flag_sum": "Combined game situations",
+    "market_move_toward_home": "Market move toward the home side",
+    "market_move_available": "Whether a market move was available",
+}
+SPLIT_LABELS = {
+    "week_in_season": "Time of season",
+    "spread_band": "Spread size",
 }
 
 
@@ -117,7 +128,16 @@ def _fit_predict(
 def _paired_predictions(
     frame: pd.DataFrame, declaration: dict[str, Any]
 ) -> tuple[pd.DataFrame, list[dict[str, Any]]]:
-    pairs = frame[["game_id", "season", "week", "home_covered", "model_probability"]].copy()
+    pairs = frame[
+        [
+            "game_id",
+            "season",
+            "week",
+            "home_covered",
+            "model_probability",
+            "tue_open_home_spread",
+        ]
+    ].copy()
     coefficients: list[dict[str, Any]] = []
     for evaluation in declaration["evaluations"]:
         for arm in ("full", "reduced"):
@@ -273,7 +293,25 @@ def _cell(
     }
 
 
-def _registry_batch(report: dict[str, Any], directory: Path) -> dict[str, Any]:
+def _split_masks(frame: pd.DataFrame, split: str) -> dict[str, Any]:
+    if split == "week_in_season":
+        return {
+            "overall": np.ones(len(frame), dtype=bool),
+            "weeks_1_4": (frame.week <= 4).to_numpy(),
+            "weeks_5_12": frame.week.between(5, 12).to_numpy(),
+            "weeks_13_18": (frame.week >= 13).to_numpy(),
+        }
+    if split == "spread_band":
+        spread = frame.tue_open_home_spread.abs().to_numpy(dtype=float)
+        return {
+            "overall": np.ones(len(frame), dtype=bool),
+            "short": spread <= 7.0,
+            "long": spread >= 7.5,
+        }
+    raise ValueError(f"Signal atlas split is not registered: {split}")
+
+
+def _family_registry_batch(family: dict[str, Any], directory: Path) -> list[dict[str, Any]]:
     cells = []
     metrics = (
         ("accuracy_delta_points", "accuracy_points", "accuracy_interval", "probability_positive"),
@@ -285,16 +323,18 @@ def _registry_batch(report: dict[str, Any], directory: Path) -> dict[str, Any]:
             "log_loss_probability_positive",
         ),
     )
-    for view, rows in report["evaluations"].items():
+    for view, rows in family["evaluations"].items():
         for row in rows:
             seasons = [item["season"] for item in row["seasons"]]
             for index, (metric, units, interval, positive) in enumerate(metrics):
                 cells.append(
                     {
-                        "name": f"conditional_situations_{view}_{row['cell']}_{units}",
+                        "name": f"{family['family']}_{view}_{row['cell']}_{units}",
+                        "family": family["family"],
                         "description": "; ".join(
                             (
-                                "Paired fitted game-situation term",
+                                f"Paired fitted term {family['signal']}",
+                                f"split {family['split']}",
                                 view,
                                 row["label"],
                                 f"{units}.",
@@ -312,11 +352,20 @@ def _registry_batch(report: dict[str, Any], directory: Path) -> dict[str, Any]:
                         "season_end": max(seasons),
                     }
                 )
+    return cells
+
+
+def _registry_batch(report: dict[str, Any], directory: Path) -> dict[str, Any]:
+    cells = []
+    families = []
+    for family in report["families"]:
+        cells.extend(_family_registry_batch(family, directory))
+        families.append(family["family"])
     return {
         "source": (directory / "report.json").as_posix(),
         "classification": "unresolved_below_power",
         "league": "nfl",
-        "family": report["family"],
+        "families": families,
         "category": "schedule",
         "classification_evidence": (
             "Retrospective diagnostic; no untouched selection test or certified historical "
@@ -325,8 +374,8 @@ def _registry_batch(report: dict[str, Any], directory: Path) -> dict[str, Any]:
         ),
         "notes": " ".join(report["limitations"]),
         "plain_summary": (
-            "How pooled game situations change a fitted probability when added to the same "
-            "model and market inputs."
+            "How the served model's own fitted terms change a probability when added to the "
+            "same model and market inputs, across several ways of splitting the games."
         ),
         "cells": cells,
     }
@@ -337,14 +386,15 @@ def build_signal_atlas(artifacts_root: Path, registry_root: Path) -> Path:
     declaration = _read(declaration_path)
     split_path = registry_root / "split_library.json"
     split = _read(split_path)
-    if declaration["cells"][1:] != split["splits"]["week_in_season"]["cells"]:
-        raise ValueError("Signal atlas declared week cells differ from the split library")
     if declaration["full_features"] != list(FIT_FEATURES):
         raise ValueError("Signal atlas full features differ from the active fitter")
-    if declaration["reduced_features"] != [
-        name for name in FIT_FEATURES if name != declaration["signal"]
-    ]:
-        raise ValueError("Signal atlas reduced fit must remove only the declared term")
+    for family in declaration["families"]:
+        if family["signal"] not in FIT_FEATURES:
+            raise ValueError(f"Signal atlas family declares an unfitted signal: {family['signal']}")
+        if family["cells"][0] != "overall":
+            raise ValueError("Signal atlas declared cells must start with overall")
+        if family["cells"][1:] != split["splits"][family["split"]]["cells"]:
+            raise ValueError("Signal atlas declared cells differ from the split library")
     source, metadata = _source(artifacts_root)
     frame = pd.read_parquet(source / "per_game.parquet").reset_index(drop=True)
     required = [
@@ -354,6 +404,7 @@ def build_signal_atlas(artifacts_root: Path, registry_root: Path) -> Path:
         "season",
         "week",
         "margin_vs_open",
+        "tue_open_home_spread",
     ]
     if frame.empty or frame.game_id.isna().any() or frame.game_id.duplicated().any():
         raise ValueError("Signal atlas source must have one row per game")
@@ -370,41 +421,41 @@ def build_signal_atlas(artifacts_root: Path, registry_root: Path) -> Path:
         raise ValueError("Signal atlas source has invalid weeks or base probabilities")
     if len(frame) != metadata["graded_games"]:
         raise ValueError("Signal atlas source population differs from its metadata")
-    pairs, coefficients = _paired_predictions(frame, declaration)
-    evaluations: dict[str, list[dict[str, Any]]] = {}
-    for evaluation in declaration["evaluations"]:
-        eligible = pairs.dropna(subset=[f"{evaluation}_full", f"{evaluation}_reduced"])
-        masks: dict[str, Any] = {
-            "overall": np.ones(len(eligible), dtype=bool),
-            "weeks_1_4": eligible.week <= 4,
-            "weeks_5_12": eligible.week.between(5, 12),
-            "weeks_13_18": eligible.week >= 13,
+    signals = sorted({family["signal"] for family in declaration["families"]})
+    pairs_by_signal: dict[str, pd.DataFrame] = {}
+    coefficients: list[dict[str, Any]] = []
+    for signal in signals:
+        signal_declaration = {
+            "evaluations": declaration["evaluations"],
+            "full_features": declaration["full_features"],
+            "reduced_features": [name for name in FIT_FEATURES if name != signal],
+            "chronological_minimum_training_seasons": declaration[
+                "chronological_minimum_training_seasons"
+            ],
         }
-        evaluations[evaluation] = [
-            _cell(eligible.loc[masks[cell]], evaluation, cell, declaration)
-            for cell in declaration["cells"]
-        ]
-    directory = artifacts_root / "signal_atlas" / datetime.now(UTC).strftime("%Y%m%dT%H%M%S%fZ")
-    directory.mkdir(parents=True)
-    report = {
-        "schema_version": 1,
-        "active_model_id": metadata["active_model_id"],
-        "source_artifact": source.relative_to(artifacts_root.resolve()).as_posix(),
-        "source_hashes": {
-            name: _hash(source / name)
-            for name in ("per_game.parquet", "metadata.json", "coefficients.json")
-        },
-        "declaration_sha256": _hash(declaration_path),
-        "split_library_sha256": _hash(split_path),
-        "family": declaration["family"],
-        "bootstrap_draws": declaration["bootstrap_draws"],
-        "look_count": len(declaration["arms"])
-        * len(declaration["cells"])
-        * len(declaration["evaluations"]),
-        "look_inventory": {
-            "arm_cell_evaluation_combinations": 48,
-            "paired_metric_comparisons": 36,
-            "fitted_models": len(coefficients),
+        signal_pairs, signal_coefficients = _paired_predictions(frame, signal_declaration)
+        for entry in signal_coefficients:
+            entry["signal"] = signal
+        coefficients.extend(signal_coefficients)
+        pairs_by_signal[signal] = signal_pairs
+    families_report: list[dict[str, Any]] = []
+    for family in declaration["families"]:
+        signal = family["signal"]
+        pairs = pairs_by_signal[signal]
+        evaluations: dict[str, list[dict[str, Any]]] = {}
+        for evaluation in declaration["evaluations"]:
+            eligible = pairs.dropna(subset=[f"{evaluation}_full", f"{evaluation}_reduced"])
+            masks = _split_masks(eligible, family["split"])
+            evaluations[evaluation] = [
+                _cell(eligible.loc[masks[cell]], evaluation, cell, declaration)
+                for cell in family["cells"]
+            ]
+        look_inventory = {
+            "arm_cell_evaluation_combinations": len(declaration["arms"])
+            * len(family["cells"])
+            * len(declaration["evaluations"]),
+            "paired_metric_comparisons": len(family["cells"]) * len(declaration["evaluations"]) * 3,
+            "fitted_models": len([c for c in coefficients if c["signal"] == signal]),
             "reliability_bins_declared_per_arm": len(declaration["reliability_edges"]) - 1,
             "year_breakdowns": sum(
                 len(cell["seasons"]) for cells in evaluations.values() for cell in cells
@@ -413,11 +464,69 @@ def build_signal_atlas(artifacts_root: Path, registry_root: Path) -> Path:
                 "Overlapping diagnostic looks, not independent confirmations; no selected best "
                 "cell or multiplicity-adjusted claim."
             ),
+        }
+        families_report.append(
+            {
+                "family": family["family"],
+                "signal": signal,
+                "split": family["split"],
+                "signal_label": SIGNAL_LABELS.get(signal, signal),
+                "split_label": SPLIT_LABELS.get(family["split"], family["split"]),
+                "cells": family["cells"],
+                "reduced_features": [name for name in FIT_FEATURES if name != signal],
+                "evaluations": evaluations,
+                "look_count": look_inventory["arm_cell_evaluation_combinations"],
+                "look_inventory": look_inventory,
+                "in_sample_gap": {
+                    metric: evaluations["in_sample"][0][metric]
+                    - evaluations["out_of_season"][0][metric]
+                    for metric in (
+                        "accuracy_delta_points",
+                        "brier_improvement",
+                        "log_loss_improvement",
+                    )
+                },
+            }
+        )
+    base_columns = [
+        "game_id",
+        "season",
+        "week",
+        "home_covered",
+        "model_probability",
+        "tue_open_home_spread",
+    ]
+    combined = pairs_by_signal[signals[0]][base_columns].copy()
+    for evaluation in declaration["evaluations"]:
+        combined[f"{evaluation}_full"] = pairs_by_signal[signals[0]][f"{evaluation}_full"]
+    for signal in signals:
+        for evaluation in declaration["evaluations"]:
+            combined[f"{evaluation}_reduced__{signal}"] = pairs_by_signal[signal][
+                f"{evaluation}_reduced"
+            ]
+    directory = artifacts_root / "signal_atlas" / datetime.now(UTC).strftime("%Y%m%dT%H%M%S%fZ")
+    directory.mkdir(parents=True)
+    report = {
+        "schema_version": 2,
+        "active_model_id": metadata["active_model_id"],
+        "source_artifact": source.relative_to(artifacts_root.resolve()).as_posix(),
+        "source_hashes": {
+            name: _hash(source / name)
+            for name in ("per_game.parquet", "metadata.json", "coefficients.json")
         },
+        "declaration_sha256": _hash(declaration_path),
+        "split_library_sha256": _hash(split_path),
+        "bootstrap_draws": declaration["bootstrap_draws"],
+        "seed": declaration["seed"],
+        "interval_level": declaration["interval_level"],
+        "look_count": sum(entry["look_count"] for entry in families_report),
+        "families": families_report,
         "excluded": {
             "pushes": metadata["pushes_dropped"],
             "ungraded": metadata["ungraded_dropped"],
-            "chronological_warmup_games": int(pairs.chronological_full.isna().sum()),
+            "chronological_warmup_games": int(
+                pairs_by_signal[signals[0]].chronological_full.isna().sum()
+            ),
         },
         "availability_certified": False,
         "serving": False,
@@ -461,13 +570,8 @@ def build_signal_atlas(artifacts_root: Path, registry_root: Path) -> Path:
                 "a winning group or change the picks."
             ),
         ],
-        "evaluations": evaluations,
-        "in_sample_gap": {
-            metric: evaluations["in_sample"][0][metric] - evaluations["out_of_season"][0][metric]
-            for metric in ("accuracy_delta_points", "brier_improvement", "log_loss_improvement")
-        },
     }
-    pairs.to_parquet(directory / "per_game.parquet", index=False)
+    combined.to_parquet(directory / "per_game.parquet", index=False)
     _write(directory / "coefficients.json", coefficients)
     _write(directory / "declaration.json", declaration)
     report["saved_declaration_sha256"] = _hash(directory / "declaration.json")

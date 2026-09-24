@@ -19,29 +19,32 @@ def main() -> None:
     if report is None:
         raise ValueError("Signal atlas activation failed")
     print(f"Signal atlas: {directory}")
-    for view in ("out_of_season", "chronological"):
-        for cell in report["evaluations"][view]:
-            print(
-                json.dumps(
-                    {
-                        "view": view,
-                        **{
-                            key: cell[key]
-                            for key in (
-                                "cell",
-                                "games",
-                                "decisive_games",
-                                "full_decisive_wins",
-                                "reduced_decisive_wins",
-                                "accuracy_delta_points",
-                                "accuracy_interval",
-                                "probability_positive",
-                                "brier_improvement",
-                            )
-                        },
-                    }
+    print(f"Look count: {report['look_count']}")
+    for family in report["families"]:
+        for view in ("out_of_season", "chronological"):
+            for cell in family["evaluations"][view]:
+                print(
+                    json.dumps(
+                        {
+                            "family": family["family"],
+                            "view": view,
+                            **{
+                                key: cell[key]
+                                for key in (
+                                    "cell",
+                                    "games",
+                                    "decisive_games",
+                                    "full_decisive_wins",
+                                    "reduced_decisive_wins",
+                                    "accuracy_delta_points",
+                                    "accuracy_interval",
+                                    "probability_positive",
+                                    "brier_improvement",
+                                )
+                            },
+                        }
+                    )
                 )
-            )
 
 
 if __name__ == "__main__":

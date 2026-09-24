@@ -1006,12 +1006,25 @@ table.board td.kickoff .lock-countdown:empty{display:none}
   }
   body[data-interactive-page="findings"] .atlas-signal-choice{
     display:flex;
+    width:100%;
     gap:11px;
     align-items:flex-start;
     margin-top:16px;
     padding:14px 12px;
-    border:1px solid #8f6c32;
+    border:1px solid #30383b;
     border-radius:3px;
+    background:transparent;
+    color:#c7cdcf;
+    font:inherit;
+    text-align:left;
+    cursor:pointer;
+  }
+  body[data-interactive-page="findings"] .atlas-signal-choice:hover{
+    border-color:#4a5458;
+    background:#1c2124;
+  }
+  body[data-interactive-page="findings"] .atlas-signal-choice[aria-current="true"]{
+    border-color:#8f6c32;
     background:#252117;
     color:#f4e6c8;
   }
@@ -1020,6 +1033,9 @@ table.board td.kickoff .lock-countdown:empty{display:none}
     min-width:3px;
     height:34px;
     border-radius:2px;
+    background:transparent;
+  }
+  body[data-interactive-page="findings"] .atlas-signal-choice[aria-current="true"] .atlas-signal-mark{
     background:#d9a64a;
   }
   body[data-interactive-page="findings"] .atlas-signal-choice strong,
@@ -1081,9 +1097,18 @@ table.board td.kickoff .lock-countdown:empty{display:none}
     color:#768084;
     font-size:15px;
   }
-  body[data-interactive-page="findings"] .atlas-tabs .is-active{
+  body[data-interactive-page="findings"] .atlas-tabs button{
     align-self:stretch;
+    padding:0;
     padding-top:10px;
+    border:0;
+    border-bottom:2px solid transparent;
+    background:none;
+    color:inherit;
+    font:inherit;
+    cursor:pointer;
+  }
+  body[data-interactive-page="findings"] .atlas-tabs .is-active{
     border-bottom:2px solid #d9a64a;
     color:#f0dfbd;
     font-weight:700;
@@ -1461,6 +1486,9 @@ table.board td.kickoff .lock-countdown:empty{display:none}
     body[data-interactive-page="findings"] .atlas-tabs{
       display:block;
       padding-bottom:12px;
+    }
+    body[data-interactive-page="findings"] .atlas-tabs button{
+      display:block;
     }
     body[data-interactive-page="findings"] .atlas-tabs .is-active{
       display:inline-block;

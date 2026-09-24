@@ -1,12 +1,7 @@
 {
-  "schema_version": 1,
-  "family": "conditional_situational_probability_v1",
+  "schema_version": 2,
   "declared_before_scoring": true,
-  "signal": "composition_flag_sum",
-  "split": "week_in_season",
-  "cells": ["overall", "weeks_1_4", "weeks_5_12", "weeks_13_18"],
   "full_features": ["model_logit", "composition_flag_sum", "market_move_toward_home", "market_move_available"],
-  "reduced_features": ["model_logit", "market_move_toward_home", "market_move_available"],
   "evaluations": ["out_of_season", "chronological", "in_sample"],
   "arms": ["full", "reduced", "model", "market"],
   "metrics": ["accuracy_points", "brier_improvement", "log_loss_improvement"],
@@ -18,5 +13,43 @@
   "chronological_minimum_training_seasons": 2,
   "serving": false,
   "selection_scope": "Features were selected using the scored years. No untouched outer-test claim.",
-  "availability_scope": "The saved fit lacks per-game feature availability evidence. Retrospective diagnostic only; no certified historical pregame timing."
+  "availability_scope": "The saved fit lacks per-game feature availability evidence. Retrospective diagnostic only; no certified historical pregame timing.",
+  "families": [
+    {
+      "family": "composition_flag_sum__week_in_season",
+      "signal": "composition_flag_sum",
+      "split": "week_in_season",
+      "cells": ["overall", "weeks_1_4", "weeks_5_12", "weeks_13_18"]
+    },
+    {
+      "family": "composition_flag_sum__spread_band",
+      "signal": "composition_flag_sum",
+      "split": "spread_band",
+      "cells": ["overall", "short", "long"]
+    },
+    {
+      "family": "market_move_toward_home__week_in_season",
+      "signal": "market_move_toward_home",
+      "split": "week_in_season",
+      "cells": ["overall", "weeks_1_4", "weeks_5_12", "weeks_13_18"]
+    },
+    {
+      "family": "market_move_toward_home__spread_band",
+      "signal": "market_move_toward_home",
+      "split": "spread_band",
+      "cells": ["overall", "short", "long"]
+    },
+    {
+      "family": "market_move_available__week_in_season",
+      "signal": "market_move_available",
+      "split": "week_in_season",
+      "cells": ["overall", "weeks_1_4", "weeks_5_12", "weeks_13_18"]
+    },
+    {
+      "family": "market_move_available__spread_band",
+      "signal": "market_move_available",
+      "split": "spread_band",
+      "cells": ["overall", "short", "long"]
+    }
+  ]
 }

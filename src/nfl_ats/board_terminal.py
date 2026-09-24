@@ -2665,7 +2665,7 @@ def _atlas_phase_seasons_html(cells: list[dict[str, Any]]) -> str:
             f"<tbody>{rows}</tbody></table></div></div>"
         )
     return (
-        '<details class="atlas-details atlas-season-explorer" id="atlas-seasons">'
+        '<details class="atlas-details atlas-season-explorer" data-atlas-season-explorer>'
         "<summary>Compare the result across seasons</summary>"
         '<p class="atlas-detail-copy">Each row is the held-out result for one season. '
         "The comparison uses the selected time window from the chart above.</p>"
@@ -2674,21 +2674,9 @@ def _atlas_phase_seasons_html(cells: list[dict[str, Any]]) -> str:
 
 
 def _atlas_explorer_html(cells: list[dict[str, Any]]) -> str:
-    phase_order = ("weeks_1_4", "weeks_5_12", "weeks_13_18")
-    cell_by_id = {str(cell["cell"]): cell for cell in cells}
-    phases = [cell_by_id[cell_id] for cell_id in phase_order if cell_id in cell_by_id]
+    phases = [cell for cell in cells if str(cell["cell"]) != "overall"]
     if not phases:
-        return '<p class="atlas-empty">No time-of-season comparisons are available.</p>'
-    labels = {
-        "weeks_1_4": "Weeks 1\u20134",
-        "weeks_5_12": "Weeks 5\u201312",
-        "weeks_13_18": "Weeks 13\u201318",
-    }
-    titles = {
-        "weeks_1_4": "Early season",
-        "weeks_5_12": "Midseason",
-        "weeks_13_18": "Late season",
-    }
+        return '<p class="atlas-empty">No comparisons are available for this signal.</p>'
     minimum = min(_atlas_float(cell["accuracy_interval"][0]) for cell in phases)
     maximum = max(_atlas_float(cell["accuracy_interval"][1]) for cell in phases)
     scale_low = floor(min(minimum, 0.0) / 4) * 4
@@ -2707,9 +2695,8 @@ def _atlas_explorer_html(cells: list[dict[str, Any]]) -> str:
     rows: list[str] = []
     details: list[str] = []
     for index, cell in enumerate(phases):
-        cell_key = str(cell["cell"])
-        cell_id = escape(cell_key)
-        label = labels.get(cell_key, str(cell["label"]))
+        cell_id = escape(str(cell["cell"]))
+        label = str(cell["label"])
         low = position(cell["accuracy_interval"][0])
         high = position(cell["accuracy_interval"][1])
         point = position(cell["accuracy_delta_points"])
@@ -2729,12 +2716,12 @@ def _atlas_explorer_html(cells: list[dict[str, Any]]) -> str:
             f'<div class="atlas-context-detail" id="atlas-detail-{cell_id}" '
             f'data-atlas-detail="{cell_id}"{"" if index == 0 else " hidden"}>'
             '<p class="atlas-detail-eyebrow">Selected context</p>'
-            f"<h3>{escape(titles.get(cell_key, label))}</h3>"
+            f"<h3>{escape(label)}</h3>"
             '<p class="atlas-probability-label">Chance of improvement</p>'
             f'<p class="atlas-probability">{_atlas_percent(cell.get("probability_positive"))}</p>'
             '<div class="atlas-detail-section"><h4>Why it could matter</h4>'
-            "<p>Game situations may add more information at some points in the season. "
-            "They contribute to one combined probability.</p></div>"
+            "<p>This signal may add more information in some situations than others. "
+            "It contributes to one combined probability, never a standalone pick.</p></div>"
             '<div class="atlas-detail-section"><h4>What the history suggests</h4>'
             f"<p>{escape(str(cell.get('games', '—')))} games: "
             f"{_atlas_signed(cell.get('accuracy_delta_points'))} points in accuracy, "
@@ -2747,31 +2734,11 @@ def _atlas_explorer_html(cells: list[dict[str, Any]]) -> str:
         f'<span style="--atlas-tick:{position(tick):.3f}%">{_atlas_signed(tick)}</span>'
         for tick in range(scale_low, scale_high + 1, 4)
     )
-    season_cells = [
-        dict(cell, label=labels.get(str(cell["cell"]), cell["label"])) for cell in phases
-    ]
     return (
-        '<div class="atlas-shell">'
-        '<aside class="atlas-signal-rail" aria-label="Available signals">'
-        '<p class="atlas-rail-label">Choose a signal</p>'
-        '<div class="atlas-signal-choice" aria-current="true">'
-        '<span class="atlas-signal-mark" aria-hidden="true"></span>'
-        "<span><strong>Combined game situations</strong>"
-        "<small>Time of season</small></span></div>"
-        '<p class="atlas-rail-note">Individual situations have not been measured '
-        "separately here.</p>"
-        "</aside>"
-        '<div class="atlas-workspace">'
-        '<header class="atlas-workspace-header">'
-        "<h2>Combined game situations</h2>"
-        '<p class="atlas-context-question">Where does it look most useful?</p>'
-        '<div class="atlas-tabs"><span class="is-active">Time of season</span>'
-        '<span class="atlas-tab-muted">Select a row to explore</span></div>'
-        "</header>"
         '<div class="atlas-workspace-body">'
         '<div class="atlas-chart">'
         '<div class="atlas-chart-heading"><h3>Change in pick accuracy</h3>'
-        "<p>Compared with the model alone · 95% uncertainty</p></div>"
+        "<p>Compared with the model without this signal &middot; 95% uncertainty</p></div>"
         f'<div class="atlas-plot" style="--atlas-zero:{zero_position:.3f}%">'
         '<span class="atlas-zero-guide" aria-hidden="true"></span>'
         f'{"".join(rows)}<div class="atlas-axis" aria-hidden="true">{ticks}</div></div>'
@@ -2784,22 +2751,19 @@ def _atlas_explorer_html(cells: list[dict[str, Any]]) -> str:
         "<small>Look for a pattern that holds up year after year.</small></span>"
         '<button type="button" data-atlas-explore-seasons>Explore seasons '
         '<span aria-hidden="true">→</span></button>'
-        "</div></div></div>"
-        f"{_atlas_phase_seasons_html(season_cells)}"
+        "</div>"
+        f"{_atlas_phase_seasons_html(phases)}"
     )
 
 
-def _signal_atlas_section_html(content: FindingsPageContent) -> str:
-    report = content.atlas
-    if report is None:
-        return ""
-    evaluations = report["evaluations"]
+def _signal_atlas_family_panel_html(
+    family: dict[str, Any], *, tabs_html: str, visible: bool, bootstrap_draws: int
+) -> str:
+    evaluations = family["evaluations"]
     metrics = evaluations["out_of_season"][0]["metrics"]
-    limitations = "".join(f"<li>{escape(str(item))}</li>" for item in report["limitations"])
-    look_count = int(report["look_count"])
-    bootstrap_draws = int(report["bootstrap_draws"])
-    cells_per_view = len(evaluations["out_of_season"])
-    gap = report.get("in_sample_gap")
+    look_count = int(family["look_count"])
+    cells_per_view = len(family["cells"])
+    gap = family.get("in_sample_gap")
     gap_html = ""
     if gap is not None:
         gap_html = (
@@ -2809,7 +2773,7 @@ def _signal_atlas_section_html(content: FindingsPageContent) -> str:
             f"log-loss improvement {_atlas_signed(gap['log_loss_improvement'], digits=3)}. "
             "A larger positive gap means the same-year result looks better.</p>"
         )
-    inventory = report.get("look_inventory")
+    inventory = family.get("look_inventory")
     inventory_html = f"{look_count} version &times; time-window &times; evaluation comparisons"
     if inventory is not None:
         inventory_html = (
@@ -2819,16 +2783,18 @@ def _signal_atlas_section_html(content: FindingsPageContent) -> str:
             f"{int(inventory['reliability_bins_declared_per_arm'])} pre-set reliability ranges "
             f"per version; and {int(inventory['year_breakdowns'])} year-by-year rows"
         )
+    family_id = escape(str(family["family"]))
     return (
-        '<section class="signal-atlas" aria-label="Signal atlas">'
+        f'<div class="atlas-family-panel" data-atlas-family="{family_id}" '
+        f'data-atlas-signal-owner="{escape(str(family["signal"]))}" '
+        f'data-atlas-split="{escape(str(family["split"]))}"{"" if visible else " hidden"}>'
+        '<header class="atlas-workspace-header">'
+        f"<h2>{escape(str(family['signal_label']))}</h2>"
+        '<p class="atlas-context-question">Where does it look most useful?</p>'
+        f"{tabs_html}"
+        "</header>"
         + _atlas_explorer_html(evaluations["out_of_season"])
         + '<div class="atlas-supporting-details">'
-        '<details class="atlas-details"><summary>How to read this comparison</summary>'
-        "<p>These historical comparisons ask whether the combined game-situation signal was "
-        "associated with better picks and probabilities. They do not show that a situation "
-        "caused an outcome or change the published card.</p>"
-        '<div class="atlas-caution"><strong>Limits of this view</strong><ul>'
-        f"{limitations}</ul></div></details>"
         '<details class="atlas-details"><summary>Evaluation views</summary>'
         + _atlas_evaluation_html(
             evaluations["out_of_season"],
@@ -2866,7 +2832,76 @@ def _signal_atlas_section_html(content: FindingsPageContent) -> str:
         f"Intervals use {bootstrap_draws:,} resamples.</p></details>"
         '<details class="atlas-details"><summary>Scoring and calibration</summary>'
         + _atlas_metrics_html(metrics)
-        + "</details></div></section>"
+        + "</details></div></div>"
+    )
+
+
+def _signal_atlas_section_html(content: FindingsPageContent) -> str:
+    report = content.atlas
+    if report is None:
+        return ""
+    families = report["families"]
+    if not families:
+        return ""
+    bootstrap_draws = int(report["bootstrap_draws"])
+    signals: list[str] = []
+    families_by_signal: dict[str, list[dict[str, Any]]] = {}
+    for family in families:
+        signal = str(family["signal"])
+        if signal not in families_by_signal:
+            families_by_signal[signal] = []
+            signals.append(signal)
+        families_by_signal[signal].append(family)
+    rail_buttons = "".join(
+        '<button type="button" class="atlas-signal-choice" '
+        f'data-atlas-signal="{escape(signal)}" '
+        f'aria-current="{"true" if index == 0 else "false"}">'
+        '<span class="atlas-signal-mark" aria-hidden="true"></span>'
+        f"<span><strong>{escape(str(families_by_signal[signal][0]['signal_label']))}</strong>"
+        "</span></button>"
+        for index, signal in enumerate(signals)
+    )
+    panels: list[str] = []
+    seen = 0
+    for signal in signals:
+        splits_for_signal = families_by_signal[signal]
+        for family in splits_for_signal:
+            tab_buttons = "".join(
+                '<button type="button" class="atlas-tab-btn'
+                + (" is-active" if other["split"] == family["split"] else "")
+                + f'" data-atlas-split="{escape(str(other["split"]))}">'
+                + f"{escape(str(other['split_label']))}</button>"
+                for other in splits_for_signal
+            )
+            panels.append(
+                _signal_atlas_family_panel_html(
+                    family,
+                    tabs_html=f'<div class="atlas-tabs" role="tablist">{tab_buttons}</div>',
+                    visible=seen == 0,
+                    bootstrap_draws=bootstrap_draws,
+                )
+            )
+            seen += 1
+    limitations = "".join(f"<li>{escape(str(item))}</li>" for item in report["limitations"])
+    return (
+        '<section class="signal-atlas" aria-label="Signal atlas">'
+        '<div class="atlas-shell">'
+        '<aside class="atlas-signal-rail" aria-label="Available signals">'
+        '<p class="atlas-rail-label">Choose a signal</p>'
+        f"{rail_buttons}"
+        '<p class="atlas-rail-note">Each row compares the model with and without one signal, '
+        "holding everything else the same.</p>"
+        "</aside>"
+        f'<div class="atlas-workspace">{"".join(panels)}</div>'
+        "</div>"
+        '<div class="atlas-supporting-details">'
+        '<details class="atlas-details"><summary>How to read this comparison</summary>'
+        "<p>These historical comparisons ask whether a signal was associated with better "
+        "picks and probabilities once it is added to the model. They do not show that a "
+        "situation caused an outcome, and they do not change the published card.</p>"
+        '<div class="atlas-caution"><strong>Limits of this view</strong><ul>'
+        f"{limitations}</ul></div></details></div>"
+        "</section>"
     )
 
 
