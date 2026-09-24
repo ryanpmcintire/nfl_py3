@@ -29,14 +29,16 @@ odds sources.
 
 ## Tried
 
-- The direct Bovada capture failed with `Bovada response must be an array` on
-  2026-09-24. Its endpoint shape has probably changed. Odds Gap still carries a
-  Bovada line, so coverage holds.
+- 2026-09-24: the direct Bovada capture failed with `Bovada response must be an
+  array`. The `coupon/events` endpoint now returns `{}`. Fixed by switching to
+  `services/sports/event/v2/events/...`, which returns the same payload format.
+  A direct run captured 18 games and 72 quotes; `--run-job odds_private_sat`
+  returned MANUAL-RUN OK (Bovada was correctly skipped by the 30-minute age
+  guard).
 - ESPN pickcenter returns 403; those jobs stay disabled.
 
 ## Next
 
-- Fix `scripts/capture_bovada_private.py` for the new Bovada response shape.
 - After Friday's 12:30 run, confirm Books now updates by itself.
 
 ## Open

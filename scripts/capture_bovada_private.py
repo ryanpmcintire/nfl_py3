@@ -22,7 +22,7 @@ from nfl_ats.source_policy import require_acquisition, require_private_raw_desti
 REPO = Path(__file__).resolve().parents[1]
 SOURCE = "bovada_public_nfl"
 ROOT = REPO / "data" / "market" / "raw"
-URL = "https://www.bovada.lv/services/sports/event/coupon/events/A/description/football/nfl?marketFilterId=def&preMatchOnly=true&lang=en"
+URL = "https://www.bovada.lv/services/sports/event/v2/events/A/description/football/nfl?marketFilterId=def&preMatchOnly=true&lang=en"
 
 
 def _price(value: Any) -> float | None:
