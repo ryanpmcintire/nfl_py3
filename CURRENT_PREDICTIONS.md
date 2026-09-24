@@ -33,7 +33,7 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 
 **Tiebreaker (last game, PHI at CHI):** CHI 21 - PHI 19, total 40 (market total 41) -- consistent with the CHI +3.5 pick.
 
-**Source freshness: COMPLETE.** Complete: odds opener, odds refresh, injuries nflverse, injuries nflverse timestamps, inactives, projected lineups, referee assignments, player arrests, pfr transactions, airnow weather. Degraded (allowed fallback): none. Blocked: none. Not due yet: none. Not set up: injuries sportradar. Budgets, fallbacks and source states: `docs/source_freshness_policy.md`.
+**Source freshness: COMPLETE.** Complete: odds opener, odds refresh, injuries nflverse, injuries nflverse timestamps, projected lineups, referee assignments, player arrests, pfr transactions, airnow weather. Degraded (allowed fallback): none. Blocked: none. Not due yet: inactives. Not set up: injuries sportradar. Budgets, fallbacks and source states: `docs/source_freshness_policy.md`.
 
 `Cover chance` is the picked side's chance to cover. Cover chance is a fitted estimate, excluding ties. Across 1,503 past games with each season held out of fitting, strong estimates won 60% and slight estimates won 55%. These broad groups do not establish a large advantage for the single highest estimate.
 
