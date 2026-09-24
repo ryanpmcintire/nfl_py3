@@ -23,8 +23,11 @@ OVERLAY_STATUS_FIRED = "half_line_2h_underdog_fired"
 OVERLAY_STATUS_NO_DISAGREEMENT = "full_and_2h_favorite_agree"
 OVERLAY_STATUS_NO_BULK_SNAPSHOT = "no_bulk_snapshot_before_pass"
 OVERLAY_STATUS_NO_HALVES_SNAPSHOT = "no_halves_snapshot_before_pass"
+OVERLAY_STATUS_NO_CURRENT_HALVES_SOURCE = "no_second_half_source_since_paid_feed_cancelled"
 OVERLAY_STATUS_NO_MATCHED_QUOTE = "game_absent_from_matched_quotes"
 OVERLAY_STATUS_PICKEM = "full_or_2h_line_is_pickem"
+
+HALVES_SNAPSHOT_STALE_BOUND = pd.Timedelta(days=7)
 
 _BULK_SNAPSHOT_NAME_RE = re.compile(r"^\d{8}T\d{6}Z$")
 
@@ -205,6 +208,19 @@ def build_half_line_refresh_rows(
             "reason": OVERLAY_STATUS_NO_HALVES_SNAPSHOT,
             "bulk_snapshot_id": bulk.snapshot_id,
         }
+    if pass_instant - halves.observed_at_utc > HALVES_SNAPSHOT_STALE_BOUND:
+        return empty, {
+            "skipped": True,
+            "reason": OVERLAY_STATUS_NO_CURRENT_HALVES_SOURCE,
+            "reason_detail": (
+                "no second-half source since the paid feed was cancelled; the newest "
+                "halves snapshot is older than HALVES_SNAPSHOT_STALE_BOUND and would "
+                "silently read as every game absent from matched quotes"
+            ),
+            "bulk_snapshot_id": bulk.snapshot_id,
+            "halves_snapshot_id": halves.snapshot_id,
+            "halves_observed_at_utc": halves.observed_at_utc,
+        }
 
     per_game = matched_book_disagreement(bulk.quotes, halves.quotes)
 
@@ -345,6 +361,8 @@ __all__ = [
     "CHALLENGER_ID",
     "FULL_GAME_MARKET",
     "HALF_LINE_REFRESH_COLUMNS",
+    "HALVES_SNAPSHOT_STALE_BOUND",
+    "OVERLAY_STATUS_NO_CURRENT_HALVES_SOURCE",
     "SECOND_HALF_MARKET",
     "MarketSnapshotRef",
     "build_half_line_refresh_rows",

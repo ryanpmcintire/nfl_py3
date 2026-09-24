@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-24T19:55:42.427452+00:00`
+Refreshed at: `2026-09-24T19:58:03.563920+00:00`
 
 ## Start here
 
@@ -21,23 +21,25 @@ Refreshed at: `2026-09-24T19:55:42.427452+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `7cd3b894a63d` — Coordinator in-season scan covers the current season's completed games
-- Pending change set: 15 paths
+- Baseline commit: `a2f81121361b` — Record atlas families and extended-training result
+- Pending change set: 17 paths
+  - ` M docs/findings.html`
+  - ` M docs/history.html`
   - ` M docs/index.html`
   - ` M docs/lanes/conditional-signal-atlas.md`
-  - `A  docs/lanes/four-term-extended-training.md`
+  - `A  docs/lanes/lead61-second-half-channel.md`
+  - `M  docs/lanes/pool-rank-card.md`
   - ` M docs/lanes/week3-research-recorders.md`
+  - ` M docs/model.html`
   - ` M registry/conditional_signal_atlas.json`
-  - `M  registry/weak_signals.json`
   - ` M scripts/conditional_signal_atlas.py`
-  - `A  scripts/four_term_extended_training.py`
   - ` M scripts/lockday_verify.py`
+  - ` M src/nfl_ats/board_interactive_layout.js`
   - ` M src/nfl_ats/board_terminal.py`
   - ` M src/nfl_ats/board_terminal_style.css`
-  - ` M src/nfl_ats/half_line_refresh_overlay.py`
+  - `M  src/nfl_ats/half_line_refresh_overlay.py`
   - ` M src/nfl_ats/sharp_book_movement_features.py`
   - ` M src/nfl_ats/signal_atlas.py`
-  - `?? _tmp_refresh_w3.json`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

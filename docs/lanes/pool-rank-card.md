@@ -181,3 +181,42 @@ POOL-01: choose the card that maximises expected pool finishing position given t
   a 2-fold, 32-game field model is too unstable to trust its flips (see
   State/Tried above). Do not serve the DEN@KC-style flip pattern without
   a larger, stabler fit.
+
+- 2026-09-24 **read**: `scripts/capture_scheduler.py` grep for
+  splash/pool -- only `splash_board_tue` (tue 12:05, runs
+  `check_splash_board.py`) exists as a scheduled pool job. It only
+  validates that a board/LINES capture is present for `weekly_lock`
+  (`data/splash/2026_week0N_*.json`); it captures nothing about field
+  pick shares. The field-share TSVs
+  (`data/splash/field/2026_week0{1,2}_field_distribution.tsv`, header
+  `captured_at_et=... capture_method=browser_read_by_agent`) are a
+  manual per-week browser pull, not scheduled anywhere -- confirms the
+  2026-09-23 note. `data/splash/` also holds board captures for week 1-3
+  (`2026_week03_20260922_2019.json` exists, post-Tuesday-lock), but
+  **no `field/2026_week03_field_distribution.tsv` yet** -- the week-3
+  pick-share pull has not been done. Real field-share coverage is still
+  exactly 2 weeks / 32 games, unchanged since the 2026-09-23 fit; no
+  re-run was warranted this round (same n, same `artifacts/pool_field_share/
+  20260923T193620Z/{results.json,games.csv}` is current).
+- Splash's own aggregate picks/best_picks counts are fixed at each
+  week's Tuesday-noon pool lock and do not move afterward (owner,
+  2026-09-08: entries lock noon Tue); reading them any time after that
+  lock (even post-game, as both captures were) is not a leakage
+  violation for offline field-model fitting -- the value itself was
+  pregame-determined, only our read of it was late. This is distinct
+  from using them as a live production input before a game's own lock,
+  which remains banned.
+- **Unit 2 predeclaration draft** (params to fix now, before seeing week
+  3+ data, per LOSO/no-in-sample-gates): field-share model form = OLS
+  `home_share ~ public_split + market_vig_free_home` (already used for
+  the 2-fold check); evaluation = leave-one-week-out across all weeks
+  once >=3 are captured (not the current 2-fold swap); promotion
+  question = does the LOWO-fitted field's rank-optimal card ever
+  disagree with the served card on a decisive game, and does that
+  disagreement net positive realised rank across held-out weeks (not
+  per-game MAE/r, which is already `unresolved_below_power` at n=32 and
+  won't resolve with one more week either). Do not run
+  `greedy_rank_card()` against the fitted field again until >=3 weeks
+  of real shares exist (currently 2) -- next agent's first move each
+  week is capturing `field_distribution.tsv`, not re-fitting on the
+  same n.
