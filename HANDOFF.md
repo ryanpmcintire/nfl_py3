@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-24T10:42:31.729038+00:00`
+Refreshed at: `2026-09-24T10:42:49.079612+00:00`
 
 ## Start here
 
@@ -21,13 +21,13 @@ Refreshed at: `2026-09-24T10:42:31.729038+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `65e11e150081` — Refresh handoff after closing the Odds API lane
+- Baseline commit: `1cb2aff7c236` — Record the Books now interval directive and the permission block
 - Pending change set: 11 paths
   - ` M CURRENT_PREDICTIONS.md`
+  - `M  HANDOFF.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/free-odds-sources.md`
   - ` M docs/model.html`
   - ` M tiebreaker.json`
   - `?? registry/experiments/margin-backtest/20260924T005342Z.json`
