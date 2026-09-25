@@ -727,3 +727,119 @@ Escalate to the orchestrator before building a play-level clock-kill rule:
 whether to invest in the per-play submodels (Units 3-5) next, given three
 successive drive-level conditioning attempts (1b, 1c, 6) have now all failed
 to move the margin-3/7/14 gap.
+
+## Unit 1d diagnostic (measured, 2026-09-25)
+
+Diagnostic only (no new conditioning, no GO/NO-GO gate): decompose why three
+drive-level attempts (1b, 1c, 6) all undershoot margin 3. Train 2009-2014,
+validate 2015-2017, 2018-2025 untouched. Script
+`scripts/sim04_unit1d_divergence.py` (dynamically imports
+`sim04_unit1b_state_chain.py`, does not duplicate its logic). Ran once:
+`.\.tools\uv.exe run --no-sync python scripts\sim04_unit1d_divergence.py`.
+Artifact: `artifacts/sim04_unit1d/20260925T204442Z/report.json`. 36,455
+training drives (1 dropped), N=10,000 simulated games, RNG seed 20260925,
+1,000-resample bootstrap on the decomposition.
+
+**Data caveat (measured):** the validation actual set here is 768 REG-only
+games (season_type=="REG" read directly from the raw pbp snapshot), not the
+801 Unit 1b/1c/6 used — `game_features_pbp.parquet` filters only by
+`season`, so its "2015-2017" slice silently includes 33 playoff games (week
+18-20 game ids, e.g. `2015_20_NE_DEN`). This unit's 768 is the cleaner
+regular-season-only figure; Units 1b/1c/6's "801 actual REG games" wording
+is off by these 33 postseason games. Flagged for the orchestrator, not
+corrected retroactively here (out of this unit's scope).
+
+**1. Score-differential (home-away) distribution at fixed checkpoints, sim
+vs actual, and the sim/actual SD ratio:**
+
+| checkpoint | sim mean | sim sd | actual mean | actual sd | sd ratio (sim/actual) |
+|---|---|---|---|---|---|
+| end Q1 (gsr 2700) | 0.03 | 7.28 | 1.12 | 6.72 | 1.084 |
+| halftime (gsr 1800) | 0.05 | 11.45 | 2.13 | 10.53 | 1.088 |
+| end Q3 (gsr 900) | 0.05 | 14.33 | 2.29 | 13.12 | 1.093 |
+| 5:00 left Q4 (gsr 300) | 0.04 | 15.66 | 2.43 | 14.04 | 1.115 |
+| 2:00 left Q4 (gsr 120) | 0.12 | 15.96 | 2.24 | 14.28 | 1.117 |
+| final margin | 0.12 | 15.96 | 2.20 | 13.87 | 1.150 |
+
+The sim/actual SD ratio is already 1.08 by the end of Q1 and rises steadily
+(not a step change at the endgame) to 1.15 at the final margin -- excess
+dispersion starts early and compounds gradually through the whole game, it
+does not appear only in Q4. Share of games within 3 points also runs
+consistently below actual at every checkpoint (e.g. q4_5min: sim 0.195 vs
+actual 0.221).
+
+**2. Transition matrix at 5:00 left in Q4 (home-relative score_bucket_coarse
+-> P(final |margin|==3)):**
+
+| bucket (home persp.) | actual n | actual P(margin=3) | sim n | sim P(margin=3) |
+|---|---|---|---|---|
+| trail >=9 | 158 | 0.063 | 2746 | 0.031 |
+| trail 1-8 | 150 | 0.233 | 1990 | 0.156 |
+| tied | 46 | 0.609 | 456 | 0.461 |
+| lead 1-8 | 166 | 0.217 | 2066 | 0.146 |
+| lead >=9 | 248 | 0.032 | 2742 | 0.031 |
+
+Every non-blowout bucket shows actual converting to exactly a 3-point final
+far more often than the sim, tied being the starkest (61% vs 46%).
+
+**3. Per-drive scoring rate by the offense's own score_bucket_coarse
+(mean points_off / P(scored), train-pool-fed sim draws vs actual validation
+drives):** actual and sim show the same shape (trail>=9 and lead>=9 both
+score least, ~1.77/1.69-1.77/1.69 pts, the three middle buckets ~1.75-1.85
+pts in both) -- the marginal per-drive scoring-rate-by-state association is
+already reasonably matched between sim and actual. This rules out "missing
+negative dependence at the single-drive marginal level" as the main driver;
+conditioning on score differential already reproduces roughly the right
+trailing/leading scoring-rate shape.
+
+**4. Last-drive-of-the-game category share, all games and margin-3 games
+only:**
+
+| category | actual all (n=768) | sim all (n=10000) | actual margin=3 (n=117) | sim margin=3 (n=990) |
+|---|---|---|---|---|
+| End of half (clock expiration) | 85.3% | 46.6% | 61.5% | 17.3% |
+| Field goal | 5.2% | 11.2% | 23.9% | 37.8% |
+| Touchdown | 1.7% | 11.6% | 0% | 11.6% |
+| Turnover / on downs / punt / other | 7.8% | 30.7% | 14.6% | 33.3% |
+
+Real games overwhelmingly end via clock expiration (85.3% of all games,
+61.5% even restricted to margin-3 games); the simulator treats the final
+drive like any other drive draw, so under half its games (46.6%) and well
+under a fifth of its margin-3 games (17.3%) end that way -- it manufactures
+3-point finals mostly via a live go-ahead field-goal drive (37.8%) instead.
+
+**Decomposition (predeclared 2x2 swap on the 5:00-left transition matrix,
+1000-resample bootstrap 90% CI):**
+
+| quantity | value | 90% CI |
+|---|---|---|
+| P(margin=3), actual (direct) | 0.1523 | [0.1328, 0.1732] |
+| P(margin=3), sim (direct) | 0.0990 | [0.0940, 0.1039] |
+| sim reaching x actual finishing | 0.1452 | [0.1257, 0.1658] |
+| actual reaching x sim finishing | 0.1058 | [0.0982, 0.1137] |
+
+Gap to explain: 0.0533. Swapping only the actual *finishing* behavior onto
+the sim's own (too-dispersed) 5:00 checkpoint distribution recovers 0.1452,
+86.6% of the gap. Swapping only the actual *reaching* (checkpoint)
+distribution onto the sim's own finishing behavior recovers just 0.1058,
+12.8% of the gap. **Finishing, not reaching, explains the shortfall**
+(~87% vs ~13%).
+
+**Named mechanism:** the drive-chain simulator has no clock-expiration rule.
+A drive drawn late in the 4th quarter is given its full drawn (category,
+duration) outcome from the empirical pool regardless of whether real time
+would have run out first, so games that reach a close state late still
+convert to live scoring/turnover plays at the pool's unconditional rate
+instead of overwhelmingly running out the clock the way real close games do
+(item 4). This is the same mechanism Unit 1c's non-OT margin-3 breakdown
+(56.7% "End of half") and Unit 6's null result on timeout-conditioned
+resampling already pointed at, now quantified: it accounts for roughly 87%
+of the margin-3 mass shortfall via the transition-matrix decomposition, not
+the broader pre-Q4 dispersion buildup (~13%, though that buildup is real and
+gradual, first measurable by end of Q1).
+
+**Recommendation:** build an explicit, near-deterministic clock-expiration
+/ kneel-down rule for the final drive of a half (a per-play or remaining-
+time-vs-drive-duration check, not another resampling-pool conditioning
+axis) -- Units 3-5's per-play loop, as the prior "Next" already escalated,
+now with a measured ~87%-of-gap justification rather than a qualitative one.

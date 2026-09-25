@@ -34,6 +34,24 @@ probability it makes enters the pick probability, and then only as a fitted term
   `game_features_pbp.parquet` matches except EPA features up to 0.00075,
   traced to an upstream nflverse revision of 2020 EPA (1,381 plays, 253
   games) carried forward by the EWM.
+- Unit 1d diagnostic DONE (2026-09-25, `scripts/sim04_unit1d_divergence.py`,
+  artifact `artifacts/sim04_unit1d/20260925T204442Z/report.json`, full tables
+  in `docs/sim04_unit_log.md` "Unit 1d diagnostic"): decomposed the margin-3
+  shortfall via a predeclared reaching-vs-finishing swap on the 5:00-left-Q4
+  transition matrix. **Finishing explains ~87% of the gap, reaching only
+  ~13%.** Named mechanism: no clock-expiration/kneel-down rule -- the sim
+  gives a late drive its full drawn outcome instead of running out the
+  clock, so real games' last drive is "End of half" 85.3% of the time (61.5%
+  of margin-3 games) vs the sim's 46.6% (17.3% of margin-3 games); sim
+  manufactures 3-point finals mostly via a live go-ahead FG instead (37.8%
+  vs actual 23.9%). Dispersion does build gradually pre-Q4 too (sim/actual
+  SD ratio 1.08 at end of Q1 rising to 1.15 at final margin) but is the
+  smaller piece. Per-drive scoring-rate-by-state shape already matches
+  between sim and actual (rules out missing marginal negative dependence).
+  Data caveat found in passing: `game_features_pbp.parquet` filters only by
+  `season`, so Units 1b/1c/6's "801 actual REG games" for 2015-2017 silently
+  includes 33 playoff games; this unit used the clean 768 REG-only games and
+  did not retroactively fix 1b/1c/6.
 
 ## Tried
 
@@ -44,15 +62,20 @@ probability it makes enters the pick probability, and then only as a fitted term
 
 ## Next
 
-- Unit 6 is done (see State). Its null result plus Unit 1c's decomposition
-  point at a near-deterministic clock-kill rule (not probability-weighted
-  resampling) as the remaining lever, which needs a per-play loop -- closer
-  to Units 3-5 than to more drive-level state-cell conditioning. Escalate to
-  the orchestrator: invest in Units 3-5 (per-play submodels) next, given
-  three successive drive-level conditioning attempts (1b, 1c, 6) have all
-  failed to move the margin-3/7/14 gap.
+- Unit 1d's decomposition (measured, see State) upgrades Unit 6's null
+  result from qualitative to quantitative: build an explicit
+  clock-expiration/kneel-down rule for the final drive of a half (checks
+  remaining time vs a drive's normal duration, not another resampling-pool
+  conditioning axis) -- this is Units 3-5's per-play territory. Escalate to
+  the orchestrator: invest there next, with ~87%-of-gap justification, given
+  four successive drive-level-conditioning-only attempts (1b, 1c, 6, 1d) all
+  point at the same missing mechanism rather than a conditioning fix.
 
 ## Open
 
 - `scripts/team_style_features.py` has a cached raw parquet with the old
   schema; run it with `--refresh-raw` next time (research-only, not scheduled).
+- `game_features_pbp.parquet`'s season-only filter silently includes
+  playoff games in what Units 1b/1c/6 called "actual REG" 2015-2017/2018-
+  2025 slices (Unit 1d found 33 such games in 2015-2017 alone); not fixed
+  retroactively, flagged for the orchestrator.
