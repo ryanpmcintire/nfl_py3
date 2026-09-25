@@ -118,16 +118,44 @@ probability it makes enters the pick probability, and then only as a fitted term
   `unresolved_below_power`; most of the tied-at-5:00 gap is not explained
   by the coarse-cell dilution after all.
 
+- Unit 8b trace DONE (2026-09-25, `scripts/sim04_unit8b_trace.py`, copy of
+  Unit 8 config C, artifact
+  `artifacts/sim04_unit8b_trace/20260925T214746Z/report.json`, full
+  writeup `docs/sim04_unit_log.md` "Unit 8b trace"). Found and fixed (in
+  the copy only) the real bug behind the 84% vs 34.7% tied-at-5:00 OT-rate
+  contradiction: `build_play_rows` (`scripts/sim04_unit7_clock.py:92-148`)
+  rebuilds its `selected` play list per-drive, so every drive-ending play
+  (punt/FG/score) that isn't literally the last play of the period gets
+  `elapsed = gsr - boundary` -- the *entire remaining clock* -- instead of
+  the true few seconds to the next snap (measured: terminal-row mean
+  elapsed 267.8s vs non-terminal 28.3s at `sl_bucket=4`, tied bucket).
+  `run_race` checks clock-expiry before `is_terminal`
+  (`sim04_unit7_clock.py:268`), so these corrupted rows get misread as
+  "clock expired," discarding real scores and starving the window of
+  possessions. Ruled out the Q2/Q4-pooling hypothesis directly (elapsed/
+  terminal-rate stats are nearly identical split by qtr). Fixed in the
+  copy (`build_play_rows_fixed`, accumulates `selected` across the whole
+  game before computing elapsed): possessions/game 1.63->3.04 (now matches
+  actual's 3.04 almost exactly), OT rate 84.3%->66.5% (actual 34.7%),
+  via-regulation margin-3 0.094->0.162 (actual 0.531), log-loss delta
+  +0.00812->+0.00681. Gap roughly halved, not closed -- a second, unnamed
+  mechanism remains (post-fix clock-expired share still 32.9% vs actual's
+  15.4% "End of half"; per-possession scoring rate still half actual's).
+  Not ported to `src/` or Unit 7/8 (this was a bounded copy-only debugging
+  task).
+
 ## Next
 
-- Unit 8 is DONE (NO-GO, see Tried). **Recommended next unit:** extend
-  Unit 7's play-level clock race (`build_play_rows`/`build_race_pools` in
-  `scripts/sim04_unit7_clock.py`) to condition on qtr (2 vs 4) so end-of-
-  half and end-of-game plays stop sharing the same duration/elapsed-time
-  pool -- untouched by Units 7 or 8, and the remaining candidate driver of
-  how many drives fit in the 5-minute window, now that the coarse-cell
-  dilution Unit 7b named is fixed and confirmed non-dominant. Escalate to
-  the orchestrator for the next unit assignment.
+- **Recommended next unit:** (1) port the `build_play_rows` elapsed fix
+  from `sim04_unit8b_trace.py`'s `build_play_rows_fixed` into
+  `scripts/sim04_unit7_clock.py` for real -- it changes Unit 7/7b/8's own
+  race pools, so their validation numbers need a rerun, not just this
+  diagnostic copy; (2) diagnose the residual clock-expired-too-often /
+  scores-too-rarely gap once possession count is fixed -- candidate: the
+  race still has no down/distance or plays-already-run conditioning, so it
+  can't tell a fresh 1st-and-10 snap from 3rd-and-short and likely still
+  over-draws non-terminal early-down plays before a terminal one. Escalate
+  to the orchestrator for the next unit assignment.
 
 ## Open
 

@@ -1181,3 +1181,101 @@ race (Unit 7's `build_play_rows`/`build_race_pools`) to condition on
 qtr (2 vs 4) so the number-of-drives-that-fit-in-the-window distribution
 stops pooling end-of-half with end-of-game plays -- the remaining lever
 this unit did not touch -- before further tuning the drive-level cells.
+
+## Unit 8b trace (measured, 2026-09-25)
+
+Debugging unit, not a new config. Copy `scripts/sim04_unit8b_trace.py`
+(Unit 8 config C: train 2009-2014, validate 2015-2017 REG-only,
+`use_q4_level=False`, `use_score_level=False`, `min_cell_n=25`), instrumented
+to log every post-5:00-of-Q4 possession (race outcome, cell level/key,
+start clock, duration, category, points) for sim games tied at the 5:00
+checkpoint, plus the matching actual possession set from
+`sim04_unit1b_state_chain.reconstruct_drives` restricted to `start_qtr==4`
+rows after the checkpoint drive. Artifact
+`artifacts/sim04_unit8b_trace/20260925T214746Z/report.json` (before/after
+fix, `--both`).
+
+**Possession-level comparison (tied-at-5:00, before fix):**
+
+| metric | sim | actual |
+|---|---|---|
+| n tied-at-5:00 games | 445 | 49 |
+| possessions/game (post-checkpoint, REG) | 1.63 | 3.04 |
+| mean possession duration | 121.9s | 59.4s |
+| scoring rate per possession | 0.101 | 0.302 |
+| share of possessions = clock-expired/"End of half" | 61.4% (445/725) | 15.4% (23/149) |
+| OT rate | 84.3% | 34.7% |
+| via-regulation P(margin=3) | 0.094 | 0.531 |
+
+**Named bug (not the Q2/Q4-pooling mechanism Unit 8 flagged next -- that
+was checked and ruled out: splitting the race's tied-bucket play pool by
+qtr shows near-identical mean elapsed and P(terminal) in qtr 2 vs qtr 4 at
+every `sl_bucket`, e.g. `sl_bucket=4`: qtr2 mean_elapsed=68.1s/p_term=0.164
+(n=445) vs qtr4 67.0s/0.167 (n=204)).** The real bug is in
+`build_play_rows` (`scripts/sim04_unit7_clock.py:92-148`, the `elapsed`
+calculation at lines 109-115): `selected` is rebuilt fresh inside the
+per-drive loop (`for _drive_id, drive in game.groupby("fixed_drive")`), so
+for the *last selected play of every drive* -- which is every terminal
+play (punt, FG, scoring play) that ends a drive before the period truly
+ends -- `j + 1 < len(selected)` is false and the code falls to
+`elapsed = gsr - boundary` (boundary=0 for Q4), crediting that single
+historical play with the *entire remaining clock at that instant* instead
+of the true few-seconds-to-the-next-team's-snap. Measured: mean elapsed on
+terminal-flagged tied-bucket rows is 267.8s at `sl_bucket=4` (240-300s
+left) vs 28.3s on non-terminal rows in the same bucket (cell audit,
+2009-2014 train). Because `run_race` (`sim04_unit7_clock.py:268`) checks
+`if consumed + elapsed >= remaining: return True (clock expired)` *before*
+checking `is_terminal`, drawing one of these corrupted rows makes the race
+declare "clock expired" (0 points, game/period ends immediately) instead
+of crediting the real score/punt/turnover and continuing -- this is what
+starves the 5-minute window of possessions and inflates the OT rate. Three
+example sim traces (before fix) show it directly: game 109, a single away
+possession at 226s left instantly returns `clock_expired` with
+`duration=226` (no scoring chance at all, straight to OT, final margin 0);
+game 189 same pattern at 265s left (final margin -3, OT); game 5 has one
+real possession (missed FG, 147s) then its next possession instantly
+expires at 30s left (OT, final margin 4).
+
+**Fix (in the copy only):** `build_play_rows_fixed` in
+`sim04_unit8b_trace.py` accumulates `selected` plays across the whole game
+(all drives, chronological) before computing `elapsed`, so a drive-ending
+play's elapsed is measured to the next real selected play (any team, any
+drive) and the boundary fallback fires only for the play that is truly
+last in the period.
+
+**Before/after (validation, same split, config C, one fixed run, no
+tuning):**
+
+| metric | before | after | actual |
+|---|---|---|---|
+| possessions/game | 1.63 | 3.04 | 3.04 |
+| mean possession duration | 121.9s | 64.7s | 59.4s |
+| scoring rate per possession | 0.101 | 0.153 | 0.302 |
+| OT rate (tied-at-5:00) | 84.3% | 66.5% | 34.7% |
+| via-regulation P(margin=3) | 0.094 | 0.162 | 0.531 |
+| key-number hits/5 | 1 | 1 | -- |
+| log-loss delta vs naive | +0.00812 | +0.00681 | -- |
+
+The fix closes the possessions-per-game gap essentially completely (1.63
+-> 3.04, matching actual 3.04) and roughly halves the OT-rate gap (49.6pt
+-> 31.8pt) and lifts via-regulation margin-3 threefold (0.094 -> 0.162),
+but does not close the gap to GO: post-fix `clock_expired`/"End of half"
+share is still 32.9% (421/1278) vs actual's 15.4%, and scoring rate per
+possession is still about half actual's (0.153 vs 0.302). This is a
+**confirmed, named, fixed code bug** (not `unresolved_below_power` -- the
+mechanism was directly measured, the fix directly verified against the
+same held-out split), but a second, separate, unnamed mechanism remains:
+after the elapsed fix, possession *count* matches reality but each
+possession still scores too rarely and still resolves via bogus-looking
+"clock expired" too often. Not applied to `src/` or Unit 7/8 (task scope:
+copy-only debugging unit; no registry writes, no commits).
+
+**Recommended next unit:** (1) port this `build_play_rows` elapsed fix
+into `scripts/sim04_unit7_clock.py` for real (it changes Unit 7/7b/8's own
+race pools, a rerun of those units' validation numbers, not just this
+diagnostic copy); (2) diagnose the residual clock-expired-too-often /
+scores-too-rarely gap now that possession count is fixed -- candidate: the
+race's per-play conditioning still lacks down/distance or "plays already
+run this drive," so it cannot tell a fresh 1st-and-10 snap from a
+3rd-and-short snap and likely still over-draws non-terminal early-down
+plays before finding a terminal one.
