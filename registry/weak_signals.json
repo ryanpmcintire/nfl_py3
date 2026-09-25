@@ -165037,6 +165037,90 @@
       "source": "artifacts/news_trigger_historical/20260923T212553Z/summary.json",
       "standard_error": 0.9459525447539588
     },
+    "news_trigger_resolution_line_move": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap interval [-0.0455,0.0000], upper edge exactly zero not strictly negative; only 19 decisive games (7 candidate vs 12 baseline). Not self-classified as wrong_sign_resolved: no mechanism named per AGENTS.md, and a wholly-one-sided small-sample interval alone is not an admissible closing ground per the line-move-regrade-legacy precedent (drafted unresolved_below_power there too under the same pattern).",
+      "closing_ground": null,
+      "description": "news_trigger_value_shift (Unit 1 severity-only term) graded on line movement toward the pick (market_move_toward_home, restricted to market_move_available==1 rows) instead of accuracy, same LOSO 4-term baseline, seasons 2020-2024.",
+      "effect": -0.022727272727272728,
+      "effect_units": "ats_points",
+      "family": null,
+      "interval": [
+        -0.045454545454545456,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Once a questionable player's status resolves, the market barely moves at all, and on this small sample it moves slightly against the pick more often than with it, too few decisive games to call this settled.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-25",
+      "reliability": null,
+      "sample_blocks": 2,
+      "sample_games": 528,
+      "seasons": [
+        2020,
+        2024
+      ],
+      "source": "artifacts/news_trigger_player_value/20260925T192146Z/summary.json",
+      "standard_error": null
+    },
+    "news_trigger_role_share_cover_probability": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Bootstrap probability_positive=0.042 for candidate beating baseline on accuracy (2000 draws, season/week blocks), interval [-2.324,0.085] touches the positive side so not wholly on the wrong side; exact_null_p=0.0652 on 36 decisive games (12 candidate wins vs 24 baseline wins). Brier/log-loss improvements near zero (P+ 0.182/0.184, no signal). Per-fold coefficient sign-unstable (negative 2020, positive 2021-2024), unlike candidate A's consistently negative folds. Sign not reversed with the whole interval on the wrong side, no positive control run, so unresolved_below_power.",
+      "closing_ground": null,
+      "description": "news_trigger_value_shift_v2 (per-player trailing role-share value, channel-split skill/defense value-per-role-share over each resolved questionable player's own EWM offense/defense snap share, role_span=8) added as a 5th fitted term to the served 4-term LOSO logistic, seasons 2020-2024, paired against the same 4-term baseline used in Unit 1, same games.",
+      "effect": -0.9787928221859706,
+      "effect_units": "accuracy_points",
+      "family": null,
+      "interval": [
+        -2.3239453732503885,
+        0.08518250954991828
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Weighting each hurt player's news by their own role on the team, instead of a flat team-average, still does not clearly help or hurt picks over 2020-2024, and the effect flips direction season to season.",
+      "probability_positive": 0.042,
+      "recorded_at": "2026-09-25",
+      "reliability": null,
+      "sample_blocks": 89,
+      "sample_games": 1226,
+      "seasons": [
+        2020,
+        2024
+      ],
+      "source": "artifacts/news_trigger_player_value/20260925T192146Z/summary.json",
+      "standard_error": 0.6416186486652954
+    },
+    "news_trigger_role_share_line_move": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block bootstrap interval [-0.0152,0.0189] crosses zero, probability_positive 0.7435; decisive record tied 8-8 on 16 games, indistinguishable from no effect.",
+      "closing_ground": null,
+      "description": "news_trigger_value_shift_v2 (per-player role-share term) graded on line movement toward the pick instead of accuracy, same 4-term LOSO baseline, seasons 2020-2024.",
+      "effect": 0.001893939393939394,
+      "effect_units": "ats_points",
+      "family": null,
+      "interval": [
+        -0.015151515151515152,
+        0.01893939393939394
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Weighting hurt players by their own role does not move the betting line toward or away from the pick in any detectable direction.",
+      "probability_positive": 0.7435,
+      "recorded_at": "2026-09-25",
+      "reliability": null,
+      "sample_blocks": 2,
+      "sample_games": 528,
+      "seasons": [
+        2020,
+        2024
+      ],
+      "source": "artifacts/news_trigger_player_value/20260925T192146Z/summary.json",
+      "standard_error": null
+    },
     "nfl_lead44_lookahead_fade_on_production_full_archive": {
       "category": "schedule",
       "classification": "unresolved_below_power",

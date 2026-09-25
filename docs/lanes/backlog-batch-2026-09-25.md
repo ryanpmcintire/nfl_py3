@@ -18,7 +18,7 @@ item below is shipped, recorded, or blocked with its reason.
   and `board_terminal.py`. Rendered: 23 of 32 settled picks also covered the
   close, 9 missed, 1 had no archived close.
 - (c) DONE: Week 3 challengers all recorded by scheduled passes (lockday_verify: 59 recorded, 4 skipped, 0 missing); the tiebreaker shade is gated by design; lane moved to done/.
-- (d) MKT-08 per-player news value decomposition (lane `news-trigger-refresh`) running.
+- (d) DONE: MKT-08 per-player role-share news value. Accuracy -0.98 [-2.32,+0.09] P+ 0.04 (12-24 decisive); line move +0.002 P+ 0.74 (8-8); recorded 7,261-7,263, unresolved.
 
 ## Tried
 
