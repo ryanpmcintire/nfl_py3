@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-25T19:29:15.401208+00:00`
+Refreshed at: `2026-09-25T19:39:08.489429+00:00`
 
 ## Start here
 
@@ -21,10 +21,10 @@ Refreshed at: `2026-09-25T19:29:15.401208+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `1dfdbd604815` — Weighting injury news by each player's role does not help picks
+- Baseline commit: `c2baed5675bb` — Score and clock conditioning halves the simulator's log-loss gap
 - Pending change set: 3 paths
   - ` M docs/lanes/sim04-play-simulator.md`
-  - `A  scripts/sim04_unit1b_state_chain.py`
+  - `A  scripts/sim04_unit1c_diagnostic.py`
   - ` M src/nfl_ats/pbp.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
