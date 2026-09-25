@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-25T19:39:08.489429+00:00`
+Refreshed at: `2026-09-25T19:48:19.185805+00:00`
 
 ## Start here
 
@@ -21,10 +21,17 @@ Refreshed at: `2026-09-25T19:39:08.489429+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `c2baed5675bb` — Score and clock conditioning halves the simulator's log-loss gap
-- Pending change set: 3 paths
+- Baseline commit: `642deab57371` — Endgame clock play, not drive tuning, drives the 3-point gap
+- Pending change set: 10 paths
+  - `M  HANDOFF.md`
+  - ` M README.md`
+  - `M  ROADMAP.md`
+  - `M  docs/lanes/README.md`
+  - `M  docs/lanes/backlog-batch-2026-09-25.md`
   - ` M docs/lanes/sim04-play-simulator.md`
-  - `A  scripts/sim04_unit1c_diagnostic.py`
+  - `A  docs/lanes/surface-switch-fitted-term.md`
+  - `M  registry/weak_signals.json`
+  - `A  scripts/surface_switch_fitted_term.py`
   - ` M src/nfl_ats/pbp.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.

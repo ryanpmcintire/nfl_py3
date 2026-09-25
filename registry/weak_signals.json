@@ -196210,6 +196210,174 @@
       "source": "nfl-ats experiment run registry\\experiment_specs\\surface_switch_feature_arm.json",
       "standard_error": 0.7036500468667235
     },
+    "surface_switch_fitted_term_accuracy_2011_2025": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block interval crosses zero (P+ 0.802); week-block P+ 0.824; decisive games 673 (term 349, base 324). No interval wholly on the wrong side and no positive control, so unresolved. Family look count 11.",
+      "closing_ground": null,
+      "description": "Point-in-time surface switch flag (grass-modal visitor at a turf home venue, modal surface from prior home games only) added as a fifth fitted term to the served four-term pick probability, LOSO by season, ridge 1e-3; accuracy at the opener, extended 2011-2025 population; paired against the base.",
+      "effect": 0.6695232994108195,
+      "effect_units": "accuracy_points",
+      "family": "surface_switch_fitted_term_v1",
+      "interval": [
+        -0.8545700418870369,
+        2.1248839614761397
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Letting the pick model weigh road teams used to grass playing on artificial turf did not clearly help or hurt picks; unresolved and not served.",
+      "probability_positive": 0.802,
+      "recorded_at": "2026-09-25",
+      "reliability": null,
+      "sample_blocks": 15,
+      "sample_games": 3734,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/surface_switch_fitted_term/20260925T194502Z/summary.json",
+      "standard_error": null
+    },
+    "surface_switch_fitted_term_accuracy_2020_2025": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block interval crosses zero (P+ 0.038); week-block P+ 0.0325; decisive games 35 (term 12, base 23). No interval wholly on the wrong side and no positive control, so unresolved. Family look count 11.",
+      "closing_ground": null,
+      "description": "Point-in-time surface switch flag (grass-modal visitor at a turf home venue, modal surface from prior home games only) added as a fifth fitted term to the served four-term pick probability, LOSO by season, ridge 1e-3; accuracy at the opener, served 2020-2025 population; paired against the base.",
+      "effect": -0.7318695941450433,
+      "effect_units": "accuracy_points",
+      "family": "surface_switch_fitted_term_v1",
+      "interval": [
+        -1.644736842105263,
+        0.13151200651200642
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Letting the pick model weigh road teams used to grass playing on artificial turf did not clearly help or hurt picks; unresolved and not served.",
+      "probability_positive": 0.038,
+      "recorded_at": "2026-09-25",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/surface_switch_fitted_term/20260925T194502Z/summary.json",
+      "standard_error": null
+    },
+    "surface_switch_fitted_term_line_move_2013_2025": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block interval crosses zero (P+ 0.0525); week-block P+ 0.1055; decisive games 428 (term 189, base 239). No interval wholly on the wrong side and no positive control, so unresolved. Family look count 11.",
+      "closing_ground": null,
+      "description": "Point-in-time surface switch flag (grass-modal visitor at a turf home venue, modal surface from prior home games only) added as a fifth fitted term to the served four-term pick probability, LOSO by season, ridge 1e-3; line movement toward the pick, four-term base, 2013-2025; paired against the base.",
+      "effect": -0.031230674087816945,
+      "effect_units": "ats_points",
+      "family": "surface_switch_fitted_term_v1",
+      "interval": [
+        -0.07455079557221464,
+        0.0066301783488634134
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Letting the pick model weigh road teams used to grass playing on artificial turf did not clearly help or hurt picks; unresolved and not served.",
+      "probability_positive": 0.0525,
+      "recorded_at": "2026-09-25",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 3234,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/surface_switch_fitted_term/20260925T194502Z/summary.json",
+      "standard_error": null
+    },
+    "surface_switch_fitted_term_line_move_2020_2025": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block interval crosses zero (P+ 0.158); week-block P+ 0.094; decisive games 24 (term 8, base 16). No interval wholly on the wrong side and no positive control, so unresolved. Family look count 11.",
+      "closing_ground": null,
+      "description": "Point-in-time surface switch flag (grass-modal visitor at a turf home venue, modal surface from prior home games only) added as a fifth fitted term to the served four-term pick probability, LOSO by season, ridge 1e-3; line movement toward the pick, four-term base, 2020-2025; paired against the base.",
+      "effect": -0.009314703925482368,
+      "effect_units": "ats_points",
+      "family": "surface_switch_fitted_term_v1",
+      "interval": [
+        -0.029495275611869178,
+        0.007832898172323759
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Letting the pick model weigh road teams used to grass playing on artificial turf did not clearly help or hurt picks; unresolved and not served.",
+      "probability_positive": 0.158,
+      "recorded_at": "2026-09-25",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/surface_switch_fitted_term/20260925T194502Z/summary.json",
+      "standard_error": null
+    },
+    "surface_switch_fitted_term_line_move_opener_only_2013_2025": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block interval crosses zero (P+ 0.3955); week-block P+ 0.384; decisive games 496 (term 241, base 255). No interval wholly on the wrong side and no positive control, so unresolved. Family look count 11.",
+      "closing_ground": null,
+      "description": "Point-in-time surface switch flag (grass-modal visitor at a turf home venue, modal surface from prior home games only) added as a fifth fitted term to the served four-term pick probability, LOSO by season, ridge 1e-3; line movement toward the pick, opener-only two-term base, 2013-2025; paired against the base.",
+      "effect": -0.007266542980828695,
+      "effect_units": "ats_points",
+      "family": "surface_switch_fitted_term_v1",
+      "interval": [
+        -0.0580865741493804,
+        0.03505243132952709
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Letting the pick model weigh road teams used to grass playing on artificial turf did not clearly help or hurt picks; unresolved and not served.",
+      "probability_positive": 0.3955,
+      "recorded_at": "2026-09-25",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 3234,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/surface_switch_fitted_term/20260925T194502Z/summary.json",
+      "standard_error": null
+    },
+    "surface_switch_fitted_term_line_move_opener_only_2020_2025": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block interval crosses zero (P+ 0.038); week-block P+ 0.036; decisive games 54 (term 22, base 32). No interval wholly on the wrong side and no positive control, so unresolved. Family look count 11.",
+      "closing_ground": null,
+      "description": "Point-in-time surface switch flag (grass-modal visitor at a turf home venue, modal surface from prior home games only) added as a fifth fitted term to the served four-term pick probability, LOSO by season, ridge 1e-3; line movement toward the pick, opener-only two-term base, 2020-2025; paired against the base.",
+      "effect": -0.028276779773785763,
+      "effect_units": "ats_points",
+      "family": "surface_switch_fitted_term_v1",
+      "interval": [
+        -0.06284916201117319,
+        0.0019120458891013384
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Letting the pick model weigh road teams used to grass playing on artificial turf did not clearly help or hurt picks; unresolved and not served.",
+      "probability_positive": 0.038,
+      "recorded_at": "2026-09-25",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/surface_switch_fitted_term/20260925T194502Z/summary.json",
+      "standard_error": null
+    },
     "suspension_return_rust_on_production": {
       "category": "offfield",
       "classification": "unresolved_below_power",

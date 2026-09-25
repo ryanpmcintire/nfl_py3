@@ -20,6 +20,7 @@ modified lane when the prompt just says to continue.
 
 ## Active
 
+- [surface-switch-fitted-term](surface-switch-fitted-term.md) - 2026-09-25: grass-to-turf visitor as a fifth fitted term; unresolved both windows (P+ 0.80 extended, 0.04 served era); recorded, not served.
 - [sim04-play-simulator](sim04-play-simulator.md) - 2026-09-25: SIM-04 play-by-play simulator build plan (`docs/sim04_play_simulator_plan.md`); planning unit dispatched.
 - [backlog-batch-2026-09-25](backlog-batch-2026-09-25.md) - 2026-09-25: standing backlog lane; batch 1 = queued registry records + one UI-20 improvement.
 - [inactives-capture-empty](inactives-capture-empty.md) - 2026-09-24: RotoWire fallback now parses (150 rows on an archived page); check the first live T-90 manifest tonight (ATL at GB) and Sunday.
