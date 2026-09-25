@@ -97,18 +97,37 @@ probability it makes enters the pick probability, and then only as a fitted term
   `time_bucket_coarse` merges with pre-halftime Q2 tied drives -- a lower-
   urgency population that dilutes the true endgame scoring rate.
 
+- Unit 8 DONE, NO-GO (2026-09-25, `scripts/sim04_unit8_cells.py`, artifact
+  `artifacts/sim04_unit8/20260925T212234Z/report.json`, full writeup in
+  `docs/sim04_unit_log.md` "Unit 8 predeclaration"/"Unit 8 result"). Built
+  the Q2/Q4 coarse-cell split + Q4-only/score-only backoff levels Unit 7b
+  named, plus era-correct OT length (15 min through 2016, 10 min from
+  2017) and an audit of the OT possession rule (no bug found there).
+  **Fix verified working at the single-drive level but does not close the
+  gap**: cell audit confirms the new Q4-only level pools tied+late-Q4
+  drives correctly (n=91-165, scoring rate 0.24-0.35, close to actual
+  ~0.355) with no more Q2 dilution, yet the tied-at-5:00 aggregate barely
+  moved (sim OT rate 84-85% vs actual 34.7%, was 86.9% pre-fix; sim
+  via-regulation margin-3 share 0.09-0.11 vs actual 0.531, unchanged from
+  pre-fix 0.092). Validation hits **regressed** 2/5 (Unit 7 B: 7,10) to
+  1/5 (7 only) across all 3 predeclared configs; selected config C
+  (coarse-split only, no extra levels) per the predeclared tie-break, log
+  loss best-in-series at +0.00812. OT era fix confirmed working
+  independently: sim OT tie rate 14.8% -> 6.5-9.4%. Not a refuted
+  mechanism (no sign flip on the Unit 7b fix itself) --
+  `unresolved_below_power`; most of the tied-at-5:00 gap is not explained
+  by the coarse-cell dilution after all.
+
 ## Next
 
-- Build change named by Unit 7b: split the coarse-cell fallback so Q4
-  endgame tied cells (`tb_fine` in {5,6}) never pool with Q2 pre-half tied
-  cells (`tb_fine==2`) in `build_state_cells`/`draw_cell` (e.g. give
-  `time_bucket_coarse` a separate bucket for {5,6}, or add a Q4-only
-  intermediate level). Re-measure the tied-bucket OT rate and via-regulation
-  margin-3 share on the same 2015-2017 split before touching OT resolution
-  (secondary finding: sim OT ties 14.8% vs actual 0/17, and OT_SECONDS=600
-  applied uniformly though 2015-2016 used the 15-min rule -- pre-existing,
-  not introduced here). Escalate to the orchestrator for the next unit
-  assignment (src/ build change vs. another diagnostic).
+- Unit 8 is DONE (NO-GO, see Tried). **Recommended next unit:** extend
+  Unit 7's play-level clock race (`build_play_rows`/`build_race_pools` in
+  `scripts/sim04_unit7_clock.py`) to condition on qtr (2 vs 4) so end-of-
+  half and end-of-game plays stop sharing the same duration/elapsed-time
+  pool -- untouched by Units 7 or 8, and the remaining candidate driver of
+  how many drives fit in the 5-minute window, now that the coarse-cell
+  dilution Unit 7b named is fixed and confirmed non-dominant. Escalate to
+  the orchestrator for the next unit assignment.
 
 ## Open
 

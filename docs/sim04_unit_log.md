@@ -1049,3 +1049,135 @@ between level0 and level1/level2 in `build_state_cells`/`draw_cell` -- then
 re-measure the tied-bucket OT rate and via-regulation margin-3 share on
 this same 2015-2017 split before touching OT resolution or the era OT-
 length mismatch.
+
+## Unit 8 predeclaration (written before running, 2026-09-25)
+
+Target (from Unit 7b): `build_state_cells`/`draw_cell`'s coarse fallback
+(`time_bucket_coarse`) merges Q2 pre-half tied drives (`tb_fine==2`) with
+Q4 endgame tied drives (`tb_fine` in {5,6}) into one pooled bucket, diluting
+the true endgame scoring rate. New script `scripts/sim04_unit8_cells.py`,
+built on Unit 7 config B (play-level clock race, `use_timeouts=False`,
+race `min_cell_n=25`, imported unmodified from `sim04_unit7_clock`).
+Reuses `sim04_unit7b_scoring_mix.actual_diagnostics`/`aggregate` unmodified
+for the actual-side tied-at-5:00 bucket so the sim/actual comparison stays
+apples-to-apples with Unit 7b's own numbers.
+
+**Fix 1, back-off hierarchy** (local `time_bucket_coarse2`,
+`build_state_cells2`, `draw_cell2`, not touching `sim04_unit1b_state_chain`):
+`time_bucket_coarse2` splits the old 3-way split into 4: `tb_fine==7`(OT)->3,
+`tb_fine==2`(Q2 pre-half)->1, `tb_fine` in {5,6}(Q4 endgame, the trigger
+window)->2, else->0. New chain: level0 `(sb_fine,tb_fine,fb)` -> **level_q4**
+(new, active only when `tb_fine` in {5,6}) `(sb_fine,tb_fine)` pooled over
+`fb` -> level1 `(sb_fine,tb_coarse2,fb)` -> level2 `(sb_coarse,tb_coarse2,fb)`
+-> **level_score** (new) `(sb_fine,)` pooled over all time/fp -> level3, now
+a single unconditional pool of every training drive (previously indexed by
+`fb` alone). `tb_fine==4` (Q4, >300s left) stays in the general group 0 --
+Unit 7b flagged only the <=300s buckets as low-n.
+
+**Fix 2, OT duration by era:** real rule is 15-minute (900s) regular-season
+OT through 2016, 10-minute (600s) from 2017 (**read**, general NFL-rules
+knowledge, not re-verified against a primary source this unit). Simulated
+games carry no season tag, so each simulated game draws its own OT length
+from `rng.choice` over the eval seasons' rule (`900.0` for season<=2016,
+`600.0` for >=2017) -- for the 2015-2017 validation split that is P(900)=2/3,
+P(600)=1/3, matching season composition.
+
+**Fix 3, OT tie rate:** audited the existing possession-rule ("settled")
+logic against the modified-sudden-death rule (first-possession FG earns the
+opponent an answering drive; a first-possession TD or a defensive/return
+score wins immediately; once both sides have had one possession, the next
+score of either side wins) -- traced through all three branches
+(FG-then-answer, TD/defensive-score-immediate, scoreless-first-answered) and
+the code's `settled` check already matches the rule in each case. No
+possession-rule bug found; **fix 2 (era-correct OT length) is the whole of
+fix 3** -- shortening every 2015-2016 OT period to 600s when the real rule
+gave 900s mechanically raises the chance the simulated clock expires before
+a winner emerges. Measured pre/post tie rate is reported; if a material gap
+remains after the era fix this is named `unresolved_below_power`, not
+patched further this unit.
+
+**Configs (at most 3, predeclared), state-cell backoff only (race pools
+fixed at Unit 7 config B for all three):**
+| config | min_cell_n | level_q4 | level_score |
+|---|---|---|---|
+| A (full fix) | 25 | on | on |
+| B (sparser floor) | 15 | on | on |
+| C (coarse-split only, ablation) | 25 | off | off |
+
+**Validation split:** train 2009-2014, validate 2015-2017 REG-only (same
+~768-game actual set as Units 7/7b). Selection rule (same pattern as prior
+units): most key-number hits of 5; ties broken by smallest log-loss delta;
+a config whose log-loss delta regresses more than +0.02 nats versus this
+unit's own config A is disqualified even with a higher hit count. **This
+unit is validation-only** -- no test-split run, no 6th look at 2018-2025.
+
+Reported, not gating: tied-at-5:00 regulation-path margin-3 share, OT rate,
+OT tie rate (all vs Unit 7b's actual 2015-2017 numbers), key-number mass
+table with CI, discrete log loss vs naive histogram, margin sd -- all
+against Unit 7 config B's validation numbers.
+
+Script: `scripts/sim04_unit8_cells.py`. Artifacts under
+`artifacts/sim04_unit8/<timestamp>/`.
+
+## Unit 8 result (measured, 2026-09-25)
+
+Validation (train 2009-2014, eval 2015-2017 REG-only, artifact
+`artifacts/sim04_unit8/20260925T212234Z/report.json`). All three configs:
+hits/5 **1** (only 7). Log-loss delta -- A=+0.01349, B=+0.01395,
+C=+0.00812, none disqualified (bound +0.02 above config A's own delta).
+Predeclared rule (most hits, tie-break smallest delta) selects **config C**
+(coarse-split fix only, no Q4-only/score-only levels) -- verified by hand,
+matches the script's own `selected_config`.
+
+**Fix 1 (backoff hierarchy) is verified working as designed but does not
+close the targeted gap.** Direct cell audit on the 2009-2014 train drives
+confirms `level_q4` is reached and no longer polluted: tied+`tb_fine=5`
+(2-5 min left) has n=91 with per-drive scoring rate 0.352 -- within noise of
+Unit 7b's actual rate (~0.355 blended); tied+`tb_fine=6` (final 2 min) has
+n=165, scoring rate 0.242 (lower, as expected -- less time to convert).
+Despite the first-drive scoring rate now landing close to actual, the
+**aggregate tied-at-5:00 bucket barely moved**: sim OT rate 84.3-84.6%
+across configs vs actual 34.7% (Unit 7b's pre-fix number was 86.9% -- a
+~2 point improvement, not the expected large closure), and sim
+via-regulation P(margin=3) is 0.092-0.105 vs actual 0.531 (Unit 7b pre-fix:
+sim 0.092 -- **unchanged**). This is a measured, verified-mechanism,
+unresolved result: the diagnosed Q2/Q4 coarse-cell dilution was real and is
+now fixed at the single-drive level, but it is not the dominant driver of
+the tied-at-5:00 under-scoring gap -- most of the gap must come from
+elsewhere in the multi-drive sequence within the 5-minute window (candidate:
+the play-level clock-race's per-play elapsed-time/duration distribution,
+which still ignores whether the drive is a Q2-half-ending or Q4-game-ending
+race -- untouched this unit -- bounding how many total drives fit in the
+window regardless of each drive's individual scoring rate).
+
+**Fix 2 (OT duration by era) measurably worked.** Overall sim OT tie rate
+fell from Unit 7b's 14.8% (53/358, uniform 600s) to 6.5% (config A), 9.4%
+(B), 7.7% (C) with era-correct 900s/600s draws -- roughly halved, in the
+direction and rough magnitude the named mechanism predicts, against an
+actual rate of 0/17 (small-sample zero, cannot fully validate against).
+
+**Fix 3 (possession-rule audit):** no bug found (see predeclaration); the
+era fix carried the full measured improvement above.
+
+**Net effect vs Unit 7 config B (validation):** hits regressed 2/5 (7,10)
+-> 1/5 (7 only) -- **10** moved from inside the actual 90% CI
+([0.0391,0.0546]) to just above it (sim 0.0589-0.0591). Sim margin sd rose
+to 15.63-15.72 vs Unit 7 B's implied dispersion (Unit 7 B's own validation
+run did not publish margin sd; only its test-split sd ratio 1.076 vs a
+different actual population is on record, so this is not a like-for-like
+comparison). Miss directions are mixed, not uniformly simulator-under-actual
+(3 and 14 under; 10 and 17 over) -- a change in shape from every prior unit,
+where misses had been uniformly under. No number's actual-CI is fully
+crossed in sign by a config disagreement (all three configs miss the same
+four numbers), so this is not a refutation of the Unit 7b mechanism, but it
+is a clear miss of the predeclared GO bar.
+
+**Verdict: NO-GO on validation** (needs >=4/5 hits; got 1/5, worse than
+Unit 7 B's 2/5). Classify as `unresolved_below_power`: the named mechanism
+(Q2/Q4 coarse-cell dilution) is fixed and confirmed non-dominant, not
+refuted (no sign flip on the fix itself); the era-correct OT fix is
+confirmed working. **Recommended next unit:** extend the play-level clock
+race (Unit 7's `build_play_rows`/`build_race_pools`) to condition on
+qtr (2 vs 4) so the number-of-drives-that-fit-in-the-window distribution
+stops pooling end-of-half with end-of-game plays -- the remaining lever
+this unit did not touch -- before further tuning the drive-level cells.
