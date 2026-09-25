@@ -9,6 +9,21 @@ and `total_conditioned_key_number_lattice_v1` for Week 3 before kickoffs.
 
 ## State
 
+**2026-09-25: lane closed.** `scripts/lockday_verify.py --season 2026 --week
+3` now reports `0 MISSING of 63 active`. All nine challenger records named as
+missing in the prior session (`total_conditioned_key_number_lattice_v1`, the
+six `late_week_move_follow_refresh_decisions.parquet` challenger IDs, and
+`consensus_movement_1_0_off_incumbent`) are recorded with full Week 3 rows,
+written by a scheduled pass before this session (last success timestamp on
+`refresh_last_call_fri_1330` is `2026-09-25T13:32:07-04:00` per
+`data/scheduler_state.json`) -- this session verified only, ran no recorder
+command. The ninth, `tiebreaker_low_side_shade`, remains at 0 Week 3 rows by
+permanent design (served tiebreaker total always carries the `-1.0` shade, so
+served/shaded arms can never pair -- `docs/tiebreaker.md`'s 2026-09-10
+section), confirmed as an expected `--` gate in lockday_verify, not a `!!`
+MISSING. See dated 2026-09-25 entry under Next for the full per-ledger
+breakdown. No code changed, nothing committed, nothing pushed this pass.
+
 **Root cause of the empty `late_week_move_follow_refresh_decisions.parquet` for
 weeks 2-3 found and fixed.** Reproduced `build_late_week_move_follow_refresh_rows`
 for season 2026 week 3 outside recording (scratch script calling `plan_refresh`
@@ -114,23 +129,60 @@ now resolve. Read (did not run) `publish_predictions.py` /
 to confirm idempotent, deadline-safe record semantics. Did not run
 `pytest -k "refresh or lockday"` -- out of remaining tool budget this pass.
 
-## Next
+## Next (2026-09-25)
 
-1. `pytest -k "refresh or lockday"` run this session: 67 passed, 0 failed
-   (only pre-existing unrelated warnings). Root: run `nfl-ats
-   publish-predictions --record-decisions` (bare, as
-   above) before the remaining Week 3 games' deadlines to record
-   `tiebreaker_low_side_shade` and `total_conditioned_key_number_lattice_v1`.
-2. Root: run a `refresh-picks --record-decisions` pass (the next scheduled one
-   is fine) so `late_week_move_follow_refresh_decisions.parquet` actually
-   picks up real Week 3 rows under the fix -- today's earlier refresh_thu
-   pass (20260924T190047Z) ran before this fix landed, so the ledger on disk
-   still has 0 Week 3 rows until the next pass.
-3. `git status` shows this session's edits are uncommitted
-   (`src/nfl_ats/sharp_book_movement_features.py`,
-   `scripts/lockday_verify.py`) alongside pre-existing unrelated modified
-   files from earlier sessions -- root reviews and commits per its own
-   workflow.
+**All nine previously-missing Week 3 challenger records are resolved; no
+recorder command was needed this pass.** Checked directly (`.tools/uv.exe run
+--no-sync python scripts/lockday_verify.py --season 2026 --week 3
+--run-summary artifacts/scheduled_locks/2026-week-03/weekly_summary.json`):
+`59 recorded, 4 skipped, 0 MISSING, 0 pending wiring of 63 active`. Confirmed
+against the ledger parquets directly too (`pandas.read_parquet` filtered to
+season 2026 week 3):
+- `total_conditioned_key_number_lattice_v1` -- `total_conditioned_lattice_decisions.parquet`
+  now has 16/16 Week 3 rows (was 0 last session). `ok` in lockday_verify.
+- `late_week_move_follow_refresh_decisions.parquet` and its five sibling
+  challenger IDs (`late_week_move_follow_refresh_v1`,
+  `late_week_leader_median_follow_v1`,
+  `late_week_leader_median_follow_0_5_off_incumbent`,
+  `late_week_leader_median_follow_flat_1_0_off_incumbent`,
+  `late_week_follow_no_news_veto_off_incumbent`,
+  `late_week_follow_no_sunday_blackout`) -- all 16 games present, 31-127 rows
+  each, all `ok`.
+- `consensus_movement_1_0_off_incumbent` -- 96 rows, `ok` (this was the ninth
+  previously-missing ID).
+- `tiebreaker_low_side_shade` -- still 0 Week 3 rows, but `--` (named,
+  expected gate), not `!!` MISSING. `record_tiebreaker_shade_decisions`
+  (`src/nfl_ats/tiebreaker_shade_prospective.py:122-127`) returns a
+  permanent skip whenever the served tiebreaker's
+  `total_low_side_shade_points <= -1.0`, i.e. whenever the served total
+  already carries the standing `-1.0` shade (`TOTAL_LOW_SIDE_SHADE_POINTS`,
+  `docs/tiebreaker.md`'s 2026-09-10 section, confirmed live at
+  `docs/tiebreaker.md:163,324-360`) -- the served and shaded arms are then no
+  longer a paired contrast. This is a structural gate, not a recording-window
+  gap: no invocation of `publish-predictions --record-decisions` can produce
+  a row while the shade stays wired into the served total. **No command run
+  this pass** -- running it would not change this outcome (confirmed by
+  reading the guard, not by running) and every other ledger was already full,
+  so there was nothing left for the recorder to do. This matches the older
+  Open-section question below, now answered: the answer is "not while the
+  shade is served," which is a pre-existing design decision, not a bug.
+- All Week 3 rows checked belong to games at or after their recorded
+  deadlines with no post-kickoff writes observed; ATL at GB (locked Thursday
+  game) shows no rows recorded after its kickoff in any of the three ledgers
+  inspected -- consistent with each recorder's own kickoff/deadline guard,
+  not separately re-verified by a new write this pass.
+
+Prior items now stale/superseded (root's earlier `Next` list): items 1-2 below
+are done (recorded by a scheduled pass, likely `refresh_last_call_fri_1330`
+which last ran `2026-09-25T13:32:07-04:00` per `data/scheduler_state.json`,
+before this session started) -- no action was needed or taken here.
+
+Remaining for root:
+1. `git status` still shows this session's (and prior sessions') edits
+   uncommitted (`src/nfl_ats/sharp_book_movement_features.py`,
+   `scripts/lockday_verify.py`, plus many pre-existing unrelated modified
+   files) -- root reviews and commits per its own workflow. Not touched this
+   pass (read-only recorder-coverage check only).
 
 ## Open
 

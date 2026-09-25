@@ -172728,6 +172728,174 @@
       "source": "scripts/pooled_signal_third_fit.py; tests/scratch/pooled_signal_third_fit.json",
       "standard_error": 1.5955
     },
+    "pooled_vs_base_accuracy_2020_2025_subset": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Root adjudication 2026-09-25: recorded unresolved, not closed, because the enclosing 2013-2025 window reads +0.43 [-0.87,+1.84] P+ 0.72 and the line-move arm accuracy companion reads P+ 0.91; the 2020-2025 subset conflicts across eras within a 17-look family. Subset: season-block interval is entirely below zero (upper bound -0.513, P+=0.0005) -- a resolved wrong sign per AGENTS.md, not a lean; 237/1,503 picks differ from the four-term base, and the pooled model loses that split 108-129 while the base wins it 129-108; the pooled_transfer_logit LOSO beta is negative in all 13 folds of this same fit family (-0.087 to -0.134), consistent with the resolved negative aggregate effect; mechanism: Units 1-2 already resolved that a CFB-trained model scored directly on NFL badly underperforms (-6.92 to -7.78 accuracy points, wrong-sign), and ridge-shrinking the NFL slope toward that same poorly-transferring CFB slope reproduces the failure inside the pooled term rather than fixing it",
+      "closing_ground": null,
+      "description": "Same pooled two-league joint-fit 5th-term LOSO cell as _all_graded, restricted to the 2020-2025 subset (n=1,503) for direct comparability with Units 1-3",
+      "effect": -1.397205588822359,
+      "effect_units": "accuracy_points",
+      "family": "opener_error_transfer_v5",
+      "interval": [
+        -2.3019634394041977,
+        -0.5128205128205221
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Restricting the same shared NFL-and-college model to just the last six seasons, it made the pick worse than not using it, but the longer 2013-2025 check leans the other way, so this is unresolved and stays out of the served pick.",
+      "probability_positive": 0.0005,
+      "recorded_at": "2026-09-25",
+      "reliability": 0.14132263925353555,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/opener_error_transfer_unit5/20260925T191444Z/summary.json",
+      "standard_error": null
+    },
+    "pooled_vs_base_accuracy_all_graded": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block interval crosses zero (P+=0.72) on the 13-season point-in-time-correct population; the pooled term's own LOSO beta in the plus model is negative in all 13 folds (-0.087 to -0.134) despite this aggregate cell being directionally positive on the full point spread of games, an internal tension not resolved by this cell alone; reliability reused from Unit 2 (0.141), not zero",
+      "closing_ground": null,
+      "description": "Two-league pooled ridge-logit opener-error fit (NFL and CFB rows fit jointly per held-out NFL season with a league indicator and league-by-feature interactions, ridge-shrinking NFL coefficients toward the CFB ones; CFB rows from local seasons strictly preceding the held-out NFL season, NFL training rows from every other graded season) added as a 5th fitted term to the served four-term NFL pick probability, LOSO by season, vs the four-term base, on the 2013-2025 graded population",
+      "effect": 0.43290043290044045,
+      "effect_units": "accuracy_points",
+      "family": "opener_error_transfer_v5",
+      "interval": [
+        -0.8679030941994746,
+        1.835838032228631
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "We tried training one shared model on NFL and college data together, letting the college numbers pull the NFL numbers toward them. Checked back to 2013, its effect on picking the right side of the NFL opener is too uncertain to call -- unresolved, not served.",
+      "probability_positive": 0.7215,
+      "recorded_at": "2026-09-25",
+      "reliability": 0.14132263925353555,
+      "sample_blocks": 13,
+      "sample_games": 3234,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/opener_error_transfer_unit5/20260925T191444Z/summary.json",
+      "standard_error": null
+    },
+    "pooled_vs_base_linemove_2020_2025_subset": {
+      "category": "market",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Season-block interval is entirely below zero (upper bound -0.025, P+=0.0) -- a resolved wrong sign; 206 decisive games split 98-108 against the pooled model; same mechanism as the all-graded cell (ridge-shrinkage toward the CFB slope reproduces Units 1-2's resolved CFB-direct underperformance inside the pooled term); this resolves negative even though Unit 4's simpler CFB-only-trained term on the same 2020-2025 subset stayed unresolved_below_power (P+=0.29), showing the joint-pooling mechanism specifically, not the CFB-transfer idea generally, is what fails here",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Same pooled two-league joint-fit 3rd-term LOSO line-move cell as _all_graded, restricted to the 2020-2025 subset (n=1,503) for direct comparison against Unit 4",
+      "effect": -0.06919494344644045,
+      "effect_units": "ats_points",
+      "family": "opener_error_transfer_v5",
+      "interval": [
+        -0.11869747899159663,
+        -0.02497839070053763
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "On just the last six NFL seasons, blending NFL and college data into one model still reliably pushes the line the wrong way. Resolved negative, not served.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-25",
+      "reliability": 0.14132263925353555,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/opener_error_transfer_unit5/20260925T191444Z/summary.json",
+      "standard_error": null
+    },
+    "pooled_vs_base_linemove_all_graded": {
+      "category": "market",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Season-block interval is entirely below zero (upper bound -0.050, P+=0.0), week-block agrees ([-0.128,-0.028], P+=0.0) -- a resolved wrong sign per AGENTS.md; the pooled model loses the 470 decisive (line-moving) games 221-249 to the base; pooled_transfer_logit's LOSO beta is negative in all 13 folds of the plus model (-0.087 to -0.134), an order of magnitude larger than Unit 4's cfb_transfer_logit beta (positive in all 13 folds, 0.013-0.056); mechanism: shrinking the NFL slope toward the CFB slope (via the ridge-penalized league-interaction terms) pulls the fit toward the same relationship shape that Units 1-2 already resolved as a poor standalone NFL predictor",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Two-league pooled ridge-logit opener-error fit (NFL and CFB rows fit jointly per held-out NFL season with a league indicator and league-by-feature interactions under ridge) added as a 3rd fitted term to a Tuesday-knowable-only base (model_logit + composition_flag_sum), LOSO by season, graded on close-minus-open line movement toward the pick, on the 2013-2025 graded population",
+      "effect": -0.07854050711193568,
+      "effect_units": "ats_points",
+      "family": "opener_error_transfer_v5",
+      "interval": [
+        -0.1111747154867137,
+        -0.049559496630077644
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Blending NFL and college data into one shared model, instead of keeping the college model separate, reliably makes the line move AWAY from the pick rather than toward it. A clear, resolved negative -- this approach stays out of the served pick.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-25",
+      "reliability": 0.14132263925353555,
+      "sample_blocks": 13,
+      "sample_games": 3234,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/opener_error_transfer_unit5/20260925T191444Z/summary.json",
+      "standard_error": null
+    },
+    "pooled_vs_cfb_accuracy_all_graded_context": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block interval crosses zero (P+=0.64); cannot resolve whether the pooled joint fit beats the simpler CFB-only-trained term on accuracy at this population size; reliability reused from Unit 2 (0.141), not zero",
+      "closing_ground": null,
+      "description": "Pooled two-league joint-fit term vs the Unit-3 CFB-only-trained transfer term, both added as a 5th fitted term to the same four-term base, LOSO by season, 2013-2025 graded population; isolates whether joint pooling with shrinkage helps over training on CFB alone",
+      "effect": 0.30921459492888603,
+      "effect_units": "accuracy_points",
+      "family": "opener_error_transfer_v5",
+      "interval": [
+        -1.164629878717384,
+        1.8193491064793954
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Comparing two ways of using college data -- training on college alone versus blending it with NFL data -- neither clearly beats the other on picking the NFL opener correctly. Unresolved.",
+      "probability_positive": 0.643125,
+      "recorded_at": "2026-09-25",
+      "reliability": 0.14132263925353555,
+      "sample_blocks": 13,
+      "sample_games": 3234,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/opener_error_transfer_unit5/20260925T191444Z/summary.json",
+      "standard_error": null
+    },
+    "pooled_vs_cfb_linemove_all_graded_context": {
+      "category": "market",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Season-block interval is entirely below zero (upper bound -0.033, P+=0.0) -- a resolved wrong sign; the pooled model loses the 546 decisive games 260-286 to the CFB-only-trained model; directly answers the task's isolation question -- joint pooling with league-interaction shrinkage is resolved WORSE than simply training on CFB alone and scoring it on NFL, not an improvement on the transfer mechanism",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Pooled two-league joint-fit term vs the Unit-4 CFB-only-trained transfer term, both added as a 3rd fitted term to the same Tuesday-knowable-only base, LOSO by season, graded on line movement toward the pick, 2013-2025 graded population; isolates whether joint pooling with shrinkage helps over training on CFB alone",
+      "effect": -0.0782312925170068,
+      "effect_units": "ats_points",
+      "family": "opener_error_transfer_v5",
+      "interval": [
+        -0.12459734845233666,
+        -0.033383260888056356
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Blending NFL and college data together, versus just training on college data alone, makes the college-derived signal LESS useful for predicting NFL line movement, not more. Resolved negative for the blending approach specifically.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-25",
+      "reliability": 0.14132263925353555,
+      "sample_blocks": 13,
+      "sample_games": 3234,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/opener_error_transfer_unit5/20260925T191444Z/summary.json",
+      "standard_error": null
+    },
     "post_bye_new_oc_tuesday_line_move_legacy_b2": {
       "category": "modeling",
       "classification": "unresolved_below_power",

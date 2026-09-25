@@ -17,7 +17,7 @@ item below is shipped, recorded, or blocked with its reason.
   (`HistoryPickRow.close_outcome_text`, `_history_pick_rows(close_reference=)`)
   and `board_terminal.py`. Rendered: 23 of 32 settled picks also covered the
   close, 9 missed, 1 had no archived close.
-- (c) Week 3 challenger records (lane `week3-research-recorders`) running.
+- (c) DONE: Week 3 challengers all recorded by scheduled passes (lockday_verify: 59 recorded, 4 skipped, 0 missing); the tiebreaker shade is gated by design; lane moved to done/.
 - (d) MKT-08 per-player news value decomposition (lane `news-trigger-refresh`) running.
 
 ## Tried

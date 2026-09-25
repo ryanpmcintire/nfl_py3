@@ -30,9 +30,8 @@ modified lane when the prompt just says to continue.
 - [market-move-decomposition](market-move-decomposition.md) - 2026-09-24: all arms recorded (Unit 3 all-books active-window arm unresolved, P+ 0.22); only an optional train/serve window reconciliation look remains.
 - [positive-control-power](positive-control-power.md) - 2026-09-23: minimum detectable effect harness; decides which unresolved cells are bounded by a control.
 - [free-odds-sources](free-odds-sources.md) - 2026-09-24: Books now shows posted lines (one number or a low-to-high range); no-publication rule removed; mid-week captures back on; direct Bovada capture fixed (v2 endpoint).
-- [opener-error-transfer](opener-error-transfer.md) - XLG-09 units 1-3, 2026-09-23: point-in-time-correct CFB training on the extended 2011-2025 NFL population still reads unresolved_below_power (+0.12 pts all-graded, +0.27 pts on 2020-2025); four record commands (v2 + v3) queued for the root.
+- [opener-error-transfer](opener-error-transfer.md) - XLG-09, 2026-09-25: unit 5 pooled two-league fit recorded; pooling is a resolved wrong sign on line movement (closed); the CFB-only term stays unresolved.
 - [opener-population-backfill](opener-population-backfill.md) - 2026-09-23: 2011-2025 fit population built (3,734 games, +2,231); discrete rebuild of 2011-2019 in progress.
-- [week3-research-recorders](week3-research-recorders.md) - nine challenger records remain missing; all 16 served Week 3 paper decisions are complete.
 - [news-trigger-refresh](news-trigger-refresh.md) - MKT-08 dispatch implemented and verified; prospective comparison awaits new events.
 - [gh-window-incident](gh-window-incident.md) - prior runaway CLI windows remain a separate investigation; no gh commands used for this deployment.
 
@@ -56,6 +55,7 @@ modified lane when the prompt just says to continue.
 
 ## Done
 
+- [week3-research-recorders](done/week3-research-recorders.md) - 2026-09-25: all Week 3 challengers recorded (59 recorded, 4 skipped, 0 missing); the tiebreaker shade skips by design.
 - [card-freshness-and-log-labels](done/card-freshness-and-log-labels.md) - 2026-09-24: refresh passes rewrite the card's freshness line; no follow-rule log label.
 - [four-term-nonlinear-check](done/four-term-nonlinear-check.md) - 2026-09-24: trees on the four served terms resolved worse (-1.26 pts, wrong sign); interactions unresolved.
 - [four-term-extended-training](done/four-term-extended-training.md) - 2026-09-24: 2011-2025 training does not beat served 2020-2025 training (-0.27 pts, P+ 0.25); recorded.
