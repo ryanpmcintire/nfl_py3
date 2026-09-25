@@ -2113,6 +2113,8 @@ def _history_pick_row_html(row: HistoryPickRow) -> str:
         f'<td data-label="Pick"><b>{escape(row.pick_team)}</b> {escape(line)} {best}</td>'
         f'<td data-label="Confidence" class="prob">{confidence}</td>'
         f'<td data-label="Outcome">{_history_status_html(row)}</td>'
+        f'<td data-label="Vs. the close"><span class="game-sub">'
+        f"{escape(row.close_outcome_text)}</span></td>"
         "</tr>"
     )
 
@@ -2285,8 +2287,12 @@ def render_history_page(content: HistoryPageContent) -> str:
         picks_section = (
             '<div class="board-scroll"><table class="board"><thead><tr>'
             "<th>Season / week</th><th>Matchup</th><th>Pick at frozen line</th>"
-            "<th>Chosen-side confidence</th><th>Outcome</th>"
+            "<th>Chosen-side confidence</th><th>Outcome</th><th>Vs. the close</th>"
             f"</tr></thead><tbody>{picks_body}</tbody></table></div>"
+            '<p class="policy-note">The Outcome column is how the pool actually settles '
+            "every pick, at the line the card locked before kickoff. Vs. the close is "
+            "context only: whether that same pick would also have covered the market's "
+            "last number right before the game. It never changes the Outcome.</p>"
         )
     elif content.primary_error:
         picks_section = (

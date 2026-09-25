@@ -241,6 +241,8 @@ class HistoryPickRow:
     status: str
     correct: bool | None
     score_text: str | None
+    close_status: str = "pending"
+    close_correct: bool | None = None
 
     @property
     def pick_team(self) -> str:
@@ -256,6 +258,16 @@ class HistoryPickRow:
             return "--"
         line = -self.decision_home_spread if self.pick_side == "HOME" else self.decision_home_spread
         return "PK" if line == 0.0 else f"{line:+g}"
+
+    @property
+    def close_outcome_text(self) -> str:
+        if self.status not in {"settled", "push"}:
+            return "--"
+        if self.close_status == "push":
+            return "Push at the close"
+        if self.close_status == "settled":
+            return "Also covered the close" if self.close_correct else "Missed the close"
+        return "No close line archived"
 
 
 @dataclass(frozen=True)
@@ -1203,14 +1215,16 @@ def _history_pick_rows(
     outcomes: pd.DataFrame,
     *,
     now: datetime | None = None,
+    close_reference: pd.DataFrame | None = None,
 ) -> tuple[HistoryPickRow, ...]:
     if decisions.empty:
         return ()
-    settled = settle_prospective_picks(decisions, outcomes)
+    settled = settle_prospective_picks(decisions, outcomes, close_reference=close_reference)
     frozen = frozen_picks(artifacts_root, now=now or datetime.now(UTC), include_open=True)
     rows: list[HistoryPickRow] = []
     for _, row in settled.iterrows():
         status = str(row.get(f"status_at_{DECISION_GRADE}") or "pending")
+        close_status = str(row.get(f"status_at_{CLOSE_GRADE}") or "pending")
         season_value = _number(row.get("season"))
         week_value = _number(row.get("week"))
         if status == "settled":
@@ -1218,6 +1232,13 @@ def _history_pick_rows(
             correct = bool(correct_value == 1.0) if correct_value is not None else None
         else:
             correct = None
+        if close_status == "settled":
+            close_correct_value = _number(row.get(f"correct_at_{CLOSE_GRADE}"))
+            close_correct = (
+                bool(close_correct_value == 1.0) if close_correct_value is not None else None
+            )
+        else:
+            close_correct = None
         rows.append(
             HistoryPickRow(
                 game_id=str(row.get("game_id")),
@@ -1241,6 +1262,8 @@ def _history_pick_rows(
                     if status in {"settled", "push"}
                     else None
                 ),
+                close_status=close_status,
+                close_correct=close_correct,
             )
         )
     return tuple(rows)
@@ -1578,8 +1601,21 @@ def _load_history_page_content(
     else:
         primary_available = not primary.empty
     outcomes = _load_game_outcomes(data_root, artifacts_root)
+    close_schedule = _load_close_schedule(data_root)
+    close_reference = pd.DataFrame()
+    if not close_schedule.empty:
+        try:
+            close_reference = live_close_reference(data_root, close_schedule, as_of=generated_at)
+        except (DataContractError, ValueError, OSError):
+            close_reference = pd.DataFrame()
     try:
-        picks = _history_pick_rows(artifacts_root, primary, outcomes, now=generated_at)
+        picks = _history_pick_rows(
+            artifacts_root,
+            primary,
+            outcomes,
+            now=generated_at,
+            close_reference=close_reference,
+        )
     except (ValueError, OSError) as error:
         picks = ()
         primary_error = primary_error or str(error) or "primary ledger could not be settled"
@@ -1595,13 +1631,6 @@ def _load_history_page_content(
         outcomes,
         _latest_prospective_reports(artifacts_root),
     )
-    close_schedule = _load_close_schedule(data_root)
-    close_reference = pd.DataFrame()
-    if not close_schedule.empty:
-        try:
-            close_reference = live_close_reference(data_root, close_schedule, as_of=generated_at)
-        except (DataContractError, ValueError, OSError):
-            close_reference = pd.DataFrame()
     try:
         recorded_week_grades = _history_week_grades(primary, outcomes, close_reference)
     except (ValueError, OSError) as error:

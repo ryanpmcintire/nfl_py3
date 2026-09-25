@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-25T19:12:59.301587+00:00`
+Refreshed at: `2026-09-25T19:17:21.588690+00:00`
 
 ## Start here
 
@@ -21,29 +21,21 @@ Refreshed at: `2026-09-25T19:12:59.301587+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `5bd4d0469a1f` — Format nonlinear check script; close its lane
-- Pending change set: 32 paths
-  - `M  CURRENT_PREDICTIONS.md`
+- Baseline commit: `7a45777f30ea` — Plan the play-by-play simulator; record the last queued cell
+- Pending change set: 13 paths
   - `M  HANDOFF.md`
-  - `M  README.md`
   - `M  ROADMAP.md`
   - `M  docs/findings.html`
   - `M  docs/history.html`
   - `M  docs/index.html`
-  - `M  docs/lanes/README.md`
-  - `A  docs/lanes/backlog-batch-2026-09-25.md`
-  - `M  docs/lanes/lead59-archive-battery.md`
-  - `M  docs/lanes/line-move-regrade-legacy.md`
-  - `M  docs/lanes/market-move-decomposition.md`
-  - `M  docs/lanes/mod18-spread-regime.md`
-  - `M  docs/lanes/opener-population-backfill.md`
-  - `M  docs/lanes/pooled-signal-model.md`
-  - `A  docs/lanes/sim04-play-simulator.md`
-  - `M  docs/lanes/total-conditioned-lattice.md`
+  - `M  docs/lanes/backlog-batch-2026-09-25.md`
+  - ` M docs/lanes/opener-error-transfer.md`
+  - ` M docs/lanes/sim04-play-simulator.md`
   - `M  docs/model.html`
-  - `A  docs/sim04_play_simulator_plan.md`
-  - `A  registry/experiments/margin-backtest/20260924T210830Z.json`
-  - ...and 12 more
+  - `M  src/nfl_ats/board_site_content.py`
+  - `M  src/nfl_ats/board_terminal.py`
+  - `?? docs/opener_error_transfer.md`
+  - `?? scripts/opener_error_transfer_unit5.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
