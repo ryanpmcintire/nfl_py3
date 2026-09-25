@@ -20,6 +20,12 @@ probability it makes enters the pick probability, and then only as a fitted term
   validation split; none recover 7/14; the try-after-TD idea is refuted (PATs are
   already folded into drives). Of real 3-point games, 24% go to OT, and in 57% of
   the rest the final drive runs out the clock.
+- Unit 6 (`scripts/sim04_unit6_endgame.py`) DONE, NO-GO: timeout-conditioned
+  late-window resampling (4 configs, predeclared) did not beat Unit 1b's
+  unmodified cascade on validation; config A won the predeclared selection.
+  Test split (config A, 4th look at 2018-2025): 2/5 hits (10, 17), log-loss
+  delta +0.01748 -- parity with Unit 1b, confirms the prior NO-GO. Full tables
+  in `docs/sim04_unit_log.md` "Unit 6".
 - Unit 2 DONE (root, 2026-09-25): `PBP_SNAPSHOT_COLUMNS` widened 45 -> 56
   (penalty team/type, play_type_nfl, four timeout columns, rusher, receiver
   and fumble player ids). Personnel/formation do not exist upstream. New
@@ -38,11 +44,13 @@ probability it makes enters the pick probability, and then only as a fitted term
 
 ## Next
 
-- Unit 6 moved forward (orchestrator decision): an endgame policy submodel
-  covering clock-kill and kneel-out when leading, fourth-down go/kick, and the
-  timeout-driven clock, fit on 2009-2014 and validated on 2015-2017 using the
-  new timeout columns. Wire it into the unit 1b chain, then run one test-split
-  look against the unchanged GO bar.
+- Unit 6 is done (see State). Its null result plus Unit 1c's decomposition
+  point at a near-deterministic clock-kill rule (not probability-weighted
+  resampling) as the remaining lever, which needs a per-play loop -- closer
+  to Units 3-5 than to more drive-level state-cell conditioning. Escalate to
+  the orchestrator: invest in Units 3-5 (per-play submodels) next, given
+  three successive drive-level conditioning attempts (1b, 1c, 6) have all
+  failed to move the margin-3/7/14 gap.
 
 ## Open
 

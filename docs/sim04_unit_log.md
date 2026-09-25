@@ -607,3 +607,123 @@ orchestrator before spawning a subagent for Unit 2's completion, Unit 6, or
 any further Unit-1-family diagnostic — three diagnostic units (1, 1b, 1c)
 have now all pointed at score/clock/endgame-policy conditioning as the gap,
 not at deeper tuning of the unconditional-outcome-pool architecture.
+
+## Unit 6 (endgame policy layer) -- 2026-09-25, NO-GO
+
+### Design (predeclared before running, verbatim from the lane)
+Endgame layer on top of Unit 1b's chain, active when `qtr==4 and gsr<=300`
+or `qtr>=5`. New per-drive state at drive start from the widened snapshot
+`data/pbp/raw/20260925T202544Z`: `off_to`/`def_to` (posteam/defteam timeouts
+remaining, default 3.0 if missing), bucketed 0/1/2-3. `late_time_bucket`:
+Q4 (120,300]s left -> 0, Q4 <=120s -> 1, OT -> 2. In the late window, a
+drive's (category, points_off, points_def, duration) and its (off_to,
+def_to) are resampled jointly and empirically from real late-window drives
+matching (score_bucket_fine x late_time_bucket [x fp_bucket] x
+def_to_bucket [x off_to_bucket]), backing off to a coarser cell (drop
+fp_bucket) and then to Unit 1b's unmodified level0->level3 cascade as the
+floor. This folds the leading team's clock-kill/kneel choice, the trailing
+team's 4th-down go/kick/punt, and timeout-driven clock consumption into one
+conditioning scheme rather than three hand-built submodels — a scope
+limitation stated up front, not a full play-level policy/clock model (that
+needs Units 3-5, not yet built). Back-off minimum predeclared: 15 late-window
+drives per cell for configs B/C; config D reuses B's dimensions at
+min_cell_n=25. Script: `scripts/sim04_unit6_endgame.py` (imports scalar
+helpers from `sim04_unit1b_state_chain.py`; duplicates `reconstruct_drives`
+to add the two timeout fields).
+
+| config | late dimensions | min_cell_n (late) |
+|---|---|---|
+| A (control) | none (Unit 1b unmodified) | n/a |
+| B | score x late_time x fp x def_to | 15 |
+| C | score x late_time x fp x def_to x off_to | 15 |
+| D | score x late_time x fp x def_to | 25 |
+
+Selection rule (fixed before running): most key-number hits (of 5) on
+2015-2017; ties broken by smallest log-loss delta vs. the train naive
+histogram; a config regressing log-loss delta >0.02 nats above config A is
+disqualified even with more hits. The winner runs exactly once on train
+2009-2017 / test 2018-2025 against the unchanged Unit 1 GO bar.
+
+### Validation result (measured, 2026-09-25)
+Ran `scripts/sim04_unit6_endgame.py --mode validation` once (all 4 configs,
+seed `20260925`). Artifact:
+`artifacts/sim04_unit6/20260925T203417Z/validation_report.json`. Train
+2009-2014 (36,455 drives, 1 dropped), eval 2015-2017 (801 actual games).
+
+| config | hits/5 | numbers hit | log-loss delta vs naive |
+|---|---|---|---|
+| A (control) | 1 | 10 | +0.01622 |
+| B | 0 | none | +0.01779 |
+| C | 1 | 10 | +0.02053 |
+| D | 1 | 10 | +0.01905 |
+
+Mass at 3 barely moved from Unit 1b/1c's baseline across every config
+(A 0.1052, B 0.1064, C 0.1044, D 0.1061, all vs. actual-pooled 0.1486); none
+recovers 7 or 14 either. Per the predeclared rule, A/C/D tie on hits, none
+disqualified (largest gap from A is C at +0.0043, under the 0.02 threshold),
+and **config A (no endgame layer) has the smallest log-loss delta among the
+tied group and wins**. The timeout-conditioned late-window resampling
+(configs B-D) did not out-hit or out-score the unmodified Unit 1b cascade on
+this validation split.
+
+### Test result (measured once, 2026-09-25, config A)
+Ran `scripts/sim04_unit6_endgame.py --mode test --config A` once — the
+single predeclared look at 2018-2025 for this unit (the 4th across the sim04
+family, after Units 1, 1b, 1c). Artifact:
+`artifacts/sim04_unit6/20260925T203506Z/test_report.json`. Train 2009-2017
+(54,322 drives, 2 dropped), eval 2018-2025 (2,227 actual games).
+
+| number | Unit 6 (config A) sim | actual bootstrap CI | in CI? |
+|---|---|---|---|
+| 3 | 0.1001 | [0.1364, 0.1588] | no |
+| 7 | 0.0664 | [0.0762, 0.0955] | no |
+| 10 | 0.0495 | [0.0420, 0.0543] | yes |
+| 14 | 0.0324 | [0.0409, 0.0643] | no |
+| 17 | 0.0425 | [0.0288, 0.0438] | yes |
+
+Hits: **2/5** (10, 17). Log loss: simulator 3.98996 vs. naive train
+histogram 3.97248, delta **+0.01748** nats. Matches Unit 1b's own run
+(2/5 at 10/17, delta +0.0175) to within float noise, expected since config A
+is Unit 1b's logic unmodified — a parity check, not a new finding.
+
+**Verdict: NO-GO**, unchanged from Units 1b/1c, against the unchanged Unit 1
+criterion (needs >=4/5 hits AND log-loss delta <=+0.02 nats; got 2/5, delta
+passes alone). Because config A won the predeclared validation selection,
+this test run confirms the prior NO-GO rather than testing a materially new
+mechanism.
+
+**What this unit resolved:** timeout-conditioned resampling of the *existing*
+per-drive (category, duration) pool, even with real timeouts-remaining data
+and a purpose-built back-off cascade, does not move the margin-3 mass toward
+the actual pile-up (stuck at ~0.10-0.106 vs. actual ~0.148-0.149 in both
+validation and test). This is `unresolved_below_power` for this specific
+mechanism (finer empirical conditioning of a single per-drive outcome draw),
+not a refutation of endgame policy as a driver — the margin-3 decomposition
+from Unit 1c (56.7% of non-OT margin-3 games end on a clock-expiration
+"End of half" drive) still stands as a real, unmodeled mechanism. The likely
+reason conditioning alone did not surface it: a probabilistic draw from a
+mixed pool (some fraction of late-window cells are kill-clock drives, most
+are not) still lets normal drive outcomes appear with their pooled
+probability, while the real mechanism is closer to a **near-deterministic
+rule** (leading team with the ball in the final ~2 minutes and a manageable
+lead essentially always kills the clock, conditional on down/distance state
+this unit does not track) rather than a resampling-weight problem. Sparsity
+likely also mutes any signal that reached deep cells: many late-window
+(score, time, fp, timeout) cells fall under the 15/25-drive floor and back
+off to the coarser cell, diluting the timeout signal.
+
+**Look count, full unit:** 4 validation-split looks (configs A-D) + 1
+test-split look (config A) = 5 total; 1 look at 2018-2025 (4th across the
+sim04 family).
+
+### Next
+Endgame policy as *empirical resampling conditioning* is exhausted for this
+architecture. The remaining lever implied by both Unit 1c's decomposition and
+this unit's null result is an explicit, near-deterministic clock-kill rule
+(not a probability-weighted draw) for the leading team in the final ~2
+minutes with a first-down/manageable-lead state — i.e., closer to Units 3-5's
+per-play loop than to more state-cell conditioning on the drive-level chain.
+Escalate to the orchestrator before building a play-level clock-kill rule:
+whether to invest in the per-play submodels (Units 3-5) next, given three
+successive drive-level conditioning attempts (1b, 1c, 6) have now all failed
+to move the margin-3/7/14 gap.

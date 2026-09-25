@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-25T20:28:55.654179+00:00`
+Refreshed at: `2026-09-25T20:37:11.481799+00:00`
 
 ## Start here
 
@@ -21,12 +21,12 @@ Refreshed at: `2026-09-25T20:28:55.654179+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `a741773a07a1` — Grass-to-turf visitors as a fitted term: helps 2011-2025, not 2020-2025
+- Baseline commit: `b989dce67a27` — Capture timeouts, penalty type and ball-carrier ids in play-by-play
 - Pending change set: 4 paths
   - `M  HANDOFF.md`
   - `M  docs/lanes/sim04-play-simulator.md`
-  - `A  docs/sim04_unit_log.md`
-  - `M  src/nfl_ats/pbp.py`
+  - `M  docs/sim04_unit_log.md`
+  - `A  scripts/sim04_unit6_endgame.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
