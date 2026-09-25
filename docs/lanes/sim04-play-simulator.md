@@ -60,16 +60,35 @@ probability it makes enters the pick probability, and then only as a fitted term
   2015-2017 validation split, and the final comparison should use
   leave-one-season-out or 2026 prospective games, not 2018-2025 again.
 
+- Unit 7 DONE, NO-GO (2026-09-25, `scripts/sim04_unit7_clock.py`): play-level
+  clock-race model for the final drive(s) of each half. Predeclaration,
+  configs, and both results (validation +
+  `artifacts/sim04_unit7/20260925T205718Z/report.json`; test +
+  `artifacts/sim04_unit7/20260925T210113Z/report.json`) are in
+  `docs/sim04_unit_log.md` "Unit 7 predeclaration"/"Unit 7 result". REG-only
+  actual-set fix (confirmed `game_type=='REG'` == raw-snapshot
+  `season_type=='REG'`) used for every actual set here; on 2018-2025 it
+  removes 100 playoff games (2227->2127) but shifts key-number mass only
+  slightly (<=0.004 per number). Config B (no timeout conditioning) won
+  validation (2/5 hits) and ran once on test 2018-2025 (5th look): **2/5
+  hits (10, 17)** -- same count/numbers as Unit 1b/1c/6 -- log-loss delta
+  +0.01610 (passes, better than Unit 1b's +0.0175), sd ratio 1.076 (down
+  from Unit 1b's 1.090). The targeted mechanism itself is fixed:
+  final-drive clock-expiration share is now **90.1%** (vs. actual 85.3%),
+  up from Unit 1b's implicit ~46.6%. No sign flips (all misses are
+  simulator-under-actual) so this is `unresolved_below_power`, not a
+  refuted mechanism.
+
 ## Next
 
-- Unit 1d's decomposition (measured, see State) upgrades Unit 6's null
-  result from qualitative to quantitative: build an explicit
-  clock-expiration/kneel-down rule for the final drive of a half (checks
-  remaining time vs a drive's normal duration, not another resampling-pool
-  conditioning axis) -- this is Units 3-5's per-play territory. Escalate to
-  the orchestrator: invest there next, with ~87%-of-gap justification, given
-  four successive drive-level-conditioning-only attempts (1b, 1c, 6, 1d) all
-  point at the same missing mechanism rather than a conditioning fix.
+- Unit 7 named the likely next binding constraint: the "clock survives"
+  branch of the race still draws its scoring outcome from Unit 1b's
+  original, unmodified drive-level cells (a declared Unit 7 simplification).
+  Next bounded diagnostic: check whether that branch's category mix in the
+  late window still overweights live go-ahead scores relative to the real
+  late-window state-conditioned rate now that clock-expired drives no
+  longer dilute the comparison, before any further clock-mechanism build.
+  Escalate to the orchestrator for the next unit assignment.
 
 ## Open
 
@@ -77,5 +96,5 @@ probability it makes enters the pick probability, and then only as a fitted term
   schema; run it with `--refresh-raw` next time (research-only, not scheduled).
 - `game_features_pbp.parquet`'s season-only filter silently includes
   playoff games in what Units 1b/1c/6 called "actual REG" 2015-2017/2018-
-  2025 slices (Unit 1d found 33 such games in 2015-2017 alone); not fixed
-  retroactively, flagged for the orchestrator.
+  2025 slices (Unit 1d found 33 such games in 2015-2017 alone); Unit 7 fixes
+  this for its own actual sets only, not retroactively for 1b/1c/6.

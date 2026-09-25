@@ -843,3 +843,152 @@ gradual, first measurable by end of Q1).
 time-vs-drive-duration check, not another resampling-pool conditioning
 axis) -- Units 3-5's per-play loop, as the prior "Next" already escalated,
 now with a measured ~87%-of-gap justification rather than a qualitative one.
+
+## Unit 7 predeclaration (written before running, 2026-09-25)
+
+Data-bug fix (applies to every actual set this unit uses, not retroactive to
+1b/1c/6): `game_features_pbp.parquet` has a `game_type` column; confirmed by
+direct read that `game_type=='REG'` yields exactly the same `game_id` set as
+`season_type=='REG'` on the raw snapshot `data/pbp/raw/20260925T202544Z`
+(2016 check: 256/256 identical ids, vs 267 games with `game_type` unfiltered).
+Every actual set below uses `game_features_pbp.parquet` filtered on
+`season.isin(...) & game_type=='REG'`.
+
+**Mechanism target (from Unit 1d):** `sim04_unit1b_state_chain.py`'s game
+loop (`while gsr>0: apply_drive(); gsr=max(0,gsr-duration)`) draws a late
+drive's `(category, points_off, points_def, duration)` atomically from a
+historical pool and applies the score in full even when that drive's drawn
+duration exceeds the actual remaining clock -- there is no play-level check
+that the clock expires before the drive resolves. Unit 7 adds exactly that
+check for the final drive(s) of each half.
+
+**Trigger:** a drive's start state (`qtr in {2,4}` and
+`seconds_left_in_period(qtr,gsr) <= 300`) triggers the play-level clock race
+in place of Unit 1b's plain atomic draw; OT is untouched (Unit 1b's existing
+OT loop). Unit 1b's drive-level `level0..level3` cells and GO criterion are
+otherwise reused unmodified via import (`sim04_unit1b_state_chain` as `u1b`).
+
+**Play-level training pool** (from `data/pbp/raw/20260925T202544Z`,
+`season_type=='REG'`, TRAIN_SEASONS): one row per offensive snap belonging to
+a drive (`fixed_drive`) whose play falls in the trigger window, excluding
+kickoff/extra_point rows. Per row: `label` in {kneel (`qb_kneel==1`), spike
+(`qb_spike==1`), field_goal, punt, run, pass, no_play} from `play_type` with
+the kneel/spike override; `elapsed` = this play's `game_seconds_remaining`
+minus the next selected play's in the same game, or minus the half boundary
+(1800 for qtr 2, 0 for qtr 4) for the last selected play of that half, clipped
+to [0,300] -- an empirical duration, not a hand-coded runoff rule, so it
+already bakes in incompletions/out-of-bounds/timeouts stopping the clock
+without needing an explicit stoppage flag (not present in the 56-column
+snapshot); `is_terminal` = True if `label` in {punt, field_goal} or
+`touchdown==1` or `interception==1` or `fumble_lost==1` or the row is the
+last row of its `fixed_drive` (turnover on downs / clock-forced end); cell
+key fields `sb_fine` (Unit 1b's `score_bucket_fine` on `score_differential`),
+`sl_bucket` (5 levels, `min(4, seconds_left//60)`), `own_to`/`def_to`
+(`min(3, posteam/defteam_timeouts_remaining)`).
+
+**Back-off (predeclared, minimum cell count = 25 rows, matching Unit
+1b/1c):** L0 `(sb_fine, sl_bucket, own_to, def_to)` -> L1 `(sb_fine,
+sl_bucket, own_to)` -> L2 `(sb_coarse, sl_bucket)` -> L3 floor (all
+trigger-window rows pooled, guaranteed non-empty).
+
+**Race loop per late-window drive:** `own_to`/`def_to` are read once at
+drive start and held fixed for the whole race (declared simplification --
+mid-drive timeout depletion is not re-bucketed play-to-play; the persistent
+per-team timeout counters used by the *next* drive's own_to/def_to do update,
+from each drawn row's timeout delta); `sb_fine` likewise fixed for the race;
+`sl_bucket` is recomputed each iteration from `remaining - consumed`. Each
+iteration bootstrap-draws one training row from the back-off cell; if
+`consumed + elapsed >= remaining` (or a 30-play safety cap is hit), the clock
+wins: category becomes `Clock expired`, `points_off=points_def=0`,
+`duration=remaining` exactly, and the game loop proceeds unchanged (this
+naturally covers both "End of half" at the 1800s boundary and game end at the
+0s boundary, since Unit 1b's outer loop already just checks `gsr>0`). If a
+drawn row is `is_terminal` before the clock expires, the drive's
+category/points/next_fp are drawn from Unit 1b's own state cells at the
+drive's start `(diff,qtr,gsr,fp)` exactly as Unit 1b already does (declared
+simplification: the race's job is only to decide *whether* the clock survives
+the drive, not to re-derive the scoring outcome), but `duration` is replaced
+by the race's own `consumed` value.
+
+**Configs (at most 3, predeclared):**
+| config | timeout conditioning (own_to/def_to in L0/L1) | min_cell_n |
+|---|---|---|
+| A (baseline) | yes | 25 |
+| B (no-timeout ablation) | no (L0=L1=`(sb_fine, sl_bucket)`) | 25 |
+| C (sparsity) | yes | 15 |
+
+**Validation split:** train 2009-2014, validate 2015-2017 (REG only, fixed
+actual set, ~768 games per Unit 1d). Selection rule (fixed now): most
+key-number hits of 5; ties broken by smallest log-loss delta; a config whose
+log-loss delta regresses more than +0.02 nats versus config A is disqualified
+even with a higher hit count (same rule as Unit 1c). The chosen config runs
+once on train 2009-2017 / test 2018-2025 (REG only) against the unchanged
+Unit 1/1b GO criterion (>=4/5 key numbers in the actual bootstrap 90% CI AND
+log-loss delta <=+0.02 nats vs. the naive train histogram) -- this is the 5th
+look at 2018-2025 (after Unit 1, Unit 1b, Unit 1c-config-A, Unit 6-config-A).
+Also reported, not gating: final-drive "End of half"/"Clock expired" share
+and margin sd vs. actual, and the REG-only-fix delta on 2018-2025 key-number
+mass (old season-only-filtered vs. new `game_type=='REG'`-filtered actual).
+
+Script: `scripts/sim04_unit7_clock.py`. Artifacts under
+`artifacts/sim04_unit7/<timestamp>/`.
+
+## Unit 7 result (measured, 2026-09-25)
+
+Validation (train 2009-2014, eval 2015-2017, artifact
+`artifacts/sim04_unit7/20260925T205718Z/report.json`): hits/5 -- A=1 (7),
+B=2 (7,10), C=1 (7); log-loss delta -- A=+0.01424, B=+0.01323, C=+0.01686,
+none disqualified. Config B (no-timeout-conditioning ablation) wins the
+predeclared rule.
+
+Test split (config B, train 2009-2017, test 2018-2025 REG-only, the **5th
+look at 2018-2025**, artifact
+`artifacts/sim04_unit7/20260925T210113Z/report.json`):
+
+| number | Unit 7 (B) sim | actual (REG-only) 90% CI | in CI? | Unit 1b sim (old actual) |
+|---|---|---|---|---|
+| 3 | 0.0987 | [0.1333, 0.1548] | no | 0.1001 |
+| 7 | 0.0733 | [0.0755, 0.0966] | no | 0.0664 |
+| 10 | 0.0546 | [0.0430, 0.0546] | yes | 0.0495 |
+| 14 | 0.0382 | [0.0396, 0.0630] | no | 0.0324 |
+| 17 | 0.0384 | [0.0287, 0.0445] | yes | 0.0425 |
+
+Hits: **2/5** (10, 17) -- same count and same numbers as Unit 1b/1c/6. Log
+loss: simulator 4.00001 vs. naive 3.98391, delta **+0.01610** (inside the
++0.02 bound, an improvement over Unit 1b's +0.0175). Sim margin sd 15.39 vs.
+actual 14.31 (ratio 1.076, tighter than Unit 1b's 1.090). **Final-drive
+clock-expired share (of all 10,000 games, excluding OT games decided in
+OT): 90.06%** vs. actual 85.3% (Unit 1d) -- the targeted mechanism is now
+close to real, a large jump from Unit 1b's implicit ~46.6%.
+
+**REG-only fix effect on 2018-2025** (season-only-filtered vs.
+`game_type=='REG'`-filtered actual, 2227 vs. 2127 games, 100 playoff games
+removed): mass changes are small at this snapshot -- 3: 0.1482->0.1443
+(-0.0038), 7: 0.0849->0.0851, 10: 0.0480->0.0489, 14: 0.0521->0.0512, 17:
+0.0364->0.0362. The REG-only fix matters more for 2015-2017 (33/801 = 4.1%
+playoff games, Unit 1d) than it moves 2018-2025's headline numbers here,
+though the game-count correction itself (2227->2127) is real and now used
+consistently for this unit's GO/NO-GO gate.
+
+**Verdict: NO-GO** against the unchanged criterion (needs both >=4/5 hits
+and log-loss delta <=+0.02; log loss clears, hits do not). This is a
+measured, mixed result: the play-level clock race achieves its named
+target (final-drive clock-expiration rate 90.1% vs. actual 85.3%, up from
+Unit 1b's ~46.6%) and modestly improves log loss and sd ratio, but does not
+move the hit count -- 7 and 14 remain misses at the same numbers as every
+prior unit (1b, 1c, 6), and the margin-3 gap (sim 0.0987 vs. actual
+[0.1333,0.1548]) is barely smaller than Unit 1b's. No interval here flips
+sign (all misses are simulator-under-actual, not over), so this is not a
+refuted mechanism per AGENTS.md -- it is `unresolved_below_power`: fixing
+*whether* the clock expires was necessary but not sufficient; the
+"clock-survives" branch still draws its scoring outcome from Unit 1b's
+original unmodified drive-level cells (a declared simplification, see the
+predeclaration), so a next diagnostic should check whether that branch's
+outcome distribution -- not the clock-expiration rate itself -- is now the
+binding constraint on 7/14/margin-3.
+
+**Recommended next unit:** a bounded diagnostic on the "clock survives"
+branch's drawn category mix in the late window (does it still overweight
+live go-ahead scores relative to the real late-window state-conditioned
+rate, now that the clock-expired branch is no longer diluting the
+comparison), before any further clock-mechanism engineering.
