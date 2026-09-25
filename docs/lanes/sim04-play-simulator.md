@@ -79,16 +79,36 @@ probability it makes enters the pick probability, and then only as a fitted term
   simulator-under-actual) so this is `unresolved_below_power`, not a
   refuted mechanism.
 
+- Unit 7b diagnostic DONE (2026-09-25, `scripts/sim04_unit7b_scoring_mix.py`,
+  artifact `artifacts/sim04_unit7b/20260925T211101Z/report.json`, full
+  writeup in `docs/sim04_unit_log.md` "Unit 7b diagnostic"). Resolved the
+  Unit 7 "Next" question the opposite way it was guessed: the clock-survives
+  branch **under**-scores in the late window, not over-scores. Tied-at-5:00
+  P(margin=3): actual 0.714 vs sim 0.573 (gap +0.141), and splitting by
+  OT-vs-regulation shows the gap is 100%+ from the regulation (no-OT) path
+  (+0.438, partly offset by -0.297 via-OT where sim already over-produces
+  3s). Root cause is measured: sim's tied-at-5:00 OT rate is 0.869 vs actual
+  0.347 (2.5x too high) because the final-5-minutes scoring rate is flat-out
+  low (mean scoring plays after 5:00: 0.99 sim vs 1.33 actual; both FG and
+  TD+PAT shares ~1.5-1.6x short, not a mix problem). Cell audit on 2009-2014
+  train drives found the mechanism: `draw_cell`'s fine (tied, late-Q4,
+  field-position) cell has n=2-49 (median ~10), almost always below
+  `MIN_CELL_N=25`, so it falls back to a coarse pool that
+  `time_bucket_coarse` merges with pre-halftime Q2 tied drives -- a lower-
+  urgency population that dilutes the true endgame scoring rate.
+
 ## Next
 
-- Unit 7 named the likely next binding constraint: the "clock survives"
-  branch of the race still draws its scoring outcome from Unit 1b's
-  original, unmodified drive-level cells (a declared Unit 7 simplification).
-  Next bounded diagnostic: check whether that branch's category mix in the
-  late window still overweights live go-ahead scores relative to the real
-  late-window state-conditioned rate now that clock-expired drives no
-  longer dilute the comparison, before any further clock-mechanism build.
-  Escalate to the orchestrator for the next unit assignment.
+- Build change named by Unit 7b: split the coarse-cell fallback so Q4
+  endgame tied cells (`tb_fine` in {5,6}) never pool with Q2 pre-half tied
+  cells (`tb_fine==2`) in `build_state_cells`/`draw_cell` (e.g. give
+  `time_bucket_coarse` a separate bucket for {5,6}, or add a Q4-only
+  intermediate level). Re-measure the tied-bucket OT rate and via-regulation
+  margin-3 share on the same 2015-2017 split before touching OT resolution
+  (secondary finding: sim OT ties 14.8% vs actual 0/17, and OT_SECONDS=600
+  applied uniformly though 2015-2016 used the 15-min rule -- pre-existing,
+  not introduced here). Escalate to the orchestrator for the next unit
+  assignment (src/ build change vs. another diagnostic).
 
 ## Open
 

@@ -992,3 +992,60 @@ branch's drawn category mix in the late window (does it still overweight
 live go-ahead scores relative to the real late-window state-conditioned
 rate, now that the clock-expired branch is no longer diluting the
 comparison), before any further clock-mechanism engineering.
+
+## Unit 7b diagnostic (measured, 2026-09-25)
+
+`scripts/sim04_unit7b_scoring_mix.py`, Unit 7 config B simulator, train
+2009-2014 / validate 2015-2017 REG-only, 10,000 sim games, artifact
+`artifacts/sim04_unit7b/20260925T211101Z/report.json`. Found the opposite
+of the suspected mechanism: the "clock survives" branch does not
+overweight live scores in the late window, it **underweights** them.
+
+Tied-at-5:00 bucket (n=49 actual, 412 sim): P(final margin=3) actual 0.714
+vs sim 0.573, gap +0.141. Split the gap by whether the game reached OT:
+via-OT actual 0.184 vs sim 0.481 (gap -0.297, sim is *not* short here --
+overtime alone already manufactures more 3s than reality once a game gets
+there); via-regulation (no OT) actual 0.531 vs sim 0.092 (gap +0.438, this
+is the whole story). Root cause: sim's OT rate for tied-at-5:00 games is
+0.869 vs actual 0.347 -- 2.5x too many tied games reach overtime instead
+of being decided by a single late score. That traces to a flat scoring
+deficit in the final-5-minutes window: mean scoring plays after 5:00 is
+0.99 sim vs 1.33 actual; share of post-checkpoint drives that score
+nothing is 76.7% sim vs 64.5% actual; both FG share (15.6% vs 23.5%, 1.5x
+short) and TD+PAT share (6.4% vs 10.4%, 1.6x short) of post-checkpoint
+drives are proportionally under-drawn -- not a TD-vs-FG mix problem, a
+general late-and-tied scoring-rate problem.
+
+Cell audit (measured on the 2009-2014 train drives) names the mechanism:
+`draw_cell`'s fine cell for (tied, final-5-or-2-min-of-Q4, field-position)
+has n=2 to 49 across the 10 field-position buckets (median ~10), almost
+always under `MIN_CELL_N=25`, so nearly every draw in the "clock
+survives" branch falls back past level0 to the coarse pool. That coarse
+pool is keyed by `tb_coarse`, and `time_bucket_coarse` merges
+`tb_fine` in {2, 5, 6} into one bucket -- meaning the true Q4 endgame
+cell is diluted with pre-halftime Q2 "tied, clock running down" drives,
+a lower-urgency population where teams play more conservatively and
+score less. This is the binding constraint, not clock expiry (already
+fixed in Unit 7) and not a TD/FG mix error.
+
+Secondary, smaller finding: OT resolution itself is also off -- sim OT
+tied-bucket endings are 14.8% ties (53/358) vs actual 0/17, and
+`p_fg_given_ot` runs a little hot (0.430 sim vs 0.294 actual); `OT_SECONDS
+=600` (10-minute period) is applied uniformly even though 2015-2016 used
+the 15-minute regular-season OT rule (changed to 10 minutes for 2017
+only) -- a pre-existing simplification (shared with Units 1b/1c/6/7/1d),
+not newly introduced here, and secondary to the regulation-path gap.
+
+Field-position table (`field_position_table_post_5min_drives` in the
+artifact) shows the same general under-scoring pattern pooled across all
+four state buckets, most visible in the 20-50-yard-line bins where actual
+FG-attempt rate runs 15-38% against sim's 5-15%.
+
+**Next build change:** split the fallback the "clock survives" branch
+uses so Q2 pre-half tied cells (`tb_fine==2`) never pool with Q4 endgame
+tied cells (`tb_fine` in {5, 6}) -- either give `time_bucket_coarse` a
+distinct bucket for {5, 6} vs {2}, or insert a Q4-only intermediate level
+between level0 and level1/level2 in `build_state_cells`/`draw_cell` -- then
+re-measure the tied-bucket OT rate and via-regulation margin-3 share on
+this same 2015-2017 split before touching OT resolution or the era OT-
+length mismatch.
