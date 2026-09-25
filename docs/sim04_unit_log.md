@@ -1279,3 +1279,107 @@ race's per-play conditioning still lacks down/distance or "plays already
 run this drive," so it cannot tell a fresh 1st-and-10 snap from a
 3rd-and-short snap and likely still over-draws non-terminal early-down
 plays before finding a terminal one.
+
+## Unit 9 (measured, 2026-09-25)
+
+Built `scripts/sim04_unit9.py` on Unit 8 config C (`min_cell_n=25,
+use_q4_level=False, use_score_level=False`; race `use_timeouts=False,
+min_cell_n=25`), train 2009-2014 / validate 2015-2017 REG-only. Does not
+edit units 7/8; imports `sim04_unit1b_state_chain`, `sim04_unit7_clock`,
+`sim04_unit7b_scoring_mix`, `sim04_unit8_cells` and defines two new,
+corrected functions. Artifact
+`artifacts/sim04_unit9/20260925T215733Z/report.json`.
+
+**Defect 1 (new, found here): cross-quarter contamination in the Unit 8b
+elapsed fix.** `build_play_rows_fixed` (`sim04_unit8b_trace.py:73-169`)
+accumulates `selected` plays across the whole game before computing
+`elapsed`, which fixed the per-drive rebuild bug, but the accumulated list
+mixes late-Q2-window and late-Q4-window rows with nothing in between (Q1,
+early Q2, Q3, early Q4 are filtered out of `selected` entirely). For the
+true last late-Q2 play of a game, `j + 1 < len(selected)` is true but
+`selected[j+1]` is actually the first late-Q4 row of the same game, so
+`elapsed = gsr - next_gsr` computes a bogus multi-quarter gap (900+
+seconds, silently clipped to `WINDOW_SECONDS=300`) instead of falling back
+to the period boundary. `sim04_unit9.py:29-140`
+(`build_play_rows_qtr_safe`) fixes this by only using `selected[j+1]` when
+it shares the same `qtr` as row `j`, else using the boundary fallback,
+same as the original per-drive logic intended.
+
+**Defect 2 (new, found here): `run_race` discards terminal (scoring)
+draws that land near the clock boundary.** `run_race`
+(`sim04_unit7_clock.py:263-275`) checks `if consumed + elapsed >=
+remaining: return True (clock_expired)` **before** checking `is_terminal`.
+A drawn play that is itself terminal (TD, FG, punt, turnover) but whose
+`elapsed` happens to push the cumulative race clock to or past what's
+left gets misclassified as a bare clock expiry -- the caller then credits
+zero points and treats the period as having ended with no score, discarding
+the real scoring/terminal event. `sim04_unit9.py:143-172`
+(`run_race_fixed`) checks `is_terminal` first: a terminal draw always
+returns the score outcome (with `consumed` clipped to `remaining` for
+clock bookkeeping), and only a **non-terminal** draw that would exhaust
+the clock is treated as expiry. This directly targets the reported "half
+the scoring rate, doubled expiry share" symptom.
+
+**Drive-duration audit (`reconstruct_drives`, unit 1/1b) -- no
+comparable bug found.** Measured on 2009-2014 train drives
+(`audit_drive_duration`, `sim04_unit9.py:373-395`): period-ending drives
+(the last drive of a quarter with `start_qtr` 2 or 4) have shorter mean
+duration than other drives in the same quarter (qtr2: 49.7s
+period-ending vs 139.0s other, n=1536/7751; qtr4: 87.2s vs 133.8s,
+n=1536/7687). This is real structure, not a bug: a period-ending drive is
+capped by the period boundary at whatever time it started, so it cannot
+run as long as a mid-period drive on average. `_emit_drive`
+(`sim04_unit1b_state_chain.py:106-148`) always measures duration from the
+drive's own actual last recorded play's `game_seconds_remaining` (never a
+period-boundary fallback substituting for a missing next play, unlike the
+old `build_play_rows` bug), so there is no analogous inflation mechanism.
+Sanity check: the "other" mean durations (139.0s / 133.8s) are close to
+the actual per-drive average from `game_features_pbp.parquet`
+(`home_drive_seconds_per_drive`/`away_drive_seconds_per_drive`, pooled
+mean 138.6s).
+
+**Before (Unit 8b, elapsed fix only, contamination + ordering bugs still
+present) vs after (Unit 9, both fixes) vs actual, tied-at-5:00 Q4
+possessions, validation:**
+
+| metric | before (8b) | after (unit 9) | actual |
+|---|---|---|---|
+| possessions/game | 3.04 | 3.40 | 3.04 |
+| mean possession duration | 64.7s | 58.1s | 59.4s |
+| scoring rate per possession | 0.153 | 0.161 | 0.302 |
+| clock-expired / "End of half" share | 32.9% | 25.1% | 15.4% (23/149) |
+| OT rate (tied-at-5:00) | 66.5% | 59.9% | 34.7% |
+| via-regulation P(margin=3) | 0.162 | 0.171 | 0.531 |
+| key-number hits/5 | 1 | 1 (still only "10") | -- |
+| log-loss delta vs naive | +0.00681 | +0.00968 | -- |
+| sim margin sd / actual margin sd | -- | 15.92 / 13.87 (ratio 1.15) | -- |
+
+Full key-number table (unit 9, validation): 3: sim 0.0996 vs actual
+0.1523 (CI 0.1380-0.1667, miss); 7: sim 0.0749 vs actual 0.0911 (CI
+0.0755-0.1068, miss); 10: sim 0.0545 vs actual 0.0482 (CI
+0.0391-0.0573, **hit**); 14: sim 0.0317 vs actual 0.0508 (CI
+0.0456-0.0560, miss); 17: sim 0.0402 vs actual 0.0299 (CI
+0.0208-0.0391, miss). `go_no_go: NO_GO` (needs >=4/5 hits and log-loss
+delta <=0.02; got 1/5, though the log-loss delta itself still passes).
+
+**Verdict: both fixes move the mechanism in the right direction
+(clock-expired share and OT rate close roughly a third to half of their
+gap) but do not close it, and the scoring-rate deficit that was expected
+to shrink most from Defect 2 barely moved (0.153 -> 0.161 vs actual
+0.302).** This says the ordering bug was real but not the dominant
+remaining mechanism. Candidate reason, matching what the task asked to
+audit ("whether down, distance and field position progress"): they do
+not. When the race says "not expired," the actual scored outcome is not
+the terminal play the race drew -- it is a **second, independent draw**
+from `draw_cell2`'s historical whole-drive pool
+(`sim04_unit8_cells.py:100-138`, called from `sim04_unit9.py:229-231`),
+keyed only by score-bucket/time-bucket/field-position and, under config
+C, falling through to the coarse level1/level2 pools (Q4-specific
+`level_q4` and `level_score` are both off in config C). This reproduces
+Unit 8's own finding that the Q4-specific level does not close the gap
+even when it fires cleanly at the cell level -- the race's terminal
+signal and the drive's scored outcome are structurally decoupled, so
+fixing the race's own bookkeeping (Defect 2) cannot, by itself, raise the
+drive-outcome pool's scoring rate.
+
+Not applied to `src/`; no registry writes; no commits.

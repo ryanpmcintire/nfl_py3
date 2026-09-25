@@ -144,18 +144,61 @@ probability it makes enters the pick probability, and then only as a fitted term
   Not ported to `src/` or Unit 7/8 (this was a bounded copy-only debugging
   task).
 
+- Unit 9 DONE, NO-GO (2026-09-25, `scripts/sim04_unit9.py`, artifact
+  `artifacts/sim04_unit9/20260925T215733Z/report.json`, full writeup in
+  `docs/sim04_unit_log.md` "Unit 9"). Built on Unit 8 config C, train
+  2009-2014 / validate 2015-2017. Found and fixed two more clear bugs:
+  (1) `sim04_unit8b_trace.py`'s whole-game elapsed fix mixes late-Q2 and
+  late-Q4 rows (nothing selected in between), so the true last late-Q2
+  play of a game reads a bogus cross-quarter gap as `elapsed` instead of
+  falling back to the period boundary -- fixed with a same-quarter-only
+  "next" search (`build_play_rows_qtr_safe`); (2) `run_race`
+  (`sim04_unit7_clock.py:268`) checks clock-expiry *before* `is_terminal`,
+  so a drawn scoring/terminal play whose `elapsed` reaches the remaining
+  clock gets discarded as a bare expiry instead of crediting the score --
+  fixed by checking `is_terminal` first (`run_race_fixed`). Audited
+  `reconstruct_drives` for the same class of bug: no comparable defect
+  found (period-ending drives are legitimately shorter, capped by the
+  period boundary at their start; `_emit_drive` always uses the drive's
+  own real last-play gsr, never a boundary fallback). Re-measured
+  tied-at-5:00 validation: possessions/game 3.04->3.40 (actual 3.04,
+  overshoots now), duration 64.7s->58.1s (actual 59.4s, improved),
+  clock-expired/"End of half" share 32.9%->25.1% (actual 15.4%, ~40%
+  of the gap closed), OT rate 66.5%->59.9% (actual 34.7%, ~20% of the
+  gap closed), but **scoring rate per possession barely moved: 0.153->
+  0.161 (actual 0.302)**, via-regulation margin-3 0.162->0.171 (actual
+  0.531), key-number hits stayed 1/5 (only "10"), log-loss delta
+  **worsened** +0.00681->+0.00968 (still under the 0.02 GO threshold on
+  its own, but hits are the binding constraint). NO-GO: needs >=4/5 hits.
+  Named mechanism for the near-zero movement in scoring rate: when the
+  race says "not expired," the scored outcome is not the terminal play
+  the race drew -- it is a second, independent draw from `draw_cell2`'s
+  historical whole-drive pool (`sim04_unit8_cells.py:100-138`), keyed
+  only by score/time/field-position and, under config C, missing the
+  Q4-specific `level_q4`/`level_score` levels. The race's terminal signal
+  and the drive's scored outcome are structurally decoupled, so Defect 2
+  could not raise the drive-outcome pool's own scoring rate -- this
+  matches Unit 8's finding that the Q4-specific level doesn't close the
+  gap even firing cleanly at the cell level.
+
 ## Next
 
-- **Recommended next unit:** (1) port the `build_play_rows` elapsed fix
-  from `sim04_unit8b_trace.py`'s `build_play_rows_fixed` into
-  `scripts/sim04_unit7_clock.py` for real -- it changes Unit 7/7b/8's own
-  race pools, so their validation numbers need a rerun, not just this
-  diagnostic copy; (2) diagnose the residual clock-expired-too-often /
-  scores-too-rarely gap once possession count is fixed -- candidate: the
-  race still has no down/distance or plays-already-run conditioning, so it
-  can't tell a fresh 1st-and-10 snap from 3rd-and-short and likely still
-  over-draws non-terminal early-down plays before a terminal one. Escalate
-  to the orchestrator for the next unit assignment.
+- Orchestrator decision 2026-09-25: stop patching the drive-chain hybrid
+  (units 1b-9 are chained copies: 1b -> 7 -> 8 -> 8b -> 9, each patching the
+  last). Their lasting value is diagnostic: the gap is late-game finishing;
+  possessions and duration now match actual; the remaining defect is that
+  scoring is drawn separately from the play sequence, so late possessions score
+  at half the real rate (0.161 vs 0.302).
+- Next unit: build the plan's Unit 3 as ONE clean module
+  (`scripts/sim04_engine.py`), a play-level engine for the whole game. The state
+  is (qtr, clock, score diff, possession, down, distance, yardline, timeouts);
+  each play draws its type and result (yards, clock, turnover, penalty, score)
+  from empirical cells with back-off, and down, distance and field position
+  advance, so scoring and the clock come out of the same play sequence. Validate
+  on train 2009-2014 / 2015-2017 (regular season) against units 1b and 9. Report
+  the late-possession scoring rate, the tied-at-5:00 OT rate, the key-number
+  table, log loss and sd. No 2018-2025 runs (it has had 5 looks); the final
+  evaluation is leave-one-season-out or 2026 prospective.
 
 ## Open
 
