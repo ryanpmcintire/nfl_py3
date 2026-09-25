@@ -97,10 +97,21 @@ PBP_SNAPSHOT_COLUMNS = (
     "score_differential",
     "penalty",
     "penalty_yards",
+    "penalty_team",
+    "penalty_type",
     "fixed_drive_result",
     "posteam_score",
     "posteam_score_post",
     "play",
+    "play_type_nfl",
+    "home_timeouts_remaining",
+    "away_timeouts_remaining",
+    "posteam_timeouts_remaining",
+    "defteam_timeouts_remaining",
+    "rusher_player_id",
+    "receiver_player_id",
+    "fumbled_1_player_id",
+    "fumble_recovery_1_player_id",
 )
 
 
