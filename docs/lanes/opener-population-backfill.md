@@ -139,6 +139,10 @@ so it was not attempted under this unit's read-only/cheap-only brief.
   (`data/pbp/raw/20260817T184927Z`).
 
 ## Next
+2026-09-25: reconciliation pass confirms this lane has no drafted
+`weak-signals record` commands — every measured look is explicitly "not
+recorded, this is a look" per its own State section. Nothing to run here.
+
 Unit 2 shipped `artifacts/extended_fit_population/20260923T205041Z/` (smooth
 2011-2019 `model_logit`, superseded by Unit 3 for that column).
 

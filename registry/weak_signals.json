@@ -172644,6 +172644,34 @@
       "source": "artifacts/pooled_signal_sixth_fit/20260923T204014Z",
       "standard_error": null
     },
+    "pooled_signal_sixth_fit_vs_model_only": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Companion vs-model-only read, not the decision-relevant comparison (that is vs the served four-term base, which is unresolved_below_power per pooled_signal_sixth_fit_vs_four_term); per lane convention (units 1-5) recorded unresolved_below_power regardless of this cell's own P+, since MOD-20 resolves no cell alone and the family stays open",
+      "closing_ground": null,
+      "description": "MOD-20 unit 6 companion: interaction fit (four-term base + reddit_home_comment_ratio_elevated) vs model-only picks, LOSO 2020-2025, same 1,503 games; +3.726 accuracy points, week-block interval [1.175,6.324], P+ 0.9985, decisive 285-229 on 514.",
+      "effect": 3.7258815701929473,
+      "effect_units": "accuracy_points",
+      "family": "pooled_signal_first_model_v1",
+      "interval": [
+        1.1748582327023498,
+        6.324278837745554
+      ],
+      "league": "nfl",
+      "notes": "Companion, not decision-relevant alone; see pooled_signal_sixth_fit_vs_four_term for the decision-relevant unit 6 read.",
+      "plain_summary": null,
+      "probability_positive": 0.9985,
+      "recorded_at": "2026-09-25",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/pooled_signal_sixth_fit_new_family.py; artifacts/pooled_signal_sixth_fit/20260923T204014Z/results.json; docs/lanes/pooled-signal-model.md",
+      "standard_error": null
+    },
     "pooled_signal_third_fit_vs_four_term": {
       "category": "modeling",
       "classification": "unresolved_below_power",

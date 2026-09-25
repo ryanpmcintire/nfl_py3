@@ -129,6 +129,10 @@ nfl-ats weak-signals record --name mod18_spread_regime_extended_2011_2025 \
   fitted term.
 
 ## Next
+2026-09-25: verified both cells already in `registry/weak_signals.json`
+(`mod18_spread_regime_served_2020_2025`, `mod18_spread_regime_extended_2011_2025`,
+both `unresolved_below_power`). Nothing further to run.
+
 Root runs the two `weak-signals record` commands above (Unit 1, both
 `unresolved_below_power`). No further fitting is warranted from this unit's
 evidence: the mechanism this row was chartered to test (large-spread deficit)

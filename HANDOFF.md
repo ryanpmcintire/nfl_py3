@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-24T20:31:58.890695+00:00`
+Refreshed at: `2026-09-25T19:12:59.301587+00:00`
 
 ## Start here
 
@@ -21,11 +21,29 @@ Refreshed at: `2026-09-24T20:31:58.890695+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `f171b453124a` — Nonlinear fits of the four served terms do not beat the logistic
-- Pending change set: 3 paths
+- Baseline commit: `5bd4d0469a1f` — Format nonlinear check script; close its lane
+- Pending change set: 32 paths
+  - `M  CURRENT_PREDICTIONS.md`
+  - `M  HANDOFF.md`
+  - `M  README.md`
+  - `M  ROADMAP.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
   - `M  docs/lanes/README.md`
-  - `R  docs/lanes/four-term-nonlinear-check.md -> docs/lanes/done/four-term-nonlinear-check.md`
-  - `M  scripts/four_term_nonlinear_check.py`
+  - `A  docs/lanes/backlog-batch-2026-09-25.md`
+  - `M  docs/lanes/lead59-archive-battery.md`
+  - `M  docs/lanes/line-move-regrade-legacy.md`
+  - `M  docs/lanes/market-move-decomposition.md`
+  - `M  docs/lanes/mod18-spread-regime.md`
+  - `M  docs/lanes/opener-population-backfill.md`
+  - `M  docs/lanes/pooled-signal-model.md`
+  - `A  docs/lanes/sim04-play-simulator.md`
+  - `M  docs/lanes/total-conditioned-lattice.md`
+  - `M  docs/model.html`
+  - `A  docs/sim04_play_simulator_plan.md`
+  - `A  registry/experiments/margin-backtest/20260924T210830Z.json`
+  - ...and 12 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -34,18 +52,18 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `2d4049be9772415b`
+- Model ID: `8587951e3acc6055`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20260924T161555Z`)
+- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20260925T161328Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card applies this after the coach policy, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,103 / 2,107 (52.35%)**
-- Linked forecast: **2026 Week 3**, created `2026-09-24T16:12:31.071175+00:00`
+- Linked forecast: **2026 Week 3**, created `2026-09-25T16:09:55.822273+00:00`
 
 The 52.35% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 3** from model `2d4049be9772415b`, published `2026-09-24T16:20:38.221428+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 3** from model `8587951e3acc6055`, published `2026-09-25T16:17:03.761209+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

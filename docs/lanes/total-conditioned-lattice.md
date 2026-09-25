@@ -121,6 +121,11 @@ exact disagreement null, and split-half reliability. No refit, no served-path
 change.
 
 ## Next (for the root orchestrator; this subagent made no registry writes)
+2026-09-25: verified both cells already in `registry/weak_signals.json`
+(`total_conditioned_key_number_lattice_log_loss`,
+`total_conditioned_key_number_lattice_accuracy`, both
+`unresolved_below_power`). Nothing further to run.
+
 1. Record with (season-block interval used as primary; edit if root prefers
    week-block or a pooled interval):
 

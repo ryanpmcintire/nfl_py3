@@ -240,6 +240,11 @@ deliberately so nobody records stale numbers.
 
 ## Next
 
+2026-09-25: reconciliation pass confirms all 6 `market_move_decomposition_v1`
+family cells (a-e plus b_early/b_late) present in `registry/weak_signals.json`,
+including `market_move_decomposition_e_all_books_median_active_window`
+(`unresolved_below_power`). Nothing further to run.
+
 1. **[SUPERSEDED — done]** Items 1-5 below this line (ruff cleanup, rerun,
    pull numbers, record 5 arms) describe Unit 1 and are already complete:
    `registry/weak_signals.json` holds all 5 `market_move_decomposition` arms

@@ -57,6 +57,16 @@ MOD-20: one hierarchical model with every situational family as a shrunk term, j
 
 ## Next
 
+- 2026-09-25: reconciliation pass found the unit 6 vs-model-only companion
+  cell was still missing (only `pooled_signal_sixth_fit_vs_four_term` had
+  been recorded). Filled its numbers from
+  `artifacts/pooled_signal_sixth_fit/20260923T204014Z/results.json`
+  (`vs_model_only_week_block`: +3.726 accuracy pts [1.175,6.324], P+ 0.9985,
+  1503 games, 107 week-blocks) and ran it: recorded
+  `pooled_signal_sixth_fit_vs_model_only`, `unresolved_below_power` per lane
+  convention (registry now 7,254 total signals). All other units 1-6 cells
+  confirmed already present.
+
 - 2026-09-23 root: unit 6 ran (artifacts/pooled_signal_sixth_fit/20260923T204014Z): reddit attention term -0.07 pts [-0.34,+0.28], P+ 0.27, decisive 4-5 on 9; Brier and log loss unchanged; recorded unresolved (registry 7,004). The served four-term base still wins; the new term barely moves any pick. Templates below are history.
 
 - 2026-09-23 root: this unit's cells are recorded (registry 7,003); the commands below are history.

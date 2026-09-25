@@ -151,6 +151,12 @@ before this run.
 
 ## Next
 
+2026-09-25: verified both type-trait cells already in
+`registry/weak_signals.json` (`lead59_dpi_tilt_pass_heavy_favorite_fit_term`,
+`lead59_holding_tilt_run_heavy_fit_term`, family
+`lead59_type_trait_archive_bins_fit_v1`, both `unresolved_below_power`).
+Nothing further to run.
+
 Root: record both cells (source is the summary above; neither is served,
 neither changes a pick; both close the open item honestly as
 `unresolved_below_power`):

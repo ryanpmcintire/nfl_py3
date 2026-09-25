@@ -673,7 +673,7 @@ weeks.
 
 | ID | Status | Item | Definition of done |
 |---|---|---|---|
-| SIM-04 | 🔬 | Full play-by-play simulator | Play call, outcome, clock, penalty, turnover, fourth-down policy |
+| SIM-04 | 🚧 | Full play-by-play simulator | Play call, outcome, clock, penalty, turnover, fourth-down policy. **Build plan written 2026-09-25** (`docs/sim04_play_simulator_plan.md`, lane `docs/lanes/sim04-play-simulator.md`): the case is the discrete margin distribution, counterfactuals (SIM-05) and a dashboard view, not better side picks; MOD-09's ICC 0.013 finding stands against a sequence model replacing the served summary features. Ten units, from a drive-outcome key-number baseline (unit 1, no team conditioning) through play, clock, penalty, turnover and fourth-down submodels to a chronological leave-one-season-out comparison against the served `DiscretePushReader` read. A simulator probability enters the one calibrated pick probability only as a fitted term, never as a flip. The NFL play-by-play capture is a 45-column allowlist (`PBP_SNAPSHOT_COLUMNS`, `src/nfl_ats/pbp.py`); timeouts, penalty type and team, and personnel need a capture widening (unit 2). |
 | SIM-05 | 🔬 | Counterfactual simulator | Compare coaching decisions, injuries, weather, and matchup changes |
 | SIM-06 | 🌙 | Differentiable football environment | Learn policy/state transitions jointly without sacrificing auditability |
 | SIM-07 | 🌙 | Multi-agent tactical model | Personnel and scheme interaction below the play level |

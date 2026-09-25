@@ -241,6 +241,13 @@ check` still passes):
 
 ## Next
 
+- 2026-09-25: reconciliation pass confirms all drafted cells present in
+  `registry/weak_signals.json` — b2 (8), b3 (4), b4 (2). Division-revenge and
+  special_teams_return_top_quartile are recorded `refuted_mechanism` /
+  `wrong_sign_resolved` (not the draft template's `unresolved_below_power`,
+  matching the actual research decision noted below); the rest are
+  `unresolved_below_power`. Nothing further to run.
+
 - 2026-09-23 root: batch 4 recorded (registry 7,059). special_teams_return_top_quartile is a resolved wrong sign on line movement for this Tuesday-base variant (-0.064 [-0.091,-0.036], week block also negative, decisive 35-56), opposite its accuracy prior; not a served member (only in unserved_tilt_marginals). hc_year_one_fade unresolved. Further batches only for families with a live builder; the ranking discrepancy is documented in Open.
 
 - 2026-09-23 root: division revenge (b2) and batch 3 recorded (registry 7,057). Division revenge is a resolved wrong sign on both blockings (-0.054 [-0.115,-0.012]). coach_fade stays unresolved (season block negative, week block crosses zero). Batch 4 (special_teams_return_top_quartile, hc_year_one_fade) run this session -- see Batch 4 results above. special_teams_return_top_quartile is a candidate wrong-sign-resolved case (both blockings wholly negative, P+ 0.00/0.002) but OPPOSITE-signed from its own registry prior (which was positive, P+ 0.9547) -- naming the mechanism is an orchestrator research call, not made this session. hc_year_one_fade (week<=8) stays unresolved (both blockings cross zero). Neither recorded yet (no registry-write authorization this session). Draft commands below are history except where noted.

@@ -20,6 +20,8 @@ modified lane when the prompt just says to continue.
 
 ## Active
 
+- [sim04-play-simulator](sim04-play-simulator.md) - 2026-09-25: SIM-04 play-by-play simulator build plan (`docs/sim04_play_simulator_plan.md`); planning unit dispatched.
+- [backlog-batch-2026-09-25](backlog-batch-2026-09-25.md) - 2026-09-25: standing backlog lane; batch 1 = queued registry records + one UI-20 improvement.
 - [inactives-capture-empty](inactives-capture-empty.md) - 2026-09-24: RotoWire fallback now parses (150 rows on an archived page); check the first live T-90 manifest tonight (ATL at GB) and Sunday.
 - [lead53-sunday-renomination](lead53-sunday-renomination.md) - 2026-09-24: ranks on the served four-term probability; after Sun 10:00 ET grep BEST-PICK-LEDGER in data/scheduler_log.txt for the Week 3 pairing.
 - [lead64-friday-designations](lead64-friday-designations.md) - 2026-09-24: headline designations lead the official file but only n=3 checkable; not wired; rerun the join after more weeks now that inactives capture works.
