@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-26T19:01:56.982670+00:00`
+Refreshed at: `2026-09-26T19:03:15.616658+00:00`
 
 ## Start here
 
@@ -21,28 +21,11 @@ Refreshed at: `2026-09-26T19:01:56.982670+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `ebf7e02b6bf5` — Saturday card refresh; Books now note says '1 game'; Bovada failures keep the payload
-- Pending change set: 20 paths
-  - `M  docs/lanes/README.md`
-  - `A  docs/lanes/backlog-batch-2026-09-26.md`
-  - `R  docs/lanes/backlog-batch-2026-09-25.md -> docs/lanes/done/backlog-batch-2026-09-25.md`
-  - `R  docs/lanes/clv-metric-everywhere.md -> docs/lanes/done/clv-metric-everywhere.md`
-  - `R  docs/lanes/conditional-signal-atlas.md -> docs/lanes/done/conditional-signal-atlas.md`
-  - `R  docs/lanes/every-metric-every-experiment.md -> docs/lanes/done/every-metric-every-experiment.md`
-  - `R  docs/lanes/inactives-capture-empty.md -> docs/lanes/done/inactives-capture-empty.md`
-  - `R  docs/lanes/lane-replay-dream-rsi.md -> docs/lanes/done/lane-replay-dream-rsi.md`
-  - `R  docs/lanes/lead59-archive-battery.md -> docs/lanes/done/lead59-archive-battery.md`
-  - `R  docs/lanes/lead65-protection-window-split.md -> docs/lanes/done/lead65-protection-window-split.md`
-  - `R  docs/lanes/line-move-regrade-legacy.md -> docs/lanes/done/line-move-regrade-legacy.md`
-  - `R  docs/lanes/market-move-decomposition.md -> docs/lanes/done/market-move-decomposition.md`
-  - `R  docs/lanes/mod18-spread-regime.md -> docs/lanes/done/mod18-spread-regime.md`
-  - `R  docs/lanes/opener-error-transfer.md -> docs/lanes/done/opener-error-transfer.md`
-  - `R  docs/lanes/opener-population-backfill.md -> docs/lanes/done/opener-population-backfill.md`
-  - `R  docs/lanes/pooled-signal-model.md -> docs/lanes/done/pooled-signal-model.md`
-  - `R  docs/lanes/prospective-leads-2026-09-23.md -> docs/lanes/done/prospective-leads-2026-09-23.md`
-  - `R  docs/lanes/scheduler-once-timeout.md -> docs/lanes/done/scheduler-once-timeout.md`
-  - `R  docs/lanes/surface-switch-fitted-term.md -> docs/lanes/done/surface-switch-fitted-term.md`
-  - `R  docs/lanes/total-conditioned-lattice.md -> docs/lanes/done/total-conditioned-lattice.md`
+- Baseline commit: `d76ffa3fcb7b` — Lanes: close 18 finished lanes; backfilled metric cells do not add a look
+- Pending change set: 3 paths
+  - `M  ROADMAP.md`
+  - `M  docs/lanes/backlog-batch-2026-09-26.md`
+  - `M  docs/open_benchmark_suite.md`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

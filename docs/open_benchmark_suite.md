@@ -68,3 +68,21 @@ SKY-07 therefore remains open until all of these are resolved outside this modul
 
 No generated dataset, private label file, model artifact, score, or leaderboard is
 tracked by this foundation.
+
+## Decisions 2026-09-26
+
+Decided from the repository rules; no step below needs the owner.
+
+- License and sources: CC-BY-4.0 with nflverse attribution; source URLs are the
+  nflverse-data release assets actually read. Only columns computed solely from
+  nflverse inputs ship (`config/source_policies.json`).
+- Hosting: a tagged GitHub release of this repository, with the asset URL
+  pinned in the manifest.
+- Test-label custody: the test split is games not yet played when the release
+  is tagged, so no outcome is withheld by anyone; labels become public results.
+  Scoring reads the nflverse result file after the last test game.
+- Leaderboard: primary log loss of the home cover probability excluding
+  pushes, graded at the opening spread; Brier score and forced-pick accuracy
+  reported beside it with week-blocked intervals and the market (0.5) and
+  simple-model baselines. One submission per entrant per release; log loss
+  equal to 1e-6 shares a rank; a release is versioned by its content identity.

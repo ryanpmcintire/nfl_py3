@@ -62,3 +62,4 @@ command to run.
 - Also closed: inactives-capture-empty (live Thursday capture returned 11 real
   rows), backlog-batch-2026-09-25. Fixed: Friday odds window (`b94e59d`),
   Bovada error evidence and card note plural (`ebf7e02`).
+- SKY-07 publication decisions made from the rules (docs/open_benchmark_suite.md, Decisions 2026-09-26); next: per-dataset nflverse license check and first local export.
