@@ -11,6 +11,7 @@ import numpy as np
 import pandas as pd
 from scipy.spatial import cKDTree
 from sklearn.ensemble import HistGradientBoostingClassifier
+from sklearn.ensemble._hist_gradient_boosting.common import X_DTYPE
 from sklearn.neighbors import KDTree
 
 REPO = Path(__file__).resolve().parents[1]
@@ -331,7 +332,27 @@ def fit_fourth_down_policy(trans: pd.DataFrame) -> HistGradientBoostingClassifie
 
 
 def fourth_down_clf_features(score: float, time_raw: float, dist: float, fp: float) -> np.ndarray:
-    return np.array([[score, time_raw, dist, fp + 17.0]])
+    return np.array([[score, time_raw, dist, fp + 17.0]], dtype=X_DTYPE)
+
+
+def make_fourth_down_bitsets(clf: HistGradientBoostingClassifier):
+    return clf._bin_mapper.make_known_categories_bitsets()
+
+
+def fast_gbm_predict_label(clf: HistGradientBoostingClassifier, bitsets, feat: np.ndarray) -> int:
+    known_cat_bitsets, f_idx_map = bitsets
+    raw = np.zeros((1, clf.n_trees_per_iteration_), dtype=clf._baseline_prediction.dtype, order="F")
+    raw += clf._baseline_prediction
+    for predictors_of_ith_iteration in clf._predictors:
+        for k, predictor in enumerate(predictors_of_ith_iteration):
+            raw[:, k] += predictor.predict(
+                feat, known_cat_bitsets=known_cat_bitsets, f_idx_map=f_idx_map, n_threads=1
+            )
+    if raw.shape[1] == 1:
+        encoded = int(raw.ravel()[0] > 0)
+    else:
+        encoded = int(np.argmax(raw[0]))
+    return int(clf.classes_[encoded])
 
 
 def build_fourth_down_group_index(trans: pd.DataFrame) -> dict:
@@ -473,18 +494,25 @@ def pick_index_nn_conditioned(
         ind = np.atleast_1d(ind)
         neighbors = sub_idx[ind]
         cache[key] = neighbors
-    off_row = tables["arrays"]["off_row"][neighbors]
-    def_row = tables["arrays"]["def_row"][neighbors]
-    is_home_row = tables["arrays"]["is_home_off"][neighbors]
-    h = tables["team_kernel_h"]
-    dist_sq = (off_row - off_sim) ** 2 + (def_row - def_sim) ** 2
-    weights = np.exp(-dist_sq / (2.0 * h * h))
-    weights = weights * np.where(is_home_row == is_home_sim, TEAM_KERNEL_LAMBDA, 1.0)
-    weight_sum = weights.sum()
-    if not np.isfinite(weight_sum) or weight_sum <= 0.0:
-        weights = np.ones_like(weights)
+    wcache = tables["nn_weight_cache_cond"]
+    wkey = (key, off_sim, def_sim, is_home_sim)
+    cached_w = wcache.get(wkey)
+    if cached_w is None:
+        off_row = tables["arrays"]["off_row"][neighbors]
+        def_row = tables["arrays"]["def_row"][neighbors]
+        is_home_row = tables["arrays"]["is_home_off"][neighbors]
+        h = tables["team_kernel_h"]
+        dist_sq = (off_row - off_sim) ** 2 + (def_row - def_sim) ** 2
+        weights = np.exp(-dist_sq / (2.0 * h * h))
+        weights = weights * np.where(is_home_row == is_home_sim, TEAM_KERNEL_LAMBDA, 1.0)
         weight_sum = weights.sum()
-    cdf = np.cumsum(weights)
+        if not np.isfinite(weight_sum) or weight_sum <= 0.0:
+            weights = np.ones_like(weights)
+            weight_sum = weights.sum()
+        cdf = np.cumsum(weights)
+        cached_w = (cdf, weight_sum)
+        wcache[wkey] = cached_w
+    cdf, weight_sum = cached_w
     pick = int(np.searchsorted(cdf, rng.random() * weight_sum, side="right"))
     pick = min(pick, len(neighbors) - 1)
     return int(neighbors[pick])
@@ -707,6 +735,7 @@ def build_tables(seasons: tuple[int, ...], condition_on_team: bool = False) -> d
         league_def_mean = None
     nn_trees = build_neighbor_index(trans)
     fourth_down_clf = fit_fourth_down_policy(trans)
+    fourth_down_clf_bitsets = make_fourth_down_bitsets(fourth_down_clf)
     nn_trees_4th = build_fourth_down_group_index(trans)
     opening_pool = build_opening_pool(pbp)
     off_td_mask = trans["points_off"].to_numpy() >= 6.0
@@ -753,7 +782,9 @@ def build_tables(seasons: tuple[int, ...], condition_on_team: bool = False) -> d
         "nn_trees_cond": nn_trees_cond,
         "nn_cache": {},
         "nn_cache_cond": {},
+        "nn_weight_cache_cond": {},
         "fourth_down_clf": fourth_down_clf,
+        "fourth_down_clf_bitsets": fourth_down_clf_bitsets,
         "nn_trees_4th": nn_trees_4th,
         "nn_cache_4th": {},
         "opening_pool": opening_pool,
@@ -889,9 +920,8 @@ def run_one_game(
         down_key = down if down in (1, 2, 3, 4) else 4
         fourth_clf = tables.get("fourth_down_clf")
         if down_key == 4 and phase in LATE_PHASES and fourth_clf is not None:
-            label = int(
-                fourth_clf.predict(fourth_down_clf_features(score_diff, time_feat, distance, yardline))[0]
-            )
+            feat = fourth_down_clf_features(score_diff, time_feat, distance, yardline)
+            label = fast_gbm_predict_label(fourth_clf, tables["fourth_down_clf_bitsets"], feat)
             alt_idx = pick_index_nn_fourth(
                 rng, tables, phase, label, distance, yardline, score_diff, time_feat, off_to, def_to, min_cell_n
             )
@@ -1309,6 +1339,54 @@ def run_validation(n_games_per_season: int, out_dir: Path) -> dict:
         "actual_diagnostics": actual_diag,
     }
     return report, sim_all
+
+
+def _mp_process_batch(args):
+    batch, seasons, condition_on_team, n_reps, ot_seconds = args
+    import threadpoolctl
+
+    with threadpoolctl.threadpool_limits(limits=1):
+        tables = build_tables(tuple(seasons), condition_on_team=condition_on_team)
+    out = []
+    for game_index, seed, home_ratings, away_ratings in batch:
+        rng = np.random.default_rng(seed)
+        sim = simulate(
+            n_reps,
+            rng,
+            tables,
+            ot_seconds=ot_seconds,
+            home_ratings=home_ratings,
+            away_ratings=away_ratings,
+        )
+        out.append((game_index, sim["margin"].to_numpy(dtype=float)))
+    return out
+
+
+def simulate_games_multiprocess(
+    games: list[dict],
+    seasons: tuple[int, ...],
+    condition_on_team: bool,
+    n_reps: int,
+    base_seed: int,
+    ot_seconds: float = 600.0,
+    max_workers: int | None = None,
+) -> list[np.ndarray]:
+    import multiprocessing as mp
+    from concurrent.futures import ProcessPoolExecutor
+
+    if not games:
+        return []
+    ctx = mp.get_context("spawn")
+    n_workers = max(1, min(max_workers or mp.cpu_count(), len(games)))
+    tasks = [(i, base_seed + i, g.get("home_ratings"), g.get("away_ratings")) for i, g in enumerate(games)]
+    batches = [tasks[i::n_workers] for i in range(n_workers)]
+    batch_args = [(batch, seasons, condition_on_team, n_reps, ot_seconds) for batch in batches if batch]
+    results: list[np.ndarray | None] = [None] * len(games)
+    with ProcessPoolExecutor(max_workers=n_workers, mp_context=ctx) as executor:
+        for batch_result in executor.map(_mp_process_batch, batch_args):
+            for game_index, margins in batch_result:
+                results[game_index] = margins
+    return results
 
 
 def main() -> None:
