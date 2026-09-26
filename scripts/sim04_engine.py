@@ -10,6 +10,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from scipy.spatial import cKDTree
+from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.neighbors import KDTree
 
 REPO = Path(__file__).resolve().parents[1]
@@ -287,6 +288,95 @@ def pick_index_nn(
     tree, sub_idx = entry
     cache = tables["nn_cache"]
     key = round_state_key(down_key, phase, dist, fp, score, time_raw, off_to, def_to)
+    neighbors = cache.get(key)
+    if neighbors is None:
+        feat = feature_matrix(
+            np.array([dist]),
+            np.array([fp]),
+            np.array([score]),
+            np.array([time_raw]),
+            np.array([off_to]),
+            np.array([def_to]),
+            np.array([phase]),
+        )
+        k_eff = min(k, len(sub_idx))
+        _, ind = tree.query(feat, k=k_eff)
+        neighbors = sub_idx[ind[0]]
+        cache[key] = neighbors
+    return int(neighbors[rng.integers(len(neighbors))])
+
+
+FOURTH_DOWN_TYPE_CODES = (0, 1, 2, 3)
+
+
+def fourth_down_label(play_type_code: np.ndarray) -> np.ndarray:
+    return np.select([play_type_code == 3, play_type_code == 2], [1, 2], default=0)
+
+
+def fit_fourth_down_policy(trans: pd.DataFrame) -> HistGradientBoostingClassifier:
+    down_arr = trans["down_i"].to_numpy()
+    ptc = trans["play_type_code"].to_numpy()
+    mask = (down_arr == 4) & np.isin(ptc, FOURTH_DOWN_TYPE_CODES)
+    sub = trans.loc[mask]
+    label = fourth_down_label(sub["play_type_code"].to_numpy())
+    kick_dist = sub["fp_raw"].to_numpy() + 17.0
+    features = np.column_stack(
+        [sub["sc_raw"].to_numpy(), sub["time_raw"].to_numpy(), sub["dist_raw"].to_numpy(), kick_dist]
+    )
+    clf = HistGradientBoostingClassifier(max_depth=4, max_iter=150, random_state=RNG_SEED)
+    clf.fit(features, label)
+    return clf
+
+
+def fourth_down_clf_features(score: float, time_raw: float, dist: float, fp: float) -> np.ndarray:
+    return np.array([[score, time_raw, dist, fp + 17.0]])
+
+
+def build_fourth_down_group_index(trans: pd.DataFrame) -> dict:
+    down_arr = trans["down_i"].to_numpy()
+    phase_arr = trans["phase"].to_numpy()
+    ptc = trans["play_type_code"].to_numpy()
+    valid = np.isin(ptc, FOURTH_DOWN_TYPE_CODES)
+    label_all = fourth_down_label(ptc)
+    feats = feature_matrix(
+        trans["dist_raw"].to_numpy(),
+        trans["fp_raw"].to_numpy(),
+        trans["sc_raw"].to_numpy(),
+        trans["time_raw"].to_numpy(),
+        trans["off_to_raw"].to_numpy(),
+        trans["def_to_raw"].to_numpy(),
+        phase_arr,
+    )
+    trees = {}
+    for phase in LATE_PHASES:
+        for label in (0, 1, 2):
+            mask = valid & (down_arr == 4) & phase_pool_mask(phase_arr, phase) & (label_all == label)
+            sub_idx = np.flatnonzero(mask)
+            if len(sub_idx) == 0:
+                continue
+            trees[(phase, label)] = (KDTree(feats[sub_idx]), sub_idx)
+    return trees
+
+
+def pick_index_nn_fourth(
+    rng: np.random.Generator,
+    tables: dict,
+    phase: int,
+    label: int,
+    dist: float,
+    fp: float,
+    score: float,
+    time_raw: float,
+    off_to,
+    def_to,
+    k: int,
+) -> int | None:
+    entry = tables["nn_trees_4th"].get((phase, label))
+    if entry is None:
+        return None
+    tree, sub_idx = entry
+    cache = tables["nn_cache_4th"]
+    key = round_state_key(4, phase, dist, fp, score, time_raw, off_to, def_to) + (label,)
     neighbors = cache.get(key)
     if neighbors is None:
         feat = feature_matrix(
@@ -614,6 +704,12 @@ def build_tables(seasons: tuple[int, ...], condition_on_team: bool = False) -> d
         league_off_mean = None
         league_def_mean = None
     nn_trees = build_neighbor_index(trans)
+    if seasons == TRAIN_SEASONS and not condition_on_team:
+        fourth_down_clf = fit_fourth_down_policy(trans)
+        nn_trees_4th = build_fourth_down_group_index(trans)
+    else:
+        fourth_down_clf = None
+        nn_trees_4th = None
     opening_pool = build_opening_pool(pbp)
     off_td_mask = trans["points_off"].to_numpy() >= 6.0
     def_td_mask = trans["points_def"].to_numpy() >= 6.0
@@ -659,6 +755,9 @@ def build_tables(seasons: tuple[int, ...], condition_on_team: bool = False) -> d
         "nn_trees_cond": nn_trees_cond,
         "nn_cache": {},
         "nn_cache_cond": {},
+        "fourth_down_clf": fourth_down_clf,
+        "nn_trees_4th": nn_trees_4th,
+        "nn_cache_4th": {},
         "opening_pool": opening_pool,
         "pat_bonus_pool": pat_bonus_pool,
         "post_score_pool": post_score_pool,
@@ -788,6 +887,17 @@ def run_one_game(
             idx = pick_index_nn(
                 rng, tables, down, phase, distance, yardline, score_diff, time_feat, off_to, def_to, min_cell_n
             )
+            down_key = down if down in (1, 2, 3, 4) else 4
+            fourth_clf = tables.get("fourth_down_clf")
+            if down_key == 4 and phase in LATE_PHASES and fourth_clf is not None:
+                label = int(
+                    fourth_clf.predict(fourth_down_clf_features(score_diff, time_feat, distance, yardline))[0]
+                )
+                alt_idx = pick_index_nn_fourth(
+                    rng, tables, phase, label, distance, yardline, score_diff, time_feat, off_to, def_to, min_cell_n
+                )
+                if alt_idx is not None:
+                    idx = alt_idx
 
         drawn = {
             "points_off": arrays["points_off"][idx],

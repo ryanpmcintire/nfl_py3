@@ -2092,3 +2092,82 @@ measured): a non-linear (small tree) decision layer with an explicit kick
 distance feature (`fp_raw + 17`) instead of a shared linear boundary across
 all field-position buckets, since Attempt B's single linear decision surface
 could not fit the 40-49 bucket and the other buckets simultaneously.
+
+## SIM-08 unit 4 (non-linear phase-gated 4th-down layer, measured, 2026-09-26, subagent)
+
+Rebuilt unit 3 Attempt B with two predeclared changes: (1) replaced the
+multinomial logistic classifier with `HistGradientBoostingClassifier`
+(`max_depth=4, max_iter=150`), features `[sc_raw, time_raw, dist_raw,
+fp_raw+17]` (score differential, seconds left, yards to go, explicit kick
+distance), fit once on TRAIN_SEASONS (2009-2014) `down_i==4` rows restricted
+to run/pass/field_goal/punt (n=23,047; label = fg if field_goal, punt if
+punt, else go); (2) gated the redraw to fire only when `phase in
+LATE_PHASES` (`(1, 3, 4)`: Q2 end-of-half, Q4<=300s, OT), leaving every
+other 4th down (and every non-4th-down play) on the unmodified neighbor
+draw, instead of Attempt B's every-phase application.
+
+Held-out-by-season check (`tests/scratch/sim08_unit4_cv.py`, gitignored),
+required before running the sim: leave-one-season-out across the six
+TRAIN_SEASONS folds gave accuracy .8971/.8974/.9126/.8978/.9032/.9083
+(n=3750-3926/fold), mean .9027; a full-fit-and-score-on-itself check gave
+.919 in-sample (gap ~1.6pp -- not overfit); majority-class (punt) baseline
+.6416. Classifier well above baseline and stable across folds.
+
+Code (`scripts/sim04_engine.py`): `fourth_down_label`,
+`fit_fourth_down_policy`, `fourth_down_clf_features`,
+`build_fourth_down_group_index` (KDTree pools keyed by `(phase, label)` for
+`phase in LATE_PHASES` only, restricted to `down_i==4` rows of that label,
+reusing `phase_pool_mask` for OT unioning), `pick_index_nn_fourth` (lines
+312-390). `build_tables` (line 708) fits/attaches `fourth_down_clf` and
+`nn_trees_4th` only when `seasons == TRAIN_SEASONS and not
+condition_on_team` -- the single call site (`main()`) satisfies this, so
+the team-conditioned (SIM-05) and any non-training-season path are
+untouched. `run_one_game`'s unconditioned branch (line 890) redraws `idx`
+via `pick_index_nn_fourth` only when `down_key == 4 and phase in
+LATE_PHASES`, falling back to the original draw if that `(phase, label)`
+pool is empty.
+
+Diag (`tests/scratch/sim08_unit2_diag.py`, single rerun, gitignored,
+unchanged): 4th-down FG rate, trail_1_3 <30/30-39/40-49 .606/.629/.637 (unit
+1/2 baseline) -> .959/1.000/.893 (actual 1.00/.933/.96); tied
+<30/30-39/40-49 .908/.935/.880 -> .983/1.000/.951 (actual
+1.00/1.00/1.00). Every one of the 6 cells moved toward actual and none
+moved away, including the 40-49 bucket that unit 3 Attempt B halved in both
+score states (trail .637->.443, tied .901->.530) -- gating to late phases
+only removed whatever cross-phase interference broke that bucket. True-
+margin-3 games' sim last-scoring-play FG share: 44.1% (baseline) -> 49.5%
+(unit 3B) -> 52.9% (unit 4), actual 64.8% -- monotonic improvement, gap
+still open. Red-zone TD:FG split, last 5:00: sim 56.6% TD vs actual 65.2%
+FG-favoring split unchanged in direction (not the target of this unit).
+
+Full-game validation, `python scripts/sim04_engine.py` (default
+`--n-games-per-season 3334`, 2015-2017,
+`artifacts/sim04_engine/20260926T132734Z/report.json`): key-number hits
+2/5 -> 4/5 (7, 10, 14, 17 now inside the actual bootstrap CI; only 3
+remains outside), discrete log-loss delta vs naive +0.0044 -> +0.00802
+(task bar +0.0094, passes), mass@3 sim .1017 (actual .1523, still short),
+mass@7 sim .0809 (actual .0911), SD ratio 1.1007 (baseline 1.089, unit 3B
+1.0858).
+
+| metric | baseline (unit 1/2) | unit 3 Attempt B | unit 4 | actual |
+|---|---|---|---|---|
+| key-number hits /5 | 2 | 3 | 4 | -- |
+| log-loss delta vs naive | +0.0044 | +0.01156 | +0.00802 | -- |
+| mass@3 | .0978 | .09778 | .1017 | .1523 |
+| SD ratio | 1.089 | 1.0858 | 1.1007 | 1.0 |
+| FG rate trail_1_3 <30/30-39/40-49 | .606/.629/.637 | 1.00/.873/.443 | .959/1.00/.893 | 1.00/.933/.96 |
+| FG rate tied <30/30-39/40-49 | .908/.935/.880 | 1.00/.913/.530 | .983/1.00/.951 | 1.00/1.00/1.00 |
+| true-margin-3 last-play FG share | 44.1% | 49.5% | 52.9% | 64.8% |
+
+Verdict: both predeclared bars met -- all six makeable-range FG-rate cells
+moved toward actual with none moving away, and the full-game log-loss delta
+(+0.00802) is under the +0.0094 keep bar. KEPT: unlike units 2-3, this
+change is not reverted; `scripts/sim04_engine.py` now carries the
+phase-gated non-linear 4th-down layer (uncommitted). Mechanism check only,
+no registry write (not a pick decision); no commits, no dashboard or
+publish work. The mass@3 gap (.1017 vs .1523) and the true-margin-3
+FG-share gap (52.9% vs 64.8%) remain open, smaller than before but not
+closed -- `unresolved_below_power`, not refuted. Next-named candidate: the
+red-zone TD:FG split and the remaining mass@3 shortfall now look like the
+dominant residual gap once the 4th-down decision layer is no longer the
+largest source of error.
