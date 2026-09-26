@@ -2252,3 +2252,27 @@ Predeclared change: extend the fitted 4th-down layer to phase 2 (Q4 with
 1.345, end-of-Q3 SD 13.69 to 13.87: every metric moved away from actual, so
 reverted. Committed engine unchanged (4/5, +0.0080, mass at 3 .102). Leads:
 the broad TD-share excess (drawn goal-crossing outcomes) and Q4 variance.
+
+## SIM-08 goal-line borrowing (2026-09-26, engine copies, validation 2015-2017)
+
+Near the goal line the neighbour draw imports open-field yardage: at the 5,
+17-22% of drawn continuing-drive plays would cross the goal line although none
+reached it in its own game (real: no 20+ yard gain inside the 20 without a
+score). Cause: `SCALE_FP = 5.0` in `feature_matrix` weights 5 yards of field
+position like 5 yards to go, so down, distance and score outvote field
+position. At `SCALE_FP = 1.0` borrowed crossings at the 5 fall to 3-7% and
+mean field-position distance to the query from 4.9 to 1.9 yards.
+
+Full validation, `SCALE_FP = 1.0` (`artifacts/sim04_engine/20260926T154840Z`):
+log loss -0.0028 vs naive (first time below naive; committed engine +0.0080),
+SD ratio 1.081 (1.101), TD share of TD-or-FG drives .593 (.607), mass at 3
+.0996, but key-number hits 3/5: 14 at .0433 falls below its CI (.0456-.056).
+Predeclared gate required 4/5, so it is not ported. One further look at 2.5,
+gate declared before running: >=4/5, log loss below +0.0080, SD ratio <=1.101.
+
+Result at `SCALE_FP = 2.5` (`artifacts/sim04_engine/20260926T155839Z`): 4/5 key
+numbers (3 still short at .0956; 14 at .0499 inside), log loss +0.0024 vs naive
+(committed engine +0.0080), SD ratio 1.1008. Gate met; ported to
+`scripts/sim04_engine.py`. Mass at 3 moved slightly away (.102 to .096). The
+running unit 7 re-grade loaded the previous engine, so this change needs its
+own LOSO look.
