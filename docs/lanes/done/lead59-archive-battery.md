@@ -10,6 +10,10 @@ run clean on the fixed builders and the numbers are recorded through
 
 ## State
 
+Closed 2026-09-26: both type-trait cells recorded and committed (93ba72d);
+ROADMAP LEAD-59 already reflects the finding. Nothing further to run (the
+`docs/officials_archive_battery.md` tail note is optional hygiene, not blocking).
+
 Src fix done, uncommitted (opencode lane D, `big-pickle`, verified by the
 coordinator 20:15 ET): `src/nfl_ats/officials_flag_features.py` (crew
 traits from crew rows, penalty left-join with NaN, rookie floor from the

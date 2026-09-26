@@ -15,6 +15,11 @@ league interactions, as an alternative to CFB-only training.
 
 ## State
 
+Closed 2026-09-26: Unit 5 recorded; the pooling mechanism is a resolved
+wrong sign on line movement. The CFB-only term stays unresolved_below_power;
+reopening needs a new mechanism or more NFL seasons (time/data-gated, not a
+pending action).
+
 Units 1-5 complete, run once each, all real out-of-sample LOSO fits. No cell
 in this family supports adding a CFB-transfer or pooled-transfer term to
 `src/`. Units 1-4 established the CFB-only-trained term stays

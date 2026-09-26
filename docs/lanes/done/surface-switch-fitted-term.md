@@ -40,6 +40,11 @@ pick-probability logistic (`model_logit`, `composition_flag_sum`,
   predeclared).
 
 ## State
+
+Closed 2026-09-26: six corrected cells recorded unresolved_below_power; not
+served. Revisiting needs more seasons of served four-term data (time-gated),
+not a pending action.
+
 Script `scripts/surface_switch_fitted_term.py` ran once for real:
 `artifacts/surface_switch_fitted_term/20260925T194502Z/summary.json`
 (ruff format + ruff check both pass, 11 looks logged).

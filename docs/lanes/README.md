@@ -20,42 +20,43 @@ modified lane when the prompt just says to continue.
 
 ## Active
 
-- [surface-switch-fitted-term](surface-switch-fitted-term.md) - 2026-09-25: grass-to-turf visitor as a fifth fitted term; unresolved both windows (P+ 0.80 extended, 0.04 served era); recorded, not served.
+- [backlog-batch-2026-09-26](backlog-batch-2026-09-26.md) - 2026-09-26: 16 finished research lanes closed to done/; see State for what each closed on.
 - [sim08-simulator-rebuild](sim08-simulator-rebuild.md) - 2026-09-26: SIM-04 was graded while failing its own key-number gate; rebuild endgame, undamp conditioning, anchor on the opener, re-grade.
-- [backlog-batch-2026-09-25](backlog-batch-2026-09-25.md) - 2026-09-25: standing backlog lane; batch 1 = queued registry records + one UI-20 improvement.
-- [inactives-capture-empty](inactives-capture-empty.md) - 2026-09-24: RotoWire fallback now parses (150 rows on an archived page); check the first live T-90 manifest tonight (ATL at GB) and Sunday.
 - [lead53-sunday-renomination](lead53-sunday-renomination.md) - 2026-09-24: ranks on the served four-term probability; after Sun 10:00 ET grep BEST-PICK-LEDGER in data/scheduler_log.txt for the Week 3 pairing.
 - [lead64-friday-designations](lead64-friday-designations.md) - 2026-09-24: headline designations lead the official file but only n=3 checkable; not wired; rerun the join after more weeks now that inactives capture works.
 - [pol10-prospective-2026](pol10-prospective-2026.md) - 2026-09-24: prospective scorecard (card 24-8, Best Pick 1-1, n=32); rerun scripts/prospective_scorecard_2026.py after each graded week.
-- [mod18-spread-regime](mod18-spread-regime.md) - 2026-09-24: MOD-18 Unit 1 measured; served large-spread deficit shrinks and does not replicate on 2011-2025; fitted spread-size candidate unresolved_below_power both windows (P+ 0.34, 0.26); two record commands queued for the root.
-- [market-move-decomposition](market-move-decomposition.md) - 2026-09-24: all arms recorded (Unit 3 all-books active-window arm unresolved, P+ 0.22); only an optional train/serve window reconciliation look remains.
 - [positive-control-power](positive-control-power.md) - 2026-09-23: minimum detectable effect harness; decides which unresolved cells are bounded by a control.
 - [free-odds-sources](free-odds-sources.md) - 2026-09-24: Books now shows posted lines (one number or a low-to-high range); no-publication rule removed; mid-week captures back on; direct Bovada capture fixed (v2 endpoint).
-- [opener-error-transfer](opener-error-transfer.md) - XLG-09, 2026-09-25: unit 5 pooled two-league fit recorded; pooling is a resolved wrong sign on line movement (closed); the CFB-only term stays unresolved.
-- [opener-population-backfill](opener-population-backfill.md) - 2026-09-23: 2011-2025 fit population built (3,734 games, +2,231); discrete rebuild of 2011-2019 in progress.
 - [news-trigger-refresh](news-trigger-refresh.md) - MKT-08 dispatch implemented and verified; prospective comparison awaits new events.
 - [gh-window-incident](gh-window-incident.md) - prior runaway CLI windows remain a separate investigation; no gh commands used for this deployment.
 
 - [confidence-best-pick-unification](confidence-best-pick-unification.md) - shared calibrated selector published in `5fb88a2`; confidence reliability and within-week ranking research remains open
 
 
-- [pooled-signal-model](pooled-signal-model.md) — MOD-20, units 1-6 recorded; unit 6 (reddit attention term) -0.07 pts [-0.34,+0.28] P+ 0.27 unresolved, served four-term base still wins after 6 fits
 - [pool-rank-card](pool-rank-card.md) — POOL-01, unit 1 measured 2026-09-16 (unresolved); unit 2 only with a fitted field
-- [every-metric-every-experiment](every-metric-every-experiment.md) — ENG-46 implementation done 2026-09-16; backfilled-look accounting remains open (runner emits four metrics, backfill recorded, margin cells corrected same day, pool + findings read the margin family).
-- [lane-replay-dream-rsi](lane-replay-dream-rsi.md) — ENG-45, units 1-2 done 2026-09-16 (both unresolved); unit 3 not recommended
-- [conditional-signal-atlas](conditional-signal-atlas.md) - MOD-19: next unit fills the approved mockup's signal rail with already-measured split families from the atlas registry; no unmeasured families.
-- [lead65-protection-window-split](lead65-protection-window-split.md) — decided 2026-09-23: served flag sum unchanged; week-gated variant stays a prospective challenger.
-- [lead59-archive-battery](lead59-archive-battery.md) — LEAD-59 src fix and battery re-run done, 23 cells recorded; type-trait binning measured 2026-09-23 (2 cells, both unresolved_below_power, archive unreachable pre-2015), record commands queued for the root
 - [token-diet](token-diet.md) — session-startup token cost cut about 80%; remaining: trim the three 15 KB+ open ROADMAP rows (owner text) and decide whether `.claude/` hooks should be tracked
-- [total-conditioned-lattice](total-conditioned-lattice.md) — total-banded key-number lattice measured 2026-09-23 vs served discrete read, mixed sign across metrics/seasons, unresolved_below_power; two `weak-signals record` commands queued for the root
-- [line-move-regrade-legacy](line-move-regrade-legacy.md) — 2026-09-23: batch 1 (8 legacy terms) measured, roof_state_predicted_open best-of-8 fails OOS replication on 2011-2019; batch 2 partial, 7/8 recorded (rookie_priors, low_total_div_home_dog resolved wrong-sign); division_revenge_tilt builder failing, batch-1/2 record commands queued for the root.
-- [prospective-leads-2026-09-23](prospective-leads-2026-09-23.md) — 2026-09-23: total_conditioned_key_number_lattice_v1 registered and live-dry-run verified as a prospective challenger; all-books median market move dropped (does not beat the served move, P+ 0.22).
-- [clv-metric-everywhere](clv-metric-everywhere.md) — ENG-47, 2026-09-23: line-move-toward-pick yardstick now emitted everywhere opener-evaluation runs; paired eval (5 cells) all unresolved_below_power.
-- [scheduler-once-timeout](scheduler-once-timeout.md) — fixed and committed `786a569`: `--once` defers to a live daemon via a file lock, scheduler suites green.
 - [sunday-market-probability](sunday-market-probability.md) — activated 2026-09-20 as `leader_median_through_sunday_prekick_v1`; six unresolved metric/protocol cells recorded under `sunday_market_probability_fixed_v1`.
 
 ## Done
 
+- [backlog-batch-2026-09-25](done/backlog-batch-2026-09-25.md) - 2026-09-25: standing backlog lane; batch 1 = queued registry records + one UI-20 improvement.
+- [inactives-capture-empty](done/inactives-capture-empty.md) - 2026-09-24: RotoWire fallback now parses (150 rows on an archived page); closed 2026-09-26: live Thursday T-90 capture returned 11 real rows.
+- [lead59-archive-battery](done/lead59-archive-battery.md) - 2026-09-26: referee type-trait bins recorded and committed (93ba72d); ROADMAP LEAD-59 reflects the finding.
+- [line-move-regrade-legacy](done/line-move-regrade-legacy.md) - 2026-09-26: batches 2-4 all recorded; division-revenge and special-teams-return resolved wrong-sign, rest unresolved_below_power.
+- [market-move-decomposition](done/market-move-decomposition.md) - 2026-09-26: all 6 market_move_decomposition_v1 cells recorded, all unresolved_below_power.
+- [mod18-spread-regime](done/mod18-spread-regime.md) - 2026-09-26: served and extended-window spread-regime cells recorded unresolved_below_power; served card unchanged.
+- [total-conditioned-lattice](done/total-conditioned-lattice.md) - 2026-09-26: total-banded key-number lattice log-loss and accuracy cells recorded unresolved_below_power.
+- [opener-population-backfill](done/opener-population-backfill.md) - 2026-09-26: 2011-2025 discrete-read population built as a challenger/sanity artifact; no record commands were ever drafted (looks only).
+- [pooled-signal-model](done/pooled-signal-model.md) - 2026-09-26: MOD-20 units 1-6 all recorded; served four-term base beats every structural variant tried.
+- [conditional-signal-atlas](done/conditional-signal-atlas.md) - 2026-09-26: MOD-19 atlas committed, ROADMAP updated, published to the live site in a prior session.
+- [scheduler-once-timeout](done/scheduler-once-timeout.md) - 2026-09-26: fixed and committed `786a569`; scheduler suites green.
+- [lane-replay-dream-rsi](done/lane-replay-dream-rsi.md) - 2026-09-26: ENG-45 units 1-2 measured (unresolved); unit 3 not recommended.
+- [prospective-leads-2026-09-23](done/prospective-leads-2026-09-23.md) - 2026-09-26: total-conditioned-lattice challenger fully wired and verified; nothing blocks it.
+- [opener-error-transfer](done/opener-error-transfer.md) - 2026-09-26: XLG-09 unit 5 recorded; pooling mechanism refuted on line movement, CFB-only term stays unresolved.
+- [surface-switch-fitted-term](done/surface-switch-fitted-term.md) - 2026-09-26: six ENV-02 cells recorded unresolved_below_power; not served.
+- [lead65-protection-window-split](done/lead65-protection-window-split.md) - 2026-09-26: served flag sum kept unchanged; week-gated variant stays a tracked prospective challenger.
+- [clv-metric-everywhere](done/clv-metric-everywhere.md) - 2026-09-26: ENG-47 line-move-toward-pick yardstick live everywhere; paired eval (5 cells) unresolved_below_power.
+- [every-metric-every-experiment](done/every-metric-every-experiment.md) - 2026-09-26: ENG-46 implementation and backfill complete; backfilled-look accounting policy question carried to backlog-batch-2026-09-26.
 - [week3-research-recorders](done/week3-research-recorders.md) - 2026-09-25: all Week 3 challengers recorded (59 recorded, 4 skipped, 0 missing); the tiebreaker shade skips by design.
 - [card-freshness-and-log-labels](done/card-freshness-and-log-labels.md) - 2026-09-24: refresh passes rewrite the card's freshness line; no follow-rule log label.
 - [four-term-nonlinear-check](done/four-term-nonlinear-check.md) - 2026-09-24: trees on the four served terms resolved worse (-1.26 pts, wrong sign); interactions unresolved.

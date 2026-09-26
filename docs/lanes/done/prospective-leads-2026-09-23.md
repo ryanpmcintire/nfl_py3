@@ -10,6 +10,11 @@ point-in-time live input path.
 
 ## State
 
+Closed 2026-09-26: challenger fully wired and verified per this lane's own
+Next item 1 ("nothing blocks it... close it per the session's own
+judgment"). The weekly registry-flip confirmation happens automatically
+inside the standing `publish-predictions` job, not owned by this lane.
+
 **Registration mechanism (read/measured):** `artifacts/prospective/challengers.json`
 (`nfl_ats.prospective_scoring.challenger_registry_path`,
 `src/nfl_ats/prospective_scoring.py:290-358`) lists challengers with

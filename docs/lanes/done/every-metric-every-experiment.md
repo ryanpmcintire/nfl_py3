@@ -7,6 +7,13 @@ recorded, backfilled from preserved predictions. Done when the runner emits
 all four by default and the backfill cells are in the registry.
 
 ## State
+
+Closed 2026-09-26: ENG-46 implementation and backfill complete. Whether
+backfilled cells count as new looks remains an open accounting-policy
+question (proposal: same family, flagged backfilled, not counted) — a
+decision, not a pending command; carried to
+`docs/lanes/backlog-batch-2026-09-26.md`.
+
 - 2026-09-16: ROADMAP row ENG-46 written. Correction recorded the same day:
   the served model is a ridge regression of the margin relative to the
   spread (`margin.py` `_target_values`, target market_residual); an earlier

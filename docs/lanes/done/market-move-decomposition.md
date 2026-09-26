@@ -172,6 +172,9 @@ nfl-ats weak-signals record \
 ## State (mid-fix — script edited but NOT rerun; do not trust the 20260923T212214Z
 numbers below, they are the pre-fix run kept only for reference)
 
+Closed 2026-09-26: reconciliation confirmed all 6 `market_move_decomposition_v1`
+cells recorded, including the Unit 3 all-books arm. Nothing further to run.
+
 **Root cause of the 4.5-point parity gap, found this session (measured, read
 code — not yet reverified by a rerun):**
 

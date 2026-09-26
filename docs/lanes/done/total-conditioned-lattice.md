@@ -10,6 +10,10 @@ served read on the opener grade; classify per AGENTS.md
 `weak-signals`/"An interval crossing zero is not grounds for rejection".
 
 ## State
+
+Closed 2026-09-26: both cells (log_loss, accuracy) recorded
+unresolved_below_power; root-only record commands already executed.
+
 Read (confirmed): the served read (`band_read`,
 `mass_preserving_lattice.py:112-149`) selects prior games only by
 `abs(pool_line - anchor) <= band` (spread-line band, expanding until

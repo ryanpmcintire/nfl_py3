@@ -4,6 +4,11 @@
 Make the signed opener-to-close line move toward the pick (points) a standard, low-variance yardstick in every backtest and opener evaluation, and use it to test whether the served card adds anything beyond following the line.
 
 ## State
+
+Closed 2026-09-26: line-move-toward-pick yardstick emitted everywhere
+opener-evaluation runs; paired eval complete (5 cells, all
+unresolved_below_power). Nothing further to run.
+
 - Unit 1 DONE, committed `df535bd`: `backtest.summarize_predictions` and `clv.opener_pick_evaluation` / `opener_evaluation_metrics` / `_metric_draws` emit `line_move_toward_pick_{mean,games,pushes,no_close}`; opener-eval cache version `3-line-move-toward-pick`. Run with `--features data/processed/game_features_weak_stack.parquet` (default features file is stale for the active model).
 - Measured unpaired, `artifacts/opener_evaluation/20260923T172849Z/`, 1,537 games: raw-model pick +0.131 [0.089, 0.178]; discrete probability-rule pick +0.094; always-favourite +0.103; always-home +0.099.
 - Unit 2 DONE 2026-09-23 (`scripts/line_move_yardstick_paired_eval.py`, `artifacts/line_move_yardstick/20260923T180055Z/`, family `line_move_yardstick_v1`, 5 cells, all unresolved_below_power), paired season-block:

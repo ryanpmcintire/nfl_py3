@@ -39,6 +39,10 @@ population. Decision implication: would it change any Week 3 served pick.
   calibration-table reads logged by the script's own `record_look`.
 
 ## State
+
+Closed 2026-09-26: both cells (served 2020-2025, extended 2011-2025) recorded
+unresolved_below_power; measurement complete, no owner decision required.
+
 Unit 1 DONE. `scripts/mod18_spread_regime.py` (new, ruff format+check clean),
 run once for real. Artifact:
 `artifacts/mod18_spread_regime/20260924T183858Z/summary.json` (+

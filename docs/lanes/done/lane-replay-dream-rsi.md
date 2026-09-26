@@ -9,6 +9,10 @@ a replay-chosen allocation policy beats the hand-set loop on resolutions per
 cell out of time, or the row closes on an admissible ground.
 
 ## State
+
+Closed 2026-09-26: units 1-2 measured, unit 3 not recommended on this
+evidence. Owner questions in Open are deferred, not blocking.
+
 - 2026-09-16: ROADMAP row ENG-45 (Phase 11) carries the three-unit design.
 - Unit 1 DONE. Script `scripts/lane_replay_feasibility.py` (read-only over
   the registries); artifact `artifacts/lane_replay/20260916T144228Z/`

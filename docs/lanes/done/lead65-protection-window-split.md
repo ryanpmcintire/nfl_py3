@@ -13,6 +13,11 @@ LEAD-65 states what the read implies for the served rule.
 
 ## State
 
+Closed 2026-09-26: served flag sum decided unchanged (2026-09-23); the
+week-gated variant stays a live prospective challenger tracked by the
+standing `publish-predictions` job (time-gated resolution), not a pending
+action in this lane.
+
 - Measured 2026-09-13 (subagent, then re-run by the coordinator with
   `uv run --no-sync python tests/scratch/lanes/pbp08_early_season_split_20260913.py`;
   report `tests/scratch/lanes/pbp08_early_season_split_20260913.md`).

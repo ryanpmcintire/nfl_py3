@@ -7,6 +7,11 @@ Re-grade Tuesday-knowable legacy registry families on the line-move yardstick
 ## State (2026-09-23, session 6 - batch 4 added and run, ruff clean, record
 commands drafted, NOT run)
 
+Closed 2026-09-26: reconciliation confirmed all drafted cells (batches 2-4)
+are recorded in `registry/weak_signals.json`; division-revenge and
+special-teams-return resolved wrong-sign, the rest unresolved_below_power.
+Nothing further to run.
+
 **Session 6 summary**: added `TERM_DECLARATIONS_BATCH4` (`--batch 4`) for
 the 2 families batch 3 flagged but skipped -- `special_teams_return_top_quartile`
 and `hc_year_one_fade`. `ruff check` (no --fix) passes clean. Ran `--batch 4`

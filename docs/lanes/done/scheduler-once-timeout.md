@@ -7,6 +7,10 @@ refit it duplicates. Done when --once defers to a live daemon, one process
 can never run a job twice, and the scheduler suites stay green.
 
 ## State
+
+Closed 2026-09-26: fixed and committed `786a569`; scheduler suites green
+(confirmed by the README summary and commit history). Nothing further to run.
+
 - 2026-09-16: diagnosed (measured). Daemon ran `lineups_wed` 12:00:37; two
   `--once` calls at 12:04:54 and 12:26:00 re-ran the same 12:00 window
   in-process and were killed by the caller at 180s/300s; daemon's own run

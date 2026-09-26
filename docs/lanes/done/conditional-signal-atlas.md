@@ -1,6 +1,10 @@
 # Conditional signal atlas (MOD-19)
 
 ## State — 2026-09-24 (visual-check unit DONE, uncommitted; found+fixed a real mobile CSS bug)
+
+Closed 2026-09-26: ROADMAP MOD-19 already updated, all six files already
+committed, and publish-board/push already happened in a prior session
+(confirmed via git log and the live ROADMAP entry). Nothing further to run.
 Resumed from "rail shows 3 signals correctly, two-column-vs-stacked at wide desktop and mobile
 width both unconfirmed" (prior unit hit its tool-call cap before checking). This unit:
 - Cleaned up first: killed the two leftover `python -m http.server 8934` processes (PIDs 25840

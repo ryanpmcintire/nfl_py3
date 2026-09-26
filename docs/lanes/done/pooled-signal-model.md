@@ -4,6 +4,12 @@
 MOD-20: one hierarchical model with every situational family as a shrunk term, judged as a whole on line movement toward the pick and calibration at the opener; no cell resolved alone.
 
 ## State
+
+Closed 2026-09-26: units 1-6 all recorded (including the unit 6
+vs-model-only companion cell filled by the 2026-09-25 reconciliation pass);
+the served four-term base beats every variant tried. Whether to run a unit 7
+is a future owner call, not a required next step.
+
 - 2026-09-16: queued by owner; ROADMAP row written. Population/pipeline: opener
   `per_game.parquet` via `pick_probability_fit.build_fit_population`, LOSO
   2020-2025, 1,503 graded games; margin base (`margin.py`/`features.py`) is a

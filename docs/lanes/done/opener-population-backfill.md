@@ -8,6 +8,11 @@ whether pre-2020 NFL opener lines exist locally with enough provenance to
 grade at the opener, and what restricts opener-evaluation to 2020+.
 
 ## State
+
+Closed 2026-09-26: reconciliation confirmed no drafted record commands remain
+outstanding (every measured look was explicitly "not recorded, this is a
+look"); the population artifacts stand as challenger/sanity input only.
+
 Unit 1 DONE (read-only; no new artifact written; nothing served changed).
 Unit 3 DONE (discrete-read rebuild; see Next for detail); this is now the
 current-best extended population artifact:
