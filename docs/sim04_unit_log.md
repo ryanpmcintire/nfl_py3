@@ -2191,3 +2191,48 @@ pooled log loss from 3.947 to 3.932. The SIM-05 what-if refuted it:
 | h 0.5, layer (`20260926T141946Z`) | +1.39 (0.19) | -0.73 (0.27) |
 
 h 0.10 reverted to 0.5; the layer is kept. Damping stays open.
+
+## SIM-08 unit 6 (2026-09-26)
+
+Measured how much of the target rating gap reaches the kernel draw itself, on
+2009-2014 tables, `pick_index_nn_conditioned` unchanged (`TEAM_KERNEL_H_SCALE`
+stays 0.5): fixed a neutral defense, swept the offense target across deciles
+of the 2009-2014 off-EPA distribution, drew 1500 plays per decile from four
+canonical game states, and compared the drawn plays' own (off_row - def_row)
+label to the target. Transmission regression: `drawn_net = 0.7666 *
+target_net - 0.0029` (`tests/scratch/sim08_unit6_transmission.py`) — the
+kernel itself already carries about 77% of the rating gap into the selected
+play's label; a raw population regression of yards_gained on net rating gave
+the wrong sign (-0.28, confounded by down/distance/score correlating with
+team strength), so a fixed-effects regression of yards_gained on net rating
+within (down, phase, dist bucket, fp bucket, score bucket) cells was used
+instead: slope +0.6425 yards per unit EPA/play (n=229,015 rows with cell
+size >= 20).
+
+Change: after the unchanged kernel draw picks `idx`, add
+`yard_shift = TEAM_RATING_YARD_GAIN * ((off_sim - def_sim) - (off_row[idx] -
+def_row[idx]))` to that play's `yards_gained` before it drives field position
+and down progression (`scripts/sim04_engine.py:34` constant,
+`scripts/sim04_engine.py:902-909` the shift, applied only inside `if
+conditioned:` so the unconditioned path adds 0.0). `TEAM_RATING_YARD_GAIN =
+0.6425` is the fixed-effects slope above, chosen on 2009-2014 tables; no new
+bandwidth. Graded with `tests/scratch/sim08_unit6_calibrate.py` (TRAIN
+tables, QB drop from 2015-2017 only, 1500 games) before the real run: home
+edge +2.27 (SE 0.36), backup-QB shift -2.14 (SE 0.52), both correctly signed
+and inside range.
+
+Acceptance, both scripts run once in the foreground:
+
+| check | before (unit 5, h 0.5 + layer) | after (unit 6) | bound |
+|---|---|---|---|
+| home edge at equal ratings | +1.39 (0.19) | +1.8938 (0.1935) | [1.8, 3.0] |
+| backup-QB shift | -0.73 (0.27) | -1.3694 (0.2753) | more negative than -0.73 |
+| unconditioned validation | 4/5, +0.008016 | 4/5, +0.008016485953585839 | unchanged |
+
+`python scripts/sim05_whatif.py --n-games 5000`:
+`artifacts/sim05_whatif/20260926T144104Z/report.json`. `python
+scripts/sim04_engine.py`: GO, key_number_hits_of_5=4,
+delta_sim_minus_naive=+0.008016485953585839, byte-identical to unit 5 since
+`conditioned` is False on that path. Kept. Damping is closed for this engine
+version: the kernel draw's own transmission (~77%) plus the fixed-effects
+yard shift now clear both bounds without touching the bandwidth.

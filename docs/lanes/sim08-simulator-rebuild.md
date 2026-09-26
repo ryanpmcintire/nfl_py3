@@ -24,8 +24,18 @@ on cover-vs-miss and push log loss, recorded with `weak-signals record`.
   (+1.64, SE 0.26; home edge +0.23), `artifacts/sim05_whatif/20260926T141045Z`.
   At 0.5 with the layer (`20260926T141946Z`, 5000 games): home edge +1.39
   (SE 0.19), QB shift -0.73 (SE 0.27) vs -1.24 (SE 0.14) without the layer.
-- Validation 2015-2017 has had about 12 engine looks; LOSO 2020-2025 is the
-  untouched test. Detail: `docs/sim04_unit_log.md` "SIM-08 unit 1" to "unit 5".
+- Unit 6: damping closed without touching the bandwidth. On 2009-2014 tables
+  the kernel draw itself already carries ~77% of the target rating gap into
+  the drawn play's label (`tests/scratch/sim08_unit6_transmission.py`). Added
+  a fixed-effects-slope yard shift (`TEAM_RATING_YARD_GAIN = 0.6425`,
+  `scripts/sim04_engine.py:34,902-909`) on top of the unchanged kernel draw.
+  5000-game acceptance run (`artifacts/sim05_whatif/20260926T144104Z`): home
+  edge +1.8938 (SE 0.1935, in [1.8, 3.0]), backup-QB shift -1.3694
+  (SE 0.2753, more negative than -0.73). Unconditioned validation unchanged:
+  4/5, +0.008016485953585839, GO. Detail: `docs/sim04_unit_log.md` "SIM-08
+  unit 6".
+- Validation 2015-2017 has had about 13 engine looks; LOSO 2020-2025 is the
+  untouched test. Detail: `docs/sim04_unit_log.md` "SIM-08 unit 1" to "unit 6".
 
 ## Tried
 
@@ -38,9 +48,9 @@ on cover-vs-miss and push log loss, recorded with `weak-signals record`.
 
 ## Next
 
-0. Damping is still open (QB shift about 25-40% of the rating gap). Test a
-   bandwidth-free fix, e.g. shift drawn play EPA outcomes by the rating gap,
-   judged on the SIM-05 QB sign and home edge (about +2.4), not a slope fit.
+0. Damping closed (unit 6): fixed-effects yard shift on top of the unchanged
+   kernel draw. 5000-game whatif: home edge +1.89 (in [1.8,3.0]), QB shift
+   -1.37 (more negative than -0.73). Not yet re-graded on LOSO 2020-2025.
 1. Remaining shape gaps: mass at 3 (.102 vs .152) and SD ratio 1.10 (margins
    too dispersed; the narrower kernel may widen them, recheck).
 2. Anchor on the opening spread and total; re-grade LOSO 2020-2025 with 1000+

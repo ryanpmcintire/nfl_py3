@@ -31,6 +31,7 @@ K_NEIGHBORS = 40
 K_STATE = 200
 TEAM_KERNEL_LAMBDA = 1_000_000.0
 TEAM_KERNEL_H_SCALE = 0.5
+TEAM_RATING_YARD_GAIN = 0.6425
 SCALE_YDSTOGO = 5.0
 SCALE_FP = 5.0
 SCALE_TIME = 300.0
@@ -897,6 +898,12 @@ def run_one_game(
             if alt_idx is not None:
                 idx = alt_idx
 
+        if conditioned:
+            drawn_net = float(arrays["off_row"][idx] - arrays["def_row"][idx])
+            yard_shift = TEAM_RATING_YARD_GAIN * ((off_sim - def_sim) - drawn_net)
+        else:
+            yard_shift = 0.0
+
         drawn = {
             "points_off": arrays["points_off"][idx],
             "points_def": arrays["points_def"][idx],
@@ -905,7 +912,7 @@ def run_one_game(
             "next_down": arrays["next_down"][idx],
             "next_distance": arrays["next_distance"][idx],
             "next_yardline": arrays["next_yardline"][idx],
-            "yards_gained": arrays["yards_gained"][idx],
+            "yards_gained": arrays["yards_gained"][idx] + yard_shift,
             "dist_gained": arrays["dist_gained"][idx],
             "auto_first": bool(arrays["auto_first"][idx]),
             "repeat_down": bool(arrays["repeat_down"][idx]),

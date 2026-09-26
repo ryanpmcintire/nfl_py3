@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-26T14:29:26.861709+00:00`
+Refreshed at: `2026-09-26T14:55:50.808145+00:00`
 
 ## Start here
 
@@ -21,9 +21,14 @@ Refreshed at: `2026-09-26T14:29:26.861709+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `0014146eee9a` — SIM-08 unit 4: late fourth-down decisions bring the simulator through its gate
-- Pending change set: 3 paths
+- Baseline commit: `0324ecd035c0` — SIM-08 unit 5: fourth-down layer reaches the held-out grade; narrow kernel refuted
+- Pending change set: 8 paths
+  - ` M CURRENT_PREDICTIONS.md`
+  - ` M docs/findings.html`
+  - ` M docs/history.html`
+  - ` M docs/index.html`
   - `M  docs/lanes/sim08-simulator-rebuild.md`
+  - ` M docs/model.html`
   - `M  docs/sim04_unit_log.md`
   - `M  scripts/sim04_engine.py`
 
