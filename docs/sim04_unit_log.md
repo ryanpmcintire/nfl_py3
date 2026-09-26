@@ -2276,3 +2276,17 @@ numbers (3 still short at .0956; 14 at .0499 inside), log loss +0.0024 vs naive
 `scripts/sim04_engine.py`. Mass at 3 moved slightly away (.102 to .096). The
 running unit 7 re-grade loaded the previous engine, so this change needs its
 own LOSO look.
+
+## SIM-08 anchoring check (2026-09-26, engine before the goal-line fix)
+
+768 real 2015-2017 REG games, team-conditioned, tables 2009-2014, 200 draws
+each (`tests/scratch/sim08_condition/`). Real mass at 3 falls with spread size
+(.160/.158/.126 for |spread| 0-3/3.5-7/7.5+); the sim follows the direction at
+about 60% of the level (.099/.096/.091). Real mass at 7 rises to .106 at 7.5+;
+the sim stays flat at .084. Slope of mean total on opening total: sim 0.343
+[0.304, 0.382] vs real 0.867 [0.617, 1.142], so the sim's scoring level barely
+responds to the game environment. Neither a margin-only nor a joint
+margin-plus-total tilt moves key-number mass toward real (joint tilt matches
+the mean total exactly but leaves 3 and 7 flat or lower). The key-number
+shortfall is in the engine's generated shape, not in its centring; the tilt
+fixes location only.

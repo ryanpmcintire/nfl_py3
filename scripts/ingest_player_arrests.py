@@ -287,6 +287,26 @@ def _page_number(path: Path) -> int:
     return int(match.group(1))
 
 
+def _fetch_valid_page(
+    page_fetcher: Callable[[str, int], bytes],
+    nonce: str,
+    page: int,
+    sleeper: Callable[[float], None],
+    attempts: int = 3,
+) -> bytes:
+    for attempt in range(attempts):
+        raw = page_fetcher(nonce, page)
+        try:
+            parse_table_page(raw, expected_page=page)
+        except PlayerArrestsIngestError:
+            if attempt + 1 == attempts:
+                raise
+            sleeper(3.0 * (attempt + 1))
+            continue
+        return raw
+    raise PlayerArrestsIngestError(f"Page {page} could not be fetched")
+
+
 def ingest(
     snapshot_dir: Path,
     *,
@@ -309,8 +329,7 @@ def ingest(
     fetched_pages: list[int] = []
     skipped_pages: list[int] = []
     if not page_one_path.exists():
-        raw = page_fetcher(nonce, 1)
-        parse_table_page(raw, expected_page=1)
+        raw = _fetch_valid_page(page_fetcher, nonce, 1, sleeper)
         _write_once(page_one_path, raw)
         fetched_pages.append(1)
     else:
@@ -327,8 +346,7 @@ def ingest(
             continue
         if delay_seconds > 0:
             sleeper(delay_seconds)
-        raw = page_fetcher(nonce, page)
-        parse_table_page(raw, expected_page=page)
+        raw = _fetch_valid_page(page_fetcher, nonce, page, sleeper)
         _write_once(path, raw)
         fetched_pages.append(page)
         print(f"Fetched page {page}/{total_pages}")
