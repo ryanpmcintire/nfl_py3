@@ -39,12 +39,15 @@ on cover-vs-miss and push log loss, recorded with `weak-signals record`.
 
 ## Next
 
-1. Re-grade the current engine once, when no scheduler weekly-run is active
-   and at least 40 GB is free: `scripts/sim04_loso.py --n-reps 500 --workers 8`
-   (about 4-5 h; Monte Carlo cost 0.002). One heavy job at a time; no other
-   simulation running alongside. Add per-season checkpointing first so a kill
-   does not lose the whole run. Then append "SIM-08 LOSO re-grade" to the unit
-   log and run the drafted `weak-signals record` commands after checking them.
+1. Re-grade RUNNING since 2026-09-26 ~18:10 UTC: `scripts/sim04_loso.py
+   --n-reps 500 --workers 8`, log `tests/scratch/sim08_loso_regrade.log`.
+   Per-season margins checkpoint to
+   `artifacts/sim04_loso/checkpoints/engine-<sha12 of sim04_engine.py>_reps-500_mp-1/<season>.npz`;
+   a rerun of the same command reuses finished seasons. Do not edit
+   `scripts/sim04_engine.py` while it runs (spawned workers re-import it).
+   On finish: append "SIM-08 LOSO re-grade" to `docs/sim04_unit_log.md` from
+   the new `report.json`, then run the drafted `weak-signals record` commands
+   after checking them.
 2. Engine shape: mass at 3 (.096 vs .152), SD ratio 1.10, and the total that
    barely tracks the opening total (slope 0.34 vs 0.87); tilting does not fix
    shape (unit log "anchoring check").

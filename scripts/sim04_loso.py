@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
 from datetime import UTC, datetime
@@ -18,6 +19,7 @@ from sim04_engine import build_tables, simulate, simulate_games_multiprocess
 OPENER_PATH = REPO / "artifacts" / "opener_evaluation" / "20260925T161328Z" / "per_game.parquet"
 GAME_FEATURES_PATH = REPO / "data" / "processed" / "game_features_pbp.parquet"
 ARTIFACT_ROOT = REPO / "artifacts" / "sim04_loso"
+CHECKPOINT_ROOT = ARTIFACT_ROOT / "checkpoints"
 
 GRADED_SEASONS = (2020, 2021, 2022, 2023, 2024, 2025)
 FIRST_TRAIN_SEASON = 2009
@@ -189,45 +191,63 @@ def _append_team_cond_hists(
     tilt.append(tilt_hist(margins, float(row["predicted_margin_at_open"])))
 
 
+def engine_fingerprint() -> str:
+    engine_source = (Path(__file__).resolve().parent / "sim04_engine.py").read_bytes()
+    return hashlib.sha256(engine_source).hexdigest()[:12]
+
+
+def simulate_season_margins(
+    season: int, season_rows: pd.DataFrame, ratings: pd.DataFrame, n_reps: int, workers: int
+) -> np.ndarray:
+    train_seasons = tuple(range(FIRST_TRAIN_SEASON, season))
+    tables = build_tables(train_seasons, condition_on_team=True)
+    league_off = tables["league_off_mean"]
+    league_def = tables["league_def_mean"]
+    pairs = []
+    for _, row in season_rows.iterrows():
+        r = ratings.loc[row["game_id"]]
+        pairs.append(_team_ratings_for_row(r, league_off, league_def))
+    if workers > 1:
+        games = [{"home_ratings": home, "away_ratings": away} for home, away in pairs]
+        base_seed = RNG_SEED + season * TEAM_COND_MP_SEED_STRIDE
+        results = simulate_games_multiprocess(games, train_seasons, True, n_reps, base_seed, max_workers=workers)
+        return np.vstack([np.asarray(m, dtype=float) for m in results])
+    rng = np.random.default_rng(RNG_SEED + season)
+    out = []
+    for home, away in pairs:
+        sim = simulate(n_reps, rng, tables, home_ratings=home, away_ratings=away)
+        out.append(sim["margin"].to_numpy(dtype=float))
+    return np.vstack(out)
+
+
 def build_team_conditioned_hists(
     frame: pd.DataFrame, game_features: pd.DataFrame, n_reps: int, workers: int = 1
 ) -> tuple[list[dict[int, float]], list[dict[int, float]], list[dict[int, float]]]:
     ratings = game_features.loc[game_features["game_type"] == "REG", RATING_COLS].set_index("game_id")
+    checkpoint_dir = CHECKPOINT_ROOT / f"engine-{engine_fingerprint()}_reps-{n_reps}_mp-{int(workers > 1)}"
+    checkpoint_dir.mkdir(parents=True, exist_ok=True)
     primary: list[dict[int, float]] = []
     shift: list[dict[int, float]] = []
     tilt: list[dict[int, float]] = []
     order: list[int] = []
     for season in GRADED_SEASONS:
-        train_seasons = tuple(range(FIRST_TRAIN_SEASON, season))
         season_rows = frame.loc[frame["season"] == season]
-        if workers > 1:
-            tables = build_tables(train_seasons, condition_on_team=True)
-            league_off = tables["league_off_mean"]
-            league_def = tables["league_def_mean"]
-            rows = list(season_rows.iterrows())
-            games = []
-            for idx, row in rows:
-                r = ratings.loc[row["game_id"]]
-                home_ratings, away_ratings = _team_ratings_for_row(r, league_off, league_def)
-                games.append({"home_ratings": home_ratings, "away_ratings": away_ratings})
-            base_seed = RNG_SEED + season * TEAM_COND_MP_SEED_STRIDE
-            results = simulate_games_multiprocess(
-                games, train_seasons, True, n_reps, base_seed, max_workers=workers
-            )
-            for (idx, row), margins_raw in zip(rows, results, strict=True):
-                _append_team_cond_hists(row, margins_raw, primary, shift, tilt)
-                order.append(idx)
-        else:
-            tables = build_tables(train_seasons, condition_on_team=True)
-            rng = np.random.default_rng(RNG_SEED + season)
-            league_off = tables["league_off_mean"]
-            league_def = tables["league_def_mean"]
-            for idx, row in season_rows.iterrows():
-                r = ratings.loc[row["game_id"]]
-                home_ratings, away_ratings = _team_ratings_for_row(r, league_off, league_def)
-                sim = simulate(n_reps, rng, tables, home_ratings=home_ratings, away_ratings=away_ratings)
-                _append_team_cond_hists(row, sim["margin"].to_numpy(dtype=float), primary, shift, tilt)
-                order.append(idx)
+        path = checkpoint_dir / f"{season}.npz"
+        margins = None
+        if path.exists():
+            saved = np.load(path, allow_pickle=False)
+            if saved["game_id"].tolist() == season_rows["game_id"].tolist():
+                margins = saved["margins"]
+                print(f"season {season}: reused checkpoint {path}", file=sys.stderr, flush=True)
+        if margins is None:
+            margins = simulate_season_margins(season, season_rows, ratings, n_reps, workers)
+            tmp = path.with_suffix(".tmp.npz")
+            np.savez(tmp, game_id=season_rows["game_id"].to_numpy(dtype=str), margins=margins)
+            tmp.replace(path)
+            print(f"season {season}: simulated and checkpointed {path}", file=sys.stderr, flush=True)
+        for (idx, row), margins_raw in zip(season_rows.iterrows(), margins, strict=True):
+            _append_team_cond_hists(row, margins_raw, primary, shift, tilt)
+            order.append(idx)
     if order != list(frame.index):
         raise ValueError("team-conditioned candidate row order does not match frame order")
     return primary, shift, tilt

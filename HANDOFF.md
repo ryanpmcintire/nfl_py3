@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-26T17:35:50.106807+00:00`
+Refreshed at: `2026-09-26T18:55:53.766338+00:00`
 
 ## Start here
 
@@ -21,20 +21,27 @@ Refreshed at: `2026-09-26T17:35:50.106807+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `0b6887a1e07a` — Simulator worker count is capped by free memory
-- Pending change set: 12 paths
+- Baseline commit: `b7b76b073069` — SIM-08 lane: restore engine history to State
+- Pending change set: 19 paths
   - ` M CURRENT_PREDICTIONS.md`
+  - ` M README.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
   - `M  docs/lanes/sim08-simulator-rebuild.md`
   - ` M docs/model.html`
+  - `M  scripts/sim04_loso.py`
+  - ` M tiebreaker.json`
   - `?? registry/experiments/margin-backtest/20260926T161310Z.json`
   - `?? registry/experiments/margin-backtest/20260926T163946Z.json`
   - `?? registry/experiments/margin-backtest/20260926T165526Z.json`
+  - `?? registry/experiments/margin-backtest/20260926T173914Z.json`
   - `?? registry/experiments/margin-predict/2026-week-03-20260926T161504Z.json`
   - `?? registry/experiments/margin-predict/2026-week-03-20260926T164038Z.json`
   - `?? registry/experiments/margin-predict/2026-week-03-20260926T165620Z.json`
+  - `?? registry/experiments/margin-predict/2026-week-03-20260926T174045Z.json`
+  - `?? registry/experiments/opener-evaluation/20260926T174414Z.json`
+  - `?? registry/experiments/waterfall-feed/20260926T174956Z.json`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -45,16 +52,16 @@ trust live Git output after checkout.
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
 - Model ID: `284a38bf00c29c53`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Served-policy baseline (opener-graded probability rule, home-side push applied): **unavailable in local artifacts**
+- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20260926T174414Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card applies this after the coach policy, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,103 / 2,107 (52.35%)**
-- Linked forecast: **2026 Week 3**, created `2026-09-26T16:56:20.985006+00:00`
+- Linked forecast: **2026 Week 3**, created `2026-09-26T17:40:45.950867+00:00`
 
 The 52.35% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 3** from model `8587951e3acc6055`, published `2026-09-25T16:17:03.761209+00:00`. It is an early, mutable research preview. **Warning:** the tracked publication does not match the local active model; run `nfl-ats publish-predictions` before publishing model claims.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 3** from model `284a38bf00c29c53`, published `2026-09-26T17:52:06.927679+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 
