@@ -1831,3 +1831,46 @@ Result: +2.41 ± 0.26 on 2009-2014 tables (measured, 3000 games). Grade: 2020-20
 REG Tuesday openers, tables built from 2009..S-1 for each season S, 200
 simulations per game. Primary = raw histogram; secondary = the same shape
 re-centred on the served predicted margin. Both are recorded.
+
+## Unit LOSO grade result (measured, 2026-09-26)
+
+Artifact `artifacts/sim04_loso/20260926T034537Z` (report.json, per_game.parquet),
+2020-2025 REG Tuesday openers, 1537 games, 107 week blocks, 200 simulations
+per game, tables from 2009..S-1. Delta is candidate minus served read
+(negative means worse).
+
+| candidate | three-way log loss | CI | p(pos) | seasons adverse |
+|---|---|---|---|---|
+| raw team-conditioned | -0.0343 | [-0.0493, -0.0192] | 0.000 | 6/6 |
+| re-centred on served margin | -0.0112 | [-0.0209, -0.0021] | 0.004 | 6/6 |
+
+Where the re-centred loss comes from (measured): on the 34 pushed games its log
+loss is 3.59 vs 2.78 for the served read. On the 1503 non-push games it is
+0.7113 vs 0.7181. The simulator prices pushes too low, consistent with its
+key-number shortfall.
+
+Post-hoc cover-vs-miss split (pushes excluded, 1503 games): raw -0.0290
+[-0.0446, -0.0130], p(pos) 0.00, 50% side agreement, forced-pick 51.0% vs
+53.4%. Re-centred -0.0011 [-0.0057, +0.0036], p(pos) 0.32, 78% agreement,
+53.4% vs 53.4%.
+
+Registry rows (family `sim04_play_simulator`, 5 looks on 2020-2025):
+`sim04_engine_team_conditioned_raw_vs_discrete_read` refuted_mechanism
+(wrong_sign_resolved; EPA conditioning locates games worse than the
+market-anchored read); `sim04_engine_team_conditioned_recentered_vs_discrete_read`
+refuted_mechanism (wrong_sign_resolved; the simulator's push mass is worse);
+`sim04_engine_recentered_side_split_vs_discrete_read` unresolved_below_power.
+Nothing enters the pick probability. Monte Carlo noise at 200 draws costs about
+0.005 in three-way log loss (inferred, (K-1)/2N), far below the raw gap. A
+fitted-term blend with the served probability is untested.
+
+## SIM-05 and dashboard (2026-09-26)
+
+What-ifs: `artifacts/sim05_whatif/20260926T034314Z` (lane
+`docs/lanes/done/sim05-whatif.md`). Dashboard: every game's inspector panel
+shows a simulated-margin chart ("How this game could finish"), fed by
+`scripts/sim04_week.py` -> `artifacts/sim04_week/<ts>/margins.json`. The raw
+team-conditioned histogram is exponentially tilted to the served predicted
+margin, so the key-number spikes stay at the real numbers and the mean
+matches the card within 0.1. The chart is shape only; its caption says the
+pick's chance comes from the model.

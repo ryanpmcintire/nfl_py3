@@ -12,6 +12,8 @@ is `sim04-loso-eval.md` (team conditioning, LOSO grade, what-if runs, dashboard)
 
 ## State
 
+- CLOSED 2026-09-26. Final results are in `docs/sim04_unit_log.md` ("Unit LOSO grade result", "SIM-05 and dashboard") and ROADMAP SIM-04/SIM-05. Anything below is history.
+
 - The engine is `scripts/sim04_engine.py`. Each snap draws one real 2009-2014
   REG play. As of Engine unit 3 the draw is a k=40 nearest-neighbour pick from
   a per-(down, phase) `sklearn.neighbors.KDTree` on continuous state

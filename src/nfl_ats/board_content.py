@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import os
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass, field, replace
@@ -439,6 +440,13 @@ class SpreadAdjusterParams:
 
 
 @dataclass(frozen=True)
+class SimMarginChart:
+    histogram: tuple[tuple[int, int], ...]
+    break_even: float
+    n: int
+
+
+@dataclass(frozen=True)
 class GameDive:
     game_id: str
     matchup_label: str
@@ -456,6 +464,7 @@ class GameDive:
     home_lineup: TeamLineup | None = None
     away_lineup: TeamLineup | None = None
     lock_text: str | None = None
+    sim_margin: SimMarginChart | None = None
 
 
 @dataclass(frozen=True)
@@ -2800,6 +2809,7 @@ def _build_dive(
     spread_explorer_params: Mapping[str, SpreadExplorerGameParams],
     raw_home_cover_probability: float | None,
     lineups: Mapping[str, tuple[TeamLineup, TeamLineup]],
+    sim_margins: Mapping[str, Any] | None = None,
 ) -> GameDive:
 
     attribution = _build_attribution(
@@ -2857,6 +2867,42 @@ def _build_dive(
         home_lineup=home_lineup,
         away_lineup=away_lineup,
         lock_text=game.lock_text,
+        sim_margin=_build_sim_margin(game, (sim_margins or {}).get(game.game_id)),
+    )
+
+
+def _load_sim_margins(artifacts_root: Path) -> dict[str, Any]:
+    for candidate in sorted((artifacts_root / "sim04_week").glob("*/margins.json"), reverse=True):
+        try:
+            parsed = json.loads(candidate.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        games = parsed.get("games") if isinstance(parsed, dict) else None
+        if isinstance(games, dict) and games:
+            return games
+    return {}
+
+
+def _build_sim_margin(game: GameRow, raw: Any) -> SimMarginChart | None:
+    if not isinstance(raw, Mapping) or isnan(game.market_spread):
+        return None
+    try:
+        pick_is_home = game.pick_team == game.home
+        counts: dict[int, int] = {}
+        for margin_text, count in raw["home_margin_histogram"].items():
+            home_margin = int(margin_text)
+            pick_margin = home_margin if pick_is_home else -home_margin
+            counts[pick_margin] = counts.get(pick_margin, 0) + int(count)
+    except (KeyError, TypeError, ValueError, AttributeError):
+        return None
+    total = sum(counts.values())
+    if total <= 0:
+        return None
+    sign = -1.0 if pick_is_home else 1.0
+    return SimMarginChart(
+        histogram=tuple(sorted(counts.items())),
+        break_even=-(game.market_spread * sign),
+        n=total,
     )
 
 
@@ -3836,6 +3882,7 @@ def load_board_content(
     require_active_waterfall_feed(waterfall_document, artifacts.active)
     waterfall_feed = waterfall_games_by_id(waterfall_document)
     lineups = load_lineups(artifacts_root)
+    sim_margins = _load_sim_margins(artifacts_root)
     dives = tuple(
         _build_dive(
             game,
@@ -3850,6 +3897,7 @@ def load_board_content(
                 None if calibrated_mass else raw_probability_by_game.get(game.game_id)
             ),
             lineups=lineups,
+            sim_margins=sim_margins,
         )
         for game in games
     )

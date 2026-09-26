@@ -369,6 +369,13 @@ table.board td.kickoff .lock-countdown:empty{display:none}
   svg.curve .marker{ fill:var(--amber); stroke:var(--bg); stroke-width:1; }
   .curve-legend{ display:flex; gap:14px; margin-top:6px; font-family:var(--font-mono); font-size:10.5px; color:var(--text-dim); }
   .curve-legend b{ color:var(--amber); }
+  .sim-block{ margin-top:16px; }
+  svg.curve.sim .sim-cover{ fill:var(--green); opacity:.75; }
+  svg.curve.sim .sim-miss{ fill:var(--red); opacity:.55; }
+  svg.curve.sim .sim-push{ fill:var(--amber); }
+  svg.curve.sim .ref{ stroke:var(--amber); stroke-dasharray:none; }
+  .sim-key-cover{ color:var(--green); }
+  .sim-key-miss{ color:var(--red); }
 
   /* ---------- findings ---------- */
   .find-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1px; background:var(--line); border:1px solid var(--line); }

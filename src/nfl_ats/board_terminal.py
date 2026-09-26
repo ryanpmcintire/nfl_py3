@@ -1038,6 +1038,68 @@ def _adjuster_html(
     )
 
 
+def _sim_margin_html(dive: GameDive) -> str:
+    chart = dive.sim_margin
+    if chart is None:
+        return ""
+    lo, hi = -21, 21
+    counts = {m: 0 for m in range(lo, hi + 1)}
+    for margin, count in chart.histogram:
+        if lo <= margin <= hi:
+            counts[margin] += count
+    peak = max(counts.values()) or 1
+    width = 240 / (hi - lo + 1)
+
+    def px(margin: float) -> float:
+        return 20 + (margin - lo) * width
+
+    bars = []
+    for margin, count in counts.items():
+        if margin > chart.break_even:
+            tone = "cover"
+        elif margin == chart.break_even:
+            tone = "push"
+        else:
+            tone = "miss"
+        height = count / peak * 70
+        bars.append(
+            f'<rect class="sim-{tone}" x="{px(margin) + 0.4:.1f}" y="{85 - height:.1f}" '
+            f'width="{width - 0.8:.1f}" height="{height:.1f}"></rect>'
+        )
+    ticks = "".join(
+        f'<text x="{px(k) + width / 2:.1f}" y="94" text-anchor="middle">{k:+d}</text>'
+        if k
+        else f'<text x="{px(k) + width / 2:.1f}" y="94" text-anchor="middle">0</text>'
+        for k in (-14, -7, -3, 0, 3, 7, 14)
+    )
+    line_x = px(min(max(chart.break_even, lo - 0.5), hi + 0.5)) + width / 2
+    pick_label = f"{dive.pick_team} {dive.pick_spread_text}"
+    svg = (
+        '<svg class="curve sim" viewBox="0 0 280 100" width="100%" height="140" role="img" '
+        f'aria-label="Simulated final margins for {escape(dive.pick_team)}, line '
+        f'{escape(pick_label)} marked">'
+        '<line class="grid" x1="20" y1="85" x2="260" y2="85"></line>'
+        f'{"".join(bars)}'
+        f'<line class="ref" x1="{line_x:.1f}" y1="8" x2="{line_x:.1f}" y2="85"></line>'
+        f'<text x="{line_x + 3:.1f}" y="12">{escape(pick_label)}</text>'
+        f"{ticks}"
+        "</svg>"
+    )
+    return (
+        '<div class="sim-block">'
+        f'<div class="chart-cap">How this game could finish &middot; {chart.n:,} simulated '
+        "games played out snap by snap</div>"
+        f"{svg}"
+        f'<div class="curve-legend"><span>x &middot; {escape(dive.pick_team)} final margin</span>'
+        '<span class="sim-key-cover">&#9632; covers</span>'
+        '<span class="sim-key-miss">&#9632; misses</span></div>'
+        '<p style="margin-top:6px;font-family:var(--font-mono);font-size:10.5px;'
+        'color:var(--text-faint);">Shape only: tall bars at 3 and 7 are how football '
+        "scores land. The pick's chance above comes from the model, not this chart.</p>"
+        "</div>"
+    )
+
+
 def _game_dive_chart_html(dive: GameDive) -> str:
 
     if not dive.cover_curve:
@@ -1310,6 +1372,7 @@ def _dive_panel_html(
         f"{escape(dive.matchup_label)}</div>"
         f"{_game_dive_chart_html(dive)}"
         "</div></div>"
+        f"{_sim_margin_html(dive)}"
         f"{_lineups_html(dive)}</div></div>"
     )
 

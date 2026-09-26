@@ -8,7 +8,9 @@ leave-one-season-out at the opener against the served discrete read and record
 the result in the registry; run SIM-05 what-if runs; add a simulated-margin
 chart to the dashboard game page, then publish and push.
 
-## State (2026-09-25, this subagent, STOPPED AT 50-TOOL-CALL CAP MID-EDIT)
+## State
+
+- CLOSED 2026-09-26. Final results are in `docs/sim04_unit_log.md` ("Unit LOSO grade result", "SIM-05 and dashboard") and ROADMAP SIM-04/SIM-05. Anything below is history. (2026-09-25, this subagent, STOPPED AT 50-TOOL-CALL CAP MID-EDIT)
 
 Team conditioning IS implemented and IS verified correct in
 `scripts/sim04_engine.py`. `scripts/sim04_loso.py` has the team-conditioned

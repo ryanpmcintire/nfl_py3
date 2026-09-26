@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-26T03:54:55.672001+00:00`
+Refreshed at: `2026-09-26T04:54:27.068697+00:00`
 
 ## Start here
 
@@ -21,17 +21,24 @@ Refreshed at: `2026-09-26T03:54:55.672001+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `766024bf66ad` — Simulator draws nearest-neighbour plays and follows the down rules
-- Pending change set: 9 paths
-  - `M  docs/lanes/sim04-loso-eval.md`
-  - `A  docs/lanes/sim05-whatif.md`
+- Baseline commit: `6053eaa6baf5` — Team-conditioned simulator and what-if runs: backup QB costs about a point
+- Pending change set: 16 paths
+  - `M  ROADMAP.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - `M  docs/lanes/README.md`
+  - `A  docs/lanes/done/sim04-dashboard-chart.md`
+  - `R  docs/lanes/sim04-loso-eval.md -> docs/lanes/done/sim04-loso-eval.md`
+  - `R  docs/lanes/sim04-play-simulator.md -> docs/lanes/done/sim04-play-simulator.md`
+  - `R  docs/lanes/sim05-whatif.md -> docs/lanes/done/sim05-whatif.md`
+  - `M  docs/model.html`
   - `M  docs/sim04_unit_log.md`
-  - `M  scripts/sim04_engine.py`
-  - `M  scripts/sim04_loso.py`
-  - `A  scripts/sim05_whatif.py`
-  - `?? err.log`
-  - `?? err_engine_sanity.log`
-  - `?? out_engine_sanity.json`
+  - `M  registry/weak_signals.json`
+  - `A  scripts/sim04_week.py`
+  - `M  src/nfl_ats/board_content.py`
+  - `M  src/nfl_ats/board_terminal.py`
+  - `M  src/nfl_ats/board_terminal_style.css`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

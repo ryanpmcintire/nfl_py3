@@ -183393,6 +183393,90 @@
       "source": "artifacts/experiments/lineup_mixture/results.json",
       "standard_error": 0.0009000587152138153
     },
+    "sim04_engine_recentered_side_split_vs_discrete_read": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero with probability_positive 0.32; no resolved wrong sign and no positive control bounding an effect of this size, so the side split is below power. Agrees with the served side 78% of the time; forced-pick hit rate 53.4% for both.",
+      "closing_ground": null,
+      "description": "Cover-vs-miss probability (pushes excluded) of the re-centred team-conditioned simulator vs the served discrete read at the Tuesday opener; binary log loss, week-blocked bootstrap; post-hoc look after the three-way grade",
+      "effect": -0.00113,
+      "effect_units": "log_loss_improvement",
+      "family": "sim04_play_simulator",
+      "interval": [
+        -0.00565,
+        0.00357
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc; counted as a look. A fitted-term blend with the served probability is untested.",
+      "plain_summary": "On which side covers, the simulator and the current model are a dead heat.",
+      "probability_positive": 0.316,
+      "recorded_at": "2026-09-26",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim04_loso/20260926T034537Z/report.json",
+      "standard_error": null
+    },
+    "sim04_engine_team_conditioned_raw_vs_discrete_read": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Whole week-blocked interval on the adverse side and all six seasons adverse; the cover-vs-miss split is also adverse (-0.029, CI -0.045 to -0.013, probability_positive 0.00). Mechanism refuted: pregame EPA conditioning locates the game worse than the market-anchored served read. Monte Carlo noise at 200 draws costs about 0.005 (inferred), far smaller than the gap.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Play-level simulator margin histogram, team-conditioned on pregame EPA with exact home/away play matching, graded leave-one-season-out at the Tuesday opener against the served discrete three-way read; three-way log loss, week-blocked bootstrap, 200 simulations per game",
+      "effect": -0.03433,
+      "effect_units": "log_loss_improvement",
+      "family": "sim04_play_simulator",
+      "interval": [
+        -0.0493,
+        -0.01923
+      ],
+      "league": "nfl",
+      "notes": "Looks in this family on 2020-2025: provisional league-average shape, raw, re-centred, and two post-hoc cover-vs-miss splits (5).",
+      "plain_summary": "Simulating games from team strength alone reads the spread worse than the current model in every season since 2020.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-26",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim04_loso/20260926T034537Z/report.json",
+      "standard_error": null
+    },
+    "sim04_engine_team_conditioned_recentered_vs_discrete_read": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Whole interval adverse and all six seasons adverse. The loss is entirely push mass: on the 34 pushed games log loss is 3.59 vs 2.78 for the served read, while the 1503 non-push games are 0.7113 vs 0.7181. The simulator's key-number mass is short (0.103 vs 0.152 at 3 on validation), so as a push-probability source it is refuted. The side split is recorded separately and is unresolved.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Team-conditioned simulator histogram shape re-centred on the served predicted margin, graded at the Tuesday opener against the served discrete three-way read; three-way log loss including push mass, 200 simulations per game",
+      "effect": -0.01123,
+      "effect_units": "log_loss_improvement",
+      "family": "sim04_play_simulator",
+      "interval": [
+        -0.02086,
+        -0.00212
+      ],
+      "league": "nfl",
+      "notes": "Monte Carlo noise at 200 draws adds about 0.005 (inferred); re-centring by a fractional shift also smears key numbers.",
+      "plain_summary": "The simulator underrates how often games land exactly on the number, so it prices pushes worse than the current model.",
+      "probability_positive": 0.004,
+      "recorded_at": "2026-09-26",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim04_loso/20260926T034537Z/report.json",
+      "standard_error": null
+    },
     "single_book_opener_grade_posthoc_v1_sb_posthoc_different_line_2020_2025": {
       "category": "modeling",
       "classification": "unresolved_below_power",
