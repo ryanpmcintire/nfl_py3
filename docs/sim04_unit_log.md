@@ -1525,3 +1525,165 @@ position, clock set to 1800). One validation run, 2015-2017, artifact
 | late-Q4 possession scoring rate | 0.180 | 0.136 | 0.215 |
 
 Still NO-GO. 3 and 7 are short by a third; late possessions under-score.
+
+## Engine unit 2 predeclaration (written before fixing, 2026-09-26, subagent)
+
+Diagnostic measurements (2009-2014 train transition table plus raw pbp),
+before any fix:
+
+- fp_f (fine field-position bucket, 10 yd wide) within-bucket std of
+  yardline_100: 2.7-2.9 yd (matches uniform-in-10 theory, not itself
+  excessive). fp_c (coarse, 20-30 yd wide, used at backoff): std 4.8-8.9 yd,
+  worst in the two 30-yd-wide middle buckets.
+- `next_yardline`/`next_distance` are copied as the drawn row's own absolute
+  values regardless of how far the drawn row's own state differs from the
+  simulator's actual state inside the same bucket (`scripts/sim04_engine.py`
+  lines 176, 265-267, 517-519, 524-526). This is defect (a): confirmed by
+  code, and the coarse-bucket std above shows the magnitude once backoff
+  engages.
+- Rows where `next_gsr > gsr` within a game (clock appears to run backward):
+  309 of 230,642 transition rows. `clock_elapsed` clips these to 1.0 s
+  (`sim04_engine.py` lines 230-232) — confirmed defect (b). Sampled rows show
+  most are regulation-to-OT crossings (real OT `game_seconds_remaining`
+  resets to the OT quarter length, e.g. 900, independent of the continuous
+  0-3600 regulation clock) plus a handful of other same-quarter anomalies.
+  Small in row count (0.13%) but concentrated in exactly the late/tied cells
+  under scrutiny.
+- score_diff==0, qtr==4, gsr<=300 (the tied-late-Q4 corner): 320 distinct L0
+  cells, mean 4.7 rows/cell, only 3.4% reach MIN_CELL_N=25. L1 as currently
+  defined (`down_i, dist_f, fp_f, sc_c, tb_c`) does not add cell size here
+  (same 320 cells, same 4.7 mean) because timeouts were the only axis it
+  drops and this subset is already homogeneous on timeouts, so 96.6% of
+  these situations must fall to L2 (`down_i, dist_c, fp_c, sc_c, tb_c`, still
+  only 14.3% reach n>=25) — a large share falls all the way to L3 (down
+  only, pooling every quarter and score state). Per-play scoring rate
+  measured directly on these tied-late training rows is 0.0769 vs 0.0548
+  overall — real teams play more aggressively when tied and late — so
+  diluting this cell into L3 erases exactly the signal the sim needs. This
+  is defect (c)'s mechanism, not the literal score-bucket-merge named in the
+  task (tied is already its own fine and coarse bucket, ruled out), but the
+  same family: backoff order coarsens score/time before it needs to, because
+  today it coarsens score/time at L1 while keeping field position/distance
+  fine, the reverse of what the tied-late cell needs.
+- Kickoff-return TDs: 76 of 15,503 kickoff plays (0.49%) score, worth about
+  0.2 pts/game in aggregate. Structurally impossible in the current sim
+  because `build_opening_pool` draws only from each game's own first live
+  snap, which by construction never followed a returned-for-a-score kick.
+  Confirmed real but small (~0.2 of the ~3 pt/game gap); deferred, not fixed
+  this unit, given the tool budget and its small size relative to the
+  key-number bar.
+- Late-Q4 scoring-rate definitions in `summarize_sim` and
+  `measure_actual_diagnostics` were read side by side: both count "any score
+  (offense or defense) during a drive whose first play has qtr==4 and
+  gsr<=300," so item (e) is not the mechanism; the two numbers are honestly
+  comparable and the gap is real.
+
+Predeclared fixes, to be made together and re-measured as one look (each is
+individually motivated by the measurements above, and fix 1 is a
+precondition for fix 3 being safe):
+
+1. Field position and distance-to-go: for a non-flip (drive-continuing) row,
+   apply the drawn row's own yards-gained (its `yardline_100` minus its own
+   next yardline) to the simulator's actual current yardline instead of
+   copying the absolute next yardline; do the same for distance-to-go, reset
+   to `min(10, new_yardline)` when the drawn row's own down resets to 1 (a
+   real conversion or auto-first-down), otherwise apply the drawn row's own
+   distance-to-go delta. Keep the existing absolute-copy behavior on a flip
+   (punt, turnover, score-then-kickoff): a new drive's starting spot is
+   legitimately independent of the previous team's position.
+2. Clock: when a row's own next_gsr exceeds its gsr (the 309 rows above),
+   treat the play as using up the remainder of the clock (`clock_elapsed =
+   gsr`) instead of the clipped 1.0 s value.
+3. Backoff order: swap L1 so it coarsens distance and field position first
+   (`down_i, dist_c, fp_c, sc_f, tb_f`) and keeps score/time fine, instead of
+   today's L1 which coarsens score/time and keeps distance/field position
+   fine. This is only safe because of fix 1: once field position and
+   distance move by relative delta, a wide backoff bucket no longer teleports
+   the ball, so it is safe to sacrifice that granularity first and keep the
+   tied/urgent-time signal through backoff instead. L2 (fully coarse) is
+   unchanged as the final fallback before the down-only floor.
+
+Not changed this unit: MIN_CELL_N, the score-bucket boundaries themselves,
+kickoff modeling. Also adding `simulate_from_state`/`simulate_from_states`
+(task item 1, finishing-vs-reaching split) to `scripts/sim04_engine.py`,
+factored out of `simulate`'s per-game loop body with no behavior change to
+`simulate` itself.
+
+## Engine unit 2 result (measured, 2026-09-26, subagent)
+
+Fix 3 (backoff reorder) was implemented and measured, then dropped: with all
+three fixes, hits fell to 1/5 and log-loss delta rose to +0.0103, tied-at-5:00
+OT rate rose to 56.6% and tie rate to 2.03%, all worse than fix1+fix2 alone.
+Coarsening field position/distance at L1 while keeping score/time fine pools
+plays across very different field-position/down-and-distance contexts (e.g. a
+midfield snap answering a goal-line situation), which turned out to cost more
+realism than the score/time dilution it was meant to fix. Reverted; kept only
+fixes 1 and 2 (`scripts/sim04_engine.py`: `build_transition_frame` now emits
+`yards_gained`/`dist_gained` and a corrected `clock_elapsed`; `run_one_game`'s
+non-flip branch applies the delta to the simulator's own state instead of
+copying the drawn row's absolute `next_yardline`/`next_distance`; L1/L2
+grouping and `k1`/`k2` keys unchanged from Engine fix 1).
+
+Full validation, `--n-games-per-season 3334` (10,002 games), train 2009-2014,
+valid 2015-2017 REG, artifact `artifacts/sim04_engine/20260926T023148Z/report.json`:
+
+| metric | before (fix 1) | after (fix 1+2) | actual |
+|---|---|---|---|
+| mass at 3 / 7 / 10 / 14 / 17 | .098/.063/.056/.041/.041 | .102/.072/.055/.039/.038 | .152/.091/.048/.051/.030 |
+| key-number hits | 1 | 2 (10, 17) | -- |
+| log-loss delta vs naive | +0.0207 | +0.0092 | -- |
+| margin SD ratio | 1.077 | 1.056 | -- |
+| points/game | 41.8 | 40.8 | ~45 |
+| tie rate | 1.6% | 1.8% | ~0.4% |
+| tied-at-5:00 OT rate | 49.3% | 52.4% | 14.9% |
+| late-Q4 possession scoring rate | 0.136 | 0.129 | 0.215 |
+
+Log-loss delta now clears the <=0.02 bar for the first time this series.
+Hits improved 1->2. Tied-at-5:00 OT rate and tie rate did not improve (both
+slightly worse), confirming these are not primarily a field-position-copy or
+OT-clock artifact. Still NO-GO (2/5 hits < 4).
+
+Diagnostic split (task item 1), run against the fix1+2 engine,
+`sim04_engine.simulate_from_states` (n=768 real 2015-2017 REG games, each
+started from its own first live snap with qtr==4 and
+game_seconds_remaining<=300, 200 reps/game = 153,600 sim endings) and
+`simulate` (2000 full games, `tied_at_5_diff` column read for every game, not
+only tied ones, despite its name):
+
+| split | metric | sim | actual |
+|---|---|---|---|
+| finishing (from real Q4<=300s state to end) | mass@3 | .1136 | .1523 |
+| finishing | mass@7 | .0746 | .0911 |
+| finishing | mean / SD of margin | 2.26 / 14.13 | 2.20 / 13.87 |
+| reaching (home margin at 5:00 left, full-game sim vs actual) | mass@3 | .090 | .087 |
+| reaching | mass@7 | .077 | .090 |
+| reaching | mass@14 | .041 | .055 |
+| reaching | mass@17 | .036 | .027 |
+
+Finishing-error SD ratio is 14.13/13.87 = 1.02, essentially matched, well
+below the full-validation ratio of 1.056 for the same fixed engine. The
+aggregate reaching-error mass (all games' home margin at 5:00, not
+conditioned on being tied) is also fairly close to actual. This localizes
+most of the remaining excess variance and the mass-3/7 shortfall to how the
+game arrives at a state, not to how it closes one out: specifically the
+tied-at-5:00 subgroup (52.4% sim OT rate vs 14.9% actual), which is invisible
+in the aggregate reaching-mass check above because ties are a small slice of
+all home margins at 5:00. This confirms the Engine unit's original diagnosis
+(cell-sparsity backoff dilutes the real, measured, higher per-play scoring
+rate in tied+late situations, 0.077 vs 0.055 overall) as the still-open
+mechanism, and rules out fix 3's specific remedy (reordering which axis
+backoff coarsens first) as ineffective.
+
+GO/NO-GO: NO_GO (2/5 hits, need >=4). Named next mechanism, not yet
+implemented: the tied+late(qtr==4, gsr<=300, score_diff==0) corner has only
+320 L0 cells averaging 4.7 rows and 96.6% must back off; instead of
+coarsening an existing axis, pool historical rows from ALL trailing-team and
+leading-team small-margin (|score_diff|<=3) late-Q4 rows with the CURRENT
+sim's own score_diff sign and magnitude used only to select offense-vs-
+defense aggression symmetrically (a trailing-by-3 team plays like a
+trailing-by-3 team regardless of exact game), which would multiply tied-cell
+n several-fold without touching field position/distance/time granularity at
+all. Not measured this unit (out of tool budget).
+
+Not ported to `src/`; no registry writes; no commits; no dashboard or
+publish work (research-only per AGENTS.md).

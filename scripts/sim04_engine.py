@@ -227,9 +227,12 @@ def build_transition_frame(pbp: pd.DataFrame) -> pd.DataFrame:
     )
     points_off = np.where(points_def > 0, 0.0, points_off_raw)
 
-    clock_elapsed = np.clip(
-        df["game_seconds_remaining"].to_numpy() - df["next_gsr"].to_numpy(), 1.0, None
-    )
+    gsr_now = df["game_seconds_remaining"].to_numpy()
+    raw_elapsed = gsr_now - df["next_gsr"].to_numpy()
+    clock_elapsed = np.where(raw_elapsed < 0, gsr_now, np.clip(raw_elapsed, 1.0, None))
+
+    yards_gained = df["yardline_100"].to_numpy() - df["next_yardline"].to_numpy()
+    dist_gained = df["ydstogo"].to_numpy() - df["next_distance"].to_numpy()
 
     down_i = df["down"].to_numpy().astype(int)
     dist = df["ydstogo"].to_numpy()
@@ -265,6 +268,8 @@ def build_transition_frame(pbp: pd.DataFrame) -> pd.DataFrame:
             "next_down": df["next_down"].to_numpy(),
             "next_distance": df["next_distance"].to_numpy(),
             "next_yardline": df["next_yardline"].to_numpy(),
+            "yards_gained": yards_gained,
+            "dist_gained": dist_gained,
             "possession_flip": flipped,
             "points_off": points_off,
             "points_def": points_def,
@@ -308,6 +313,8 @@ def build_tables(seasons: tuple[int, ...]) -> dict:
         "next_down": trans["next_down"].to_numpy(),
         "next_distance": trans["next_distance"].to_numpy(),
         "next_yardline": trans["next_yardline"].to_numpy(),
+        "yards_gained": trans["yards_gained"].to_numpy(),
+        "dist_gained": trans["dist_gained"].to_numpy(),
         "off_to_used": trans["off_to_used"].to_numpy(),
         "def_to_used": trans["def_to_used"].to_numpy(),
     }
@@ -336,6 +343,242 @@ def default_policy(down, distance, yardline, score_diff, qtr, clock_left, drawn)
     return drawn
 
 
+def initial_kickoff_state(rng: np.random.Generator, opening_pool: np.ndarray) -> dict:
+    offense = "home" if rng.random() < 0.5 else "away"
+    return {
+        "home_score": 0.0,
+        "away_score": 0.0,
+        "home_to": 3,
+        "away_to": 3,
+        "offense": offense,
+        "second_half_receiver": "away" if offense == "home" else "home",
+        "down": 1,
+        "distance": 10.0,
+        "yardline": float(rng.choice(opening_pool)),
+        "gsr": 3600.0,
+        "in_ot": False,
+        "ot_clock": 0.0,
+        "ot_possession_index": 0,
+        "went_ot": False,
+        "drive_start_qtr": 1,
+        "drive_start_gsr": 3600.0,
+        "drive_scored": False,
+        "tied_at_5_diff": None,
+    }
+
+
+def run_one_game(
+    state: dict,
+    tables: dict,
+    rng: np.random.Generator,
+    ot_seconds: float,
+    policy,
+    min_cell_n: int,
+    max_plays: int,
+) -> tuple[dict, bool]:
+    arrays = tables["arrays"]
+    opening_pool = tables["opening_pool"]
+
+    home_score = state["home_score"]
+    away_score = state["away_score"]
+    home_to = state["home_to"]
+    away_to = state["away_to"]
+    offense = state["offense"]
+    second_half_receiver = state["second_half_receiver"]
+    down = state["down"]
+    distance = state["distance"]
+    yardline = state["yardline"]
+    gsr = state["gsr"]
+    in_ot = state["in_ot"]
+    ot_clock = state["ot_clock"]
+    ot_possession_index = state["ot_possession_index"]
+    went_ot = state["went_ot"]
+    drive_start_qtr = state["drive_start_qtr"]
+    drive_start_gsr = state["drive_start_gsr"]
+    drive_scored = state["drive_scored"]
+    tied_at_5_diff = state["tied_at_5_diff"]
+
+    plays = 0
+    possessions = 1
+    late_q4_log: list = []
+    settled = False
+    final_margin = None
+    cap_hit = False
+
+    for _step in range(max_plays):
+        plays += 1
+        if in_ot:
+            qtr = 5
+        else:
+            qtr = 4 - int(np.floor(max(gsr, 0.0) / 900.0))
+            qtr = min(max(qtr, 1), 4)
+        clock_val = ot_clock if in_ot else gsr
+
+        off_to = home_to if offense == "home" else away_to
+        def_to = away_to if offense == "home" else home_to
+        off_score = home_score if offense == "home" else away_score
+        def_score = away_score if offense == "home" else home_score
+        score_diff = off_score - def_score
+
+        tb_fine = time_bucket_fine(qtr, clock_val if not in_ot else 0.0)
+        if in_ot:
+            tb_fine = 7
+        tb_coarse = time_bucket_coarse(tb_fine)
+
+        k0 = (
+            down,
+            dist_bucket_fine(distance),
+            fp_bucket_fine(yardline),
+            score_bucket_fine(score_diff),
+            tb_fine,
+            min(off_to, 1),
+            min(def_to, 1),
+        )
+        k1 = (
+            down,
+            dist_bucket_fine(distance),
+            fp_bucket_fine(yardline),
+            score_bucket_coarse(score_diff),
+            tb_coarse,
+        )
+        k2 = (
+            down,
+            dist_bucket_coarse(distance),
+            fp_bucket_coarse(yardline),
+            score_bucket_coarse(score_diff),
+            tb_coarse,
+        )
+        k3 = down
+
+        idx = pick_index(rng, tables, k0, k1, k2, k3, min_cell_n)
+
+        drawn = {
+            "points_off": arrays["points_off"][idx],
+            "points_def": arrays["points_def"][idx],
+            "clock_elapsed": arrays["clock_elapsed"][idx],
+            "flip": bool(arrays["possession_flip"][idx]),
+            "next_down": arrays["next_down"][idx],
+            "next_distance": arrays["next_distance"][idx],
+            "next_yardline": arrays["next_yardline"][idx],
+            "yards_gained": arrays["yards_gained"][idx],
+            "dist_gained": arrays["dist_gained"][idx],
+            "off_to_used": arrays["off_to_used"][idx],
+            "def_to_used": arrays["def_to_used"][idx],
+        }
+        drawn = policy(down, distance, yardline, score_diff, qtr, clock_val, drawn)
+
+        points_off = drawn["points_off"]
+        points_def = drawn["points_def"]
+        clock_elapsed = drawn["clock_elapsed"]
+        flip = drawn["flip"]
+
+        if offense == "home":
+            home_score += points_off
+            away_score += points_def
+            home_to = max(0, home_to - drawn["off_to_used"])
+            away_to = max(0, away_to - drawn["def_to_used"])
+        else:
+            away_score += points_off
+            home_score += points_def
+            away_to = max(0, away_to - drawn["off_to_used"])
+            home_to = max(0, home_to - drawn["def_to_used"])
+
+        if points_off > 0 or points_def > 0:
+            drive_scored = True
+
+        if in_ot:
+            ot_clock = max(0.0, ot_clock - clock_elapsed)
+            if (points_def > 0 or points_off >= 6) and home_score != away_score:
+                settled = True
+            elif points_off > 0 and ot_possession_index >= 1 and home_score != away_score:
+                settled = True
+            if settled:
+                final_margin = home_score - away_score
+                break
+            if ot_clock <= 0.0:
+                final_margin = home_score - away_score
+                if drive_start_qtr == 4 and drive_start_gsr <= 300.0:
+                    late_q4_log.append(drive_scored)
+                break
+        else:
+            new_gsr = max(0.0, gsr - clock_elapsed)
+            if qtr == 4 and gsr > 300.0 and new_gsr <= 300.0 and tied_at_5_diff is None:
+                tied_at_5_diff = home_score - away_score
+            crossed_half = gsr > 1800.0 and new_gsr <= 1800.0
+            if crossed_half:
+                home_to, away_to = 3, 3
+                if drive_start_qtr == 4 and drive_start_gsr <= 300.0:
+                    late_q4_log.append(drive_scored)
+                gsr = 1800.0
+                possessions += 1
+                offense = second_half_receiver
+                down, distance = 1, 10
+                yardline = float(rng.choice(opening_pool))
+                drive_start_qtr = 3
+                drive_start_gsr = gsr
+                drive_scored = False
+                continue
+            gsr = new_gsr
+            if gsr <= 0.0:
+                if drive_start_qtr == 4 and drive_start_gsr <= 300.0:
+                    late_q4_log.append(drive_scored)
+                if home_score != away_score:
+                    final_margin = home_score - away_score
+                    break
+                went_ot = True
+                in_ot = True
+                ot_clock = ot_seconds
+                ot_possession_index = 0
+                offense = "home" if rng.random() < 0.5 else "away"
+                down, distance = 1, 10
+                yardline = float(rng.choice(opening_pool))
+                home_to, away_to = 3, 3
+                possessions += 1
+                drive_start_qtr = 5
+                drive_start_gsr = ot_clock
+                drive_scored = False
+                continue
+
+        if flip:
+            if drive_start_qtr == 4 and drive_start_gsr <= 300.0:
+                late_q4_log.append(drive_scored)
+            possessions += 1
+            if in_ot:
+                ot_possession_index += 1
+            offense = "away" if offense == "home" else "home"
+            down = int(drawn["next_down"])
+            distance = float(drawn["next_distance"])
+            yardline = float(drawn["next_yardline"])
+            drive_start_qtr = qtr
+            drive_start_gsr = clock_val if not in_ot else ot_clock
+            drive_scored = False
+        else:
+            next_down_i = int(drawn["next_down"])
+            new_yardline = min(max(yardline - drawn["yards_gained"], 1.0), 99.0)
+            if next_down_i == 1:
+                new_distance = min(10.0, new_yardline)
+            else:
+                new_distance = min(max(distance - drawn["dist_gained"], 1.0), new_yardline)
+            down = next_down_i
+            distance = new_distance
+            yardline = new_yardline
+    else:
+        cap_hit = True
+        final_margin = home_score - away_score
+
+    record = {
+        "margin": final_margin,
+        "total": home_score + away_score,
+        "went_ot": went_ot,
+        "tied": final_margin == 0,
+        "plays": plays,
+        "possessions": possessions,
+        "tied_at_5_diff": tied_at_5_diff,
+        "late_q4_possessions_scored": late_q4_log,
+    }
+    return record, cap_hit
+
+
 def simulate(
     n_games: int,
     rng: np.random.Generator,
@@ -346,200 +589,43 @@ def simulate(
     max_plays: int = MAX_PLAYS_PER_GAME,
 ) -> pd.DataFrame:
     policy = policy or default_policy
-    arrays = tables["arrays"]
     opening_pool = tables["opening_pool"]
 
     records = []
     max_play_cap_hits = 0
 
     for _ in range(n_games):
-        home_score = 0.0
-        away_score = 0.0
-        home_to = 3
-        away_to = 3
-        offense = "home" if rng.random() < 0.5 else "away"
-        second_half_receiver = "away" if offense == "home" else "home"
-        down, distance = 1, 10
-        yardline = float(rng.choice(opening_pool))
-        gsr = 3600.0
-        in_ot = False
-        ot_clock = 0.0
-        ot_possession_index = 0
-        went_ot = False
-        plays = 0
-        possessions = 1
-        drive_start_gsr = gsr
-        drive_start_qtr = 1
-        drive_scored = False
-        late_q4_log = []
-        tied_at_5_diff = None
-        settled = False
-        final_margin = None
+        state = initial_kickoff_state(rng, opening_pool)
+        record, cap_hit = run_one_game(state, tables, rng, ot_seconds, policy, min_cell_n, max_plays)
+        max_play_cap_hits += int(cap_hit)
+        records.append(record)
 
-        for _step in range(max_plays):
-            plays += 1
-            qtr = 5 if in_ot else int(min(4, 4 - int(gsr // 900) if gsr < 3600 else 1))
-            if not in_ot:
-                qtr = 4 - int(np.floor(max(gsr, 0.0) / 900.0))
-                qtr = min(max(qtr, 1), 4)
-            clock_val = ot_clock if in_ot else gsr
+    frame = pd.DataFrame.from_records(records)
+    frame.attrs["max_play_cap_hits"] = max_play_cap_hits
+    return frame
 
-            off_to = home_to if offense == "home" else away_to
-            def_to = away_to if offense == "home" else home_to
-            off_score = home_score if offense == "home" else away_score
-            def_score = away_score if offense == "home" else home_score
-            score_diff = off_score - def_score
 
-            tb_fine = time_bucket_fine(qtr, clock_val if not in_ot else 0.0)
-            if in_ot:
-                tb_fine = 7
-            tb_coarse = time_bucket_coarse(tb_fine)
+def simulate_from_states(
+    states: list[dict],
+    tables: dict,
+    rng: np.random.Generator,
+    ot_seconds: float,
+    reps: int,
+    policy=None,
+    min_cell_n: int = MIN_CELL_N,
+    max_plays: int = MAX_PLAYS_PER_GAME,
+) -> pd.DataFrame:
+    policy = policy or default_policy
+    records = []
+    max_play_cap_hits = 0
 
-            k0 = (
-                down,
-                dist_bucket_fine(distance),
-                fp_bucket_fine(yardline),
-                score_bucket_fine(score_diff),
-                tb_fine,
-                min(off_to, 1),
-                min(def_to, 1),
-            )
-            k1 = (
-                down,
-                dist_bucket_fine(distance),
-                fp_bucket_fine(yardline),
-                score_bucket_coarse(score_diff),
-                tb_coarse,
-            )
-            k2 = (
-                down,
-                dist_bucket_coarse(distance),
-                fp_bucket_coarse(yardline),
-                score_bucket_coarse(score_diff),
-                tb_coarse,
-            )
-            k3 = down
-
-            idx = pick_index(rng, tables, k0, k1, k2, k3, min_cell_n)
-
-            drawn = {
-                "points_off": arrays["points_off"][idx],
-                "points_def": arrays["points_def"][idx],
-                "clock_elapsed": arrays["clock_elapsed"][idx],
-                "flip": bool(arrays["possession_flip"][idx]),
-                "next_down": arrays["next_down"][idx],
-                "next_distance": arrays["next_distance"][idx],
-                "next_yardline": arrays["next_yardline"][idx],
-                "off_to_used": arrays["off_to_used"][idx],
-                "def_to_used": arrays["def_to_used"][idx],
-            }
-            drawn = policy(down, distance, yardline, score_diff, qtr, clock_val, drawn)
-
-            points_off = drawn["points_off"]
-            points_def = drawn["points_def"]
-            clock_elapsed = drawn["clock_elapsed"]
-            flip = drawn["flip"]
-
-            if offense == "home":
-                home_score += points_off
-                away_score += points_def
-                home_to = max(0, home_to - drawn["off_to_used"])
-                away_to = max(0, away_to - drawn["def_to_used"])
-            else:
-                away_score += points_off
-                home_score += points_def
-                away_to = max(0, away_to - drawn["off_to_used"])
-                home_to = max(0, home_to - drawn["def_to_used"])
-
-            if points_off > 0 or points_def > 0:
-                drive_scored = True
-
-            if in_ot:
-                ot_clock = max(0.0, ot_clock - clock_elapsed)
-                if (points_def > 0 or points_off >= 6) and home_score != away_score:
-                    settled = True
-                elif points_off > 0 and ot_possession_index >= 1 and home_score != away_score:
-                    settled = True
-                if settled:
-                    final_margin = home_score - away_score
-                    break
-                if ot_clock <= 0.0:
-                    final_margin = home_score - away_score
-                    if drive_start_qtr == 4 and drive_start_gsr <= 300.0:
-                        late_q4_log.append(drive_scored)
-                    break
-            else:
-                new_gsr = max(0.0, gsr - clock_elapsed)
-                if qtr == 4 and gsr > 300.0 and new_gsr <= 300.0 and tied_at_5_diff is None:
-                    tied_at_5_diff = home_score - away_score
-                crossed_half = gsr > 1800.0 and new_gsr <= 1800.0
-                if crossed_half:
-                    home_to, away_to = 3, 3
-                    if drive_start_qtr == 4 and drive_start_gsr <= 300.0:
-                        late_q4_log.append(drive_scored)
-                    gsr = 1800.0
-                    possessions += 1
-                    offense = second_half_receiver
-                    down, distance = 1, 10
-                    yardline = float(rng.choice(opening_pool))
-                    drive_start_qtr = 3
-                    drive_start_gsr = gsr
-                    drive_scored = False
-                    continue
-                gsr = new_gsr
-                if gsr <= 0.0:
-                    if drive_start_qtr == 4 and drive_start_gsr <= 300.0:
-                        late_q4_log.append(drive_scored)
-                    if home_score != away_score:
-                        final_margin = home_score - away_score
-                        break
-                    went_ot = True
-                    in_ot = True
-                    ot_clock = ot_seconds
-                    ot_possession_index = 0
-                    offense = "home" if rng.random() < 0.5 else "away"
-                    down, distance = 1, 10
-                    yardline = float(rng.choice(opening_pool))
-                    home_to, away_to = 3, 3
-                    possessions += 1
-                    drive_start_qtr = 5
-                    drive_start_gsr = ot_clock
-                    drive_scored = False
-                    continue
-
-            if flip:
-                if drive_start_qtr == 4 and drive_start_gsr <= 300.0:
-                    late_q4_log.append(drive_scored)
-                possessions += 1
-                if in_ot:
-                    ot_possession_index += 1
-                offense = "away" if offense == "home" else "home"
-                down = int(drawn["next_down"])
-                distance = float(drawn["next_distance"])
-                yardline = float(drawn["next_yardline"])
-                drive_start_qtr = qtr
-                drive_start_gsr = clock_val if not in_ot else ot_clock
-                drive_scored = False
-            else:
-                down = int(drawn["next_down"])
-                distance = float(drawn["next_distance"])
-                yardline = float(drawn["next_yardline"])
-        else:
-            max_play_cap_hits += 1
-            final_margin = home_score - away_score
-
-        records.append(
-            {
-                "margin": final_margin,
-                "total": home_score + away_score,
-                "went_ot": went_ot,
-                "tied": final_margin == 0,
-                "plays": plays,
-                "possessions": possessions,
-                "tied_at_5_diff": tied_at_5_diff,
-                "late_q4_possessions_scored": late_q4_log,
-            }
-        )
+    for base_state in states:
+        for _ in range(reps):
+            state = dict(base_state)
+            record, cap_hit = run_one_game(state, tables, rng, ot_seconds, policy, min_cell_n, max_plays)
+            record["source_game_id"] = base_state.get("source_game_id")
+            max_play_cap_hits += int(cap_hit)
+            records.append(record)
 
     frame = pd.DataFrame.from_records(records)
     frame.attrs["max_play_cap_hits"] = max_play_cap_hits
