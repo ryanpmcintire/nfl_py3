@@ -92,21 +92,32 @@ on cover-vs-miss and push log loss, recorded with `weak-signals record`.
 - Unit 2: distance-weighted `pick_index_nn` resample (reverted, no effect).
   See State above.
 
+- Unit 3 (measured; both attempts tried and reverted, no net engine change):
+  Attempt A (predeclared: no compression inside 8 points for phase in
+  {2,3,4} via a phase-conditional `SCORE_INNER_SCALE`) moved the trailing 1-3
+  4th-down FG rate only .606/.629/.637 -> .628/.671/.641 (target >0.85, not
+  reached) -- reverted, `git diff --stat scripts/sim04_engine.py` clean.
+  Attempt B (predeclared: multinomial logistic go/FG/punt classifier fit on
+  TRAIN_SEASONS-only 4th-down rows from score differential, seconds left,
+  field position, distance, gating a play-type-filtered KDTree redraw) moved
+  most trailing/tied makeable-range buckets to or above actual but broke the
+  40-49 kick-distance bucket (tied .901->.530, trail .637->.443, both away
+  from actual ~1.0/.96); full-game validation gave key-number hits 2/5 ->
+  3/5 but log-loss delta +0.0044 -> +0.01156, over the task's +0.0094 keep
+  bar -- reverted, `git diff --stat scripts/sim04_engine.py` clean (confirmed
+  after manual reversal, `git checkout --` is blocked by ENG-31). Full
+  detail: `docs/sim04_unit_log.md` "SIM-08 unit 3" section.
+
 ## Next
 
-1. Unit 3 candidate (not yet measured): tighten score-distance weight
-   specifically in `LATE_PHASES` (1, 3, 4) -- e.g. a smaller
-   `SCORE_INNER_SCALE`/`SCORE_OUTER_SCALE` applied only when `phase` is late,
-   inside `feature_matrix`/`scaled_score_diff`
-   (`scripts/sim04_engine.py` line 204-224), the same way timeouts are
-   already phase-weighted via `to_weight`. This targets the measured root
-   cause directly (score dominated by field position/time in the KDTree
-   distance budget at exactly the down=4/phase=3 states that decide 4th-down
-   FG attempts) rather than resampling within an already-miscomposed
-   neighbor set. Predeclare the exact scale change before rerunning; use the
-   same `tests/scratch/sim08_unit2_diag.py` measurements (item 2 and item 5
-   are the load-bearing ones) plus one full-game validation run, same
-   keep/revert bar as units 1-2.
+1. Unit 4 candidate (not yet measured): the down=4/phase=3 FG-rate gap is
+   real (units 2-3 all confirm it) but every fix inside the existing KDTree
+   metric or a linear decision layer either does nothing or trades one
+   field-position bucket for another. Consider a decision layer with an
+   explicit kick-distance feature (`fp_raw + 17`) and a non-linear model
+   (small tree, not logistic) so the 40-49 bucket isn't forced through a
+   single linear boundary shared with the other buckets; or accept the gap
+   as `unresolved_below_power` and move to items 2-3.
 2. Undamp conditioning (kernel bandwidth h, k_state) and recheck SIM-05 QB run.
 3. Anchor the sim on the opening spread and total; re-grade LOSO with 1000+
    draws; add a fitted-term blend with the served probability.

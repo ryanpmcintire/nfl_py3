@@ -2020,3 +2020,75 @@ pick decision); no commits, no dashboard or publish work. Next-named
 candidate (not yet measured): tighten score-distance weight specifically in
 `LATE_PHASES` inside `feature_matrix`/`scaled_score_diff`, the same way
 timeouts are already phase-weighted via `to_weight`.
+
+## SIM-08 unit 3 (endgame mechanism diagnosis, measured, 2026-09-26, subagent)
+
+Two predeclared attempts on the unit-2-named mechanism (4th-down FG-attempt
+rate too low trailing 1-3 / tied late), each measured once with
+`tests/scratch/sim08_unit2_diag.py` (gitignored, unchanged) then reverted by
+hand (`git checkout --` is blocked repo-wide by ENG-31, so the added code was
+removed edit-by-edit; `git diff --stat scripts/sim04_engine.py` confirmed
+clean against the unit-1-committed state after each revert).
+
+Attempt A: tightened `scaled_score_diff` so phases {2, 3, 4} (Q4 early, Q4
+late, OT) get no compression inside 8 points (`SCORE_INNER_SCALE_LATE=1.0`
+vs the shared `SCORE_INNER_SCALE=2.0`), leaving phase 0/1 and the outer band
+unchanged. `feature_matrix` and `scaled_score_diff` both took a `phase_arr`
+argument to select the per-row scale. Result (single rerun): 4th-down FG
+rate trail_1_3 <30/30-39/40-49 .606/.629/.637 -> .628/.671/.641 (target
+>0.85, not reached, barely moved); true-margin-3 games' sim last-scoring-play
+FG share 44.1% -> 44.3% (flat). Diagnosis: fp and time already contribute
+comparable-sized KDTree distances to score even at unit scale, so doubling
+score's inner weight is not enough to make it dominate the 6-D distance
+budget. Reverted immediately per the task's predeclared 0.85 bar.
+
+Attempt B: added a 4th-down decision layer -- `fit_fourth_down_policy`
+fit a `StandardScaler` + `LogisticRegression` (sklearn 1.9, no `multi_class`
+kwarg needed) on TRAIN_SEASONS-only (2009-2014) `down_i==4` rows, labelling
+each row "go" (run/pass), "fg", or "punt" from `play_type_code`, with
+features `[sc_raw, time_raw, fp_raw, dist_raw]` (score differential,
+seconds left, field position, yards to go). `build_fourth_down_group_index`
+built KDTree pools keyed by `(phase, label)` restricted to `down_i==4` rows
+of that label (using the existing `phase_pool_mask` for OT unioning).
+`build_tables` only fit and attached these (`fourth_down_clf`,
+`nn_trees_4th`, `nn_cache_4th`) when `seasons == TRAIN_SEASONS` and
+`condition_on_team` is false, so the team-conditioned path (SIM-05) and any
+non-training season window are untouched -- this is stricter than the task's
+"never 2015+" bar since it only ever fires seasons exactly equal to
+TRAIN_SEASONS. In `run_one_game`'s unconditioned branch, after the normal
+`pick_index_nn` draw, a `down == 4` play calls `fourth_clf.predict(...)` on
+the live state and redraws `idx` from `pick_index_nn_fourth` restricted to
+that label's pool (falling back to the original draw if the label's pool is
+empty at that phase).
+
+Result (diag script, single rerun): 4th-down FG rate trail_1_3
+<30/30-39/40-49 .606/.629/.637 -> 1.000/.873/.443; tied <30/30-39/40-49
+.977/.908/.901 -> 1.000/.913/.530 (actual: trail 1.0/.933/.96, tied
+1.0/1.0/1.0). Two of three buckets per score state moved to or above actual;
+the 40-49 kick-distance bucket moved sharply the wrong way in both score
+states, roughly halving. True-margin-3 games' sim last-scoring-play FG share
+44.1% -> 49.5% (toward actual 64.8%, a real move). Headline finishing split
+did not improve: mass@3 .1289 -> .1249 (actual .1523), mass@7 .0949 -> .0984
+(actual .0911, overshot). Full-game validation,
+`python scripts/sim04_engine.py` (default `--n-games-per-season 3334`,
+2015-2017): key-number hits 2/5 -> 3/5 (7, 10, 17 now inside the actual
+bootstrap CI; 3 and 14 still outside), discrete log-loss delta vs naive
++0.0044 -> +0.01156, mass@3 sim .09778 (essentially unchanged from the
+unit-2 baseline .0978), SD ratio 1.0858 (unit-2 baseline 1.089, unchanged).
+
+Verdict: Attempt A failed its predeclared 0.85 bar outright. Attempt B
+improved key-number hits and two of three trailing/tied makeable-range
+buckets and the true-margin-3 FG share, but broke the 40-49 bucket in both
+score states and pushed the full-game log-loss delta to +0.01156, over the
+task's +0.0094 keep bar -- a hard fail on the decisive gate even though the
+mechanism moved partly toward actual. Both attempts reverted; engine is
+byte-identical to the unit-1-committed state (`git diff --stat
+scripts/sim04_engine.py` empty). The FG-attempt-rate gap and its
+`scaled_score_diff` / neighbor-composition root cause remain
+`unresolved_below_power`, not refuted (two refuted FIXES, not a refuted
+signal). No registry write (mechanism check, not a pick decision); no
+commits, no dashboard or publish work. Next-named candidate (not yet
+measured): a non-linear (small tree) decision layer with an explicit kick
+distance feature (`fp_raw + 17`) instead of a shared linear boundary across
+all field-position buckets, since Attempt B's single linear decision surface
+could not fit the 40-49 bucket and the other buckets simultaneously.
