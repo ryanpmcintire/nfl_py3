@@ -1817,3 +1817,17 @@ key-number bar stays a mechanism check, `unresolved_below_power` (no sign
 flip, not refuted). The engine moves on to team conditioning and the
 decision-relevant grade: leave-one-season-out at the opener against the served
 discrete read.
+
+## Unit LOSO grade predeclaration (orchestrator, 2026-09-26)
+
+Team conditioning (built by the conditioning unit; sanity run
+`artifacts/sim04_engine/20260926T030954Z` reproduces unit 3d unconditioned):
+k_state=200 state neighbours, reweighted by a Gaussian kernel on pregame
+off/def EPA (h = half the training-window SD of off EPA). With the predeclared
+home weight of 1.5, the home edge at equal ratings was +0.56 vs the training
+era's +2.57 (measured). Changed once, before any graded season was touched:
+the home/away match is exact (weight 1e6), so home offenses draw home plays.
+Result: +2.41 ± 0.26 on 2009-2014 tables (measured, 3000 games). Grade: 2020-2025
+REG Tuesday openers, tables built from 2009..S-1 for each season S, 200
+simulations per game. Primary = raw histogram; secondary = the same shape
+re-centred on the served predicted margin. Both are recorded.

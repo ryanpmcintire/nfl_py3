@@ -4,10 +4,12 @@ import argparse
 import json
 import sys
 from datetime import UTC, datetime
+from functools import lru_cache
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from scipy.spatial import cKDTree
 from sklearn.neighbors import KDTree
 
 REPO = Path(__file__).resolve().parents[1]
@@ -25,6 +27,8 @@ MIN_CELL_N = 25
 MAX_PLAYS_PER_GAME = 400
 
 K_NEIGHBORS = 40
+K_STATE = 200
+TEAM_KERNEL_LAMBDA = 1_000_000.0
 SCALE_YDSTOGO = 5.0
 SCALE_FP = 5.0
 SCALE_TIME = 300.0
@@ -42,6 +46,7 @@ ROUND_TIME = 30.0
 OT_SECONDS_BY_SEASON = {2015: 900.0, 2016: 900.0, 2017: 600.0}
 
 LIVE_TYPES = ("run", "pass", "punt", "field_goal", "qb_kneel", "qb_spike", "no_play")
+PLAY_TYPE_CODES = {"run": 0, "pass": 1, "punt": 2, "field_goal": 3, "qb_kneel": 4, "qb_spike": 5, "no_play": 6}
 
 
 def load_reg_seasons(seasons: tuple[int, ...]) -> pd.DataFrame:
@@ -294,6 +299,99 @@ def pick_index_nn(
     return int(neighbors[rng.integers(len(neighbors))])
 
 
+@lru_cache(maxsize=1)
+def load_team_ratings() -> pd.DataFrame:
+    df = pd.read_parquet(GAME_FEATURES_PATH)
+    df = df[df["game_type"] == "REG"]
+    cols = [
+        "game_id",
+        "home_off_epa_per_play",
+        "away_off_epa_per_play",
+        "home_def_epa_per_play",
+        "away_def_epa_per_play",
+    ]
+    return df[cols].copy()
+
+
+def build_neighbor_index_scipy(trans: pd.DataFrame) -> dict:
+    down_arr = trans["down_i"].to_numpy()
+    phase_arr = trans["phase"].to_numpy()
+    feats = feature_matrix(
+        trans["dist_raw"].to_numpy(),
+        trans["fp_raw"].to_numpy(),
+        trans["sc_raw"].to_numpy(),
+        trans["time_raw"].to_numpy(),
+        trans["off_to_raw"].to_numpy(),
+        trans["def_to_raw"].to_numpy(),
+        phase_arr,
+    )
+    trees = {}
+    for down in (1, 2, 3, 4):
+        for phase in range(5):
+            mask = (down_arr == down) & (phase_arr == phase)
+            sub_idx = np.flatnonzero(mask)
+            if len(sub_idx) == 0:
+                continue
+            trees[(down, phase)] = (cKDTree(feats[sub_idx]), sub_idx)
+    return trees
+
+
+def pick_index_nn_conditioned(
+    rng: np.random.Generator,
+    tables: dict,
+    down: int,
+    phase: int,
+    dist: float,
+    fp: float,
+    score: float,
+    time_raw: float,
+    off_to,
+    def_to,
+    k_state: int,
+    off_sim: float,
+    def_sim: float,
+    is_home_sim: int,
+) -> int:
+    down_key = down if down in (1, 2, 3, 4) else 4
+    entry = tables["nn_trees_cond"].get((down_key, phase))
+    if entry is None:
+        entry = tables["nn_trees_cond"][(down_key, 0)]
+    tree, sub_idx = entry
+    cache = tables["nn_cache_cond"]
+    key = round_state_key(down_key, phase, dist, fp, score, time_raw, off_to, def_to)
+    neighbors = cache.get(key)
+    if neighbors is None:
+        feat = feature_matrix(
+            np.array([dist]),
+            np.array([fp]),
+            np.array([score]),
+            np.array([time_raw]),
+            np.array([off_to]),
+            np.array([def_to]),
+            np.array([phase]),
+        )[0]
+        k_eff = min(k_state, len(sub_idx))
+        _, ind = tree.query(feat, k=k_eff)
+        ind = np.atleast_1d(ind)
+        neighbors = sub_idx[ind]
+        cache[key] = neighbors
+    off_row = tables["arrays"]["off_row"][neighbors]
+    def_row = tables["arrays"]["def_row"][neighbors]
+    is_home_row = tables["arrays"]["is_home_off"][neighbors]
+    h = tables["team_kernel_h"]
+    dist_sq = (off_row - off_sim) ** 2 + (def_row - def_sim) ** 2
+    weights = np.exp(-dist_sq / (2.0 * h * h))
+    weights = weights * np.where(is_home_row == is_home_sim, TEAM_KERNEL_LAMBDA, 1.0)
+    weight_sum = weights.sum()
+    if not np.isfinite(weight_sum) or weight_sum <= 0.0:
+        weights = np.ones_like(weights)
+        weight_sum = weights.sum()
+    cdf = np.cumsum(weights)
+    pick = int(np.searchsorted(cdf, rng.random() * weight_sum, side="right"))
+    pick = min(pick, len(neighbors) - 1)
+    return int(neighbors[pick])
+
+
 def build_pat_bonus(pbp: pd.DataFrame) -> pd.DataFrame:
     full = pbp.sort_values(["game_id", "play_id"]).reset_index(drop=True)
     grp = full.groupby("game_id", sort=False)
@@ -307,13 +405,22 @@ def build_pat_bonus(pbp: pd.DataFrame) -> pd.DataFrame:
     return full[["game_id", "play_id", "pat_bonus"]]
 
 
-def build_transition_frame(pbp: pd.DataFrame) -> pd.DataFrame:
+def build_transition_frame(pbp: pd.DataFrame, team_ratings: pd.DataFrame | None = None) -> pd.DataFrame:
     pat_bonus = build_pat_bonus(pbp)
     df = pbp[pbp["play_type"].isin(LIVE_TYPES)].copy()
     required = ["down", "ydstogo", "yardline_100", "score_differential", "qtr", "game_seconds_remaining"]
     df = df.dropna(subset=required)
     df = df.merge(pat_bonus, on=["game_id", "play_id"], how="left")
     df["pat_bonus"] = df["pat_bonus"].fillna(0.0)
+    if team_ratings is not None:
+        rating_cols = [
+            "game_id",
+            "home_off_epa_per_play",
+            "away_off_epa_per_play",
+            "home_def_epa_per_play",
+            "away_def_epa_per_play",
+        ]
+        df = df.merge(team_ratings[rating_cols], on="game_id", how="left")
     df = df.sort_values(["game_id", "play_id"]).reset_index(drop=True)
     grp = df.groupby("game_id", sort=False)
     df["next_down"] = grp["down"].shift(-1)
@@ -410,9 +517,28 @@ def build_transition_frame(pbp: pd.DataFrame) -> pd.DataFrame:
     off_to_raw = df["posteam_timeouts_remaining"].fillna(3.0).to_numpy()
     def_to_raw = df["defteam_timeouts_remaining"].fillna(3.0).to_numpy()
 
+    if team_ratings is not None:
+        is_home_off = (df["posteam"] == df["home_team"]).to_numpy()
+        off_row = np.where(
+            is_home_off, df["home_off_epa_per_play"].to_numpy(), df["away_off_epa_per_play"].to_numpy()
+        )
+        def_row = np.where(
+            is_home_off, df["away_def_epa_per_play"].to_numpy(), df["home_def_epa_per_play"].to_numpy()
+        )
+        off_row = np.where(np.isnan(off_row), np.nanmean(off_row), off_row)
+        def_row = np.where(np.isnan(def_row), np.nanmean(def_row), def_row)
+        is_home_off_i8 = is_home_off.astype(np.int8)
+    else:
+        off_row = np.full(len(df), np.nan)
+        def_row = np.full(len(df), np.nan)
+        is_home_off_i8 = np.full(len(df), -1, dtype=np.int8)
+
+    play_type_code = df["play_type"].map(PLAY_TYPE_CODES).fillna(-1).to_numpy().astype(np.int8)
+
     out = pd.DataFrame(
         {
             "down_i": down_i,
+            "play_type_code": play_type_code,
             "dist_f": dist_f,
             "dist_c": dist_c,
             "fp_f": fp_f,
@@ -443,6 +569,9 @@ def build_transition_frame(pbp: pd.DataFrame) -> pd.DataFrame:
             "clock_elapsed": clock_elapsed,
             "off_to_used": df["off_to_used"].to_numpy(),
             "def_to_used": df["def_to_used"].to_numpy(),
+            "off_row": off_row,
+            "def_row": def_row,
+            "is_home_off": is_home_off_i8,
         }
     )
     return out
@@ -456,10 +585,28 @@ def build_opening_pool(pbp: pd.DataFrame) -> np.ndarray:
     return first["yardline_100"].to_numpy()
 
 
-def build_tables(seasons: tuple[int, ...]) -> dict:
+def build_tables(seasons: tuple[int, ...], condition_on_team: bool = False) -> dict:
     pbp = load_reg_seasons(seasons)
-    trans = build_transition_frame(pbp)
+    team_ratings = load_team_ratings() if condition_on_team else None
+    trans = build_transition_frame(pbp, team_ratings=team_ratings)
     trans = trans.reset_index(drop=True)
+    nn_trees_cond = build_neighbor_index_scipy(trans) if condition_on_team else None
+    if condition_on_team:
+        window_ids = set(pbp["game_id"].unique())
+        window_ratings = team_ratings[team_ratings["game_id"].isin(window_ids)]
+        off_spread = pd.concat(
+            [window_ratings["home_off_epa_per_play"], window_ratings["away_off_epa_per_play"]]
+        )
+        def_spread = pd.concat(
+            [window_ratings["home_def_epa_per_play"], window_ratings["away_def_epa_per_play"]]
+        )
+        team_kernel_h = 0.5 * float(np.nanstd(off_spread.to_numpy()))
+        league_off_mean = float(np.nanmean(off_spread.to_numpy()))
+        league_def_mean = float(np.nanmean(def_spread.to_numpy()))
+    else:
+        team_kernel_h = None
+        league_off_mean = None
+        league_def_mean = None
     nn_trees = build_neighbor_index(trans)
     opening_pool = build_opening_pool(pbp)
     off_td_mask = trans["points_off"].to_numpy() >= 6.0
@@ -479,6 +626,10 @@ def build_tables(seasons: tuple[int, ...]) -> dict:
     if len(post_score_pool) == 0:
         post_score_pool = opening_pool
     arrays = {
+        "down_i": trans["down_i"].to_numpy(),
+        "dist_raw": trans["dist_raw"].to_numpy(),
+        "fp_raw": trans["fp_raw"].to_numpy(),
+        "play_type_code": trans["play_type_code"].to_numpy(),
         "points_off": trans["points_off"].to_numpy(),
         "points_def": trans["points_def"].to_numpy(),
         "clock_elapsed": trans["clock_elapsed"].to_numpy(),
@@ -492,16 +643,24 @@ def build_tables(seasons: tuple[int, ...]) -> dict:
         "repeat_down": trans["repeat_down"].to_numpy(),
         "off_to_used": trans["off_to_used"].to_numpy(),
         "def_to_used": trans["def_to_used"].to_numpy(),
+        "off_row": trans["off_row"].to_numpy(),
+        "def_row": trans["def_row"].to_numpy(),
+        "is_home_off": trans["is_home_off"].to_numpy(),
     }
     return {
         "arrays": arrays,
         "nn_trees": nn_trees,
+        "nn_trees_cond": nn_trees_cond,
         "nn_cache": {},
+        "nn_cache_cond": {},
         "opening_pool": opening_pool,
         "pat_bonus_pool": pat_bonus_pool,
         "post_score_pool": post_score_pool,
         "n_rows": len(trans),
         "seasons": seasons,
+        "team_kernel_h": team_kernel_h,
+        "league_off_mean": league_off_mean,
+        "league_def_mean": league_def_mean,
     }
 
 
@@ -541,8 +700,11 @@ def run_one_game(
     policy,
     min_cell_n: int,
     max_plays: int,
+    home_ratings: dict | None = None,
+    away_ratings: dict | None = None,
 ) -> tuple[dict, bool]:
     arrays = tables["arrays"]
+    conditioned = home_ratings is not None and away_ratings is not None and tables["team_kernel_h"] is not None
     opening_pool = tables["opening_pool"]
     pat_bonus_pool = tables["pat_bonus_pool"]
     post_score_pool = tables["post_score_pool"]
@@ -591,9 +753,35 @@ def run_one_game(
         phase = 4 if in_ot else compute_phase(qtr, gsr)
         time_feat = ot_clock if in_ot else continuous_time_feature(qtr, gsr)
 
-        idx = pick_index_nn(
-            rng, tables, down, phase, distance, yardline, score_diff, time_feat, off_to, def_to, min_cell_n
-        )
+        if conditioned:
+            if offense == "home":
+                off_sim = home_ratings["off"]
+                def_sim = away_ratings["def"]
+                is_home_sim = 1
+            else:
+                off_sim = away_ratings["off"]
+                def_sim = home_ratings["def"]
+                is_home_sim = 0
+            idx = pick_index_nn_conditioned(
+                rng,
+                tables,
+                down,
+                phase,
+                distance,
+                yardline,
+                score_diff,
+                time_feat,
+                off_to,
+                def_to,
+                K_STATE,
+                off_sim,
+                def_sim,
+                is_home_sim,
+            )
+        else:
+            idx = pick_index_nn(
+                rng, tables, down, phase, distance, yardline, score_diff, time_feat, off_to, def_to, min_cell_n
+            )
 
         drawn = {
             "points_off": arrays["points_off"][idx],
@@ -609,6 +797,7 @@ def run_one_game(
             "repeat_down": bool(arrays["repeat_down"][idx]),
             "off_to_used": arrays["off_to_used"][idx],
             "def_to_used": arrays["def_to_used"][idx],
+            "play_type_code": arrays["play_type_code"][idx],
         }
         drawn = policy(down, distance, yardline, score_diff, qtr, clock_val, drawn)
 
@@ -771,6 +960,8 @@ def simulate(
     policy=None,
     min_cell_n: int = K_NEIGHBORS,
     max_plays: int = MAX_PLAYS_PER_GAME,
+    home_ratings: dict | None = None,
+    away_ratings: dict | None = None,
 ) -> pd.DataFrame:
     policy = policy or default_policy
     opening_pool = tables["opening_pool"]
@@ -780,7 +971,9 @@ def simulate(
 
     for _ in range(n_games):
         state = initial_kickoff_state(rng, opening_pool)
-        record, cap_hit = run_one_game(state, tables, rng, ot_seconds, policy, min_cell_n, max_plays)
+        record, cap_hit = run_one_game(
+            state, tables, rng, ot_seconds, policy, min_cell_n, max_plays, home_ratings, away_ratings
+        )
         max_play_cap_hits += int(cap_hit)
         records.append(record)
 

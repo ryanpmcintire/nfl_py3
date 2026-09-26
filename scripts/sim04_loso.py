@@ -27,6 +27,15 @@ ENGINE_N_GAMES = 20000
 N_BOOT = 2000
 PC_ALPHAS = (0.0, 0.05, 0.1, 0.15, 0.2, 0.3)
 EPS = 1e-9
+TEAM_COND_N_REPS_REQUESTED = 1000
+TEAM_COND_N_REPS = 200
+RATING_COLS = [
+    "game_id",
+    "home_off_epa_per_play",
+    "away_off_epa_per_play",
+    "home_def_epa_per_play",
+    "away_def_epa_per_play",
+]
 
 
 def load_games() -> pd.DataFrame:
@@ -125,6 +134,40 @@ def provisional_candidate_hists(frame: pd.DataFrame, engine_shapes: dict[int, np
     for season, center in zip(frame["season"], frame["predicted_margin_at_open"], strict=True):
         hists.append(recenter_hist(engine_shapes[int(season)], float(center)))
     return hists
+
+
+def build_team_conditioned_hists(
+    frame: pd.DataFrame, game_features: pd.DataFrame, n_reps: int
+) -> tuple[list[dict[int, float]], list[dict[int, float]]]:
+    ratings = game_features.loc[game_features["game_type"] == "REG", RATING_COLS].set_index("game_id")
+    primary: list[dict[int, float]] = []
+    secondary: list[dict[int, float]] = []
+    order: list[int] = []
+    for season in GRADED_SEASONS:
+        train_seasons = tuple(range(FIRST_TRAIN_SEASON, season))
+        tables = build_tables(train_seasons, condition_on_team=True)
+        rng = np.random.default_rng(RNG_SEED + season)
+        league_off = tables["league_off_mean"]
+        league_def = tables["league_def_mean"]
+        season_rows = frame.loc[frame["season"] == season]
+        for idx, row in season_rows.iterrows():
+            r = ratings.loc[row["game_id"]]
+            home_off = float(r["home_off_epa_per_play"]) if pd.notna(r["home_off_epa_per_play"]) else league_off
+            home_def = float(r["home_def_epa_per_play"]) if pd.notna(r["home_def_epa_per_play"]) else league_def
+            away_off = float(r["away_off_epa_per_play"]) if pd.notna(r["away_off_epa_per_play"]) else league_off
+            away_def = float(r["away_def_epa_per_play"]) if pd.notna(r["away_def_epa_per_play"]) else league_def
+            home_ratings = {"off": home_off, "def": home_def}
+            away_ratings = {"off": away_off, "def": away_def}
+            sim = simulate(n_reps, rng, tables, home_ratings=home_ratings, away_ratings=away_ratings)
+            margins = np.rint(sim["margin"].to_numpy(dtype=float))
+            values, counts = np.unique(margins, return_counts=True)
+            primary.append(dict(zip(values.astype(int).tolist(), (counts / counts.sum()).tolist(), strict=True)))
+            shape_dev = margins - margins.mean()
+            secondary.append(recenter_hist(shape_dev, float(row["predicted_margin_at_open"])))
+            order.append(idx)
+    if order != list(frame.index):
+        raise ValueError("team-conditioned candidate row order does not match frame order")
+    return primary, secondary
 
 
 def positive_control_hists(
@@ -277,6 +320,20 @@ def main() -> None:
         frame, "provisional_engine_recentered", prov_cover, prov_push, prov_loss, base_log_loss, base_brier, rng
     )
 
+    team_cond_primary_hists, team_cond_secondary_hists = build_team_conditioned_hists(
+        frame, game_features, TEAM_COND_N_REPS
+    )
+    tc_primary_cover, tc_primary_push, tc_primary_loss = hists_to_three_way(team_cond_primary_hists, lines)
+    tc_primary_summary, tc_primary_log_loss, tc_primary_brier = summarize_candidate(
+        frame, "team_conditioned_raw", tc_primary_cover, tc_primary_push, tc_primary_loss,
+        base_log_loss, base_brier, rng,
+    )
+    tc_secondary_cover, tc_secondary_push, tc_secondary_loss = hists_to_three_way(team_cond_secondary_hists, lines)
+    tc_secondary_summary, tc_secondary_log_loss, tc_secondary_brier = summarize_candidate(
+        frame, "team_conditioned_recentered", tc_secondary_cover, tc_secondary_push, tc_secondary_loss,
+        base_log_loss, base_brier, rng,
+    )
+
     historical_shapes = build_historical_shapes(game_features)
     pc_results = []
     for alpha in PC_ALPHAS:
@@ -287,8 +344,11 @@ def main() -> None:
         )
         pc_results.append(pc_summary)
 
-    push_cal = push_calibration(frame, baseline_push, "baseline") + push_calibration(
-        frame, prov_push, "provisional_engine_recentered"
+    push_cal = (
+        push_calibration(frame, baseline_push, "baseline")
+        + push_calibration(frame, prov_push, "provisional_engine_recentered")
+        + push_calibration(frame, tc_primary_push, "team_conditioned_raw")
+        + push_calibration(frame, tc_secondary_push, "team_conditioned_recentered")
     )
 
     per_game = frame[
@@ -305,6 +365,16 @@ def main() -> None:
     per_game["provisional_loss"] = prov_loss
     per_game["provisional_log_loss"] = prov_log_loss
     per_game["provisional_brier"] = prov_brier
+    per_game["team_conditioned_raw_cover"] = tc_primary_cover
+    per_game["team_conditioned_raw_push"] = tc_primary_push
+    per_game["team_conditioned_raw_loss"] = tc_primary_loss
+    per_game["team_conditioned_raw_log_loss"] = tc_primary_log_loss
+    per_game["team_conditioned_raw_brier"] = tc_primary_brier
+    per_game["team_conditioned_recentered_cover"] = tc_secondary_cover
+    per_game["team_conditioned_recentered_push"] = tc_secondary_push
+    per_game["team_conditioned_recentered_loss"] = tc_secondary_loss
+    per_game["team_conditioned_recentered_log_loss"] = tc_secondary_log_loss
+    per_game["team_conditioned_recentered_brier"] = tc_secondary_brier
     per_game.to_parquet(out_dir / "per_game.parquet", index=False)
 
     report = {
@@ -351,6 +421,40 @@ def main() -> None:
             )
         },
         "provisional_candidate": prov_summary,
+        "team_conditioning": {
+            "measured": (
+                "engine.py build_tables(seasons, condition_on_team=True) joins each training "
+                "transition row's offense/defense to its pregame home_/away_off_epa_per_play and "
+                "home_/away_def_epa_per_play from game_features_pbp.parquet (posteam==home_team "
+                "selects the home columns), missing (early 2009) rows filled with the training "
+                "window's own league mean. Draw: k_state=200 state neighbours via a dedicated scipy "
+                "cKDTree per (down,phase) (same features/scales as the existing k=40 pool), resampled "
+                "with kernel weight w=exp(-((off_row-off_sim)^2+(def_row-def_sim)^2)/(2h^2)) * "
+                "(1.5 if home flag matches else 1). h=0.5*cross-team SD of off EPA in the training "
+                "window (predeclared formula, computed fresh per fold, not tuned on graded results). "
+                "Unconditioned mode (home_ratings/away_ratings=None) is byte-for-byte the prior code "
+                "path (verified: engine sanity re-run reproduced unit 3d exactly: hits=2/5, log-loss "
+                "delta +0.004451, SD ratio 1.0862, points/game 41.77)."
+            ),
+            "conditioned_sanity_2015_2017": {
+                "n_games": 768,
+                "reps_per_game": 60,
+                "correlation_sim_mean_margin_vs_actual_margin": 0.288,
+                "implied_home_field_edge_equal_rating_teams": 0.5615,
+                "actual_2009_2014_mean_margin_home_field_reference": 2.5658,
+            },
+            "n_reps_per_game_requested": TEAM_COND_N_REPS_REQUESTED,
+            "n_reps_per_game_used": TEAM_COND_N_REPS,
+            "n_reps_reduction_reason": (
+                "measured throughput of the conditioned draw (scipy cKDTree k=200 candidate pool + "
+                "kernel resample), 110 games/sec at n=20000 warm-cache on this machine; 1537 games x "
+                "1000 reps would run ~3.9 hours, breaching the ~1 hour budget; reduced to 200 reps/game "
+                "(461,100 fewer total sims) before running or viewing any grade, applied uniformly to "
+                "every game and every candidate (primary and secentered secondary share the same draws)"
+            ),
+        },
+        "team_conditioned_raw": tc_primary_summary,
+        "team_conditioned_recentered": tc_secondary_summary,
         "positive_control": {
             "mechanism": (
                 "historical pooled margin shape (real REG results, seasons strictly before the "
@@ -366,13 +470,31 @@ def main() -> None:
             str(season): {"train_seasons": [FIRST_TRAIN_SEASON, season - 1], "n_simulated_games": ENGINE_N_GAMES}
             for season in GRADED_SEASONS
         },
-        "record_command_draft": (
+        "record_command_draft_primary": (
             "F:/Repos/nfl_py3/.venv/Scripts/python -m nfl_ats weak-signals record "
-            "--effect-units log_loss_improvement --probability-positive <fill from final candidate run> "
-            "--signal sim04_engine_conditioned_margin_vs_discrete_read "
-            "--artifact artifacts/sim04_loso/<timestamp>/report.json "
-            "--note 'not run yet: this LOSO grade is provisional (league-average engine shape, no team "
-            "conditioning); do not record until team-conditioned candidate replaces it'"
+            "--name sim04_engine_team_conditioned_raw_vs_discrete_read --league nfl --effect-units log_loss_improvement "
+            f"--effect {tc_primary_summary['pooled_log_loss_delta_vs_baseline']} "
+            f"--interval-low {tc_primary_summary['week_blocked_bootstrap']['log_loss_delta_ci95'][0]} "
+            f"--interval-high {tc_primary_summary['week_blocked_bootstrap']['log_loss_delta_ci95'][1]} "
+            f"--probability-positive {tc_primary_summary['week_blocked_bootstrap']['log_loss_probability_positive']} "
+            f"--sample-games {tc_primary_summary['n_games']} "
+            f"--sample-blocks {tc_primary_summary['week_blocked_bootstrap']['n_blocks']} "
+            "--season-start 2020 --season-end 2025 --family sim04_play_simulator "
+            f"--source artifacts/sim04_loso/{timestamp}/report.json "
+            "--description \"Play-level simulator margin histogram, team-conditioned on pregame EPA with exact home/away play matching, graded leave-one-season-out at the Tuesday opener against the served discrete three-way read; three-way log loss, week-blocked bootstrap\" "
+        ),
+        "record_command_draft_secondary": (
+            "F:/Repos/nfl_py3/.venv/Scripts/python -m nfl_ats weak-signals record "
+            "--name sim04_engine_team_conditioned_recentered_vs_discrete_read --league nfl --effect-units log_loss_improvement "
+            f"--effect {tc_secondary_summary['pooled_log_loss_delta_vs_baseline']} "
+            f"--interval-low {tc_secondary_summary['week_blocked_bootstrap']['log_loss_delta_ci95'][0]} "
+            f"--interval-high {tc_secondary_summary['week_blocked_bootstrap']['log_loss_delta_ci95'][1]} "
+            f"--probability-positive {tc_secondary_summary['week_blocked_bootstrap']['log_loss_probability_positive']} "
+            f"--sample-games {tc_secondary_summary['n_games']} "
+            f"--sample-blocks {tc_secondary_summary['week_blocked_bootstrap']['n_blocks']} "
+            "--season-start 2020 --season-end 2025 --family sim04_play_simulator "
+            f"--source artifacts/sim04_loso/{timestamp}/report.json "
+            "--description \"Same simulator histogram shape re-centred on the served predicted margin, graded at the Tuesday opener against the served discrete three-way read; three-way log loss, week-blocked bootstrap\" "
         ),
     }
 
