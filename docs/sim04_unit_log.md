@@ -1383,3 +1383,145 @@ fixing the race's own bookkeeping (Defect 2) cannot, by itself, raise the
 drive-outcome pool's scoring rate.
 
 Not applied to `src/`; no registry writes; no commits.
+
+## Engine unit (2026-09-25/26, root)
+
+Built `scripts/sim04_engine.py`, one clean self-contained play-level engine
+(no imports from the abandoned units 1b-9 chain). Design departs from every
+prior unit: instead of drawing a whole-drive outcome from a pool and racing
+it against a separately-fit clock model (the structurally-decoupled defect
+Unit 9 named as the remaining mechanism), this engine samples one real
+historical play row per snap from a bucketed empirical cell keyed on
+(down, distance bucket, field-position bucket, score-diff bucket, time
+bucket incl. two-minute/last-5-min-Q4/OT, timeout flags) with hierarchical
+backoff (L0 finest, L1 drops timeouts and coarsens score/time, L2 coarsens
+distance/field position, L3 down-only floor, MIN_CELL_N=25), and copies
+that historical row's own recorded transition (next down, next distance,
+next yardline_100, whether possession flipped, clock elapsed to the next
+snap, points scored) directly onto the simulated game state. Down,
+distance, field position, scoring and the clock all come from this one
+sequence. Because the transition is read directly off real (current row ->
+next live snap in the same game) pairs, punt net yardage, FG make/miss by
+distance, turnover-return field position and the 4th-down go/kick/punt
+choice are not separately modeled -- they fall out of the same draw for
+free, since real coaches' historical decisions are already baked into what
+actually happened next in that bucket. Two explicit non-empirical rules
+were added on top: touchdown scoring rows are credited with the
+immediately following extra-point/2-point row's own score delta (folded
+into points_off/points_def at table-build time via build_pat_bonus;
+otherwise every TD would only ever be worth 6, never 7/8, the single
+largest bug found this unit, see below), and era-correct OT length (900s
+through 2016, 600s from 2017) with a hand-coded sudden-death settlement
+(any defensive/return score or offense TD ends it; an offense FG only
+ends it if this is not the first team's first OT possession and the score
+is no longer tied) plus a timeouts-reset-to-3-at-halftime rule, since
+timeout counts are tracked as delta-consumption applied to real team
+identities, not copied absolute values. build_tables(seasons) and
+simulate(n_games, rng, tables, ot_seconds=..., policy=...) match the
+requested interface; policy is a pass-through seam for SIM-05, not
+exercised this unit. Train 2009-2014, validate 2015-2017, REG-only via
+season_type=='REG' on data/pbp/raw/20260925T202544Z and game_type=='REG'
+on game_features_pbp.parquet (matches Unit 7's confirmed-equivalent
+filter). No 2018-2025 run.
+
+Bugs found and fixed in-session (self-contained to this file, each
+re-measured before the next): (1) NaN down/yardline_100/opening-pool draws
+crashed bucket functions -- dropna on required columns and on the
+opening-field-position pool. (2) Extra points/2-point conversions are
+separate play_type=='extra_point'/play_type_nfl=='PAT2' rows excluded from
+the live-snap set, so every touchdown scored exactly 6 with no PAT --
+fixed via build_pat_bonus, which reads the immediately-following PAT row's
+own score delta and adds it to the TD row's points_off/points_def before
+folding into the table; this fix alone dropped the validation log-loss
+delta from +0.785 to +0.119 at n=300 games and moved key-number-3 mass
+from grossly excess toward the actual range. (3) The OT sudden-death check
+treated any positive score after the first possession as game-ending,
+including a field goal that only re-tied the score (e.g. 3-0 -> 3-3) --
+fixed to require home_score != away_score after the score before
+settling; did not measurably move the tie rate (see below), so this bug
+was real but not the dominant source of the elevated tie rate.
+
+Command run (final, n=3334 games/season = 10,002 total, ~16s wall):
+`.venv/Scripts/python scripts/sim04_engine.py --n-games-per-season 3334`.
+Artifact: `artifacts/sim04_engine/20260926T020854Z/report.json`.
+
+Key-number table (validation 2015-2017, bootstrap CI over actual seasons):
+3: sim 0.0894 vs actual 0.1523 (CI 0.1380-0.1667, miss, sim too low); 7:
+sim 0.0640 vs actual 0.0911 (CI 0.0755-0.1068, miss, too low); 10: sim
+0.0551 vs actual 0.0482 (CI 0.0391-0.0573, hit); 14: sim 0.0366 vs actual
+0.0508 (CI 0.0456-0.0560, miss, too low); 17: sim 0.0375 vs actual 0.0299
+(CI 0.0208-0.0391, hit). 2/5 hits. Discrete log loss: simulator 3.9948 vs
+naive-train-histogram 3.9522, delta +0.0426 (fails the <=+0.02 bar).
+Margin SD ratio (sim/actual) 1.077. Points/game (sim) 42.75. Plays/game:
+sim 148.95 vs actual 158.51. Possessions/game: sim 22.27 vs actual 23.06.
+Late-Q4 (final 5:00) possession scoring rate: sim 0.180 vs
+measured-this-session actual 0.215 (n=768 REG games, 2015-2017; this is a
+fresh from-scratch measurement, not the same definition as the task
+prompt's cited historical figure of 0.302 from Units 7b/9 -- the two do
+not agree, most likely a differing drive-boundary or "scored" definition;
+flagged, not reconciled, given the tool budget). Tied-at-5:00-remaining-
+in-Q4 OT rate: sim 0.530 (n=419 sim games tied at that instant) vs
+measured-this-session actual 0.149 (n=47 real games). Overall OT rate: sim
+0.0481 vs actual 0.0625 (closest any unit in this series has come to
+actual -- prior units ranged 59.9%-91%). Tie rate: sim 0.0283 vs a
+real-world rate on the order of 0.003-0.005 (not separately re-measured
+this session; visibly still roughly 6-10x too high).
+
+GO/NO-GO: NO_GO (2/5 hits, log-loss delta +0.0426 > +0.02).
+
+Verdict and named remaining mechanism. The literal play-by-play
+architecture closes most of the gap this whole series has chased: OT rate
+now nearly matches actual (4.8% vs 6.25%, vs 60-91% for every drive-chain
+hybrid unit 1b-9), and the aggregate late-Q4 scoring-rate ratio
+(0.180/0.215 = 0.84) is far closer to 1 than the old units' 0.161/0.302 =
+0.53. The remaining, more specific defect: the tied-at-5:00 subgroup still
+resolves to OT far more often in the sim (53.0%) than in real games
+(14.9%), a much larger relative gap than the aggregate late-Q4 rate shows,
+meaning tied/urgent-endgame situations specifically are under-scoring more
+than the average late-Q4 possession. A same-session diagnostic on train
+data (2009-2014) supports this: real drives that start tied, qtr==4,
+gsr<=300 score at 0.291, actually higher than the all-late-Q4 average of
+0.199 (trailing/leading teams plausibly play worse than an evenly matched
+tied situation), so a correctly-calibrated engine should show the tied
+subgroup scoring more than average, not roughly the same or less. This is
+the same family of defect diagnosed in Units 7b-9 (tied-late-game scoring
+undershoot from cell-sparsity backoff) recurring in a structurally
+different engine, at much smaller magnitude, which is evidence the earlier
+units' "structural decoupling" diagnosis was real but not the sole cause
+-- data sparsity in the tied-plus-late-plus-specific-down/distance/field-
+position corner of the cell hierarchy is at minimum a second contributing
+mechanism. Not yet isolated to a single fix: the score-bucket functions
+already keep tied (diff==0) as its own fine and coarse bucket (ruling out
+the exact old mixing bug), so the next diagnostic step (not run this
+session, out of budget) is to measure, from the same simulated games, the
+per-play scoring rate specifically inside the k0/k1/k2 cells active when
+score_diff==0 and qtr==4 and gsr<=300, split by which backoff level
+actually fired, to see whether L1/L2 backoff (which drops or coarsens
+field position/distance) is diluting the tied-specific elevated aggression
+the same way Unit 7b found for the old drive-pool design.
+
+Not ported to `src/`; no registry writes; no commits; no dashboard or
+publish work (research-only per AGENTS.md).
+
+## Engine fix 1 (measured, 2026-09-26, orchestrator)
+
+Bug: `build_transition_frame` shifted next-state within game then dropped rows
+with no next play, so the last play of every game never entered the pool. On
+2009-2014 REG that removed 148 game-ending scores (81 of 94 OT final plays are
+the winning score) and 851 final kneel-downs, so a simulated OT could almost
+never end on a score. Fix: keep the last row as a terminal transition (clock to
+zero in regulation, 6 s in OT, possession flips). Also added the halftime
+possession change (second-half receiver is the opening kicker, fresh field
+position, clock set to 1800). One validation run, 2015-2017, artifact
+`artifacts/sim04_engine/20260926T021517Z/report.json`:
+
+| metric | before | after | actual |
+|---|---|---|---|
+| mass at 3 / 7 / 10 / 14 / 17 | .089/.064/.055/.037/.038 | .098/.063/.056/.041/.041 | .152/.091/.048/.051/.030 |
+| key-number hits | 2 | 1 | -- |
+| log-loss delta vs naive | +0.0426 | +0.0207 | -- |
+| tie rate | 2.8% | 1.6% | ~0.4% |
+| tied-at-5:00 OT rate | 53.0% | 49.3% | 14.9% |
+| late-Q4 possession scoring rate | 0.180 | 0.136 | 0.215 |
+
+Still NO-GO. 3 and 7 are short by a third; late possessions under-score.
