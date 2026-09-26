@@ -9,6 +9,11 @@ on cover-vs-miss and push log loss, recorded with `weak-signals record`.
 
 ## State
 
+- UNIT 7 IN FLIGHT (2026-09-26, subagent hit 50-tool-call cap; background
+  task `bvw7920cf` keeps running independently of this session): full
+  detail and next-agent instructions are in "Next" item 2 below. Do not
+  relaunch the run; check for a fresh `artifacts/sim04_loso/<timestamp>/`
+  directory first (newer than 20260926T034537Z).
 - SIM-04 was closed while the engine failed its own gate (2/5 key numbers);
   its registry rows refute that engine version only.
 - Unit 1 (`69fe2f1`): OT neighbour pool includes phase 3; OT TDs per play .007
@@ -53,9 +58,36 @@ on cover-vs-miss and push log loss, recorded with `weak-signals record`.
    -1.37 (more negative than -0.73). Not yet re-graded on LOSO 2020-2025.
 1. Remaining shape gaps: mass at 3 (.102 vs .152) and SD ratio 1.10 (margins
    too dispersed; the narrower kernel may widen them, recheck).
-2. Anchor on the opening spread and total; re-grade LOSO 2020-2025 with 1000+
-   draws via `scripts/sim04_loso.py`; add a fitted-term blend with the served
-   probability; record with `weak-signals record`.
+2. Unit 7 IN FLIGHT (2026-09-26, subagent, background task `bvw7920cf`):
+   `scripts/sim04_loso.py` now has an exponential-tilt secondary read
+   (`tilt_hist`/`tilt_to_mean`, same mechanism as `sim04_week.py`, keeps
+   spikes on integers, reuses the raw team-conditioned draws so no extra
+   sim cost) alongside the old rounded-shift read, plus a `fit_blend`
+   logistic (features: logit of served cover-excl-push, logit of tilted-sim
+   cover-excl-push; push kept at the served read; weights fit LOSO across
+   2020-2025, one fold per held-out season). Timing benchmark
+   (`tests/scratch/sim08_unit7_timing.py`, kept): 30.5 games/sec on 2020's
+   table, 27.3 games/sec on 2025's (current engine is ~3.6x slower than the
+   unit-6-era 110 games/sec, from the 4th-down layer/OT pool/yard shift).
+   1000 reps/game would run ~14h (over the 3h budget), so
+   `TEAM_COND_N_REPS = 180` (est. ~2.7-2.8h for 1537 games), MC cost
+   (K-1)/2N = 2/360 = 0.00556. Plumbing verified end to end with a 2-season,
+   5-rep smoke run (deleted after passing) before launching the real run.
+   Full run launched foreground-then-auto-backgrounded, artifact will land
+   at `artifacts/sim04_loso/<timestamp>/` (report.json + per_game.parquet),
+   stdout/stderr mirrored to `tests/scratch/sim08_unit7_full_stdout.json`
+   and `..._stderr.txt`. NEXT AGENT: if this lane is picked up fresh, check
+   whether that background task finished (look for a new dir under
+   `artifacts/sim04_loso/` newer than 20260926T034537Z, or read the stderr
+   tail for `Artifact directory:`); if still running, just wait for its
+   notification. Once done: read report.json's `team_conditioned_raw`,
+   `team_conditioned_shift`, `team_conditioned_tilt`,
+   `team_conditioned_tilt_served_blend`, `blend_fold_coefficients`,
+   `push_vs_nonpush_log_loss`, `cover_vs_miss_delta_pushes_excluded`,
+   `disagreement_report`, `best_read_reliability_table`,
+   `record_command_drafts`; append a "SIM-08 unit 7 LOSO re-grade" section
+   to `docs/sim04_unit_log.md`. Nothing served; do not run the record
+   commands (draft only).
 
 ## Open
 

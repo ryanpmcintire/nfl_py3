@@ -7,6 +7,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from sklearn.linear_model import LogisticRegression
 
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -28,7 +29,9 @@ N_BOOT = 2000
 PC_ALPHAS = (0.0, 0.05, 0.1, 0.15, 0.2, 0.3)
 EPS = 1e-9
 TEAM_COND_N_REPS_REQUESTED = 1000
-TEAM_COND_N_REPS = 200
+TEAM_COND_N_REPS = 180
+MEASURED_GAMES_PER_SECOND_2020 = 30.5
+MEASURED_GAMES_PER_SECOND_2025 = 27.3
 RATING_COLS = [
     "game_id",
     "home_off_epa_per_play",
@@ -94,6 +97,31 @@ def recenter_hist(shape_dev: np.ndarray, center: float) -> dict[int, float]:
     return dict(zip(values.tolist(), probs.tolist(), strict=True))
 
 
+def tilt_to_mean(values: np.ndarray, counts: np.ndarray, target: float) -> np.ndarray:
+    lo, hi = -2.0, 2.0
+    for _ in range(80):
+        theta = (lo + hi) / 2.0
+        w = counts * np.exp(theta * (values - values.mean()))
+        if (w * values).sum() / w.sum() < target:
+            lo = theta
+        else:
+            hi = theta
+    return counts * np.exp((lo + hi) / 2.0 * (values - values.mean()))
+
+
+def tilt_hist(margins: np.ndarray, center: float) -> dict[int, float]:
+    clipped = np.clip(margins, -MARGIN_CLIP, MARGIN_CLIP).astype(int)
+    values, counts = np.unique(clipped, return_counts=True)
+    weights = tilt_to_mean(values.astype(float), counts.astype(float), center)
+    probs = weights / weights.sum()
+    return dict(zip(values.tolist(), probs.tolist(), strict=True))
+
+
+def safe_logit(p: np.ndarray) -> np.ndarray:
+    q = np.clip(p, EPS, 1.0 - EPS)
+    return np.log(q / (1.0 - q))
+
+
 def hist_to_three_way(hist: dict[int, float], line: float) -> tuple[float, float, float]:
     cover = push = loss = 0.0
     for margin, prob in hist.items():
@@ -138,10 +166,11 @@ def provisional_candidate_hists(frame: pd.DataFrame, engine_shapes: dict[int, np
 
 def build_team_conditioned_hists(
     frame: pd.DataFrame, game_features: pd.DataFrame, n_reps: int
-) -> tuple[list[dict[int, float]], list[dict[int, float]]]:
+) -> tuple[list[dict[int, float]], list[dict[int, float]], list[dict[int, float]]]:
     ratings = game_features.loc[game_features["game_type"] == "REG", RATING_COLS].set_index("game_id")
     primary: list[dict[int, float]] = []
-    secondary: list[dict[int, float]] = []
+    shift: list[dict[int, float]] = []
+    tilt: list[dict[int, float]] = []
     order: list[int] = []
     for season in GRADED_SEASONS:
         train_seasons = tuple(range(FIRST_TRAIN_SEASON, season))
@@ -163,11 +192,12 @@ def build_team_conditioned_hists(
             values, counts = np.unique(margins, return_counts=True)
             primary.append(dict(zip(values.astype(int).tolist(), (counts / counts.sum()).tolist(), strict=True)))
             shape_dev = margins - margins.mean()
-            secondary.append(recenter_hist(shape_dev, float(row["predicted_margin_at_open"])))
+            shift.append(recenter_hist(shape_dev, float(row["predicted_margin_at_open"])))
+            tilt.append(tilt_hist(margins, float(row["predicted_margin_at_open"])))
             order.append(idx)
     if order != list(frame.index):
         raise ValueError("team-conditioned candidate row order does not match frame order")
-    return primary, secondary
+    return primary, shift, tilt
 
 
 def positive_control_hists(
@@ -298,6 +328,105 @@ def summarize_candidate(
     }, log_loss, brier
 
 
+def fit_blend(
+    frame: pd.DataFrame,
+    baseline_cover: np.ndarray,
+    baseline_loss: np.ndarray,
+    baseline_push: np.ndarray,
+    tilt_cover: np.ndarray,
+    tilt_loss: np.ndarray,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, list[dict]]:
+    served_cond = baseline_cover / np.clip(baseline_cover + baseline_loss, EPS, None)
+    tilt_cond = tilt_cover / np.clip(tilt_cover + tilt_loss, EPS, None)
+    x_served = safe_logit(served_cond)
+    x_tilt = safe_logit(tilt_cond)
+    outcome = frame["outcome"].to_numpy()
+    seasons = frame["season"].to_numpy()
+    nonpush = outcome != "push"
+    y_cover = (outcome == "cover").astype(int)
+    blend_cond = np.empty(len(frame))
+    fold_coeffs: list[dict] = []
+    for season in GRADED_SEASONS:
+        train_mask = (seasons != season) & nonpush
+        test_mask = seasons == season
+        x_train = np.column_stack([x_served[train_mask], x_tilt[train_mask]])
+        y_train = y_cover[train_mask]
+        model = LogisticRegression(C=1e10, max_iter=2000)
+        model.fit(x_train, y_train)
+        x_test = np.column_stack([x_served[test_mask], x_tilt[test_mask]])
+        blend_cond[test_mask] = model.predict_proba(x_test)[:, 1]
+        fold_coeffs.append(
+            {
+                "held_out_season": int(season),
+                "n_train": int(train_mask.sum()),
+                "intercept": float(model.intercept_[0]),
+                "coef_served_logit": float(model.coef_[0][0]),
+                "coef_tilt_logit": float(model.coef_[0][1]),
+            }
+        )
+    p_push_blend = baseline_push.copy()
+    p_cover_blend = (1.0 - p_push_blend) * blend_cond
+    p_loss_blend = (1.0 - p_push_blend) * (1.0 - blend_cond)
+    return p_cover_blend, p_push_blend, p_loss_blend, fold_coeffs
+
+
+def push_split(label: str, log_loss: np.ndarray, frame: pd.DataFrame) -> dict:
+    outcome = frame["outcome"].to_numpy()
+    push_mask = outcome == "push"
+    return {
+        "candidate": label,
+        "push_log_loss_mean": float(log_loss[push_mask].mean()),
+        "n_push": int(push_mask.sum()),
+        "nonpush_log_loss_mean": float(log_loss[~push_mask].mean()),
+        "n_nonpush": int((~push_mask).sum()),
+    }
+
+
+def cover_miss_delta(
+    label: str, base_log_loss: np.ndarray, cand_log_loss: np.ndarray, frame: pd.DataFrame, rng: np.random.Generator
+) -> dict:
+    outcome = frame["outcome"].to_numpy()
+    nonpush = outcome != "push"
+    sub_frame = frame.loc[nonpush]
+    delta = (base_log_loss - cand_log_loss)[nonpush]
+    boot = week_blocked_bootstrap(sub_frame, delta, delta, N_BOOT, rng)
+    return {
+        "candidate": label,
+        "n_games": int(nonpush.sum()),
+        "log_loss_delta_mean": float(delta.mean()),
+        "ci95": boot["log_loss_delta_ci95"],
+        "probability_positive": boot["log_loss_probability_positive"],
+    }
+
+
+def disagreement_report(
+    label: str,
+    cand_cover: np.ndarray,
+    cand_loss: np.ndarray,
+    base_cover: np.ndarray,
+    base_loss: np.ndarray,
+    frame: pd.DataFrame,
+) -> dict:
+    outcome = frame["outcome"].to_numpy()
+    nonpush = outcome != "push"
+    cand_pick = (cand_cover[nonpush] > cand_loss[nonpush]).astype(int)
+    base_pick = (base_cover[nonpush] > base_loss[nonpush]).astype(int)
+    actual = (outcome[nonpush] == "cover").astype(int)
+    agree = cand_pick == base_pick
+    disagree = ~agree
+    n_dis = int(disagree.sum())
+    cand_acc = float((cand_pick[disagree] == actual[disagree]).mean()) if n_dis else float("nan")
+    base_acc = float((base_pick[disagree] == actual[disagree]).mean()) if n_dis else float("nan")
+    return {
+        "candidate": label,
+        "n_nonpush": int(nonpush.sum()),
+        "side_agreement_rate": float(agree.mean()),
+        "n_disagreements": n_dis,
+        "candidate_forced_pick_accuracy_on_disagreements": cand_acc,
+        "served_forced_pick_accuracy_on_disagreements": base_acc,
+    }
+
+
 def main() -> None:
     timestamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
     out_dir = ARTIFACT_ROOT / timestamp
@@ -320,7 +449,7 @@ def main() -> None:
         frame, "provisional_engine_recentered", prov_cover, prov_push, prov_loss, base_log_loss, base_brier, rng
     )
 
-    team_cond_primary_hists, team_cond_secondary_hists = build_team_conditioned_hists(
+    team_cond_primary_hists, team_cond_shift_hists, team_cond_tilt_hists = build_team_conditioned_hists(
         frame, game_features, TEAM_COND_N_REPS
     )
     tc_primary_cover, tc_primary_push, tc_primary_loss = hists_to_three_way(team_cond_primary_hists, lines)
@@ -328,11 +457,43 @@ def main() -> None:
         frame, "team_conditioned_raw", tc_primary_cover, tc_primary_push, tc_primary_loss,
         base_log_loss, base_brier, rng,
     )
-    tc_secondary_cover, tc_secondary_push, tc_secondary_loss = hists_to_three_way(team_cond_secondary_hists, lines)
-    tc_secondary_summary, tc_secondary_log_loss, tc_secondary_brier = summarize_candidate(
-        frame, "team_conditioned_recentered", tc_secondary_cover, tc_secondary_push, tc_secondary_loss,
+    tc_shift_cover, tc_shift_push, tc_shift_loss = hists_to_three_way(team_cond_shift_hists, lines)
+    tc_shift_summary, tc_shift_log_loss, tc_shift_brier = summarize_candidate(
+        frame, "team_conditioned_shift", tc_shift_cover, tc_shift_push, tc_shift_loss,
         base_log_loss, base_brier, rng,
     )
+    tc_tilt_cover, tc_tilt_push, tc_tilt_loss = hists_to_three_way(team_cond_tilt_hists, lines)
+    tc_tilt_summary, tc_tilt_log_loss, tc_tilt_brier = summarize_candidate(
+        frame, "team_conditioned_tilt", tc_tilt_cover, tc_tilt_push, tc_tilt_loss,
+        base_log_loss, base_brier, rng,
+    )
+    blend_cover, blend_push, blend_loss, blend_fold_coeffs = fit_blend(
+        frame, baseline_cover, baseline_loss, baseline_push, tc_tilt_cover, tc_tilt_loss
+    )
+    blend_summary, blend_log_loss, blend_brier = summarize_candidate(
+        frame, "team_conditioned_tilt_served_blend", blend_cover, blend_push, blend_loss,
+        base_log_loss, base_brier, rng,
+    )
+
+    candidates = [
+        ("team_conditioned_raw", tc_primary_cover, tc_primary_push, tc_primary_loss, tc_primary_log_loss, tc_primary_summary),
+        ("team_conditioned_shift", tc_shift_cover, tc_shift_push, tc_shift_loss, tc_shift_log_loss, tc_shift_summary),
+        ("team_conditioned_tilt", tc_tilt_cover, tc_tilt_push, tc_tilt_loss, tc_tilt_log_loss, tc_tilt_summary),
+        ("team_conditioned_tilt_served_blend", blend_cover, blend_push, blend_loss, blend_log_loss, blend_summary),
+    ]
+    push_split_report = [push_split(label, ll, frame) for label, _, _, _, ll, _ in candidates]
+    cover_miss_report = [
+        cover_miss_delta(label, base_log_loss, ll, frame, rng) for label, _, _, _, ll, _ in candidates
+    ]
+    disagreement_reports = [
+        disagreement_report(label, cov, los, baseline_cover, baseline_loss, frame)
+        for label, cov, _, los, _, _ in candidates
+    ]
+    best_label, _, _, _, _, best_summary = min(candidates, key=lambda c: c[5]["pooled_log_loss_mean"])
+    best_read = {
+        "candidate": best_label,
+        "reliability_table_cover_deciles": best_summary["reliability_table_cover_deciles"],
+    }
 
     historical_shapes = build_historical_shapes(game_features)
     pc_results = []
@@ -348,7 +509,9 @@ def main() -> None:
         push_calibration(frame, baseline_push, "baseline")
         + push_calibration(frame, prov_push, "provisional_engine_recentered")
         + push_calibration(frame, tc_primary_push, "team_conditioned_raw")
-        + push_calibration(frame, tc_secondary_push, "team_conditioned_recentered")
+        + push_calibration(frame, tc_shift_push, "team_conditioned_shift")
+        + push_calibration(frame, tc_tilt_push, "team_conditioned_tilt")
+        + push_calibration(frame, blend_push, "team_conditioned_tilt_served_blend")
     )
 
     per_game = frame[
@@ -370,11 +533,21 @@ def main() -> None:
     per_game["team_conditioned_raw_loss"] = tc_primary_loss
     per_game["team_conditioned_raw_log_loss"] = tc_primary_log_loss
     per_game["team_conditioned_raw_brier"] = tc_primary_brier
-    per_game["team_conditioned_recentered_cover"] = tc_secondary_cover
-    per_game["team_conditioned_recentered_push"] = tc_secondary_push
-    per_game["team_conditioned_recentered_loss"] = tc_secondary_loss
-    per_game["team_conditioned_recentered_log_loss"] = tc_secondary_log_loss
-    per_game["team_conditioned_recentered_brier"] = tc_secondary_brier
+    per_game["team_conditioned_shift_cover"] = tc_shift_cover
+    per_game["team_conditioned_shift_push"] = tc_shift_push
+    per_game["team_conditioned_shift_loss"] = tc_shift_loss
+    per_game["team_conditioned_shift_log_loss"] = tc_shift_log_loss
+    per_game["team_conditioned_shift_brier"] = tc_shift_brier
+    per_game["team_conditioned_tilt_cover"] = tc_tilt_cover
+    per_game["team_conditioned_tilt_push"] = tc_tilt_push
+    per_game["team_conditioned_tilt_loss"] = tc_tilt_loss
+    per_game["team_conditioned_tilt_log_loss"] = tc_tilt_log_loss
+    per_game["team_conditioned_tilt_brier"] = tc_tilt_brier
+    per_game["blend_cover"] = blend_cover
+    per_game["blend_push"] = blend_push
+    per_game["blend_loss"] = blend_loss
+    per_game["blend_log_loss"] = blend_log_loss
+    per_game["blend_brier"] = blend_brier
     per_game.to_parquet(out_dir / "per_game.parquet", index=False)
 
     report = {
@@ -446,15 +619,25 @@ def main() -> None:
             "n_reps_per_game_requested": TEAM_COND_N_REPS_REQUESTED,
             "n_reps_per_game_used": TEAM_COND_N_REPS,
             "n_reps_reduction_reason": (
-                "measured throughput of the conditioned draw (scipy cKDTree k=200 candidate pool + "
-                "kernel resample), 110 games/sec at n=20000 warm-cache on this machine; 1537 games x "
-                "1000 reps would run ~3.9 hours, breaching the ~1 hour budget; reduced to 200 reps/game "
-                "(461,100 fewer total sims) before running or viewing any grade, applied uniformly to "
-                "every game and every candidate (primary and secentered secondary share the same draws)"
+                "SIM-08 unit 7 re-benchmark on the current engine (post OT-pool/4th-down-layer/"
+                "team-yard-shift): 30.5 games/sec on 2020's table (11-season train window), "
+                "27.3 games/sec on 2025's table (16-season train window), both measured on 15 games "
+                "x 40 reps, tests/scratch/sim08_unit7_timing.py. 1537 games x 1000 reps would run "
+                "~14 hours at this throughput, far over the ~3 hour budget; 180 reps/game estimates "
+                "to ~2.7-2.8 hours using the slower 2025-table rate, applied uniformly to every game "
+                "and every candidate (raw, shift and tilt share the same draws). Monte Carlo cost at "
+                "180 draws, (K-1)/2N with K=3 outcomes: 2/360 = 0.00556 in three-way log loss."
             ),
         },
         "team_conditioned_raw": tc_primary_summary,
-        "team_conditioned_recentered": tc_secondary_summary,
+        "team_conditioned_shift": tc_shift_summary,
+        "team_conditioned_tilt": tc_tilt_summary,
+        "team_conditioned_tilt_served_blend": blend_summary,
+        "blend_fold_coefficients": blend_fold_coeffs,
+        "push_vs_nonpush_log_loss": push_split_report,
+        "cover_vs_miss_delta_pushes_excluded": cover_miss_report,
+        "disagreement_report": disagreement_reports,
+        "best_read_reliability_table": best_read,
         "positive_control": {
             "mechanism": (
                 "historical pooled margin shape (real REG results, seasons strictly before the "
@@ -470,33 +653,38 @@ def main() -> None:
             str(season): {"train_seasons": [FIRST_TRAIN_SEASON, season - 1], "n_simulated_games": ENGINE_N_GAMES}
             for season in GRADED_SEASONS
         },
-        "record_command_draft_primary": (
-            "F:/Repos/nfl_py3/.venv/Scripts/python -m nfl_ats weak-signals record "
-            "--name sim04_engine_team_conditioned_raw_vs_discrete_read --league nfl --effect-units log_loss_improvement "
-            f"--effect {tc_primary_summary['pooled_log_loss_delta_vs_baseline']} "
-            f"--interval-low {tc_primary_summary['week_blocked_bootstrap']['log_loss_delta_ci95'][0]} "
-            f"--interval-high {tc_primary_summary['week_blocked_bootstrap']['log_loss_delta_ci95'][1]} "
-            f"--probability-positive {tc_primary_summary['week_blocked_bootstrap']['log_loss_probability_positive']} "
-            f"--sample-games {tc_primary_summary['n_games']} "
-            f"--sample-blocks {tc_primary_summary['week_blocked_bootstrap']['n_blocks']} "
-            "--season-start 2020 --season-end 2025 --family sim04_play_simulator "
-            f"--source artifacts/sim04_loso/{timestamp}/report.json "
-            "--description \"Play-level simulator margin histogram, team-conditioned on pregame EPA with exact home/away play matching, graded leave-one-season-out at the Tuesday opener against the served discrete three-way read; three-way log loss, week-blocked bootstrap\" "
-        ),
-        "record_command_draft_secondary": (
-            "F:/Repos/nfl_py3/.venv/Scripts/python -m nfl_ats weak-signals record "
-            "--name sim04_engine_team_conditioned_recentered_vs_discrete_read --league nfl --effect-units log_loss_improvement "
-            f"--effect {tc_secondary_summary['pooled_log_loss_delta_vs_baseline']} "
-            f"--interval-low {tc_secondary_summary['week_blocked_bootstrap']['log_loss_delta_ci95'][0]} "
-            f"--interval-high {tc_secondary_summary['week_blocked_bootstrap']['log_loss_delta_ci95'][1]} "
-            f"--probability-positive {tc_secondary_summary['week_blocked_bootstrap']['log_loss_probability_positive']} "
-            f"--sample-games {tc_secondary_summary['n_games']} "
-            f"--sample-blocks {tc_secondary_summary['week_blocked_bootstrap']['n_blocks']} "
-            "--season-start 2020 --season-end 2025 --family sim04_play_simulator "
-            f"--source artifacts/sim04_loso/{timestamp}/report.json "
-            "--description \"Same simulator histogram shape re-centred on the served predicted margin, graded at the Tuesday opener against the served discrete three-way read; three-way log loss, week-blocked bootstrap\" "
-        ),
     }
+
+    descriptions = {
+        "team_conditioned_raw": "Play-level simulator margin histogram, team-conditioned on pregame EPA with exact home/away play matching, graded leave-one-season-out at the Tuesday opener against the served discrete three-way read; three-way log loss, week-blocked bootstrap",
+        "team_conditioned_shift": "Same simulator histogram shape re-centred (rounded shift) on the served predicted margin, graded at the Tuesday opener against the served discrete three-way read; three-way log loss, week-blocked bootstrap",
+        "team_conditioned_tilt": "Same simulator histogram shape exponentially tilted (integer-support preserving, as in sim04_week.py) to the served predicted margin, graded at the Tuesday opener against the served discrete three-way read; three-way log loss, week-blocked bootstrap",
+        "team_conditioned_tilt_served_blend": "Logistic blend of the served cover logit and the tilted-sim cover logit (weights fit leave-one-season-out on 2020-2025), push probability kept at the served read, graded at the Tuesday opener against the served discrete three-way read; three-way log loss, week-blocked bootstrap",
+    }
+    record_drafts = {}
+    for label, _, _, _, _, summary in candidates:
+        ci_low, ci_high = summary["week_blocked_bootstrap"]["log_loss_delta_ci95"]
+        if ci_high < 0.0:
+            classification_args = (
+                "--classification refuted_mechanism --closing-ground wrong_sign_resolved "
+                "--classification-evidence \"whole week-blocked bootstrap CI for the log-loss delta vs the served read is below zero\" "
+            )
+        else:
+            classification_args = "--classification unresolved_below_power "
+        record_drafts[label] = (
+            "F:/Repos/nfl_py3/.venv/Scripts/python -m nfl_ats weak-signals record "
+            f"--name sim04_engine_{label}_vs_discrete_read --league nfl --effect-units log_loss_improvement "
+            f"--effect {summary['pooled_log_loss_delta_vs_baseline']} "
+            f"--interval-low {ci_low} --interval-high {ci_high} "
+            f"--probability-positive {summary['week_blocked_bootstrap']['log_loss_probability_positive']} "
+            f"--sample-games {summary['n_games']} "
+            f"--sample-blocks {summary['week_blocked_bootstrap']['n_blocks']} "
+            "--season-start 2020 --season-end 2025 --family sim04_play_simulator "
+            + classification_args
+            + f"--source artifacts/sim04_loso/{timestamp}/report.json "
+            f"--description \"{descriptions[label]}\" "
+        )
+    report["record_command_drafts"] = record_drafts
 
     with (out_dir / "report.json").open("w", encoding="utf-8") as handle:
         json.dump(report, handle, indent=2)
