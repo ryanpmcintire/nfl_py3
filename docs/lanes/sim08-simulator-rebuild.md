@@ -53,41 +53,23 @@ on cover-vs-miss and push log loss, recorded with `weak-signals record`.
 
 ## Next
 
-0. Damping closed (unit 6): fixed-effects yard shift on top of the unchanged
-   kernel draw. 5000-game whatif: home edge +1.89 (in [1.8,3.0]), QB shift
-   -1.37 (more negative than -0.73). Not yet re-graded on LOSO 2020-2025.
-1. Remaining shape gaps: mass at 3 (.102 vs .152) and SD ratio 1.10 (margins
-   too dispersed; the narrower kernel may widen them, recheck).
-2. Unit 7 IN FLIGHT (2026-09-26, subagent, background task `bvw7920cf`):
-   `scripts/sim04_loso.py` now has an exponential-tilt secondary read
-   (`tilt_hist`/`tilt_to_mean`, same mechanism as `sim04_week.py`, keeps
-   spikes on integers, reuses the raw team-conditioned draws so no extra
-   sim cost) alongside the old rounded-shift read, plus a `fit_blend`
-   logistic (features: logit of served cover-excl-push, logit of tilted-sim
-   cover-excl-push; push kept at the served read; weights fit LOSO across
-   2020-2025, one fold per held-out season). Timing benchmark
-   (`tests/scratch/sim08_unit7_timing.py`, kept): 30.5 games/sec on 2020's
-   table, 27.3 games/sec on 2025's (current engine is ~3.6x slower than the
-   unit-6-era 110 games/sec, from the 4th-down layer/OT pool/yard shift).
-   1000 reps/game would run ~14h (over the 3h budget), so
-   `TEAM_COND_N_REPS = 180` (est. ~2.7-2.8h for 1537 games), MC cost
-   (K-1)/2N = 2/360 = 0.00556. Plumbing verified end to end with a 2-season,
-   5-rep smoke run (deleted after passing) before launching the real run.
-   Full run launched foreground-then-auto-backgrounded, artifact will land
-   at `artifacts/sim04_loso/<timestamp>/` (report.json + per_game.parquet),
-   stdout/stderr mirrored to `tests/scratch/sim08_unit7_full_stdout.json`
-   and `..._stderr.txt`. NEXT AGENT: if this lane is picked up fresh, check
-   whether that background task finished (look for a new dir under
-   `artifacts/sim04_loso/` newer than 20260926T034537Z, or read the stderr
-   tail for `Artifact directory:`); if still running, just wait for its
-   notification. Once done: read report.json's `team_conditioned_raw`,
-   `team_conditioned_shift`, `team_conditioned_tilt`,
-   `team_conditioned_tilt_served_blend`, `blend_fold_coefficients`,
-   `push_vs_nonpush_log_loss`, `cover_vs_miss_delta_pushes_excluded`,
-   `disagreement_report`, `best_read_reliability_table`,
-   `record_command_drafts`; append a "SIM-08 unit 7 LOSO re-grade" section
-   to `docs/sim04_unit_log.md`. Nothing served; do not run the record
-   commands (draft only).
+1. Unit 7 re-grade RUNNING (python `scripts/sim04_loso.py`, started 11:08,
+   about 3 h, 180 draws per game, Monte Carlo cost 0.0056). Reads: raw, old
+   shift, spike-keeping tilt, LOSO logistic blend with the served cover
+   probability. When `artifacts/sim04_loso/<ts>/report.json` newer than
+   20260926T034537Z exists, append "SIM-08 unit 7 LOSO re-grade" to the unit
+   log (keys: team_conditioned_raw/_shift/_tilt/_tilt_served_blend,
+   blend_fold_coefficients, push_vs_nonpush_log_loss,
+   cover_vs_miss_delta_pushes_excluded, disagreement_report,
+   best_read_reliability_table, record_command_drafts); root runs the drafted
+   `weak-signals record` commands after checking them. Do not relaunch.
+2. Shape: diagnosis in the unit log "SIM-08 shape diagnosis". Follow-up on an
+   engine copy (`tests/scratch/sim08_shape2/`) targets the 3-5 point TD-share
+   excess and Q4 variance.
+3. Parallel on copies: anchoring check (`tests/scratch/sim08_condition/`:
+   does sim key-number mass track spread and total; joint spread+total tilt)
+   and speed (`tests/scratch/sim08_speed/`, engine now ~28 games/s, output
+   must stay bit-identical). Port what passes after the re-grade finishes.
 
 ## Open
 

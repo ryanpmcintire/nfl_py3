@@ -2236,3 +2236,19 @@ delta_sim_minus_naive=+0.008016485953585839, byte-identical to unit 5 since
 `conditioned` is False on that path. Kept. Damping is closed for this engine
 version: the kernel draw's own transmission (~77%) plus the fixed-effects
 yard shift now clear both bounds without touching the bandwidth.
+
+## SIM-08 shape diagnosis (2026-09-26, engine copy, validation 2015-2017)
+
+Unconditioned, 10002 games; real vs sim. Possessions per game 23.06 vs 23.59.
+Points per possession Q1/Q2/Q3/Q4: real 1.952/1.779/1.995/1.633, sim
+2.045/1.676/2.060/1.369. TD share of TD-or-FG drives is 3-5 points high in
+nearly every field-position bucket (60-70 yd .567 vs .608, 80-90 yd .607 vs
+.636). Margin SD at half / end of Q3 / final: real 10.58/13.11/13.87, sim
+11.22/13.69/15.27, so most excess dispersion is present by halftime, and Q4
+adds about 2.2 times the real variance while scoring less per possession.
+
+Predeclared change: extend the fitted 4th-down layer to phase 2 (Q4 with
+5-15 minutes left). Mass at 3 .103 to .087, Q4 points per possession 1.369 to
+1.345, end-of-Q3 SD 13.69 to 13.87: every metric moved away from actual, so
+reverted. Committed engine unchanged (4/5, +0.0080, mass at 3 .102). Leads:
+the broad TD-share excess (drawn goal-crossing outcomes) and Q4 variance.
