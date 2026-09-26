@@ -928,10 +928,14 @@ def _board_section(content: BoardContent, *, archived: bool = False) -> str:
     if not archived:
         missing_quotes = sum(game.market_now is None for game in content.games)
         if missing_quotes:
+            game_word = "game" if missing_quotes == 1 else "games"
             coverage = (
                 "No book has posted a line in the last two days."
                 if missing_quotes == len(content.games)
-                else f"No book has posted a line in the last two days for {missing_quotes} games."
+                else (
+                    "No book has posted a line in the last two days for "
+                    f"{missing_quotes} {game_word}."
+                )
             )
             market_status = (
                 f'<p class="policy-note"><b>Books now:</b> {coverage} '

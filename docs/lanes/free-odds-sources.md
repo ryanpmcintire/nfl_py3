@@ -80,5 +80,18 @@ odds sources.
      to 3 days; at Friday 16:30 UTC it now sees 14 games (was 0, measured
      against `game_features.parquet`). Confirm next Friday's 12:30 log line
      reads captured true.
-  2. `bovada_public_nfl` (`capture_bovada_private.py:_rows`, line 37-40)
-     still intermittently returns a non-array payload after the endpoint fix.
+  2. FIXED 2026-09-26: `bovada_public_nfl` failures (2 of 4 logged runs:
+     `data/scheduler_log.txt:1764`, `:1887`) were a real intermittent
+     PerimeterX bot-check on the endpoint (`X-Px` header present on every
+     response, live-checked twice, both 200 with a proper JSON array —
+     could not reproduce the block live within the 2-request budget).
+     `capture_bovada_private.py:_rows` (now ~38-53) previously raised a
+     generic "must be an array" with no payload evidence, so the block
+     shape was never captured for diagnosis. Now: JSON-decode errors and
+     non-list/non-`events`-dict payloads raise with the decoded type plus
+     a 200-char snippet of the actual body; a single coupon dict (has an
+     `events` list) is normalized to `[dict]` instead of rejected. Verified
+     with a real run: `python scripts/capture_bovada_private.py` ->
+     `{"captured": true, "games": 17, "quotes": 68, ...}`. Next occurrence
+     of the failure will log the real payload shape instead of a blind
+     message.

@@ -34,10 +34,23 @@ def _price(value: Any) -> float | None:
         return None
 
 
+def _snippet(payload: bytes) -> str:
+    text = payload.decode("utf-8", errors="replace")
+    return text[:200]
+
+
 def _rows(payload: bytes, observed: datetime) -> list[dict[str, Any]]:
-    decoded = json.loads(payload)
+    try:
+        decoded = json.loads(payload)
+    except json.JSONDecodeError as error:
+        raise ValueError(f"Bovada response was not JSON: {_snippet(payload)!r}") from error
+    if isinstance(decoded, dict) and isinstance(decoded.get("events"), list):
+        decoded = [decoded]
     if not isinstance(decoded, list):
-        raise ValueError("Bovada response must be an array")
+        raise ValueError(
+            f"Bovada response must be an array, got {type(decoded).__name__}: "
+            f"{_snippet(payload)!r}"
+        )
     digest = hashlib.sha256(payload).hexdigest()
     rows: list[dict[str, Any]] = []
     for coupon in decoded:

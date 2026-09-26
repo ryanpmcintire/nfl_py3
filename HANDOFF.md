@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-26T18:59:04.548027+00:00`
+Refreshed at: `2026-09-26T19:01:06.116617+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-09-26T18:59:04.548027+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `de0133f37448` — SIM-08: held-out grade checkpoints each season so a kill keeps finished seasons
-- Pending change set: 21 paths
-  - ` M CURRENT_PREDICTIONS.md`
-  - ` M docs/findings.html`
-  - ` M docs/history.html`
-  - ` M docs/index.html`
+- Baseline commit: `b94e59d52e8f` — Friday odds capture sees Sunday games: upcoming window is three days
+- Pending change set: 53 paths
+  - `M  CURRENT_PREDICTIONS.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - ` M docs/lanes/README.md`
+  - ` D docs/lanes/clv-metric-everywhere.md`
+  - ` D docs/lanes/conditional-signal-atlas.md`
+  - ` D docs/lanes/every-metric-every-experiment.md`
   - `M  docs/lanes/free-odds-sources.md`
-  - `M  docs/lanes/inactives-capture-empty.md`
-  - ` M docs/model.html`
-  - `M  scripts/capture_private_sunday_odds.py`
-  - ` M src/nfl_ats/board_terminal.py`
-  - ` M tiebreaker.json`
-  - `?? docs/lanes/ui20-2026-09-26.md`
-  - `?? registry/experiments/margin-backtest/20260926T161310Z.json`
-  - `?? registry/experiments/margin-backtest/20260926T163946Z.json`
-  - `?? registry/experiments/margin-backtest/20260926T165526Z.json`
-  - `?? registry/experiments/margin-backtest/20260926T173914Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-03-20260926T161504Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-03-20260926T164038Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-03-20260926T165620Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-03-20260926T174045Z.json`
-  - `?? registry/experiments/opener-evaluation/20260926T174414Z.json`
-  - ...and 1 more
+  - ` D docs/lanes/lane-replay-dream-rsi.md`
+  - ` D docs/lanes/lead59-archive-battery.md`
+  - ` D docs/lanes/lead65-protection-window-split.md`
+  - ` D docs/lanes/line-move-regrade-legacy.md`
+  - ` D docs/lanes/market-move-decomposition.md`
+  - ` D docs/lanes/mod18-spread-regime.md`
+  - ` D docs/lanes/opener-error-transfer.md`
+  - ` D docs/lanes/opener-population-backfill.md`
+  - ` D docs/lanes/pooled-signal-model.md`
+  - ` D docs/lanes/prospective-leads-2026-09-23.md`
+  - ` D docs/lanes/scheduler-once-timeout.md`
+  - ...and 33 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
