@@ -2171,3 +2171,23 @@ closed -- `unresolved_below_power`, not refuted. Next-named candidate: the
 red-zone TD:FG split and the remaining mass@3 shortfall now look like the
 dominant residual gap once the 4th-down decision layer is no longer the
 largest source of error.
+
+## SIM-08 unit 5 (2026-09-26)
+
+Fourth-down layer generalised: `build_tables` fits it on the tables' own
+seasons in both paths, and the team-conditioned draw applies it. Before this,
+the layer was absent from every LOSO grade and SIM-05 run. Unconditioned
+validation reproduces unit 4 exactly (4/5 key numbers, +0.008016, GO).
+
+Damping: a bandwidth sweep on 2009-2014 tables scored on 2015-2017 games gave
+noisy slopes (actual slope 33.7, 47.4, 27.8 at 8, 40, 150 games). At 150 games
+x 100 reps, h 0.10 moved the sim slope from 19.9 to 23.8 (actual 27.8) and
+pooled log loss from 3.947 to 3.932. The SIM-05 what-if refuted it:
+
+| config (5000 games unless noted) | home edge at equal ratings | backup-QB shift |
+|---|---|---|
+| h 0.5, no layer (20000, `20260926T034314Z`) | +1.56 (0.10) | -1.24 (0.14) |
+| h 0.10, layer (`20260926T141045Z`) | +0.23 (0.18) | +1.64 (0.26) |
+| h 0.5, layer (`20260926T141946Z`) | +1.39 (0.19) | -0.73 (0.27) |
+
+h 0.10 reverted to 0.5; the layer is kept. Damping stays open.

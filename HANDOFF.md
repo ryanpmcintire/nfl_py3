@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-26T13:47:31.393622+00:00`
+Refreshed at: `2026-09-26T14:29:26.861709+00:00`
 
 ## Start here
 
@@ -21,7 +21,7 @@ Refreshed at: `2026-09-26T13:47:31.393622+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `8802bb323407` — SIM-08 unit 3: fitted fourth-down layer lifts key numbers to 3/5 but costs log loss
+- Baseline commit: `0014146eee9a` — SIM-08 unit 4: late fourth-down decisions bring the simulator through its gate
 - Pending change set: 3 paths
   - `M  docs/lanes/sim08-simulator-rebuild.md`
   - `M  docs/sim04_unit_log.md`

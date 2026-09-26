@@ -30,6 +30,7 @@ MAX_PLAYS_PER_GAME = 400
 K_NEIGHBORS = 40
 K_STATE = 200
 TEAM_KERNEL_LAMBDA = 1_000_000.0
+TEAM_KERNEL_H_SCALE = 0.5
 SCALE_YDSTOGO = 5.0
 SCALE_FP = 5.0
 SCALE_TIME = 300.0
@@ -696,7 +697,7 @@ def build_tables(seasons: tuple[int, ...], condition_on_team: bool = False) -> d
         def_spread = pd.concat(
             [window_ratings["home_def_epa_per_play"], window_ratings["away_def_epa_per_play"]]
         )
-        team_kernel_h = 0.5 * float(np.nanstd(off_spread.to_numpy()))
+        team_kernel_h = TEAM_KERNEL_H_SCALE * float(np.nanstd(off_spread.to_numpy()))
         league_off_mean = float(np.nanmean(off_spread.to_numpy()))
         league_def_mean = float(np.nanmean(def_spread.to_numpy()))
     else:
@@ -704,12 +705,8 @@ def build_tables(seasons: tuple[int, ...], condition_on_team: bool = False) -> d
         league_off_mean = None
         league_def_mean = None
     nn_trees = build_neighbor_index(trans)
-    if seasons == TRAIN_SEASONS and not condition_on_team:
-        fourth_down_clf = fit_fourth_down_policy(trans)
-        nn_trees_4th = build_fourth_down_group_index(trans)
-    else:
-        fourth_down_clf = None
-        nn_trees_4th = None
+    fourth_down_clf = fit_fourth_down_policy(trans)
+    nn_trees_4th = build_fourth_down_group_index(trans)
     opening_pool = build_opening_pool(pbp)
     off_td_mask = trans["points_off"].to_numpy() >= 6.0
     def_td_mask = trans["points_def"].to_numpy() >= 6.0
@@ -887,17 +884,18 @@ def run_one_game(
             idx = pick_index_nn(
                 rng, tables, down, phase, distance, yardline, score_diff, time_feat, off_to, def_to, min_cell_n
             )
-            down_key = down if down in (1, 2, 3, 4) else 4
-            fourth_clf = tables.get("fourth_down_clf")
-            if down_key == 4 and phase in LATE_PHASES and fourth_clf is not None:
-                label = int(
-                    fourth_clf.predict(fourth_down_clf_features(score_diff, time_feat, distance, yardline))[0]
-                )
-                alt_idx = pick_index_nn_fourth(
-                    rng, tables, phase, label, distance, yardline, score_diff, time_feat, off_to, def_to, min_cell_n
-                )
-                if alt_idx is not None:
-                    idx = alt_idx
+
+        down_key = down if down in (1, 2, 3, 4) else 4
+        fourth_clf = tables.get("fourth_down_clf")
+        if down_key == 4 and phase in LATE_PHASES and fourth_clf is not None:
+            label = int(
+                fourth_clf.predict(fourth_down_clf_features(score_diff, time_feat, distance, yardline))[0]
+            )
+            alt_idx = pick_index_nn_fourth(
+                rng, tables, phase, label, distance, yardline, score_diff, time_feat, off_to, def_to, min_cell_n
+            )
+            if alt_idx is not None:
+                idx = alt_idx
 
         drawn = {
             "points_off": arrays["points_off"][idx],
