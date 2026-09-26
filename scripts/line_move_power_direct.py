@@ -147,10 +147,23 @@ def load_extended_2011_2025_population():
     return extended[POPULATION_COLUMNS].copy(), provenance, "extended_2011_2025"
 
 
+def load_roof_state_2011_2019_population():
+    extended, provenance, _ = load_extended_2011_2025_population()
+    restricted = extended.loc[extended["season"].between(2011, 2019)].reset_index(drop=True)
+    provenance = dict(provenance)
+    provenance["note"] = (
+        provenance["note"]
+        + " restricted to seasons 2011-2019 (exact population match to "
+        "roof_state_predicted_open_line_move_replication_2011_2019)"
+    )
+    return restricted[POPULATION_COLUMNS].copy(), provenance, "roof_state_2011_2019"
+
+
 POPULATION_LOADERS = {
     "served_2020_2025": load_served_population,
     "opener_error_transfer_v4_2013_2025": load_v4_2013_2025_population,
     "extended_2011_2025": load_extended_2011_2025_population,
+    "roof_state_2011_2019": load_roof_state_2011_2019_population,
 }
 
 
@@ -202,8 +215,14 @@ def main(argv=None):
         choices=list(POPULATION_LOADERS),
         default="served_2020_2025",
     )
+    parser.add_argument("--prevalence", type=float, default=None)
     args = parser.parse_args(argv)
     grid = tuple(float(value) for value in args.grid.split(","))
+    prevalence_cases = (
+        PREVALENCE_CASES
+        if args.prevalence is None
+        else ((f"binary_p{args.prevalence:g}".replace(".", "_"), "binary", args.prevalence),)
+    )
 
     started = time.time()
     population, provenance, population_label = POPULATION_LOADERS[args.population]()
@@ -266,7 +285,7 @@ def main(argv=None):
         "mde_table_line_move_points": {},
     }
 
-    for prev_label, kind, prevalence in PREVALENCE_CASES:
+    for prev_label, kind, prevalence in prevalence_cases:
         grid_rows = []
         for coef_points in grid:
             coef_logit = coef_points / logistic_scale if logistic_scale else 0.0

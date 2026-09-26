@@ -639,3 +639,63 @@ compute here.
 
 ## Root decision 2026-09-23 (unit 4)
 Ran the cfb_transfer_logit_line_move_v4_all_graded reclassification (exact population match, upper 0.026 < MDE 0.0556). Did NOT run the roof-state replication reclassification: its 2,231-game, 9-block population is smaller than the 3,734-game control (larger true MDE) and its 1.2% prevalence is below the smallest tested bucket; it stays unresolved.
+
+## Unit 5 (matched roof-state control) 2026-09-26
+
+RAM check: Win32_OperatingSystem FreePhysicalMemory = 42.3 GB free (>= 12 GB
+threshold) before starting; ran single-process, no --parallel flag exists on
+this script anyway.
+
+Added `--population roof_state_2011_2019` (new loader
+`load_roof_state_2011_2019_population`, filters `load_extended_2011_2025_population()`'s
+frame to season 2011-2019, reusing its SBR-derived open_move/margin_vs_open
+merge unchanged) and `--prevalence FLOAT` (replaces the fixed 4-case
+PREVALENCE_CASES sweep with one custom binary case at the given rate when
+passed) to scripts/line_move_power_direct.py. ruff-clean.
+
+Smoke test --population roof_state_2011_2019 --prevalence 0.012 --sims 8
+--draws 40 --grid 0.01,0.05,0.2,0.5 (2.8s) confirmed population count: games=
+games_scored=2231, season_blocks=9, seasons 2011-2019 -- exact match to the
+registry cell (confirmed by count, not just by construction).
+
+Full run: --population roof_state_2011_2019 --prevalence 0.012 --sims 150
+--draws 300 --fit-iterations 20 --grid 0.01,0.02,0.05,0.10,0.20,0.35 (matches
+2026-09-23 sims/draws levels), 8.4s elapsed, single process:
+artifacts/line_move_power_direct/20260926T190407Z/results.json (games=
+games_scored=2231, season_blocks=9, seasons 2011-2019,
+margin_sd_points_empirical=13.588041376791631). MDE at 80% power (clean
+linear interpolation between coef 0.1 detection=0.293 and coef 0.2
+detection=0.933, no boundary note) = 0.028722804759685874 line-move points,
+for a binary term at exactly 1.2% prevalence (no bucket approximation --
+matches the cell's own measured roof_state_term_nonzero_rate exactly).
+
+Comparison (same standard as every prior unit in this lane): cell interval
+[-0.018494, 0.013883], max(abs(-0.018494), 0.013883) = 0.018494 <
+0.028722804759685874 (MDE) -> QUALIFIES for bounded_by_control /
+positive_control_bound. Unlike the 2026-09-23 attempt (extended_2011_2025
+control, 3734 games/15 blocks, binary_p03=3% bucket used as an approximation
+for 1.2% prevalence -- flagged not-exact), this run is an EXACT population
+match (2231 games, 9 blocks, confirmed by count) AND an exact prevalence
+match (1.2%, not a nearest-bucket read), so no approximation caveat remains.
+
+Ran (not just drafted):
+`.venv/Scripts/python.exe -m nfl_ats.cli weak-signals record --name
+roof_state_predicted_open_line_move_replication_2011_2019 ... --classification
+bounded_by_control --closing-ground positive_control_bound --replace` (every
+original field preserved: description, source, effect -0.002241,
+effect_units ats_points, league nfl, season 2011-2019, interval
+[-0.018494, 0.013883], probability_positive 0.386, sample_games 2231,
+sample_blocks 9, category environment, notes ""; only classification,
+closing_ground, classification_evidence, plain_summary, recorded_at changed).
+Exact output: `{"classification": "bounded_by_control", "effect": -0.002241,
+"effect_units": "ats_points", "favours_candidate": false, "recorded":
+"roof_state_predicted_open_line_move_replication_2011_2019", "registry":
+"registry\\weak_signals.json", "total_signals": 7272}`. Command did not
+error; verdict stands.
+
+This unit is COMPLETE. No commit/push made (out of scope this session per
+task instruction) -- registry/weak_signals.json and
+scripts/line_move_power_direct.py are modified working-tree files awaiting
+the orchestrator's commit decision. Next: orchestrator commits/pushes if it
+wants this reclassification persisted upstream (git-tracked registry file),
+otherwise the change sits in the working tree.
