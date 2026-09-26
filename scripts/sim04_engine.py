@@ -1362,6 +1362,54 @@ def _mp_process_batch(args):
     return out
 
 
+WORKER_MEMORY_GB = 3.0
+RESERVED_MEMORY_GB = 16.0
+MAX_SIM_WORKERS = 8
+
+
+def available_memory_gb() -> float:
+    if sys.platform == "win32":
+        import ctypes
+
+        class MemoryStatus(ctypes.Structure):
+            _fields_ = [
+                ("dwLength", ctypes.c_ulong),
+                ("dwMemoryLoad", ctypes.c_ulong),
+                ("ullTotalPhys", ctypes.c_ulonglong),
+                ("ullAvailPhys", ctypes.c_ulonglong),
+                ("ullTotalPageFile", ctypes.c_ulonglong),
+                ("ullAvailPageFile", ctypes.c_ulonglong),
+                ("ullTotalVirtual", ctypes.c_ulonglong),
+                ("ullAvailVirtual", ctypes.c_ulonglong),
+                ("ullAvailExtendedVirtual", ctypes.c_ulonglong),
+            ]
+
+        status = MemoryStatus()
+        status.dwLength = ctypes.sizeof(MemoryStatus)
+        ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(status))
+        return status.ullAvailPhys / 1024**3
+    with open("/proc/meminfo", encoding="utf-8") as handle:
+        for line in handle:
+            if line.startswith("MemAvailable:"):
+                return int(line.split()[1]) / 1024**2
+    return 0.0
+
+
+def safe_worker_count(requested: int | None) -> int:
+    import os
+
+    by_memory = int((available_memory_gb() - RESERVED_MEMORY_GB) // WORKER_MEMORY_GB)
+    by_cpu = max(1, (os.cpu_count() or 2) - 4)
+    cap = min(MAX_SIM_WORKERS, by_cpu, by_memory)
+    if cap < 1:
+        raise RuntimeError(
+            f"Only {available_memory_gb():.1f} GB free; need "
+            f"{RESERVED_MEMORY_GB + WORKER_MEMORY_GB:.0f} GB "
+            "to start even one simulation worker"
+        )
+    return min(requested or cap, cap)
+
+
 def simulate_games_multiprocess(
     games: list[dict],
     seasons: tuple[int, ...],
@@ -1377,7 +1425,7 @@ def simulate_games_multiprocess(
     if not games:
         return []
     ctx = mp.get_context("spawn")
-    n_workers = max(1, min(max_workers or mp.cpu_count(), len(games)))
+    n_workers = max(1, min(safe_worker_count(max_workers), len(games)))
     tasks = [(i, base_seed + i, g.get("home_ratings"), g.get("away_ratings")) for i, g in enumerate(games)]
     batches = [tasks[i::n_workers] for i in range(n_workers)]
     batch_args = [(batch, seasons, condition_on_team, n_reps, ot_seconds) for batch in batches if batch]
