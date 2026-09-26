@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-26T17:35:33.004413+00:00`
+Refreshed at: `2026-09-26T17:35:50.106807+00:00`
 
 ## Start here
 
@@ -21,15 +21,14 @@ Refreshed at: `2026-09-26T17:35:33.004413+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `59fd7bac025d` — Arrests ingest retries a truncated page before failing closed
-- Pending change set: 13 paths
+- Baseline commit: `0b6887a1e07a` — Simulator worker count is capped by free memory
+- Pending change set: 12 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
   - `M  docs/lanes/sim08-simulator-rebuild.md`
   - ` M docs/model.html`
-  - `M  scripts/sim04_engine.py`
   - `?? registry/experiments/margin-backtest/20260926T161310Z.json`
   - `?? registry/experiments/margin-backtest/20260926T163946Z.json`
   - `?? registry/experiments/margin-backtest/20260926T165526Z.json`
