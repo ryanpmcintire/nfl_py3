@@ -63,3 +63,65 @@ command to run.
   rows), backlog-batch-2026-09-25. Fixed: Friday odds window (`b94e59d`),
   Bovada error evidence and card note plural (`ebf7e02`).
 - SKY-07 publication decisions made from the rules (docs/open_benchmark_suite.md, Decisions 2026-09-26); next: per-dataset nflverse license check and first local export.
+
+## SKY-07 result 2026-09-26 (steps 1 and 6 of the blocker list)
+
+Finding first: `src/nfl_ats/open_benchmark.py` and `tests/test_open_benchmark.py`
+were deleted whole by `b7ed31d` ("Repository cut... -54%"), but ROADMAP.md
+SKY-07 and `docs/open_benchmark_suite.md` still read as if the foundation is
+implemented. **measured** (`git show --stat b7ed31d` shows -674/-238 lines;
+`git show HEAD:src/nfl_ats/open_benchmark.py` errors "does not exist"). I
+restored the library from `b7ed31d^` into `src/nfl_ats/open_benchmark.py`,
+stripped its 8 docstrings to match the current no-comments/no-docstrings
+policy (logic untouched), and did NOT restore the deleted test file (test
+moratorium: no new tests). **This restoration is on disk, uncommitted** per
+this task's "no commit" constraint — the orchestrator must decide whether to
+commit it and whether to backfill test coverage.
+
+Step 1 (license check, **measured** via `gh api`): the only dataset needed for
+core columns is nflverse `schedules`/`games`
+(https://github.com/nflverse/nflverse-data/releases/tag/schedules, asset
+`games.csv`). `nflverse-data` repo `LICENSE.md` decodes to CC BY 4.0
+("Attribution 4.0 International"). Release notes say data is maintained
+upstream in `nflverse/nfldata` (`games.rds`); that repo carries no separate
+LICENSE file or conflicting license text in its README, so nothing overrides
+the nflverse-data CC-BY-4.0 terms actually governing the fetched release
+asset. Kept: nflverse schedules. No other dataset was needed (release has zero
+extra feature columns, so team_stats/other nflverse files were out of scope
+and untouched). Confirms `config/source_policies.json`'s existing "green,
+allowed_with_attribution" entry.
+
+Step 6 (export + independent verify, **measured**): built from the existing
+local snapshot `data/raw/20260923T005026Z/schedules.parquet` (fetched
+2026-09-23, seasons 2009-2026, no new fetch needed — respects "light memory
+only"). `kickoff_utc` = `gameday`+`gametime` localized `America/New_York` (per
+nflreadr data dictionary: gametime is always Eastern) then converted to UTC;
+`decision_time_utc` = kickoff - 1h; `inputs_observed_through_utc` = same.
+Split: train = seasons 2009-2024, validation = season 2025 (both "completed"),
+test = season-2026 rows with `kickoff_utc >= now` AND a posted `spread_line`
+(excludes both future weeks with no line yet and the one stale 9/24 game whose
+score isn't in this snapshot — neither mislabeled, both just left out of the
+release). Exported to
+`F:\Repos\nfl_py3\tests\scratch\open_benchmark_v1\` (observations.csv +
+manifest.json): **4661 rows total — train 4345, validation 285, test 31**.
+`license_spdx=CC-BY-4.0`, `source_urls` = the 3 URLs above, `public_url=None`
+(placeholder).
+
+Independent verification, all passed: recomputed SHA-256 of observations.csv
+by hand (`ab5d84e5af...31681`) matches `manifest.json`'s
+`files[0].sha256`/`dataset_content_sha256` field and byte count; 0 of 31 test
+rows carry `ats_margin`/`cover_side`; game_id unique across all 4661 rows;
+chronology strict (max train kickoff 2025-02-09 < min validation kickoff
+2025-09-05 < max validation kickoff 2026-02-08 < min test kickoff 2026-09-27);
+0 rows violate `inputs_observed_through_utc <= decision_time_utc < kickoff_utc`.
+`manifest.json` publication block: `{"ready": false, "blockers":
+["external hosting location is not configured"]}` — exactly and only the
+unset public URL, as required.
+
+Remaining blockers before publication: (1) tag a GitHub release and pin its
+asset URL into `public_url` (owner/orchestrator action, not run here); (2)
+decide whether to commit the restored `src/nfl_ats/open_benchmark.py` and
+whether to recreate `tests/test_open_benchmark.py` under the moratorium's
+rules; (3) ROADMAP.md/docs still describe a foundation that was silently
+deleted — needs a correction pass independent of this export.
+- SKY-07 retired (root, 2026-09-26): the library was cut on 2026-09-10 as unimported; not restored, since a benchmark changes no pick, grade, or page. ROADMAP row and doc updated.

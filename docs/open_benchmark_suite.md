@@ -1,6 +1,6 @@
 # Open benchmark suite foundation (SKY-07)
 
-Status: **foundation implemented; publication remains open**.
+Status: **retired 2026-09-26**. The library was removed in the 2026-09-10 repository cut (`b7ed31d`); it is recoverable at `git show b7ed31d^:src/nfl_ats/open_benchmark.py`. This page records the contract and the decisions in case it is revived.
 
 `nfl_ats.open_benchmark` defines a deterministic exchange contract for an NFL
 against-the-spread benchmark without publishing a dataset or claiming a
