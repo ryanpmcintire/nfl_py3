@@ -63,13 +63,14 @@ on cover-vs-miss and push log loss, recorded with `weak-signals record`.
    cover_vs_miss_delta_pushes_excluded, disagreement_report,
    best_read_reliability_table, record_command_drafts); root runs the drafted
    `weak-signals record` commands after checking them. Do not relaunch.
-2. Shape: diagnosis in the unit log "SIM-08 shape diagnosis". Follow-up on an
-   engine copy (`tests/scratch/sim08_shape2/`) targets the 3-5 point TD-share
-   excess and Q4 variance.
+2. Shape: goal-line borrowing fixed (`SCALE_FP` 2.5, `3cc779e`; log loss
+   +0.0024, 4/5). The unit 7 run grades the engine before this change, so a
+   second LOSO look is needed after it. Still open: mass at 3 (.096 vs .152),
+   SD ratio 1.10, Q4 variance.
 3. Parallel on copies: anchoring check (`tests/scratch/sim08_condition/`:
    does sim key-number mass track spread and total; joint spread+total tilt)
    and speed (`tests/scratch/sim08_speed/`, engine now ~28 games/s, output
-   must stay bit-identical). Port what passes after the re-grade finishes.
+   must stay bit-identical; its copy predates `SCALE_FP` 2.5). Port what passes after the re-grade finishes.
 
 ## Open
 
