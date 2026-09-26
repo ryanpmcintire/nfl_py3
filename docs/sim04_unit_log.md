@@ -2290,3 +2290,31 @@ margin-plus-total tilt moves key-number mass toward real (joint tilt matches
 the mean total exactly but leaves 3 and 7 flat or lower). The key-number
 shortfall is in the engine's generated shape, not in its centring; the tilt
 fixes location only.
+
+## SIM-08 LOSO re-grade (2026-09-26)
+
+Measured, `artifacts/sim04_loso/20260926T203158Z/` (report.json,
+per_game.parquet, recalibration_check.txt): engine `a4f9c9b78593`, 500 draws
+per game, 1,537 opener-graded games 2020-2025, 107 week blocks, three-way log
+loss vs the served discrete read (positive = candidate better).
+
+| Read | Log-loss delta | 95% interval | P+ | Registry verdict |
+|---|---|---|---|---|
+| Raw sim | -0.0267 | [-0.0408, -0.0126] | 0.000 | refuted, wrong sign resolved |
+| Re-centred shift | -0.0070 | [-0.0144, -0.00001] | 0.025 | refuted, wrong sign resolved |
+| Spike-keeping tilt | -0.0023 | [-0.0072, +0.0026] | 0.19 | unresolved below power |
+| Blend (served + tilt logits) | +0.0043 | [-0.0012, +0.0095] | 0.93 | see next row |
+| Blend vs served-only recalibration | -0.0004 | [-0.0011, +0.0003] | 0.14 | unresolved below power |
+| Served-only LOSO recalibration | +0.0047 | [-0.0006, +0.0100] | 0.96 | unresolved below power |
+
+- Tilt on cover-vs-miss alone (pushes excluded) is +0.0076, [+0.0035,
+  +0.0115], but a one-term recalibration of the served logit earns the same;
+  the tilt loses it back on pushes (push log loss 3.22 vs blend 2.78, n=34).
+- Blend fold coefficients: served logit -0.05 to 0.39, tilt logit 0.01 to
+  0.42; unstable, and the sum tracks the served-only slope (0.27-0.43).
+- Decisive games: blend vs served disagree on 167 non-push games, blend right
+  on 75 (44.9%); blend vs recalibrated served disagree on 121, blend right on 53.
+- Reading: the whole blend gain is shrinking an overconfident served cover
+  probability (same finding as MKT-17, slope 0.135-0.424). The rebuilt
+  simulator adds nothing measurable beyond that. Remaining engine defect is
+  shape (mass at 3 .096 vs .152, total slope 0.34 vs 0.87).

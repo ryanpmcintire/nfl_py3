@@ -22,11 +22,9 @@ on cover-vs-miss and push log loss, recorded with `weak-signals record`.
 - `scripts/sim04_loso.py` grades raw, old shift, spike-keeping tilt and a LOSO
   blend with the served cover probability (`a91cbfe`); `--n-reps`/`--workers`
   (`d9e42e8`). Detail for every unit: `docs/sim04_unit_log.md`.
-- Both LOSO re-grades died on 2026-09-26 when a 22-worker run (~59 GB) ran
-  the 64 GB host out of memory and crashed the session; neither wrote output
-  (`artifacts/sim04_loso/20260926T150827Z` and `...T162257Z` are empty).
-  `simulate_games_multiprocess` now caps workers at min(8, free RAM less
-  16 GB over 3 GB per worker, CPUs less 4) and refuses to start below that.
+- Early re-grades died on 2026-09-26 from memory (22 workers, then an
+  unbounded per-game weight cache, fixed in `f62011e`). Workers are capped at
+  min(8, free RAM less 16 GB over 3 GB per worker, CPUs less 4).
 
 ## Tried
 
@@ -39,30 +37,22 @@ on cover-vs-miss and push log loss, recorded with `weak-signals record`.
 
 ## Next
 
-1. Re-grade attempt 3 (2026-09-26, `--n-reps 500 --workers 8`) was killed by
-   Claude Code's low-memory reaper about 45 min into the first season's
-   8-worker phase (warm-up 18:55-19:25 UTC); no season checkpoint was written
-   (the `engine-fd9b29826e52_reps-500_mp-1/` directory is empty). Free RAM
-   was 42 GB before the workers started, so 8 workers use more than the
-   3 GB each the cap assumes. Next run, only when the owner asks: same
-   command with `--workers 4`, in a terminal the owner starts (not a
-   background shell), or with CLAUDE_CODE_DISABLE_BG_SHELL_PRESSURE_REAP=1 set
-   before Claude Code starts. Measure per-worker memory in the first minutes and
-   fix `simulate_games_multiprocess`'s 3 GB assumption. Checkpoints resume
-   finished seasons. After: append "SIM-08 LOSO re-grade" to
-   `docs/sim04_unit_log.md` and run the drafted `weak-signals record`
-   commands after checking them.
-   Attempt 4 RUNNING (2026-09-26, `--workers 4`, log
-   `tests/scratch/sim08_loso_regrade.log`). Worker memory grew ~1 GB/min:
-   `nn_weight_cache_cond` is keyed by team ratings, so it never hits across
-   games and grew all season. `_mp_process_batch` now clears it after each
-   game (output-identical: entries are deterministic in the key, no RNG on a
-   miss). Seasons after the first use the fix. The checkpoint directory keeps
-   the pre-fix hash `engine-fd9b29826e52_reps-500_mp-1`; if a rerun is needed,
-   rename it to the new hash so finished seasons are reused.
-2. Engine shape: mass at 3 (.096 vs .152), SD ratio 1.10, and the total that
-   barely tracks the opening total (slope 0.34 vs 0.87); tilting does not fix
-   shape (unit log "anchoring check").
+1. Re-grade DONE 2026-09-26 (`artifacts/sim04_loso/20260926T203158Z/`,
+   table in `docs/sim04_unit_log.md` "SIM-08 LOSO re-grade"; five rows
+   recorded under family `sim04_play_simulator`, names `sim08_*` and
+   `served_cover_probability_loso_recalibration_at_open`). Goal NOT met: raw
+   and shift refuted (wrong sign resolved); tilt -0.0023 P+ 0.19; blend
+   +0.0043 P+ 0.93 over served, but -0.0004 [-0.0011,+0.0003] P+ 0.14 over a
+   served-only LOSO recalibration, so the gain is shrinkage, not the sim.
+2. Engine shape is the remaining defect: mass at 3 (.096 vs .152), SD ratio
+   1.10, total barely tracks the opening total (slope 0.34 vs 0.87); tilting
+   does not fix shape. Next unit, if the lane continues: fix mass at 3 in the
+   generator, then re-grade the blend against recalibrated served (checkpoints
+   are keyed by engine hash, so a changed engine re-simulates; ~45 min on 6
+   workers, workers peak about 2.3 GB each).
+3. Served cover probability is overconfident (LOSO slope 0.27-0.43, all six
+   seasons gain from shrinking); this is MKT-17's known finding, owned by
+   `docs/lanes/joint-probability-model.md`, not this lane.
 
 ## Open
 

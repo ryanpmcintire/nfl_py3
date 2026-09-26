@@ -180089,6 +180089,34 @@
       "source": "artifacts/active_ats_model.json",
       "standard_error": null
     },
+    "served_cover_probability_loso_recalibration_at_open": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "LOSO one-feature logistic recalibration of the served cover-vs-miss logit at the Tuesday opener, push probability unchanged; fold slopes 0.27-0.43 say the served cover probability is overconfident; per-season gain positive in all six held-out seasons (0.0005 to 0.0128)",
+      "effect": 0.00465,
+      "effect_units": "log_loss_improvement",
+      "family": "sim04_play_simulator",
+      "interval": [
+        -0.00064,
+        0.01002
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Our model's cover percentages run too far from 50%; pulling them in toward 50% forecasts better in all six held-out seasons.",
+      "probability_positive": 0.956,
+      "recorded_at": "2026-09-26",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim04_loso/20260926T203158Z/recalibration_check.txt",
+      "standard_error": null
+    },
     "served_margin_mae_vs_spread_2018_2025": {
       "category": "modeling",
       "classification": "refuted_mechanism",
@@ -183475,6 +183503,118 @@
         2025
       ],
       "source": "artifacts/sim04_loso/20260926T034537Z/report.json",
+      "standard_error": null
+    },
+    "sim08_engine_team_conditioned_raw_vs_discrete_read": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "whole week-blocked bootstrap CI for the log-loss delta vs the served read is below zero",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "SIM-08 rebuilt engine (4/5 key numbers): raw team-conditioned simulator margin histogram graded LOSO at the Tuesday opener against the served discrete three-way read; three-way log loss, week-blocked bootstrap",
+      "effect": -0.026743512464129354,
+      "effect_units": "log_loss_improvement",
+      "family": "sim04_play_simulator",
+      "interval": [
+        -0.04080351342549387,
+        -0.012625169464848256
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The rebuilt play-by-play simulator, used on its own, forecasts covers worse than the model we serve.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-26",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim04_loso/20260926T203158Z/report.json",
+      "standard_error": null
+    },
+    "sim08_engine_team_conditioned_shift_vs_discrete_read": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "whole week-blocked bootstrap CI for the log-loss delta vs the served read is below zero",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "SIM-08 rebuilt engine: simulator histogram re-centred on the served predicted margin, graded LOSO at the Tuesday opener against the served discrete three-way read",
+      "effect": -0.007049511134237389,
+      "effect_units": "log_loss_improvement",
+      "family": "sim04_play_simulator",
+      "interval": [
+        -0.014360108253142182,
+        -1.0833888511972302e-05
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Sliding the simulator's score spread onto our model's predicted margin still forecasts covers worse than the served model.",
+      "probability_positive": 0.025,
+      "recorded_at": "2026-09-26",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim04_loso/20260926T203158Z/report.json",
+      "standard_error": null
+    },
+    "sim08_engine_team_conditioned_tilt_vs_discrete_read": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "SIM-08 rebuilt engine: simulator histogram exponentially tilted to the served predicted margin, graded LOSO at the Tuesday opener against the served discrete three-way read",
+      "effect": -0.002279735755418098,
+      "effect_units": "log_loss_improvement",
+      "family": "sim04_play_simulator",
+      "interval": [
+        -0.007195622550333595,
+        0.0025885831935150536
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Reshaping the simulator's score spread to match our model's predicted margin comes out about even with the served model; not settled.",
+      "probability_positive": 0.1885,
+      "recorded_at": "2026-09-26",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim04_loso/20260926T203158Z/report.json",
+      "standard_error": null
+    },
+    "sim08_engine_tilt_served_blend_vs_recalibrated_served": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "SIM-08 rebuilt engine: LOSO logistic blend of served and tilted-sim cover logits versus a LOSO recalibration of the served cover logit alone (same push read); isolates what the simulator adds beyond shrinking the served probability",
+      "effect": -0.0004,
+      "effect_units": "log_loss_improvement",
+      "family": "sim04_play_simulator",
+      "interval": [
+        -0.00112,
+        0.00028
+      ],
+      "league": "nfl",
+      "notes": "blend vs raw served read is +0.00425 (P 0.949) but served-only recalibration alone is +0.00465 (P 0.956); the gain is recalibration, not the simulator",
+      "plain_summary": "Mixing the simulator into our model adds nothing once our model's own confidence is corrected; not settled.",
+      "probability_positive": 0.136,
+      "recorded_at": "2026-09-26",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim04_loso/20260926T203158Z/recalibration_check.txt",
       "standard_error": null
     },
     "single_book_opener_grade_posthoc_v1_sb_posthoc_different_line_2020_2025": {
