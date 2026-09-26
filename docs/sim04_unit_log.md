@@ -1932,3 +1932,91 @@ measured, targeted improvement to a named mechanism, not reverted).
 `unresolved_below_power`; no registry write (mechanism check per the task,
 not a pick decision); not ported beyond this file; no commits, no
 dashboard or publish work.
+
+## SIM-08 unit 2 (endgame mechanism diagnosis, measured, 2026-09-26, subagent)
+
+Extended `tests/scratch/sim08_unit1_diag.py` into
+`tests/scratch/sim08_unit2_diag.py` (gitignored), same 768 real 2015-2017
+REG games x 200 reps from their own Q4<=300s state, restricted to non-OT
+plays (`qtr < 5`). Read the engine first: `phase_pool_mask`
+(`scripts/sim04_engine.py` line 241-244) only special-cases phase==4 (OT
+unioned with phase 3, from unit 1); phase 3 (Q4<=300s) itself draws
+strictly from phase==3 rows with no cross-phase dilution, so the "regulation
+dilution via the phase mask" theory in unit 1's Next entry does not describe
+what the mask does. The candidate mechanism instead lives in `pick_index_nn`
+(line 270-305): a down x phase KDTree query draws `k=min(40, pool_n)`
+nearest neighbors and then picks one uniformly at random, discarding the
+KDTree distances.
+
+Five measurements (sim vs actual, same script):
+
+| mechanism | sim | actual | read |
+|---|---|---|---|
+| neighbor mean field-position dist, down=4/phase=3 | 3.69 yd (pool_n=2935) | -- | modest |
+| neighbor mean score dist, down=4/phase=3 | 4.21 pts | -- | comparable to the 3-pt trail_1_3 bucket width |
+| neighbor mean time dist, down=4/phase=3 | 75.4 s | -- | modest |
+| red-zone (<=20) drive TD:FG split, last 5:00 | TD 64.2% (n=71,084) | TD 65.2% (n=511) | matched |
+| 4th-down FG rate, tied, kick dist <30/30-39/40-49 | .908/.935/.880 (n=1956-3078) | 1.0/1.0/1.0 (n=10-11) | close |
+| 4th-down FG rate, trail 1-3, kick dist <30/30-39/40-49 | .606/.629/.637 (n=2040-2540) | 1.0/.933/.96 (n=14-25) | large, consistent gap |
+| net point change per late possession | 0: 81.1%, +3: 7.2%, +7: 8.4%, +6: 1.3% | -- | descriptive |
+| true-margin-3 games: sim last scoring play value | 3pt 44.1%, 6/7/8pt 51.4% | -- | -- |
+| true-margin-3 games: actual last scoring play type | -- | field_goal 64.8%, pass 26.7%, run 6.7% | sim substitutes TDs for FGs |
+
+Named mechanism: on 4th down in makeable field-goal range (kick distance
+<50) while tied or trailing 1-3 with <=5:00 left, real teams kick a field
+goal essentially every time (93-100% across three field-position buckets,
+n=10-25/cell -- small n individually but the direction and size are
+consistent across every cell and both score states); the sim only kicks
+61-64% of the time trailing 1-3 (88-93% tied) at the same buckets
+(n=1956-3078/cell), drawing punt or go-for-it instead. Directly measured
+consequence: among the 117 real 2015-2017 games whose actual final margin
+is exactly 3 (23,400 sim reps), the sim's own last scoring play in that
+game is a field goal only 44.1% of the time vs a touchdown 51.4% of the
+time, inverted from actual's 64.8% field-goal share. Root cause read from
+the code: `scaled_score_diff` (`scripts/sim04_engine.py` line 204-210,
+`SCORE_INNER=8`, `SCORE_INNER_SCALE=2`) compresses a 0-8 point real score
+gap into only 0-4 scaled feature units, so at down=4/phase=3 the measured
+mean neighbor score distance (4.2 raw points) is comparable to or wider
+than the 3-point width of the trail_1_3 bucket itself -- field position and
+time dominate the KDTree distance budget over score exactly where the real
+decision is score-driven and near-deterministic.
+
+Fix tried (one change, predeclared before rerun): `pick_index_nn`
+(`scripts/sim04_engine.py` ~line 270-296) kept the KDTree query distances
+instead of discarding them and replaced the uniform `rng.integers` neighbor
+pick with an adaptive Gaussian kernel weight (`bw` = median of the k=40
+neighbor distances, `weights = exp(-0.5*(dvec/bw)**2)`, falling back to
+uniform if `bw<=1e-9`), drawn via `rng.choice(..., p=weights)`. Same k=40
+pool and phase masks as before; only the within-pool sampling weight
+changed, and only on the unconditioned path (`pick_index_nn_conditioned`
+untouched).
+
+Result (same 768x200 split, rerun once): 4th-down FG rate trail_1_3 <30
+.606 -> .599 (n=2313, within noise), 30-39 .629 -> .654 (wrong direction),
+tied 50+ .108 -> .110 (flat); true-margin-3 games' sim mass@3 subset .3106
+-> .3157 (+0.0051, ~1.7 SE at n=23,400, not a real move). Headline finishing
+split: mass@3 .1289 -> .1297, mass@7 .0949 -> .0956, SD ratio 1.016 ->
+1.015, OT reach .0631 -> .0629 -- all flat within noise. Diagnosis: an
+adaptive bandwidth set to the median of 40 neighbor distances only mildly
+discriminates near from far (roughly a 7x weight ratio nearest to
+farthest), which is not enough to fix a pool where the *nearest* 40
+neighbors are themselves already off on score state because of the
+`scaled_score_diff` compression named above.
+
+Verdict: the fix did not move the named mechanism toward actual in any of
+the tested cells, so it was reverted. `git diff --stat
+scripts/sim04_engine.py` after the revert shows no diff against the
+unit-1-committed engine, confirming a clean revert. Ran the full-game
+validation once on the current (unit-1-only) engine to close out the unit:
+`python scripts/sim04_engine.py` (default `--n-games-per-season 3334`,
+2015-2017) gave key-number hits 2/5 (unchanged), log-loss delta +0.0044 vs
+naive (unit 3d: +0.0045, 2/5 -- same within noise, as expected since no net
+engine change survived), mass@3 sim .0978 vs actual .1523 pooled, SD ratio
+1.089. The FG-attempt-rate mechanism and its `scaled_score_diff` root cause
+remain open: `unresolved_below_power`, not refuted (this was a refuted fix
+attempt, not a refuted signal -- the underlying gap is real, measured, and
+still present). No registry write (mechanism check per the task, not a
+pick decision); no commits, no dashboard or publish work. Next-named
+candidate (not yet measured): tighten score-distance weight specifically in
+`LATE_PHASES` inside `feature_matrix`/`scaled_score_diff`, the same way
+timeouts are already phase-weighted via `to_weight`.

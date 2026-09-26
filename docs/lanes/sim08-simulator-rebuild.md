@@ -13,47 +13,69 @@ on cover-vs-miss and push log loss, recorded with `weak-signals record`.
   validation gate (2/5 key numbers). Its registry rows
   (`sim04_engine_team_conditioned_*`) refute this engine version only, not
   play simulation. Numbers: `docs/sim04_unit_log.md` lines 1806-1866.
-- 2026-09-26 unit 1 (measured, this session): the task's cited finishing-split
-  baseline (mass@3 .114) is stale (it was the pre-NN fix1+2 engine, log line
-  1655). Rerun against the CURRENT committed engine
-  (`scripts/sim04_engine.py`, unconditioned, same 768 real 2015-2017 REG
-  games x 200 reps from their own Q4<=300s state): mass@3 .1331, mass@7
-  .0845, SD ratio 1.015, OT reach rate .0622 (actual .0625, matched). Actual
-  season-block bootstrap CI for mass@3 on these 768 games: mean .1525, 90%
-  CI [.1380, .1667] -- sim sits just below the CI floor, a real but much
-  smaller gap than the task assumed. Mechanism breakdown (sim vs actual,
-  same script): 4th-down go rate trailing 1-3 .427/.420 (matched), leading
-  kneel rate .172/.183 (matched), hurry-up pass rate trailing <=120s
-  .775/.772 (matched), FG make rate by distance/score-state noisy on the
-  actual side (n=2-57 per cell) with no consistent directional bug. The one
-  clear, well-powered anomaly: OT outcomes. Sim OT games tie 21.3% of the
-  time vs actual 4.2% (n=48 real OT games in this set), FG-win share 49.0%
-  vs actual 60.4%; at the play level sim's OT touchdown rate is .0066 vs
-  actual .0203 (n=934 real OT plays, 2015-2017) while OT FG-attempt/make
-  rates already matched (.044/.047 attempt, .84/.80 make). Named mechanism:
-  the down x phase KDTree for OT (phase 4) is built from OT rows only, the
-  smallest, sparsest pool of all five phases, so red-zone OT snaps often
-  can't find 40 true neighbors and pull in field-position-distant rows,
-  suppressing the relative-gain-crosses-goal TD path unit 3's fix relies on.
-- 2026-09-26 unit 1 fix (measured): `scripts/sim04_engine.py` -- added
-  `phase_pool_mask` (~line 241) and used it in both `build_neighbor_index`
-  (~line 253-260) and `build_neighbor_index_scipy` (~line 328-335) so the
-  down x phase=4 (OT) tree draws from phase in {3, 4} (OT unioned with
-  Q4<=300s) instead of phase==4 alone; every other phase's tree is
-  unchanged. Rerun, same 768x200 split: sim OT TD rate rose .0066 -> .0174
-  (actual .0203, much closer); OT tie rate fell 21.3% -> 10.3% (actual
-  4.2%); OT FG-win share fell 49.0% -> 40.6% (actual 60.4%, moved the wrong
-  way -- the reclaimed scoring mostly became OT touchdowns, not OT field
-  goals). Net effect on the headline finishing split: mass@3 .1331 -> .1289
-  (actual .1523, slightly worse, ~5 SE at n=153,600 so not noise), mass@7
-  .0845 -> .0949 (actual .0911, closer), SD ratio 1.015 -> 1.016 (flat), OT
-  reach rate .0622 -> .0631 (flat, matched either way). Verdict: the named
-  OT-pool-sparsity mechanism was real and the fix corrected it in the
-  predicted direction (TD rate, tie rate) but OT is only ~6% of games, and
-  it did not close the aggregate mass-at-3 gap -- the larger driver is
-  still open. Kept the fix (real, measured, targeted improvement to a named
-  mechanism); not reverted. `unresolved_below_power`, no registry write per
-  the task (mechanism check, not a pick decision).
+- Unit 1 (measured + fix kept): finishing split (768 real 2015-2017 REG games
+  x 200 reps from their own Q4<=300s state) on the then-current engine gave
+  mass@3 .1331, mass@7 .0845, SD ratio 1.015, OT reach .0622 (actual mass@3
+  .1525, 90% CI [.1380, .1667] on these 768 games -- sim just under the CI
+  floor, a real but smaller gap than SIM-04's task framing assumed). Named
+  mechanism: OT's down x phase KDTree pool (phase 4) drew only from the
+  sparsest phase, missing the TD path. Fix: `phase_pool_mask`
+  (`scripts/sim04_engine.py` ~line 241) makes the phase=4 tree draw from
+  phase in {3, 4}. Result: OT TD rate .0066 -> .0174 (actual .0203), OT tie
+  rate 21.3% -> 10.3% (actual 4.2%), but OT FG-win share moved the wrong way
+  (49.0% -> 40.6%, actual 60.4%). Headline barely moved: mass@3 .1331 ->
+  .1289 (actual .1523), mass@7 .0845 -> .0949, SD ratio 1.015 -> 1.016, OT
+  reach .0622 -> .0631. Kept (real, measured, targeted; OT is only ~6% of
+  games so it didn't close the aggregate gap). Full detail:
+  `docs/sim04_unit_log.md` "SIM-08 unit 1" section.
+- Unit 2 (measured; fix tried and reverted, no net engine change): built
+  `tests/scratch/sim08_unit2_diag.py` (gitignored) to check five things on
+  the same 768x200 non-OT finishing split: (1) real-unit KDTree neighbor
+  spread by down x phase, (2) 4th-down FG-attempt rate by field position
+  when tied/trailing 1-3, (3) red-zone (yardline<=20) drive TD:FG split for
+  the last 5:00, (4) net point change per late possession, (5) the sim's
+  outcome distribution restricted to the 117 real games whose actual final
+  margin is exactly 3. Findings: neighbor spread (1) and the red-zone TD:FG
+  split (3) already match actual closely -- not the driver. The dominant,
+  well-powered gap is (2): actual teams kick a field goal 93-100% of the
+  time on 4th down in makeable range (kick distance <50) when tied or
+  trailing 1-3 with <=5:00 left (n=10-25/cell); the sim only does so 61-64%
+  of the time trailing 1-3 (88-93% tied) at the same field-position buckets
+  (n=1956-3002/cell) -- it draws punt/go-for-it far too often exactly where
+  real coaches essentially never do. Consequence measured directly in (5):
+  among the true-margin-3 games, the sim's own last scoring play is a field
+  goal only 44% of the time vs a touchdown 51% of the time, while actual is
+  65% field goal. Root cause read from the code: `scaled_score_diff`
+  (`scripts/sim04_engine.py` line 204-210, `SCORE_INNER=8`,
+  `SCORE_INNER_SCALE=2`) compresses a 0-8 point real score gap into only 0-4
+  scaled units, so the measured mean neighbor score distance at down=4,
+  phase=3 (4.2 raw points) is comparable to or wider than the 3-point
+  trail_1_3 bucket itself -- field position and time dominate the KDTree
+  distance budget over score exactly where the real decision is score-driven
+  and near-deterministic. One fix tried (predeclared, `pick_index_nn`,
+  `scripts/sim04_engine.py` ~line 270-296): kept the KDTree distances and
+  replaced the uniform `rng.integers` neighbor pick with an adaptive Gaussian
+  kernel weight (`bw` = median of the k=40 distances). Rerun (finishing
+  split + all five measurements): moved nothing -- FG rate trail_1_3 <30
+  .606->.599, 30-39 .629->.654 (wrong direction), tied 50+ .108->.110; true
+  margin-3 sim mass@3 .3106->.3157 (+0.0051, ~1.7 SE at n=23,400, noise);
+  headline mass@3 .1289->.1297, mass@7 .0949->.0956, SD ratio 1.016->1.015,
+  OT reach .0631->.0629 (all flat). Diagnosis: the adaptive bandwidth only
+  mildly discriminates near vs far neighbors (~7x nearest:farthest), not
+  enough when the nearest 40 neighbors themselves are already off on score
+  state because of the compression above. Verdict: fix did not move the
+  named mechanism toward actual, so it was reverted (`git diff --stat
+  scripts/sim04_engine.py` confirms no diff against the unit-1 committed
+  state). Full-game validation of the current (unit-1-only) engine,
+  `python scripts/sim04_engine.py` default `--n-games-per-season 3334`,
+  2015-2017: key-number hits 2/5 (unchanged), log-loss delta +0.0044 vs
+  naive (unit 3d was +0.0045, 2/5 -- same within noise, as expected since no
+  net engine change was kept), mass@3 sim .0978 vs actual .1523 pooled, SD
+  ratio 1.089. The FG-attempt-rate mechanism and its `scaled_score_diff`
+  root cause remain open and unresolved -- not closed, not refuted (this was
+  a refuted FIX, not a refuted signal; the underlying gap is still real and
+  measured). No registry write (mechanism check, not a pick decision). Full
+  detail: `docs/sim04_unit_log.md` "SIM-08 unit 2" section.
 
 ## Tried (from SIM-04, do not redo)
 
@@ -66,18 +88,25 @@ on cover-vs-miss and push log loss, recorded with `weak-signals record`.
 - Team conditioning: backup QB moves margin 40% of the rating gap (damped).
 - LOSO grade with no market input: raw -0.034, re-centred -0.011 (all from
   pushes), side split dead heat at 78% agreement.
+- Unit 1: OT-pool KDTree fix (kept). See State above.
+- Unit 2: distance-weighted `pick_index_nn` resample (reverted, no effect).
+  See State above.
 
 ## Next
 
-1. Endgame unit continued: the OT-pool fix (unit 1) did not close the
-   aggregate mass-at-3 gap (.1289 vs .1523, actual 90% CI [.1380,.1667]).
-   Next candidate mechanism, not yet measured: regulation-time (non-OT)
-   dilution in the same down x phase pools -- check whether phase=3
-   (Q4<=300s) itself is sparse enough to pull neighbors from phase=2
-   (Q4>300s) or phase=0 in a way that mutes the true late-game FG-attempt
-   rate, using the same play-level trace method as unit 1 (throwaway
-   script, policy hook capture) restricted to non-OT plays. Diagnostic
-   script (gitignored, reusable): `tests/scratch/sim08_unit1_diag.py`.
+1. Unit 3 candidate (not yet measured): tighten score-distance weight
+   specifically in `LATE_PHASES` (1, 3, 4) -- e.g. a smaller
+   `SCORE_INNER_SCALE`/`SCORE_OUTER_SCALE` applied only when `phase` is late,
+   inside `feature_matrix`/`scaled_score_diff`
+   (`scripts/sim04_engine.py` line 204-224), the same way timeouts are
+   already phase-weighted via `to_weight`. This targets the measured root
+   cause directly (score dominated by field position/time in the KDTree
+   distance budget at exactly the down=4/phase=3 states that decide 4th-down
+   FG attempts) rather than resampling within an already-miscomposed
+   neighbor set. Predeclare the exact scale change before rerunning; use the
+   same `tests/scratch/sim08_unit2_diag.py` measurements (item 2 and item 5
+   are the load-bearing ones) plus one full-game validation run, same
+   keep/revert bar as units 1-2.
 2. Undamp conditioning (kernel bandwidth h, k_state) and recheck SIM-05 QB run.
 3. Anchor the sim on the opening spread and total; re-grade LOSO with 1000+
    draws; add a fitted-term blend with the served probability.
