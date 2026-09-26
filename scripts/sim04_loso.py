@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 import json
 import sys
 from datetime import UTC, datetime
@@ -12,7 +13,7 @@ from sklearn.linear_model import LogisticRegression
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from sim04_engine import build_tables, simulate
+from sim04_engine import build_tables, simulate, simulate_games_multiprocess
 
 OPENER_PATH = REPO / "artifacts" / "opener_evaluation" / "20260925T161328Z" / "per_game.parquet"
 GAME_FEATURES_PATH = REPO / "data" / "processed" / "game_features_pbp.parquet"
@@ -30,6 +31,7 @@ PC_ALPHAS = (0.0, 0.05, 0.1, 0.15, 0.2, 0.3)
 EPS = 1e-9
 TEAM_COND_N_REPS_REQUESTED = 1000
 TEAM_COND_N_REPS = 180
+TEAM_COND_MP_SEED_STRIDE = 1_000_000
 MEASURED_GAMES_PER_SECOND_2020 = 30.5
 MEASURED_GAMES_PER_SECOND_2025 = 27.3
 RATING_COLS = [
@@ -164,8 +166,31 @@ def provisional_candidate_hists(frame: pd.DataFrame, engine_shapes: dict[int, np
     return hists
 
 
+def _team_ratings_for_row(r: pd.Series, league_off: float, league_def: float) -> tuple[dict, dict]:
+    home_off = float(r["home_off_epa_per_play"]) if pd.notna(r["home_off_epa_per_play"]) else league_off
+    home_def = float(r["home_def_epa_per_play"]) if pd.notna(r["home_def_epa_per_play"]) else league_def
+    away_off = float(r["away_off_epa_per_play"]) if pd.notna(r["away_off_epa_per_play"]) else league_off
+    away_def = float(r["away_def_epa_per_play"]) if pd.notna(r["away_def_epa_per_play"]) else league_def
+    return {"off": home_off, "def": home_def}, {"off": away_off, "def": away_def}
+
+
+def _append_team_cond_hists(
+    row: pd.Series,
+    margins_raw: np.ndarray,
+    primary: list[dict[int, float]],
+    shift: list[dict[int, float]],
+    tilt: list[dict[int, float]],
+) -> None:
+    margins = np.rint(margins_raw)
+    values, counts = np.unique(margins, return_counts=True)
+    primary.append(dict(zip(values.astype(int).tolist(), (counts / counts.sum()).tolist(), strict=True)))
+    shape_dev = margins - margins.mean()
+    shift.append(recenter_hist(shape_dev, float(row["predicted_margin_at_open"])))
+    tilt.append(tilt_hist(margins, float(row["predicted_margin_at_open"])))
+
+
 def build_team_conditioned_hists(
-    frame: pd.DataFrame, game_features: pd.DataFrame, n_reps: int
+    frame: pd.DataFrame, game_features: pd.DataFrame, n_reps: int, workers: int = 1
 ) -> tuple[list[dict[int, float]], list[dict[int, float]], list[dict[int, float]]]:
     ratings = game_features.loc[game_features["game_type"] == "REG", RATING_COLS].set_index("game_id")
     primary: list[dict[int, float]] = []
@@ -174,27 +199,35 @@ def build_team_conditioned_hists(
     order: list[int] = []
     for season in GRADED_SEASONS:
         train_seasons = tuple(range(FIRST_TRAIN_SEASON, season))
-        tables = build_tables(train_seasons, condition_on_team=True)
-        rng = np.random.default_rng(RNG_SEED + season)
-        league_off = tables["league_off_mean"]
-        league_def = tables["league_def_mean"]
         season_rows = frame.loc[frame["season"] == season]
-        for idx, row in season_rows.iterrows():
-            r = ratings.loc[row["game_id"]]
-            home_off = float(r["home_off_epa_per_play"]) if pd.notna(r["home_off_epa_per_play"]) else league_off
-            home_def = float(r["home_def_epa_per_play"]) if pd.notna(r["home_def_epa_per_play"]) else league_def
-            away_off = float(r["away_off_epa_per_play"]) if pd.notna(r["away_off_epa_per_play"]) else league_off
-            away_def = float(r["away_def_epa_per_play"]) if pd.notna(r["away_def_epa_per_play"]) else league_def
-            home_ratings = {"off": home_off, "def": home_def}
-            away_ratings = {"off": away_off, "def": away_def}
-            sim = simulate(n_reps, rng, tables, home_ratings=home_ratings, away_ratings=away_ratings)
-            margins = np.rint(sim["margin"].to_numpy(dtype=float))
-            values, counts = np.unique(margins, return_counts=True)
-            primary.append(dict(zip(values.astype(int).tolist(), (counts / counts.sum()).tolist(), strict=True)))
-            shape_dev = margins - margins.mean()
-            shift.append(recenter_hist(shape_dev, float(row["predicted_margin_at_open"])))
-            tilt.append(tilt_hist(margins, float(row["predicted_margin_at_open"])))
-            order.append(idx)
+        if workers > 1:
+            tables = build_tables(train_seasons, condition_on_team=True)
+            league_off = tables["league_off_mean"]
+            league_def = tables["league_def_mean"]
+            rows = list(season_rows.iterrows())
+            games = []
+            for idx, row in rows:
+                r = ratings.loc[row["game_id"]]
+                home_ratings, away_ratings = _team_ratings_for_row(r, league_off, league_def)
+                games.append({"home_ratings": home_ratings, "away_ratings": away_ratings})
+            base_seed = RNG_SEED + season * TEAM_COND_MP_SEED_STRIDE
+            results = simulate_games_multiprocess(
+                games, train_seasons, True, n_reps, base_seed, max_workers=workers
+            )
+            for (idx, row), margins_raw in zip(rows, results, strict=True):
+                _append_team_cond_hists(row, margins_raw, primary, shift, tilt)
+                order.append(idx)
+        else:
+            tables = build_tables(train_seasons, condition_on_team=True)
+            rng = np.random.default_rng(RNG_SEED + season)
+            league_off = tables["league_off_mean"]
+            league_def = tables["league_def_mean"]
+            for idx, row in season_rows.iterrows():
+                r = ratings.loc[row["game_id"]]
+                home_ratings, away_ratings = _team_ratings_for_row(r, league_off, league_def)
+                sim = simulate(n_reps, rng, tables, home_ratings=home_ratings, away_ratings=away_ratings)
+                _append_team_cond_hists(row, sim["margin"].to_numpy(dtype=float), primary, shift, tilt)
+                order.append(idx)
     if order != list(frame.index):
         raise ValueError("team-conditioned candidate row order does not match frame order")
     return primary, shift, tilt
@@ -428,6 +461,11 @@ def disagreement_report(
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--n-reps", type=int, default=TEAM_COND_N_REPS)
+    parser.add_argument("--workers", type=int, default=1)
+    args = parser.parse_args()
+
     timestamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
     out_dir = ARTIFACT_ROOT / timestamp
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -450,7 +488,7 @@ def main() -> None:
     )
 
     team_cond_primary_hists, team_cond_shift_hists, team_cond_tilt_hists = build_team_conditioned_hists(
-        frame, game_features, TEAM_COND_N_REPS
+        frame, game_features, args.n_reps, args.workers
     )
     tc_primary_cover, tc_primary_push, tc_primary_loss = hists_to_three_way(team_cond_primary_hists, lines)
     tc_primary_summary, tc_primary_log_loss, tc_primary_brier = summarize_candidate(
@@ -617,16 +655,29 @@ def main() -> None:
                 "actual_2009_2014_mean_margin_home_field_reference": 2.5658,
             },
             "n_reps_per_game_requested": TEAM_COND_N_REPS_REQUESTED,
-            "n_reps_per_game_used": TEAM_COND_N_REPS,
+            "n_reps_per_game_used": args.n_reps,
+            "workers_used": args.workers,
             "n_reps_reduction_reason": (
-                "SIM-08 unit 7 re-benchmark on the current engine (post OT-pool/4th-down-layer/"
-                "team-yard-shift): 30.5 games/sec on 2020's table (11-season train window), "
-                "27.3 games/sec on 2025's table (16-season train window), both measured on 15 games "
-                "x 40 reps, tests/scratch/sim08_unit7_timing.py. 1537 games x 1000 reps would run "
-                "~14 hours at this throughput, far over the ~3 hour budget; 180 reps/game estimates "
-                "to ~2.7-2.8 hours using the slower 2025-table rate, applied uniformly to every game "
-                "and every candidate (raw, shift and tilt share the same draws). Monte Carlo cost at "
-                "180 draws, (K-1)/2N with K=3 outcomes: 2/360 = 0.00556 in three-way log loss."
+                (
+                    "SIM-08 unit 7 re-benchmark on the engine before the goal-line fix (post "
+                    "OT-pool/4th-down-layer/team-yard-shift): 30.5 games/sec on 2020's table "
+                    "(11-season train window), 27.3 games/sec on 2025's table (16-season train "
+                    "window), both measured on 15 games x 40 reps, tests/scratch/sim08_unit7_timing.py. "
+                    "1537 games x 1000 reps would run ~14 hours single-process, far over the ~3 hour "
+                    "budget; 180 reps/game estimated ~2.7-2.8 hours single-process, applied uniformly "
+                    "to every game and every candidate (raw, shift and tilt share the same draws). "
+                    "Monte Carlo cost at 180 draws, (K-1)/2N with K=3 outcomes: 2/360 = 0.00556 in "
+                    "three-way log loss."
+                )
+                if args.n_reps < TEAM_COND_N_REPS_REQUESTED
+                else (
+                    f"SIM-08 unit 8 second LOSO look, after the goal-line fix (SCALE_FP 2.5, 3cc779e): "
+                    f"requested {TEAM_COND_N_REPS_REQUESTED} reps/game, ran {args.n_reps} reps/game "
+                    f"across {args.workers} worker(s) via scripts/sim04_engine.py "
+                    f"simulate_games_multiprocess (no reduction needed at this worker count). "
+                    f"Monte Carlo cost at {args.n_reps} draws, (K-1)/2N with K=3 outcomes: "
+                    f"{2 / (2 * args.n_reps):.6f} in three-way log loss."
+                )
             ),
         },
         "team_conditioned_raw": tc_primary_summary,

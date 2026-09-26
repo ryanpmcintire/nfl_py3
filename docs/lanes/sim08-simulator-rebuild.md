@@ -53,16 +53,31 @@ on cover-vs-miss and push log loss, recorded with `weak-signals record`.
 
 ## Next
 
-1. Unit 7 re-grade RUNNING (python `scripts/sim04_loso.py`, started 11:08,
-   about 3 h, 180 draws per game, Monte Carlo cost 0.0056). Reads: raw, old
-   shift, spike-keeping tilt, LOSO logistic blend with the served cover
-   probability. When `artifacts/sim04_loso/<ts>/report.json` newer than
-   20260926T034537Z exists, append "SIM-08 unit 7 LOSO re-grade" to the unit
-   log (keys: team_conditioned_raw/_shift/_tilt/_tilt_served_blend,
-   blend_fold_coefficients, push_vs_nonpush_log_loss,
-   cover_vs_miss_delta_pushes_excluded, disagreement_report,
-   best_read_reliability_table, record_command_drafts); root runs the drafted
-   `weak-signals record` commands after checking them. Do not relaunch.
+1. Unit 8 (second LOSO look, post goal-line fix) LAUNCHED and RUNNING:
+   `scripts/sim04_loso.py --n-reps 1000 --workers 22`, pid 34068, started
+   2026-09-26 16:22:55Z, artifact dir
+   `artifacts/sim04_loso/20260926T162257Z/` (do not touch unit 7's own
+   `artifacts/sim04_loso/20260926T150827Z`, pid 7024/28028, still running
+   separately; do not relaunch either job). Change: `scripts/sim04_loso.py`
+   gained `--n-reps`/`--workers` argparse in `main()` (default
+   `TEAM_COND_N_REPS`=180/1, serial path byte-unchanged); `workers>1` routes
+   `build_team_conditioned_hists` (new helpers `_team_ratings_for_row`,
+   `_append_team_cond_hists`) through `sim04_engine.simulate_games_multiprocess`
+   once per held-out season, seed `RNG_SEED + season*1_000_000` + per-game
+   index. Reads (raw, shift, tilt, blend) and all report keys unchanged; only
+   `n_reps_per_game_used` now reflects `--n-reps` and `n_reps_reduction_reason`
+   branches on whether a reduction actually happened. Smoke
+   (`tests/scratch/sim08_unit8_mp_smoke.py`, season 2020, 20 reps, 8 workers,
+   run twice): 227 games, identical=True, ~88s/run (measured). ETA: 51.2
+   games-reps/s at 8 workers (season-2020 table, measured, concurrent with
+   unit 7) extrapolated linearly to 22 workers and slowed per-season by the
+   unit-7 single-process 2020-vs-2025 ratio (30.5/27.3, inferred to hold under
+   multiprocessing) -> ~3.2 h for 1537 games x 1000 reps, under the 4 h cap;
+   Monte Carlo cost (K-1)/2N = 1/1000 = 0.001. When
+   `artifacts/sim04_loso/20260926T162257Z/report.json` exists and is stable,
+   append "SIM-08 unit 8 LOSO re-grade" to `docs/sim04_unit_log.md` (same
+   keys as unit 7, plus the shape fix now in effect) and have root run the
+   drafted `weak-signals record` commands after checking them.
 2. Shape: goal-line borrowing fixed (`SCALE_FP` 2.5, `3cc779e`; log loss
    +0.0024, 4/5). The unit 7 run grades the engine before this change, so a
    second LOSO look is needed after it. Still open: mass at 3 (.096 vs .152),
