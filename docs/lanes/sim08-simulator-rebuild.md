@@ -39,15 +39,19 @@ on cover-vs-miss and push log loss, recorded with `weak-signals record`.
 
 ## Next
 
-1. Re-grade RUNNING since 2026-09-26 ~18:10 UTC: `scripts/sim04_loso.py
-   --n-reps 500 --workers 8`, log `tests/scratch/sim08_loso_regrade.log`.
-   Per-season margins checkpoint to
-   `artifacts/sim04_loso/checkpoints/engine-<sha12 of sim04_engine.py>_reps-500_mp-1/<season>.npz`;
-   a rerun of the same command reuses finished seasons. Do not edit
-   `scripts/sim04_engine.py` while it runs (spawned workers re-import it).
-   On finish: append "SIM-08 LOSO re-grade" to `docs/sim04_unit_log.md` from
-   the new `report.json`, then run the drafted `weak-signals record` commands
-   after checking them.
+1. Re-grade attempt 3 (2026-09-26, `--n-reps 500 --workers 8`) was killed by
+   Claude Code's low-memory reaper about 45 min into the first season's
+   8-worker phase (warm-up 18:55-19:25 UTC); no season checkpoint was written
+   (the `engine-fd9b29826e52_reps-500_mp-1/` directory is empty). Free RAM
+   was 42 GB before the workers started, so 8 workers use more than the
+   3 GB each the cap assumes. Next run, only when the owner asks: same
+   command with `--workers 4`, in a terminal the owner starts (not a
+   background shell), or with CLAUDE_CODE_DISABLE_BG_SHELL_PRESSURE_REAP=1 set
+   before Claude Code starts. Measure per-worker memory in the first minutes and
+   fix `simulate_games_multiprocess`'s 3 GB assumption. Checkpoints resume
+   finished seasons. After: append "SIM-08 LOSO re-grade" to
+   `docs/sim04_unit_log.md` and run the drafted `weak-signals record`
+   commands after checking them.
 2. Engine shape: mass at 3 (.096 vs .152), SD ratio 1.10, and the total that
    barely tracks the opening total (slope 0.34 vs 0.87); tilting does not fix
    shape (unit log "anchoring check").

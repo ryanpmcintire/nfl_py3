@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-26T19:11:37.608121+00:00`
+Refreshed at: `2026-09-26T19:31:40.859669+00:00`
 
 ## Start here
 
@@ -21,11 +21,9 @@ Refreshed at: `2026-09-26T19:11:37.608121+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `91385f46bbdd` — Roof-state line-move replication bounded by a matched positive control
-- Pending change set: 3 paths
-  - `M  ROADMAP.md`
-  - `M  docs/lanes/backlog-batch-2026-09-26.md`
-  - `M  docs/open_benchmark_suite.md`
+- Baseline commit: `cb05eb3edae8` — SKY-07 retired: its library was cut on 2026-09-10 and is not restored
+- Pending change set: 1 paths
+  - `M  docs/lanes/sim08-simulator-rebuild.md`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
