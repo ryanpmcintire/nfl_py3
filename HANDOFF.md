@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-26T18:55:53.766338+00:00`
+Refreshed at: `2026-09-26T18:59:04.548027+00:00`
 
 ## Start here
 
@@ -21,17 +21,19 @@ Refreshed at: `2026-09-26T18:55:53.766338+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `b7b76b073069` — SIM-08 lane: restore engine history to State
-- Pending change set: 19 paths
+- Baseline commit: `de0133f37448` — SIM-08: held-out grade checkpoints each season so a kill keeps finished seasons
+- Pending change set: 21 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - ` M README.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/sim08-simulator-rebuild.md`
+  - `M  docs/lanes/free-odds-sources.md`
+  - `M  docs/lanes/inactives-capture-empty.md`
   - ` M docs/model.html`
-  - `M  scripts/sim04_loso.py`
+  - `M  scripts/capture_private_sunday_odds.py`
+  - ` M src/nfl_ats/board_terminal.py`
   - ` M tiebreaker.json`
+  - `?? docs/lanes/ui20-2026-09-26.md`
   - `?? registry/experiments/margin-backtest/20260926T161310Z.json`
   - `?? registry/experiments/margin-backtest/20260926T163946Z.json`
   - `?? registry/experiments/margin-backtest/20260926T165526Z.json`
@@ -41,7 +43,7 @@ Refreshed at: `2026-09-26T18:55:53.766338+00:00`
   - `?? registry/experiments/margin-predict/2026-week-03-20260926T165620Z.json`
   - `?? registry/experiments/margin-predict/2026-week-03-20260926T174045Z.json`
   - `?? registry/experiments/opener-evaluation/20260926T174414Z.json`
-  - `?? registry/experiments/waterfall-feed/20260926T174956Z.json`
+  - ...and 1 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

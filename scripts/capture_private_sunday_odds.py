@@ -35,7 +35,7 @@ def capture(features_path: Path, max_age_minutes: int) -> dict[str, Any]:
     now = datetime.now(UTC)
     features = pd.read_parquet(features_path, columns=["kickoff"])
     kickoff = pd.to_datetime(features["kickoff"], utc=True, errors="coerce")
-    if not kickoff.between(pd.Timestamp(now), pd.Timestamp(now) + pd.Timedelta(days=2)).any():
+    if not kickoff.between(pd.Timestamp(now), pd.Timestamp(now) + pd.Timedelta(days=3)).any():
         return {"captured": False, "reason": "no_upcoming_nfl_games"}
     results: dict[str, Any] = {}
     for source, runner in (

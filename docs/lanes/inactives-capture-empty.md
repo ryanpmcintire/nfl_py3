@@ -148,15 +148,21 @@ Verified this session (**measured**):
 - Did not touch `source_freshness_policy.py` (out of scope per batch rule).
 
 ### Next
-- Tonight's real capture (ATL at GB, T-90 ≈ 18:45 ET / 22:45 UTC) is the first
-  live proof against RotoWire's *current*-week markup, not an archived one.
-  Structure should match (same site template), but watch
-  `data/players/inactives/<tonight's stamp>/manifest.json` for `row_count > 0`,
-  `source_used="fallback"`, and empty `warnings`. If RotoWire changed their
-  grid classes since Nov 2025, `_parse_rotowire_grid` will return 0 rows and
-  `source_freshness_policy`'s fail-closed branch (already fixed, see above)
-  reports `degraded` rather than falsely `complete` — check `empty_reason` in
-  that manifest first before re-diagnosing from scratch.
+- 2026-09-26 measured, LANE FINISHED: the real Thursday-night capture
+  confirmed the fix live. `inactives_thu_primetime` ran at 18:50 ET
+  (`data/scheduler_log.txt:1806-1807`, `OK ... snapshot:
+  data/players/inactives/20260924T225037Z (ok=True)`); its manifest
+  (`data/players/inactives/20260924T225037Z/manifest.json`) shows `ok=true`,
+  `row_count=11`, `teams_seen=["ATL","GB"]`, `source_used="fallback"`,
+  `fallback.showed_known_placeholder=false` (real RotoWire data, not the
+  placeholder), `empty_reason="primary_offseason_placeholder"` (expected,
+  NFL.com's page is still dead), `warnings=[]`. `refresh_thu_inactives_primetime`
+  then ran at 19:15 ET and picked it up (`data/scheduler_log.txt:1808-1809`).
+  RotoWire's current-week markup matched `_parse_rotowire_grid` with no
+  changes needed. No later inactives job (Sunday week-4 T-90) has fired yet as
+  of this check (Saturday 2026-09-26 13:56 ET) — nothing further to watch for
+  this bug; the fix holds on real in-season data. This bounded task is done;
+  no code changed this session.
 - Fetched artifacts kept for reference under `tests/scratch/rotowire/`
   (gitignored): `wayback_20251116.html` (real populated page),
   `live_20260924.html` (today's live placeholder, JS-light static HTML with no

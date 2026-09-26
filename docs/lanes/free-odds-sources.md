@@ -43,8 +43,42 @@ odds sources.
 
 ## Next
 
-- After Friday's 12:30 run, confirm Books now updates by itself.
+- 2026-09-26 measured: Friday 2026-09-25 12:30 ET `odds_private_fri` ran but
+  did NOT capture — `OK odds_private_fri: {"captured": false, "reason":
+  "no_upcoming_nfl_games"}` (`data/scheduler_log.txt:1842-1843`). Read
+  `scripts/capture_private_sunday_odds.py:34-39`: it requires a kickoff within
+  `(now, now + 2 days)`. Friday 12:30 ET + 2 days = Sunday 12:30 ET, which is
+  ~30 min before the earliest 1:00 PM ET Sunday kickoff, so the window
+  structurally excludes every Sunday game whenever this job runs at its
+  scheduled Friday-noon time. This is a distinct bug from the 9/24 Bovada
+  endpoint fix — not yet diagnosed further, not fixed here (read-only check).
+  Saturday's 10:00 ET `odds_private_sat` run then succeeded:
+  `the_odds_gap_lineshop_private` captured=true, 15 games, 90 quotes, written
+  to `data/market/raw/20260926T140051Z-odds-gap-private/`
+  (`data/scheduler_log.txt:1886-1887`). `docs/index.html` mtime is
+  2026-09-26T13:56:20-04:00, matching the `lineups_sat_pm` republish that ran
+  right after that capture, so Books now does reflect data captured after
+  Friday 12:30 ET — but from Saturday's run, not Friday's. The original Next
+  ("confirm Friday's run updates Books now by itself") is not confirmed as
+  stated; Books now self-updates only because Saturday's job papered over
+  Friday's structural miss. Next: widen or fix the 2-day upcoming-game window
+  in `capture_private_sunday_odds.py` so the Friday job itself captures.
+- 2026-09-26 measured: the same Saturday run's `bovada_public_nfl` job (a
+  separate direct-scrape job in `scripts/capture_bovada_private.py`, distinct
+  from the Bovada quotes already included via Odds Gap's 3-book aggregate)
+  failed again with `"reason": "Bovada response must be an array"` even
+  though that script already uses the fixed endpoint
+  (`capture_bovada_private.py:25`, `services/sports/event/v2/events/...`,
+  raised at line 40). The 9/24 endpoint fix has not made this job reliable;
+  looks intermittent (anti-bot/rate limit) rather than the original wrong-URL
+  bug. Not fixed here.
 
 ## Open
 
-- None.
+- Two open items, both read-only findings from 2026-09-26, not fixed:
+  1. FIXED 2026-09-26: `capture_private_sunday_odds.py:capture` window widened
+     to 3 days; at Friday 16:30 UTC it now sees 14 games (was 0, measured
+     against `game_features.parquet`). Confirm next Friday's 12:30 log line
+     reads captured true.
+  2. `bovada_public_nfl` (`capture_bovada_private.py:_rows`, line 37-40)
+     still intermittently returns a non-array payload after the endpoint fix.
