@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-26T04:54:27.068697+00:00`
+Refreshed at: `2026-09-26T12:28:35.332710+00:00`
 
 ## Start here
 
@@ -21,24 +21,13 @@ Refreshed at: `2026-09-26T04:54:27.068697+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `6053eaa6baf5` — Team-conditioned simulator and what-if runs: backup QB costs about a point
-- Pending change set: 16 paths
+- Baseline commit: `8e9ad60d84c4` — Simulator finished: reads the spread no better than the model; board shows its shapes
+- Pending change set: 5 paths
   - `M  ROADMAP.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
   - `M  docs/lanes/README.md`
-  - `A  docs/lanes/done/sim04-dashboard-chart.md`
-  - `R  docs/lanes/sim04-loso-eval.md -> docs/lanes/done/sim04-loso-eval.md`
-  - `R  docs/lanes/sim04-play-simulator.md -> docs/lanes/done/sim04-play-simulator.md`
-  - `R  docs/lanes/sim05-whatif.md -> docs/lanes/done/sim05-whatif.md`
-  - `M  docs/model.html`
+  - `A  docs/lanes/sim08-simulator-rebuild.md`
   - `M  docs/sim04_unit_log.md`
-  - `M  registry/weak_signals.json`
-  - `A  scripts/sim04_week.py`
-  - `M  src/nfl_ats/board_content.py`
-  - `M  src/nfl_ats/board_terminal.py`
-  - `M  src/nfl_ats/board_terminal_style.css`
+  - `M  scripts/sim04_engine.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

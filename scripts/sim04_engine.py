@@ -238,6 +238,12 @@ def round_state_key(down: int, phase: int, dist: float, fp: float, score: float,
     return (down, phase, r_dist, r_fp, r_score, r_time, r_off, r_def)
 
 
+def phase_pool_mask(phase_arr: np.ndarray, phase: int) -> np.ndarray:
+    if phase == 4:
+        return np.isin(phase_arr, (3, 4))
+    return phase_arr == phase
+
+
 def build_neighbor_index(trans: pd.DataFrame) -> dict:
     down_arr = trans["down_i"].to_numpy()
     phase_arr = trans["phase"].to_numpy()
@@ -253,7 +259,7 @@ def build_neighbor_index(trans: pd.DataFrame) -> dict:
     trees = {}
     for down in (1, 2, 3, 4):
         for phase in range(5):
-            mask = (down_arr == down) & (phase_arr == phase)
+            mask = (down_arr == down) & phase_pool_mask(phase_arr, phase)
             sub_idx = np.flatnonzero(mask)
             if len(sub_idx) == 0:
                 continue
@@ -328,7 +334,7 @@ def build_neighbor_index_scipy(trans: pd.DataFrame) -> dict:
     trees = {}
     for down in (1, 2, 3, 4):
         for phase in range(5):
-            mask = (down_arr == down) & (phase_arr == phase)
+            mask = (down_arr == down) & phase_pool_mask(phase_arr, phase)
             sub_idx = np.flatnonzero(mask)
             if len(sub_idx) == 0:
                 continue

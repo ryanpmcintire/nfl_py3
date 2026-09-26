@@ -1874,3 +1874,61 @@ team-conditioned histogram is exponentially tilted to the served predicted
 margin, so the key-number spikes stay at the real numbers and the mean
 matches the card within 0.1. The chart is shape only; its caption says the
 pick's chance comes from the model.
+
+## SIM-08 unit 1 (endgame mechanism diagnosis, measured, 2026-09-26, subagent)
+
+Reran the finishing split (`tests/scratch/sim08_unit1_diag.py`, gitignored:
+768 real 2015-2017 REG games from their own first live Q4<=300s snap, 200
+reps, unconditioned engine) against the CURRENT committed
+`scripts/sim04_engine.py`, not the pre-NN fix1+2 engine the task's cited
+baseline (.114) came from (log line 1655). Result: mass@3 .1331, mass@7
+.0845, SD ratio 1.015, OT reach rate .0622 (actual .0625). Actual
+season-block bootstrap on these 768 games: mass@3 mean .1525, 90% CI
+[.1380, .1667] -- sim sits just under the CI floor, a real but much smaller
+gap than assumed.
+
+Per-mechanism sim vs actual (same script):
+
+| mechanism | sim | actual | read |
+|---|---|---|---|
+| 4th-down go rate, trailing 1-3 | .427 (n=27,692) | .420 (n=143) | matched |
+| leading-team kneel rate | .172 (n=961,401) | .183 (n=4,733) | matched |
+| hurry-up pass rate, trailing <=120s | .775 (n=649,346) | .772 (n=3,548) | matched |
+| FG make rate by distance x score state | noisy | n=2-57/cell | no consistent bug |
+| OT tie rate (of OT games) | .213 (n=9,550) | .042 (n=48) | large gap |
+| OT FG-win share | .490 | .604 | moderate gap |
+| OT per-play TD rate | .0066 (n=179,594 OT plays) | .0203 (n=934) | large gap |
+| OT FG attempt/make rate | .044/.84 | .047/.80 (35/44) | matched |
+
+Named mechanism: the down x phase KDTree for OT (phase 4) draws only from
+OT rows, the sparsest of the five phases, so red-zone OT snaps often can't
+find 40 true OT neighbors and pull in field-position-distant ones,
+suppressing the relative-gain-crosses-goal TD path (unit 3's fix) precisely
+where it matters most.
+
+Fix (one change, predeclared before rerun): `scripts/sim04_engine.py`,
+`phase_pool_mask` (~line 241) used in `build_neighbor_index` (~line
+253-260) and `build_neighbor_index_scipy` (~line 328-335) -- the phase=4
+tree pool is now rows with phase in {3, 4} (OT unioned with Q4<=300s)
+instead of phase==4 alone; every other phase's tree mask is unchanged.
+
+Result (same 768x200 split, rerun once): OT per-play TD rate .0066 ->
+.0174 (actual .0203, closed most of the gap); OT tie rate 21.3% -> 10.3%
+(actual 4.2%, closed about half); OT FG-win share 49.0% -> 40.6% (actual
+60.4%, moved the wrong way -- the reclaimed OT scoring mostly became
+touchdowns, not field goals). Headline finishing split: mass@3 .1331 ->
+.1289 (actual .1523; ~5 SE at n=153,600, a small real move in the wrong
+direction, not noise), mass@7 .0845 -> .0949 (actual .0911, closer), SD
+ratio 1.015 -> 1.016 (flat), OT reach rate .0622 -> .0631 (flat, matched
+either way).
+
+Verdict: the named OT-pool-sparsity mechanism was real and the fix
+corrected it in the predicted direction, but OT is only ~6% of finishing
+games and the freed-up scoring mostly became touchdowns rather than field
+goals, so it does not close the aggregate mass-at-3 gap. The larger driver
+of the mass-at-3 shortfall is still open (regulation-time phase=3 pool
+dilution is the next-named candidate, not yet measured). Fix kept (real,
+measured, targeted improvement to a named mechanism, not reverted).
+`unresolved_below_power`; no registry write (mechanism check per the task,
+not a pick decision); not ported beyond this file; no commits, no
+dashboard or publish work.
