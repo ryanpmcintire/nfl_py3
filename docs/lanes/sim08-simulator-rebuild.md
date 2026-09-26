@@ -52,6 +52,14 @@ on cover-vs-miss and push log loss, recorded with `weak-signals record`.
    finished seasons. After: append "SIM-08 LOSO re-grade" to
    `docs/sim04_unit_log.md` and run the drafted `weak-signals record`
    commands after checking them.
+   Attempt 4 RUNNING (2026-09-26, `--workers 4`, log
+   `tests/scratch/sim08_loso_regrade.log`). Worker memory grew ~1 GB/min:
+   `nn_weight_cache_cond` is keyed by team ratings, so it never hits across
+   games and grew all season. `_mp_process_batch` now clears it after each
+   game (output-identical: entries are deterministic in the key, no RNG on a
+   miss). Seasons after the first use the fix. The checkpoint directory keeps
+   the pre-fix hash `engine-fd9b29826e52_reps-500_mp-1`; if a rerun is needed,
+   rename it to the new hash so finished seasons are reused.
 2. Engine shape: mass at 3 (.096 vs .152), SD ratio 1.10, and the total that
    barely tracks the opening total (slope 0.34 vs 0.87); tilting does not fix
    shape (unit log "anchoring check").

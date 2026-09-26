@@ -1359,6 +1359,7 @@ def _mp_process_batch(args):
             away_ratings=away_ratings,
         )
         out.append((game_index, sim["margin"].to_numpy(dtype=float)))
+        tables["nn_weight_cache_cond"].clear()
     return out
 
 
