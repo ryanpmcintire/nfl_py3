@@ -8,6 +8,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from sklearn.neighbors import KDTree
 
 REPO = Path(__file__).resolve().parents[1]
 PBP_SNAPSHOT_DIR = REPO / "data" / "pbp" / "raw" / "20260925T202544Z"
@@ -22,6 +23,21 @@ RNG_SEED = 20260925
 N_BOOT = 2000
 MIN_CELL_N = 25
 MAX_PLAYS_PER_GAME = 400
+
+K_NEIGHBORS = 40
+SCALE_YDSTOGO = 5.0
+SCALE_FP = 5.0
+SCALE_TIME = 300.0
+SCALE_TIMEOUTS = 1.0
+SCORE_CLIP = 21.0
+SCORE_INNER = 8.0
+SCORE_INNER_SCALE = 2.0
+SCORE_OUTER_SCALE = 8.0
+LATE_PHASES = (1, 3, 4)
+ROUND_DIST = 2.0
+ROUND_FP = 5.0
+ROUND_SCORE = 2.0
+ROUND_TIME = 30.0
 
 OT_SECONDS_BY_SEASON = {2015: 900.0, 2016: 900.0, 2017: 600.0}
 
@@ -149,6 +165,135 @@ def vectorized_time_bucket_fine(qtr: np.ndarray, gsr: np.ndarray) -> np.ndarray:
     return tb
 
 
+def compute_phase(qtr: int, gsr: float) -> int:
+    if qtr >= 5:
+        return 4
+    if qtr == 4:
+        return 3 if gsr <= 300.0 else 2
+    if qtr == 2 and (gsr - 1800.0) <= 120.0:
+        return 1
+    return 0
+
+
+def vectorized_phase(qtr: np.ndarray, gsr: np.ndarray) -> np.ndarray:
+    phase = np.zeros(len(qtr), dtype=np.int8)
+    is_q4 = qtr == 4
+    phase[is_q4 & (gsr <= 300.0)] = 3
+    phase[is_q4 & (gsr > 300.0)] = 2
+    is_q2 = qtr == 2
+    phase[is_q2 & ((gsr - 1800.0) <= 120.0)] = 1
+    phase[qtr >= 5] = 4
+    return phase
+
+
+def continuous_time_feature(qtr: int, gsr: float) -> float:
+    if qtr >= 5:
+        return gsr
+    return gsr - 1800.0 if gsr > 1800.0 else gsr
+
+
+def vectorized_time_raw(qtr: np.ndarray, gsr: np.ndarray) -> np.ndarray:
+    return np.where(qtr >= 5, gsr, np.where(gsr > 1800.0, gsr - 1800.0, gsr))
+
+
+def scaled_score_diff(d):
+    d = np.clip(d, -SCORE_CLIP, SCORE_CLIP)
+    abs_d = np.abs(d)
+    inner = np.minimum(abs_d, SCORE_INNER)
+    outer = np.maximum(abs_d - SCORE_INNER, 0.0)
+    mag = inner / SCORE_INNER_SCALE + outer / SCORE_OUTER_SCALE
+    return np.sign(d) * mag
+
+
+def feature_matrix(dist, fp, score, time_raw, off_to, def_to, phase_arr):
+    to_weight = np.isin(phase_arr, LATE_PHASES).astype(float)
+    return np.column_stack(
+        [
+            np.asarray(dist) / SCALE_YDSTOGO,
+            np.asarray(fp) / SCALE_FP,
+            scaled_score_diff(np.asarray(score)),
+            np.asarray(time_raw) / SCALE_TIME,
+            (np.asarray(off_to) / SCALE_TIMEOUTS) * to_weight,
+            (np.asarray(def_to) / SCALE_TIMEOUTS) * to_weight,
+        ]
+    )
+
+
+def round_state_key(down: int, phase: int, dist: float, fp: float, score: float, time_raw: float, off_to, def_to):
+    r_dist = int(round(min(max(dist, 0.0), 30.0) / ROUND_DIST))
+    r_fp = int(round(fp / ROUND_FP))
+    r_score = int(round(min(max(score, -SCORE_CLIP), SCORE_CLIP) / ROUND_SCORE))
+    r_time = int(round(time_raw / ROUND_TIME))
+    if phase in LATE_PHASES:
+        r_off = int(off_to)
+        r_def = int(def_to)
+    else:
+        r_off = 0
+        r_def = 0
+    return (down, phase, r_dist, r_fp, r_score, r_time, r_off, r_def)
+
+
+def build_neighbor_index(trans: pd.DataFrame) -> dict:
+    down_arr = trans["down_i"].to_numpy()
+    phase_arr = trans["phase"].to_numpy()
+    feats = feature_matrix(
+        trans["dist_raw"].to_numpy(),
+        trans["fp_raw"].to_numpy(),
+        trans["sc_raw"].to_numpy(),
+        trans["time_raw"].to_numpy(),
+        trans["off_to_raw"].to_numpy(),
+        trans["def_to_raw"].to_numpy(),
+        phase_arr,
+    )
+    trees = {}
+    for down in (1, 2, 3, 4):
+        for phase in range(5):
+            mask = (down_arr == down) & (phase_arr == phase)
+            sub_idx = np.flatnonzero(mask)
+            if len(sub_idx) == 0:
+                continue
+            trees[(down, phase)] = (KDTree(feats[sub_idx]), sub_idx)
+    return trees
+
+
+def pick_index_nn(
+    rng: np.random.Generator,
+    tables: dict,
+    down: int,
+    phase: int,
+    dist: float,
+    fp: float,
+    score: float,
+    time_raw: float,
+    off_to,
+    def_to,
+    k: int,
+) -> int:
+    down_key = down if down in (1, 2, 3, 4) else 4
+    entry = tables["nn_trees"].get((down_key, phase))
+    if entry is None:
+        entry = tables["nn_trees"][(down_key, 0)]
+    tree, sub_idx = entry
+    cache = tables["nn_cache"]
+    key = round_state_key(down_key, phase, dist, fp, score, time_raw, off_to, def_to)
+    neighbors = cache.get(key)
+    if neighbors is None:
+        feat = feature_matrix(
+            np.array([dist]),
+            np.array([fp]),
+            np.array([score]),
+            np.array([time_raw]),
+            np.array([off_to]),
+            np.array([def_to]),
+            np.array([phase]),
+        )
+        k_eff = min(k, len(sub_idx))
+        _, ind = tree.query(feat, k=k_eff)
+        neighbors = sub_idx[ind[0]]
+        cache[key] = neighbors
+    return int(neighbors[rng.integers(len(neighbors))])
+
+
 def build_pat_bonus(pbp: pd.DataFrame) -> pd.DataFrame:
     full = pbp.sort_values(["game_id", "play_id"]).reset_index(drop=True)
     grp = full.groupby("game_id", sort=False)
@@ -201,6 +346,9 @@ def build_transition_frame(pbp: pd.DataFrame) -> pd.DataFrame:
     df["def_to_used"] = np.nan_to_num(def_to_used, nan=0.0)
 
     turnover_score = (df["touchdown"] == 1) & ((df["interception"] == 1) | (df["fumble_lost"] == 1))
+    points_off_raw_pre = (df["posteam_score_post"] - df["posteam_score"]).fillna(0.0).to_numpy()
+    return_score = (df["touchdown"].to_numpy() == 1) & ~turnover_score.to_numpy() & (points_off_raw_pre == 0.0)
+    def_score = turnover_score.to_numpy() | return_score
 
     drive_last = df.sort_values(["game_id", "fixed_drive", "play_id"]).groupby(
         ["game_id", "fixed_drive"], sort=False
@@ -216,14 +364,11 @@ def build_transition_frame(pbp: pd.DataFrame) -> pd.DataFrame:
     is_safety_row = is_last_of_drive & pd.Series(row_keys, index=df.index).isin(safety_pairs).to_numpy()
 
     pat_bonus_arr = df["pat_bonus"].to_numpy()
-    points_def = np.where(
-        turnover_score.to_numpy(), 6.0 + pat_bonus_arr, np.where(is_safety_row, 2.0, 0.0)
-    )
-    points_off_raw = (df["posteam_score_post"] - df["posteam_score"]).fillna(0.0).to_numpy()
+    points_def = np.where(def_score, 6.0 + pat_bonus_arr, np.where(is_safety_row, 2.0, 0.0))
     points_off_raw = np.where(
-        (df["touchdown"].to_numpy() == 1) & ~turnover_score.to_numpy(),
-        points_off_raw + pat_bonus_arr,
-        points_off_raw,
+        (df["touchdown"].to_numpy() == 1) & ~def_score,
+        points_off_raw_pre + pat_bonus_arr,
+        points_off_raw_pre,
     )
     points_off = np.where(points_def > 0, 0.0, points_off_raw)
 
@@ -233,6 +378,15 @@ def build_transition_frame(pbp: pd.DataFrame) -> pd.DataFrame:
 
     yards_gained = df["yardline_100"].to_numpy() - df["next_yardline"].to_numpy()
     dist_gained = df["ydstogo"].to_numpy() - df["next_distance"].to_numpy()
+    next_down_arr = df["next_down"].to_numpy()
+    row_down = df["down"].to_numpy()
+    same_side = ~flipped
+    short = yards_gained < df["ydstogo"].to_numpy()
+    spot_distance = df["ydstogo"].to_numpy() - yards_gained
+    repeat_down = same_side & short & (next_down_arr == row_down) & (
+        np.abs(df["next_distance"].to_numpy() - spot_distance) <= 0.5
+    )
+    auto_first = same_side & short & (next_down_arr == 1) & ~repeat_down
 
     down_i = df["down"].to_numpy().astype(int)
     dist = df["ydstogo"].to_numpy()
@@ -251,6 +405,10 @@ def build_transition_frame(pbp: pd.DataFrame) -> pd.DataFrame:
     tb_c = np.array([time_bucket_coarse(int(v)) for v in tb_f], dtype=np.int8)
     off_to01 = (df["posteam_timeouts_remaining"].fillna(0).to_numpy() > 0).astype(np.int8)
     def_to01 = (df["defteam_timeouts_remaining"].fillna(0).to_numpy() > 0).astype(np.int8)
+    phase = vectorized_phase(qtr, gsr)
+    time_raw = vectorized_time_raw(qtr, gsr)
+    off_to_raw = df["posteam_timeouts_remaining"].fillna(3.0).to_numpy()
+    def_to_raw = df["defteam_timeouts_remaining"].fillna(3.0).to_numpy()
 
     out = pd.DataFrame(
         {
@@ -265,6 +423,15 @@ def build_transition_frame(pbp: pd.DataFrame) -> pd.DataFrame:
             "tb_c": tb_c,
             "off_to01": off_to01,
             "def_to01": def_to01,
+            "phase": phase,
+            "auto_first": auto_first,
+            "repeat_down": repeat_down,
+            "dist_raw": dist,
+            "fp_raw": fp,
+            "sc_raw": sc,
+            "time_raw": time_raw,
+            "off_to_raw": off_to_raw,
+            "def_to_raw": def_to_raw,
             "next_down": df["next_down"].to_numpy(),
             "next_distance": df["next_distance"].to_numpy(),
             "next_yardline": df["next_yardline"].to_numpy(),
@@ -289,22 +456,28 @@ def build_opening_pool(pbp: pd.DataFrame) -> np.ndarray:
     return first["yardline_100"].to_numpy()
 
 
-def build_levels(trans: pd.DataFrame):
-    trans = trans.reset_index(drop=True)
-    l0 = trans.groupby(
-        ["down_i", "dist_f", "fp_f", "sc_f", "tb_f", "off_to01", "def_to01"], sort=False
-    ).indices
-    l1 = trans.groupby(["down_i", "dist_f", "fp_f", "sc_c", "tb_c"], sort=False).indices
-    l2 = trans.groupby(["down_i", "dist_c", "fp_c", "sc_c", "tb_c"], sort=False).indices
-    l3 = trans.groupby(["down_i"], sort=False).indices
-    return trans, l0, l1, l2, l3
-
-
 def build_tables(seasons: tuple[int, ...]) -> dict:
     pbp = load_reg_seasons(seasons)
     trans = build_transition_frame(pbp)
-    trans, l0, l1, l2, l3 = build_levels(trans)
+    trans = trans.reset_index(drop=True)
+    nn_trees = build_neighbor_index(trans)
     opening_pool = build_opening_pool(pbp)
+    off_td_mask = trans["points_off"].to_numpy() >= 6.0
+    def_td_mask = trans["points_def"].to_numpy() >= 6.0
+    pat_bonus_pool = np.concatenate(
+        [
+            trans.loc[off_td_mask, "points_off"].to_numpy() - 6.0,
+            trans.loc[def_td_mask, "points_def"].to_numpy() - 6.0,
+        ]
+    )
+    if len(pat_bonus_pool) == 0:
+        pat_bonus_pool = np.array([0.0])
+    scored_mask = (
+        (trans["points_off"].to_numpy() > 0.0) | (trans["points_def"].to_numpy() > 0.0)
+    ) & trans["possession_flip"].to_numpy()
+    post_score_pool = trans.loc[scored_mask, "next_yardline"].to_numpy()
+    if len(post_score_pool) == 0:
+        post_score_pool = opening_pool
     arrays = {
         "points_off": trans["points_off"].to_numpy(),
         "points_def": trans["points_def"].to_numpy(),
@@ -315,28 +488,21 @@ def build_tables(seasons: tuple[int, ...]) -> dict:
         "next_yardline": trans["next_yardline"].to_numpy(),
         "yards_gained": trans["yards_gained"].to_numpy(),
         "dist_gained": trans["dist_gained"].to_numpy(),
+        "auto_first": trans["auto_first"].to_numpy(),
+        "repeat_down": trans["repeat_down"].to_numpy(),
         "off_to_used": trans["off_to_used"].to_numpy(),
         "def_to_used": trans["def_to_used"].to_numpy(),
     }
     return {
         "arrays": arrays,
-        "l0": l0,
-        "l1": l1,
-        "l2": l2,
-        "l3": l3,
+        "nn_trees": nn_trees,
+        "nn_cache": {},
         "opening_pool": opening_pool,
+        "pat_bonus_pool": pat_bonus_pool,
+        "post_score_pool": post_score_pool,
         "n_rows": len(trans),
         "seasons": seasons,
     }
-
-
-def pick_index(rng: np.random.Generator, tables: dict, k0, k1, k2, k3, min_cell_n: int) -> int:
-    for level, key in ((tables["l0"], k0), (tables["l1"], k1), (tables["l2"], k2)):
-        idxs = level.get(key)
-        if idxs is not None and len(idxs) >= min_cell_n:
-            return int(idxs[rng.integers(len(idxs))])
-    idxs = tables["l3"].get(k3)
-    return int(idxs[rng.integers(len(idxs))])
 
 
 def default_policy(down, distance, yardline, score_diff, qtr, clock_left, drawn):
@@ -378,6 +544,8 @@ def run_one_game(
 ) -> tuple[dict, bool]:
     arrays = tables["arrays"]
     opening_pool = tables["opening_pool"]
+    pat_bonus_pool = tables["pat_bonus_pool"]
+    post_score_pool = tables["post_score_pool"]
 
     home_score = state["home_score"]
     away_score = state["away_score"]
@@ -420,37 +588,12 @@ def run_one_game(
         def_score = away_score if offense == "home" else home_score
         score_diff = off_score - def_score
 
-        tb_fine = time_bucket_fine(qtr, clock_val if not in_ot else 0.0)
-        if in_ot:
-            tb_fine = 7
-        tb_coarse = time_bucket_coarse(tb_fine)
+        phase = 4 if in_ot else compute_phase(qtr, gsr)
+        time_feat = ot_clock if in_ot else continuous_time_feature(qtr, gsr)
 
-        k0 = (
-            down,
-            dist_bucket_fine(distance),
-            fp_bucket_fine(yardline),
-            score_bucket_fine(score_diff),
-            tb_fine,
-            min(off_to, 1),
-            min(def_to, 1),
+        idx = pick_index_nn(
+            rng, tables, down, phase, distance, yardline, score_diff, time_feat, off_to, def_to, min_cell_n
         )
-        k1 = (
-            down,
-            dist_bucket_fine(distance),
-            fp_bucket_fine(yardline),
-            score_bucket_coarse(score_diff),
-            tb_coarse,
-        )
-        k2 = (
-            down,
-            dist_bucket_coarse(distance),
-            fp_bucket_coarse(yardline),
-            score_bucket_coarse(score_diff),
-            tb_coarse,
-        )
-        k3 = down
-
-        idx = pick_index(rng, tables, k0, k1, k2, k3, min_cell_n)
 
         drawn = {
             "points_off": arrays["points_off"][idx],
@@ -462,6 +605,8 @@ def run_one_game(
             "next_yardline": arrays["next_yardline"][idx],
             "yards_gained": arrays["yards_gained"][idx],
             "dist_gained": arrays["dist_gained"][idx],
+            "auto_first": bool(arrays["auto_first"][idx]),
+            "repeat_down": bool(arrays["repeat_down"][idx]),
             "off_to_used": arrays["off_to_used"][idx],
             "def_to_used": arrays["def_to_used"][idx],
         }
@@ -553,15 +698,54 @@ def run_one_game(
             drive_start_gsr = clock_val if not in_ot else ot_clock
             drive_scored = False
         else:
-            next_down_i = int(drawn["next_down"])
-            new_yardline = min(max(yardline - drawn["yards_gained"], 1.0), 99.0)
-            if next_down_i == 1:
-                new_distance = min(10.0, new_yardline)
+            raw_next_yardline = yardline - drawn["yards_gained"]
+            if raw_next_yardline <= 0.0:
+                bonus = float(rng.choice(pat_bonus_pool))
+                td_points = 6.0 + bonus
+                if offense == "home":
+                    home_score += td_points
+                else:
+                    away_score += td_points
+                drive_scored = True
+                if in_ot:
+                    final_margin = home_score - away_score
+                    break
+                if drive_start_qtr == 4 and drive_start_gsr <= 300.0:
+                    late_q4_log.append(drive_scored)
+                possessions += 1
+                offense = "away" if offense == "home" else "home"
+                down, distance = 1, 10.0
+                yardline = float(rng.choice(post_score_pool))
+                drive_start_qtr = qtr
+                drive_start_gsr = clock_val if not in_ot else ot_clock
+                drive_scored = False
             else:
-                new_distance = min(max(distance - drawn["dist_gained"], 1.0), new_yardline)
-            down = next_down_i
-            distance = new_distance
-            yardline = new_yardline
+                new_yardline = min(max(raw_next_yardline, 1.0), 99.0)
+                gained = yardline - new_yardline
+                if drawn["auto_first"] or (not drawn["repeat_down"] and gained >= distance):
+                    down = 1
+                    distance = min(10.0, new_yardline)
+                    yardline = new_yardline
+                elif drawn["repeat_down"]:
+                    distance = min(max(distance - gained, 1.0), new_yardline)
+                    yardline = new_yardline
+                elif down >= 4:
+                    if drive_start_qtr == 4 and drive_start_gsr <= 300.0:
+                        late_q4_log.append(drive_scored)
+                    possessions += 1
+                    if in_ot:
+                        ot_possession_index += 1
+                    offense = "away" if offense == "home" else "home"
+                    down, distance = 1, 10.0
+                    yardline = min(max(100.0 - new_yardline, 1.0), 99.0)
+                    distance = min(10.0, yardline)
+                    drive_start_qtr = qtr
+                    drive_start_gsr = clock_val if not in_ot else ot_clock
+                    drive_scored = False
+                else:
+                    down = down + 1
+                    distance = min(max(distance - gained, 1.0), new_yardline)
+                    yardline = new_yardline
     else:
         cap_hit = True
         final_margin = home_score - away_score
@@ -585,7 +769,7 @@ def simulate(
     tables: dict,
     ot_seconds: float = 600.0,
     policy=None,
-    min_cell_n: int = MIN_CELL_N,
+    min_cell_n: int = K_NEIGHBORS,
     max_plays: int = MAX_PLAYS_PER_GAME,
 ) -> pd.DataFrame:
     policy = policy or default_policy
@@ -612,7 +796,7 @@ def simulate_from_states(
     ot_seconds: float,
     reps: int,
     policy=None,
-    min_cell_n: int = MIN_CELL_N,
+    min_cell_n: int = K_NEIGHBORS,
     max_plays: int = MAX_PLAYS_PER_GAME,
 ) -> pd.DataFrame:
     policy = policy or default_policy
@@ -781,7 +965,7 @@ def run_validation(n_games_per_season: int, out_dir: Path) -> dict:
         "valid_seasons": list(VALID_SEASONS),
         "n_simulated_games_per_season": n_games_per_season,
         "n_train_transition_rows": tables["n_rows"],
-        "min_cell_n": MIN_CELL_N,
+        "min_cell_n": K_NEIGHBORS,
         "key_number_mass": {
             str(k): {
                 "simulated": sim_mass[k],

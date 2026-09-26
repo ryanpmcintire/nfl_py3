@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-26T02:35:53.942407+00:00`
+Refreshed at: `2026-09-26T03:04:48.274367+00:00`
 
 ## Start here
 
@@ -21,13 +21,12 @@ Refreshed at: `2026-09-26T02:35:53.942407+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `df1c2f2f295f` — Play-level simulator engine: scoring and clock from one play sequence
-- Pending change set: 6 paths
-  - `M  docs/lanes/sim04-loso-eval.md`
+- Baseline commit: `779177fc353c` — Simulator finishes real games well; tied late games still under-score
+- Pending change set: 5 paths
   - `M  docs/lanes/sim04-play-simulator.md`
   - `M  docs/sim04_unit_log.md`
+  - `A  scripts/sim04_backoff_diag.py`
   - `M  scripts/sim04_engine.py`
-  - `A  scripts/sim04_loso.py`
   - `?? err.log`
 
 The baseline commit and pending paths were observed before the automatic refresh.

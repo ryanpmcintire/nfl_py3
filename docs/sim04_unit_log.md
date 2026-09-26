@@ -1687,3 +1687,133 @@ all. Not measured this unit (out of tool budget).
 
 Not ported to `src/`; no registry writes; no commits; no dashboard or
 publish work (research-only per AGENTS.md).
+
+## Engine unit 3 (TD-overshoot/return-TD fixes + NN backoff replacement) -- 2026-09-25/26
+
+### Predeclaration (written before any validation-split look)
+
+Fix A (`scripts/sim04_engine.py` `run_one_game`, non-flip branch, ~line
+686): a drawn non-scoring gain whose relative delta (`yardline -
+drawn["yards_gained"]`) crosses the goal line is now scored as a touchdown
+(6 + a bonus drawn uniformly from `tables["pat_bonus_pool"]`) instead of
+clamped to the 1-yard line. `pat_bonus_pool` (built in `build_tables`,
+~line 456) pools the empirical PAT/2pt bonus (`points_off/points_def - 6.0`)
+from every real touchdown row, offense- or defense-scored, since both share
+the same PAT mechanism. The receiving team's next field position is drawn
+uniformly from `post_score_pool` (~line 467): the empirical `next_yardline`
+of every real scoring, flip-causing row (any score, not just this branch's
+kind). In OT this ends the game immediately (mirrors the existing in-OT
+settle rule, since a TD always breaks a tie or a one-score-behind state).
+
+Fix B (`build_transition_frame`, ~lines 350-351): `return_score` flags
+touchdown rows that are not interception/fumble-return scores but where the
+scoring credit did not go to `posteam` (punt-return and blocked-kick-return
+TDs, `posteam_score_post - posteam_score == 0`). These now feed the same
+`def_score` branch as INT/fumble returns (6 + PAT bonus credited to
+`points_def`), instead of being misrouted into `points_off` with the score
+delta silently zero.
+
+Backoff-level measurement (`scripts/sim04_backoff_diag.py`, run once,
+3,000-game simulate() call on the fixed engine, still using the OLD
+categorical l0-l3 backoff before its removal): overall level-0 (exact fine
+cell) fires 67.2%, l1 25.3%, l2 6.4%, l3 (down-only) 1.1% (n=433,470 draws).
+In the Q4<=300s window specifically: l0 27.9%, l1 29.5%, l2 36.4%, l3 6.3%
+(n=47,186) -- 72% of late-Q4 draws must leave the exact fine cell, and 42.7%
+fall to the two coarsest levels. In Q2<=120s: l0 44.7%, l1 20.5%, l2 30.8%,
+l3 3.9% (n=28,396). This confirms item (C): the categorical hierarchy backs
+off hardest exactly where score/time conditioning matters most.
+
+NN replacement design (predeclared before running validation): down (exact
+match, 1-4) x phase (exact match, 5 levels: `compute_phase`, ~line 168 --
+Q1-Q3-and-Q2>120s "normal"=0, Q2<=120s=1, Q4>300s=2, Q4<=300s=3, OT=4) each
+get one `sklearn.neighbors.KDTree` (`build_neighbor_index`, ~line 236; 20
+trees total, one per down x phase). Distance features (`feature_matrix`,
+~line 208): `ydstogo/5`, `yardline_100/20`, a piecewise score_diff scale
+clipped to +/-21 with slope 1/2 inside +/-8 and 1/8 beyond it (so a 3-point
+lead and a 10-point lead differ by 2.5 scaled units, both late-game distinct
+regimes, while a 15- and a 20-point lead differ by only 0.625 -- picked from
+football's one-possession-game threshold, not fit to any result), continuous
+seconds-left-in-half (`continuous_time_feature`/`vectorized_time_raw`,
+~line 188-196; OT uses the raw OT-period clock directly, confirmed by
+reading 2015 OT rows: `game_seconds_remaining` for qtr>=5 already runs
+149-900, i.e. it IS the OT-period clock, not a continuation of the game
+clock) divided by 300, and off/def timeouts remaining divided by 1 -- but
+the timeout pair is multiplied by 0 outside the three late phases
+(Q2<=120s/Q4<=300s/OT) so it is a no-op constant everywhere else, keeping
+every tree 6-dimensional without touching normal-phase neighbor rankings.
+Draw uniformly from the k=40 nearest in that (down, phase) tree
+(`pick_index_nn`, ~line 259); k and every scale above were fixed before this
+predeclaration was written, not chosen by looking at 2015-2017. Neighbour
+sets are memoized on a rounded state key (`round_state_key`, ~line 222:
+ydstogo to 2, yardline to 5, score_diff to 2, seconds-left to 30, timeouts
+exact in late phases / collapsed to 0 elsewhere) -- this rounding is a
+runtime-only approximation (coarser round = faster, marginally blunter
+neighbor set), not a modeling choice, so it was tuned for the "few minutes
+for 10k games" requirement after the fact: 300 games at the first (finer)
+rounding took 6.3s with a 94% cache-miss rate; widening the rounding to the
+values above dropped 1,000 games to 15.9s (extrapolated ~159s for the full
+3x3,334-game validation), which the real run then confirmed.
+
+GO/NO-GO criterion: unchanged from every prior sim04 unit -- >=4/5 key
+numbers (3,7,10,14,17) inside the actual 2015-2017 bootstrap 90% CI AND
+discrete log-loss delta vs. the naive train-histogram baseline <=+0.02 nats,
+both required. This is the only look this unit takes at 2015-2017 (no
+config sweep -- the NN design was fixed by football reasoning, not selected
+from a validation sweep, so there is nothing to select between).
+
+### Result (measured once, `.venv/Scripts/python scripts/sim04_engine.py
+--n-games-per-season 3334`, 2026-09-26)
+
+## Engine unit 3b predeclaration (orchestrator, 2026-09-26)
+
+After unit 3 (k=40 nearest-neighbour draws), plays per possession are 6.26 vs
+6.87 actual and the SD ratio is 1.105. Named mechanism (read): on a non-flip
+play the sim copies the neighbour row's `next_down`, so a 3rd-and-2 state that
+draws a 3rd-and-9 neighbour converts or fails by the neighbour's distance, not
+its own. Change (one config, no tuning): downs follow the rules. A first down
+comes when the relative gain covers the sim's distance, or when the row was a
+penalty auto first down (next down 1 with gain short of its distance). A
+repeated down (penalty/no play) keeps the down. Otherwise the down advances,
+and failing on 4th is a turnover on downs at the spot. One validation run,
+logged as a look.
+
+Unit 3b result (look 1, `artifacts/sim04_engine/20260926T025349Z`): 2/5 hits
+(7, 10), log-loss delta +0.0146, SD ratio 1.122, points/game 46.2, ties 1.1%,
+tied-at-5:00 OT rate 28.7%. Tally of the sim's own draws (3000 games) against
+the 2009-2014 pool: row points 40.3 vs 44.3, while game totals are 46.3. About
+6 points per game come from relative gains that cross the goal line on rows that
+were not touchdowns. FGs are 2.26 vs 3.21 and possession changes 20.1 vs 22.4.
+Mechanism (measured): with `SCALE_FP = 20` the neighbours span about ±20 yards
+of field position, and long gains from rows farther out overshoot the goal, so
+FG drives become TD drives and dispersion rises.
+
+## Engine unit 3c predeclaration
+
+One change: `SCALE_FP` 20 -> 5 (neighbours within about ±5 yards), nothing
+else. One validation run, logged as a look.
+
+Unit 3c result (look 2, `artifacts/sim04_engine/20260926T025644Z`): 2/5 hits
+(10, 17), log-loss delta +0.0087, SD ratio 1.080, points/game 42.8. The
+overshoot share fell, but FGs are still 2.61 vs 3.21. Diagnosis (measured, 2000
+games): the rule-based downs added in 3b flagged every 1st-down conversion as a
+"repeat down" (next down equals current down), so the rule gave 1st-down
+conversion 0.061 vs 0.179 on the pool's own rows. Fix: a repeat down requires a
+gain short of the distance and a next distance equal to distance minus gain;
+an auto first down is a short gain whose next down is 1 and is not a repeat.
+After the fix, first-down rates by down are sim/pool 0.185/0.179,
+0.294/0.282, 0.343/0.350.
+
+Unit 3d result (look 3, bug fix only, `artifacts/sim04_engine/20260926T030149Z`):
+2/5 hits (10, 17), **log-loss delta +0.0045** (best of the series), SD ratio
+1.086, points/game 41.8, ties 1.0%, tied-at-5:00 OT rate 31.2% (actual 14.9%),
+mass at 3 .103 vs .152 and at 7 .074 vs .091. Remaining named gaps (measured):
+FGs 2.84 vs 3.21 per game, because the sim reaches 4th down inside the 35 on
+2.8% of plays vs 3.1% (mean field position 53.8 vs 52.5); dispersion 8% high
+even with equal teams, and it builds before the last five minutes (the unit 2
+finishing test from real 5:00 states gave an SD ratio of 1.02).
+
+Orchestrator decision: the validation split has now had 7 engine looks. The
+key-number bar stays a mechanism check, `unresolved_below_power` (no sign
+flip, not refuted). The engine moves on to team conditioning and the
+decision-relevant grade: leave-one-season-out at the opener against the served
+discrete read.
