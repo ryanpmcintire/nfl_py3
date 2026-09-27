@@ -1,6 +1,6 @@
 # Artifact retention policy (WP6 / ROADMAP OPS-02)
 
-## Current availability (2026-09-26)
+## Current availability (2026-09-27)
 
 **Measured:** `git diff-tree --no-commit-id --name-status -r b7ed31d --
 scripts/artifact_retention.py src/nfl_ats/artifact_retention_policy.py
@@ -10,10 +10,13 @@ reports all four files deleted in the September 10 repository cut. A current
 commands below are historical examples and are not runnable in this checkout.
 The historical measurements do not establish current disk use or backup coverage.
 
-OPS-02 remains open. Its next implementation step is to assess the current need
-for read-only inventory and budget tooling before restoring or replacing it.
-Deletion and quarantine are outside this documentation correction. The policy
-and historical evidence below are retained for that assessment.
+OPS-02 remains open. **Read:** the [current inventory lane](lanes/artifact-retention-inventory.md)
+records the September 27 inventory, reference scan, and archive eligibility review.
+The next step is to establish process ownership of the five generated archive-review
+directories; backup coverage remains unverified. No deletion or quarantine is
+authorized, and the removed planner should not be restored for this assessment.
+
+## Historical planner and measurements
 
 Measurement and a dry-run pruning **planner** for `artifacts/` and `data/`.
 The tool is `scripts/artifact_retention.py`; this document records what it

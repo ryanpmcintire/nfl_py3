@@ -20,6 +20,7 @@ from nfl_ats.data import DataContractError
 from nfl_ats.io import atomic_parquet
 from nfl_ats.provenance import sha256_file
 from nfl_ats.recorder_override import replace_week_rows
+from nfl_ats.settlement import LEDGERS, Arm, LedgerSpec
 
 SETTLEMENT_REQUIRED_COLUMNS: tuple[str, ...] = (
     "game_id",
@@ -33,6 +34,67 @@ SETTLEMENT_REQUIRED_COLUMNS: tuple[str, ...] = (
 
 DECISION_GRADE = "decision_line"
 CLOSE_GRADE = "close_line"
+
+TOTAL_CONDITIONED_LATTICE_LEDGER = LedgerSpec(
+    key="total_conditioned_lattice",
+    relative_path="prospective/total_conditioned_lattice_decisions.parquet",
+    arms=(Arm("challenger", "challenger_pick_side", line_column="spread_line"),),
+)
+PROSPECTIVE_LEDGER_SPECS = (*LEDGERS, TOTAL_CONDITIONED_LATTICE_LEDGER)
+
+DEDICATED_CHALLENGER_SETTLEMENT_ARMS = {
+    "crew_tilt_refresh_v1": ("crew_tilt_refresh", "crew_tilt"),
+    "half_line_2h_underdog_refresh_v1": ("half_line_refresh", "half_line_2h_underdog"),
+    "handle_follow_refresh_off_incumbent": ("handle_follow_refresh", "off_arm"),
+    "inactives_refresh_v1": ("inactives_refresh", "inactives"),
+    "injury_signal_refresh_tilt": ("injury_signal_refresh", "injury_tilt"),
+    "late_week_leader_median_follow_v1": (
+        "late_week_move_follow_refresh",
+        "movement_follow",
+    ),
+    "late_week_move_follow_refresh_v1": (
+        "late_week_move_follow_refresh",
+        "equal_book_off_arm",
+    ),
+    "model_only_refresh_incumbent": ("pick_revisions", "model_only_off_arm"),
+    "nflcom_friday_refresh_out2_starters_v1": ("nflcom_friday_refresh", "nflcom_starters"),
+    "specialist_absence_fade_refresh_v1": ("specialist_absence_fade_refresh", "specialist_fade"),
+    "total_conditioned_key_number_lattice_v1": ("total_conditioned_lattice", "challenger"),
+}
+
+DEDICATED_ARM_IDENTITIES = {
+    ("late_week_move_follow_refresh", "equal_book_off_arm"): (
+        "challenger_id",
+        "late_week_move_follow_refresh_v1",
+    ),
+    ("late_week_move_follow_refresh", "movement_follow"): (
+        "served_challenger_id",
+        "late_week_leader_median_follow_v1",
+    ),
+}
+
+UNSUPPORTED_PROSPECTIVE_CHALLENGERS = frozenset(
+    {
+        "rookie_crew_underdog_off_incumbent",
+        "best_pick_sunday_renomination",
+        "tiebreaker_lattice_centre",
+        "tiebreaker_low_side_shade",
+        "totals_served_method",
+    }
+)
+
+
+class InvalidProspectiveArmError(DataContractError):
+    def __init__(self, *, source: str, diagnostics: dict[str, Any]) -> None:
+        invalid_rows = list(diagnostics["invalid_rows"])
+        self.source = source
+        self.diagnostics = diagnostics
+        self.invalid_row_count = len(invalid_rows)
+        self.invalid_rows = invalid_rows
+        details = "; ".join(
+            f"{row['game_id']} ({', '.join(row['reasons'])})" for row in invalid_rows
+        )
+        super().__init__(f"{source} has {len(invalid_rows)} invalid selected rows: {details}")
 
 
 def _utc_series(values: pd.Series) -> pd.Series:
@@ -67,6 +129,207 @@ def assert_recorded_before_kickoff(decisions: pd.DataFrame) -> None:
             "Prospective decisions were recorded at or after kickoff and cannot be "
             f"scored: {examples}"
         )
+
+
+def _strict_utc_series(values: pd.Series, *, field: str) -> pd.Series:
+    parsed: list[pd.Timestamp] = []
+    invalid: list[object] = []
+    for index, value in values.items():
+        try:
+            timestamp = pd.Timestamp(value)
+            if pd.isna(timestamp) or timestamp.tzinfo is None:
+                raise ValueError
+            parsed.append(timestamp.tz_convert("UTC"))
+        except (TypeError, ValueError, OverflowError):
+            invalid.append(index)
+    if invalid:
+        raise DataContractError(
+            f"Prospective ledger has invalid {field} values at rows: "
+            + ", ".join(str(index) for index in invalid[:5])
+        )
+    return pd.Series(parsed, index=values.index, dtype="datetime64[ns, UTC]")
+
+
+def dedicated_challenger_settlement_arm(
+    challenger_id: str,
+) -> tuple[LedgerSpec, Arm] | None:
+    keys = DEDICATED_CHALLENGER_SETTLEMENT_ARMS.get(challenger_id)
+    if keys is None:
+        return None
+    ledger_key, arm_name = keys
+    spec = next(spec for spec in PROSPECTIVE_LEDGER_SPECS if spec.key == ledger_key)
+    arm = next(arm for arm in spec.arms if arm.label == arm_name)
+    return spec, arm
+
+
+def adapt_settlement_arm_for_prospective_scoring(
+    decisions: pd.DataFrame,
+    *,
+    spec: LedgerSpec,
+    arm: Arm,
+    diagnostics: dict[str, Any] | None = None,
+) -> pd.DataFrame:
+    source = f"{spec.key}:{arm.label}"
+    source_rows = len(decisions)
+    identity = DEDICATED_ARM_IDENTITIES.get((spec.key, arm.label))
+    if spec.row_keys != ("game_id",) or arm.game_column != "game_id":
+        raise DataContractError("Prospective scoring adapters require one game_id row per decision")
+    if arm.split_by is not None or arm.filter_column is not None:
+        raise DataContractError(
+            "Prospective scoring adapters do not support split or filtered settlement arms"
+        )
+    deadline_column = next(
+        (column for column in spec.deadline_columns if column in decisions.columns),
+        None,
+    )
+    if deadline_column is None:
+        raise DataContractError(
+            "Prospective ledger is missing a supported deadline column: "
+            + ", ".join(spec.deadline_columns)
+        )
+    required = {
+        "game_id",
+        "season",
+        "week",
+        spec.order_column,
+        "kickoff",
+        arm.pick_column,
+        arm.line_column,
+    }
+    if identity is not None:
+        required.add(identity[0])
+    missing = sorted(required.difference(decisions.columns))
+    if missing:
+        raise DataContractError(f"Prospective ledger is missing columns: {', '.join(missing)}")
+
+    identity_diagnostics: dict[str, Any] = {}
+    if identity is not None:
+        identity_column, identity_value = identity
+        identity_values = decisions[identity_column].astype("string").str.strip()
+        identity_matches = identity_values.eq(identity_value).fillna(False)
+        excluded = decisions.loc[~identity_matches]
+        excluded_games = excluded["game_id"].astype("string").str.strip().dropna().nunique()
+        identity_diagnostics = {
+            "identity_column": identity_column,
+            "identity_value": identity_value,
+            "identity_matched_rows": int(identity_matches.sum()),
+            "discarded_identity_rows": int((~identity_matches).sum()),
+            "discarded_identity_games": int(excluded_games),
+        }
+        decisions = decisions.loc[identity_matches].copy()
+    if decisions.empty:
+        if diagnostics is not None:
+            diagnostics.update(
+                {
+                    "source_rows": source_rows,
+                    "discarded_late_revisions": 0,
+                    "discarded_games_without_predeadline_rows": 0,
+                    "selected_rows": 0,
+                    "deadline_column": deadline_column,
+                    **identity_diagnostics,
+                }
+            )
+        return pd.DataFrame(columns=SETTLEMENT_REQUIRED_COLUMNS)
+
+    game_ids = decisions["game_id"].astype("string").str.strip()
+    invalid_identity = game_ids.isna() | game_ids.eq("")
+    if invalid_identity.any():
+        examples = ", ".join(decisions.loc[invalid_identity, "game_id"].astype(str).tolist()[:5])
+        raise DataContractError(f"Prospective ledger has invalid game identity for: {examples}")
+
+    recorded = _strict_utc_series(decisions[spec.order_column], field=spec.order_column)
+    kickoff = _strict_utc_series(decisions["kickoff"], field="kickoff")
+    deadline = _strict_utc_series(decisions[deadline_column], field=deadline_column)
+    eligible = recorded.lt(deadline)
+    eligible_rows = decisions.loc[eligible].copy()
+    eligible_rows["_prospective_order"] = recorded.loc[eligible]
+    selected = (
+        eligible_rows.sort_values([*spec.row_keys, "_prospective_order"])
+        .drop_duplicates(list(spec.row_keys), keep="last")
+        .drop(columns="_prospective_order")
+    )
+    selected_ids = set(selected["game_id"].astype("string").str.strip())
+    missing_games = set(game_ids) - selected_ids
+
+    if selected.empty:
+        if diagnostics is not None:
+            diagnostics.update(
+                {
+                    "source_rows": source_rows,
+                    "discarded_late_revisions": int((~eligible).sum()),
+                    "discarded_games_without_predeadline_rows": len(missing_games),
+                    "selected_rows": 0,
+                    "deadline_column": deadline_column,
+                    **identity_diagnostics,
+                }
+            )
+        return pd.DataFrame(columns=SETTLEMENT_REQUIRED_COLUMNS)
+
+    adapted = pd.DataFrame(
+        {
+            "game_id": selected["game_id"].astype("string").str.strip(),
+            "season": pd.to_numeric(selected["season"], errors="coerce"),
+            "week": pd.to_numeric(selected["week"], errors="coerce"),
+            "kickoff": kickoff.loc[selected.index],
+            "recorded_at_utc": recorded.loc[selected.index],
+            "pick_side": selected[arm.pick_column].astype("string").str.strip(),
+            "decision_home_spread": pd.to_numeric(selected[arm.line_column], errors="coerce"),
+        }
+    )
+    known_pick_rows = adapted["pick_side"].notna() & adapted["pick_side"].ne("")
+    unknown_picks = sorted(
+        set(adapted.loc[known_pick_rows, "pick_side"].astype(str)) - VALID_PICK_SIDES
+    )
+    if unknown_picks:
+        raise DataContractError(f"{source} contains invalid pick_side values: {unknown_picks}")
+    if adapted["game_id"].duplicated().any():
+        duplicates = sorted(
+            adapted.loc[adapted["game_id"].duplicated(), "game_id"].astype(str).unique()
+        )
+        raise DataContractError(f"{source} contains duplicate game_id rows: {duplicates}")
+    adapted = adapted.reset_index(drop=True)
+    assert_recorded_before_kickoff(adapted)
+    finite_season = pd.Series(np.isfinite(adapted["season"]), index=adapted.index)
+    finite_week = pd.Series(np.isfinite(adapted["week"]), index=adapted.index)
+    finite_spread = pd.Series(np.isfinite(adapted["decision_home_spread"]), index=adapted.index)
+    integral_season = finite_season & adapted["season"].mod(1).eq(0)
+    integral_week = finite_week & adapted["week"].mod(1).eq(0)
+    invalid_rows: list[dict[str, Any]] = []
+    for position, (_, row) in enumerate(adapted.iterrows()):
+        reasons: list[str] = []
+        if not finite_season.iat[position]:
+            reasons.append("non_finite_season")
+        elif not integral_season.iat[position]:
+            reasons.append("non_integral_season")
+        if not finite_week.iat[position]:
+            reasons.append("non_finite_week")
+        elif not integral_week.iat[position]:
+            reasons.append("non_integral_week")
+        if not finite_spread.iat[position]:
+            reasons.append("non_finite_decision_home_spread")
+        if pd.isna(row["pick_side"]) or not str(row["pick_side"]).strip():
+            reasons.append("missing_pick_side")
+        if reasons:
+            invalid_rows.append({"game_id": str(row["game_id"]), "reasons": reasons})
+    selection_diagnostics = {
+        "source_rows": source_rows,
+        "discarded_late_revisions": int((~eligible).sum()),
+        "discarded_games_without_predeadline_rows": len(missing_games),
+        "selected_rows": len(adapted),
+        "deadline_column": deadline_column,
+        **identity_diagnostics,
+    }
+    if invalid_rows:
+        selection_diagnostics.update(
+            {"invalid_row_count": len(invalid_rows), "invalid_rows": invalid_rows}
+        )
+    if diagnostics is not None:
+        diagnostics.update(selection_diagnostics)
+    if invalid_rows:
+        raise InvalidProspectiveArmError(source=source, diagnostics=selection_diagnostics)
+    adapted["season"] = adapted["season"].astype(int)
+    adapted["week"] = adapted["week"].astype(int)
+    return adapted
 
 
 def settle_prospective_picks(

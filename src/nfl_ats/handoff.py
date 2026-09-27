@@ -215,7 +215,8 @@ def _model_markdown(artifacts_root: Path) -> tuple[str, dict[str, Any] | None]:
         f"**{POLICY_GRADED_GAMES:,} games** "
         f"(+{POLICY_EFFECT_ACCURACY_POINTS:.3f} accuracy points; "
         f"`probability_positive={POLICY_PROBABILITY_POSITIVE:.4f}`); the live card "
-        "applies this after the coach policy, while paired prospective tracking continues"
+        "combines this with the coach component in one fitted calibrated probability, "
+        "while paired prospective tracking continues"
     )
     text = (
         f"- Status: **{active['status']}**; linked artifacts present: **{str(linked).lower()}**\n"

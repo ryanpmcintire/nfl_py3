@@ -118,6 +118,20 @@ def build_late_week_move_follow_refresh_rows(
     exposure["news_veto_movement_flip"] = exposure.news_veto_would_be_pick_side.ne(
         exposure.tuesday_pick_side
     )
+    for column in (
+        "tuesday_pick_side",
+        "movement_would_be_pick_side",
+        "leader_median_flat_would_be_pick_side",
+        "leader_median_half_would_be_pick_side",
+        "equal_would_be_pick_side",
+        "news_veto_would_be_pick_side",
+    ):
+        if column not in exposure:
+            raise DataContractError(f"Late-week refresh is missing recorded pick column {column}.")
+        invalid = ~exposure[column].isin(["HOME", "AWAY"])
+        if invalid.any():
+            game_ids = ", ".join(exposure.loc[invalid, "game_id"].astype(str))
+            raise DataContractError(f"Late-week refresh has invalid {column} for {game_ids}.")
     exposure["revision_recorded_at_utc"] = now
     exposure["refresh_run_id"] = plan.refresh_run_id
     exposure["challenger_id"] = CHALLENGER_ID

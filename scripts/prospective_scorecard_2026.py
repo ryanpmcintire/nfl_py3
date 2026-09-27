@@ -2,16 +2,18 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import Any, cast
 
 import numpy as np
 import pandas as pd
 
+from nfl_ats.data import DataContractError
 from nfl_ats.io import atomic_json, run_id
+from nfl_ats.prospective_scoring import dedicated_challenger_settlement_arm
 
 ROOT = Path(__file__).resolve().parents[1]
 ARTIFACTS = ROOT / "artifacts"
 SEASON = 2026
-DECISIVE_WEEKS = (1, 2)
 
 
 def implied_probability(odds: pd.Series) -> pd.Series:
@@ -131,7 +133,7 @@ def probability_block(frame: pd.DataFrame) -> dict[str, object]:
     }
 
 
-def best_pick_record() -> dict[str, dict[str, int]]:
+def best_pick_record(decisive_weeks: list[int]) -> dict[str, dict[str, int]]:
     graded = pd.read_parquet(ARTIFACTS / "settlement" / "graded_decisions.parquet")
     best = graded.loc[
         graded["ledger"].eq("paper_decisions")
@@ -140,13 +142,15 @@ def best_pick_record() -> dict[str, dict[str, int]]:
     ]
     out: dict[str, dict[str, int]] = {}
     for week, group in best.groupby("week"):
-        out[str(int(week))] = record_row(group)
-    out["to_date"] = record_row(best.loc[best["week"].isin(DECISIVE_WEEKS)])
+        out[str(int(cast(Any, week)))] = record_row(group)
+    out["to_date"] = record_row(best.loc[best["week"].isin(decisive_weeks)])
     out["all_recorded"] = record_row(best)
     return out
 
 
-def challenger_paired_records(served: pd.DataFrame) -> list[dict[str, object]]:
+def challenger_paired_records(
+    served: pd.DataFrame, decisive_weeks: list[int]
+) -> list[dict[str, object]]:
     registry = json.loads((ARTIFACTS / "prospective" / "challengers.json").read_text())
     active_ids = sorted(
         {
@@ -156,18 +160,43 @@ def challenger_paired_records(served: pd.DataFrame) -> list[dict[str, object]]:
         }
     )
     graded = pd.read_parquet(ARTIFACTS / "settlement" / "graded_decisions.parquet")
-    challenger_frame = graded.loc[
+    generic_frame = graded.loc[
         graded["ledger"].eq("challenger_decisions")
         & graded["season"].eq(SEASON)
-        & graded["week"].isin(DECISIVE_WEEKS)
+        & graded["week"].isin(decisive_weeks)
     ]
-    served_outcome = served.loc[served["week"].isin(DECISIVE_WEEKS), ["game_id", "outcome"]].rename(
+    served_outcome = served.loc[served["week"].isin(decisive_weeks), ["game_id", "outcome"]].rename(
         columns={"outcome": "served_outcome"}
     )
     rows: list[dict[str, object]] = []
     for challenger_id in active_ids:
-        entrant = challenger_frame.loc[challenger_frame["arm"].eq(challenger_id)]
+        generic = generic_frame.loc[generic_frame["arm"].eq(challenger_id)]
+        binding = dedicated_challenger_settlement_arm(challenger_id)
+        dedicated = pd.DataFrame()
+        dedicated_source: str | None = None
+        if binding is not None:
+            spec, arm = binding
+            dedicated_source = f"{spec.key}:{arm.label}"
+            dedicated = graded.loc[
+                graded["ledger"].eq(spec.key)
+                & graded["arm"].eq(arm.label)
+                & graded["season"].eq(SEASON)
+                & graded["week"].isin(decisive_weeks)
+            ]
+        if not generic.empty and not dedicated.empty:
+            raise DataContractError(
+                f"Challenger {challenger_id!r} has both generic and dedicated graded rows"
+            )
+        entrant = generic if not generic.empty else dedicated
+        source = "challenger_decisions" if not generic.empty else dedicated_source
         if entrant.empty:
+            rows.append(
+                {
+                    "challenger_id": challenger_id,
+                    "status": "unsupported" if binding is None else "missing_scored_rows",
+                    "source": source,
+                }
+            )
             continue
         paired = entrant.merge(served_outcome, on="game_id", how="inner")
         paired = paired.loc[
@@ -175,6 +204,13 @@ def challenger_paired_records(served: pd.DataFrame) -> list[dict[str, object]]:
         ]
         n = len(paired)
         if n == 0:
+            rows.append(
+                {
+                    "challenger_id": challenger_id,
+                    "status": "no_decisive_paired_rows",
+                    "source": source,
+                }
+            )
             continue
         challenger_better = int(
             (paired["outcome"].eq("won") & paired["served_outcome"].eq("lost")).sum()
@@ -186,6 +222,8 @@ def challenger_paired_records(served: pd.DataFrame) -> list[dict[str, object]]:
         rows.append(
             {
                 "challenger_id": challenger_id,
+                "status": "scored",
+                "source": source,
                 "n_decisive_paired": n,
                 "challenger_beats_served": challenger_better,
                 "served_beats_challenger": served_better,
@@ -197,19 +235,24 @@ def challenger_paired_records(served: pd.DataFrame) -> list[dict[str, object]]:
 
 def main() -> None:
     served = build_served_frame()
+    decisive_weeks = sorted(
+        int(week)
+        for week in served.loc[served["outcome"].isin(["won", "lost"]), "week"].dropna().unique()
+    )
     served_weeks = {}
     for week, group in served.groupby("week"):
-        served_weeks[str(int(week))] = {
+        served_weeks[str(int(cast(Any, week)))] = {
             "record": record_row(group),
             "probability": probability_block(group),
         }
-    to_date = served.loc[served["week"].isin(DECISIVE_WEEKS)]
+    to_date = served.loc[served["week"].isin(decisive_weeks)]
+    decisive_count = int(to_date["outcome"].isin(["won", "lost"]).sum())
     summary = {
         "season": SEASON,
-        "decisive_weeks_graded": list(DECISIVE_WEEKS),
+        "decisive_weeks_graded": decisive_weeks,
         "note": (
-            "Two graded weeks (n=32 decisive games) is far too few to decide anything; "
-            "figures below are reported, not a verdict."
+            f"{len(decisive_weeks)} graded weeks (n={decisive_count} decisive games) "
+            "are shown below; descriptive records alone do not establish a serving decision."
         ),
         "served_card": {
             **served_weeks,
@@ -218,8 +261,8 @@ def main() -> None:
                 "probability": probability_block(to_date),
             },
         },
-        "best_pick": best_pick_record(),
-        "challenger_paired_vs_served": challenger_paired_records(served),
+        "best_pick": best_pick_record(decisive_weeks),
+        "challenger_paired_vs_served": challenger_paired_records(served, decisive_weeks),
     }
     output_dir = ARTIFACTS / "prospective_scorecard" / run_id()
     output_dir.mkdir(parents=True, exist_ok=True)

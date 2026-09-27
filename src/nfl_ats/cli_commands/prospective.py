@@ -18,9 +18,20 @@ from nfl_ats.cli_common import (
     _registry_root,
 )
 from nfl_ats.clv import live_close_reference, load_paper_decisions, week_blocked_bootstrap
+from nfl_ats.data import DataContractError
 from nfl_ats.io import atomic_csv, atomic_parquet, run_id
+from nfl_ats.paired_prospective import paired_prospective_report
+from nfl_ats.prospective_nominees import (
+    SUNDAY_ENTRANT_ID,
+    TUESDAY_ENTRANT_ID,
+    InvalidProspectiveNomineeArmError,
+    adapt_best_pick_nominee_arm,
+)
 from nfl_ats.prospective_scoring import (
+    InvalidProspectiveArmError,
     active_challenger_ids,
+    adapt_settlement_arm_for_prospective_scoring,
+    dedicated_challenger_settlement_arm,
     find_challenger,
     find_challenger_artifact,
     load_challenger_decisions,
@@ -105,6 +116,167 @@ def _prospective_primary_entrants(active: pd.DataFrame) -> list[tuple[str, pd.Da
     return entrants
 
 
+def _best_pick_nominee_entrants(
+    artifacts: Path,
+    features: pd.DataFrame,
+    generic: pd.DataFrame,
+    start_season: int,
+) -> tuple[list[tuple[str, pd.DataFrame]], list[dict[str, Any]]]:
+    entrant_ids = (TUESDAY_ENTRANT_ID, SUNDAY_ENTRANT_ID)
+    if not generic.empty:
+        generic_ids = set(generic["challenger_id"].astype(str))
+        collisions = sorted(
+            generic_ids.intersection({"best_pick_sunday_renomination", *entrant_ids})
+        )
+        if collisions:
+            raise DataContractError(
+                f"Best-pick nominee arms have both generic and dedicated decisions: {collisions}"
+            )
+    ledger_path = artifacts / "prospective" / "best_pick_refresh_decisions.parquet"
+    if not ledger_path.is_file():
+        return [], [
+            {
+                "challenger_id": entrant_id,
+                "status": "missing_ledger",
+                "source": f"best_pick_refresh:{entrant_id.rsplit(':', 1)[-1]}",
+                "diagnostics": {},
+            }
+            for entrant_id in entrant_ids
+        ]
+    ledger = pd.read_parquet(ledger_path)
+    entrants: list[tuple[str, pd.DataFrame]] = []
+    statuses: list[dict[str, Any]] = []
+    for entrant_id in entrant_ids:
+        diagnostics: dict[str, Any] = {}
+        invalid_arm = False
+        try:
+            decisions = adapt_best_pick_nominee_arm(
+                ledger,
+                features,
+                entrant_id=entrant_id,
+                diagnostics=diagnostics,
+            )
+        except InvalidProspectiveNomineeArmError as exc:
+            diagnostics.update(exc.diagnostics)
+            decisions = pd.DataFrame()
+            invalid_arm = True
+        if not decisions.empty:
+            seasons = pd.to_numeric(decisions["season"], errors="coerce")
+            decisions = decisions.loc[seasons.ge(start_season)].copy()
+        if invalid_arm:
+            status = "invalid_arm"
+        elif not decisions.empty:
+            entrants.append((entrant_id, decisions))
+            status = "scored"
+        elif diagnostics.get("status") == "no_recorded_rows":
+            status = "no_recorded_rows"
+        else:
+            status = "no_eligible_rows"
+        statuses.append(
+            {
+                "challenger_id": entrant_id,
+                "status": status,
+                "source": f"best_pick_refresh:{entrant_id.rsplit(':', 1)[-1]}",
+                "diagnostics": diagnostics,
+            }
+        )
+    return entrants, statuses
+
+
+def _prospective_challenger_entrants(
+    artifacts: Path,
+    registered: list[str],
+    start_season: int,
+    features: pd.DataFrame,
+) -> tuple[list[tuple[str, pd.DataFrame]], list[dict[str, Any]]]:
+    generic = load_challenger_decisions(artifacts)
+    entrants: list[tuple[str, pd.DataFrame]] = []
+    statuses: list[dict[str, Any]] = []
+    registered_ids = set(registered)
+    nominee_ids = {TUESDAY_ENTRANT_ID, SUNDAY_ENTRANT_ID}
+    if "best_pick_sunday_renomination" in registered_ids and registered_ids.intersection(
+        nominee_ids
+    ):
+        raise DataContractError(
+            "Best-pick nominee base and expanded entrant IDs are both registered"
+        )
+    for challenger_id in sorted(registered_ids):
+        if challenger_id == "best_pick_sunday_renomination":
+            nominee_entrants, nominee_statuses = _best_pick_nominee_entrants(
+                artifacts,
+                features,
+                generic,
+                start_season,
+            )
+            entrants.extend(nominee_entrants)
+            statuses.extend(nominee_statuses)
+            continue
+        generic_rows = (
+            generic.loc[generic["challenger_id"].astype(str).eq(challenger_id)].copy()
+            if not generic.empty
+            else pd.DataFrame()
+        )
+        had_generic = not generic_rows.empty
+        binding = dedicated_challenger_settlement_arm(challenger_id)
+        dedicated_rows = pd.DataFrame()
+        diagnostics: dict[str, Any] = {}
+        source = "challenger_decisions" if had_generic else None
+        ledger_exists = False
+        invalid_arm = False
+        if binding is not None:
+            spec, arm = binding
+            ledger_path = spec.path(artifacts)
+            ledger_exists = ledger_path.is_file()
+            dedicated_source = f"{spec.key}:{arm.label}"
+            if ledger_exists:
+                try:
+                    dedicated_rows = adapt_settlement_arm_for_prospective_scoring(
+                        pd.read_parquet(ledger_path),
+                        spec=spec,
+                        arm=arm,
+                        diagnostics=diagnostics,
+                    )
+                except InvalidProspectiveArmError as exc:
+                    if had_generic:
+                        raise DataContractError(
+                            f"Challenger {challenger_id!r} has both generic and dedicated decisions"
+                        ) from None
+                    diagnostics.update(exc.diagnostics)
+                    invalid_arm = True
+                    source = dedicated_source
+            if not dedicated_rows.empty:
+                if had_generic:
+                    raise DataContractError(
+                        f"Challenger {challenger_id!r} has both generic and dedicated decisions"
+                    )
+                source = dedicated_source
+        decisions = generic_rows if had_generic else dedicated_rows
+        if not decisions.empty:
+            seasons = pd.to_numeric(decisions["season"], errors="coerce")
+            decisions = decisions.loc[seasons.ge(start_season)].copy()
+        if invalid_arm:
+            status = "invalid_arm"
+        elif not decisions.empty:
+            entrants.append((challenger_id, decisions))
+            status = "scored"
+        elif had_generic or (binding is not None and ledger_exists):
+            status = "no_eligible_rows"
+        elif binding is not None:
+            status = "missing_ledger"
+            source = dedicated_source
+        else:
+            status = "unsupported"
+        statuses.append(
+            {
+                "challenger_id": challenger_id,
+                "status": status,
+                "source": source,
+                "diagnostics": diagnostics,
+            }
+        )
+    return entrants, statuses
+
+
 def _prospective_outcomes(features: pd.DataFrame, artifacts: Path) -> pd.DataFrame:
 
     outcomes = features.loc[:, ["game_id", "result"]].copy()
@@ -131,14 +303,16 @@ def _cmd_prospective_score(args: argparse.Namespace) -> None:
     if not active.empty:
         active = active.loc[active["season"].astype(int).ge(args.start_season)]
     entrants = _prospective_primary_entrants(active)
+    challenger_statuses: list[dict[str, Any]] = []
+    try:
+        registered = [] if args.skip_challengers else active_challenger_ids(artifacts)
+    except FileNotFoundError:
+        registered = []
     if not args.skip_challengers:
-        challengers = load_challenger_decisions(artifacts)
-        if not challengers.empty:
-            challengers = challengers.loc[challengers["season"].astype(int).ge(args.start_season)]
-        for challenger_id in sorted(set(challengers["challenger_id"].astype(str))):
-            entrants.append(
-                (challenger_id, challengers.loc[challengers["challenger_id"].eq(challenger_id)])
-            )
+        challenger_entrants, challenger_statuses = _prospective_challenger_entrants(
+            artifacts, registered, args.start_season, features
+        )
+        entrants.extend(challenger_entrants)
 
     frames: list[pd.DataFrame] = []
     reports: list[dict[str, Any]] = []
@@ -153,6 +327,11 @@ def _cmd_prospective_score(args: argparse.Namespace) -> None:
         )
         frames.append(settled)
         reports.append(report)
+
+    for settled, report in zip(frames[1:], reports[1:], strict=True):
+        report["paired_comparison"] = paired_prospective_report(
+            settled, frames[0], samples=args.bootstrap_samples, seed=args.bootstrap_seed
+        )
 
     output = _artifacts_root() / "prospective_scoring" / run_id(now)
     combined = (
@@ -180,14 +359,11 @@ def _cmd_prospective_score(args: argparse.Namespace) -> None:
         "bootstrap_samples": args.bootstrap_samples,
         "bootstrap_seed": args.bootstrap_seed,
     }
-    try:
-        registered = [] if args.skip_challengers else active_challenger_ids(artifacts)
-    except FileNotFoundError:
-        registered = []
     metadata = {
         "created_at_utc": now.isoformat(),
         **configuration,
         "registered_challengers": registered,
+        "challenger_statuses": challenger_statuses,
         "entrants": reports,
         "provenance": artifact_provenance(configuration, args.features),
     }

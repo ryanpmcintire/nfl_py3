@@ -50,6 +50,11 @@ from nfl_ats.model_weak_spots import (
     build_season_timing,
     build_weak_spots,
 )
+from nfl_ats.paired_prospective import (
+    PAIRED_METRIC,
+    paired_decision_rows,
+    paired_decisions_fingerprint,
+)
 from nfl_ats.prospective_scoring import (
     CLOSE_GRADE,
     DECISION_GRADE,
@@ -285,6 +290,7 @@ class ChallengerAssessment:
     interval_low: float | None
     interval_high: float | None
     grading_basis: str
+    historical_evidence: bool = False
 
 
 HISTORY_GRADE_CAPTION = (
@@ -1441,10 +1447,10 @@ def _latest_prospective_reports(artifacts_root: Path) -> dict[str, Mapping[str, 
         try:
             payload = read_json(directory / "metadata.json")
         except (ValueError, OSError):
-            continue
+            return {}
         entrants = payload.get("entrants")
         if not isinstance(entrants, list):
-            continue
+            return {}
         return {
             str(entry.get("entrant")): entry
             for entry in entrants
@@ -1454,39 +1460,46 @@ def _latest_prospective_reports(artifacts_root: Path) -> dict[str, Mapping[str, 
 
 
 def _prospective_report_grade(
-    report: Mapping[str, Any], *, paired_games: int
-) -> tuple[float | None, float | None, float | None] | None:
-
-    forced = report.get("forced_picks")
-    decision = forced.get(DECISION_GRADE) if isinstance(forced, Mapping) else None
-    games = _number(decision.get("games")) if isinstance(decision, Mapping) else None
-    if paired_games <= 0 or games is None or int(games) != paired_games:
+    report: Mapping[str, Any], *, paired_games: int, paired_fingerprint: str
+) -> tuple[float, float, float] | None:
+    comparison = report.get("paired_comparison")
+    if not isinstance(comparison, Mapping) or comparison.get("reference_entrant") != "active_model":
         return None
-    report_probability = _number(report.get("probability_positive"))
-    uncertainty = report.get("uncertainty")
+    games = _number(comparison.get("paired_games"))
+    if (
+        paired_games <= 0
+        or games != paired_games
+        or comparison.get("paired_decisions_sha256") != paired_fingerprint
+    ):
+        return None
+    uncertainty = comparison.get("uncertainty")
     if not isinstance(uncertainty, list):
-        return (report_probability, None, None) if report_probability is not None else None
+        return None
     candidates = [
         entry
         for entry in uncertainty
-        if isinstance(entry, Mapping) and entry.get("metric") == "decision_line_accuracy"
+        if isinstance(entry, Mapping)
+        and entry.get("metric") == PAIRED_METRIC
+        and entry.get("block") == "week"
     ]
-    if not candidates:
-        unlabeled = [
-            entry for entry in uncertainty if isinstance(entry, Mapping) and "metric" not in entry
-        ]
-        if len(unlabeled) != 1:
-            return (report_probability, None, None) if report_probability is not None else None
-        candidates = unlabeled
-    week_rows = [entry for entry in candidates if entry.get("block") == "week"]
-    selected = week_rows[-1] if week_rows else candidates[-1]
-    return (
-        _number(selected.get("probability_positive"))
-        if _number(selected.get("probability_positive")) is not None
-        else report_probability,
-        _number(selected.get("lower")),
-        _number(selected.get("upper")),
-    )
+    if len(candidates) != 1:
+        return None
+    selected = candidates[0]
+    probability = _number(selected.get("probability_positive"))
+    estimate = _number(selected.get("estimate"))
+    lower = _number(selected.get("lower"))
+    upper = _number(selected.get("upper"))
+    if (
+        probability is None
+        or estimate is None
+        or lower is None
+        or upper is None
+        or not 0.0 <= probability <= 1.0
+        or not -1.0 <= estimate <= 1.0
+        or not -1.0 <= lower <= upper <= 1.0
+    ):
+        return None
+    return probability, lower * 100.0, upper * 100.0
 
 
 def _history_challenger_assessments(
@@ -1502,9 +1515,7 @@ def _history_challenger_assessments(
         active_settled = settle_prospective_picks(active_decisions, outcomes)
     except (ValueError, OSError):
         active_settled = pd.DataFrame()
-    active_by_game = (
-        active_settled.set_index("game_id") if not active_settled.empty else pd.DataFrame()
-    )
+
     registry = {
         str(item.get("challenger_id")): item
         for item in challengers
@@ -1526,51 +1537,36 @@ def _history_challenger_assessments(
         pushes = int((status == "push").sum())
         pending = int((status == "pending").sum())
         accuracy = float(correct.mean()) if len(correct) else None
-        delta: float | None = None
-        paired_games = 0
-        if not active_settled.empty:
-            challenger_index = settled.set_index("game_id")
-            common = challenger_index.index.intersection(active_by_game.index)
-            candidate = challenger_index.loc[common]
-            incumbent = active_by_game.loc[common]
-            candidate_status = candidate[f"status_at_{DECISION_GRADE}"].astype(str)
-            incumbent_status = incumbent[f"status_at_{DECISION_GRADE}"].astype(str)
-            paired = (candidate_status == "settled") & (incumbent_status == "settled")
-            candidate_correct = pd.to_numeric(
-                candidate.loc[paired, f"correct_at_{DECISION_GRADE}"], errors="coerce"
-            )
-            incumbent_correct = pd.to_numeric(
-                incumbent.loc[paired, f"correct_at_{DECISION_GRADE}"], errors="coerce"
-            )
-            valid = candidate_correct.notna() & incumbent_correct.notna()
-            paired_games = int(valid.sum())
-            if paired_games:
-                delta = float((candidate_correct[valid] - incumbent_correct[valid]).mean() * 100)
+        paired = paired_decision_rows(settled, active_settled)
+        paired_games = len(paired)
+        delta = float(paired[PAIRED_METRIC].mean() * 100.0) if paired_games else None
         report_grade = _prospective_report_grade(
-            reports.get(str(challenger_id), {}), paired_games=paired_games
+            reports.get(str(challenger_id), {}),
+            paired_games=paired_games,
+            paired_fingerprint=paired_decisions_fingerprint(paired),
         )
+        probability: float | None = None
+        low: float | None = None
+        high: float | None = None
         if report_grade is not None:
             probability, low, high = report_grade
-        else:
-            probability = low = high = None
         if report_grade is None:
             probability, low, high = _evidence_values(registry.get(str(challenger_id), {}))
             if probability is not None or low is not None or high is not None:
                 grading_basis = (
-                    "Settled prospectively at the frozen decision/opener line; "
-                    "pre-registration/historical evidence shown because no matching "
-                    "prospective-score report exists."
+                    "These games were recorded before kickoff. The uncertainty shown "
+                    "comes from earlier historical evaluation because no matching "
+                    "comparison with the current model is available."
                 )
             else:
                 grading_basis = (
-                    "Settled prospectively at the frozen decision/opener line; "
-                    "no matching prospective-score uncertainty is recorded."
+                    "These games were recorded before kickoff. No matching comparison "
+                    "with the current model is available yet."
                 )
         else:
             grading_basis = (
-                "Settled prospectively at the frozen decision/opener line; "
-                "paired with active model and sourced from the latest prospective-score "
-                "report."
+                "These games were recorded before kickoff and compared directly with "
+                "the current model at the same line."
             )
         rows.append(
             ChallengerAssessment(
@@ -1589,6 +1585,7 @@ def _history_challenger_assessments(
                 interval_low=low,
                 interval_high=high,
                 grading_basis=grading_basis,
+                historical_evidence=report_grade is None,
             )
         )
     return tuple(rows)

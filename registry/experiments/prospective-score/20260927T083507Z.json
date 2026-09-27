@@ -1,0 +1,33 @@
+{
+  "artifact_directory": "artifacts\\prospective_scoring\\20260927T083507Z",
+  "backfill_note": null,
+  "code_diff_sha256": "f9f0e275ee9c6f67fd989319c97434d954d1371c882720ed05ec4f00b04dda22",
+  "code_dirty": true,
+  "code_revision": "99c6f0f2ed839ee84c6cdcdc193d4bc5cb4dc414",
+  "command": "prospective-score",
+  "config_hash": "87a1eeec325e646d156827ee91cebba6c719488eba191bd37c87ed75aec1e23b",
+  "experiment_id": "prospective-score/20260927T083507Z",
+  "feature_table_sha256": "cdee1343a6e36077ad52780837a6dbb34dedd7a5290a042c247133c1e84a5a45",
+  "metrics": {
+    "_metrics_truncated_keys": [
+      "challenger_statuses",
+      "entrants",
+      "provenance",
+      "registered_challengers"
+    ],
+    "bootstrap_samples": 1000,
+    "bootstrap_seed": 20260817,
+    "command": "prospective-score",
+    "created_at_utc": "2026-09-27T08:35:07.575524+00:00",
+    "skip_challengers": false,
+    "start_season": 2026
+  },
+  "notes": "",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-27T08:35:07.575524+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats prospective-score",
+  "uv_lock_sha256": "bd8759ed78c466872864514dcc35b23cc63daab0dcf9fc737175372a2a683945",
+  "weak_signal_name": null
+}

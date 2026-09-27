@@ -1227,12 +1227,12 @@ def _lineup_team_html(lineup: TeamLineup | None) -> str:
                 'style="display:block;font-weight:400;font-size:9px;'
                 f'color:var(--text-faint);">starts {player.start_probability:.0%}</span>'
             )
-        injury = player.injury_status or "no report"
+        injury = player.injury_status or "No injury status reported"
         is_base_model_qb = player.model_role == "base_model"
         impact = player.model_impact_note or (
             "model's starter"
             if is_base_model_qb
-            else "not scored by the active model"
+            else "shown for context"
             if player.model_role == "context_only"
             else "model input"
         )
@@ -2332,6 +2332,8 @@ def _history_assessment_html(row: ChallengerAssessment) -> str:
         )
     else:
         uncertainty = "not measured yet"
+    if row.historical_evidence and uncertainty != "not measured yet":
+        uncertainty += " in earlier evaluation"
     return (
         '<tr class="game">'
         f'<td data-label="Challenger"><b class="mono-id">{escape(row.display_name)}</b></td>'

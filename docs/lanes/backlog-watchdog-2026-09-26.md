@@ -1,30 +1,18 @@
 # Continuous backlog and watchdog
 
 ## Goal
-Keep three bounded backlog workers busy and check their queue every 30 minutes.
-The owner explicitly authorized continuous work and automatic replenishment.
+Progress the authorized backlog with three concurrent bounded subagent assignments and a 30-minute liveness check; refill completed assignments immediately while useful work remains.
 
 ## State
-Three workers active: SIM-08 timeout mechanism audit, POL-10 scorecard integration,
-and MOD-18 paired opener evaluation core. Refill on completion messages as well as
-30-minute session checks. Last check: 2026-09-27 08:55 UTC;
-next check: 2026-09-27 09:25 UTC.
+Active. Root live check at 2026-09-27 13:55 UTC found three workers running. The 1,800-second in-session timer uses session 2054; next scheduled check is 14:25 UTC. The timer cannot resume a closed chat. No persistent Codex scheduler or daemon was installed.
+
+Root is integrating POL-10/MOD-18, reviewing generated pages, and preparing repository verification. Publication passed after rebuilding probabilities for the scheduled active-model refresh. Push is blocked by automatic approval review; the approval question remains pending.
 
 ## Tried
-- **Reported (owner):** `codex --no-daemon` stopped shell popups.
-- **Measured:** the installed CLI rejects `codex --no-daemon queue` because
-  queueing requires the shared server. Evidence: `.tmp/backlog-queue-check.log`.
-- The session timer emitted its scheduled check at 08:55 UTC; its next check is 09:25 UTC, then every 30 minutes.
-  It writes a status file and process output for the primary agent to inspect and refill all three assignments.
-  The 08:55 check found all three workers running. No shared daemon was started.
-- **Measured:** project capture scheduler is running; 218 jobs current, one
-  acknowledged missed lock job. Its `--once` check exited 0.
+Bounded assignments, immutable artifact validation, canonical prospective scoring, active-model probability rebuild, and four-page publication. Evidence and current pointers: `.tmp/backlog-active-context.md`.
 
 ## Next
-Check live workers by 09:25 UTC, refill finished assignments immediately,
-and checkpoint reviewed changes while root handles operational work.
+Finish paired-input preparation, the default-off crew recorder, and missing-pick/rendered-page review. Refill workers on independent reviews and concrete backlog work. Freeze changes for full checks, refresh handoff, and save a verified local checkpoint. Continue the 30-minute liveness checks.
 
 ## Open
-A persistent wake-up after this session closes is not installed. The available
-CLI queue path conflicts with the owner's working no-daemon launch mode.
-The active-session checks cannot wake a closed session.
+Persistent scheduling without reintroducing console popups remains unverified. Do not start the Codex daemon. Preserve prospective immutability and all research/serving gates; zero crossing never closes a signal. Stop immediately on owner instruction.
