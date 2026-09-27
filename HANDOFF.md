@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-27T16:37:41.848162+00:00`
+Refreshed at: `2026-09-27T16:39:52.550405+00:00`
 
 ## Start here
 
@@ -21,29 +21,17 @@ Refreshed at: `2026-09-27T16:37:41.848162+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `9648e3efae82` — Record and score immutable rookie-crew prospective arms
-- Pending change set: 27 paths
+- Baseline commit: `59c152b80001` — Build authenticated paired opener evaluation and preserve bootstrap results
+- Pending change set: 9 paths
   - ` M AGENTS.md`
-  - `M  CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
-  - `M  README.md`
   - ` M docs/agent_workflow.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
   - `M  docs/lanes/backlog-watchdog-2026-09-26.md`
-  - `A  docs/lanes/done/mod18-paired-opener-evaluation.md`
-  - `D  docs/lanes/mod18-paired-opener-evaluation.md`
-  - `A  docs/mod18_paired_opener_evaluation.md`
-  - `M  docs/model.html`
-  - `A  registry/experiments/margin-backtest/20260927T160927Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-03-20260927T161013Z.json`
-  - `A  registry/experiments/waterfall-feed/20260927T161409Z.json`
-  - `M  registry/weak_signals.json`
-  - `M  src/nfl_ats/cli_commands/clv.py`
-  - `M  src/nfl_ats/paired_opener_evaluation.py`
-  - `A  src/nfl_ats/paired_opener_inputs.py`
-  - ...and 7 more
+  - `?? docs/lanes/windows-shell-popup.md`
+  - `?? registry/experiments/margin-backtest/20260927T134152Z.json`
+  - `?? registry/experiments/margin-predict/2026-week-03-20260927T134352Z.json`
+  - `?? registry/experiments/opener-evaluation/20260927T134738Z.json`
+  - `?? registry/experiments/waterfall-feed/20260927T134851Z.json`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
