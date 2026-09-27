@@ -50,7 +50,15 @@ ROUND_TIME = 30.0
 OT_SECONDS_BY_SEASON = {2015: 900.0, 2016: 900.0, 2017: 600.0}
 
 LIVE_TYPES = ("run", "pass", "punt", "field_goal", "qb_kneel", "qb_spike", "no_play")
-PLAY_TYPE_CODES = {"run": 0, "pass": 1, "punt": 2, "field_goal": 3, "qb_kneel": 4, "qb_spike": 5, "no_play": 6}
+PLAY_TYPE_CODES = {
+    "run": 0,
+    "pass": 1,
+    "punt": 2,
+    "field_goal": 3,
+    "qb_kneel": 4,
+    "qb_spike": 5,
+    "no_play": 6,
+}
 
 
 def load_reg_seasons(seasons: tuple[int, ...]) -> pd.DataFrame:
@@ -228,11 +236,13 @@ def feature_matrix(dist, fp, score, time_raw, off_to, def_to, phase_arr):
     )
 
 
-def round_state_key(down: int, phase: int, dist: float, fp: float, score: float, time_raw: float, off_to, def_to):
-    r_dist = int(round(min(max(dist, 0.0), 30.0) / ROUND_DIST))
-    r_fp = int(round(fp / ROUND_FP))
-    r_score = int(round(min(max(score, -SCORE_CLIP), SCORE_CLIP) / ROUND_SCORE))
-    r_time = int(round(time_raw / ROUND_TIME))
+def round_state_key(
+    down: int, phase: int, dist: float, fp: float, score: float, time_raw: float, off_to, def_to
+):
+    r_dist = round(min(max(dist, 0.0), 30.0) / ROUND_DIST)
+    r_fp = round(fp / ROUND_FP)
+    r_score = round(min(max(score, -SCORE_CLIP), SCORE_CLIP) / ROUND_SCORE)
+    r_time = round(time_raw / ROUND_TIME)
     if phase in LATE_PHASES:
         r_off = int(off_to)
         r_def = int(def_to)
@@ -324,7 +334,12 @@ def fit_fourth_down_policy(trans: pd.DataFrame) -> HistGradientBoostingClassifie
     label = fourth_down_label(sub["play_type_code"].to_numpy())
     kick_dist = sub["fp_raw"].to_numpy() + 17.0
     features = np.column_stack(
-        [sub["sc_raw"].to_numpy(), sub["time_raw"].to_numpy(), sub["dist_raw"].to_numpy(), kick_dist]
+        [
+            sub["sc_raw"].to_numpy(),
+            sub["time_raw"].to_numpy(),
+            sub["dist_raw"].to_numpy(),
+            kick_dist,
+        ]
     )
     clf = HistGradientBoostingClassifier(max_depth=4, max_iter=150, random_state=RNG_SEED)
     clf.fit(features, label)
@@ -348,10 +363,7 @@ def fast_gbm_predict_label(clf: HistGradientBoostingClassifier, bitsets, feat: n
             raw[:, k] += predictor.predict(
                 feat, known_cat_bitsets=known_cat_bitsets, f_idx_map=f_idx_map, n_threads=1
             )
-    if raw.shape[1] == 1:
-        encoded = int(raw.ravel()[0] > 0)
-    else:
-        encoded = int(np.argmax(raw[0]))
+    encoded = int(raw.ravel()[0] > 0) if raw.shape[1] == 1 else int(np.argmax(raw[0]))
     return int(clf.classes_[encoded])
 
 
@@ -373,7 +385,9 @@ def build_fourth_down_group_index(trans: pd.DataFrame) -> dict:
     trees = {}
     for phase in LATE_PHASES:
         for label in (0, 1, 2):
-            mask = valid & (down_arr == 4) & phase_pool_mask(phase_arr, phase) & (label_all == label)
+            mask = (
+                valid & (down_arr == 4) & phase_pool_mask(phase_arr, phase) & (label_all == label)
+            )
             sub_idx = np.flatnonzero(mask)
             if len(sub_idx) == 0:
                 continue
@@ -399,7 +413,7 @@ def pick_index_nn_fourth(
         return None
     tree, sub_idx = entry
     cache = tables["nn_cache_4th"]
-    key = round_state_key(4, phase, dist, fp, score, time_raw, off_to, def_to) + (label,)
+    key = (*round_state_key(4, phase, dist, fp, score, time_raw, off_to, def_to), label)
     neighbors = cache.get(key)
     if neighbors is None:
         feat = feature_matrix(
@@ -520,21 +534,32 @@ def pick_index_nn_conditioned(
 
 def build_pat_bonus(pbp: pd.DataFrame) -> pd.DataFrame:
     full = pbp.sort_values(["game_id", "play_id"]).reset_index(drop=True)
-    grp = full.groupby("game_id", sort=False)
+    meaningful = full["play_type"].notna() & (full["play_type"] != "no_play")
+    plays = full.loc[meaningful].copy()
+    grp = plays.groupby("game_id", sort=False)
     next_play_type = grp["play_type"].shift(-1)
     next_play_type_nfl = grp["play_type_nfl"].shift(-1)
     next_posteam_score = grp["posteam_score"].shift(-1)
     next_posteam_score_post = grp["posteam_score_post"].shift(-1)
     is_pat_next = (next_play_type == "extra_point") | (next_play_type_nfl == "PAT2")
     bonus = np.where(is_pat_next, next_posteam_score_post - next_posteam_score, 0.0)
-    full["pat_bonus"] = np.nan_to_num(bonus, nan=0.0)
-    return full[["game_id", "play_id", "pat_bonus"]]
+    plays["pat_bonus"] = np.nan_to_num(bonus, nan=0.0)
+    return plays[["game_id", "play_id", "pat_bonus"]]
 
 
-def build_transition_frame(pbp: pd.DataFrame, team_ratings: pd.DataFrame | None = None) -> pd.DataFrame:
+def build_transition_frame(
+    pbp: pd.DataFrame, team_ratings: pd.DataFrame | None = None
+) -> pd.DataFrame:
     pat_bonus = build_pat_bonus(pbp)
     df = pbp[pbp["play_type"].isin(LIVE_TYPES)].copy()
-    required = ["down", "ydstogo", "yardline_100", "score_differential", "qtr", "game_seconds_remaining"]
+    required = [
+        "down",
+        "ydstogo",
+        "yardline_100",
+        "score_differential",
+        "qtr",
+        "game_seconds_remaining",
+    ]
     df = df.dropna(subset=required)
     df = df.merge(pat_bonus, on=["game_id", "play_id"], how="left")
     df["pat_bonus"] = df["pat_bonus"].fillna(0.0)
@@ -580,21 +605,28 @@ def build_transition_frame(pbp: pd.DataFrame, team_ratings: pd.DataFrame | None 
 
     turnover_score = (df["touchdown"] == 1) & ((df["interception"] == 1) | (df["fumble_lost"] == 1))
     points_off_raw_pre = (df["posteam_score_post"] - df["posteam_score"]).fillna(0.0).to_numpy()
-    return_score = (df["touchdown"].to_numpy() == 1) & ~turnover_score.to_numpy() & (points_off_raw_pre == 0.0)
+    return_score = (
+        (df["touchdown"].to_numpy() == 1) & ~turnover_score.to_numpy() & (points_off_raw_pre == 0.0)
+    )
     def_score = turnover_score.to_numpy() | return_score
 
-    drive_last = df.sort_values(["game_id", "fixed_drive", "play_id"]).groupby(
-        ["game_id", "fixed_drive"], sort=False
-    ).tail(1)
+    drive_last = (
+        df.sort_values(["game_id", "fixed_drive", "play_id"])
+        .groupby(["game_id", "fixed_drive"], sort=False)
+        .tail(1)
+    )
     safety_pairs = set(
         zip(
             drive_last.loc[drive_last["fixed_drive_result"] == "Safety", "game_id"],
             drive_last.loc[drive_last["fixed_drive_result"] == "Safety", "fixed_drive"],
+            strict=False,
         )
     )
     is_last_of_drive = df.index.isin(drive_last.index)
-    row_keys = list(zip(df["game_id"], df["fixed_drive"]))
-    is_safety_row = is_last_of_drive & pd.Series(row_keys, index=df.index).isin(safety_pairs).to_numpy()
+    row_keys = list(zip(df["game_id"], df["fixed_drive"], strict=False))
+    is_safety_row = (
+        is_last_of_drive & pd.Series(row_keys, index=df.index).isin(safety_pairs).to_numpy()
+    )
 
     pat_bonus_arr = df["pat_bonus"].to_numpy()
     points_def = np.where(def_score, 6.0 + pat_bonus_arr, np.where(is_safety_row, 2.0, 0.0))
@@ -616,8 +648,11 @@ def build_transition_frame(pbp: pd.DataFrame, team_ratings: pd.DataFrame | None 
     same_side = ~flipped
     short = yards_gained < df["ydstogo"].to_numpy()
     spot_distance = df["ydstogo"].to_numpy() - yards_gained
-    repeat_down = same_side & short & (next_down_arr == row_down) & (
-        np.abs(df["next_distance"].to_numpy() - spot_distance) <= 0.5
+    repeat_down = (
+        same_side
+        & short
+        & (next_down_arr == row_down)
+        & (np.abs(df["next_distance"].to_numpy() - spot_distance) <= 0.5)
     )
     auto_first = same_side & short & (next_down_arr == 1) & ~repeat_down
 
@@ -627,6 +662,7 @@ def build_transition_frame(pbp: pd.DataFrame, team_ratings: pd.DataFrame | None 
     sc = df["score_differential"].to_numpy()
     qtr = df["qtr"].to_numpy()
     gsr = df["game_seconds_remaining"].to_numpy()
+    is_home_off = (df["posteam"] == df["home_team"]).to_numpy()
 
     dist_f = np.array([dist_bucket_fine(v) for v in dist], dtype=np.int8)
     dist_c = np.array([dist_bucket_coarse(v) for v in dist], dtype=np.int8)
@@ -644,12 +680,15 @@ def build_transition_frame(pbp: pd.DataFrame, team_ratings: pd.DataFrame | None 
     def_to_raw = df["defteam_timeouts_remaining"].fillna(3.0).to_numpy()
 
     if team_ratings is not None:
-        is_home_off = (df["posteam"] == df["home_team"]).to_numpy()
         off_row = np.where(
-            is_home_off, df["home_off_epa_per_play"].to_numpy(), df["away_off_epa_per_play"].to_numpy()
+            is_home_off,
+            df["home_off_epa_per_play"].to_numpy(),
+            df["away_off_epa_per_play"].to_numpy(),
         )
         def_row = np.where(
-            is_home_off, df["away_def_epa_per_play"].to_numpy(), df["home_def_epa_per_play"].to_numpy()
+            is_home_off,
+            df["away_def_epa_per_play"].to_numpy(),
+            df["home_def_epa_per_play"].to_numpy(),
         )
         off_row = np.where(np.isnan(off_row), np.nanmean(off_row), off_row)
         def_row = np.where(np.isnan(def_row), np.nanmean(def_row), def_row)
@@ -698,6 +737,16 @@ def build_transition_frame(pbp: pd.DataFrame, team_ratings: pd.DataFrame | None 
             "off_row": off_row,
             "def_row": def_row,
             "is_home_off": is_home_off_i8,
+            "game_id": df["game_id"].to_numpy(),
+            "play_id": df["play_id"].to_numpy(),
+            "qtr_actual": qtr,
+            "gsr_actual": gsr,
+            "home_margin_pre": np.where(is_home_off, sc, -sc),
+            "home_margin_post": np.where(
+                is_home_off,
+                sc + points_off - points_def,
+                -sc + points_def - points_off,
+            ),
         }
     )
     return out
@@ -738,22 +787,6 @@ def build_tables(seasons: tuple[int, ...], condition_on_team: bool = False) -> d
     fourth_down_clf_bitsets = make_fourth_down_bitsets(fourth_down_clf)
     nn_trees_4th = build_fourth_down_group_index(trans)
     opening_pool = build_opening_pool(pbp)
-    off_td_mask = trans["points_off"].to_numpy() >= 6.0
-    def_td_mask = trans["points_def"].to_numpy() >= 6.0
-    pat_bonus_pool = np.concatenate(
-        [
-            trans.loc[off_td_mask, "points_off"].to_numpy() - 6.0,
-            trans.loc[def_td_mask, "points_def"].to_numpy() - 6.0,
-        ]
-    )
-    if len(pat_bonus_pool) == 0:
-        pat_bonus_pool = np.array([0.0])
-    scored_mask = (
-        (trans["points_off"].to_numpy() > 0.0) | (trans["points_def"].to_numpy() > 0.0)
-    ) & trans["possession_flip"].to_numpy()
-    post_score_pool = trans.loc[scored_mask, "next_yardline"].to_numpy()
-    if len(post_score_pool) == 0:
-        post_score_pool = opening_pool
     arrays = {
         "down_i": trans["down_i"].to_numpy(),
         "dist_raw": trans["dist_raw"].to_numpy(),
@@ -788,8 +821,6 @@ def build_tables(seasons: tuple[int, ...], condition_on_team: bool = False) -> d
         "nn_trees_4th": nn_trees_4th,
         "nn_cache_4th": {},
         "opening_pool": opening_pool,
-        "pat_bonus_pool": pat_bonus_pool,
-        "post_score_pool": post_score_pool,
         "n_rows": len(trans),
         "seasons": seasons,
         "team_kernel_h": team_kernel_h,
@@ -838,10 +869,12 @@ def run_one_game(
     away_ratings: dict | None = None,
 ) -> tuple[dict, bool]:
     arrays = tables["arrays"]
-    conditioned = home_ratings is not None and away_ratings is not None and tables["team_kernel_h"] is not None
+    conditioned = (
+        home_ratings is not None
+        and away_ratings is not None
+        and tables["team_kernel_h"] is not None
+    )
     opening_pool = tables["opening_pool"]
-    pat_bonus_pool = tables["pat_bonus_pool"]
-    post_score_pool = tables["post_score_pool"]
 
     home_score = state["home_score"]
     away_score = state["away_score"]
@@ -868,6 +901,12 @@ def run_one_game(
     settled = False
     final_margin = None
     cap_hit = False
+    terminal_score_points = np.nan
+    penultimate_score_points = np.nan
+    terminal_score_pre_margin = np.nan
+    terminal_score_post_margin = np.nan
+    terminal_score_qtr = np.nan
+    terminal_score_clock = np.nan
 
     for _step in range(max_plays):
         plays += 1
@@ -914,7 +953,17 @@ def run_one_game(
             )
         else:
             idx = pick_index_nn(
-                rng, tables, down, phase, distance, yardline, score_diff, time_feat, off_to, def_to, min_cell_n
+                rng,
+                tables,
+                down,
+                phase,
+                distance,
+                yardline,
+                score_diff,
+                time_feat,
+                off_to,
+                def_to,
+                min_cell_n,
             )
 
         down_key = down if down in (1, 2, 3, 4) else 4
@@ -923,7 +972,17 @@ def run_one_game(
             feat = fourth_down_clf_features(score_diff, time_feat, distance, yardline)
             label = fast_gbm_predict_label(fourth_clf, tables["fourth_down_clf_bitsets"], feat)
             alt_idx = pick_index_nn_fourth(
-                rng, tables, phase, label, distance, yardline, score_diff, time_feat, off_to, def_to, min_cell_n
+                rng,
+                tables,
+                phase,
+                label,
+                distance,
+                yardline,
+                score_diff,
+                time_feat,
+                off_to,
+                def_to,
+                min_cell_n,
             )
             if alt_idx is not None:
                 idx = alt_idx
@@ -956,6 +1015,7 @@ def run_one_game(
         points_def = drawn["points_def"]
         clock_elapsed = drawn["clock_elapsed"]
         flip = drawn["flip"]
+        home_margin_pre = home_score - away_score
 
         if offense == "home":
             home_score += points_off
@@ -970,12 +1030,18 @@ def run_one_game(
 
         if points_off > 0 or points_def > 0:
             drive_scored = True
+            penultimate_score_points = terminal_score_points
+            terminal_score_points = points_off + points_def
+            terminal_score_pre_margin = home_margin_pre
+            terminal_score_post_margin = home_score - away_score
+            terminal_score_qtr = qtr
+            terminal_score_clock = clock_val
 
         if in_ot:
             ot_clock = max(0.0, ot_clock - clock_elapsed)
-            if (points_def > 0 or points_off >= 6) and home_score != away_score:
-                settled = True
-            elif points_off > 0 and ot_possession_index >= 1 and home_score != away_score:
+            if ((points_def > 0 or points_off >= 6) and home_score != away_score) or (
+                points_off > 0 and ot_possession_index >= 1 and home_score != away_score
+            ):
                 settled = True
             if settled:
                 final_margin = home_score - away_score
@@ -1024,68 +1090,47 @@ def run_one_game(
                 drive_scored = False
                 continue
 
-        if flip:
+        if points_off > 0 or points_def > 0 or flip:
             if drive_start_qtr == 4 and drive_start_gsr <= 300.0:
                 late_q4_log.append(drive_scored)
             possessions += 1
             if in_ot:
                 ot_possession_index += 1
-            offense = "away" if offense == "home" else "home"
+            if flip:
+                offense = "away" if offense == "home" else "home"
             down = int(drawn["next_down"])
             distance = float(drawn["next_distance"])
             yardline = float(drawn["next_yardline"])
             drive_start_qtr = qtr
-            drive_start_gsr = clock_val if not in_ot else ot_clock
+            drive_start_gsr = ot_clock if in_ot else gsr
             drive_scored = False
         else:
-            raw_next_yardline = yardline - drawn["yards_gained"]
-            if raw_next_yardline <= 0.0:
-                bonus = float(rng.choice(pat_bonus_pool))
-                td_points = 6.0 + bonus
-                if offense == "home":
-                    home_score += td_points
-                else:
-                    away_score += td_points
-                drive_scored = True
-                if in_ot:
-                    final_margin = home_score - away_score
-                    break
+            new_yardline = min(max(yardline - drawn["yards_gained"], 1.0), 99.0)
+            gained = yardline - new_yardline
+            if drawn["auto_first"] or (not drawn["repeat_down"] and gained >= distance):
+                down = 1
+                distance = min(10.0, new_yardline)
+                yardline = new_yardline
+            elif drawn["repeat_down"]:
+                distance = min(max(distance - gained, 1.0), new_yardline)
+                yardline = new_yardline
+            elif down >= 4:
                 if drive_start_qtr == 4 and drive_start_gsr <= 300.0:
                     late_q4_log.append(drive_scored)
                 possessions += 1
+                if in_ot:
+                    ot_possession_index += 1
                 offense = "away" if offense == "home" else "home"
                 down, distance = 1, 10.0
-                yardline = float(rng.choice(post_score_pool))
+                yardline = min(max(100.0 - new_yardline, 1.0), 99.0)
+                distance = min(10.0, yardline)
                 drive_start_qtr = qtr
-                drive_start_gsr = clock_val if not in_ot else ot_clock
+                drive_start_gsr = ot_clock if in_ot else gsr
                 drive_scored = False
             else:
-                new_yardline = min(max(raw_next_yardline, 1.0), 99.0)
-                gained = yardline - new_yardline
-                if drawn["auto_first"] or (not drawn["repeat_down"] and gained >= distance):
-                    down = 1
-                    distance = min(10.0, new_yardline)
-                    yardline = new_yardline
-                elif drawn["repeat_down"]:
-                    distance = min(max(distance - gained, 1.0), new_yardline)
-                    yardline = new_yardline
-                elif down >= 4:
-                    if drive_start_qtr == 4 and drive_start_gsr <= 300.0:
-                        late_q4_log.append(drive_scored)
-                    possessions += 1
-                    if in_ot:
-                        ot_possession_index += 1
-                    offense = "away" if offense == "home" else "home"
-                    down, distance = 1, 10.0
-                    yardline = min(max(100.0 - new_yardline, 1.0), 99.0)
-                    distance = min(10.0, yardline)
-                    drive_start_qtr = qtr
-                    drive_start_gsr = clock_val if not in_ot else ot_clock
-                    drive_scored = False
-                else:
-                    down = down + 1
-                    distance = min(max(distance - gained, 1.0), new_yardline)
-                    yardline = new_yardline
+                down = down + 1
+                distance = min(max(distance - gained, 1.0), new_yardline)
+                yardline = new_yardline
     else:
         cap_hit = True
         final_margin = home_score - away_score
@@ -1099,6 +1144,12 @@ def run_one_game(
         "possessions": possessions,
         "tied_at_5_diff": tied_at_5_diff,
         "late_q4_possessions_scored": late_q4_log,
+        "terminal_score_points": terminal_score_points,
+        "penultimate_score_points": penultimate_score_points,
+        "terminal_score_pre_margin": terminal_score_pre_margin,
+        "terminal_score_post_margin": terminal_score_post_margin,
+        "terminal_score_qtr": terminal_score_qtr,
+        "terminal_score_clock": terminal_score_clock,
     }
     return record, cap_hit
 
@@ -1123,7 +1174,15 @@ def simulate(
     for _ in range(n_games):
         state = initial_kickoff_state(rng, opening_pool)
         record, cap_hit = run_one_game(
-            state, tables, rng, ot_seconds, policy, min_cell_n, max_plays, home_ratings, away_ratings
+            state,
+            tables,
+            rng,
+            ot_seconds,
+            policy,
+            min_cell_n,
+            max_plays,
+            home_ratings,
+            away_ratings,
         )
         max_play_cap_hits += int(cap_hit)
         records.append(record)
@@ -1150,7 +1209,9 @@ def simulate_from_states(
     for base_state in states:
         for _ in range(reps):
             state = dict(base_state)
-            record, cap_hit = run_one_game(state, tables, rng, ot_seconds, policy, min_cell_n, max_plays)
+            record, cap_hit = run_one_game(
+                state, tables, rng, ot_seconds, policy, min_cell_n, max_plays
+            )
             record["source_game_id"] = base_state.get("source_game_id")
             max_play_cap_hits += int(cap_hit)
             records.append(record)
@@ -1182,11 +1243,17 @@ def bootstrap_season_ci(
     result = {}
     for k in keys:
         arr = np.array(boot_masses[k])
-        result[k] = (float(np.mean(arr)), float(np.percentile(arr, 5)), float(np.percentile(arr, 95)))
+        result[k] = (
+            float(np.mean(arr)),
+            float(np.percentile(arr, 5)),
+            float(np.percentile(arr, 95)),
+        )
     return result
 
 
-def discrete_log_loss(actual_margins: np.ndarray, reference_margins: np.ndarray, max_abs: int = 60) -> float:
+def discrete_log_loss(
+    actual_margins: np.ndarray, reference_margins: np.ndarray, max_abs: int = 60
+) -> float:
     grid = np.arange(-max_abs, max_abs + 1)
     counts = np.array([(reference_margins == g).sum() for g in grid], dtype=float)
     counts += 1.0
@@ -1197,18 +1264,21 @@ def discrete_log_loss(actual_margins: np.ndarray, reference_margins: np.ndarray,
     return float(-np.mean(np.log(p)))
 
 
-def measure_actual_diagnostics(seasons: tuple[int, ...]) -> dict:
-    pbp = load_reg_seasons(seasons)
+def measure_actual_diagnostics(pbp: pd.DataFrame) -> dict:
     live = pbp[pbp["play_type"].isin(LIVE_TYPES)].copy()
     n_games = live["game_id"].nunique()
     plays_per_game = len(live) / n_games
     possessions_per_game = live.groupby("game_id")["fixed_drive"].nunique().mean()
 
-    drive_first = live.sort_values(["game_id", "fixed_drive", "play_id"]).groupby(
-        ["game_id", "fixed_drive"], sort=False
-    ).first()
-    drive_scored = live.groupby(["game_id", "fixed_drive"])["fixed_drive_result"].last().isin(
-        ["Touchdown", "Field goal", "Safety", "Opp touchdown"]
+    drive_first = (
+        live.sort_values(["game_id", "fixed_drive", "play_id"])
+        .groupby(["game_id", "fixed_drive"], sort=False)
+        .first()
+    )
+    drive_scored = (
+        live.groupby(["game_id", "fixed_drive"])["fixed_drive_result"]
+        .last()
+        .isin(["Touchdown", "Field goal", "Safety", "Opp touchdown"])
     )
     drive_info = drive_first.join(drive_scored.rename("scored"))
     late_mask = (drive_info["qtr"] == 4) & (drive_info["game_seconds_remaining"] <= 300.0)
@@ -1217,9 +1287,15 @@ def measure_actual_diagnostics(seasons: tuple[int, ...]) -> dict:
     q4 = live[(live["qtr"] == 4) & (live["game_seconds_remaining"] >= 300.0)].sort_values(
         ["game_id", "game_seconds_remaining"], ascending=[True, True]
     )
-    at_5 = q4.groupby("game_id").head(1)[["game_id", "score_differential", "posteam", "home_team"]].copy()
+    at_5 = (
+        q4.groupby("game_id")
+        .head(1)[["game_id", "score_differential", "posteam", "home_team"]]
+        .copy()
+    )
     at_5["home_diff"] = np.where(
-        at_5["posteam"] == at_5["home_team"], at_5["score_differential"], -at_5["score_differential"]
+        at_5["posteam"] == at_5["home_team"],
+        at_5["score_differential"],
+        -at_5["score_differential"],
     )
     tied_games = set(at_5.loc[at_5["home_diff"] == 0, "game_id"])
     ot_games = set(live.loc[live["qtr"] >= 5, "game_id"].unique())
@@ -1241,18 +1317,163 @@ def measure_actual_diagnostics(seasons: tuple[int, ...]) -> dict:
     }
 
 
+def actual_terminal_score_frame(pbp: pd.DataFrame, games: pd.DataFrame) -> pd.DataFrame:
+    columns = [
+        "game_id",
+        "play_id",
+        "posteam",
+        "home_team",
+        "score_differential",
+        "qtr",
+        "game_seconds_remaining",
+        "play_type",
+        "play_type_nfl",
+    ]
+    plays = pbp.loc[pbp["posteam"].notna() & pbp["score_differential"].notna(), columns].copy()
+    plays = plays.sort_values(["game_id", "play_id"])
+    plays["home_margin_pre"] = np.where(
+        plays["posteam"] == plays["home_team"],
+        plays["score_differential"],
+        -plays["score_differential"],
+    )
+    plays["home_margin_post"] = plays.groupby("game_id")["home_margin_pre"].shift(-1)
+    last_indices = plays.groupby("game_id").tail(1).index
+    final_margins = games.set_index("game_id")["margin"]
+    plays.loc[last_indices, "home_margin_post"] = plays.loc[last_indices, "game_id"].map(
+        final_margins
+    )
+    plays["score_delta"] = plays["home_margin_post"] - plays["home_margin_pre"]
+    scoring = plays[plays["score_delta"].fillna(0) != 0]
+    grouped = dict(tuple(scoring.groupby("game_id")))
+
+    rows = []
+    for game in games.itertuples(index=False):
+        raw_events = grouped.get(game.game_id)
+        events = []
+        if raw_events is not None:
+            for event in raw_events.itertuples(index=False):
+                delta = float(event.score_delta)
+                current = {
+                    "points": abs(delta),
+                    "delta": delta,
+                    "pre_margin": float(event.home_margin_pre),
+                    "post_margin": float(event.home_margin_post),
+                    "qtr": float(event.qtr),
+                    "clock": float(event.game_seconds_remaining),
+                }
+                is_conversion = (
+                    event.play_type == "extra_point"
+                    or event.play_type_nfl in {"PAT2", "XP_KICK"}
+                    or (
+                        event.play_type == "no_play"
+                        and event.play_type_nfl == "PENALTY"
+                        and abs(delta) <= 2
+                    )
+                )
+                if (
+                    is_conversion
+                    and events
+                    and events[-1]["points"] == 6
+                    and np.sign(events[-1]["delta"]) == np.sign(delta)
+                ):
+                    events[-1]["points"] += abs(delta)
+                    events[-1]["delta"] += delta
+                    events[-1]["post_margin"] = float(event.home_margin_post)
+                    continue
+                events.append(current)
+
+        if not events:
+            rows.append(
+                {
+                    "game_id": game.game_id,
+                    "margin": game.margin,
+                    "terminal_score_points": np.nan,
+                    "penultimate_score_points": np.nan,
+                    "terminal_score_pre_margin": np.nan,
+                    "terminal_score_post_margin": np.nan,
+                    "terminal_score_qtr": np.nan,
+                    "terminal_score_clock": np.nan,
+                }
+            )
+            continue
+        terminal = events[-1]
+        penultimate = events[-2] if len(events) > 1 else None
+        rows.append(
+            {
+                "game_id": game.game_id,
+                "margin": game.margin,
+                "terminal_score_points": terminal["points"],
+                "penultimate_score_points": (
+                    penultimate["points"] if penultimate is not None else np.nan
+                ),
+                "terminal_score_pre_margin": terminal["pre_margin"],
+                "terminal_score_post_margin": terminal["post_margin"],
+                "terminal_score_qtr": terminal["qtr"],
+                "terminal_score_clock": terminal["clock"],
+            }
+        )
+    return pd.DataFrame(rows)
+
+
+def terminal_score_sequence_diagnostics(simulated: pd.DataFrame, actual: pd.DataFrame) -> dict:
+    comparisons = {
+        "terminal_points_3": lambda frame: frame["terminal_score_points"] == 3,
+        "terminal_points_7": lambda frame: frame["terminal_score_points"] == 7,
+        "terminal_pre_score_tied": lambda frame: frame["terminal_score_pre_margin"] == 0,
+        "last_two_scores_7_7": lambda frame: (
+            (frame["terminal_score_points"] == 7) & (frame["penultimate_score_points"] == 7)
+        ),
+        "terminal_score_final_five_minutes_q4_ot": lambda frame: (
+            (frame["terminal_score_qtr"] >= 5)
+            | ((frame["terminal_score_qtr"] == 4) & (frame["terminal_score_clock"] <= 300))
+        ),
+    }
+    by_margin = {}
+    for margin in (3, 14):
+        sim_slice = simulated[simulated["margin"].abs() == margin]
+        actual_slice = actual[actual["margin"].abs() == margin]
+        values = {}
+        for name, comparison in comparisons.items():
+            sim_rate = float(comparison(sim_slice).mean())
+            actual_rate = float(comparison(actual_slice).mean())
+            values[name] = {
+                "simulated": sim_rate,
+                "actual": actual_rate,
+                "delta": sim_rate - actual_rate,
+            }
+        by_margin[str(margin)] = {
+            "simulated_n": len(sim_slice),
+            "actual_n": len(actual_slice),
+            "comparisons": values,
+        }
+    has_terminal = actual["terminal_score_post_margin"].notna()
+    terminal_match = (
+        actual.loc[has_terminal, "terminal_score_post_margin"] == actual.loc[has_terminal, "margin"]
+    )
+    return {
+        "predeclared_comparative_looks": 10,
+        "integrity_looks": 1,
+        "comparison_names": list(comparisons),
+        "actual_terminal_margin_match_rate": float(terminal_match.mean()),
+        "actual_terminal_margin_mismatches": int((~terminal_match).sum()),
+        "actual_games_without_scoring_event": int((~has_terminal).sum()),
+        "by_absolute_margin": by_margin,
+    }
+
+
 def summarize_sim(frame: pd.DataFrame) -> dict:
     late_all = [s for row in frame["late_q4_possessions_scored"] for s in row]
-    tied5 = frame["tied_at_5_diff"].dropna()
     tied5_games = frame.loc[frame["tied_at_5_diff"] == 0]
     return {
-        "n_games": int(len(frame)),
+        "n_games": len(frame),
         "plays_per_game": float(frame["plays"].mean()),
         "possessions_per_game": float(frame["possessions"].mean()),
         "late_q4_possession_scoring_rate": float(np.mean(late_all)) if late_all else float("nan"),
         "n_late_q4_possessions": len(late_all),
-        "n_tied_at_5min_q4_games": int(len(tied5_games)),
-        "tied_at_5min_q4_ot_rate": float(tied5_games["went_ot"].mean()) if len(tied5_games) else float("nan"),
+        "n_tied_at_5min_q4_games": len(tied5_games),
+        "tied_at_5min_q4_ot_rate": float(tied5_games["went_ot"].mean())
+        if len(tied5_games)
+        else float("nan"),
         "ot_rate_all_games": float(frame["went_ot"].mean()),
         "tie_rate": float(frame["tied"].mean()),
         "max_play_cap_hits": int(frame.attrs.get("max_play_cap_hits", 0)),
@@ -1265,25 +1486,32 @@ def run_validation(n_games_per_season: int, out_dir: Path) -> dict:
 
     sim_frames = []
     for season in VALID_SEASONS:
-        frame = simulate(
-            n_games_per_season, rng, tables, ot_seconds=OT_SECONDS_BY_SEASON[season]
-        )
+        frame = simulate(n_games_per_season, rng, tables, ot_seconds=OT_SECONDS_BY_SEASON[season])
         frame["season"] = season
         sim_frames.append(frame)
     sim_all = pd.concat(sim_frames, ignore_index=True)
-    sim_all.attrs["max_play_cap_hits"] = sum(f.attrs.get("max_play_cap_hits", 0) for f in sim_frames)
+    sim_all.attrs["max_play_cap_hits"] = sum(
+        f.attrs.get("max_play_cap_hits", 0) for f in sim_frames
+    )
 
     game_features = pd.read_parquet(GAME_FEATURES_PATH)
     game_features = game_features[
-        game_features["season"].isin(TRAIN_SEASONS + VALID_SEASONS) & (game_features["game_type"] == "REG")
+        game_features["season"].isin(TRAIN_SEASONS + VALID_SEASONS)
+        & (game_features["game_type"] == "REG")
     ].copy()
     game_features["margin"] = game_features["home_score"] - game_features["away_score"]
 
-    train_margins_actual = game_features.loc[game_features["season"].isin(TRAIN_SEASONS), "margin"].to_numpy()
-    valid_margins_actual = game_features.loc[game_features["season"].isin(VALID_SEASONS), "margin"].to_numpy()
+    train_margins_actual = game_features.loc[
+        game_features["season"].isin(TRAIN_SEASONS), "margin"
+    ].to_numpy()
+    valid_margins_actual = game_features.loc[
+        game_features["season"].isin(VALID_SEASONS), "margin"
+    ].to_numpy()
     actual_by_season = {
         int(season): group["margin"].to_numpy()
-        for season, group in game_features[game_features["season"].isin(VALID_SEASONS)].groupby("season")
+        for season, group in game_features[game_features["season"].isin(VALID_SEASONS)].groupby(
+            "season"
+        )
     }
 
     sim_margins = sim_all["margin"].to_numpy()
@@ -1299,8 +1527,12 @@ def run_validation(n_games_per_season: int, out_dir: Path) -> dict:
 
     go_decision = bool(hits >= 4 and log_loss_delta <= 0.02)
 
+    valid_pbp = load_reg_seasons(VALID_SEASONS)
     sim_diag = summarize_sim(sim_all)
-    actual_diag = measure_actual_diagnostics(VALID_SEASONS)
+    actual_diag = measure_actual_diagnostics(valid_pbp)
+    valid_games = game_features[game_features["season"].isin(VALID_SEASONS)]
+    actual_terminal = actual_terminal_score_frame(valid_pbp, valid_games)
+    terminal_score_sequences = terminal_score_sequence_diagnostics(sim_all, actual_terminal)
 
     report = {
         "generated_at": out_dir.name,
@@ -1333,10 +1565,13 @@ def run_validation(n_games_per_season: int, out_dir: Path) -> dict:
         "sim_margin_std": float(np.std(sim_margins)),
         "actual_valid_margin_mean": float(np.mean(valid_margins_actual)),
         "actual_valid_margin_std": float(np.std(valid_margins_actual)),
-        "margin_sd_ratio_sim_over_actual": float(np.std(sim_margins) / np.std(valid_margins_actual)),
+        "margin_sd_ratio_sim_over_actual": float(
+            np.std(sim_margins) / np.std(valid_margins_actual)
+        ),
         "sim_points_per_game_mean": float(sim_all["total"].mean()),
         "simulated_diagnostics": sim_diag,
         "actual_diagnostics": actual_diag,
+        "terminal_score_sequences": terminal_score_sequences,
     }
     return report, sim_all
 
@@ -1427,9 +1662,14 @@ def simulate_games_multiprocess(
         return []
     ctx = mp.get_context("spawn")
     n_workers = max(1, min(safe_worker_count(max_workers), len(games)))
-    tasks = [(i, base_seed + i, g.get("home_ratings"), g.get("away_ratings")) for i, g in enumerate(games)]
+    tasks = [
+        (i, base_seed + i, g.get("home_ratings"), g.get("away_ratings"))
+        for i, g in enumerate(games)
+    ]
     batches = [tasks[i::n_workers] for i in range(n_workers)]
-    batch_args = [(batch, seasons, condition_on_team, n_reps, ot_seconds) for batch in batches if batch]
+    batch_args = [
+        (batch, seasons, condition_on_team, n_reps, ot_seconds) for batch in batches if batch
+    ]
     results: list[np.ndarray | None] = [None] * len(games)
     with ProcessPoolExecutor(max_workers=n_workers, mp_context=ctx) as executor:
         for batch_result in executor.map(_mp_process_batch, batch_args):
