@@ -47,6 +47,7 @@ from nfl_ats.clv import (
     week_blocked_bootstrap,
 )
 from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES
+from nfl_ats.data import DataContractError
 from nfl_ats.drift import build_drift_report, write_drift_artifacts
 from nfl_ats.home_side_location import HOME_SIDE_OFFSET_SERVED
 from nfl_ats.io import atomic_csv, atomic_json, atomic_parquet, run_id
@@ -361,8 +362,9 @@ def _cmd_drift_report(args: argparse.Namespace) -> None:
 
 def _cmd_opener_evaluation(args: argparse.Namespace) -> None:
     command_started = perf_counter()
-    features = _load_features(args.features)
-    market_root = _data_root() / "market" / "raw"
+    feature_path = Path(args.features).resolve()
+    features = _load_features(feature_path)
+    market_root = (_data_root() / "market" / "raw").resolve()
     active_model_config = (
         {
             "feature_profile": args.feature_profile,
@@ -381,7 +383,7 @@ def _cmd_opener_evaluation(args: argparse.Namespace) -> None:
                 "model_id", None
             )
         active_model_config["probability_method"] = probability_method
-    provenance = artifact_provenance(active_model_config, args.features)
+    provenance = artifact_provenance(active_model_config, feature_path)
     feature_sha = provenance["feature_table"]["sha256"]
     expected_sha = active_model_config.get("feature_table_sha256")
     if expected_sha is not None and expected_sha != feature_sha:
@@ -398,18 +400,38 @@ def _cmd_opener_evaluation(args: argparse.Namespace) -> None:
         active_model_config = dict(active_model_config)
         active_model_config["comparison_baseline_model_id"] = active_model_config.pop("model_id")
     line_source_path = getattr(args, "opener_line_source", None)
+    line_manifest_path = getattr(args, "opener_line_manifest", None)
+    if line_manifest_path is not None and line_source_path is None:
+        raise DataContractError("--opener-line-manifest requires --opener-line-source")
     line_source: dict[str, Any] | None = None
     override = None
     if line_source_path is not None:
-        override = pd.read_parquet(line_source_path)
+        resolved_line_source = Path(line_source_path).resolve()
+        manifest_sha: str | None = None
+        resolved_manifest: Path | None = None
+        if line_manifest_path is not None:
+            from nfl_ats.single_book_opener import validate_opener_line_input_manifest
+
+            resolved_manifest = Path(line_manifest_path).resolve()
+            override, _, manifest_sha = validate_opener_line_input_manifest(
+                manifest_path=resolved_manifest,
+                feature_path=feature_path,
+                market_root=market_root,
+                line_series_path=resolved_line_source,
+            )
+        else:
+            override = pd.read_parquet(resolved_line_source)
         line_source = {
-            "path": str(line_source_path),
-            "sha256": sha256_file(Path(line_source_path)),
+            "path": str(resolved_line_source),
+            "sha256": sha256_file(resolved_line_source),
             "games": len(override),
             "label": str(override["line_source"].iloc[0])
             if "line_source" in override.columns and len(override)
             else "unnamed",
         }
+        if resolved_manifest is not None:
+            line_source["input_manifest_path"] = str(resolved_manifest)
+            line_source["input_manifest_sha256"] = manifest_sha
         if "model_id" in active_model_config:
             active_model_config = dict(active_model_config)
             active_model_config["comparison_baseline_model_id"] = active_model_config.pop(
@@ -514,43 +536,87 @@ def _cmd_opener_evaluation(args: argparse.Namespace) -> None:
 
 def _cmd_opener_line_series(args: argparse.Namespace) -> None:
     from nfl_ats.single_book_opener import (
+        OPENER_LABEL,
         book_coverage,
+        build_opener_line_input_manifest,
         choose_book,
         half_point_median_series,
-        opener_book_quotes,
+        opener_book_quotes_with_sources,
         series_agreement,
         single_book_series,
+        validate_opener_line_input_manifest,
     )
 
-    features = _load_features(args.features)
-    market_root = _data_root() / "market" / "raw"
-    quotes = opener_book_quotes(market_root, schedule=features)
-    coverage = book_coverage(quotes)
-    book = args.book or choose_book(coverage)
-    series = (
-        single_book_series(quotes, book)
-        if args.series == "book"
-        else half_point_median_series(quotes)
+    feature_path = Path(args.features).resolve()
+    feature_sha = sha256_file(feature_path)
+    features = _load_features(feature_path)
+    if sha256_file(feature_path) != feature_sha:
+        raise DataContractError("Feature table changed while opener line series was built")
+    market_root = (_data_root() / "market" / "raw").resolve()
+    if args.series != "book" and args.book is not None:
+        raise DataContractError("--book is valid only with --series book")
+    quotes, raw_sources = opener_book_quotes_with_sources(
+        market_root,
+        schedule=features,
+        capture_kind=HISTORICAL_CAPTURE_KIND,
+        label=OPENER_LABEL,
     )
-    output = args.output or (_artifacts_root() / "opener_line_series" / run_id())
-    atomic_parquet(series, output / f"{args.series}.parquet")
+    coverage = book_coverage(quotes)
+    requested_book = args.book if args.series == "book" else None
+    if args.series == "book":
+        resolved_book = requested_book or choose_book(coverage)
+        book_selection = "explicit" if requested_book is not None else "coverage_rank"
+        series = single_book_series(quotes, resolved_book)
+    else:
+        resolved_book = None
+        book_selection = "not_applicable"
+        series = half_point_median_series(quotes)
+    output = Path(args.output or (_artifacts_root() / "opener_line_series" / run_id())).resolve()
+    line_series_path = output / f"{args.series}.parquet"
+    atomic_parquet(series, line_series_path)
+    manifest = build_opener_line_input_manifest(
+        feature_path=feature_path,
+        feature_sha256=feature_sha,
+        market_root=market_root,
+        capture_kind=HISTORICAL_CAPTURE_KIND,
+        labels=(OPENER_LABEL,),
+        seasons=None,
+        raw_sources=raw_sources,
+        line_series_path=line_series_path,
+        line_series=series,
+        series=args.series,
+        requested_book=requested_book,
+        resolved_book=resolved_book,
+        book_selection=book_selection,
+    )
+    manifest_path = output / "input_manifest.json"
+    atomic_json(manifest, manifest_path)
+    _, _, manifest_sha = validate_opener_line_input_manifest(
+        manifest_path=manifest_path,
+        feature_path=feature_path,
+        market_root=market_root,
+        line_series_path=line_series_path,
+    )
     atomic_csv(coverage, output / "book_coverage.csv")
     consensus = build_pairing_table(
-        market_root, capture_kind=HISTORICAL_CAPTURE_KIND, labels=("tue_open",), schedule=features
+        market_root,
+        capture_kind=HISTORICAL_CAPTURE_KIND,
+        labels=(OPENER_LABEL,),
+        schedule=features,
     )
     consensus = consensus.rename(columns={"home_spread": "tue_open_home_spread"})
     summary = {
         "created_at_utc": datetime.now(UTC).isoformat(),
         "series": args.series,
-        "book": book if args.series == "book" else None,
-        "book_chosen_by": "most games among the predeclared candidate books"
-        if args.book is None
-        else "explicit --book",
+        "book": resolved_book,
+        "book_chosen_by": book_selection,
         "opener_quote_rows": len(quotes),
         "opener_quote_games": int(quotes["game_id"].nunique()) if len(quotes) else 0,
         "books_in_archive": int(quotes["bookmaker_key"].nunique()) if len(quotes) else 0,
         "coverage_top": coverage.head(12).to_dict(orient="records"),
         "agreement": series_agreement(series, consensus),
+        "input_manifest_path": str(manifest_path),
+        "input_manifest_sha256": manifest_sha,
         "artifact_directory": str(output),
     }
     atomic_json(summary, output / "summary.json")
@@ -874,6 +940,13 @@ def register_diagnostics(
         "a parquet with game_id, home_spread and optional books columns (see "
         "nfl-ats opener-line-series). The run writes to artifacts/opener_evaluation_line_source "
         "and never identifies itself as the active model's opener evaluation",
+    )
+    opener_evaluation_parser.add_argument(
+        "--opener-line-manifest",
+        type=Path,
+        default=None,
+        help="validate the alternative opener line and its exact raw inputs before scoring; "
+        "requires --opener-line-source",
     )
     opener_evaluation_parser.add_argument(
         "--no-home-side-offset",

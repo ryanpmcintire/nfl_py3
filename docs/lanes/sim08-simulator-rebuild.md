@@ -28,14 +28,19 @@ This validates engine execution, not research promotion or serving.
   declared timeout-omission sensitivity yields 9 in 9 rollout clusters from
   6 scheduled games. Both fail declared 30-transition/10-cluster support gates.
   Neither computes an effect. Two rollout endpoint looks are recorded.
+- **Measured:** the expanded 96-game/eight-seed sample yields 67 matched scoring
+  transitions in 66 rollouts from 40 scheduled games. Its fixed-selection paired
+  bootstrap estimates selected-minus-actual elapsed discrepancy -0.751 seconds
+  [-2.728, +1.173], probability_positive 0.2175 (2,000 draws; 55 actual games).
+  This fourth rollout endpoint look is recorded as `unresolved_below_power`.
 - Full methods, artifacts, uncertainty and limitations are retained in
   `done/sim08-late-game-diagnostic-history.md`.
 
 ## Next
-Review the declared 96-game, eight-seed support sample before any effect estimate.
-Keep the timeout-omitted matching definition fixed; report timeout imbalance and
-single-reference-game cells. Any estimator must jointly cluster shared game
-identities and then resample seeds within scheduled games.
+Retain the fourth-look result and frozen replay bundle under
+`artifacts/sim08_reference_bootstrap/20260927T055500Z/`. Predeclare a mechanism-led
+repair or a separate uncertainty expansion before another look. Fixed-selection
+intervals omit neighbor and alpha selection; timeout imbalance remains material.
 
 ## Open
 Finite-draw probability_positive of 0 or 1 is not impossibility or certainty.

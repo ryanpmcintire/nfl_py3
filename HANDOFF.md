@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-27T05:50:21.926342+00:00`
+Refreshed at: `2026-09-27T09:04:35.899410+00:00`
 
 ## Start here
 
@@ -21,27 +21,29 @@ Refreshed at: `2026-09-27T05:50:21.926342+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `3fca965cc4ef` — Replay historical positive controls and checkpoint backlog diagnostics
-- Pending change set: 19 paths
+- Baseline commit: `99c6f0f2ed83` — Stop duplicate lattice enrollment and reconcile prospective backlog status
+- Pending change set: 40 paths
   - ` M AGENTS.md`
   - ` M CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
+  - ` M README.md`
   - `M  ROADMAP.md`
   - ` M docs/agent_workflow.md`
-  - ` M docs/findings.html`
-  - ` M docs/history.html`
-  - ` M docs/index.html`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
   - `M  docs/lanes/backlog-watchdog-2026-09-26.md`
-  - `M  docs/lanes/done/conditional-signal-atlas.md`
-  - `A  docs/lanes/done/lead61-quote-coverage-audit.md`
-  - `A  docs/lanes/done/mod07-prospective-status-audit.md`
-  - `A  docs/lanes/done/mod17-recorder-enrollment.md`
-  - ` M docs/model.html`
-  - `M  registry/split_library.json`
-  - `M  src/nfl_ats/lattice_centre_challenger.py`
-  - ` M src/nfl_ats/prospective_scoring.py`
-  - ` M src/nfl_ats/weak_signals.py`
-  - `?? docs/lanes/windows-shell-popup.md`
+  - `A  docs/lanes/done/env02-forecast-provenance-chronology.md`
+  - `A  docs/lanes/done/mod18-frozen-opener-inputs.md`
+  - `A  docs/lanes/done/per03-provider-overlay-integration.md`
+  - `A  docs/lanes/done/per07-validation-artifact-selection.md`
+  - `M  docs/lanes/done/sim08-late-game-diagnostic-history.md`
+  - `M  docs/lanes/lead64-friday-designations.md`
+  - `M  docs/lanes/sim08-simulator-rebuild.md`
+  - `M  docs/model.html`
+  - `M  docs/roof_state_screen.md`
+  - `M  docs/sportradar_injury_capture.md`
+  - ...and 20 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

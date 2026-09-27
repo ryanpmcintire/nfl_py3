@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import sys
@@ -39,6 +40,27 @@ HISTORY_LAST_SEASON = 2025
 
 FAMILY_LEAD29_PROD = "lead29_playcaller_first_game_on_production"
 FAMILY_LEAD28_PROD = "lead28_post_bye_new_playcaller_on_production"
+COUNTED_CHANGE_STATUSES = frozenset({"playcaller_role", "staff_change"})
+CHANGE_VALIDATION_STATUSES = frozenset(
+    {
+        "playcaller_role",
+        "reverted_identity_edit",
+        "role_correction",
+        "staff_change",
+        "unverified_identity_edit",
+    }
+)
+CHANGE_REQUIRED_FIELDS = frozenset(
+    {
+        "season",
+        "team",
+        "role",
+        "previous_person",
+        "person",
+        "revision_at",
+        "validation_status",
+    }
+)
 
 
 def _latest_schedules() -> Path:
@@ -69,26 +91,100 @@ def _naive_utc(series: pd.Series) -> pd.Series:
     return pd.to_datetime(series, utc=True).dt.tz_localize(None)
 
 
-def load_counted_events() -> list[dict[str, Any]]:
-    coord_dir = _latest_coordinator_dir()
-    validation = json.loads((coord_dir / "change_validation.json").read_text(encoding="utf-8"))
+def _change_validation_path(change_validation: Path | None) -> Path:
+    if change_validation is None:
+        path = _latest_coordinator_dir() / "change_validation.json"
+    else:
+        path = change_validation if change_validation.is_absolute() else REPO / change_validation
+    path = path.resolve()
+    if not path.is_file():
+        raise SystemExit(f"change validation artifact not found: {path}")
+    return path
+
+
+def _display_source_path(path: Path) -> str:
+    try:
+        return path.relative_to(REPO).as_posix()
+    except ValueError:
+        return str(path)
+
+
+def load_counted_events(
+    change_validation: Path | None = None,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    path = _change_validation_path(change_validation)
+    raw = path.read_bytes()
+    try:
+        validation = json.loads(raw)
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise SystemExit(f"invalid change validation JSON: {path}: {exc}") from exc
+    if not isinstance(validation, dict) or not isinstance(validation.get("changes"), list):
+        raise SystemExit("change validation must contain a changes list")
+    provenance = validation.get("_provenance_stamp")
+    if not isinstance(provenance, dict):
+        raise SystemExit("change validation must contain _provenance_stamp")
+    if not isinstance(provenance.get("code_dirty"), bool):
+        raise SystemExit("change validation provenance code_dirty must be boolean")
+    if (
+        not isinstance(provenance.get("code_revision"), str)
+        or not provenance["code_revision"].strip()
+    ):
+        raise SystemExit("change validation provenance code_revision must be a non-empty string")
+    recorded_at = provenance.get("recorded_at")
+    if not isinstance(recorded_at, str) or not recorded_at.strip():
+        raise SystemExit("change validation provenance recorded_at must be a non-empty string")
+    try:
+        provenance_timestamp = pd.Timestamp(recorded_at)
+    except (TypeError, ValueError) as exc:
+        raise SystemExit("change validation provenance recorded_at must be a timestamp") from exc
+    if pd.isna(provenance_timestamp):
+        raise SystemExit("change validation provenance recorded_at must be a timestamp")
+
     counted = []
-    for row in validation["changes"]:
-        if row["validation_status"] not in ("staff_change", "playcaller_role"):
+    for index, row in enumerate(validation["changes"]):
+        if not isinstance(row, dict):
+            raise SystemExit(f"change validation row {index} must be an object")
+        missing = sorted(CHANGE_REQUIRED_FIELDS.difference(row))
+        if missing:
+            raise SystemExit(f"change validation row {index} missing fields: {', '.join(missing)}")
+        status = row["validation_status"]
+        if status not in CHANGE_VALIDATION_STATUSES:
+            raise SystemExit(f"change validation row {index} has unknown status: {status!r}")
+        if isinstance(row["season"], bool) or not isinstance(row["season"], int):
+            raise SystemExit(f"change validation row {index} season must be an integer")
+        for field in ("team", "role", "previous_person", "person", "revision_at"):
+            if not isinstance(row[field], str) or not row[field].strip():
+                raise SystemExit(
+                    f"change validation row {index} {field} must be a non-empty string"
+                )
+        try:
+            revision_at = pd.Timestamp(row["revision_at"])
+        except (TypeError, ValueError) as exc:
+            raise SystemExit(
+                f"change validation row {index} revision_at must be a timestamp"
+            ) from exc
+        if pd.isna(revision_at):
+            raise SystemExit(f"change validation row {index} revision_at must be a timestamp")
+        if status not in COUNTED_CHANGE_STATUSES:
             continue
         counted.append(
             {
-                "season": int(row["season"]),
+                "season": row["season"],
                 "team": row["team"],
                 "role": row["role"],
                 "previous_person": row["previous_person"],
                 "person": row["person"],
-                "revision_at": pd.Timestamp(row["revision_at"]),
-                "validation_status": row["validation_status"],
+                "revision_at": revision_at,
+                "validation_status": status,
             }
         )
     counted.sort(key=lambda r: (r["team"], r["revision_at"]))
-    return counted
+    source = {
+        "path": _display_source_path(path),
+        "sha256": hashlib.sha256(raw).hexdigest(),
+        "embedded_provenance": provenance,
+    }
+    return counted, source
 
 
 def load_oc_tenure_table() -> pd.DataFrame:
@@ -360,8 +456,8 @@ def _signed_subset_gap(
     return signed
 
 
-def cmd_screen(_: argparse.Namespace) -> None:
-    events = load_counted_events()
+def cmd_screen(args: argparse.Namespace) -> None:
+    events, change_validation_source = load_counted_events(args.change_validation)
     tenure_table = load_oc_tenure_table()
     bye_table = load_bye_table()
 
@@ -662,6 +758,7 @@ def cmd_screen(_: argparse.Namespace) -> None:
     result = {
         "sources": {
             "coordinator_history_dir": str(_latest_coordinator_dir()),
+            "change_validation": change_validation_source,
             "schedules_snapshot": str(_latest_schedules()),
             "opener_archive": str(OPENER_ARCHIVE),
             "game_features": str(GAME_FEATURES),
@@ -749,14 +846,16 @@ def _summarize(frame: pd.DataFrame, samples: int, seed: int) -> dict[str, Any]:
     }
 
 
-def _signal_long_table(lead: int) -> tuple[pd.DataFrame, int | None]:
+def _signal_long_table(
+    lead: int, change_validation: Path | None = None
+) -> tuple[pd.DataFrame, int | None, dict[str, Any] | None]:
     full_features = pd.read_parquet(GAME_FEATURES)
     long_df = build_close_team_long(full_features)
     if lead == 29:
-        events = load_counted_events()
+        events, change_validation_source = load_counted_events(change_validation)
         long_df = attach_games_after_change(long_df, events)
         long_df["signal"] = np.where(long_df["game_number_after_change"].eq(1), 1, 0)
-        return long_df, len(events)
+        return long_df, len(events), change_validation_source
     tenure_table = load_oc_tenure_table()
     bye_table = load_bye_table()
     long_df = attach_oc_tenure(long_df, tenure_table)
@@ -764,7 +863,7 @@ def _signal_long_table(lead: int) -> tuple[pd.DataFrame, int | None]:
     long_df["signal"] = 0
     long_df.loc[long_df["own_off_bye"] & long_df["oc_tenure"].isin(["1", "2"]), "signal"] = 1
     long_df.loc[long_df["own_off_bye"] & long_df["oc_tenure"].eq("3+"), "signal"] = -1
-    return long_df, None
+    return long_df, None, None
 
 
 def _score_and_tilt(
@@ -806,7 +905,7 @@ def _production_read(scored: pd.DataFrame) -> dict[str, Any]:
     }
 
 
-def cmd_production(lead: int) -> None:
+def cmd_production(lead: int, change_validation: Path | None = None) -> None:
     family = FAMILY_LEAD29_PROD if lead == 29 else FAMILY_LEAD28_PROD
     registry = load_registry()
     features = pd.read_parquet(PRODUCTION_FEATURES)
@@ -817,7 +916,7 @@ def cmd_production(lead: int) -> None:
     scoped = pd.concat([training, window], ignore_index=True)
 
     config = resolve_active_model_config(ARTIFACTS_ROOT)
-    long_df, n_events = _signal_long_table(lead)
+    long_df, n_events, change_validation_source = _signal_long_table(lead, change_validation)
     signals = game_level_signal(long_df, "signal")
     signals["game_id"] = signals["game_id"].astype(str)
 
@@ -842,6 +941,8 @@ def cmd_production(lead: int) -> None:
             **full_read,
         },
     }
+    if change_validation_source is not None:
+        result["sources"] = {"change_validation": change_validation_source}
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     out_path = OUT_DIR / f"production_results_lead{lead}.json"
@@ -857,16 +958,30 @@ def cmd_production(lead: int) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description="LEAD-28/LEAD-29 playcaller-change screen")
     sub = parser.add_subparsers(dest="command", required=True)
-    sub.add_parser("screen", help="subset-bias cells and split-half reliability for R1/R2")
+    screen_parser = sub.add_parser(
+        "screen", help="subset-bias cells and split-half reliability for R1/R2"
+    )
+    screen_parser.add_argument(
+        "--change-validation",
+        type=Path,
+        help="validated playcaller-change artifact; defaults to the newest coordinator snapshot",
+    )
     sub.add_parser("production-lead28", help="post-bye new-playcaller tilt stacked on production")
-    sub.add_parser("production-lead29", help="playcaller-first-game tilt stacked on production")
+    lead29_parser = sub.add_parser(
+        "production-lead29", help="playcaller-first-game tilt stacked on production"
+    )
+    lead29_parser.add_argument(
+        "--change-validation",
+        type=Path,
+        help="validated playcaller-change artifact; defaults to the newest coordinator snapshot",
+    )
     args = parser.parse_args()
     if args.command == "screen":
         cmd_screen(args)
     elif args.command == "production-lead28":
         cmd_production(28)
     elif args.command == "production-lead29":
-        cmd_production(29)
+        cmd_production(29, args.change_validation)
 
 
 if __name__ == "__main__":

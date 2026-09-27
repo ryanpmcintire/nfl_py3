@@ -64,7 +64,10 @@ EFFECT_UNITS = (
     "brier_improvement",
     "log_loss_improvement",
     "payout_first_pp",
+    "elapsed_seconds_bias",
 )
+
+NONDIRECTIONAL_EFFECT_UNITS = frozenset({"elapsed_seconds_bias"})
 
 CATEGORIES = (
     "market",
@@ -165,18 +168,29 @@ class WeakSignal:
     superseded_by: str | None = None
 
     @property
-    def favours_candidate(self) -> bool:
+    def is_directional(self) -> bool:
 
+        return self.effect_units not in NONDIRECTIONAL_EFFECT_UNITS
+
+    @property
+    def favours_candidate(self) -> bool | None:
+
+        if not self.is_directional:
+            return None
         return self.effect > 0.0
 
     @property
-    def favours_baseline(self) -> bool:
+    def favours_baseline(self) -> bool | None:
 
+        if not self.is_directional:
+            return None
         return self.effect < 0.0
 
     @property
-    def direction(self) -> int:
+    def direction(self) -> int | None:
 
+        if not self.is_directional:
+            return None
         if self.effect > 0.0:
             return 1
         if self.effect < 0.0:
@@ -836,14 +850,17 @@ def sign_test(signals: Sequence[WeakSignal]) -> dict[str, Any]:
 
     excluded_invalidated = sum(s.status == "invalidated" for s in signals)
     signals = [s for s in signals if s.status != "invalidated"]
-    favourable = sum(1 for signal in signals if signal.direction > 0)
-    against = sum(1 for signal in signals if signal.direction < 0)
+    excluded_nondirectional = sum(not signal.is_directional for signal in signals)
+    signals = [signal for signal in signals if signal.is_directional]
+    favourable = sum(1 for signal in signals if signal.effect > 0)
+    against = sum(1 for signal in signals if signal.effect < 0)
     ties = len(signals) - favourable - against
     informative = favourable + against
     p_value = binomial_two_sided_p(favourable, informative)
     return {
         "signals": len(signals),
         "excluded_invalidated": excluded_invalidated,
+        "excluded_nondirectional": excluded_nondirectional,
         "tie_convention": (
             "ties excluded from the test (classical sign test); "
             "'*_half_credit' fields report the ties-split-evenly reading"
@@ -860,7 +877,7 @@ def sign_test(signals: Sequence[WeakSignal]) -> dict[str, Any]:
         ),
         "p_value": p_value,
         "interpretation": (
-            "no signals recorded"
+            "no directional signals recorded"
             if not signals
             else (
                 "every signal is an exact tie; the pile has no direction to test"

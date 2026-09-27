@@ -183617,6 +183617,34 @@
       "source": "artifacts/sim04_loso/20260926T203158Z/recalibration_check.txt",
       "standard_error": null
     },
+    "sim08_team_conditioned_late_clock_reference_bias_v1": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Fourth rollout endpoint look. Neither admissible closing ground nor positive control bound established. Fixed-selection uncertainty excludes neighbor selection and alpha selection.",
+      "closing_ground": null,
+      "description": "Fixed-selection late-game scoring-transition elapsed discrepancy, selected simulator transitions minus a stabilized actual-game reference.",
+      "effect": -0.7505527354108618,
+      "effect_units": "elapsed_seconds_bias",
+      "family": "sim08_late_selected_scoring_transition_elapsed_time",
+      "interval": [
+        -2.7275887964646524,
+        1.173366718988303
+      ],
+      "league": "nfl",
+      "notes": "67 matched transitions across 66 rollouts and 40 of 96 scheduled games; reference has 56 transitions in 55 games. Training-only alpha=32, 589 games from 2009-2014; validation 2015-2017. 2000 paired game-identity and seed bootstrap draws. Timeout omitted from matching and imbalance remains. Raw exact discrepancy=1.9402985074626866 seconds. Diagnostic only; no serving change. Bundle manifest SHA256=f69145aa9e1dc994498994013a50fbc305ada6b3d8076da7433c11c9196a2ae3.",
+      "plain_summary": "Late-game scoring plays in the simulator take about three quarters of a second less than comparable real plays; the remaining uncertainty is too large to resolve the difference.",
+      "probability_positive": 0.2175,
+      "recorded_at": "2026-09-27",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 55,
+      "seasons": [
+        2015,
+        2017
+      ],
+      "source": "artifacts/sim08_reference_bootstrap/20260927T055500Z/.tmp/sim08_reference_bootstrap_effect.json",
+      "standard_error": null
+    },
     "single_book_opener_grade_posthoc_v1_sb_posthoc_different_line_2020_2025": {
       "category": "modeling",
       "classification": "unresolved_below_power",

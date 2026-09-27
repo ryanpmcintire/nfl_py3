@@ -14,6 +14,7 @@ import requests
 from nfl_ats.io import atomic_bytes, atomic_json, atomic_parquet, run_id
 from nfl_ats.provenance import sha256_file
 from nfl_ats.source_policy import require_acquisition, require_private_raw_destination
+from nfl_ats.sportradar_injury_snapshot import SportradarInjuryCaptureError
 
 REPO = Path(__file__).resolve().parents[1]
 DEFAULT_ROOT = REPO / "data/raw/sportradar_injuries"
@@ -24,10 +25,6 @@ BASE_URL = (
 )
 MAX_SOURCE_AGE = timedelta(hours=8)
 VALID_ACCESS_LEVELS = frozenset({"trial", "production"})
-
-
-class SportradarInjuryCaptureError(RuntimeError):
-    pass
 
 
 def source_url(season: int, week: int, season_type: str, access_level: str) -> str:
@@ -250,51 +247,10 @@ def capture(
         raise SportradarInjuryCaptureError(str(exc)) from exc
 
 
-def load_for_decision(root: Path, decision_at: datetime) -> tuple[Path, pd.DataFrame]:
-
-    cutoff = pd.Timestamp(decision_at)
-    if cutoff.tzinfo is None:
-        raise SportradarInjuryCaptureError("Decision time must carry a timezone")
-    eligible: list[tuple[pd.Timestamp, Path, dict[str, Any]]] = []
-    for manifest_path in sorted(root.glob("*/manifest.json")):
-        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-        if manifest.get("status") != "complete":
-            continue
-        if manifest.get("schema") != "sportradar_nfl_injuries_snapshot/1":
-            raise SportradarInjuryCaptureError(f"Wrong snapshot schema in {manifest_path}")
-        captured_at = pd.Timestamp(manifest.get("captured_at_utc"))
-        if captured_at.tzinfo is None:
-            raise SportradarInjuryCaptureError(f"Naive capture time in {manifest_path}")
-        if captured_at <= cutoff.tz_convert("UTC"):
-            eligible.append((captured_at, manifest_path.parent, manifest))
-    if not eligible:
-        raise SportradarInjuryCaptureError(f"No complete injury snapshot existed by {cutoff}")
-    captured_at, snapshot, manifest = max(eligible, key=lambda item: item[0])
-    entries = manifest.get("files")
-    if not isinstance(entries, list) or {entry.get("path") for entry in entries} != {
-        "source.json",
-        "injuries.parquet",
-    }:
-        raise SportradarInjuryCaptureError(f"Incomplete file manifest in {snapshot}")
-    for entry in entries:
-        path = snapshot / str(entry["path"])
-        if not path.is_file() or sha256_file(path) != entry["sha256"]:
-            raise SportradarInjuryCaptureError(f"Snapshot file failed SHA-256 verification: {path}")
-    frame = pd.read_parquet(snapshot / "injuries.parquet")
-    available = pd.to_datetime(frame["available_at_utc"], utc=True, errors="coerce")
-    if frame.empty or available.isna().any() or not available.eq(captured_at).all():
-        raise SportradarInjuryCaptureError(
-            "Snapshot availability does not match immutable capture time"
-        )
-    if (available > cutoff.tz_convert("UTC")).any():
-        raise SportradarInjuryCaptureError(
-            "Post-decision injury rows crossed the availability boundary"
-        )
-    return snapshot, frame
-
-
 def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(
+        description="Capture an immutable Sportradar NFL injury snapshot."
+    )
     parser.add_argument("--out", type=Path, default=DEFAULT_ROOT)
     parser.add_argument("--access-level", choices=sorted(VALID_ACCESS_LEVELS), default="trial")
     args = parser.parse_args()

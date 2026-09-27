@@ -1046,6 +1046,7 @@ _RECENT_ACTIVITY_EFFECT_UNIT_WORDS: dict[str, str] = {
     "mae": "points of average error",
     "mae_improvement": "points of average-error improvement",
     "correlation": "correlation",
+    "elapsed_seconds_bias": "seconds of difference between simulated and real play times",
     "payout_first_pp": "percentage points of simulated chance of finishing first",
 }
 
@@ -1059,11 +1060,21 @@ def _recent_activity_entry_view(entry: RecentActivityEntry) -> RecentActivityEnt
         if entry.effect is not None
         else "not yet measured"
     )
-    chance_text = (
-        f"chance it helps: {entry.probability_positive:.0%}"
-        if entry.probability_positive is not None
-        else "chance it helps: not measured yet"
-    )
+    if entry.effect_units == "elapsed_seconds_bias":
+        if entry.probability_positive is None:
+            chance_text = "play-time difference: not measured yet"
+        elif entry.probability_positive >= 0.5:
+            chance_text = f"chance simulated plays take longer: {entry.probability_positive:.0%}"
+        else:
+            chance_text = (
+                f"chance simulated plays take less time: {1.0 - entry.probability_positive:.0%}"
+            )
+    else:
+        chance_text = (
+            f"chance it helps: {entry.probability_positive:.0%}"
+            if entry.probability_positive is not None
+            else "chance it helps: not measured yet"
+        )
     return RecentActivityEntryView(
         plain_summary=name_books_for_readers(entry.plain_summary or PLAIN_SUMMARY_PENDING),
         effect_text=effect_text,
@@ -1073,7 +1084,8 @@ def _recent_activity_entry_view(entry: RecentActivityEntry) -> RecentActivityEnt
 
 
 def _recent_activity_extremity(entry: RecentActivityEntry) -> float:
-    return abs((entry.probability_positive or 0.5) - 0.5)
+    probability = entry.probability_positive
+    return abs((probability if probability is not None else 0.5) - 0.5)
 
 
 def _recent_activity_highlights(
@@ -1087,9 +1099,12 @@ def _recent_activity_highlights(
         key=_recent_activity_extremity,
         reverse=True,
     )
+    if not ranked or limit <= 0:
+        return ()
+    newest = max(ranked, key=lambda entry: entry.recorded_at)
     seen_summaries: set[str] = set()
     highlighted: list[RecentActivityEntry] = []
-    for entry in ranked:
+    for entry in (newest, *ranked):
         summary_key = entry.plain_summary or entry.key
         if summary_key in seen_summaries:
             continue

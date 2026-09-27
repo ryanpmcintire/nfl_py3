@@ -14,6 +14,10 @@ from nfl_ats.roster_availability_flag_features import (
     SPECIALIST_POSITIONS,
     specialist_player_slugs,
 )
+from nfl_ats.sportradar_injury_snapshot import (
+    SportradarInjuryCaptureError,
+    load_for_decision,
+)
 from nfl_ats.transaction_wire_features import canonical_team
 
 CHALLENGER_ID = "specialist_absence_fade_refresh_v1"
@@ -109,6 +113,23 @@ def live_specialist_out_qualifying(injuries: pd.DataFrame) -> pd.DataFrame:
     return rows.drop_duplicates().reset_index(drop=True)
 
 
+def _sportradar_injuries_for_plan(root: Path, plan: RefreshResult) -> tuple[Path, pd.DataFrame]:
+    snapshot_path, injuries = load_for_decision(
+        root,
+        plan.computed_at_utc,
+        season=int(plan.season),
+        week=int(plan.week),
+        season_type="REG",
+    )
+    return snapshot_path, injuries.rename(
+        columns={
+            "player": "full_name",
+            "game_status": "report_status",
+            "season_type": "game_type",
+        }
+    )
+
+
 def _opposite(side: str) -> str:
     return "AWAY" if side == "HOME" else "HOME"
 
@@ -120,7 +141,10 @@ class _InjurySnapshot:
 
 
 def build_specialist_absence_fade_refresh_rows(
-    plan: RefreshResult, *, data_root: Path
+    plan: RefreshResult,
+    *,
+    data_root: Path,
+    sportradar_root: Path | None = None,
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
 
     empty = pd.DataFrame(columns=list(SPECIALIST_ABSENCE_REFRESH_COLUMNS))
@@ -128,20 +152,35 @@ def build_specialist_absence_fade_refresh_rows(
     if not eligible_games:
         return empty, {"skipped": True, "reason": "no eligible games in this refresh pass"}
 
-    snapshot_path = latest_nflverse_injuries_snapshot(
-        data_root, as_of=pd.Timestamp(plan.computed_at_utc)
-    )
-    if snapshot_path is None:
-        return empty, {
-            "skipped": True,
-            "reason": OVERLAY_STATUS_NO_SNAPSHOT,
-            "detail": (
-                f"no {data_root / 'raw' / 'nflverse_injuries'}/*/injuries.parquet snapshot found"
-            ),
-        }
+    if sportradar_root is None:
+        snapshot_path = latest_nflverse_injuries_snapshot(
+            data_root, as_of=pd.Timestamp(plan.computed_at_utc)
+        )
+        if snapshot_path is None:
+            return empty, {
+                "skipped": True,
+                "reason": OVERLAY_STATUS_NO_SNAPSHOT,
+                "detail": (
+                    f"no {data_root / 'raw' / 'nflverse_injuries'}/*/injuries.parquet "
+                    "snapshot found"
+                ),
+            }
+        injuries = None
+        snapshot_id = snapshot_path.parent.name
+    else:
+        try:
+            snapshot_path, injuries = _sportradar_injuries_for_plan(sportradar_root, plan)
+        except SportradarInjuryCaptureError as error:
+            return empty, {
+                "skipped": True,
+                "reason": OVERLAY_STATUS_NO_SNAPSHOT,
+                "detail": f"{type(error).__name__}: {error}",
+            }
+        snapshot_id = f"sportradar/{snapshot_path.name}"
 
     try:
-        injuries = pd.read_parquet(snapshot_path)
+        if injuries is None:
+            injuries = pd.read_parquet(snapshot_path)
         if "date_modified" in injuries.columns:
             modified = pd.to_datetime(injuries["date_modified"], utc=True, errors="coerce")
             injuries = injuries.loc[modified.le(pd.Timestamp(plan.computed_at_utc))].copy()
@@ -152,7 +191,7 @@ def build_specialist_absence_fade_refresh_rows(
             "skipped": True,
             "reason": OVERLAY_STATUS_NO_SNAPSHOT,
             "detail": f"{type(error).__name__}: {error}",
-            "injury_snapshot_id": snapshot_path.parent.name,
+            "injury_snapshot_id": snapshot_id,
         }
 
     week_qualifying = qualifying.loc[
@@ -171,7 +210,7 @@ def build_specialist_absence_fade_refresh_rows(
                 f"no injury report resolves for season {plan.season} week {plan.week} in "
                 f"{snapshot_path}"
             ),
-            "injury_snapshot_id": snapshot_path.parent.name,
+            "injury_snapshot_id": snapshot_id,
         }
 
     out_teams = set(week_qualifying["team"].astype(str))
@@ -205,7 +244,7 @@ def build_specialist_absence_fade_refresh_rows(
                 "decision_home_spread": game.decision_home_spread,
                 "played_pick_side": game.new_pick_side,
                 "production_home_cover_probability": float(game.new_home_cover_probability),
-                "injury_snapshot_id": snapshot_path.parent.name,
+                "injury_snapshot_id": snapshot_id,
                 "home_specialist_out": bool(home_out),
                 "away_specialist_out": bool(away_out),
                 "specialist_would_be_pick_side": would_be_side,
@@ -219,7 +258,7 @@ def build_specialist_absence_fade_refresh_rows(
     frame = pd.DataFrame(rows, columns=list(SPECIALIST_ABSENCE_REFRESH_COLUMNS))
     diagnostics = {
         "skipped": False,
-        "injury_snapshot_id": snapshot_path.parent.name,
+        "injury_snapshot_id": snapshot_id,
         "games_considered": len(frame),
         "home_specialist_out_game_ids": frame.loc[frame["home_specialist_out"], "game_id"].tolist(),
         "away_specialist_out_game_ids": frame.loc[frame["away_specialist_out"], "game_id"].tolist(),
@@ -235,6 +274,7 @@ def record_specialist_absence_fade_refresh_overlay(
     plan: RefreshResult,
     *,
     record_decisions: bool = False,
+    sportradar_root: Path | None = None,
 ) -> dict[str, Any]:
 
     if not record_decisions:
@@ -253,7 +293,9 @@ def record_specialist_absence_fade_refresh_overlay(
         original["kickoff"], plan.computed_at_utc, ledger="specialist-absence-fade-refresh"
     )
 
-    rows, diagnostics = build_specialist_absence_fade_refresh_rows(plan, data_root=data_root)
+    rows, diagnostics = build_specialist_absence_fade_refresh_rows(
+        plan, data_root=data_root, sportradar_root=sportradar_root
+    )
     existing = load_specialist_absence_fade_refresh_decisions(artifacts_root)
     if rows.empty:
         return {

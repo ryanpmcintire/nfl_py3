@@ -42,11 +42,20 @@ and new acquisition remains prohibited. **Read** from
    counts, and SHA-256 hashes.
 
 The canonical availability timestamp is the immutable capture time, not the
-provider's `status_date`. `load_for_decision()` considers only a complete
-snapshot captured by the supplied decision time, verifies every manifest hash,
-and rejects rows whose availability differs from that capture. A later revision
-therefore cannot appear in an earlier information set. This boundary is not
-wired to the active model.
+provider's `status_date`. The installed runtime loader at
+`nfl_ats.sportradar_injury_snapshot.load_for_decision()` considers only a
+complete snapshot for the requested season, week, and season type captured by
+the supplied decision time. It verifies both manifest hashes and rejects
+incomplete team coverage, row-target mismatches, or rows whose availability
+differs from that capture. A later revision therefore cannot appear in an
+earlier information set.
+
+The specialist-absence refresh overlay accepts an explicit local Sportradar
+snapshot root. That choice is source-exclusive: an unavailable or invalid exact
+provider snapshot skips the overlay and never falls back to nflverse. Omitting
+the root preserves the existing nflverse behavior. The publishing caller does
+not supply a provider root, so this remains an offline input seam rather than an
+active-model data source.
 
 Run manually after supplying a provider-authorized key:
 

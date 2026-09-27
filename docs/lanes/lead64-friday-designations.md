@@ -37,6 +37,13 @@ and successful fallback rows clear an earlier primary-source `empty_reason`.
    excludes games without a deadline-valid trigger. No current downstream path can use either named
    Saturday capture as pregame evidence.
 
+6. **Measured:** native freshness audit of all three archived RotoWire pages found
+   no publication time, week, or game identifier for the inactive list. All three
+   parse to the same 11 player identities; date-bearing text belongs to navigation
+   or general guidance. Raw and normalized payload hashes agree with their manifests.
+   Evidence: `.tmp/lead64-source-freshness-report.txt`. **Inferred:** identical
+   rosters alone cannot establish staleness; retain the measured kickoff guard.
+
 ## Next
 
 - Gather source-native freshness evidence before imposing an earlier pregame cutoff. The kickoff guard

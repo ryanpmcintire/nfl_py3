@@ -14,6 +14,7 @@ sys.path.insert(0, str(ROOT))
 
 import scripts.capture_scheduler as scheduler  # noqa: E402
 import scripts.capture_sportradar_injuries as capture_module  # noqa: E402
+from nfl_ats.sportradar_injury_snapshot import load_for_decision  # noqa: E402
 
 
 def _schedule(path: Path) -> Path:
@@ -167,15 +168,17 @@ def test_decision_loader_ignores_later_revision_and_verifies_hashes(
         ),
     )
 
-    selected, frame = capture_module.load_for_decision(
-        out, datetime(2026, 9, 2, 16, 30, tzinfo=UTC)
+    selected, frame = load_for_decision(
+        out, datetime(2026, 9, 2, 16, 30, tzinfo=UTC), season=2026, week=1, season_type="REG"
     )
     assert selected == first
     assert frame["game_status"].eq("Questionable").all()
 
     (first / "injuries.parquet").write_bytes(b"corrupt")
     with pytest.raises(capture_module.SportradarInjuryCaptureError, match="SHA-256"):
-        capture_module.load_for_decision(out, datetime(2026, 9, 2, 16, 30, tzinfo=UTC))
+        load_for_decision(
+            out, datetime(2026, 9, 2, 16, 30, tzinfo=UTC), season=2026, week=1, season_type="REG"
+        )
 
 
 def test_scheduler_replacement_jobs_are_credential_gated_and_nflcom_stays_paused() -> None:

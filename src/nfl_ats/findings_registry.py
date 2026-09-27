@@ -397,8 +397,19 @@ def _parse_registry_date(value: Any) -> date | None:
         return None
 
 
-def _activity_direction_sentence(probability_positive: float) -> str:
-
+def _activity_direction_sentence(probability_positive: float, effect_units: str | None) -> str:
+    if effect_units == "elapsed_seconds_bias":
+        if probability_positive >= 0.5:
+            return (
+                "The simulated scoring plays are more likely to take longer "
+                "than comparable real plays "
+                f"({probability_positive:.0%} probability)."
+            )
+        below = 1.0 - probability_positive
+        return (
+            "The simulated scoring plays are more likely to take less time "
+            f"than comparable real plays ({below:.0%} probability)."
+        )
     if probability_positive >= 0.5:
         return (
             f"Leans FOR the pattern described -- {probability_positive:.0%} "
@@ -473,7 +484,7 @@ def recent_registry_activity(
                 effect_units=signal.effect_units,
                 probability_positive=signal.probability_positive,
                 direction_sentence=(
-                    _activity_direction_sentence(signal.probability_positive)
+                    _activity_direction_sentence(signal.probability_positive, signal.effect_units)
                     if signal.probability_positive is not None
                     else None
                 ),
@@ -503,7 +514,9 @@ def recent_registry_activity(
                     effect_units=window.effect_units,
                     probability_positive=window.probability_positive,
                     direction_sentence=(
-                        _activity_direction_sentence(window.probability_positive)
+                        _activity_direction_sentence(
+                            window.probability_positive, window.effect_units
+                        )
                         if window.probability_positive is not None
                         else None
                     ),

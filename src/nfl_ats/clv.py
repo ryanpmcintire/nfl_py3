@@ -234,14 +234,73 @@ def load_snapshot_manifest_index(root: Path) -> pd.DataFrame:
     return index.sort_values("snapshot_timestamp_utc", kind="stable").reset_index(drop=True)
 
 
-def load_decision_quotes(
+def _select_decision_quote_rows(
+    root: Path,
+    *,
+    capture_kind: str,
+    labels: Iterable[str] | None,
+    seasons: Iterable[int] | None,
+) -> pd.DataFrame:
+    label_values = tuple(str(value) for value in labels) if labels is not None else None
+    season_values = tuple(int(value) for value in seasons) if seasons is not None else None
+    index = load_snapshot_manifest_index(root)
+    selected = index.loc[index["capture_kind"].eq(capture_kind)]
+    if label_values is not None:
+        selected = selected.loc[selected["decision_label"].isin(label_values)]
+    if season_values is not None:
+        selected = selected.loc[selected["season"].isin(season_values)]
+    return selected.reset_index(drop=True)
+
+
+def _decision_quote_source_records(root: Path, selected: pd.DataFrame) -> list[dict[str, Any]]:
+    resolved_root = root.resolve()
+    records: list[dict[str, Any]] = []
+    for row in selected.itertuples(index=False):
+        snapshot_dir = Path(str(row.dir)).resolve()
+        manifest_path = snapshot_dir / "manifest.json"
+        quotes_path = snapshot_dir / "quotes.parquet"
+        if not manifest_path.is_file() or not quotes_path.is_file():
+            raise DataContractError(f"Selected decision quote source is incomplete: {snapshot_dir}")
+        try:
+            manifest_relative = manifest_path.relative_to(resolved_root).as_posix()
+            quotes_relative = quotes_path.relative_to(resolved_root).as_posix()
+        except ValueError as exc:
+            raise DataContractError(
+                f"Selected decision quote source is outside market root: {snapshot_dir}"
+            ) from exc
+        records.append(
+            {
+                "snapshot_id": str(row.snapshot_id),
+                "capture_kind": str(row.capture_kind),
+                "season": int(str(row.season)),
+                "week": int(str(row.week)),
+                "decision_label": str(row.decision_label),
+                "manifest_path": manifest_relative,
+                "manifest_sha256": sha256_file(manifest_path),
+                "quotes_path": quotes_relative,
+                "quotes_sha256": sha256_file(quotes_path),
+            }
+        )
+    return records
+
+
+def decision_quote_source_records(
     root: Path,
     *,
     capture_kind: str = HISTORICAL_CAPTURE_KIND,
     labels: Iterable[str] | None = None,
     seasons: Iterable[int] | None = None,
-) -> pd.DataFrame:
+) -> list[dict[str, Any]]:
+    selected = _select_decision_quote_rows(
+        root,
+        capture_kind=capture_kind,
+        labels=labels,
+        seasons=seasons,
+    )
+    return _decision_quote_source_records(root, selected)
 
+
+def _load_selected_decision_quotes(selected: pd.DataFrame) -> pd.DataFrame:
     tag_columns = [
         "capture_kind",
         "season",
@@ -249,12 +308,6 @@ def load_decision_quotes(
         "decision_label",
         "snapshot_timestamp_utc",
     ]
-    index = load_snapshot_manifest_index(root)
-    selected = index.loc[index["capture_kind"].eq(capture_kind)]
-    if labels is not None:
-        selected = selected.loc[selected["decision_label"].isin(set(labels))]
-    if seasons is not None:
-        selected = selected.loc[selected["season"].isin(set(seasons))]
     if selected.empty:
         return pd.DataFrame(columns=[*tag_columns])
     frames: list[pd.DataFrame] = []
@@ -278,6 +331,43 @@ def load_decision_quotes(
     combined["commence_time_utc"] = pd.to_datetime(combined["commence_time_utc"], utc=True)
     combined["observed_at_utc"] = pd.to_datetime(combined["observed_at_utc"], utc=True)
     return combined
+
+
+def load_decision_quotes(
+    root: Path,
+    *,
+    capture_kind: str = HISTORICAL_CAPTURE_KIND,
+    labels: Iterable[str] | None = None,
+    seasons: Iterable[int] | None = None,
+) -> pd.DataFrame:
+    selected = _select_decision_quote_rows(
+        root,
+        capture_kind=capture_kind,
+        labels=labels,
+        seasons=seasons,
+    )
+    return _load_selected_decision_quotes(selected)
+
+
+def load_decision_quotes_with_sources(
+    root: Path,
+    *,
+    capture_kind: str = HISTORICAL_CAPTURE_KIND,
+    labels: Iterable[str] | None = None,
+    seasons: Iterable[int] | None = None,
+) -> tuple[pd.DataFrame, list[dict[str, Any]]]:
+    selected = _select_decision_quote_rows(
+        root,
+        capture_kind=capture_kind,
+        labels=labels,
+        seasons=seasons,
+    )
+    sources_before = _decision_quote_source_records(root, selected)
+    quotes = _load_selected_decision_quotes(selected)
+    sources_after = _decision_quote_source_records(root, selected)
+    if sources_after != sources_before:
+        raise DataContractError("Decision quote sources changed while they were being loaded")
+    return quotes, sources_before
 
 
 _CONSENSUS_REQUIRED_COLUMNS = (

@@ -195,6 +195,27 @@ ever trains on its own or a later season's games), on:
   correlates with COLDER weather can each learn their own sign), plus five
   venue dummy intercepts.
 
+### Replay input contract
+
+`predict-roof` and `production` require the forecast Parquet and its companion
+manifest. The loader verifies the archive hash and row count, the exact
+pool-decision cutoff policy, and the hashes of the schedule and game-feature
+inputs recorded by that manifest. It reads the manifest-pinned schedule rather
+than the mutable latest schedule. That schedule supplies the roof and stadium
+population; the manifest-pinned game-feature snapshot supplies the kickoff used
+by the archive producer. Forecast and input game IDs must be present and unique.
+Every successful forecast must have explicit-timezone timestamps ordered
+`issuance_runtime_utc <= decision_cutoff_utc <= kickoff_utc`. Its archived
+kickoff must equal the pinned game-feature kickoff, and its decision cutoff must
+equal the shared pool-decision calculation for that kickoff. Every game in the
+retractable-roof population must have a successful forecast with finite weather
+values. A missing, late, malformed, duplicated, or hash-mismatched input stops
+prediction instead of being interpreted as a closed roof.
+
+Replay paths may be supplied with `--forecast-archive` and
+`--forecast-manifest`; the defaults name the repository archive location. The
+manifest remains authoritative for schedule and game-feature identity.
+
 **Measured** (`nfl-ats`-independent per-venue temperature correlations,
 before any model was fit, informing why a venue interaction was used rather
 than one global temperature coefficient): ARI's forecast temp correlates

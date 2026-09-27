@@ -228,3 +228,40 @@ game without further matching relaxation. Its support report must include unique
 scheduled games, timeout imbalance, and cells supported by only one reference
 game before an effect is released. These support failures close no research
 signal and authorize no engine weighting or served probability change.
+
+## Fourth rollout endpoint: stabilized reference, 2026-09-27
+
+**Measured:** the fixed 96-game, eight-seed expansion produced 768 rollouts with
+zero caps and 67 matched selected scoring transitions in 66 rollouts from 40
+scheduled games. The actual validation reference has 56 transitions in 55 games.
+Selected-minus-actual elapsed discrepancy is **-0.750553 seconds**, with a paired
+2,000-draw interval **[-2.727589, +1.173367]** and **probability_positive 0.2175**.
+The raw exact-cell discrepancy is +1.940299 seconds; it is reported as a sensitivity,
+not substituted for the stabilized estimator. This is the fourth rollout endpoint
+look, separate from the earlier 25 neighbor/chronological/source-age looks.
+
+Training-only alpha selection chose 32 from 0.5, 1, 2, 4, 8, 16, 32 using rolling
+2010-2014 reference error; the final prior uses 589 games from 2009-2014. Validation
+is 2015-2017. Hierarchical reference means use route/down/phase, then score/time,
+then distance/field position. The bootstrap resamples shared game identities jointly
+across roles within season, then seeds within scheduled games; reference priors are
+recomputed. Neighbors, source choices, matching and alpha remain fixed, so intervals
+omit selection uncertainty. Timeout matching remains omitted: total variation
+0.287580 and maximum bucket gap 0.074360. Sparse exact reference cells remain a
+limitation; these diagnostics are neither causal effects nor served ATS gains.
+
+**Measured:** `nfl-ats weak-signals record` exited 0 and stored
+`sim08_team_conditioned_late_clock_reference_bias_v1` as `unresolved_below_power`,
+using nondirectional `elapsed_seconds_bias` units; `favours_candidate` is null.
+Neither admissible closure nor a positive-control bound has been established.
+AGENTS.md's research-closure rule therefore keeps the line open. No fitted weight,
+calibration, prediction or served side changed.
+
+The durable ignored replay bundle is
+`artifacts/sim08_reference_bootstrap/20260927T055500Z/manifest.json`, SHA256
+`f69145aa9e1dc994498994013a50fbc305ada6b3d8076da7433c11c9196a2ae3`.
+All 17 bundled file hashes and 10 external input hashes were verified. It includes
+the frozen declarations, support/reference scripts, effect JSON, engine, environment
+lock and command logs. Replay requires the recorded input hashes. The shell wrapper
+reported exit 1 after a joblib physical-core warning, while the completed effect JSON
+records all 2,000 draws; this execution caveat is preserved with the raw logs.

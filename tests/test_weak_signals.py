@@ -689,6 +689,7 @@ def test_existing_effect_units_are_unchanged_by_the_new_additions() -> None:
         "brier_improvement",
         "log_loss_improvement",
         "payout_first_pp",
+        "elapsed_seconds_bias",
     }
 
 

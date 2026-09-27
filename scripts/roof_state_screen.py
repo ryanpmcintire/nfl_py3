@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -23,6 +24,7 @@ from nfl_ats.clv import (  # noqa: E402
 )
 from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES  # noqa: E402
 from nfl_ats.evidence_conventions import probability_positive_from_draws  # noqa: E402
+from nfl_ats.nfl_week import pool_decision_cutoff  # noqa: E402
 from nfl_ats.rotation import confirmation_split, load_registry  # noqa: E402
 
 RETRACT_TEAMS = ("ARI", "ATL", "DAL", "HOU", "IND")
@@ -30,6 +32,10 @@ GAME_FEATURES = REPO / "data" / "processed" / "game_features.parquet"
 PRODUCTION_FEATURES = REPO / "data" / "processed" / "game_features_weak_stack.parquet"
 POOL_DECISION_ARCHIVE = (
     REPO / "data" / "raw" / "forecast_archive" / "pool_decision_2009_2025" / "forecasts.parquet"
+)
+POOL_DECISION_MANIFEST = POOL_DECISION_ARCHIVE.with_name("manifest.json")
+POOL_DECISION_POLICY = (
+    "min(kickoff, Sunday 16:00 America/New_York in the game's Tuesday-through-Monday NFL week)"
 )
 MARKET_ROOT = REPO / "data" / "market" / "raw"
 ARTIFACTS_ROOT = REPO / "artifacts"
@@ -47,9 +53,152 @@ def _latest_schedules() -> Path:
     return candidates[-1]
 
 
-def load_population() -> pd.DataFrame:
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _manifest_input_path(record: object, label: str) -> Path:
+    if not isinstance(record, dict):
+        raise SystemExit(f"forecast manifest is missing {label} input metadata")
+    recorded_path = record.get("path")
+    recorded_sha = record.get("sha256")
+    if not isinstance(recorded_path, str) or not isinstance(recorded_sha, str):
+        raise SystemExit(f"forecast manifest has incomplete {label} input metadata")
+    declared = Path(recorded_path)
+    candidates = [declared]
+    lowered = [part.lower() for part in declared.parts]
+    for anchor in ("data", "registry"):
+        if anchor in lowered:
+            candidates.append(REPO.joinpath(*declared.parts[lowered.index(anchor) :]))
+    selected = next((candidate for candidate in candidates if candidate.is_file()), None)
+    if selected is None:
+        raise SystemExit(f"forecast manifest {label} input is unavailable: {recorded_path}")
+    actual_sha = _sha256(selected)
+    if actual_sha != recorded_sha.lower():
+        raise SystemExit(
+            f"forecast manifest {label} SHA mismatch: expected {recorded_sha}, got {actual_sha}"
+        )
+    return selected.resolve()
+
+
+def _utc_timestamps(frame: pd.DataFrame, column: str, required: pd.Series) -> pd.Series:
+    if column not in frame.columns:
+        raise SystemExit(f"forecast archive is missing {column}")
+    values = frame[column].astype("string")
+    present = values.notna() & values.str.strip().ne("")
+    offset = values.str.contains(r"(?:Z|[+-]\d{2}:?\d{2})$", regex=True, na=False)
+    if bool((required & (~present | ~offset)).any()):
+        raise SystemExit(f"forecast archive has missing or timezone-naive {column}")
+    parsed = pd.to_datetime(values, utc=True, errors="coerce")
+    if bool((required & parsed.isna()).any()):
+        raise SystemExit(f"forecast archive has invalid {column}")
+    return parsed
+
+
+def load_forecast_inputs(
+    archive_path: Path = POOL_DECISION_ARCHIVE,
+    manifest_path: Path = POOL_DECISION_MANIFEST,
+) -> tuple[pd.DataFrame, Path, Path]:
+    archive_path = Path(archive_path)
+    manifest_path = Path(manifest_path)
+    if not archive_path.is_file() or not manifest_path.is_file():
+        raise SystemExit("forecast archive and manifest are both required")
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8-sig"))
+    if not isinstance(manifest, dict):
+        raise SystemExit("forecast manifest root must be an object")
+    if (
+        manifest.get("cutoff_mode") != "pool_decision"
+        or manifest.get("selection_policy") != POOL_DECISION_POLICY
+    ):
+        raise SystemExit(
+            "forecast manifest cutoff policy is not the supported pool-decision policy"
+        )
+    files = manifest.get("files")
+    if not isinstance(files, dict):
+        raise SystemExit("forecast manifest is missing file metadata")
+    forecast = files.get(archive_path.name)
+    if not isinstance(forecast, dict):
+        raise SystemExit("forecast manifest is missing forecast metadata")
+    forecast_sha = forecast.get("sha256")
+    if not isinstance(forecast_sha, str) or forecast_sha.lower() != _sha256(archive_path):
+        raise SystemExit("forecast archive SHA does not match its manifest")
+    inputs = manifest.get("inputs")
+    if not isinstance(inputs, dict):
+        raise SystemExit("forecast manifest is missing input metadata")
+    schedule_path = _manifest_input_path(inputs.get("schedules"), "schedules")
+    feature_path = _manifest_input_path(inputs.get("game_features"), "game_features")
+    archive = pd.read_parquet(
+        archive_path,
+        columns=[
+            "game_id",
+            "fetch_status",
+            "cutoff_mode",
+            "kickoff_utc",
+            "decision_cutoff_utc",
+            "issuance_runtime_utc",
+            "forecast_temp_f",
+            "forecast_precip_prob_pct",
+        ],
+    )
+    if forecast.get("rows") != len(archive):
+        raise SystemExit("forecast archive row count does not match its manifest")
+    game_ids = archive["game_id"].astype("string")
+    if bool(game_ids.isna().any() or game_ids.str.strip().eq("").any()):
+        raise SystemExit("forecast archive contains a missing game_id")
+    if bool(game_ids.duplicated().any()):
+        raise SystemExit("forecast archive contains duplicate game_id rows")
+    archive["game_id"] = game_ids
+    if not bool(archive["cutoff_mode"].eq("pool_decision").all()):
+        raise SystemExit("forecast archive contains an unsupported cutoff mode")
+    ok = archive["fetch_status"].eq("ok")
+    kickoff = _utc_timestamps(archive, "kickoff_utc", ok)
+    decision = _utc_timestamps(archive, "decision_cutoff_utc", ok)
+    issuance = _utc_timestamps(archive, "issuance_runtime_utc", ok)
+    if bool((ok & ((issuance > decision) | (decision > kickoff))).any()):
+        raise SystemExit("forecast archive violates issuance <= decision cutoff <= kickoff")
+    feature_kickoffs = pd.read_parquet(feature_path, columns=["game_id", "kickoff"])
+    feature_game_ids = feature_kickoffs["game_id"].astype("string")
+    if bool(feature_game_ids.isna().any() or feature_game_ids.str.strip().eq("").any()):
+        raise SystemExit("game-feature input contains a missing game_id")
+    if bool(feature_game_ids.duplicated().any()):
+        raise SystemExit("game-feature input contains duplicate game_id rows")
+    feature_kickoffs["game_id"] = feature_game_ids
+    feature_kickoffs["kickoff"] = pd.to_datetime(
+        feature_kickoffs["kickoff"], utc=True, errors="coerce"
+    )
+    pinned_kickoff = archive["game_id"].map(feature_kickoffs.set_index("game_id")["kickoff"])
+    if bool((ok & pinned_kickoff.isna()).any()):
+        raise SystemExit("forecast archive has no manifest-pinned game-feature kickoff")
+    if bool((ok & kickoff.ne(pinned_kickoff)).any()):
+        raise SystemExit(
+            "forecast archive kickoff does not match manifest-pinned game-feature kickoff"
+        )
+    expected_decision = pinned_kickoff.loc[ok].map(
+        lambda value: pd.Timestamp(pool_decision_cutoff(value.to_pydatetime()))
+    )
+    if bool(decision.loc[ok].ne(expected_decision).any()):
+        raise SystemExit(
+            "forecast archive decision cutoff does not match the supported pool-decision policy"
+        )
+    weather = archive.loc[ok, ["forecast_temp_f", "forecast_precip_prob_pct"]].apply(
+        pd.to_numeric, errors="coerce"
+    )
+    if not bool(np.isfinite(weather.to_numpy(dtype=float)).all()):
+        raise SystemExit("forecast archive has missing or nonfinite required weather")
+    return archive, schedule_path, feature_path
+
+
+def load_population(
+    *,
+    schedules_path: Path | None = None,
+    game_features_path: Path = GAME_FEATURES,
+) -> pd.DataFrame:
     feat = pd.read_parquet(
-        GAME_FEATURES,
+        game_features_path,
         columns=[
             "game_id",
             "season",
@@ -63,9 +212,20 @@ def load_population() -> pd.DataFrame:
         ],
     )
     reg = feat.loc[feat["game_type"].eq("REG")].copy()
-    reg["game_id"] = reg["game_id"].astype(str)
-    sched = pd.read_parquet(_latest_schedules(), columns=["game_id", "roof", "stadium"])
-    sched["game_id"] = sched["game_id"].astype(str)
+    feature_game_ids = reg["game_id"].astype("string")
+    if bool(feature_game_ids.isna().any() or feature_game_ids.str.strip().eq("").any()):
+        raise SystemExit("regular-season feature input contains missing game_id values")
+    reg["game_id"] = feature_game_ids.astype(str)
+    if bool(reg["game_id"].duplicated().any()):
+        raise SystemExit("regular-season feature input contains duplicate game_id rows")
+    selected_schedules = schedules_path if schedules_path is not None else _latest_schedules()
+    sched = pd.read_parquet(selected_schedules, columns=["game_id", "roof", "stadium"])
+    schedule_game_ids = sched["game_id"].astype("string")
+    if bool(schedule_game_ids.isna().any() or schedule_game_ids.str.strip().eq("").any()):
+        raise SystemExit("schedule input contains missing game_id values")
+    sched["game_id"] = schedule_game_ids.astype(str)
+    if bool(sched["game_id"].duplicated().any()):
+        raise SystemExit("schedule input contains duplicate game_id rows")
     reg = reg.merge(sched, on="game_id", how="left", validate="one_to_one")
     pop = reg.loc[
         reg["home_team"].isin(RETRACT_TEAMS) & reg["roof"].isin(["open", "closed"])
@@ -326,19 +486,39 @@ def _venue_features(frame: pd.DataFrame) -> np.ndarray:
     return np.column_stack(cols)
 
 
-def build_prediction_table() -> pd.DataFrame:
-    pop = load_population()
-    archive = pd.read_parquet(
-        POOL_DECISION_ARCHIVE,
-        columns=["game_id", "fetch_status", "forecast_temp_f", "forecast_precip_prob_pct"],
+def build_prediction_table(
+    *,
+    forecast_archive: Path = POOL_DECISION_ARCHIVE,
+    forecast_manifest: Path = POOL_DECISION_MANIFEST,
+) -> pd.DataFrame:
+    archive, schedule_path, feature_path = load_forecast_inputs(forecast_archive, forecast_manifest)
+    pop = load_population(
+        schedules_path=schedule_path,
+        game_features_path=feature_path,
     )
     archive["game_id"] = archive["game_id"].astype(str)
-    archive = archive.loc[archive["fetch_status"].eq("ok")]
     merged = pop.merge(
-        archive[["game_id", "forecast_temp_f", "forecast_precip_prob_pct"]],
+        archive[
+            [
+                "game_id",
+                "fetch_status",
+                "forecast_temp_f",
+                "forecast_precip_prob_pct",
+            ]
+        ],
         on="game_id",
-        how="inner",
+        how="left",
+        validate="one_to_one",
     )
+    missing = merged["fetch_status"].ne("ok") | merged[
+        ["forecast_temp_f", "forecast_precip_prob_pct"]
+    ].isna().any(axis=1)
+    if bool(missing.any()):
+        missing_ids = ", ".join(merged.loc[missing, "game_id"].astype(str).head(5))
+        raise SystemExit(
+            f"required pool-decision forecast is unavailable for {int(missing.sum())} "
+            f"roof-population games; first game IDs: {missing_ids}"
+        )
     merged = merged.sort_values(["season", "week", "game_id"]).reset_index(drop=True)
     merged["predicted_open"] = False
     merged["prediction_basis"] = "cold_start_no_prior_season_default_closed"
@@ -346,7 +526,12 @@ def build_prediction_table() -> pd.DataFrame:
     for season in sorted(merged["season"].unique()):
         train = merged.loc[merged["season"] < season]
         test_mask = merged["season"].eq(season)
-        if train.empty or train["is_open"].nunique() < 2:
+        if train.empty:
+            continue
+        if train["is_open"].nunique() < 2:
+            merged.loc[test_mask, "prediction_basis"] = (
+                "cold_start_single_class_prior_seasons_default_closed"
+            )
             continue
         model = LogisticRegression(C=1.0, max_iter=2000)
         model.fit(_venue_features(train), train["is_open"].astype(int).to_numpy())
@@ -357,8 +542,11 @@ def build_prediction_table() -> pd.DataFrame:
     return merged
 
 
-def cmd_predict_roof(_args: argparse.Namespace) -> None:
-    table = build_prediction_table()
+def cmd_predict_roof(args: argparse.Namespace) -> None:
+    table = build_prediction_table(
+        forecast_archive=args.forecast_archive,
+        forecast_manifest=args.forecast_manifest,
+    )
     walk_forward = table.loc[
         table["prediction_basis"].eq("logistic_walk_forward_prior_seasons_only")
     ]
@@ -479,7 +667,7 @@ def _summarize(frame: pd.DataFrame, samples: int, seed: int) -> dict:
     }
 
 
-def cmd_production(_args: argparse.Namespace) -> None:
+def cmd_production(args: argparse.Namespace) -> None:
     registry = load_registry()
     features = pd.read_parquet(PRODUCTION_FEATURES)
     training, window = confirmation_split(features, registry, FAMILY)
@@ -497,7 +685,10 @@ def cmd_production(_args: argparse.Namespace) -> None:
     )
     scored = scored.loc[scored["season"].astype(int).isin(seasons)].reset_index(drop=True)
 
-    predicted = build_prediction_table()[["game_id", "predicted_open"]]
+    predicted = build_prediction_table(
+        forecast_archive=args.forecast_archive,
+        forecast_manifest=args.forecast_manifest,
+    )[["game_id", "predicted_open"]]
     predicted["game_id"] = predicted["game_id"].astype(str)
     scored["game_id"] = scored["game_id"].astype(str)
     scored = scored.merge(predicted, on="game_id", how="left")
@@ -545,8 +736,25 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="ENV-02 roof-state (open/closed) screen")
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("screen", help="coverage, cover rates, market pricing, split-half reliability")
-    sub.add_parser("predict-roof", help="deadline-visible walk-forward roof-state predictor")
-    sub.add_parser("production", help="production stack: predicted-open fade on the opener grade")
+    predict = sub.add_parser(
+        "predict-roof", help="deadline-visible walk-forward roof-state predictor"
+    )
+    production = sub.add_parser(
+        "production", help="production stack: predicted-open fade on the opener grade"
+    )
+    for command in (predict, production):
+        command.add_argument(
+            "--forecast-archive",
+            type=Path,
+            default=POOL_DECISION_ARCHIVE,
+            help="immutable pool-decision forecast parquet",
+        )
+        command.add_argument(
+            "--forecast-manifest",
+            type=Path,
+            default=POOL_DECISION_MANIFEST,
+            help="manifest pinning forecast, schedule, features, and cutoff policy",
+        )
     args = parser.parse_args()
     if args.command == "screen":
         cmd_screen(args)
