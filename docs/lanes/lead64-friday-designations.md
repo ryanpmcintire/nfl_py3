@@ -1,63 +1,50 @@
-# LEAD-64: Friday final designations reach the card before Sunday
+# LEAD-64 Friday designation and inactives freshness
 
 ## Goal
-Decide whether parsed PFT headline injury designations
-(`nfl-ats injury-headlines`) should be wired into `report_status` /
-`_injury_value_features` / `availability.resolve_unavailability` as a
-timestamped fallback for Friday designations missing from the nflverse
-injuries release.
+
+Decide whether provisional player-status headlines can improve early-week coverage, and keep inactive
+captures from treating demonstrated post-kickoff carryover as pregame evidence.
 
 ## State
-Decision: **do not wire.** Evidence is underpowered, not refuted. No `src/`
-change made.
+
+Do not wire the headline feed into the card. The measured sample is too small to establish precision.
+Inactive capture now rejects a parsed row when its capture time is at or after its mapped scheduled
+kickoff. Schedule times use the repository's Eastern-time contract and are compared in UTC. Missing
+kickoffs preserve rows; mixed captures retain valid rows and warn. When every parsed row is rejected,
+the manifest records `stale_after_kickoff`. The parquet schema and source provenance are unchanged,
+and successful fallback rows clear an earlier primary-source `empty_reason`.
 
 ## Tried
-1. Ran `nfl-ats injury-headlines --since 2026-08-19` fresh. **Measured**:
-   `artifacts/injury_headline_designations/20260924T183645Z/` — 1060 rows,
-   986 unparsed, parsed designation_counts out=20 doubtful=7 questionable=17
-   ir=29 active=1.
-2. Joined parsed 2026 Weeks 1-3 headline rows (62 rows) to
-   `data/players/raw/20260924T131530Z/weekly_rosters.parquet` (name+team+week
-   -> gsis_id): 53/62 matched (85%).
-3. Joined matched rows to `data/players/raw/20260924T131530Z/injuries.parquet`
-   (season=2026, week in 1..3) by (week, gsis_id), taking the last row by
-   `date_modified` as the official final status. **Measured**: only 23/53
-   (43%) of headline-flagged players appear anywhere in that week's official
-   injury report at all; the rest are dominated by season-ending
-   IR/surgery headlines (e.g. "out for the year", "placed on IR") that never
-   generate a weekly practice-report row.
-4. Of the 26 out/doubtful headline rows, only **3** matched a player-week
-   with a non-null official final `report_status`; 2/3 agreed exactly.
-   **n=3 is too small to claim precision is high or low** — this is
-   `unresolved_below_power`, not a refuted mechanism.
-5. Checked `data/players/inactives/` (the direct "out" ground truth: actual
-   game-day inactive lists) as an alternative check. **Measured**: all 52
-   capture directories contain an empty `inactives.parquet` (0 rows each).
-   The inactives capture pipeline is not producing data — this channel is
-   currently unusable for any comparison, independent of headline quality.
-6. Timing check on the 23 rows that did match an official row: headline
-   `first_seen_utc` was earlier than the official's first observed timestamp
-   for that player-week in 23/23 cases (100%), median lead ~134 hours —
-   confirms headlines arrive earlier as expected, but says nothing about
-   accuracy on its own.
-7. No `src/` files touched, so ruff/mypy/pytest and the Week 3 dry-run
-   verification (step 3 of the task) do not apply this round.
+
+1. **Measured 2026-09-24:** `injury-headlines --since 2026-08-19` produced 1,060 rows, including
+   74 parsed rows. Of 62 parsed Weeks 1-3 rows, 53 matched the weekly roster, but only 23 appeared in
+   that week's official injury report. Only 3 of 26 out/doubtful rows had a non-null final official
+   status; 2 of 3 agreed. The 23 official-row matches had median lead of about 134 hours. This
+   establishes timing, not accuracy.
+2. **Measured 2026-09-26:** captures `20260924T225037Z`, `20260926T193023Z`, and
+   `20260926T225045Z` each stored the same 11 ATL/GB rows as `2026_03_ATL_GB`. The Saturday fallback
+   files are byte-identical. The page names no source date, week, or game identifier, so the unchanged
+   post-game rows are **inferred** stale carryover.
+3. **Read:** `_parse_rotowire_grid` has only caller-provided season, week, URL, and fetch time.
+   `_schedule_lookup` now carries the scheduled kickoff into `run_capture`. The persisted row schema
+   remains unchanged, and a row with no mapped kickoff is retained.
+4. **Measured 2026-09-26:** archived replay kept the Thursday pregame capture at 11 rows and changed
+   both Saturday captures from 11 to 0 rows with `stale_after_kickoff` and an 11-row rejection warning.
+   Existing focused tests passed 7/7. Scoped Ruff format and check both passed. Full output is in
+   `.tmp/lead64-verification.log`.
+5. **Read:** publication requires capture before the pick deadline and on the kickoff's Eastern date.
+   Trigger detection may retain a post-kickoff capture only with `deadline_valid=False`, and comparison
+   excludes games without a deadline-valid trigger. No current downstream path can use either named
+   Saturday capture as pregame evidence.
 
 ## Next
-- Fix `src/nfl_ats/inactives_capture.py` (or its scheduler job) so
-  `data/players/inactives/<ts>/inactives.parquet` actually captures rows —
-  separate bounded task. This is the strongest ground truth for "out" and
-  is currently silently producing empty output every run.
-- After inactives capture is fixed and/or more weeks accumulate, rerun this
-  join (script pattern used this round: roster name+team+week -> gsis_id,
-  then join to injuries.parquet last-row-by-date_modified, plus inactives
-  join for "out") with a larger n before revisiting the wiring decision.
-- Only wire `_injury_value_features` / `resolve_unavailability` once out/
-  doubtful precision is measured on n large enough to be decision-grade
-  (this round's n=3 is not).
+
+- Gather source-native freshness evidence before imposing an earlier pregame cutoff. The kickoff guard
+  cannot distinguish stale carryover captured before kickoff.
+- Recheck headline precision after more weeks and trustworthy inactive ground truth accumulate.
+- Confirm whether nflverse intentionally excludes season-ending IR cases from weekly injury reports.
 
 ## Open
-- Why do season-ending IR headlines rarely produce a matching weekly
-  practice-report row? Worth confirming against nflverse's own injuries
-  schema semantics (is IR excluded from the weekly injury report by design,
-  or is this a real gap) before assuming it's expected.
+
+- RotoWire supplies no source-native publication date, week, or game identifier in the archived page.
+- The n=3 final-status agreement result is not adequate evidence for serving Friday designations.

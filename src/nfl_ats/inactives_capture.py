@@ -56,6 +56,7 @@ EMPTY_REASON_NO_SCHEDULE = "no_schedule_snapshot"
 EMPTY_REASON_SEASON_COMPLETE = "no_upcoming_reg_kickoff"
 EMPTY_REASON_UNRECOGNIZED_STRUCTURE = "unrecognized_page_structure"
 EMPTY_REASON_FETCH_FAILED = "primary_and_fallback_fetch_failed"
+EMPTY_REASON_STALE_AFTER_KICKOFF = "stale_after_kickoff"
 
 PARQUET_COLUMNS = [
     "captured_at_utc",
@@ -274,20 +275,44 @@ def _parse_rotowire_grid(
     return rows, warnings
 
 
-def _schedule_lookup(repo: Path, season: int, week: int) -> dict[str, tuple[str, str, str]]:
-
+def _schedule_lookup(
+    repo: Path, season: int, week: int
+) -> dict[str, tuple[str, str, str, pd.Timestamp | None]]:
     hits = sorted((repo / "data" / "raw").glob("*/schedules.parquet"))
     if not hits:
         return {}
     sched = pd.read_parquet(
-        hits[-1], columns=["season", "week", "game_type", "game_id", "home_team", "away_team"]
+        hits[-1],
+        columns=[
+            "season",
+            "week",
+            "game_type",
+            "game_id",
+            "home_team",
+            "away_team",
+            "gameday",
+            "gametime",
+        ],
     )
     sched = sched.loc[
         (sched["season"] == season) & (sched["week"] == week) & (sched["game_type"] == "REG")
-    ]
-    lookup: dict[str, tuple[str, str, str]] = {}
+    ].copy()
+    local_kickoff = pd.to_datetime(
+        sched["gameday"].astype("string") + " " + sched["gametime"].astype("string"),
+        errors="coerce",
+    )
+    sched["kickoff_utc"] = local_kickoff.dt.tz_localize(
+        "America/New_York", ambiguous="NaT", nonexistent="shift_forward"
+    ).dt.tz_convert("UTC")
+    lookup: dict[str, tuple[str, str, str, pd.Timestamp | None]] = {}
     for _, row in sched.iterrows():
-        game = (str(row["game_id"]), str(row["home_team"]), str(row["away_team"]))
+        kickoff = None if pd.isna(row["kickoff_utc"]) else pd.Timestamp(row["kickoff_utc"])
+        game = (
+            str(row["game_id"]),
+            str(row["home_team"]),
+            str(row["away_team"]),
+            kickoff,
+        )
         lookup[str(row["home_team"])] = game
         lookup[str(row["away_team"])] = game
     return lookup
@@ -426,6 +451,32 @@ def run_capture(
     if rows:
         empty_reason = None
 
+    schedule_map = _schedule_lookup(repo, resolved_season, resolved_week) if rows else {}
+    capture_time = pd.Timestamp(moment)
+    if capture_time.tzinfo is None:
+        capture_time = capture_time.tz_localize(UTC)
+    else:
+        capture_time = capture_time.tz_convert(UTC)
+    accepted_rows: list[dict[str, Any]] = []
+    stale_row_count = 0
+    for row in rows:
+        game_id, home_team, away_team, kickoff_utc = schedule_map.get(
+            row["team"], (None, None, None, None)
+        )
+        if kickoff_utc is not None and capture_time >= kickoff_utc:
+            stale_row_count += 1
+            continue
+        row["captured_at_utc"] = row.pop("fetched_at_utc")
+        row["game_id"] = game_id
+        row["home_team"] = home_team
+        row["away_team"] = away_team
+        accepted_rows.append(row)
+    rows = accepted_rows
+    if stale_row_count:
+        warnings.append(f"rejected {stale_row_count} inactive rows captured at or after kickoff")
+        if not rows:
+            empty_reason = EMPTY_REASON_STALE_AFTER_KICKOFF
+
     ok = True
     if not rows and empty_reason is None:
         if primary_html is None and fallback_html is None:
@@ -433,14 +484,6 @@ def run_capture(
         else:
             empty_reason = EMPTY_REASON_UNRECOGNIZED_STRUCTURE
         ok = False
-
-    schedule_map = _schedule_lookup(repo, resolved_season, resolved_week) if rows else {}
-    for row in rows:
-        row["captured_at_utc"] = row.pop("fetched_at_utc")
-        game_id, home_team, away_team = schedule_map.get(row["team"], (None, None, None))
-        row["game_id"] = game_id
-        row["home_team"] = home_team
-        row["away_team"] = away_team
 
     frame = pd.DataFrame(rows, columns=PARQUET_COLUMNS)
     atomic_parquet(frame, snapshot / "inactives.parquet")
