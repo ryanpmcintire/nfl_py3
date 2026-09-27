@@ -423,6 +423,9 @@ def run_capture(
                             "fixing against real in-season data"
                         )
 
+    if rows:
+        empty_reason = None
+
     ok = True
     if not rows and empty_reason is None:
         if primary_html is None and fallback_html is None:

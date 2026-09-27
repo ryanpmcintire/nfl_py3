@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-27T02:39:58.940162+00:00`
+Refreshed at: `2026-09-27T02:54:56.156115+00:00`
 
 ## Start here
 
@@ -21,8 +21,8 @@ Refreshed at: `2026-09-27T02:39:58.940162+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `e75f56d9cf78` — Restore backlog tooling and fail closed on incomplete ledger checks
-- Pending change set: 18 paths
+- Baseline commit: `2409c58d3a6e` — Refresh handoff after backlog checkpoint
+- Pending change set: 20 paths
   - ` M AGENTS.md`
   - ` M CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
@@ -30,6 +30,7 @@ Refreshed at: `2026-09-27T02:39:58.940162+00:00`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
+  - `A  docs/lanes/done/inactives-capture-status.md`
   - ` M docs/lanes/lead53-sunday-renomination.md`
   - ` M docs/lanes/positive-control-power.md`
   - ` M docs/lanes/sim08-simulator-rebuild.md`
@@ -37,9 +38,10 @@ Refreshed at: `2026-09-27T02:39:58.940162+00:00`
   - ` M scripts/positive_control_power.py`
   - ` M scripts/sim04_engine.py`
   - ` M src/nfl_ats/best_pick_refresh_prospective.py`
+  - `M  src/nfl_ats/inactives_capture.py`
   - ` M tests/test_best_pick_refresh_prospective.py`
+  - `?? docs/lanes/done/lead53-skip-diagnostics.md`
   - `?? docs/lanes/done/positive-control-power-history.md`
-  - `?? docs/lanes/lead53-skip-diagnostics.md`
   - `?? docs/lanes/windows-shell-popup.md`
 
 The baseline commit and pending paths were observed before the automatic refresh.
