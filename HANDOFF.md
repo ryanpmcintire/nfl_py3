@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-27T09:04:35.899410+00:00`
+Refreshed at: `2026-09-27T09:05:46.126338+00:00`
 
 ## Start here
 
@@ -21,29 +21,18 @@ Refreshed at: `2026-09-27T09:04:35.899410+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `99c6f0f2ed83` — Stop duplicate lattice enrollment and reconcile prospective backlog status
-- Pending change set: 40 paths
+- Baseline commit: `32c145481bb4` — Freeze opener and weather provenance and complete provider integration
+- Pending change set: 10 paths
   - ` M AGENTS.md`
   - ` M CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
-  - ` M README.md`
-  - `M  ROADMAP.md`
   - ` M docs/agent_workflow.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - `M  docs/lanes/backlog-watchdog-2026-09-26.md`
-  - `A  docs/lanes/done/env02-forecast-provenance-chronology.md`
-  - `A  docs/lanes/done/mod18-frozen-opener-inputs.md`
-  - `A  docs/lanes/done/per03-provider-overlay-integration.md`
-  - `A  docs/lanes/done/per07-validation-artifact-selection.md`
-  - `M  docs/lanes/done/sim08-late-game-diagnostic-history.md`
-  - `M  docs/lanes/lead64-friday-designations.md`
-  - `M  docs/lanes/sim08-simulator-rebuild.md`
-  - `M  docs/model.html`
-  - `M  docs/roof_state_screen.md`
-  - `M  docs/sportradar_injury_capture.md`
-  - ...and 20 more
+  - ` M scripts/prospective_scorecard_2026.py`
+  - ` M src/nfl_ats/cli_commands/prospective.py`
+  - ` M src/nfl_ats/prospective_scoring.py`
+  - `?? docs/lanes/windows-shell-popup.md`
+  - `?? registry/experiments/prospective-score/20260927T083507Z.json`
+  - `?? src/nfl_ats/paired_opener_evaluation.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
