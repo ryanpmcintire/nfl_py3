@@ -44,7 +44,7 @@
       "cell_rule": "Short: absolute Tuesday-opener home spread of 7.0 or less. Long: 7.5 or more. Lines move in half-point steps so the cut is gapless; whole-number 7.0 falls short. Cut taken from the audit spread-bucket read, not fit in this session.",
       "source_columns": "tue_open_home_spread (schedule_flag_features default_opener_lines; single_book_opener opener_book_quotes)",
       "leakage_note": "The Tuesday opener is the decision-time line the pool locks and grades against; conditioning on it adds no post-decision information.",
-      "status": "predeclared 2026-09-17, unscored"
+      "status": "predeclared 2026-09-17; scored retrospectively in the current six-family conditional signal atlas; classification remains unresolved_below_power and serving is false"
     }
   },
   "version": 2

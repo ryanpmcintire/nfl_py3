@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-27T04:57:43.227672+00:00`
+Refreshed at: `2026-09-27T05:50:21.926342+00:00`
 
 ## Start here
 
@@ -21,8 +21,8 @@ Refreshed at: `2026-09-27T04:57:43.227672+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `10adaf4d2df9` — Reject inactive-feed rows captured after scheduled kickoff
-- Pending change set: 21 paths
+- Baseline commit: `3fca965cc4ef` — Replay historical positive controls and checkpoint backlog diagnostics
+- Pending change set: 19 paths
   - ` M AGENTS.md`
   - ` M CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
@@ -31,19 +31,17 @@ Refreshed at: `2026-09-27T04:57:43.227672+00:00`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `A  docs/lanes/artifact-retention-inventory.md`
   - `M  docs/lanes/backlog-watchdog-2026-09-26.md`
-  - `A  docs/lanes/done/pol09-best-pick-ranking-status.md`
-  - `A  docs/lanes/done/positive-control-power-history.md`
-  - `A  docs/lanes/done/positive-control-power-study-history.md`
-  - `A  docs/lanes/done/sim08-late-game-diagnostic-history.md`
-  - `A  docs/lanes/done/sim08-transition-repair-history.md`
-  - `A  docs/lanes/done/ui19-season-record-status.md`
-  - `M  docs/lanes/positive-control-power.md`
-  - `M  docs/lanes/sim08-simulator-rebuild.md`
+  - `M  docs/lanes/done/conditional-signal-atlas.md`
+  - `A  docs/lanes/done/lead61-quote-coverage-audit.md`
+  - `A  docs/lanes/done/mod07-prospective-status-audit.md`
+  - `A  docs/lanes/done/mod17-recorder-enrollment.md`
   - ` M docs/model.html`
-  - `M  scripts/positive_control_power.py`
-  - ...and 1 more
+  - `M  registry/split_library.json`
+  - `M  src/nfl_ats/lattice_centre_challenger.py`
+  - ` M src/nfl_ats/prospective_scoring.py`
+  - ` M src/nfl_ats/weak_signals.py`
+  - `?? docs/lanes/windows-shell-popup.md`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

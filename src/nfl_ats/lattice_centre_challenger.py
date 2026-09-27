@@ -21,6 +21,8 @@ CHALLENGER_ID = "tiebreaker_lattice_centre"
 
 CENTRE_POLICY = "pick_deciding_margin_with_minimum_consistent_step_v1"
 
+SERVED_CENTRE_ADOPTION_AT = pd.Timestamp("2026-09-24T00:00:00Z")
+
 RULE_PICK_DECIDING_POINT = "pick_deciding_point"
 
 RULE_MINIMUM_CONSISTENT_STEP = "minimum_consistent_step"
@@ -221,6 +223,11 @@ def record_lattice_centre_decisions(
         settled = settle_decisions(existing, schedules)
         if not settled.equals(existing):
             atomic_parquet(settled, ledger_path(artifacts_root))
+        if instant >= SERVED_CENTRE_ADOPTION_AT:
+            return skip(
+                "challenger centre is the served lattice centre from 2026-09-24; "
+                "historical rows remain eligible for settlement"
+            )
         if forecast_artifact is not None:
             named = (artifacts_root / forecast_artifact).resolve()
             if not named.is_dir() or artifacts_root.resolve() not in named.parents:
