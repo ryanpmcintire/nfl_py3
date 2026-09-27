@@ -11,7 +11,7 @@ Complete ready backlog work with bounded subagents and frequent verified commits
 **Measured:** initial full pytest passed 1,645 tests. Final repository checks passed Ruff, mypy and all 1,645 tests. The existing CLI listing expectation was updated for the added command; no new tests were added. Live prospective scoring succeeded at `artifacts/prospective_scoring/20260927T154056Z`: 57 scored statuses, one invalid arm, three missing ledgers and three unsupported arms. The default-off crew recorder remains unenrolled.
 
 ## Next
-Push the reviewed assistant checkpoint, then finish authenticated opener-input production and the recorder/scorer checkpoint with final repository checks. The independent producer review passed grading, season-subset invariance, supported-profile and pre-fit support repairs.
+**Measured:** the assistant/site checkpoint is pushed as `d69a9c5`; all 192 existing board tests also passed after the final label change. Save the reviewed recorder/scorer checkpoint, then finish authenticated opener-input production and the declared paired evaluation. The independent producer review passed grading, season-subset invariance, supported-profile and pre-fit support repairs.
 
 ## Open
 **Measured:** no side or Best Pick changed in the live refresh, so no ntfy message was due. The scheduler is running with the alert hook. Remaining research lanes need future observations or separately declared mechanisms; no signal closure, enrollment, or serving promotion occurs in these infrastructure repairs. Owner policy edits and unrelated scheduled registry records remain unstaged.

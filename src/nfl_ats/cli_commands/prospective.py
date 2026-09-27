@@ -21,6 +21,12 @@ from nfl_ats.clv import live_close_reference, load_paper_decisions, week_blocked
 from nfl_ats.data import DataContractError
 from nfl_ats.io import atomic_csv, atomic_parquet, run_id
 from nfl_ats.paired_prospective import paired_prospective_report
+from nfl_ats.prospective_crew import (
+    ENTRANT_ID as ROOKIE_CREW_ENTRANT_ID,
+)
+from nfl_ats.prospective_crew import (
+    LEDGER_RELATIVE_PATH as ROOKIE_CREW_LEDGER_RELATIVE_PATH,
+)
 from nfl_ats.prospective_nominees import (
     SUNDAY_ENTRANT_ID,
     TUESDAY_ENTRANT_ID,
@@ -30,6 +36,7 @@ from nfl_ats.prospective_nominees import (
 from nfl_ats.prospective_scoring import (
     InvalidProspectiveArmError,
     active_challenger_ids,
+    adapt_rookie_crew_for_prospective_scoring,
     adapt_settlement_arm_for_prospective_scoring,
     dedicated_challenger_settlement_arm,
     find_challenger,
@@ -217,6 +224,53 @@ def _prospective_challenger_entrants(
             else pd.DataFrame()
         )
         had_generic = not generic_rows.empty
+        if challenger_id == ROOKIE_CREW_ENTRANT_ID:
+            crew_source = "rookie_crew_prospective:on_policy+off_policy"
+            ledger_path = artifacts / ROOKIE_CREW_LEDGER_RELATIVE_PATH
+            if had_generic:
+                raise DataContractError(
+                    f"Challenger {challenger_id!r} has both generic and dedicated decisions"
+                )
+            if not ledger_path.is_file():
+                statuses.append(
+                    {
+                        "challenger_id": challenger_id,
+                        "status": "missing_ledger",
+                        "source": crew_source,
+                        "diagnostics": {},
+                    }
+                )
+                continue
+            crew_diagnostics: dict[str, Any] = {}
+            crew_entrants = adapt_rookie_crew_for_prospective_scoring(
+                artifacts,
+                diagnostics=crew_diagnostics,
+            )
+            filtered_entrants: list[tuple[str, pd.DataFrame]] = []
+            for entrant_id, decisions in crew_entrants:
+                seasons = pd.to_numeric(decisions["season"], errors="coerce")
+                filtered_entrants.append(
+                    (entrant_id, decisions.loc[seasons.ge(start_season)].copy())
+                )
+            nonempty_arms = sum(not decisions.empty for _, decisions in filtered_entrants)
+            if nonempty_arms not in {0, len(filtered_entrants)}:
+                raise DataContractError(
+                    "Rookie-crew prospective arms are not matched after season filtering"
+                )
+            if nonempty_arms:
+                entrants.extend(filtered_entrants)
+                status = "scored"
+            else:
+                status = "no_eligible_rows"
+            statuses.append(
+                {
+                    "challenger_id": challenger_id,
+                    "status": status,
+                    "source": crew_source,
+                    "diagnostics": crew_diagnostics,
+                }
+            )
+            continue
         binding = dedicated_challenger_settlement_arm(challenger_id)
         dedicated_rows = pd.DataFrame()
         diagnostics: dict[str, Any] = {}

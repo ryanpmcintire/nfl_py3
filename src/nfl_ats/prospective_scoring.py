@@ -18,6 +18,16 @@ from nfl_ats.clv import (
 )
 from nfl_ats.data import DataContractError
 from nfl_ats.io import atomic_parquet
+from nfl_ats.prospective_crew import (
+    ENTRANT_ID as ROOKIE_CREW_ENTRANT_ID,
+)
+from nfl_ats.prospective_crew import (
+    LEDGER_RELATIVE_PATH as ROOKIE_CREW_LEDGER_RELATIVE_PATH,
+)
+from nfl_ats.prospective_crew import (
+    ProspectiveCrewValidationError,
+    load_rookie_crew_prospective_decisions,
+)
 from nfl_ats.provenance import sha256_file
 from nfl_ats.recorder_override import replace_week_rows
 from nfl_ats.settlement import LEDGERS, Arm, LedgerSpec
@@ -40,7 +50,23 @@ TOTAL_CONDITIONED_LATTICE_LEDGER = LedgerSpec(
     relative_path="prospective/total_conditioned_lattice_decisions.parquet",
     arms=(Arm("challenger", "challenger_pick_side", line_column="spread_line"),),
 )
-PROSPECTIVE_LEDGER_SPECS = (*LEDGERS, TOTAL_CONDITIONED_LATTICE_LEDGER)
+ROOKIE_CREW_PROSPECTIVE_LEDGER = LedgerSpec(
+    key="rookie_crew_prospective",
+    relative_path=ROOKIE_CREW_LEDGER_RELATIVE_PATH.as_posix(),
+    arms=(
+        Arm("on_policy", "on_pick_side", line_column="decision_spread_home"),
+        Arm("off_policy", "off_pick_side", line_column="decision_spread_home"),
+    ),
+    order_column="decision_recorded_at_utc",
+    deadline_columns=("deadline_utc",),
+)
+ROOKIE_CREW_ON_SCORING_ID = f"{ROOKIE_CREW_ENTRANT_ID}:on_policy"
+ROOKIE_CREW_OFF_SCORING_ID = f"{ROOKIE_CREW_ENTRANT_ID}:off_policy"
+PROSPECTIVE_LEDGER_SPECS = (
+    *LEDGERS,
+    TOTAL_CONDITIONED_LATTICE_LEDGER,
+    ROOKIE_CREW_PROSPECTIVE_LEDGER,
+)
 
 DEDICATED_CHALLENGER_SETTLEMENT_ARMS = {
     "crew_tilt_refresh_v1": ("crew_tilt_refresh", "crew_tilt"),
@@ -75,7 +101,6 @@ DEDICATED_ARM_IDENTITIES = {
 
 UNSUPPORTED_PROSPECTIVE_CHALLENGERS = frozenset(
     {
-        "rookie_crew_underdog_off_incumbent",
         "best_pick_sunday_renomination",
         "tiebreaker_lattice_centre",
         "tiebreaker_low_side_shade",
@@ -330,6 +355,102 @@ def adapt_settlement_arm_for_prospective_scoring(
     adapted["season"] = adapted["season"].astype(int)
     adapted["week"] = adapted["week"].astype(int)
     return adapted
+
+
+def adapt_rookie_crew_for_prospective_scoring(
+    artifacts_root: Path,
+    *,
+    diagnostics: dict[str, Any] | None = None,
+) -> list[tuple[str, pd.DataFrame]]:
+    try:
+        ledger = load_rookie_crew_prospective_decisions(artifacts_root)
+    except ProspectiveCrewValidationError as exc:
+        raise DataContractError(f"Invalid rookie-crew prospective ledger: {exc}") from exc
+    arm_bindings = (
+        (
+            ROOKIE_CREW_ON_SCORING_ID,
+            ROOKIE_CREW_PROSPECTIVE_LEDGER.arms[0],
+            "on_home_cover_probability",
+            "on_policy_id",
+        ),
+        (
+            ROOKIE_CREW_OFF_SCORING_ID,
+            ROOKIE_CREW_PROSPECTIVE_LEDGER.arms[1],
+            "off_home_cover_probability",
+            "off_policy_id",
+        ),
+    )
+    scoring_ledger = ledger.rename(columns={"kickoff_utc": "kickoff"})
+    entrants: list[tuple[str, pd.DataFrame]] = []
+    arm_diagnostics: dict[str, Any] = {}
+    for entrant_id, arm, home_probability_column, policy_column in arm_bindings:
+        current_diagnostics: dict[str, Any] = {}
+        decisions = adapt_settlement_arm_for_prospective_scoring(
+            scoring_ledger,
+            spec=ROOKIE_CREW_PROSPECTIVE_LEDGER,
+            arm=arm,
+            diagnostics=current_diagnostics,
+        )
+        arm_context = ledger[
+            [
+                "game_id",
+                "enrollment_id",
+                "model_id",
+                "features_sha256",
+                "candidate_method",
+                "probability_method",
+                "calibration_method",
+                "payload_sha256",
+                arm.pick_column,
+                home_probability_column,
+                policy_column,
+            ]
+        ].copy()
+        arm_context["game_id"] = arm_context["game_id"].astype("string").str.strip()
+        arm_context["home_cover_probability"] = pd.to_numeric(
+            arm_context[home_probability_column], errors="coerce"
+        )
+        arm_context["probability"] = np.where(
+            arm_context[arm.pick_column].astype("string").str.strip().eq("HOME"),
+            arm_context["home_cover_probability"],
+            1.0 - arm_context["home_cover_probability"],
+        )
+        arm_context = arm_context.rename(columns={policy_column: "policy_id"})[
+            [
+                "game_id",
+                "enrollment_id",
+                "model_id",
+                "features_sha256",
+                "candidate_method",
+                "probability_method",
+                "calibration_method",
+                "payload_sha256",
+                "policy_id",
+                "home_cover_probability",
+                "probability",
+            ]
+        ]
+        decisions = decisions.merge(
+            arm_context,
+            on="game_id",
+            how="left",
+            validate="one_to_one",
+        )
+        entrants.append((entrant_id, decisions))
+        arm_diagnostics[arm.label] = current_diagnostics
+    on_games = tuple(entrants[0][1]["game_id"].astype(str))
+    off_games = tuple(entrants[1][1]["game_id"].astype(str))
+    if on_games != off_games:
+        raise DataContractError("Rookie-crew prospective arms do not contain matched games")
+    if diagnostics is not None:
+        diagnostics.update(
+            {
+                "source_rows": len(ledger),
+                "selected_rows": len(on_games),
+                "arms": arm_diagnostics,
+            }
+        )
+    return entrants
 
 
 def settle_prospective_picks(
