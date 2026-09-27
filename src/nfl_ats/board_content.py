@@ -782,7 +782,7 @@ def injury_feed_coverage_note(
             "Questionable — " + ", ".join(f"{team}: {int(count)}" for team, count in counts.items())
         )
     if details:
-        status += f" Pending designations: {'. '.join(details)}."
+        status += f" Reported designations: {'. '.join(details)}."
     status += " Designations announced in the news but not yet in the feed are read only as a "
     status += "tiebreak when the books move a line."
     return status

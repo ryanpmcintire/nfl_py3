@@ -1422,7 +1422,7 @@ def answer(question: str, knowledge: Mapping[str, Any]) -> AssistantAnswer:
             return resolved
 
     lineup_knowledge = knowledge.get("lineups")
-    player_resolved = _lineup_player_availability_answer(tokens, lineup_knowledge)
+    player_resolved = _lineup_player_availability_answer(tokens, lineup_knowledge, parsed.teams)
     if player_resolved is not None:
         return player_resolved
 
@@ -1508,7 +1508,7 @@ def answer(question: str, knowledge: Mapping[str, Any]) -> AssistantAnswer:
                         for game in _team_games(parsed.teams[0], knowledge)
                     ),
                 )
-        if tokens & _SCHEDULE_WORDS:
+        if tokens & _SCHEDULE_WORDS and not (tokens & _LINEUP_QB_WORDS or tokens & _INJURY_WORDS):
             parts = []
             anchors = []
             for code in parsed.teams:
@@ -1537,11 +1537,17 @@ def answer(question: str, knowledge: Mapping[str, Any]) -> AssistantAnswer:
                 ),
                 anchors=("index.html",),
             )
-        if tokens & _LINEUP_QB_WORDS and not (tokens & _LINEUP_BACKUP_WORDS):
+        qb_out_status = "out" in tokens and bool(tokens & _LINEUP_QB_WORDS)
+        if (
+            tokens & _LINEUP_QB_WORDS
+            and not (tokens & _LINEUP_BACKUP_WORDS)
+            and not (tokens & _INJURY_WORDS)
+            and not qb_out_status
+        ):
             qb_resolved = _lineup_qb_starter_answer(parsed.teams, lineup_knowledge)
             if qb_resolved is not None:
                 return qb_resolved
-        if tokens & _INJURY_WORDS:
+        if tokens & _INJURY_WORDS or qb_out_status:
             injury_resolved = _lineup_team_injuries_answer(parsed.teams, lineup_knowledge)
             if injury_resolved is not None:
                 return injury_resolved
@@ -1986,17 +1992,15 @@ _ASSISTANT_SCRIPT_TEMPLATE = """
         parts.push(lineupStaleText(entry.team, lineupAnchorText(entry), lineupBudgetOf(lk)));
         return;
       }
-      var anchor = lineupAnchorText(entry);
       if (entry.note) {
         var modelName = entry.model_qb_name || "a QB not on the current roster snapshot";
         var currentName = entry.current_qb_name || "no QB listed on the current snapshot";
-        parts.push(entry.team + ": the published forecast assumed " + modelName + " at QB, " +
-          "but the current depth-chart snapshot (" + anchor + ") lists " + currentName +
-          " at QB1 instead -- I can't state a single starter until the forecast is " +
-          "regenerated from this snapshot.");
+        parts.push(entry.team + ": the published forecast lists " + modelName + " at QB, " +
+          "while the current depth chart lists " + currentName + " at QB1. The starter is " +
+          "unresolved between those published sources.");
       } else {
         var name = entry.current_qb_name || "no QB listed on the current snapshot";
-        parts.push(entry.team + " starting QB: " + name + " (" + anchor + ").");
+        parts.push(entry.team + " starting QB: " + name + " (current depth chart).");
       }
     });
     if (!parts.length) return null;
@@ -2022,7 +2026,7 @@ _ASSISTANT_SCRIPT_TEMPLATE = """
         var listing = flagged.map(function (p) {
           return p.name + " (" + p.injury_status + ")";
         }).join("; ");
-        parts.push(entry.team + " injury notes (" + anchor + "): " + listing + ".");
+        parts.push(entry.team + " injury notes: " + listing + ".");
       } else {
         var status = entry.injury_status || "unavailable";
         parts.push(entry.team + ": no per-player injury designation in the lineup snapshot (" +
@@ -2056,11 +2060,15 @@ _ASSISTANT_SCRIPT_TEMPLATE = """
       return nt.length > 0 && toks.indexOf(nt[nt.length - 1]) !== -1;
     });
   }
-  function lineupPlayerAvailabilityAnswer(toks, lineupKnowledge) {
+  function lineupPlayerAvailabilityAnswer(toks, lineupKnowledge, teamsList) {
     if (!lineupKnowledge || !hasAny(toks, INTENT.lineup_availability)) return null;
     var players = lineupKnowledge.players || [];
     if (!players.length) return null;
-    var matches = lineupResolvePlayers(toks, players);
+    var teamCodes = (teamsList || []).map(function (team) { return team.toUpperCase(); });
+    var candidates = teamCodes.length ? players.filter(function (player) {
+      return teamCodes.indexOf(String(player.team || "").toUpperCase()) !== -1;
+    }) : players;
+    var matches = lineupResolvePlayers(toks, candidates);
     if (!matches.length) return null;
     var distinct = lineupDedupePlayers(matches);
     if (distinct.length > 1) {
@@ -2079,25 +2087,20 @@ _ASSISTANT_SCRIPT_TEMPLATE = """
         ));
         return;
       }
-      var anchor = lineupAnchorText(player);
       var probability = player.play_probability;
-      // UI-20-AB (2026-09-05): every player's percentage is now a real
-      // per-player, per-game forecast from the availability model (depth
-      // chart + injury report + recent snaps), designated or not, so it is
-      // always quoted when present (mirrors
-      // nfl_ats.board_assistant_lineups.player_availability_answer
-      // exactly; retires the 2026-09-05 "no designation" stopgap).
       var probabilityText;
       if (probability === null || probability === undefined) {
         probabilityText = "not published";
       } else {
         probabilityText = Math.round(probability * 100) + "% chance of taking the field";
       }
+      var sourceNote = player.probability_source === "play_probability_model" ?
+        ", based on the current lineup and injury report" : "";
       var injury = player.injury_status || "no report";
       var roleNote = player.model_role === "base_model" ?
-        "the model's starter" : "context only -- not the model's scored player";
+        "included in the forecast" : "lineup context";
       parts.push(player.name + " (" + player.team + ", " + player.slot + "): " +
-        probabilityText + ", injury status " + injury + ", " + roleNote + " (" + anchor + ").");
+        probabilityText + sourceNote + "; injury status " + injury + "; " + roleNote + ".");
     });
     return asAnswer("lineup:availability", parts.join(" "), anchors);
   }
@@ -2146,7 +2149,7 @@ _ASSISTANT_SCRIPT_TEMPLATE = """
     // glossary/team blocks, same placement as _lineup_player_availability_answer
     // in nfl_ats.board_assistant.answer.
     var lineupKnowledge = corpus.lineups || null;
-    var playerResolved = lineupPlayerAvailabilityAnswer(toks, lineupKnowledge);
+    var playerResolved = lineupPlayerAvailabilityAnswer(toks, lineupKnowledge, parsed.teams);
     if (playerResolved) return playerResolved;
     function entry(id) {
       var found = entryById(corpus, id);
@@ -2236,7 +2239,8 @@ _ASSISTANT_SCRIPT_TEMPLATE = """
             teamGames(parsed.teams[0], corpus).map(function (g) { return g.anchor; }));
         }
       }
-      if (hasAny(toks, INTENT.schedule)) {
+      if (hasAny(toks, INTENT.schedule) &&
+          !hasAny(toks, INTENT.lineup_qb) && !hasAny(toks, INTENT.injury)) {
         var schedParts = [];
         var schedAnchors = [];
         parsed.teams.forEach(function (code) {
@@ -2262,11 +2266,14 @@ _ASSISTANT_SCRIPT_TEMPLATE = """
       // ENG-25: QB-starter and team-injury lineup intents, ahead of the
       // generic team-pick blurb -- same placement/precedence as
       // nfl_ats.board_assistant.answer.
-      if (hasAny(toks, INTENT.lineup_qb) && !hasAny(toks, INTENT.lineup_backup)) {
+      var qbOutStatus = toks.indexOf("out") !== -1 && hasAny(toks, INTENT.lineup_qb);
+      if (hasAny(toks, INTENT.lineup_qb) &&
+          !hasAny(toks, INTENT.lineup_backup) && !hasAny(toks, INTENT.injury) &&
+          !qbOutStatus) {
         var qbResolved = lineupQbStarterAnswer(parsed.teams, lineupKnowledge);
         if (qbResolved) return qbResolved;
       }
-      if (hasAny(toks, INTENT.injury)) {
+      if (hasAny(toks, INTENT.injury) || qbOutStatus) {
         var injuryResolved = lineupTeamInjuriesAnswer(parsed.teams, lineupKnowledge);
         if (injuryResolved) return injuryResolved;
       }

@@ -215,19 +215,17 @@ def qb_starter_answer(
                 )
             )
             continue
-        anchor = _anchor_text(entry)
         if entry["note"]:
             model_name = entry["model_qb_name"] or "a QB not on the current roster snapshot"
             current_name = entry["current_qb_name"] or "no QB listed on the current snapshot"
             parts.append(
-                f"{entry['team']}: the published forecast assumed {model_name} at QB, but the "
-                f"current depth-chart snapshot ({anchor}) lists {current_name} at QB1 instead -- "
-                "I can't state a single starter until the forecast is regenerated from this "
-                "snapshot."
+                f"{entry['team']}: the published forecast lists {model_name} at QB, while the "
+                f"current depth chart lists {current_name} at QB1. The starter is unresolved "
+                "between those published sources."
             )
         else:
             name = entry["current_qb_name"] or "no QB listed on the current snapshot"
-            parts.append(f"{entry['team']} starting QB: {name} ({anchor}).")
+            parts.append(f"{entry['team']} starting QB: {name} (current depth chart).")
     if not parts:
         return None
     return _make_answer("lineup:qb", " ".join(parts), anchors or ("index.html",))
@@ -263,7 +261,7 @@ def team_injuries_answer(
         flagged = [p for p in entry["players"] if p.get("injury_status")]
         if flagged:
             listing = "; ".join(f"{p['name']} ({p['injury_status']})" for p in flagged)
-            parts.append(f"{entry['team']} injury notes ({anchor}): {listing}.")
+            parts.append(f"{entry['team']} injury notes: {listing}.")
         else:
             status = entry["injury_status"] or "unavailable"
             parts.append(
@@ -305,7 +303,9 @@ def _resolve_players(
 
 
 def player_availability_answer(
-    tokens: frozenset[str], lineup_knowledge: Mapping[str, Any] | None
+    tokens: frozenset[str],
+    lineup_knowledge: Mapping[str, Any] | None,
+    teams: Sequence[str] = (),
 ) -> AssistantAnswer | None:
 
     if lineup_knowledge is None or not (tokens & AVAILABILITY_WORDS):
@@ -313,7 +313,13 @@ def player_availability_answer(
     players = lineup_knowledge.get("players", ())
     if not players:
         return None
-    matches = _resolve_players(tokens, players)
+    team_codes = {team.upper() for team in teams}
+    candidates = (
+        [player for player in players if str(player.get("team", "")).upper() in team_codes]
+        if team_codes
+        else players
+    )
+    matches = _resolve_players(tokens, candidates)
     if not matches:
         return None
     distinct = _dedupe_players(matches)
@@ -338,7 +344,6 @@ def player_availability_answer(
                 )
             )
             continue
-        anchor = _anchor_text(player)
         probability = player.get("play_probability")
         source = player.get("probability_source")
         if probability is None:
@@ -346,19 +351,17 @@ def player_availability_answer(
         else:
             probability_text = f"{probability:.0%} chance of taking the field"
         source_note = {
-            "play_probability_model": ", from the availability model (depth chart + injury "
-            "report + recent snaps)",
-            "unavailable": " (no gsis_id or rate available for this player)",
+            "play_probability_model": ", based on the current lineup and injury report",
         }.get(str(source), "")
         injury = player.get("injury_status") or "no report"
         role_note = (
-            "the model's starter"
+            "included in the forecast"
             if player.get("model_role") == "base_model"
-            else "context only -- not the model's scored player"
+            else "lineup context"
         )
         parts.append(
             f"{player['name']} ({player['team']}, {player['slot']}): {probability_text}"
-            f"{source_note}, injury status {injury}, {role_note} ({anchor})."
+            f"{source_note}; injury status {injury}; {role_note}."
         )
     return _make_answer("lineup:availability", " ".join(parts), tuple(anchors))
 

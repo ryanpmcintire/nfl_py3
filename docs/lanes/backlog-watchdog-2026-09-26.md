@@ -1,16 +1,17 @@
 # Backlog recovery and completion
 
 ## Goal
-Complete ready backlog work with bounded subagent assignments and frequent verified commits and pushes; retain future-data research as unresolved.
+Complete ready backlog work with bounded subagents and frequent verified commits and pushes; retain future-data research as unresolved.
 
 ## State
-Resumed 2026-09-27 with renewed owner authorization to commit and push. **Measured:** eleven earlier commits awaited push. Sunday nominee recording now preserves timestamp precision; a live refresh recorded the first Week 3 Sunday pairing. Card reconciliation respects valid recorded revisions without rewriting Tuesday decisions. The refresh table now clearly identifies replacement picks and omits internal policy labels.
+**Measured:** checkpoint `e3c1d81` and eleven earlier commits reached origin/master. Sunday nominee recording preserves timestamp precision; the live refresh recorded the Week 3 pair. The card ledger check reports zero disagreements. Side and Best Pick change alerts are configured in the running scheduler.
+**Measured:** the forecast already used Caleb Williams Out. The assistant wrongly matched the word "still" to an unrelated player and treated a QB availability question as a schedule request. Team-scoped matching and routing are repaired; Python/browser parity passed all five Bears questions. The report summary now labels confirmed statuses as reported designations rather than pending designations.
 
 ## Tried
-**Measured:** doctor, scheduler once, full pytest (1,645 passed), the eleven recorder tests, and 66 existing scheduler/refresh tests passed. Ruff and mypy passed before the separate worker integration. The live refresh published all four pages and reported zero card/ledger disagreements (16 paper rows, eight revisions); it changed no current side or Best Pick. Rendered-text review is `.tmp/resume-rendered-diff.txt`.
+**Measured:** initial full pytest passed 1,645 tests. Final repository checks passed Ruff, mypy and all 1,645 tests. The existing CLI listing expectation was updated for the added command; no new tests were added. Live prospective scoring succeeded at `artifacts/prospective_scoring/20260927T154056Z`: 57 scored statuses, one invalid arm, three missing ledgers and three unsupported arms. The default-off crew recorder remains unenrolled.
 
 ## Next
-Save and push this checkpoint; finish authenticated paired-input production and prospective crew scoring. The crew recorder passed scoped checks and immutable-replay probes; its scorer integration is paused while the worker resolves the owner's CHI quarterback display report. Logs use `.tmp/resume-*`.
+Push the reviewed assistant checkpoint, then finish authenticated opener-input production and the recorder/scorer checkpoint with final repository checks. The independent producer review passed grading, season-subset invariance, supported-profile and pre-fit support repairs.
 
 ## Open
-**Measured:** ntfy is configured, and the headless capture scheduler restarted with the Best Pick alert hook. Existing side alerts remain active. No message was due from the live refresh because no picks changed. **Read:** local reader text already lists Caleb Williams Out and a backup used by the model; contradictory lineup/report text is under review. Preserve owner instruction edits and unrelated scheduled registry files. No research closure or serving promotion is made.
+**Measured:** no side or Best Pick changed in the live refresh, so no ntfy message was due. The scheduler is running with the alert hook. Remaining research lanes need future observations or separately declared mechanisms; no signal closure, enrollment, or serving promotion occurs in these infrastructure repairs. Owner policy edits and unrelated scheduled registry records remain unstaged.
