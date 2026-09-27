@@ -84,6 +84,7 @@
         "clv-sign-test",
         "opener-evaluation",
         "opener-line-series",
+        "paired-opener-inputs",
         "overlay-composition",
         "served-refresh-card",
         "served-card-archive",

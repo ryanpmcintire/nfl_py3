@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-27T15:57:32.156589+00:00`
+Refreshed at: `2026-09-27T16:37:41.848162+00:00`
 
 ## Start here
 
@@ -21,25 +21,29 @@ Refreshed at: `2026-09-27T15:57:32.156589+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `d69a9c57f946` — Correct Bears injury answers and confirmed report labels
-- Pending change set: 17 paths
+- Baseline commit: `9648e3efae82` — Record and score immutable rookie-crew prospective arms
+- Pending change set: 27 paths
   - ` M AGENTS.md`
+  - `M  CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
+  - `M  README.md`
   - ` M docs/agent_workflow.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
   - `M  docs/lanes/backlog-watchdog-2026-09-26.md`
-  - `M  docs/lanes/pol10-prospective-2026.md`
-  - `A  registry/experiments/prospective-score/20260927T154056Z.json`
-  - ` M src/nfl_ats/cli_commands/clv.py`
-  - `M  src/nfl_ats/cli_commands/prospective.py`
-  - `A  src/nfl_ats/prospective_crew.py`
-  - `M  src/nfl_ats/prospective_scoring.py`
-  - ` M tests/fixtures/cli_contract.json`
-  - `?? docs/lanes/windows-shell-popup.md`
-  - `?? registry/experiments/margin-backtest/20260927T134152Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-03-20260927T134352Z.json`
-  - `?? registry/experiments/opener-evaluation/20260927T134738Z.json`
-  - `?? registry/experiments/waterfall-feed/20260927T134851Z.json`
-  - `?? src/nfl_ats/paired_opener_inputs.py`
+  - `A  docs/lanes/done/mod18-paired-opener-evaluation.md`
+  - `D  docs/lanes/mod18-paired-opener-evaluation.md`
+  - `A  docs/mod18_paired_opener_evaluation.md`
+  - `M  docs/model.html`
+  - `A  registry/experiments/margin-backtest/20260927T160927Z.json`
+  - `A  registry/experiments/margin-predict/2026-week-03-20260927T161013Z.json`
+  - `A  registry/experiments/waterfall-feed/20260927T161409Z.json`
+  - `M  registry/weak_signals.json`
+  - `M  src/nfl_ats/cli_commands/clv.py`
+  - `M  src/nfl_ats/paired_opener_evaluation.py`
+  - `A  src/nfl_ats/paired_opener_inputs.py`
+  - ...and 7 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -53,13 +57,13 @@ trust live Git output after checkout.
 - Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20260927T134738Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card combines this with the coach component in one fitted calibrated probability, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,103 / 2,107 (52.35%)**
-- Linked forecast: **2026 Week 3**, created `2026-09-27T13:43:52.850164+00:00`
+- Linked forecast: **2026 Week 3**, created `2026-09-27T16:10:13.762139+00:00`
 
 The 52.35% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 3** from model `397c9cec7b097082`, published `2026-09-27T13:52:14.224433+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 3** from model `397c9cec7b097082`, published `2026-09-27T16:16:50.502320+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

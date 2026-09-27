@@ -623,6 +623,55 @@ def _cmd_opener_line_series(args: argparse.Namespace) -> None:
     _print_json(summary)
 
 
+def _cmd_paired_opener_inputs(args: argparse.Namespace) -> None:
+    from nfl_ats.paired_opener_inputs import (
+        PairedOpenerInputConfig,
+        build_paired_opener_inputs,
+    )
+
+    config = PairedOpenerInputConfig(
+        regressor=args.regressor,
+        feature_profile=args.feature_profile,
+        probability_method=args.probability_method,
+        ridge_alpha=args.ridge_alpha,
+    )
+    report = build_paired_opener_inputs(
+        feature_path=Path(args.features),
+        fd_manifest_path=Path(args.fd_manifest),
+        consensus_manifest_path=Path(args.consensus_manifest),
+        completed_seasons=args.seasons,
+        config=config,
+        min_training_games=args.min_train_games,
+        output_root=Path(args.output),
+    )
+    fold_seasons: list[int] = sorted(report.folds["target_season"].astype(int).unique().tolist())
+    fold_counts = {
+        str(season): int(report.folds["target_season"].eq(season).sum()) for season in fold_seasons
+    }
+    _print_json(
+        {
+            "status": "prepared",
+            "artifact_directory": str(Path(args.output).resolve()),
+            "rows": {
+                "fanduel": len(report.fanduel),
+                "consensus": len(report.consensus),
+            },
+            "exclusions": {
+                "rows": len(report.exclusions),
+                "by_reason": report.provenance["exclusion_counts"],
+            },
+            "folds": {"rows": len(report.folds), "by_season": fold_counts},
+            "provenance": {
+                "feature_sha256": report.provenance["feature_sha256"],
+                "fanduel_manifest_sha256": report.provenance["fanduel_manifest_sha256"],
+                "consensus_manifest_sha256": report.provenance["consensus_manifest_sha256"],
+                "completed_seasons": report.provenance["completed_seasons"],
+            },
+            "output_paths": report.output_paths,
+        }
+    )
+
+
 def _cmd_overlay_composition(args: argparse.Namespace) -> None:
     from nfl_ats.overlay_composition import DEFAULT_INCIDENTS, run_overlay_composition
     from nfl_ats.public_board import find_matching_opener_evaluation
@@ -971,6 +1020,27 @@ def register_diagnostics(
     )
     line_series_parser.add_argument("--output", type=Path, default=None)
     line_series_parser.set_defaults(handler=_cmd_opener_line_series)
+
+    paired_inputs_parser = subparsers.add_parser(
+        "paired-opener-inputs",
+        help="prepare authenticated prior-season FanDuel and consensus opener inputs",
+    )
+    paired_inputs_parser.add_argument("--features", type=Path, required=True)
+    paired_inputs_parser.add_argument("--fd-manifest", type=Path, required=True)
+    paired_inputs_parser.add_argument("--consensus-manifest", type=Path, required=True)
+    paired_inputs_parser.add_argument("--seasons", type=int, nargs="+", required=True)
+    paired_inputs_parser.add_argument("--output", type=Path, required=True)
+    paired_inputs_parser.add_argument(
+        "--min-train-games", type=int, default=DEFAULT_MIN_TRAIN_GAMES
+    )
+    paired_inputs_parser.add_argument(
+        "--feature-profile", choices=("base", "weak_stack"), default="base"
+    )
+    paired_inputs_parser.add_argument(
+        "--probability-method", choices=RESIDUAL_SMOOTHING_METHODS, default="ecdf"
+    )
+    _add_regressor_args(paired_inputs_parser)
+    paired_inputs_parser.set_defaults(handler=_cmd_paired_opener_inputs)
 
     composition_parser = subparsers.add_parser(
         "overlay-composition",

@@ -26209,6 +26209,34 @@
       "source": "artifacts/extended_population_regrade/20260923T210646Z/summary.json",
       "standard_error": 0.487
     },
+    "fanduel_minus_consensus_calibrated_accuracy": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Four completed evaluation seasons do not establish a refuted mechanism or a positive-control detection bound. No split-half reliability was measured; no admissible closing ground is asserted.",
+      "closing_ground": null,
+      "description": "Prior-season calibrated FanDuel opener accuracy minus same-game consensus opener accuracy; one declared primary look.",
+      "effect": -0.8421052631578885,
+      "effect_units": "accuracy_points",
+      "family": "MOD18_FANDUEL_SINGLE_BOOK_V1",
+      "interval": [
+        -2.192066805845516,
+        0.2136752136752129
+      ],
+      "league": "nfl",
+      "notes": "One declared accuracy look; Brier, log loss, reliability, baselines and season rows are diagnostics. The season-bootstrap interval has only four blocks and is coarse. No serving change or profitability claim.",
+      "plain_summary": "Using a single bookmaker opener has not yet shown an advantage over the consensus line in this comparison; current picks are unchanged.",
+      "probability_positive": 0.10115,
+      "recorded_at": "2026-09-27",
+      "reliability": null,
+      "sample_blocks": 4,
+      "sample_games": 950,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts/paired_opener_evaluation/20260927-frozen-config/bootstrap_summary.parquet",
+      "standard_error": null
+    },
     "ffc_adp_cellA_highadp_underdog_back_ppr_w14": {
       "category": "attention",
       "classification": "unresolved_below_power",

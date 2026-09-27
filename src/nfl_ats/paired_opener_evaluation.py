@@ -403,20 +403,42 @@ def _joint_season_bootstrap(
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     seasons = np.sort(decisive["season"].unique())
     rng = np.random.default_rng(seed)
+    metric_names = ("accuracy", "brier", "log_loss")
+    season_indices = {season: index for index, season in enumerate(seasons)}
+    season_rows: npt.NDArray[np.int64] = np.empty(len(seasons), dtype=np.int64)
+    sums_a: npt.NDArray[np.float64] = np.empty((len(seasons), len(metric_names)), dtype=float)
+    sums_b: npt.NDArray[np.float64] = np.empty((len(seasons), len(metric_names)), dtype=float)
+    for season_index, season in enumerate(seasons):
+        frame = decisive.loc[decisive["season"] == season]
+        season_rows[season_index] = len(frame)
+        for suffix, sums in (("a", sums_a), ("b", sums_b)):
+            probability = frame[f"calibrated_probability_{suffix}"].to_numpy(dtype=float)
+            outcome = frame[f"outcome_{suffix}"].to_numpy(dtype=float)
+            clipped = np.clip(probability, _PROBABILITY_EPSILON, 1.0 - _PROBABILITY_EPSILON)
+            sums[season_index] = (
+                float(np.count_nonzero((probability >= 0.5) == outcome.astype(bool))),
+                float(np.sum((probability - outcome) ** 2)),
+                float(-np.sum(outcome * np.log(clipped) + (1.0 - outcome) * np.log1p(-clipped))),
+            )
     draw_rows: list[dict[str, object]] = []
     for draw in range(samples):
         sampled = rng.choice(seasons, size=len(seasons), replace=True)
-        resampled = pd.concat(
-            [decisive.loc[decisive["season"] == season] for season in sampled],
-            ignore_index=True,
+        sampled_indices: npt.NDArray[np.intp] = np.fromiter(
+            (season_indices[season] for season in sampled),
+            dtype=np.intp,
+            count=len(seasons),
         )
-        for metric, delta in _paired_deltas(resampled).items():
-            draw_rows.append({"draw": draw, "metric": metric, "delta": delta})
+        rows = int(season_rows[sampled_indices].sum())
+        deltas = (
+            sums_a[sampled_indices].sum(axis=0) / rows - sums_b[sampled_indices].sum(axis=0) / rows
+        )
+        for metric, delta in zip(metric_names, deltas, strict=True):
+            draw_rows.append({"draw": draw, "metric": metric, "delta": float(delta)})
     draws = pd.DataFrame(draw_rows)
     alpha = (1.0 - confidence) / 2.0
     point = _paired_deltas(decisive)
     summary_rows: list[dict[str, object]] = []
-    for metric in ("accuracy", "brier", "log_loss"):
+    for metric in metric_names:
         values = draws.loc[draws["metric"] == metric, "delta"].to_numpy(dtype=float)
         summary_rows.append(
             {
