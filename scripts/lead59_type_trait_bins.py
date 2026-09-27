@@ -217,9 +217,9 @@ def main() -> None:
     )
 
     dpi_lookup = dpi_trait.drop_duplicates("game_id").set_index("game_id")["lag_type_quartile"]
-    holding_lookup = (
-        holding_trait.drop_duplicates("game_id").set_index("game_id")["lag_type_quartile"]
-    )
+    holding_lookup = holding_trait.drop_duplicates("game_id").set_index("game_id")[
+        "lag_type_quartile"
+    ]
     population["dpi_lag_quartile"] = population["game_id"].map(dpi_lookup)
     population["holding_lag_quartile"] = population["game_id"].map(holding_lookup)
 
@@ -232,9 +232,9 @@ def main() -> None:
     population["dpi_tilt_pass_heavy_favorite"] = (
         home_favorite & pass_heavy_top & dpi_top.fillna(False)
     ).astype(float)
-    population["holding_tilt_run_heavy"] = (
-        run_heavy_bottom & holding_top.fillna(False)
-    ).astype(float)
+    population["holding_tilt_run_heavy"] = (run_heavy_bottom & holding_top.fillna(False)).astype(
+        float
+    )
 
     features_served = FIT_FEATURES
     served_oos, served_folds = loso(population, features_served)

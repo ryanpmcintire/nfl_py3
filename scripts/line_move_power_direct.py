@@ -64,9 +64,7 @@ def build_sbr_margin_move(season_start, season_end):
     sbr = sbr.loc[sbr["season"].between(season_start, season_end)]
     sbr = sbr.drop_duplicates(subset="game_id")
     sbr["open_move_sbr"] = sbr["close_home_spread"] - sbr["open_home_spread"]
-    sbr["margin_vs_open_sbr"] = (
-        sbr["home_score"] - sbr["away_score"]
-    ) - sbr["open_home_spread"]
+    sbr["margin_vs_open_sbr"] = (sbr["home_score"] - sbr["away_score"]) - sbr["open_home_spread"]
     return sbr[["game_id", "open_move_sbr", "margin_vs_open_sbr"]]
 
 
@@ -132,9 +130,9 @@ def load_extended_2011_2025_population():
     )
     extended = extended.dropna(subset=["open_move", "margin_vs_open"]).reset_index(drop=True)
     provenance = {
-        "extended_population_source": str(
-            EXTENDED_POPULATION_PATH.relative_to(REPO)
-        ).replace("\\", "/"),
+        "extended_population_source": str(EXTENDED_POPULATION_PATH.relative_to(REPO)).replace(
+            "\\", "/"
+        ),
         "true_provenance": true_provenance,
         "note": (
             "extended_fit_population 2011-2025 parquet joined to SBR home_score/away_score/"
@@ -152,8 +150,7 @@ def load_roof_state_2011_2019_population():
     restricted = extended.loc[extended["season"].between(2011, 2019)].reset_index(drop=True)
     provenance = dict(provenance)
     provenance["note"] = (
-        provenance["note"]
-        + " restricted to seasons 2011-2019 (exact population match to "
+        provenance["note"] + " restricted to seasons 2011-2019 (exact population match to "
         "roof_state_predicted_open_line_move_replication_2011_2019)"
     )
     return restricted[POPULATION_COLUMNS].copy(), provenance, "roof_state_2011_2019"
@@ -207,9 +204,7 @@ def main(argv=None):
     parser.add_argument("--draws", type=int, default=DEFAULT_DRAWS)
     parser.add_argument("--fit-iterations", type=int, default=DEFAULT_FIT_ITERATIONS)
     parser.add_argument("--seed", type=int, default=20260923)
-    parser.add_argument(
-        "--grid", default=",".join(str(value) for value in DEFAULT_GRID_POINTS)
-    )
+    parser.add_argument("--grid", default=",".join(str(value) for value in DEFAULT_GRID_POINTS))
     parser.add_argument(
         "--population",
         choices=list(POPULATION_LOADERS),

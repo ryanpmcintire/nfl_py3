@@ -236,12 +236,8 @@ def main() -> None:
             + game["away_injury_defense_disruption_value_lost"]
         )
 
-        home_players = borderline_players(
-            injuries, home_team, lookup, observations, TARGET_SEASON
-        )
-        away_players = borderline_players(
-            injuries, away_team, lookup, observations, TARGET_SEASON
-        )
+        home_players = borderline_players(injuries, home_team, lookup, observations, TARGET_SEASON)
+        away_players = borderline_players(injuries, away_team, lookup, observations, TARGET_SEASON)
         home_subsets, home_truncated = side_subsets(home_players)
         away_subsets, away_truncated = side_subsets(away_players)
         side_truncated = home_truncated or away_truncated
@@ -307,9 +303,7 @@ def main() -> None:
         for player in borderline_players(
             injuries, str(game["home_team"]), lookup, observations, TARGET_SEASON
         )
-        + borderline_players(
-            injuries, str(game["away_team"]), lookup, observations, TARGET_SEASON
-        )
+        + borderline_players(injuries, str(game["away_team"]), lookup, observations, TARGET_SEASON)
     ]
     severity_source_counts = {
         source: sum(1 for player in all_borderline_players if player["severity_source"] == source)
@@ -332,8 +326,7 @@ def main() -> None:
         ),
         "unit_coupling_multiplier": UNIT_COUPLING_MULTIPLIER,
         "coupling_source": (
-            "docs/absence_pairwise_dependence.md section 8, "
-            "observed/permuted-null excess ratios"
+            "docs/absence_pairwise_dependence.md section 8, observed/permuted-null excess ratios"
         ),
         "severity_source": "nfl_ats.availability.resolve_unavailability season-lagged rates "
         "fit on data/processed/injury_play_outcomes.parquet, sparse cells "

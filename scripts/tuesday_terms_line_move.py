@@ -236,9 +236,9 @@ def main() -> int:
                     report["line_move_toward_pick_cell"]["season_block_interval_low"],
                     report["line_move_toward_pick_cell"]["season_block_interval_high"],
                 ],
-                "line_move_season_block_probability_positive": report[
-                    "line_move_toward_pick_cell"
-                ]["season_block_probability_positive"],
+                "line_move_season_block_probability_positive": report["line_move_toward_pick_cell"][
+                    "season_block_probability_positive"
+                ],
                 "accuracy_mean_points": report["accuracy_companion_cell"]["mean_points"],
                 "accuracy_season_block_probability_positive": report["accuracy_companion_cell"][
                     "season_block_probability_positive"

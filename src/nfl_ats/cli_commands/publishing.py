@@ -1080,13 +1080,15 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                 _artifacts_root(), data_root=_data_root(), now=publish_instant
             )
         except Exception as error:
-            check = {"evaluated": False, "ok": True, "reason": f"{type(error).__name__}: {error}"}
+            check = {"evaluated": False, "ok": False, "reason": f"{type(error).__name__}: {error}"}
         result["card_ledger_check"] = check
-        if (
-            check.get("evaluated", True)
-            and not check.get("ok", True)
-            and check.get("paper_ledger_rows_checked", 0) > 0
-        ):
+        if not check.get("evaluated", True) or check.get("board_content_error"):
+            print(
+                "publish-predictions: card/ledger consistency check incomplete: "
+                f"{check.get('reason') or check.get('board_content_error')}",
+                file=sys.stderr,
+            )
+        if check.get("disagreements"):
             games = ", ".join(
                 sorted({str(row["matchup"]) for row in check.get("disagreements", [])})
             )
@@ -1591,20 +1593,22 @@ def _cmd_refresh_picks(args: argparse.Namespace) -> None:
     try:
         check = check_card_ledger_consistency(_artifacts_root(), data_root=_data_root())
     except Exception as error:
-        result["card_ledger_check"] = {
+        check = {
             "evaluated": False,
-            "ok": True,
+            "ok": False,
             "reason": f"{type(error).__name__}: {error}",
         }
-    else:
-        result["card_ledger_check"] = check
-        if check.get("evaluated", True) and not check.get("ok", True):
-            result["warnings"] = [
-                *result.get("warnings", []),
-                "card_ledger_check: the paper ledger and/or the pick-revision ledger disagree "
-                "with the currently served card for "
-                f"{len(check.get('disagreements', []))} field(s) -- see result.card_ledger_check.",
-            ]
+    result["card_ledger_check"] = check
+    if not check.get("ok", False):
+        detail = (
+            f"comparison incomplete: {check.get('reason') or check.get('board_content_error')}"
+            if not check.get("evaluated", True) or check.get("board_content_error")
+            else f"{len(check.get('disagreements', []))} field(s) disagree"
+        )
+        result["warnings"] = [
+            *result.get("warnings", []),
+            f"card_ledger_check: {detail} -- see result.card_ledger_check.",
+        ]
     _print_json(result)
 
 

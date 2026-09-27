@@ -48,8 +48,7 @@ def _rows(payload: bytes, observed: datetime) -> list[dict[str, Any]]:
         decoded = [decoded]
     if not isinstance(decoded, list):
         raise ValueError(
-            f"Bovada response must be an array, got {type(decoded).__name__}: "
-            f"{_snippet(payload)!r}"
+            f"Bovada response must be an array, got {type(decoded).__name__}: {_snippet(payload)!r}"
         )
     digest = hashlib.sha256(payload).hexdigest()
     rows: list[dict[str, Any]] = []

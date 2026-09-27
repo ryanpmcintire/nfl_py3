@@ -104,9 +104,9 @@ def load_line_move_population() -> tuple[pd.DataFrame, dict[str, Any], dict[str,
     }
 
     extended = extended.loc[extended["season"].isin(graded_seasons)].reset_index(drop=True)
-    extended = extended.dropna(
-        subset=[*CFB_FEATURES, "open_move", "home_covered"]
-    ).reset_index(drop=True)
+    extended = extended.dropna(subset=[*CFB_FEATURES, "open_move", "home_covered"]).reset_index(
+        drop=True
+    )
     return extended, provenance, graded_meta
 
 
@@ -125,9 +125,7 @@ def attach_cfb_transfer_logit(
             design(cfb_train, CFB_FEATURES, means_cfb, stds_cfb),
             cfb_train["home_covered"].to_numpy(),
         )
-        pred_p.loc[test.index] = predict_logit(
-            test, CFB_FEATURES, beta_logit, means_cfb, stds_cfb
-        )
+        pred_p.loc[test.index] = predict_logit(test, CFB_FEATURES, beta_logit, means_cfb, stds_cfb)
         per_fold_meta[str(held)] = {
             "cfb_train_seasons": sorted(int(s) for s in cfb_train["season"].unique()),
             "cfb_train_games": len(cfb_train),
@@ -189,12 +187,8 @@ def main() -> None:
     nfl["lm_plus"] = np.where(nfl["plus_pick_home"], 1.0, -1.0) * nfl["open_move"]
     nfl["diff_line_move"] = nfl["lm_plus"] - nfl["lm_base"]
 
-    nfl["base_correct"] = (
-        nfl["base_pick_home"].astype(float).eq(nfl["home_covered"]).astype(float)
-    )
-    nfl["plus_correct"] = (
-        nfl["plus_pick_home"].astype(float).eq(nfl["home_covered"]).astype(float)
-    )
+    nfl["base_correct"] = nfl["base_pick_home"].astype(float).eq(nfl["home_covered"]).astype(float)
+    nfl["plus_correct"] = nfl["plus_pick_home"].astype(float).eq(nfl["home_covered"]).astype(float)
     nfl["diff_accuracy"] = nfl["plus_correct"] - nfl["base_correct"]
 
     nfl_2020_2025 = nfl.loc[nfl["season"].ge(2020)].reset_index(drop=True)

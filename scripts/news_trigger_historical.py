@@ -45,7 +45,7 @@ def load_injury_totals(data_root: Path) -> pd.DataFrame:
             "away_injury_defense_disruption_value_lost",
             POINT_IN_TIME_COLUMN,
             "away_injury_observed_at",
-        ]
+        ],
     )
     table["home_total_value_lost"] = (
         table["home_injury_skill_epa_value_lost"]
@@ -58,9 +58,7 @@ def load_injury_totals(data_root: Path) -> pd.DataFrame:
     table["point_in_time"] = (
         table[POINT_IN_TIME_COLUMN].notna() & table["away_injury_observed_at"].notna()
     )
-    return table[
-        ["game_id", "home_total_value_lost", "away_total_value_lost", "point_in_time"]
-    ]
+    return table[["game_id", "home_total_value_lost", "away_total_value_lost", "point_in_time"]]
 
 
 def team_resolution_table(data_root: Path) -> pd.DataFrame:
@@ -74,9 +72,7 @@ def team_resolution_table(data_root: Path) -> pd.DataFrame:
         .rename("severity_sum")
     )
     questionable = outcomes.loc[outcomes["report_category"] == "questionable"].copy()
-    questionable["resolution_delta"] = (
-        questionable["unavailable"] - QUESTIONABLE_SEVERITY
-    )
+    questionable["resolution_delta"] = questionable["unavailable"] - QUESTIONABLE_SEVERITY
     resolution_sum = (
         questionable.groupby(["game_id", "team"], observed=True)["resolution_delta"]
         .sum()
@@ -254,19 +250,14 @@ def main() -> None:
             scoped["questionable_players_pregame"].gt(0).sum()
         ),
         "games_passing_visibility_gate": int(scoped["visible_before_deadline"].sum()),
-        "games_with_nonzero_resolved_shift": int(
-            scoped["news_trigger_value_shift"].ne(0.0).sum()
-        ),
+        "games_with_nonzero_resolved_shift": int(scoped["news_trigger_value_shift"].ne(0.0).sum()),
         "games_gated_out_with_questionable_pregame": int(
             (
-                scoped["questionable_players_pregame"].gt(0)
-                & ~scoped["visible_before_deadline"]
+                scoped["questionable_players_pregame"].gt(0) & ~scoped["visible_before_deadline"]
             ).sum()
         ),
         "mean_abs_margin_points_when_nonzero": float(
-            scoped.loc[
-                scoped["news_trigger_value_shift"].ne(0.0), "news_trigger_margin_points"
-            ]
+            scoped.loc[scoped["news_trigger_value_shift"].ne(0.0), "news_trigger_margin_points"]
             .abs()
             .mean()
         )

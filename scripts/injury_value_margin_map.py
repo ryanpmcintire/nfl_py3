@@ -192,9 +192,7 @@ def error_bootstrap(frame: pd.DataFrame, draws: int, seed: int) -> np.ndarray:
     candidate_abs = np.abs(residual - predicted)
     baseline_sq = residual**2
     candidate_sq = (residual - predicted) ** 2
-    difference = np.column_stack(
-        [baseline_abs - candidate_abs, baseline_sq - candidate_sq]
-    )
+    difference = np.column_stack([baseline_abs - candidate_abs, baseline_sq - candidate_sq])
     return generic_block_bootstrap(frame, difference, draws, seed)
 
 

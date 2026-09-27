@@ -15,7 +15,11 @@ _orig_pick_index = eng.pick_index
 
 def instrumented(rng, tables, k0, k1, k2, k3, min_cell_n):
     level_used = "l3"
-    for name, level, key in (("l0", tables["l0"], k0), ("l1", tables["l1"], k1), ("l2", tables["l2"], k2)):
+    for name, level, key in (
+        ("l0", tables["l0"], k0),
+        ("l1", tables["l1"], k1),
+        ("l2", tables["l2"], k2),
+    ):
         idxs = level.get(key)
         if idxs is not None and len(idxs) >= min_cell_n:
             level_used = name

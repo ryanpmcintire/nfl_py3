@@ -23,9 +23,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 ARTIFACTS_ROOT = REPO_ROOT / "artifacts"
 DATA_ROOT = REPO_ROOT / "data"
 MARKET_ROOT = REPO_ROOT / "data" / "market" / "raw"
-RATINGS_TABLE = (
-    ARTIFACTS_ROOT / "latent_ratings_on_production" / "expected_lineup_ratings.parquet"
-)
+RATINGS_TABLE = ARTIFACTS_ROOT / "latent_ratings_on_production" / "expected_lineup_ratings.parquet"
 OUTPUT_ROOT = ARTIFACTS_ROOT / "players_on_field_rating"
 
 CANDIDATE_TERMS = ("diff_lineup_total", "diff_divergence")
@@ -134,12 +132,12 @@ def season_block_bootstrap_slope(
     lower, upper = np.quantile(boots, [tail, 1.0 - tail])
     probability_positive = float((boots > 0).mean() + 0.5 * (boots == 0).mean())
     return {
-        "games": int(len(frame)),
+        "games": len(frame),
         "seasons": seasons,
         "slope": float(slope),
         "intercept": float(intercept),
         "correlation": correlation,
-        "bootstrap_draws": int(len(boots)),
+        "bootstrap_draws": len(boots),
         "bootstrap_interval": [float(lower), float(upper)],
         "probability_positive": probability_positive,
     }
@@ -209,7 +207,7 @@ def main() -> None:
             )
 
     base_oos, base_folds = loso(population, FIT_FEATURES)
-    base_is, base_is_coefficients = in_sample_fit(population, FIT_FEATURES)
+    base_is, _base_is_coefficients = in_sample_fit(population, FIT_FEATURES)
     population = population.assign(base_oos_probability=base_oos, base_is_probability=base_is)
 
     declaration = {
@@ -246,7 +244,7 @@ def main() -> None:
             base_is, population["home_covered"].to_numpy(dtype=float), RELIABILITY_EDGES
         )
         fit_results[term] = {
-            "coverage_games": int(len(scored)),
+            "coverage_games": len(scored),
             "candidate_oos_metrics": {
                 key: candidate_oos_metrics[key] for key in ("accuracy", "brier", "log_loss")
             },

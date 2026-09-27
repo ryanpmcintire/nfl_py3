@@ -418,9 +418,7 @@ def add_dome_shootout_favorite_term(
 
 def add_coach_fade_term(population: pd.DataFrame, schedule: pd.DataFrame) -> pd.DataFrame:
     flags = year_one_by_game(schedule)
-    flags = flags.drop_duplicates(subset="game_id")[
-        ["game_id", "year_one_home", "year_one_away"]
-    ]
+    flags = flags.drop_duplicates(subset="game_id")[["game_id", "year_one_home", "year_one_away"]]
     out = population.merge(flags, on="game_id", how="left")
     out["year_one_home"] = out["year_one_home"].fillna(False)
     out["year_one_away"] = out["year_one_away"].fillna(False)
@@ -430,9 +428,7 @@ def add_coach_fade_term(population: pd.DataFrame, schedule: pd.DataFrame) -> pd.
     return out
 
 
-def add_special_teams_return_term(
-    population: pd.DataFrame, schedule: pd.DataFrame
-) -> pd.DataFrame:
+def add_special_teams_return_term(population: pd.DataFrame, schedule: pd.DataFrame) -> pd.DataFrame:
     flags = special_teams_return_flag_by_game_fail_open(REPO / "data", schedule)
     flags = flags.drop_duplicates(subset="game_id")[
         ["game_id", "home_return_top_quartile", "away_return_top_quartile"]
@@ -452,9 +448,7 @@ def add_special_teams_return_term(
 
 def add_hc_year_one_fade_term(population: pd.DataFrame, schedule: pd.DataFrame) -> pd.DataFrame:
     flags = year_one_by_game(schedule)
-    flags = flags.drop_duplicates(subset="game_id")[
-        ["game_id", "year_one_home", "year_one_away"]
-    ]
+    flags = flags.drop_duplicates(subset="game_id")[["game_id", "year_one_home", "year_one_away"]]
     out = population.merge(flags, on="game_id", how="left")
     out["year_one_home"] = out["year_one_home"].fillna(False)
     out["year_one_away"] = out["year_one_away"].fillna(False)
@@ -719,9 +713,7 @@ def main() -> int:
         ratio_table = RATIO_TABLE
 
     if args.only:
-        term_declarations = tuple(
-            d for d in term_declarations if d["label"] == args.only
-        )
+        term_declarations = tuple(d for d in term_declarations if d["label"] == args.only)
 
     now = datetime.now(UTC)
     population, provenance = build_fit_population(REPO / "artifacts", REPO / "data")

@@ -1,5 +1,11 @@
 # Conditional signal atlas (MOD-19)
 
+## State — 2026-09-26 (legacy command corrected)
+
+- **Read:** The retired scripts/signal_atlas.py remained executable and computed served and leave-one-out correctness by independently flipping archived game IDs. That violated the fitted-probability rule even though the current src/nfl_ats/signal_atlas.py implementation was already correct.
+- Replaced that legacy implementation with a compatibility entry point to scripts/conditional_signal_atlas.py, so either atlas command now reaches the fitted full-versus-reduced probability comparison.
+- **Measured:** The repo-local locked command uv run --no-sync python scripts/signal_atlas.py --help exited 0 and exposed only the fitted atlas artifact-root and registry-root options with the description “Fit the declared paired conditional signal atlas.” The focused ruff check of both atlas scripts and src/nfl_ats/signal_atlas.py passed.
+
 ## State — 2026-09-24 (visual-check unit DONE, uncommitted; found+fixed a real mobile CSS bug)
 
 Closed 2026-09-26: ROADMAP MOD-19 already updated, all six files already

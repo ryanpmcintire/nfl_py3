@@ -38,9 +38,7 @@ def _sunday_style_bounds(games: pd.DataFrame) -> pd.DataFrame:
     sunday = local.dt.tz_localize(None).dt.normalize() + pd.to_timedelta(
         (6 - local.dt.weekday) % 7, unit="D"
     )
-    monday = (sunday - pd.Timedelta(days=6)).dt.tz_localize("America/New_York").dt.tz_convert(
-        "UTC"
-    )
+    monday = (sunday - pd.Timedelta(days=6)).dt.tz_localize("America/New_York").dt.tz_convert("UTC")
     wednesday = (
         (sunday - pd.Timedelta(days=4)).dt.tz_localize("America/New_York").dt.tz_convert("UTC")
     )

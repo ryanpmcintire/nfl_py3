@@ -46,7 +46,7 @@ def check_card_ledger_consistency(
         return {
             "checked_at_utc": checked_at.isoformat(),
             "evaluated": False,
-            "ok": True,
+            "ok": False,
             "reason": (
                 f"could not resolve the current served card: {type(error).__name__}: {error}"
             ),
@@ -155,7 +155,7 @@ def check_card_ledger_consistency(
         "pick_revision_rows_checked": pick_revision_rows_checked,
         "board_content_error": board_content_error,
         "evaluated": True,
-        "ok": len(disagreements) == 0,
+        "ok": len(disagreements) == 0 and not board_content_error,
         "disagreements": disagreements,
     }
 
@@ -174,6 +174,9 @@ def render_report(report: dict[str, Any]) -> str:
         lines.append(f"  board content could not be loaded: {report['board_content_error']}")
     disagreements = report.get("disagreements") or []
     if not disagreements:
+        if report.get("board_content_error"):
+            lines.append("  consistency check incomplete: board comparison unavailable")
+            return "\n".join(lines)
         lines.append(
             "  no disagreements: paper ledger, pick-revision ledger and the served card agree"
         )

@@ -79,9 +79,7 @@ def build_served_frame() -> pd.DataFrame:
         & graded["season"].eq(SEASON)
     ].copy()
     clv_ledger = pd.read_parquet(ARTIFACTS / "clv_ledger" / "decisions.parquet")
-    clv_ledger = clv_ledger.loc[
-        clv_ledger["season"].eq(SEASON), ["game_id", "forecast_artifact"]
-    ]
+    clv_ledger = clv_ledger.loc[clv_ledger["season"].eq(SEASON), ["game_id", "forecast_artifact"]]
     served = served.merge(clv_ledger, on="game_id", how="left")
     forecasts = load_forecast_probabilities(clv_ledger)
     served = served.merge(forecasts, on=["game_id", "forecast_artifact"], how="left")
@@ -118,7 +116,7 @@ def record_row(frame: pd.DataFrame) -> dict[str, int]:
 
 def probability_block(frame: pd.DataFrame) -> dict[str, object]:
     decisive = frame.dropna(subset=["y"])
-    n = int(len(decisive))
+    n = len(decisive)
     if n == 0:
         return {"n": 0}
     y = decisive["y"]
@@ -163,9 +161,9 @@ def challenger_paired_records(served: pd.DataFrame) -> list[dict[str, object]]:
         & graded["season"].eq(SEASON)
         & graded["week"].isin(DECISIVE_WEEKS)
     ]
-    served_outcome = served.loc[
-        served["week"].isin(DECISIVE_WEEKS), ["game_id", "outcome"]
-    ].rename(columns={"outcome": "served_outcome"})
+    served_outcome = served.loc[served["week"].isin(DECISIVE_WEEKS), ["game_id", "outcome"]].rename(
+        columns={"outcome": "served_outcome"}
+    )
     rows: list[dict[str, object]] = []
     for challenger_id in active_ids:
         entrant = challenger_frame.loc[challenger_frame["arm"].eq(challenger_id)]
@@ -173,10 +171,9 @@ def challenger_paired_records(served: pd.DataFrame) -> list[dict[str, object]]:
             continue
         paired = entrant.merge(served_outcome, on="game_id", how="inner")
         paired = paired.loc[
-            paired["outcome"].isin(["won", "lost"])
-            & paired["served_outcome"].isin(["won", "lost"])
+            paired["outcome"].isin(["won", "lost"]) & paired["served_outcome"].isin(["won", "lost"])
         ]
-        n = int(len(paired))
+        n = len(paired)
         if n == 0:
             continue
         challenger_better = int(

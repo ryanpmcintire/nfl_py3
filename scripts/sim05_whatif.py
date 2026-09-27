@@ -11,7 +11,7 @@ import pandas as pd
 
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "scripts"))
-import sim04_engine as eng
+import sim04_engine as eng  # noqa: E402
 
 ARTIFACT_ROOT = REPO / "artifacts" / "sim05_whatif"
 SEASONS = tuple(range(2009, 2026))
@@ -107,7 +107,12 @@ def make_fourth_down_policy(tables: dict, pool_rng: np.random.Generator):
 def run_pair(tables, home_ratings_base, away_ratings, n_games, seed, policy_whatif):
     rng_base = np.random.default_rng(seed)
     frame_base = eng.simulate(
-        n_games, rng_base, tables, ot_seconds=600.0, home_ratings=home_ratings_base, away_ratings=away_ratings
+        n_games,
+        rng_base,
+        tables,
+        ot_seconds=600.0,
+        home_ratings=home_ratings_base,
+        away_ratings=away_ratings,
     )
     rng_wi = np.random.default_rng(seed)
     frame_wi = eng.simulate(
@@ -125,11 +130,21 @@ def run_pair(tables, home_ratings_base, away_ratings, n_games, seed, policy_what
 def run_ratings_pair(tables, home_ratings_a, home_ratings_b, away_ratings, n_games, seed):
     rng_a = np.random.default_rng(seed)
     frame_a = eng.simulate(
-        n_games, rng_a, tables, ot_seconds=600.0, home_ratings=home_ratings_a, away_ratings=away_ratings
+        n_games,
+        rng_a,
+        tables,
+        ot_seconds=600.0,
+        home_ratings=home_ratings_a,
+        away_ratings=away_ratings,
     )
     rng_b = np.random.default_rng(seed)
     frame_b = eng.simulate(
-        n_games, rng_b, tables, ot_seconds=600.0, home_ratings=home_ratings_b, away_ratings=away_ratings
+        n_games,
+        rng_b,
+        tables,
+        ot_seconds=600.0,
+        home_ratings=home_ratings_b,
+        away_ratings=away_ratings,
     )
     return frame_a["margin"].to_numpy(), frame_b["margin"].to_numpy()
 
@@ -193,7 +208,9 @@ def derive_qb_out_drop(seasons) -> dict:
 
     pass_att = pbp[(pbp["play_type"] == "pass") & pbp["passer_player_id"].notna()].copy()
 
-    season_att = pass_att.groupby(["posteam", "season", "passer_player_id"], as_index=False)["epa"].count()
+    season_att = pass_att.groupby(["posteam", "season", "passer_player_id"], as_index=False)[
+        "epa"
+    ].count()
     season_att = season_att.rename(columns={"epa": "attempts"})
     season_primary = (
         season_att.sort_values("attempts", ascending=False)
@@ -202,7 +219,9 @@ def derive_qb_out_drop(seasons) -> dict:
         .rename(columns={"passer_player_id": "season_primary_passer"})
     )
 
-    game_att = pass_att.groupby(["game_id", "posteam", "passer_player_id"], as_index=False)["epa"].count()
+    game_att = pass_att.groupby(["game_id", "posteam", "passer_player_id"], as_index=False)[
+        "epa"
+    ].count()
     game_att = game_att.rename(columns={"epa": "attempts"})
     game_leader = (
         game_att.sort_values("attempts", ascending=False)
@@ -223,7 +242,11 @@ def derive_qb_out_drop(seasons) -> dict:
     game_epa = off_plays.groupby(["game_id", "posteam"], as_index=False).agg(
         mean_epa=("epa", "mean"), n_plays=("epa", "count")
     )
-    game_epa = game_epa.merge(game_leader[["game_id", "posteam", "season", "backup_led"]], on=["game_id", "posteam"], how="inner")
+    game_epa = game_epa.merge(
+        game_leader[["game_id", "posteam", "season", "backup_led"]],
+        on=["game_id", "posteam"],
+        how="inner",
+    )
 
     rows = []
     for (team, season), grp in game_epa.groupby(["posteam", "season"]):
@@ -248,7 +271,10 @@ def derive_qb_out_drop(seasons) -> dict:
             }
         )
     ts = pd.DataFrame(rows)
-    ts = ts[(ts["n_backup_plays"] >= MIN_PLAYS_PER_TEAM_SEASON_ARM) & (ts["n_primary_plays"] >= MIN_PLAYS_PER_TEAM_SEASON_ARM)]
+    ts = ts[
+        (ts["n_backup_plays"] >= MIN_PLAYS_PER_TEAM_SEASON_ARM)
+        & (ts["n_primary_plays"] >= MIN_PLAYS_PER_TEAM_SEASON_ARM)
+    ]
 
     weighted_mean_diff = float((ts["diff"] * ts["weight"]).sum() / ts["weight"].sum())
 
@@ -265,13 +291,17 @@ def derive_qb_out_drop(seasons) -> dict:
     boot = np.array(boot)
 
     return {
-        "n_team_seasons": int(len(ts)),
+        "n_team_seasons": len(ts),
         "n_backup_plays_total": int(ts["n_backup_plays"].sum()),
         "n_primary_plays_total": int(ts["n_primary_plays"].sum()),
         "mean_epa_drop_per_play": weighted_mean_diff,
         "mean_epa_drop_ci_p05": float(np.percentile(boot, 5)),
         "mean_epa_drop_ci_p95": float(np.percentile(boot, 95)),
-        "note": "diff = backup-led games offensive EPA/play minus same team-season's primary-passer games offensive EPA/play, weighted by min(n_backup_plays, n_primary_plays) per team-season, bootstrapped over team-seasons",
+        "note": (
+            "diff = backup-led games offensive EPA/play minus same team-season's "
+            "primary-passer games offensive EPA/play, weighted by min(n_backup_plays, "
+            "n_primary_plays) per team-season, bootstrapped over team-seasons"
+        ),
     }
 
 
@@ -291,10 +321,16 @@ def main() -> None:
 
     pool_rng = np.random.default_rng(BASE_SEED + 1)
     fourth_down_policy = make_fourth_down_policy(tables, pool_rng)
-    base1, wi1 = run_pair(tables, avg_ratings, avg_ratings, args.n_games, BASE_SEED + 100, fourth_down_policy)
+    base1, wi1 = run_pair(
+        tables, avg_ratings, avg_ratings, args.n_games, BASE_SEED + 100, fourth_down_policy
+    )
     whatif1 = {
         "name": "fourth_down_aggression",
-        "description": "On 4th-and-3-or-less at or past midfield, outside the final two minutes of a half, a real punt or field-goal-attempt draw is replaced with a real go-for-it outcome drawn from historical plays in that same situation.",
+        "description": (
+            "On 4th-and-3-or-less at or past midfield, outside the final two minutes of a "
+            "half, a real punt or field-goal-attempt draw is replaced with a real go-for-it "
+            "outcome drawn from historical plays in that same situation."
+        ),
         "n_go_for_it_pool_rows": int(
             (
                 (tables["arrays"]["down_i"] == 4)
@@ -312,19 +348,27 @@ def main() -> None:
     shift_se = whatif1["shift"]["mean_margin_shift_se"]
     hw_shift = whatif1["shift"]["home_win_prob_shift"]
     whatif1["plain_english"] = (
-        f"Simulated: if teams always went for it on short 4th downs past midfield instead of punting or "
+        f"Simulated: if teams always went for it on short 4th downs past midfield instead of "
+        f"punting or "
         f"kicking, the home team's average margin would move by {shift_mean:+.2f} points "
-        f"(give or take about {1.96 * shift_se:.2f}), and home win chance would shift by {hw_shift:+.1%}. "
+        f"(give or take about {1.96 * shift_se:.2f}), and home win chance would shift by "
+        f"{hw_shift:+.1%}. "
         f"This is a research simulation, not a pick change."
     )
 
     qb_drop = derive_qb_out_drop(QB_SEASONS)
     drop = qb_drop["mean_epa_drop_per_play"]
     home_ratings_qb_out = {"off": league_off + drop, "def": league_def}
-    base2b, wi2 = run_ratings_pair(tables, avg_ratings, home_ratings_qb_out, avg_ratings, args.n_games, BASE_SEED + 200)
+    base2b, wi2 = run_ratings_pair(
+        tables, avg_ratings, home_ratings_qb_out, avg_ratings, args.n_games, BASE_SEED + 200
+    )
     whatif2 = {
         "name": "starting_qb_out",
-        "description": "Home offense EPA/play rating is lowered by the measured backup-passer drop, holding the away team at league-average; compared against both teams at league average.",
+        "description": (
+            "Home offense EPA/play rating is lowered by the measured backup-passer drop, "
+            "holding the away team at league-average; compared against both teams at league "
+            "average."
+        ),
         "qb_drop_derivation": qb_drop,
         "baseline": summarize_arm(base2b),
         "whatif": summarize_arm(wi2),
@@ -335,10 +379,14 @@ def main() -> None:
     shift_se2 = whatif2["shift"]["mean_margin_shift_se"]
     hw_shift2 = whatif2["shift"]["home_win_prob_shift"]
     whatif2["plain_english"] = (
-        f"Simulated: if the home team's normal starting quarterback sits out and the backup plays like the "
-        f"typical backup does (about {drop:+.3f} EPA per play worse on offense), the home team's average "
-        f"margin would move by {shift_mean2:+.2f} points (give or take about {1.96 * shift_se2:.2f}), and home "
-        f"win chance would shift by {hw_shift2:+.1%}. This is a research simulation, not a pick change."
+        f"Simulated: if the home team's normal starting quarterback sits out and the backup "
+        f"plays like the "
+        f"typical backup does (about {drop:+.3f} EPA per play worse on offense), the home "
+        f"team's average "
+        f"margin would move by {shift_mean2:+.2f} points (give or take about "
+        f"{1.96 * shift_se2:.2f}), and home "
+        f"win chance would shift by {hw_shift2:+.1%}. This is a research simulation, not a "
+        f"pick change."
     )
 
     report = {
@@ -347,9 +395,17 @@ def main() -> None:
         "whatif_script": "scripts/sim05_whatif.py",
         "seasons_for_tables": list(SEASONS),
         "n_games_per_arm": args.n_games,
-        "shared_seed_scheme": "each baseline/whatif pair uses np.random.default_rng(seed) with the identical seed, so per-play draws stay aligned (common random numbers) until a policy intervention changes the trajectory; the 4th-down replacement draw uses a separate rng stream so it never desyncs the shared draw sequence.",
+        "shared_seed_scheme": (
+            "each baseline/whatif pair uses np.random.default_rng(seed) with the identical "
+            "seed, so per-play draws stay aligned (common random numbers) until a policy "
+            "intervention changes the trajectory; the 4th-down replacement draw uses a "
+            "separate rng stream so it never desyncs the shared draw sequence."
+        ),
         "league_average_ratings": {"off_epa_per_play": league_off, "def_epa_per_play": league_def},
-        "labels": "every number below is simulated/inferred; it is a research and dashboard artifact and never re-picks a card game",
+        "labels": (
+            "every number below is simulated/inferred; it is a research and dashboard artifact "
+            "and never re-picks a card game"
+        ),
         "fourth_down_aggression_whatif": whatif1,
         "starting_qb_out_whatif": whatif2,
     }

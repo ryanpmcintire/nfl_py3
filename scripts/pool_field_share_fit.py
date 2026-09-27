@@ -109,7 +109,9 @@ def build_week(field_path, betting_path, margin_root, week_tag, season, week):
     served = load_served(margin_root, week_tag)
     merged = field.merge(served, on=["away", "home"], how="left")
     public = load_public_split(betting_path, list(zip(field["away"], field["home"], strict=False)))
-    merged["public_split"] = [public.get((a, h), np.nan) for a, h in zip(merged["away"], merged["home"], strict=False)]
+    merged["public_split"] = [
+        public.get((a, h), np.nan) for a, h in zip(merged["away"], merged["home"], strict=False)
+    ]
     merged["market_home_implied"] = implied_prob(merged["home_spread_odds"])
     merged["market_away_implied"] = implied_prob(merged["away_spread_odds"])
     merged["market_vig_free_home"] = merged["market_home_implied"] / (
@@ -188,7 +190,9 @@ def greedy_card(pick_prob, pick_home, field_share, entrants, samples, seed):
             trial_home = cur_home.copy()
             trial_prob[idx] = 1.0 - trial_prob[idx]
             trial_home[idx] = ~trial_home[idx]
-            rank = simulate_expected_rank(trial_prob, trial_home, field_share, entrants, samples, seed)
+            rank = simulate_expected_rank(
+                trial_prob, trial_home, field_share, entrants, samples, seed
+            )
             if rank < best_rank:
                 best_rank = rank
                 best_idx = idx
@@ -221,7 +225,9 @@ def realised_rank(pick_home, home_covered, field_share, entrants):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Fit a field-share model and replay POOL-01 with it")
+    parser = argparse.ArgumentParser(
+        description="Fit a field-share model and replay POOL-01 with it"
+    )
     parser.add_argument("--out", type=Path, default=Path("artifacts") / "pool_field_share")
     args = parser.parse_args()
 
@@ -262,7 +268,7 @@ def main():
             "pearson_r": r,
             "bootstrap_ci_95": ci,
             "probability_positive": pp,
-            "n": int(len(pred)),
+            "n": len(pred),
         }
 
     folds = {}
@@ -297,7 +303,7 @@ def main():
         fitted = grp["fitted_field_share"].to_numpy(dtype=float)
         home_covered = grp["home_covered"].to_numpy(dtype=bool)
 
-        opt_home, opt_pregame_rank, flips = greedy_card(
+        opt_home, _opt_pregame_rank, flips = greedy_card(
             pick_prob_served, pick_home_served, fitted, ENTRANTS, SIM_SAMPLES, SIM_SEED
         )
         served_realised = realised_rank(pick_home_served, home_covered, real_share, ENTRANTS)
@@ -339,7 +345,7 @@ def main():
     )
     results = {
         "created_at_utc": datetime.now(UTC).isoformat(),
-        "n_games": int(len(both)),
+        "n_games": len(both),
         "entrants": ENTRANTS,
         "proxy_vs_real_field_share": proxy_report,
         "field_share_model": {

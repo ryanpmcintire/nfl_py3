@@ -1047,7 +1047,7 @@ def _sim_margin_html(dive: GameDive) -> str:
     if chart is None:
         return ""
     lo, hi = -21, 21
-    counts = {m: 0 for m in range(lo, hi + 1)}
+    counts = dict.fromkeys(range(lo, hi + 1), 0)
     for margin, count in chart.histogram:
         if lo <= margin <= hi:
             counts[margin] += count
@@ -1083,7 +1083,7 @@ def _sim_margin_html(dive: GameDive) -> str:
         f'aria-label="Simulated final margins for {escape(dive.pick_team)}, line '
         f'{escape(pick_label)} marked">'
         '<line class="grid" x1="20" y1="85" x2="260" y2="85"></line>'
-        f'{"".join(bars)}'
+        f"{''.join(bars)}"
         f'<line class="ref" x1="{line_x:.1f}" y1="8" x2="{line_x:.1f}" y2="85"></line>'
         f'<text x="{line_x + 3:.1f}" y="12">{escape(pick_label)}</text>'
         f"{ticks}"

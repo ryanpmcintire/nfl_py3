@@ -176,9 +176,7 @@ def main(argv=None):
     parser.add_argument("--draws", type=int, default=DEFAULT_DRAWS)
     parser.add_argument("--fit-iterations", type=int, default=DEFAULT_FIT_ITERATIONS)
     parser.add_argument("--seed", type=int, default=20260923)
-    parser.add_argument(
-        "--grid", default=",".join(str(value) for value in DEFAULT_GRID_POINTS)
-    )
+    parser.add_argument("--grid", default=",".join(str(value) for value in DEFAULT_GRID_POINTS))
     args = parser.parse_args(argv)
     grid = tuple(float(value) for value in args.grid.split(","))
 

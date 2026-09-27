@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-26T21:51:31.945224+00:00`
+Refreshed at: `2026-09-27T02:35:55.468008+00:00`
 
 ## Start here
 
@@ -21,19 +21,29 @@ Refreshed at: `2026-09-26T21:51:31.945224+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `f62011e41947` — Simulator workers stop growing memory game after game
-- Pending change set: 11 paths
+- Baseline commit: `53c98ee4fed9` — SIM-08 re-grade: simulator adds nothing beyond recalibrating the served probability
+- Pending change set: 50 paths
   - ` M AGENTS.md`
   - ` M CURRENT_PREDICTIONS.md`
-  - `M  ROADMAP.md`
+  - `M  HANDOFF.md`
+  - ` M docs/agent_workflow.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/sim08-simulator-rebuild.md`
+  - `A  docs/lanes/backlog-resumption-2026-09-26.md`
+  - `A  docs/lanes/backlog-watchdog-2026-09-26.md`
+  - `A  docs/lanes/done/card-ledger-check-completeness.md`
+  - `M  docs/lanes/done/conditional-signal-atlas.md`
+  - `A  docs/lanes/done/repository-verification-cleanup.md`
+  - `A  docs/lanes/done/roadmap-inventory-restoration.md`
+  - `A  docs/lanes/done/sim04-sim05-ruff-repair.md`
+  - ` M docs/lanes/lead53-sunday-renomination.md`
+  - ` M docs/lanes/positive-control-power.md`
+  - ` M docs/lanes/sim08-simulator-rebuild.md`
   - ` M docs/model.html`
-  - `M  docs/sim04_unit_log.md`
-  - `M  registry/weak_signals.json`
-  - `?? docs/lanes/windows-shell-popup.md`
+  - `M  scripts/capture_bovada_private.py`
+  - `M  scripts/injury_scenario_grade.py`
+  - ...and 30 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

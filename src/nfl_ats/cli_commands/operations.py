@@ -208,7 +208,7 @@ def _cmd_card_ledger_check(args: argparse.Namespace) -> None:
         _print_json(report)
     else:
         print(render_card_ledger_check_report(report))
-    if report.get("evaluated", True) and not report.get("ok", True):
+    if not report.get("ok", False):
         raise SystemExit(1)
 
 
@@ -221,7 +221,8 @@ def register_card_ledger_check(
         "card-ledger-check",
         help=(
             "compare the paper-decision ledger and the pick-revision ledger against "
-            "the currently served card for the active week; exits 1 on any disagreement"
+            "the currently served card for the active week; exits 1 on disagreement "
+            "or incomplete comparison"
         ),
     )
     check.add_argument("--json", action="store_true", help="emit a machine-readable report")
