@@ -24,7 +24,7 @@ tracked. A fresh checkout therefore includes the fail-closed policy registry
 required before any raw capture; API keys remain in the environment files
 described below.
 
-## Bring-up order
+## Original bring-up order (historical)
 
 1. Install WireGuard for Windows (`winget install WireGuard.WireGuard`,
    needs an admin prompt). Import `~/.wireguard/friend-wg0.conf`, activate
@@ -54,58 +54,41 @@ described below.
 `QUOTA-WARN` above 80 GiB. restic deduplicates, so weekly snapshots of a
 slowly growing tree cost roughly the week's new captures, not a full copy.
 
-## Second capture host: design
+## Second capture host: current repository behavior
 
-Owner's requirement (2026-09-10): both machines should be able to run the
-capture schedule. If this machine is off the server fills the window; if the
-server is off this machine does; if both are on, the two results are
-reconciled.
+**Read, 2026-09-26:** the scheduler selects the platform's uv executable and
+runs only capture jobs under `NFL_ATS_SCHEDULER_ROLE=capture`
+(`scripts/capture_scheduler.py:23`, `:1598`). The portability changes described
+in the original design are implemented. The deployment account below is
+historical; it does not establish the server's current health or deployed revision.
 
-### What already makes this tractable
+The primary scheduler invokes `scripts/sync_captures.py` every three hours.
+Its reconciliation behavior is (**read**, `scripts/sync_captures.py:208`):
 
-- Every capture is a directory named by its UTC timestamp
-  (`YYYYMMDDTHHMMSSZ`) under a per-source folder in `data/`. Two hosts
-  capturing the same window write two directories that never collide, so
-  merging is a union of directories, never a file overwrite.
-- The scheduler's dedupe guard reads the newest snapshot age from disk, so a
-  host that has just pulled the other host's capture for a window sees it as
-  already captured and skips its own.
-- The schedule is version-controlled in `SCHEDULE`, so both hosts run the
-  same jobs from the same commit.
+- An identical snapshot directory name is treated as already present locally;
+  the remote directory is deleted without a file comparison.
+- A local snapshot within that source's dedupe window wins. File names and sizes
+  are summarized in a `DUP` log entry, then the remote directory is deleted,
+  including when sizes differ. Distinct observations are not merged.
+- A remote snapshot that fills a local gap is copied and marked with
+  `capture_host`. Its file names and sizes must match the remote listing before
+  the remote directory is deleted. This check does not compare file contents.
+- `--keep-remote` suppresses all remote snapshot deletion. `--dry` skips copying,
+  deletion, and feature-table upload, but still queries SSH and writes the local
+  reconciliation log.
 
-### What has to change before the server can run it
+Thus the default sync does not retain both hosts' copies. Restic backup and
+remote capture reconciliation are separate operations. Changing duplicate
+retention or strengthening content verification is future work, not behavior
+already provided by this command.
 
-- `capture_scheduler.py` hard-codes `.tools/uv.exe` and ten jobs spawn
-  `powershell.exe -File scripts/*.ps1`; `odds_capture.ps1` hard-codes
-  `F:\Repos\nfl_py3`. The port is: resolve `uv` per platform, spawn `pwsh`
-  on Linux, and derive the repository path from the script location.
-- The Odds API key, the CFBD key and the Sportradar key would have to live
-  on the server for its captures to work. The server owner has root there
-  and can read anything the `friend` account holds. Decide which captures
-  the server runs: everything, or only the key-free public sources
-  (nflverse injuries, player snapshots, injury news, lineups, inactives,
-  referee assignments, PFR transactions) with the paid Odds API captures
-  staying on this machine.
-- Card-writing jobs (`weekly_lock`, every `refresh_*`, `settle_*`,
-  `publish`) stay single-writer on this machine. The server captures; it
-  never forms or publishes a card.
+The feature table is uploaded when its byte size differs from the remote file
+(**read**, `scripts/sync_captures.py:151`); equal sizes are treated as current.
+That is a size check, not proof that the contents or model provenance match.
+The table and any required private environment values must be deployed before
+all capture jobs can work. Keep credentials outside tracked repository files.
 
-### Reconciliation rule
-
-- A `sync_captures` job on each host every two hours: list the other host's
-  snapshot directories over SSH, copy the ones missing locally, and never
-  overwrite an existing directory. Both copies of a doubly-captured window
-  stay on disk.
-- Each snapshot carries the capturing host in a `capture_host` field in its
-  manifest. When a consumer needs one snapshot for a window, it takes this
-  machine's capture when present and the server's otherwise. The choice is
-  a stated rule, not the timestamp, so the same window resolves the same
-  way on both hosts.
-- A window that both hosts captured is logged with the size of the
-  difference (rows added, rows changed) so a systematic disagreement between
-  the two vantage points surfaces instead of being averaged away.
-
-### Status, 2026-09-10 evening (measured)
+### Historical deployment record, 2026-09-10
 
 Backup side is complete: tunnel up (both WireGuard services `Automatic`, so
 it survives reboot), bootstrap key rotated out and deleted, repository
@@ -161,8 +144,8 @@ the server's schedule shows 81 enabled / 96 disabled jobs.
 the sync job now pushes the local copy to the server whenever its size changes.
 Memory during the nflverse capture stayed under 200 MB used.
 
-Remaining bring-up on the server, in order (the sandbox refused to copy
-code or keys to the server, so the owner runs the first two by hand):
+Original deployment checklist (historical; reconcile it with the completed
+steps above before using it for a new deployment):
 
 1. Copy the code:
    `scp -r pyproject.toml uv.lock README.md src scripts registry config deploy backup-server:/data/nfl_py3/`

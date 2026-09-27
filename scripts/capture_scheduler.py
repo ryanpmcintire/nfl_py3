@@ -1582,7 +1582,8 @@ SCHEDULE: tuple[Job, ...] = (
             "(no local capture of that source within the job's dedupe window), marks "
             "each pulled directory with a capture_host file, logs a file-level diff "
             "for windows both hosts captured (this machine's copy is the one served), "
-            "and deletes a server copy only after the pulled files verify. Runs only "
+            "and removes accounted-for server copies; gap-filling pulls verify file "
+            "names and sizes before deletion. Runs only "
             "on the primary role; catch_up so a machine waking from sleep reconciles "
             "before its next refresh.",
             season_guarded=False,

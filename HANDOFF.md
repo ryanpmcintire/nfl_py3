@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-27T03:32:05.074523+00:00`
+Refreshed at: `2026-09-27T03:41:58.473882+00:00`
 
 ## Start here
 
@@ -21,8 +21,8 @@ Refreshed at: `2026-09-27T03:32:05.074523+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `ee8c7df3a740` — Retain Sunday Best Pick refresh attempt diagnostics
-- Pending change set: 17 paths
+- Baseline commit: `a6f4d3589995` — Preserve simulator transition outcomes and reconstruct terminal scores
+- Pending change set: 18 paths
   - ` M AGENTS.md`
   - ` M CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
@@ -30,12 +30,13 @@ Refreshed at: `2026-09-27T03:32:05.074523+00:00`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
+  - `A  docs/lanes/done/offsite-backup-runbook.md`
   - ` M docs/lanes/lead64-friday-designations.md`
   - ` M docs/lanes/positive-control-power.md`
-  - `M  docs/lanes/sim08-simulator-rebuild.md`
   - ` M docs/model.html`
+  - `M  docs/offsite_backup.md`
+  - `M  scripts/capture_scheduler.py`
   - ` M scripts/positive_control_power.py`
-  - `M  scripts/sim04_engine.py`
   - ` M src/nfl_ats/inactives_capture.py`
   - `?? docs/lanes/done/positive-control-power-history.md`
   - `?? docs/lanes/done/positive-control-power-study-history.md`
