@@ -1,18 +1,16 @@
-# Continuous backlog and watchdog
+# Backlog recovery and completion
 
 ## Goal
-Progress the authorized backlog with three concurrent bounded subagent assignments and a 30-minute liveness check; refill completed assignments immediately while useful work remains.
+Complete ready backlog work with bounded subagent assignments and frequent verified commits and pushes; retain future-data research as unresolved.
 
 ## State
-Active. Root live check at 2026-09-27 13:55 UTC found three workers running. The 1,800-second in-session timer uses session 2054; next scheduled check is 14:25 UTC. The timer cannot resume a closed chat. No persistent Codex scheduler or daemon was installed.
-
-Root is integrating POL-10/MOD-18, reviewing generated pages, and preparing repository verification. Publication passed after rebuilding probabilities for the scheduled active-model refresh. Push is blocked by automatic approval review; the approval question remains pending.
+Resumed 2026-09-27 with renewed owner authorization to commit and push. **Measured:** eleven earlier commits awaited push. Sunday nominee recording now preserves timestamp precision; a live refresh recorded the first Week 3 Sunday pairing. Card reconciliation respects valid recorded revisions without rewriting Tuesday decisions. The refresh table now clearly identifies replacement picks and omits internal policy labels.
 
 ## Tried
-Bounded assignments, immutable artifact validation, canonical prospective scoring, active-model probability rebuild, and four-page publication. Evidence and current pointers: `.tmp/backlog-active-context.md`.
+**Measured:** doctor, scheduler once, full pytest (1,645 passed), the eleven recorder tests, and 66 existing scheduler/refresh tests passed. Ruff and mypy passed before the separate worker integration. The live refresh published all four pages and reported zero card/ledger disagreements (16 paper rows, eight revisions); it changed no current side or Best Pick. Rendered-text review is `.tmp/resume-rendered-diff.txt`.
 
 ## Next
-Finish paired-input preparation, the default-off crew recorder, and missing-pick/rendered-page review. Refill workers on independent reviews and concrete backlog work. Freeze changes for full checks, refresh handoff, and save a verified local checkpoint. Continue the 30-minute liveness checks.
+Save and push this checkpoint; finish authenticated paired-input production and prospective crew scoring. The crew recorder passed scoped checks and immutable-replay probes; its scorer integration is paused while the worker resolves the owner's CHI quarterback display report. Logs use `.tmp/resume-*`.
 
 ## Open
-Persistent scheduling without reintroducing console popups remains unverified. Do not start the Codex daemon. Preserve prospective immutability and all research/serving gates; zero crossing never closes a signal. Stop immediately on owner instruction.
+**Measured:** ntfy is configured, and the headless capture scheduler restarted with the Best Pick alert hook. Existing side alerts remain active. No message was due from the live refresh because no picks changed. **Read:** local reader text already lists Caleb Williams Out and a backup used by the model; contradictory lineup/report text is under review. Preserve owner instruction edits and unrelated scheduled registry files. No research closure or serving promotion is made.

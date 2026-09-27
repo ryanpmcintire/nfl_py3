@@ -1864,14 +1864,12 @@ def _served_side_rows(
         if game.eligible:
             side = game.new_pick_side
             home_probability = float(game.new_home_cover_probability)
-            policy = game.movement_policy
         else:
             recorded = ledger_latest.get(game.game_id) if ledger_latest else None
             if recorded is None:
                 continue
             side = str(recorded.get("new_pick_side") or "")
             home_probability = float(recorded.get("new_home_cover_probability") or 0.5)
-            policy = str(recorded.get("movement_policy") or "")
         if side not in ("HOME", "AWAY") or side == published:
             continue
         estimate = home_probability if side == "HOME" else 1.0 - home_probability
@@ -1882,8 +1880,7 @@ def _served_side_rows(
                 "Matchup": f"{game.away_team} at {game.home_team}",
                 "Previous pick": str(previous_team),
                 "New pick": str(new_team),
-                "Model estimate": f"{estimate:.1%}",
-                "Policy": policy,
+                "Cover chance": f"{estimate:.1%}",
             }
         )
     return rows
@@ -1895,25 +1892,20 @@ def _refresh_section_markdown(
     renomination: SundayRenomination | None = None,
     ledger_latest: Mapping[str, Mapping[str, Any]] | None = None,
 ) -> str:
-    heading = f"## Late-week refresh (as of {result.computed_at_utc.isoformat()})\n\n"
-    label = f" ({note})" if note else ""
+    heading = "## Late-week refresh\n\n"
     star = _renomination_sentence(renomination)
     rows = _served_side_rows(result, ledger_latest)
     if not rows:
-        return heading + star + f"No pick changes since the Tuesday card{label}.\n"
+        return heading + star + "No pick changes since the Tuesday card.\n"
 
     table = pd.DataFrame(rows).to_markdown(index=False)
     changed = rows
     plural = "s" if len(changed) != 1 else ""
     intro = (
-        f"{len(changed)} pick{plural} changed since the Tuesday card{label}, recomputed with "
-        "current data but scored at the frozen Tuesday grading line. Only games whose "
-        "deadline (their own kickoff, or that week's Sunday 4:00 PM ET if earlier) had not "
-        'yet passed were eligible. "Policy" identifies the probability rule recorded for '
-        f"that revision. `{PICK_PROBABILITY_POLICY}` combines the model, situational evidence "
-        "and available line movement into the same calibrated chance shown on the card. "
-        "Earlier revisions retain their original policy labels. Where this table and the "
-        "picks table above disagree, the side here is the one being played.\n\n"
+        f"{len(changed)} pick{plural} changed since the Tuesday card. "
+        "The new picks below replace the corresponding picks above; "
+        "each keeps its original grading line. "
+        "Cover chance uses the latest information available before the pick locked.\n\n"
     )
     return heading + star + intro + table + "\n"
 

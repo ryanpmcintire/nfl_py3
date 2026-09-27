@@ -2110,12 +2110,24 @@ def notify_after_job(job: Job, status: str, detail: str, stdout: str) -> None:
     if isinstance(best_pick_ledger, dict) and job.name.startswith("refresh_sun"):
         log(f"BEST-PICK-LEDGER {job.name}: {json.dumps(best_pick_ledger, default=str)[:300]}")
     changes = [game for game in payload.get("changed_picks", []) if game.get("eligible", True)]
-    if not changes:
-        return
     lines = [describe_pick_change(g) for g in changes]
+    nomination = payload.get("best_pick_renomination")
+    if (
+        isinstance(nomination, dict)
+        and nomination.get("served") is True
+        and nomination.get("moved") is True
+        and nomination.get("previous_game_id")
+        and nomination.get("game_id")
+        and nomination["previous_game_id"] != nomination["game_id"]
+    ):
+        previous = nomination.get("previous_matchup", "the previous game")
+        current = nomination.get("matchup", "the new game")
+        lines.append(f"Best Pick moved from {previous} to {current}.")
+    if not lines:
+        return
     log(f"PICK-CHANGE {job.name}: " + "; ".join(lines))
     send_notification(
-        f"Pick change ({len(changes)}) after {job.name}",
+        "NFL pick update",
         "\n".join(lines),
         priority="urgent",
     )

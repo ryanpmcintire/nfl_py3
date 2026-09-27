@@ -8,7 +8,7 @@ import pandas as pd
 
 from nfl_ats.board_content import load_board_content
 from nfl_ats.clv import current_played_card_view, load_paper_decisions
-from nfl_ats.pick_refresh import load_pick_revisions
+from nfl_ats.pick_refresh import load_pick_revisions, pick_deadline, sunday_pick_lock
 
 
 def _matchup(away: str, home: str) -> str:
@@ -71,6 +71,26 @@ def check_card_ledger_consistency(
         paper["season"].astype(int).eq(season) & paper["week"].astype(int).eq(week)
     ]
 
+    revisions = load_pick_revisions(artifacts_root)
+    revisions_week = revisions.loc[
+        revisions["season"].astype(int).eq(season) & revisions["week"].astype(int).eq(week)
+    ]
+    if not revisions_week.empty:
+        recorded_at = pd.to_datetime(
+            revisions_week["revision_recorded_at_utc"], utc=True, errors="coerce"
+        )
+        kickoff_by_game = dict(zip(card["game_id"].astype(str), played.kickoffs, strict=True))
+        revision_kickoffs = revisions_week["game_id"].astype(str).map(kickoff_by_game)
+        lock = sunday_pick_lock(played.kickoffs)
+        deadlines = revision_kickoffs.map(
+            lambda kickoff: pick_deadline(kickoff, lock) if pd.notna(kickoff) else pd.NaT
+        )
+        revisions_week = revisions_week.loc[
+            recorded_at.le(checked_at) & recorded_at.lt(deadlines)
+        ].copy()
+        revisions_week["revision_recorded_at_utc"] = recorded_at.loc[revisions_week.index]
+    latest_revision_side = _latest_revision_side_by_game(revisions_week)
+
     disagreements: list[dict[str, Any]] = []
     for _, row in paper_week.iterrows():
         game_id = str(row["game_id"])
@@ -79,7 +99,7 @@ def check_card_ledger_consistency(
         served_side = served_pick_side.get(game_id)
         if served_side is None:
             continue
-        ledger_side = str(row["pick_side"])
+        ledger_side = latest_revision_side.get(game_id, str(row["pick_side"]))
         if served_side != ledger_side:
             disagreements.append(
                 {
@@ -104,12 +124,6 @@ def check_card_ledger_consistency(
                     "served_value": str(served_flip),
                 }
             )
-
-    revisions = load_pick_revisions(artifacts_root)
-    revisions_week = revisions.loc[
-        revisions["season"].astype(int).eq(season) & revisions["week"].astype(int).eq(week)
-    ]
-    latest_revision_side = _latest_revision_side_by_game(revisions_week)
 
     board_side_by_game: dict[str, str] = {}
     board_content_error = ""

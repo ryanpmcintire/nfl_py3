@@ -261,7 +261,9 @@ def _record_best_pick_refresh(
             column = f"sunday_{name}"
             existing[column] = existing[column].astype(object)
             existing.at[index, column] = value
-        existing["paired_at_utc"] = pd.to_datetime(existing["paired_at_utc"], utc=True)
+        existing["paired_at_utc"] = pd.to_datetime(existing["paired_at_utc"], utc=True).astype(
+            "datetime64[ns, UTC]"
+        )
         existing.at[index, "paired_at_utc"] = instant
         existing["nominees_differ"] = existing["nominees_differ"].astype(object)
         existing.at[index, "nominees_differ"] = arm["game_id"] != frozen["tuesday_game_id"]

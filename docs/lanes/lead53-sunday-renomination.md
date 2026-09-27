@@ -29,6 +29,11 @@ line. The exact recorder result and skip branch are unavailable.
 recording-enabled Sunday attempt now writes its result or skip reason to an atomic latest-attempt diagnostic.
 No validator was weakened and no historical decision was backfilled.
 
+**Measured 2026-09-27:** the live Sunday refresh recorded the Week 3 Sunday pairing after
+normalizing `paired_at_utc` to nanosecond precision. The prior millisecond Parquet column
+rejected a microsecond recording time. All eleven existing recorder tests passed; the
+live result is saved in `.tmp/resume-refresh-result.json`. No earlier week was backfilled.
+
 ## Tried
 
 Read the scheduler log, Week 2 failure metadata and stderr, the prospective ledger, the original-card loader,
@@ -37,7 +42,7 @@ and the recorder and scheduler call paths. The current production ledger probe i
 
 ## Next
 
-Observe the next eligible live Tuesday and Sunday results and preserve the diagnostic with the scheduler log.
+Keep collecting future Tuesday/Sunday pairs; the current Week 3 pair is recorded. Preserve each attempt diagnostic with the scheduler log.
 
 ## Open
 

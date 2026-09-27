@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-27T14:17:39.609650+00:00`
+Refreshed at: `2026-09-27T15:18:39.468370+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-09-27T14:17:39.609650+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `91861bdc44a0` — Refresh handoff after provenance checkpoint
-- Pending change set: 36 paths
+- Baseline commit: `c4aca3ad0c88` — Harden prospective scoring and clarify board evidence
+- Pending change set: 21 paths
   - ` M AGENTS.md`
-  - ` M CURRENT_PREDICTIONS.md`
+  - `M  CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
-  - ` M README.md`
-  - `M  ROADMAP.md`
   - ` M docs/agent_workflow.md`
-  - `M  docs/artifact_retention.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
   - `M  docs/index.html`
   - `M  docs/lanes/backlog-watchdog-2026-09-26.md`
-  - `A  docs/lanes/mod18-paired-opener-evaluation.md`
-  - `M  docs/lanes/pol10-prospective-2026.md`
-  - `M  docs/model.html`
-  - `A  registry/experiments/prospective-score/20260927T083507Z.json`
-  - `A  registry/experiments/prospective-score/20260927T095843Z.json`
-  - `A  registry/experiments/prospective-score/20260927T125136Z.json`
-  - `A  registry/experiments/prospective-score/20260927T133936Z.json`
-  - `M  scripts/prospective_scorecard_2026.py`
-  - `M  src/nfl_ats/board_site_content.py`
-  - ...and 16 more
+  - `M  docs/lanes/lead53-sunday-renomination.md`
+  - `M  scripts/capture_scheduler.py`
+  - `M  src/nfl_ats/best_pick_refresh_prospective.py`
+  - `M  src/nfl_ats/card_ledger_check.py`
+  - ` M src/nfl_ats/cli_commands/prospective.py`
+  - `M  src/nfl_ats/pick_refresh.py`
+  - ` M src/nfl_ats/prospective_scoring.py`
+  - `M  tiebreaker.json`
+  - `?? docs/lanes/windows-shell-popup.md`
+  - `?? registry/experiments/margin-backtest/20260927T134152Z.json`
+  - `?? registry/experiments/margin-predict/2026-week-03-20260927T134352Z.json`
+  - `?? registry/experiments/opener-evaluation/20260927T134738Z.json`
+  - `?? registry/experiments/waterfall-feed/20260927T134851Z.json`
+  - `?? src/nfl_ats/paired_opener_inputs.py`
+  - ...and 1 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

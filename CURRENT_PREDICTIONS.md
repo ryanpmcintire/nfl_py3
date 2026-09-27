@@ -1,8 +1,8 @@
 # NFL ATS predictions: 2026 Week 3
 
-Published from the synchronized weak stack model, 2026-09-26 17:52 UTC.
+Published from the synchronized weak stack model, 2026-09-27 13:52 UTC.
 
-<!-- publication: model_id=284a38bf00c29c53 published_at_utc=2026-09-26T17:52:06.927679+00:00 -->
+<!-- publication: model_id=397c9cec7b097082 published_at_utc=2026-09-27T13:52:14.224433+00:00 -->
 
 > **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 
@@ -10,14 +10,14 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 
 **Production policy active:** one calibrated probability combines the model, situational evidence and available line movement to choose each side.
 
-**Best Pick of the week (★):** CAR -2.5 in CAR at CLE. The pool scores one Best Pick per regular-season week. This pick was provisionally chosen because it has the highest estimated chance to cover among eligible games. Its estimated lead over the other picks is uncertain.
+**Best Pick of the week (★):** CHI +3.5 in PHI at CHI. The pool scores one Best Pick per regular-season week. This pick was provisionally chosen because it has the highest estimated chance to cover among eligible games. Its estimated lead over the other picks is uncertain.
 
 | Date        | Matchup    | ATS prediction   | Cover chance   |
 |:------------|:-----------|:-----------------|:---------------|
 | Thu, Sep 24 | ATL at GB  | ATL +6.5         | 60.5%          |
 | Sun, Sep 27 | ARI at SF  | ARI +8.5         | 50.6%          |
 | Sun, Sep 27 | BAL at DAL | DAL +2.5         | 54.1%          |
-| Sun, Sep 27 | CAR at CLE | ★ CAR -2.5       | 57.9%          |
+| Sun, Sep 27 | CAR at CLE | CAR -2.5         | 57.9%          |
 | Sun, Sep 27 | CIN at PIT | CIN -3.5         | 55.8%          |
 | Sun, Sep 27 | HOU at IND | IND +2.5         | 55.5%          |
 | Sun, Sep 27 | KC at MIA  | MIA +10.5        | 51.0%          |
@@ -29,24 +29,24 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 | Sun, Sep 27 | NYJ at DET | NYJ +6.5         | 50.8%          |
 | Sun, Sep 27 | SEA at WAS | SEA -6.5         | 52.1%          |
 | Sun, Sep 27 | TEN at NYG | TEN +3.5         | 50.4%          |
-| Mon, Sep 28 | PHI at CHI | CHI +3.5         | 56.7%          |
+| Mon, Sep 28 | PHI at CHI | ★ CHI +3.5       | 64.6%          |
 
-**Tiebreaker (last game, PHI at CHI):** CHI 21 - PHI 19, total 40 (market total 41) -- consistent with the CHI +3.5 pick.
+**Tiebreaker (last game, PHI at CHI):** CHI 21 - PHI 20, total 41 (market total 42) -- consistent with the CHI +3.5 pick.
 
 **Source freshness: COMPLETE.** Complete: odds opener, odds refresh, injuries nflverse, injuries nflverse timestamps, inactives, projected lineups, referee assignments, pfr transactions, airnow weather. Degraded (allowed fallback): none. Blocked: none. Not due yet: none. Not set up: injuries sportradar. Budgets, fallbacks and source states: `docs/source_freshness_policy.md`.
 
 `Cover chance` is the picked side's chance to cover. Cover chance is a fitted estimate, excluding ties. Across 1,503 past games with each season held out of fitting, strong estimates won 60% and slight estimates won 55%. These broad groups do not establish a large advantage for the single highest estimate.
 
 <!-- LATE_WEEK_REFRESH:START -->
-## Late-week refresh (as of 2026-09-26T17:54:25.114434+00:00)
+## Late-week refresh
 
-5 picks changed since the Tuesday card (lineups_refresh), recomputed with current data but scored at the frozen Tuesday grading line. Only games whose deadline (their own kickoff, or that week's Sunday 4:00 PM ET if earlier) had not yet passed were eligible. "Policy" identifies the probability rule recorded for that revision. `four_term_pick_probability_v1` combines the model, situational evidence and available line movement into the same calibrated chance shown on the card. Earlier revisions retain their original policy labels. Where this table and the picks table above disagree, the side here is the one being played.
+5 picks changed since the Tuesday card. The new picks below replace the corresponding picks above; each keeps its original grading line. Cover chance uses the latest information available before the pick locked.
 
-| Matchup    | Previous pick   | New pick   | Model estimate   | Policy                        |
-|:-----------|:----------------|:-----------|:-----------------|:------------------------------|
-| HOU at IND | HOU             | IND        | 55.5%            | four_term_pick_probability_v1 |
-| KC at MIA  | KC              | MIA        | 51.0%            | four_term_pick_probability_v1 |
-| LA at DEN  | LA              | DEN        | 50.3%            | four_term_pick_probability_v1 |
-| MIN at TB  | MIN             | TB         | 53.4%            | four_term_pick_probability_v1 |
-| SEA at WAS | WAS             | SEA        | 52.1%            | four_term_pick_probability_v1 |
+| Matchup    | Previous pick   | New pick   | Cover chance   |
+|:-----------|:----------------|:-----------|:---------------|
+| HOU at IND | HOU             | IND        | 55.5%          |
+| KC at MIA  | KC              | MIA        | 51.0%          |
+| LA at DEN  | LA              | DEN        | 50.3%          |
+| MIN at TB  | MIN             | TB         | 53.4%          |
+| SEA at WAS | WAS             | SEA        | 52.1%          |
 <!-- LATE_WEEK_REFRESH:END -->
