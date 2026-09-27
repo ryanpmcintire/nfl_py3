@@ -9,7 +9,7 @@ import pandas as pd
 
 from nfl_ats.best_pick_renomination import renomination_pool, select_renominee
 from nfl_ats.clv import refuse_if_outside_recording_lock_window
-from nfl_ats.io import atomic_parquet
+from nfl_ats.io import atomic_json, atomic_parquet
 from nfl_ats.pick_refresh import RefreshResult, original_card, pick_deadline, sunday_pick_lock
 from nfl_ats.prospective_scoring import settle_prospective_picks
 from nfl_ats.recorder_override import replace_week_rows
@@ -29,6 +29,10 @@ ARM_FIELDS = (
 
 def ledger_path(artifacts_root: Path) -> Path:
     return artifacts_root / "prospective" / "best_pick_refresh_decisions.parquet"
+
+
+def diagnostic_path(artifacts_root: Path) -> Path:
+    return artifacts_root / "prospective" / "best_pick_refresh_latest_attempt.json"
 
 
 def load_decisions(artifacts_root: Path) -> pd.DataFrame:
@@ -166,7 +170,7 @@ def record_best_pick_tuesday(
         return skip(f"{CHALLENGER_ID}: {error}")
 
 
-def record_best_pick_refresh(
+def _record_best_pick_refresh(
     artifacts_root: Path,
     data_root: Path,
     plan: RefreshResult,
@@ -269,3 +273,30 @@ def record_best_pick_refresh(
         }
     except (OSError, ValueError, KeyError, TypeError) as error:
         return skip(f"{CHALLENGER_ID}: {error}")
+
+
+def record_best_pick_refresh(
+    artifacts_root: Path,
+    data_root: Path,
+    plan: RefreshResult,
+    *,
+    record_decisions: bool = False,
+) -> dict[str, Any]:
+    result = _record_best_pick_refresh(
+        artifacts_root,
+        data_root,
+        plan,
+        record_decisions=record_decisions,
+    )
+    if record_decisions:
+        atomic_json(
+            {
+                "attempted_at_utc": plan.computed_at_utc,
+                "season": plan.season,
+                "week": plan.week,
+                "refresh_run_id": plan.refresh_run_id,
+                "result": result,
+            },
+            diagnostic_path(artifacts_root),
+        )
+    return result

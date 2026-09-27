@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-27T03:06:52.334103+00:00`
+Refreshed at: `2026-09-27T03:26:37.840999+00:00`
 
 ## Start here
 
@@ -21,8 +21,8 @@ Refreshed at: `2026-09-27T03:06:52.334103+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `74b7150c549f` — Document removed retention tooling and preserve open backlog
-- Pending change set: 18 paths
+- Baseline commit: `cac0187df578` — Refresh retention checkpoint handoff
+- Pending change set: 22 paths
   - ` M AGENTS.md`
   - ` M CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
@@ -30,17 +30,20 @@ Refreshed at: `2026-09-27T03:06:52.334103+00:00`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - ` M docs/lanes/lead53-sunday-renomination.md`
+  - `M  docs/lanes/backlog-watchdog-2026-09-26.md`
+  - `A  docs/lanes/done/lead53-skip-diagnostics.md`
+  - `M  docs/lanes/lead53-sunday-renomination.md`
+  - ` M docs/lanes/lead64-friday-designations.md`
   - ` M docs/lanes/positive-control-power.md`
   - ` M docs/lanes/sim08-simulator-rebuild.md`
   - ` M docs/model.html`
   - ` M scripts/positive_control_power.py`
   - ` M scripts/sim04_engine.py`
-  - ` M src/nfl_ats/best_pick_refresh_prospective.py`
-  - ` M tests/test_best_pick_refresh_prospective.py`
-  - `?? docs/lanes/done/lead53-skip-diagnostics.md`
+  - `M  src/nfl_ats/best_pick_refresh_prospective.py`
+  - ` M src/nfl_ats/inactives_capture.py`
+  - `M  tests/test_best_pick_refresh_prospective.py`
   - `?? docs/lanes/done/positive-control-power-history.md`
-  - `?? docs/lanes/windows-shell-popup.md`
+  - ...and 2 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

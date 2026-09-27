@@ -69,7 +69,11 @@ def inputs(tmp_path: Path, monkeypatch):
         for row in original.itertuples()
     )
     plan = SimpleNamespace(
-        season=2026, week=1, computed_at_utc=pd.Timestamp("2026-09-13T14:00:00+00:00"), games=games
+        season=2026,
+        week=1,
+        refresh_run_id="test-refresh",
+        computed_at_utc=pd.Timestamp("2026-09-13T14:00:00+00:00"),
+        games=games,
     )
     return artifacts, data, publication, original, plan, snapshot
 
