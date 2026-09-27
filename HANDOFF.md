@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-27T03:42:40.208589+00:00`
+Refreshed at: `2026-09-27T04:57:43.227672+00:00`
 
 ## Start here
 
@@ -21,23 +21,29 @@ Refreshed at: `2026-09-27T03:42:40.208589+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `66a78fe10b70` — Align backup runbook with capture reconciliation behavior
-- Pending change set: 15 paths
+- Baseline commit: `10adaf4d2df9` — Reject inactive-feed rows captured after scheduled kickoff
+- Pending change set: 21 paths
   - ` M AGENTS.md`
   - ` M CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
+  - `M  ROADMAP.md`
   - ` M docs/agent_workflow.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/lead64-friday-designations.md`
-  - ` M docs/lanes/positive-control-power.md`
+  - `A  docs/lanes/artifact-retention-inventory.md`
+  - `M  docs/lanes/backlog-watchdog-2026-09-26.md`
+  - `A  docs/lanes/done/pol09-best-pick-ranking-status.md`
+  - `A  docs/lanes/done/positive-control-power-history.md`
+  - `A  docs/lanes/done/positive-control-power-study-history.md`
+  - `A  docs/lanes/done/sim08-late-game-diagnostic-history.md`
+  - `A  docs/lanes/done/sim08-transition-repair-history.md`
+  - `A  docs/lanes/done/ui19-season-record-status.md`
+  - `M  docs/lanes/positive-control-power.md`
+  - `M  docs/lanes/sim08-simulator-rebuild.md`
   - ` M docs/model.html`
-  - ` M scripts/positive_control_power.py`
-  - `M  src/nfl_ats/inactives_capture.py`
-  - `?? docs/lanes/done/positive-control-power-history.md`
-  - `?? docs/lanes/done/positive-control-power-study-history.md`
-  - `?? docs/lanes/windows-shell-popup.md`
+  - `M  scripts/positive_control_power.py`
+  - ...and 1 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

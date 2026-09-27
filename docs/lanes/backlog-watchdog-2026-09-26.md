@@ -5,10 +5,10 @@ Keep three bounded backlog workers busy and check their queue every 30 minutes.
 The owner explicitly authorized continuous work and automatic replenishment.
 
 ## State
-Three workers active: simulator late-event sampling, inactives kickoff filtering,
-and evaluator-matched lead59 bootstrap. Refill on completion messages as well as
-30-minute session checks. Last check: 2026-09-27 03:25 UTC;
-next check: 2026-09-27 03:55 UTC.
+Three workers active: expanded simulator support, POL-10 ledger adapters,
+and MOD-17 implementation audit. Refill on completion messages as well as
+30-minute session checks. Last check: 2026-09-27 04:55 UTC;
+next check: 2026-09-27 05:25 UTC.
 
 ## Tried
 - **Reported (owner):** `codex --no-daemon` stopped shell popups.
@@ -19,7 +19,7 @@ next check: 2026-09-27 03:55 UTC.
   acknowledged missed lock job. Its `--once` check exited 0.
 
 ## Next
-Check live workers by 03:55 UTC, refill finished assignments immediately,
+Check live workers by 05:25 UTC, refill finished assignments immediately,
 and checkpoint reviewed changes while root handles operational work.
 
 ## Open
