@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-27T02:55:57.720890+00:00`
+Refreshed at: `2026-09-27T03:05:56.865241+00:00`
 
 ## Start here
 
@@ -21,16 +21,18 @@ Refreshed at: `2026-09-27T02:55:57.720890+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `18fff328d369` — Clear stale empty-feed status after successful inactives fallback
-- Pending change set: 19 paths
+- Baseline commit: `ccc3ff6729bb` — Refresh inactives checkpoint handoff and backlog watch
+- Pending change set: 21 paths
   - ` M AGENTS.md`
   - ` M CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
+  - `M  ROADMAP.md`
   - ` M docs/agent_workflow.md`
+  - `M  docs/artifact_retention.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/backlog-watchdog-2026-09-26.md`
+  - `A  docs/lanes/done/retention-tooling-availability.md`
   - ` M docs/lanes/lead53-sunday-renomination.md`
   - ` M docs/lanes/positive-control-power.md`
   - ` M docs/lanes/sim08-simulator-rebuild.md`
@@ -41,7 +43,7 @@ Refreshed at: `2026-09-27T02:55:57.720890+00:00`
   - ` M tests/test_best_pick_refresh_prospective.py`
   - `?? docs/lanes/done/lead53-skip-diagnostics.md`
   - `?? docs/lanes/done/positive-control-power-history.md`
-  - `?? docs/lanes/windows-shell-popup.md`
+  - ...and 1 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
