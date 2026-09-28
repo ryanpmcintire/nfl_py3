@@ -7,7 +7,16 @@ import numpy as np
 import pandas as pd
 
 from nfl_ats.data import DataContractError
+from nfl_ats.market_quote_proof import (
+    resolve_exact_market_quote_proofs,
+    verify_exact_market_quote_sources,
+)
+from nfl_ats.provenance import sha256_file
 from nfl_ats.public_betting_live import SITE_TEAM_ALIASES
+from nfl_ats.public_betting_proof import (
+    load_verified_public_snapshots,
+    verify_public_snapshot_sources,
+)
 from nfl_ats.published_probability_history import load_frozen_probability_history
 
 ALIAS: dict[str, str] = {**SITE_TEAM_ALIASES, "JAC": "JAX"}
@@ -82,7 +91,7 @@ def require_columns(frame, columns, label):
         raise DataContractError(f"{label} is missing columns: {', '.join(missing)}")
 
 
-def load_market_quotes(artifacts_root, served):
+def load_market_quotes(data_root, artifacts_root, served):
     ledger_path = artifacts_root / "clv_ledger" / "decisions.parquet"
     if not ledger_path.is_file():
         raise DataContractError(f"Missing immutable decision ledger: {ledger_path}")
@@ -103,31 +112,78 @@ def load_market_quotes(artifacts_root, served):
     ]
     rows = []
     for game in served.itertuples(index=False):
-        decision = ledger.loc[ledger["game_id"].astype(str).eq(str(game.game_id))]
-        if len(decision) != 1:
-            raise DataContractError(
-                "Expected one immutable market decision for "
-                f"game_id={game.game_id}, found {len(decision)}"
+        publication = pd.Timestamp(game.published_at_utc)
+        published_values = {
+            "artifact": getattr(game, "baseline_forecast_artifact", pd.NA),
+            "created": getattr(game, "baseline_created_at_utc", pd.NaT),
+            "line": getattr(game, "baseline_home_spread", pd.NA),
+            "recommendations_sha256": getattr(game, "baseline_recommendations_sha256", pd.NA),
+            "metadata_sha256": getattr(game, "baseline_metadata_sha256", pd.NA),
+        }
+        published_present = any(not pd.isna(value) for value in published_values.values())
+        if published_present:
+            if any(pd.isna(value) for value in published_values.values()):
+                raise DataContractError(
+                    f"Incomplete published baseline binding for game_id={game.game_id}"
+                )
+            artifact = Path(str(published_values["artifact"]))
+            recorded_at = publication
+            forecast_at = pd.to_datetime(published_values["created"], utc=True, errors="coerce")
+            decision_line = float(published_values["line"])
+            expected_recommendations_sha256 = str(published_values["recommendations_sha256"])
+            expected_metadata_sha256 = str(published_values["metadata_sha256"])
+            binding_source = "published_pick"
+        else:
+            decision = ledger.loc[ledger["game_id"].astype(str).eq(str(game.game_id))]
+            if len(decision) != 1:
+                raise DataContractError(
+                    "Expected one immutable market decision for "
+                    f"game_id={game.game_id}, found {len(decision)}"
+                )
+            decision = decision.iloc[0]
+            recorded_at = pd.to_datetime(decision["recorded_at_utc"], utc=True, errors="coerce")
+            forecast_at = pd.to_datetime(
+                decision["forecast_created_at_utc"], utc=True, errors="coerce"
             )
-        decision = decision.iloc[0]
-        deadline = pd.Timestamp(game.pick_deadline_utc)
-        recorded_at = pd.to_datetime(decision["recorded_at_utc"], utc=True, errors="coerce")
-        forecast_at = pd.to_datetime(decision["forecast_created_at_utc"], utc=True, errors="coerce")
+            decision_line = float(decision["decision_home_spread"])
+            artifact = Path(str(decision["forecast_artifact"]))
+            expected_recommendations_sha256 = ""
+            expected_metadata_sha256 = ""
+            binding_source = "legacy_decision_ledger"
         if pd.isna(recorded_at) or pd.isna(forecast_at):
             raise DataContractError(f"Invalid market lineage time for game_id={game.game_id}")
-        if recorded_at > deadline or forecast_at > deadline:
-            raise DataContractError(f"Market lineage is after deadline for game_id={game.game_id}")
-        decision_line = float(decision["decision_home_spread"])
+        if recorded_at > publication or forecast_at > publication:
+            raise DataContractError(
+                f"Market lineage is after publication for game_id={game.game_id}"
+            )
+        if forecast_at > recorded_at:
+            raise DataContractError(
+                f"Market forecast is after its binding for game_id={game.game_id}"
+            )
         if not np.isfinite(decision_line) or not np.isclose(
             decision_line, float(game.decision_home_spread), atol=1e-9, rtol=0.0
         ):
             raise DataContractError(f"Immutable decision line mismatch for game_id={game.game_id}")
-        artifact = Path(str(decision["forecast_artifact"]))
         if artifact.is_absolute() or ".." in artifact.parts:
             raise DataContractError(f"Invalid forecast artifact for game_id={game.game_id}")
         quote_path = artifacts_root / artifact / "recommendations.csv"
-        if not quote_path.is_file():
+        metadata_path = artifacts_root / artifact / "metadata.json"
+        if not quote_path.is_file() or not metadata_path.is_file():
             raise DataContractError(f"Missing immutable market quote: {quote_path}")
+        recommendations_sha256 = sha256_file(quote_path)
+        metadata_sha256 = sha256_file(metadata_path)
+        if expected_recommendations_sha256 and (
+            recommendations_sha256 != expected_recommendations_sha256
+        ):
+            raise DataContractError(f"Market quote hash mismatch for game_id={game.game_id}")
+        if expected_metadata_sha256 and metadata_sha256 != expected_metadata_sha256:
+            raise DataContractError(f"Market metadata hash mismatch for game_id={game.game_id}")
+        metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+        metadata_created_at = pd.to_datetime(
+            metadata.get("created_at_utc"), utc=True, errors="coerce"
+        )
+        if pd.isna(metadata_created_at) or metadata_created_at != forecast_at:
+            raise DataContractError(f"Market metadata time mismatch for game_id={game.game_id}")
         quotes = pd.read_csv(quote_path)
         quote_columns = (
             "game_id",
@@ -155,8 +211,17 @@ def load_market_quotes(artifacts_root, served):
         ):
             raise DataContractError(f"Market quote line mismatch for game_id={game.game_id}")
         observed_at = pd.to_datetime(quote["market_observed_at_utc"], utc=True, errors="coerce")
-        if pd.isna(observed_at) or observed_at > deadline:
-            raise DataContractError(f"Market quote is after deadline for game_id={game.game_id}")
+        if pd.isna(observed_at):
+            raise DataContractError(
+                f"Market quote observation time is missing for game_id={game.game_id}"
+            )
+        if observed_at > publication:
+            raise DataContractError(f"Market quote is after publication for game_id={game.game_id}")
+        if observed_at > forecast_at:
+            raise DataContractError(
+                "Market quote is after forecast creation and may indicate production leakage for "
+                f"game_id={game.game_id}"
+            )
         home_odds = float(quote["home_spread_odds"])
         away_odds = float(quote["away_spread_odds"])
         if not np.isfinite([home_odds, away_odds]).all() or home_odds == 0 or away_odds == 0:
@@ -170,9 +235,26 @@ def load_market_quotes(artifacts_root, served):
                 "market_quote_recorded_at_utc": recorded_at,
                 "market_quote_forecast_created_at_utc": forecast_at,
                 "market_quote_artifact": str(artifact / "recommendations.csv").replace("\\", "/"),
+                "market_quote_binding_source": binding_source,
+                "market_quote_recommendations_sha256": recommendations_sha256,
+                "market_quote_metadata_sha256": metadata_sha256,
+                "market_observed_at_utc": observed_at,
+                "forecast_created_at_utc": forecast_at,
+                "published_at_utc": publication,
+                "decision_home_spread": float(game.decision_home_spread),
             }
         )
-    return pd.DataFrame(rows)
+    market = pd.DataFrame(rows)
+    quote_proofs = resolve_exact_market_quote_proofs(data_root / "market" / "raw", market)
+    market = market.merge(quote_proofs, on="game_id", validate="one_to_one")
+    unavailable = market["exact_market_status"].ne("ready")
+    if unavailable.any():
+        details = ", ".join(
+            f"{row.game_id} ({row.exact_market_reason})"
+            for row in market.loc[unavailable].itertuples(index=False)
+        )
+        raise DataContractError(f"Missing exact immutable market quote proof: {details}")
+    return market
 
 
 def implied_prob(odds):
@@ -181,49 +263,30 @@ def implied_prob(odds):
 
 
 def load_public_split(data_root, served):
-    paths = sorted((data_root / "raw" / "public_betting_live").glob("*/index.parquet"))
-    if not paths:
-        raise DataContractError("No immutable public-split artifacts were found")
-    frames = []
-    public_columns = (
-        "capture_ts",
-        "source",
-        "season",
-        "week",
-        "away_team",
-        "home_team",
-        "start_time_utc",
-        "spread_home_bet_pct",
-        "spread_away_bet_pct",
-        "has_any_public_data",
-    )
-    for path in paths:
-        frame = pd.read_parquet(path)
-        require_columns(frame, public_columns, f"Public-split artifact {path}")
-        frame = frame.loc[
-            pd.to_numeric(frame["season"], errors="coerce").eq(int(served["season"].iloc[0]))
-            & pd.to_numeric(frame["week"], errors="coerce").eq(int(served["week"].iloc[0]))
-        ].copy()
-        if frame.empty:
-            continue
-        frame["public_split_artifact"] = str(path).replace("\\", "/")
-        frame["capture_ts"] = pd.to_datetime(frame["capture_ts"], utc=True, errors="coerce")
-        frame["start_time_utc"] = pd.to_datetime(frame["start_time_utc"], utc=True, errors="coerce")
-        frames.append(frame)
-    if not frames:
+    public, issues = load_verified_public_snapshots(data_root, repo_root=Path("."))
+    if public.empty:
+        details = (
+            ", ".join(sorted(issues["public_verification_reason"].astype(str).unique()))
+            if not issues.empty
+            else "no captures"
+        )
+        raise DataContractError(f"No verified immutable public-split artifacts: {details}")
+    public = public.loc[
+        pd.to_numeric(public["season"], errors="coerce").eq(int(served["season"].iloc[0]))
+        & pd.to_numeric(public["week"], errors="coerce").eq(int(served["week"].iloc[0]))
+    ].copy()
+    if public.empty:
         raise DataContractError("No public-split artifacts match the declared season and week")
-    public = pd.concat(frames, ignore_index=True)
     public["away_n"] = public["away_team"].map(norm)
     public["home_n"] = public["home_team"].map(norm)
     rows = []
     missing = []
     for game in served.itertuples(index=False):
-        pair = {norm(str(game.away_team)), norm(str(game.home_team))}
         candidates = public.loc[
-            public["away_n"].isin(pair)
-            & public["home_n"].isin(pair)
+            public["away_n"].eq(norm(str(game.away_team)))
+            & public["home_n"].eq(norm(str(game.home_team)))
             & public["has_any_public_data"].fillna(False).astype(bool)
-            & public["capture_ts"].le(pd.Timestamp(game.pick_deadline_utc))
+            & public["capture_ts"].le(pd.Timestamp(game.published_at_utc))
         ].copy()
         if candidates.empty:
             missing.append(str(game.game_id))
@@ -239,15 +302,13 @@ def load_public_split(data_root, served):
             raise DataContractError(f"Invalid public-split time for game_id={game.game_id}")
         if pd.Timestamp(row["start_time_utc"]) != pd.Timestamp(game.kickoff):
             raise DataContractError(f"Public-split kickoff mismatch for game_id={game.game_id}")
+        if not bool(row["public_chronology_verified"]):
+            missing.append(f"{game.game_id}({row['public_observation_time_basis']})")
+            continue
         source = str(row["source"]).strip()
         if not source or source == "<NA>":
             raise DataContractError(f"Missing public-split source for game_id={game.game_id}")
-        if row["home_n"] == norm(str(game.home_team)):
-            share = float(row["spread_home_bet_pct"])
-        elif row["away_n"] == norm(str(game.home_team)):
-            share = float(row["spread_away_bet_pct"])
-        else:
-            raise DataContractError(f"Public-split identity mismatch for game_id={game.game_id}")
+        share = float(row["spread_home_bet_pct"])
         if not np.isfinite(share) or not 0.0 <= share <= 100.0:
             raise DataContractError(f"Invalid public split for game_id={game.game_id}")
         rows.append(
@@ -256,12 +317,28 @@ def load_public_split(data_root, served):
                 "public_split": share / 100.0,
                 "public_split_captured_at_utc": pd.Timestamp(row["capture_ts"]),
                 "public_split_source": source,
-                "public_split_artifact": str(row["public_split_artifact"]),
+                "public_split_artifact": str(row["public_artifact"]),
+                "public_split_artifact_sha256": str(row["public_artifact_sha256"]),
+                "public_split_manifest_artifact": str(row["public_manifest_artifact"]),
+                "public_split_manifest_sha256": str(row["public_manifest_sha256"]),
+                "public_split_raw_html_artifact": str(row["public_raw_html_artifact"]),
+                "public_split_raw_html_sha256": str(row["public_raw_html_sha256"]),
+                "public_split_parser_artifact": str(row["public_parser_artifact"]),
+                "public_split_parser_sha256": str(row["public_parser_sha256"]),
+                "public_split_identity_basis": str(row["team_side_basis"]),
+                "public_split_identity_reparsed": bool(row["public_identity_reparsed"]),
+                "public_split_observation_time_basis": str(row["public_observation_time_basis"]),
+                "public_split_chronology_verified": bool(row["public_chronology_verified"]),
+                "public_split_home_line": row.get("spread_home_line"),
+                "public_split_away_line": row.get("spread_away_line"),
+                "public_split_home_odds": row.get("spread_home_odds"),
+                "public_split_away_odds": row.get("spread_away_odds"),
+                "public_inspected_source_hashes": row["public_inspected_source_hashes"],
             }
         )
     if missing:
         raise DataContractError(
-            "Missing deadline-eligible public split for declared games: " + ", ".join(missing)
+            "Missing publication-eligible public split for declared games: " + ", ".join(missing)
         )
     return pd.DataFrame(rows)
 
@@ -295,7 +372,7 @@ def build_week(field_path, data_root, artifacts_root, season, week):
     if not matching_line.all():
         bad = merged.loc[~matching_line, "game_id"].astype(str).tolist()
         raise DataContractError("Field-share line mismatch for games: " + ", ".join(bad))
-    quotes = load_market_quotes(artifacts_root, served)
+    quotes = load_market_quotes(data_root, artifacts_root, served)
     public = load_public_split(data_root, served)
     merged = merged.merge(quotes, on="game_id", how="left", validate="one_to_one")
     merged = merged.merge(public, on="game_id", how="left", validate="one_to_one")
@@ -560,6 +637,8 @@ def main():
             }
         )
 
+    verify_exact_market_quote_sources(both)
+    verify_public_snapshot_sources(both)
     args.out.mkdir(parents=True, exist_ok=True)
     ts = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
     run_dir = args.out / ts

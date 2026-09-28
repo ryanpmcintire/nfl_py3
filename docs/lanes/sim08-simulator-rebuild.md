@@ -6,13 +6,14 @@ without fitting weights or changing served probabilities from these diagnostics.
 
 ## State
 **Measured:** September 28 repaired quarter boundaries, zero elapsed transitions,
-and two overtime timeouts. The before/after replay completed 10,002 games per arm,
-zero caps; the before margins exactly reproduce the prior checkpoint. Repaired
-log-loss improvement over the naive histogram is +0.000939 [-0.011431, +0.015928],
-probability_positive 0.5926, conditional on only three validation seasons.
-Three of five key-number bands pass; margins 3 and 17 remain unresolved.
-Both log-loss effects are registered `unresolved_below_power`; no serving change.
-[Full results and all diagnostic looks](../backlog_research_20260928.md).
+timeouts, and historical overtime termination/conversion rules. The final fixed
+replay has 10,002 games, zero caps, but only 2/5 key-number bands pass.
+Log-loss improvement versus the training histogram is -0.000656
+[-0.013844, +0.014832], probability_positive 0.370370. Versus the preceding
+engine, improvement is -0.001595 [-0.002528, -0.000795], probability_positive 0
+in 27 conditional season draws; Monte Carlo and prior selection are omitted.
+All four effects remain registered unresolved; no serving change.
+[Complete 147-look result, including superseded arm](../simulator_overtime_repair_20260928.md).
 
 ## Tried
 - **Measured:** conversion repair reconciles 768/768 final margins. Full repair
@@ -40,12 +41,11 @@ Both log-loss effects are registered `unresolved_below_power`; no serving change
   `done/sim08-late-game-diagnostic-history.md`.
 
 ## Next
-Continue the named endgame mechanisms before another parameter or endpoint look.
-The completed predeclaration fixed seed 20260925, 3,334 games per 2015–2017 season,
-training 2009–2014, copied features, both source engines, hashes, and all rows.
-`artifacts/sim08_terminal_repair/20260928T161258Z/` retains the entire diagnostic
-family and added transparent season uncertainty. No endpoint selected a weight.
-Retain the earlier fourth-look bundle and its unresolved uncertainty separately.
+Historical rule defects are repaired; broader predictive accuracy is unresolved.
+Preserve `artifacts/sim08_overtime_repair/20260928T171712Z/` with all three arms,
+source/input hashes, 30,006 simulations and actual-game losses. Any new mechanism
+or 2025+ rules extension needs a declaration before another endpoint is scored.
+Do not patch key-number masses, fit on these diagnostics, or promote this engine.
 
 ## Open
 Finite-draw probability_positive of 0 or 1 is not impossibility or certainty.

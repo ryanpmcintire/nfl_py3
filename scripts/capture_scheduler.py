@@ -386,7 +386,7 @@ SCHEDULE: tuple[Job, ...] = (
             f"independent_validation_{day}_{at.replace(':', '')}",
             day,
             at,
-            15,
+            60,
             _cli("independent-validation", "capture"),
             True,
             "Capture frozen combined and raw probabilities for the declared future cohort; "
@@ -789,6 +789,22 @@ SCHEDULE: tuple[Job, ...] = (
         dedupe_dir="data/raw/odds_api_props",
         dedupe_minutes=180,
         added_on="2026-09-11",
+    ),
+    *(
+        Job(
+            f"public_betting_{day}",
+            day,
+            "12:00",
+            180,
+            _ps("public_betting_capture.ps1"),
+            True,
+            "Tuesday pre-publication and Thursday pre-kickoff public-split snapshots.",
+            season_guarded=False,
+            dedupe_dir="data/raw/public_betting_live",
+            dedupe_minutes=90,
+            added_on="2026-09-28",
+        )
+        for day in ("tue", "thu")
     ),
     Job(
         "public_betting_sat",

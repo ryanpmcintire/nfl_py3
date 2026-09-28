@@ -4,10 +4,9 @@
 Diagnose the three-week swing and preserve the untouched future comparison.
 
 ## State
-**Measured:** diagnosis complete in docs/2026_three_week_diagnosis.md. The pressure
-feed ends at 2025: Week 3 has 0/32 usable team windows, silently zeroing every
-matchup flag. That term supplied two winning Week 2 side changes. All 32 Week 2-3
-published probabilities replay exactly. Its Week 3 win cost remains unknown.
+**Measured:** diagnosis complete in docs/2026_three_week_diagnosis.md. The earlier
+pressure-feed gap is repaired: all 16 Week 3 matchups have current-season coverage.
+Frozen published decisions remain unchanged; its historical Week 3 win cost is unknown.
 **Measured:** historical replay complete on 533 decisive games in 2024-2025.
 Full experimental pipeline: 269-264 versus raw 282-251; Brier improvement
 -0.002283 [-0.009488,+0.005479], probability_positive 0.266050.
@@ -42,8 +41,12 @@ docs/week2_week3_combination_comparison.md; old weights changed no traced side.
 **Measured 2026-09-28:** current-season PBP ingestion and missing-pressure
 publication checks are repaired; all 16 Week 3 windows now have coverage and
 locked decisions are unchanged. See `done/current-week-pressure-inputs.md`.
-Enrolled source hashes still match. Next verify actual Week 4 study captures
-after Tuesday's fresh-data lock; do not retune from the bad week alone.
+**Measured:** all ten scheduled capture aliases ran successfully on September 28.
+The former 15-minute window missed Monday behind the noon refresh; it is now
+60 minutes. Strict per-game deadlines remain unchanged. The rehearsal recorded
+zero rows because the active forecast is Week 3. Enrollment/source hashes match;
+224 future games remain unobserved and interim scoring stays withheld.
+Next verify actual Week 4 study captures after Tuesday's fresh-data lock.
 
 ## Open
 Earlier signal design and raw-model selection remain outside the historical

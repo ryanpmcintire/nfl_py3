@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
 import urllib.error
@@ -40,30 +41,34 @@ def fetch_live_page(
 
 
 def capture(url: str = LIVE_URL, out_root: Path = DEFAULT_OUT) -> dict:
+    html, status = fetch_live_page(url)
     capture_ts = pd.Timestamp.now(tz="UTC")
     stamp = capture_ts.strftime("%Y%m%dT%H%M%SZ")
     snapshot_dir = out_root / stamp
     snapshot_dir.mkdir(parents=True, exist_ok=True)
 
-    html, status = fetch_live_page(url)
     (snapshot_dir / "raw_html").mkdir(parents=True, exist_ok=True)
-    (snapshot_dir / "raw_html" / f"{stamp}.html").write_text(html, encoding="utf-8")
+    raw_path = snapshot_dir / "raw_html" / f"{stamp}.html"
+    raw_path.write_text(html, encoding="utf-8")
 
     era, rows, error = parse_actionnetwork_snapshot(html, capture_ts)
+    if error is not None:
+        raise ValueError(f"Public-betting capture could not parse the saved page: {error}")
     frame = pd.DataFrame(rows)
-    frame_path = snapshot_dir / "index.parquet"
-    if not frame.empty:
-        frame.to_parquet(frame_path, index=False)
-    else:
-        pd.DataFrame().to_parquet(frame_path, index=False)
-
     n_rows = len(frame)
     n_with_data = int(frame["has_any_public_data"].sum()) if "has_any_public_data" in frame else 0
+    if n_rows == 0 or n_with_data == 0:
+        raise ValueError("Public-betting capture has no usable public percentages")
+    frame_path = snapshot_dir / "index.parquet"
+    frame.to_parquet(frame_path, index=False)
 
     manifest = {
         "source": "actionnetwork_live",
         "url": url,
         "fetched_at": capture_ts.isoformat(),
+        "observation_time_basis": "response_received",
+        "raw_html_sha256": hashlib.sha256(raw_path.read_bytes()).hexdigest(),
+        "index_sha256": hashlib.sha256(frame_path.read_bytes()).hexdigest(),
         "http_status": status,
         "era": era,
         "parse_error": error,

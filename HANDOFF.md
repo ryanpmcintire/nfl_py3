@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-28T16:38:15.709377+00:00`
+Refreshed at: `2026-09-28T18:16:09.864667+00:00`
 
 ## Start here
 
@@ -21,16 +21,29 @@ Refreshed at: `2026-09-28T16:38:15.709377+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `053fdb4781e2` — Correct frozen research evidence and advance precision and simulator backlog
-- Pending change set: 8 paths
+- Baseline commit: `21566fe37c36` — Refresh handoff after research backlog checkpoint
+- Pending change set: 50 paths
   - ` M AGENTS.md`
   - `M  HANDOFF.md`
+  - `M  README.md`
+  - `M  ROADMAP.md`
   - ` M docs/agent_workflow.md`
-  - `?? docs/lanes/windows-shell-popup.md`
-  - `?? registry/experiments/margin-backtest/20260927T134152Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-03-20260927T134352Z.json`
-  - `?? registry/experiments/opener-evaluation/20260927T134738Z.json`
-  - `?? registry/experiments/waterfall-feed/20260927T134851Z.json`
+  - `M  docs/backlog_research_20260928.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/independent_combination_validation.md`
+  - `M  docs/index.html`
+  - `M  docs/lanes/README.md`
+  - `M  docs/lanes/confidence-best-pick-unification.md`
+  - `A  docs/lanes/done/seven-backlog-completion.md`
+  - `M  docs/lanes/free-odds-sources.md`
+  - `M  docs/lanes/independent-combination-validation.md`
+  - `M  docs/lanes/pol10-prospective-2026.md`
+  - `M  docs/lanes/pool-rank-card.md`
+  - `M  docs/lanes/positive-control-power.md`
+  - `M  docs/lanes/sim08-simulator-rebuild.md`
+  - `A  docs/positive_control_precision_curve_20260928.md`
+  - ...and 30 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

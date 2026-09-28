@@ -1,36 +1,36 @@
 # Confidence and Best Pick unification
 
 ## Goal
-
-Assess whether the single served probability ranks games within a week and calibrates the top pick. The owner requires an overfit assessment, actual within-week ordering, and top-pick calibration; merely making Best Pick equal the highest displayed probability does not complete this work.
+Assess whether the one served probability ranks games and calibrates Best Pick,
+using complete prospective contender distributions and chronological evaluation.
 
 ## State
-
-- Measured final verification: 4,529 tests passed, nine skipped; Ruff format/lint and mypy passed. Local `publish-board` passed; rendered diff reflects the existing Denver lock and new Findings summaries. Saved pre-kickoff inputs render the unlocked nominee's 0.4-point gap; the locked card omits it. Exact checks and review sweep: `docs/confidence_top_calibration.md` execution verification.
-- Measured 2026-09-20: the declared three-season calibration repair is complete; protocol/results `docs/confidence_top_calibration.md`, reproducible script `scripts/confidence_top_calibration.py`, outputs `artifacts/confidence_top_calibration/20260920_fixed/`. The served probability is unchanged.
-- Chronological nominee Brier improvement +0.001040 [-0.027412,+0.030943], probability_positive 0.5227; all-game change -0.002490 [-0.006082,+0.001022], P+ 0.0853. Nominee inverse temperatures 1.083538, 0.000001, 0.242607 vary by fold. All 28 cells are recorded unresolved; no closing ground demonstrated.
-- Dashboard gap text now compares an unlocked Best Pick with its eligible runner-up only when deadlines and probabilities are complete. Locked nominees omit the comparison because the lock-time candidate distribution is unavailable.
-- Probability/side/Best Pick integration is published in release `5fb88a2`. The live nominee can change at each refresh; its argmax status remains provisional pending reliability work. No ranking change follows automatically from this replay.
-- The fixed matched replay and full plan/results are in `docs/confidence_best_pick_sunday_matched.md`; prediction-level outputs are `artifacts/confidence_best_pick_sunday_matched/20260920_fixed/`.
-- Eight corrected full-pool unresolved inferential cells were recorded in `registry/weak_signals.json` under `confidence_best_pick_sunday_matched_full_pool_v2`. The eight earlier v1 cells were invalidated with `weak-signals invalidate` and linked to v2, so pooling excludes the outcome-conditioned nonpush diagnostic while preserving its history.
+**Measured:** the future Tuesday/Sunday recorder now preserves all candidates,
+probabilities, eligibility, deadlines, UTC observation time and immutable hashes.
+A held Tuesday nominee stays selected while Sunday's other playable candidates
+are retained. Interrupted writes recover the original observation; changed rows,
+ambiguous phases and inconsistent metadata fail both recovery and readiness.
+The real-data isolated probe retained all 16 Week 3 candidates without changing
+historical ledgers. No historical capture was backfilled or parameter fitted.
 
 ## Tried
-
-- Predeclared one comparison before scoring: Sunday-inclusive frozen heldout probability argmax versus archived alpha=2000 chance of the **same current served side**, on the same regular-season games with kickoff after each week's Sunday 12:45 p.m. ET cutoff; grade both nominees at opener. No fitting, thresholds, side changes, or old eligibility screens.
-- The chronological alpha archive supplies full-game prior-week scores, but no alpha LOSO scores. Its parameter was previously selected and the NFL years reused; this replay is diagnostic rather than untouched validation.
-- Corrected chronological pool: all 1,537 opener games can enter selection; 930 eligible in 72 weeks, 141 started games excluded. Nominees differ in 58 weeks; 27 decisive W/P/L grades split 14 better for current, 13 for alpha (exact two-sided sign null p=1). Current W/L/P 40/32/0, alpha 38/31/3; wins per nominated week +2.78 points [-11.11,+16.67], `probability_positive=0.6504`. Pushes were not replaced or treated as losses; accuracy and probability loss use the 72/69 nonpush nominees respectively.
-- Current nonpush top predicted 65.44%, realized 55.56%: actual-minus-predicted -9.88 points [-21.25,+1.47], `probability_positive=0.0443`. Current top versus rest -1.91 points [-13.64,+9.98], P+ 0.3805; within-week slope +2.95 points per 10 confidence points [-3.52,+9.36], P+ 0.8082. Current LOSO top is 63/43/1 W/L/P in 107 weeks; alpha has no matched LOSO evidence.
-- Measured by root: `.\.tools\uv.exe run --no-sync python scripts/confidence_best_pick_sunday_matched.py` reproduced the corrected results; log `data/environment_recovery/matched_ranking_final_verified.txt`. It rewrites research outputs and does not alter the registry or live state. Ruff format/check passed.
+**Measured:** coverage-only audit: 72 historical weeks, three new paper nominees,
+two dedicated Tuesday nominees, one Sunday nominee, no historical full contender
+ledger. Week 2 lacks the dedicated pair; Week 1's dedicated and paper nominees
+differ. Readiness remains false; no outcomes were read. Evidence:
+`artifacts/confidence_nominee_readiness/20260928_verified.json` and
+[the seven-category report](../seven_backlog_completion_20260928.md).
+Historical ranking/calibration cells remain unresolved in
+`../confidence_best_pick_sunday_matched.md` and `../confidence_top_calibration.md`.
 
 ## Next
-
-- Continue the Sunday-readiness lane, preserving locked games. Calibration research next needs additional timestamped weekly nominees and a declared mechanism; monotone temperature fitting cannot establish better ranking. Do not repeat these 28 looks or promote a best cell.
-- Measured 2026-09-23 (nominee-population audit, no new comparison run): enumerated every already-archived point-in-time nominee source. `artifacts/opener_evaluation/20260923T172849Z/per_game.parquet` (rerun of the graded-population pipeline, generated the day of this audit) still spans seasons 2020-2025 only (`opener_evaluation.groupby("season").size()`: 227/239/255/272/272/272; zero 2026 rows). `artifacts/sunday_market_probability/20260920_fixed/predictions.parquet` likewise spans 2020-2025 only. `data/processed/game_features.parquet` carries the full 2026 schedule (272 rows, weeks 1-18) but only 32 games (weeks 1-2) have a graded `result`/`home_cover`; week 3 (16 games, the `artifacts/margin_predictions/2026-week-03-*` and `artifacts/scheduled_locks/2026-week-03/weekly_summary.json` snapshots) has zero graded games as of 2026-09-23. `artifacts/margin_predictions/2026-week-{01,02,03}-*/recommendations.csv` gives 72 timestamped pregame snapshots (14/13/3 for wk01/02/03 respectively) but these are pre-grading pick records only, collapsing to at most 2 usable graded weeks (wk01, wk02); `artifacts/lockday_packages/2026_wk0{1,2,3}_*` are provenance/environment manifests (git revision, package versions), not prediction-outcome pairs. No separate "weekly paper-decision ledger" artifact distinct from `src/nfl_ats/model_ledger.py` (model-promotion status, not per-game nominees) was found.
-- Net new usable nominees since the 2026-09-20 measurement: 0 integrated into the population/probability pipeline this comparison depends on (`opener_evaluation` composition-flag population and `sunday_market_probability` fold coefficients have not been extended to season 2026); 2 weeks (32 games) of raw graded 2026 results exist upstream but are unprocessed. Even if processed today, +2 weeks against the chronological population of 72 weeks (2022-2025) is a +2.8% change, and against the Sunday-only LOSO population of 107 weeks a +1.9% change — not material against cells whose week-block intervals already span roughly ±13 to ±25 points. The fold structure (`chronological`/`leave_one_season_out`, each row one whole season) also cannot admit a partial season as a new outer or training fold, so 2026 cannot enter as a new fold until it is fully played.
-- Do not run `scripts/confidence_nominee_recalibration.py` yet; growth is not material. Re-audit when either (a) the chronological population would grow >=10% (+8 weeks, i.e. 2026 weeks 3-10 graded, projected by pace of ~1 graded week per ~6.5 days since the 2026-09-10 kickoff -> approximately 2026-11-12), or (b) season 2026 finishes completely (all 18 weeks graded, kickoff data through 2027-01-10, so grading complete approximately 2027-01-12 to 2027-01-18), which is the earliest point 2026 could form a whole new fold season. Root: rerun `nfl-ats` opener-evaluation and sunday-market-probability pipelines to extend into 2026 before the next audit, since this lane made no src/ or pipeline changes.
-- Implementation and research results are verified and ready for commit/push.
-- Owner standing instruction (2026-09-20): commit and push at every verified clear stopping point, without asking again; persisted in `AGENTS.md`.
+Verify the first genuine future contender capture. Run
+`.tools/uv.exe run --no-sync python scripts/confidence_nominee_readiness.py --output .tmp/confidence_nominee_readiness.json`.
+The +8-week growth trigger does not authorize interim tuning: the frozen Week 4-18
+embargo supersedes the old Week 10 suggestion. Any later calibration needs a new
+protocol, complete inputs and an untouched outer evaluation after season completion.
 
 ## Open
-
-- Current top-pick calibration is concerning and ordering evidence is weak, but neither mechanism is closed by an interval crossing zero. No untouched outer period or matched alpha LOSO exists. Sunday's private odds cannot be shown as public Books-now prices. Backups are in `data/environment_recovery/before_probability_unification`.
+Past missing lock-time distributions cannot be reconstructed as historical facts.
+Future collection remains pending; ranking/calibration are unresolved, not closed.
+Zero crossing closes no signal; one fitted probability continues selecting the side.

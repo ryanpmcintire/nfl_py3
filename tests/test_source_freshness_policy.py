@@ -373,9 +373,9 @@ def test_observe_from_disk_reads_stamped_directory_names_not_mtimes(tmp_path: Pa
     data_root = tmp_path / "data"
     newest = NOW - timedelta(minutes=30)
     for offset in (600, 30, 5000):
-        (data_root / "raw" / "player_arrests" / _stamp(NOW - timedelta(minutes=offset))).mkdir(
-            parents=True
-        )
+        snapshot = data_root / "raw" / "player_arrests" / _stamp(NOW - timedelta(minutes=offset))
+        snapshot.mkdir(parents=True)
+        (snapshot / "manifest.json").write_text("{}", encoding="utf-8")
     (data_root / "raw" / "player_arrests" / "not-a-stamp").mkdir(parents=True)
 
     observations = {

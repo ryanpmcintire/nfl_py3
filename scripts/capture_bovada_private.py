@@ -53,25 +53,48 @@ def _rows(payload: bytes, observed: datetime) -> list[dict[str, Any]]:
     digest = hashlib.sha256(payload).hexdigest()
     rows: list[dict[str, Any]] = []
     for coupon in decoded:
+        if not isinstance(coupon, dict) or not isinstance(coupon.get("events", []), list):
+            raise ValueError(f"Bovada response has an invalid coupon: {_snippet(payload)!r}")
         for event in coupon.get("events", []):
+            if not isinstance(event, dict) or event.get("id") is None:
+                raise ValueError(f"Bovada response has an invalid event: {_snippet(payload)!r}")
             if event.get("status") != "U" or event.get("live"):
                 continue
             start = pd.to_datetime(event.get("startTime"), utc=True, unit="ms", errors="coerce")
             if pd.isna(start) or start <= pd.Timestamp(observed):
                 continue
-            names = {
-                bool(team.get("home")): str(team.get("name", ""))
-                for team in event.get("competitors", [])
-            }
+            competitors = event.get("competitors", [])
+            if not isinstance(competitors, list) or not all(
+                isinstance(team, dict) for team in competitors
+            ):
+                raise ValueError(
+                    f"Bovada response has invalid event competitors: {_snippet(payload)!r}"
+                )
+            names = {bool(team.get("home")): str(team.get("name", "")) for team in competitors}
             home_name = names.get(True, "")
             away_name = names.get(False, "")
             if home_name not in NFL_TEAM_NAMES or away_name not in NFL_TEAM_NAMES:
                 continue
             groups = event.get("displayGroups", [])
-            markets = [market for group in groups for market in group.get("markets", [])]
+            if not isinstance(groups, list) or not all(isinstance(group, dict) for group in groups):
+                raise ValueError(
+                    f"Bovada response has invalid display groups: {_snippet(payload)!r}"
+                )
+            markets = []
+            for group in groups:
+                group_markets = group.get("markets", [])
+                if not isinstance(group_markets, list) or not all(
+                    isinstance(market, dict) for market in group_markets
+                ):
+                    raise ValueError(f"Bovada response has invalid markets: {_snippet(payload)!r}")
+                markets.extend(group_markets)
             for market in markets:
                 kind = {"Point Spread": "spreads", "Total": "totals"}.get(market.get("description"))
                 period = market.get("period") or {}
+                if not isinstance(period, dict):
+                    raise ValueError(
+                        f"Bovada response has an invalid period: {_snippet(payload)!r}"
+                    )
                 if (
                     kind is None
                     or not period.get("main")
@@ -80,6 +103,14 @@ def _rows(payload: bytes, observed: datetime) -> list[dict[str, Any]]:
                 ):
                     continue
                 outcomes = market.get("outcomes", [])
+                if not isinstance(outcomes, list) or not all(
+                    isinstance(outcome, dict) for outcome in outcomes
+                ):
+                    raise ValueError(f"Bovada response has invalid outcomes: {_snippet(payload)!r}")
+                if not all(isinstance(outcome.get("price") or {}, dict) for outcome in outcomes):
+                    raise ValueError(
+                        f"Bovada response has invalid outcome prices: {_snippet(payload)!r}"
+                    )
                 expected = {"H", "A"} if kind == "spreads" else {"O", "U"}
                 if {outcome.get("type") for outcome in outcomes} != expected or len(outcomes) != 2:
                     continue
@@ -157,6 +188,8 @@ def capture(features_path: Path) -> dict[str, Any]:
         quotes[column] = pd.to_datetime(quotes[column], utc=True)
     quotes = attach_nflverse_game_ids(quotes, features)
     spreads = quotes.loc[quotes["market"].eq("spreads") & quotes["outcome_side"].eq("HOME")]
+    if spreads.empty:
+        raise ValueError("No current pregame Bovada spreads")
     if spreads["nflverse_game_id"].isna().any() or spreads["nflverse_game_id"].duplicated().any():
         raise ValueError("Bovada spreads did not match unique scheduled NFL games")
     snapshot = write_market_snapshot(

@@ -10,6 +10,13 @@ odds sources.
 
 ## State
 
+- **Measured 2026-09-28:** suffix-aware completed-capture freshness, future-time
+  rejection, malformed provider guards, and UTC normalization passed production
+  probes. A live Bovada capture returned 44 quotes for 11 games. Public captures
+  now bind response completion and actual saved bytes; explicit team IDs repaired
+  8/16 side labels in a saved page. Tuesday/Thursday capture jobs succeeded, and
+  daemon PID 28232 loaded the verified code/schedule. Details and source proof:
+  [seven-category checkpoint](../seven_backlog_completion_20260928.md).
 - 2026-09-24: the invented no-publication rule is removed everywhere.
   `config/source_policies.json` gives both sources `derived_publication:
   aggregates_only`; the `public_only` filter and `publication_scope` stamps are

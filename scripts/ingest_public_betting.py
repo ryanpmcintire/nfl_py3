@@ -184,6 +184,18 @@ def _find_consensus_book_id_era2(page_props: dict[str, Any]) -> str:
     return "15"
 
 
+def _team_sides(game: dict[str, Any]) -> tuple[str, str]:
+    teams = game.get("teams", [])
+    by_id = {str(team.get("id")): team for team in teams if isinstance(team, dict)}
+    home_id, away_id = game.get("home_team_id"), game.get("away_team_id")
+    if home_id is None or away_id is None or str(home_id) == str(away_id):
+        raise ValueError("Public-betting game has no explicit distinct home/away team IDs")
+    home, away = by_id.get(str(home_id)), by_id.get(str(away_id))
+    if home is None or away is None or not home.get("abbr") or not away.get("abbr"):
+        raise ValueError("Public-betting team IDs do not match named teams")
+    return str(away["abbr"]), str(home["abbr"])
+
+
 def parse_actionnetwork_era1(next_data: dict[str, Any], capture_ts: pd.Timestamp) -> list[dict]:
     page_props = next_data.get("props", {}).get("pageProps", {})
     init_state = page_props.get("initialState")
@@ -197,13 +209,16 @@ def parse_actionnetwork_era1(next_data: dict[str, Any], capture_ts: pd.Timestamp
         teams = game.get("teams", [])
         if len(teams) != 2:
             continue
-        away_raw, home_raw = teams[0].get("abbr"), teams[1].get("abbr")
+        away_raw, home_raw = _team_sides(game)
         odds = game.get("odds", {}).get(book_id, {}).get("game", {})
         row = {
             "capture_ts": capture_ts,
             "source": "actionnetwork",
             "era": "era1_initial_state",
             "site_game_id": game.get("id"),
+            "site_home_team_id": game.get("home_team_id"),
+            "site_away_team_id": game.get("away_team_id"),
+            "team_side_basis": "game_team_ids",
             "season": game.get("season"),
             "week": None,
             "status": game.get("status"),
@@ -264,12 +279,15 @@ def parse_actionnetwork_era2(next_data: dict[str, Any], capture_ts: pd.Timestamp
         teams = game.get("teams", [])
         if len(teams) != 2:
             continue
-        away_raw, home_raw = teams[0].get("abbr"), teams[1].get("abbr")
+        away_raw, home_raw = _team_sides(game)
         row = {
             "capture_ts": capture_ts,
             "source": "actionnetwork",
             "era": "era2_scoreboard_response",
             "site_game_id": game.get("id"),
+            "site_home_team_id": game.get("home_team_id"),
+            "site_away_team_id": game.get("away_team_id"),
+            "team_side_basis": "game_team_ids",
             "season": game.get("season"),
             "week": game.get("week"),
             "status": game.get("status"),
@@ -279,6 +297,12 @@ def parse_actionnetwork_era2(next_data: dict[str, Any], capture_ts: pd.Timestamp
             "home_team": normalize_team(home_raw),
             "start_time_utc": game.get("start_time"),
             "book_id": book_id,
+            "spread_home_line": None,
+            "spread_away_line": None,
+            "spread_home_odds": None,
+            "spread_away_odds": None,
+            "spread_home_is_live": None,
+            "spread_away_is_live": None,
             "spread_home_bet_pct": None,
             "spread_away_bet_pct": None,
             "spread_home_money_pct": None,
@@ -303,6 +327,16 @@ def parse_actionnetwork_era2(next_data: dict[str, Any], capture_ts: pd.Timestamp
                 if outcome.get("period") not in (None, "event"):
                     continue
                 side = outcome.get("side")
+                if (
+                    side in {"home", "away"}
+                    and outcome.get("team_id") is not None
+                    and str(outcome["team_id"]) != str(game[f"{side}_team_id"])
+                ):
+                    raise ValueError("Public-betting outcome team conflicts with its side")
+                if market_type == "spread" and side in {"home", "away"}:
+                    row[f"spread_{side}_line"] = outcome.get("value")
+                    row[f"spread_{side}_odds"] = outcome.get("odds")
+                    row[f"spread_{side}_is_live"] = outcome.get("is_live")
                 bet_info = outcome.get("bet_info", {})
                 tickets_pct = bet_info.get("tickets", {}).get("percent")
                 money_pct = bet_info.get("money", {}).get("percent")

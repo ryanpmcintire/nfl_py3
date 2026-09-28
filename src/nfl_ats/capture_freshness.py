@@ -15,7 +15,7 @@ _DAY_INDEX = {"mon": 0, "tue": 1, "wed": 2, "thu": 3, "fri": 4, "sat": 5, "sun":
 _MINUTES_PER_WEEK = 7 * 24 * 60
 _STAMP_FORMAT = "%Y%m%dT%H%M%SZ"
 
-_SNAPSHOT_NAME = re.compile(r"^(\d{8}T\d{6}(?:\d{6})?Z)$")
+_SNAPSHOT_NAME = re.compile(r"^(\d{8}T\d{6}(?:\d{6})?Z)(?:-[A-Za-z0-9][A-Za-z0-9_-]*)?$")
 _FORECAST_NAME = re.compile(r"^\d{4}-week-\d{2}-(\d{8}T\d{6}Z)$")
 
 FRIENDLY_NAMES: dict[str, str] = {
@@ -140,8 +140,21 @@ def newest_snapshot_instant(root: Path) -> datetime | None:
     for child in root.iterdir():
         if not child.is_dir():
             continue
-        match = _SNAPSHOT_NAME.match(child.name) or _FORECAST_NAME.match(child.name)
+        match = _SNAPSHOT_NAME.match(child.name)
+        completion_name = "manifest.json"
         if not match:
+            match = _FORECAST_NAME.match(child.name)
+            completion_name = "metadata.json"
+        if not match:
+            continue
+        completion_path = child / completion_name
+        if not completion_path.is_file():
+            continue
+        try:
+            manifest = json.loads(completion_path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        if not isinstance(manifest, dict):
             continue
         stamp = _parse_timestamp(match.group(1))
         if stamp is not None and (newest is None or stamp > newest):
@@ -155,26 +168,34 @@ def newest_snapshot_manifest_row_count(root: Path) -> tuple[datetime | None, int
         return None, None
     newest: datetime | None = None
     newest_dir: Path | None = None
+    newest_payload: dict[str, Any] | None = None
     for child in root.iterdir():
         if not child.is_dir():
             continue
-        match = _SNAPSHOT_NAME.match(child.name) or _FORECAST_NAME.match(child.name)
+        match = _SNAPSHOT_NAME.match(child.name)
+        completion_name = "manifest.json"
         if not match:
+            match = _FORECAST_NAME.match(child.name)
+            completion_name = "metadata.json"
+        if not match:
+            continue
+        completion_path = child / completion_name
+        if not completion_path.is_file():
+            continue
+        try:
+            payload = json.loads(completion_path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        if not isinstance(payload, dict):
             continue
         stamp = _parse_timestamp(match.group(1))
         if stamp is not None and (newest is None or stamp > newest):
             newest = stamp
             newest_dir = child
+            newest_payload = payload
     if newest is None or newest_dir is None:
         return newest, None
-    manifest_path = newest_dir / "manifest.json"
-    if not manifest_path.is_file():
-        return newest, None
-    try:
-        payload = json.loads(manifest_path.read_text(encoding="utf-8"))
-    except (OSError, ValueError):
-        return newest, None
-    row_count = payload.get("row_count") if isinstance(payload, dict) else None
+    row_count = newest_payload.get("row_count") if newest_payload is not None else None
     return newest, row_count if isinstance(row_count, int) else None
 
 
@@ -250,6 +271,9 @@ def compute_freshness(
             status = "missing"
             if not expected_active:
                 note = "no artifact yet; source is season-guarded and currently offseason"
+        elif newest > now_utc:
+            status = "missing"
+            note = "Latest capture is dated in the future."
         elif budget is not None and age_minutes is not None and age_minutes > budget:
             status = "stale"
         else:

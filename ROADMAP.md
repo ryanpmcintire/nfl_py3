@@ -2,6 +2,13 @@
 
 Completed rows and dated wave logs live in [docs/roadmap_archive.md](docs/roadmap_archive.md).
 
+**September 28 seven-category checkpoint:** [implementation and measured evidence](docs/seven_backlog_completion_20260928.md)
+cover independent-study scheduling, historical overtime rules, full contender
+capture, the complete evaluator precision curve, exact pool/source proof, capture
+reliability, and prospective coverage. Historical input gaps and future observation
+requirements remain open; no challenger was promoted or enrolled study retuned.
+History now explains that saved cover chances stay with their original picks.
+
 
 This is the living backlog for the revived project. It deliberately includes
 boring infrastructure, serious research ideas, and moonshots. A feature is not

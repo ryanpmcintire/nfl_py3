@@ -25,6 +25,11 @@ PUBLISHED_PICKS_COLUMNS: tuple[str, ...] = (
     "displayed_score",
     "strength_word",
     "source",
+    "baseline_forecast_artifact",
+    "baseline_created_at_utc",
+    "baseline_home_spread",
+    "baseline_recommendations_sha256",
+    "baseline_metadata_sha256",
 )
 SOURCE_SITE_PUBLISH = "site_publish"
 SCORE_PLACES = 4
@@ -53,7 +58,12 @@ def load_published_picks(artifacts_root: Path) -> pd.DataFrame:
     for column in PUBLISHED_PICKS_COLUMNS:
         if column not in frame.columns:
             frame[column] = pd.NA
-    for column in ("published_at_utc", "kickoff", "pick_deadline_utc"):
+    for column in (
+        "published_at_utc",
+        "kickoff",
+        "pick_deadline_utc",
+        "baseline_created_at_utc",
+    ):
         frame[column] = pd.to_datetime(frame[column], utc=True, errors="coerce")
     return frame[list(PUBLISHED_PICKS_COLUMNS)]
 

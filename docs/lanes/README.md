@@ -20,22 +20,23 @@ modified lane when the prompt just says to continue.
 
 ## Active
 
+- [seven-category checkpoint](done/seven-backlog-completion.md) - 2026-09-28: implemented and verified work across all seven; see the saved report for remaining observation limits.
 - [backlog research checkpoint](done/backlog-research-2026-09-28.md) - 2026-09-28: corrected frozen scorecard and pool chronology; completed four-cell precision replay and simulator terminal-rule repair/regrade.
-- [independent-combination-validation](independent-combination-validation.md) - 2026-09-28: historical selection replay completed on 533 games; calibration-stage diagnostic and 30 registry records saved; untouched Week 4–18 collection remains active.
+- [independent-combination-validation](independent-combination-validation.md) - 2026-09-28: all ten capture aliases rehearsed; wider execution windows; unchanged 224-game Week 4-18 enrollment awaits first eligible capture.
 - [backlog-batch-2026-09-26](backlog-batch-2026-09-26.md) - 2026-09-26: 16 finished research lanes closed to done/; see State for what each closed on.
-- [sim08-simulator-rebuild](sim08-simulator-rebuild.md) - 2026-09-26: SIM-04 was graded while failing its own key-number gate; rebuild endgame, undamp conditioning, anchor on the opener, re-grade.
+- [sim08-simulator-rebuild](sim08-simulator-rebuild.md) - 2026-09-28: historical overtime terminal rules repaired and regraded; 30,006 simulations retained, four unresolved records; simulator remains unserved.
 - [lead53-sunday-renomination](lead53-sunday-renomination.md) - 2026-09-24: ranks on the served four-term probability; after Sun 10:00 ET grep BEST-PICK-LEDGER in data/scheduler_log.txt for the Week 3 pairing.
 - [lead64-friday-designations](lead64-friday-designations.md) - 2026-09-24: headline designations lead the official file but only n=3 checkable; not wired; rerun the join after more weeks now that inactives capture works.
-- [pol10-prospective-2026](pol10-prospective-2026.md) - 2026-09-28: frozen card 28-19, one pending; Best Pick 1-2; 23 decisive games have valid matched baselines. Rerun scripts/prospective_scorecard_2026.py after grading.
-- [positive-control-power](positive-control-power.md) - 2026-09-23: minimum detectable effect harness; decides which unresolved cells are bounded by a control.
-- [free-odds-sources](free-odds-sources.md) - 2026-09-24: Books now shows posted lines (one number or a low-to-high range); no-publication rule removed; mid-week captures back on; direct Bovada capture fixed (v2 endpoint).
+- [pol10-prospective-2026](pol10-prospective-2026.md) - 2026-09-28: frozen card 28-19, one pending; exact proof supports 24 raw baselines (23 decisive) and three market pairs; unavailable rows retained.
+- [positive-control-power](positive-control-power.md) - 2026-09-28: full original 16-cell precision curve completed; all 96 diagnostics retained; no natural signal closed.
+- [free-odds-sources](free-odds-sources.md) - 2026-09-28: completed-capture freshness, provider/UTC guards, explicit public team identities and response-completion hashes verified; new Tuesday/Thursday jobs active.
 - [news-trigger-refresh](news-trigger-refresh.md) - MKT-08 dispatch implemented and verified; prospective comparison awaits new events.
 - [gh-window-incident](gh-window-incident.md) - prior runaway CLI windows remain a separate investigation; no gh commands used for this deployment.
 
-- [confidence-best-pick-unification](confidence-best-pick-unification.md) - shared calibrated selector published in `5fb88a2`; confidence reliability and within-week ranking research remains open
+- [confidence-best-pick-unification](confidence-best-pick-unification.md) - 2026-09-28: immutable full contender snapshots, interrupted-write recovery and integrity-gated readiness verified; future observations required.
 
 
-- [pool-rank-card](pool-rank-card.md) — POOL-01, unit 1 measured 2026-09-16 (unresolved); unit 2 only with a fitted field
+- [pool-rank-card](pool-rank-card.md) - 2026-09-28: all 32 games retained; 31 public captures lack completion-time proof and one is missing; fit fails closed, future capture repaired.
 - [token-diet](token-diet.md) — session-startup token cost cut about 80%; remaining: trim the three 15 KB+ open ROADMAP rows (owner text) and decide whether `.claude/` hooks should be tracked
 - [sunday-market-probability](sunday-market-probability.md) — activated 2026-09-20 as `leader_median_through_sunday_prekick_v1`; six unresolved metric/protocol cells recorded under `sunday_market_probability_fixed_v1`.
 

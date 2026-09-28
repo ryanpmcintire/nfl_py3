@@ -37,6 +37,7 @@ def stamp_dir(root: Path, when: datetime) -> Path:
     name = when.astimezone(UTC).strftime("%Y%m%dT%H%M%SZ")
     path = root / name
     path.mkdir(parents=True, exist_ok=True)
+    (path / "manifest.json").write_text("{}", encoding="utf-8")
     return path
 
 

@@ -71,6 +71,7 @@ from nfl_ats.pick_revision_factors import (
     model_only_factor_moves,
 )
 from nfl_ats.prospective_scoring import load_challenger_decisions
+from nfl_ats.provenance import sha256_file
 from nfl_ats.public_board import (
     DISCLAIMER_FULL,
     DISCLAIMER_SHORT,
@@ -3661,11 +3662,15 @@ def load_board_content(
     )
 
     raw_probability_by_game: dict[str, float] = {}
+    baseline_home_spread_by_game: dict[str, float] = {}
     if {"game_id", "home_cover_probability"}.issubset(artifacts.predictions.columns):
         for _, raw_row in artifacts.predictions.iterrows():
             raw_value = _number(raw_row.get("home_cover_probability"))
             if raw_value is not None:
                 raw_probability_by_game[str(raw_row["game_id"])] = raw_value
+            baseline_line = _number(raw_row.get("spread_line"))
+            if baseline_line is not None:
+                baseline_home_spread_by_game[str(raw_row["game_id"])] = baseline_line
 
     outcomes = _load_game_outcomes(resolved_data_root, artifacts_root)
     outcome_by_game_id: dict[str, tuple[Any, Any, Any]] = {}
@@ -3686,6 +3691,27 @@ def load_board_content(
     )
 
     forecast_dir = active_artifact_path(artifacts_root, artifacts.active, "weekly_forecast")
+    if forecast_dir is None:
+        raise ValueError("Active ATS model has no linked weekly forecast")
+    baseline_recommendations_path = forecast_dir / "recommendations.csv"
+    baseline_metadata_path = forecast_dir / "metadata.json"
+    baseline_forecast_artifact = forecast_dir.relative_to(artifacts_root.resolve()).as_posix()
+    if not pd.read_csv(baseline_recommendations_path).equals(artifacts.predictions):
+        raise ValueError("Weekly forecast changed while the published card was built")
+    if read_json(baseline_metadata_path) != artifacts.metadata:
+        raise ValueError("Weekly forecast metadata changed while the published card was built")
+    baseline_recommendations_sha256 = sha256_file(baseline_recommendations_path)
+    baseline_metadata_sha256 = sha256_file(baseline_metadata_path)
+    baseline_created_text = artifacts.metadata.get("created_at_utc")
+    if not isinstance(baseline_created_text, str) or not baseline_created_text.strip():
+        raise ValueError("Weekly forecast metadata has no valid creation time")
+    try:
+        baseline_created = datetime.fromisoformat(baseline_created_text.replace("Z", "+00:00"))
+    except ValueError as error:
+        raise ValueError("Weekly forecast metadata has no valid creation time") from error
+    if baseline_created.tzinfo is None or baseline_created.utcoffset() is None:
+        raise ValueError("Weekly forecast metadata creation time has no timezone")
+    baseline_created_at_utc = pd.Timestamp(baseline_created.astimezone(UTC))
     source_policy_view = _load_source_policy_view(
         artifacts.metadata,
         forecast_dir,
@@ -3758,6 +3784,9 @@ def load_board_content(
             word = frozen_pick.strength_word
             market_spread = frozen_pick.market_spread
         elif game_id in deadlines:
+            baseline_home_spread = baseline_home_spread_by_game.get(game_id)
+            if baseline_home_spread is None or abs(baseline_home_spread - market_spread) > 1e-10:
+                raise ValueError(f"Weekly forecast baseline line mismatch for {game_id}")
             published_rows.append(
                 {
                     "season": artifacts.metadata.get("season"),
@@ -3771,6 +3800,11 @@ def load_board_content(
                     "market_spread": market_spread,
                     "displayed_score": probability,
                     "strength_word": word,
+                    "baseline_forecast_artifact": baseline_forecast_artifact,
+                    "baseline_created_at_utc": baseline_created_at_utc,
+                    "baseline_home_spread": baseline_home_spread,
+                    "baseline_recommendations_sha256": baseline_recommendations_sha256,
+                    "baseline_metadata_sha256": baseline_metadata_sha256,
                 }
             )
         result, home_score, away_score = outcome_by_game_id.get(game_id, (None, None, None))

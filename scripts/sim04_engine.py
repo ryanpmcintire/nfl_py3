@@ -1013,6 +1013,14 @@ def run_one_game(
 
         points_off = drawn["points_off"]
         points_def = drawn["points_def"]
+        ot_defense_ends_game = (
+            in_ot and points_def >= 6 and ot_possession_index >= 1 and def_score > off_score
+        )
+        if in_ot and points_off >= 6:
+            points_off, points_def = 6.0, 0.0
+        elif in_ot and points_def >= 6:
+            points_off = 0.0
+            points_def = 0.0 if ot_possession_index >= 1 and def_score > off_score else 6.0
         clock_elapsed = drawn["clock_elapsed"]
         flip = drawn["flip"]
         home_margin_pre = home_score - away_score
@@ -1039,8 +1047,10 @@ def run_one_game(
 
         if in_ot:
             ot_clock = max(0.0, ot_clock - clock_elapsed)
-            if ((points_def > 0 or points_off >= 6) and home_score != away_score) or (
-                points_off > 0 and ot_possession_index >= 1 and home_score != away_score
+            if (
+                ot_defense_ends_game
+                or ((points_def > 0 or points_off >= 6) and home_score != away_score)
+                or (points_off > 0 and ot_possession_index >= 1 and home_score != away_score)
             ):
                 settled = True
             if settled:
@@ -1093,6 +1103,9 @@ def run_one_game(
         if points_off > 0 or points_def > 0 or flip:
             if drive_start_qtr == 4 and drive_start_gsr <= 300.0:
                 late_q4_log.append(drive_scored)
+            if in_ot and ot_possession_index >= 1 and home_score != away_score:
+                final_margin = home_score - away_score
+                break
             possessions += 1
             if in_ot:
                 ot_possession_index += 1
@@ -1117,6 +1130,9 @@ def run_one_game(
             elif down >= 4:
                 if drive_start_qtr == 4 and drive_start_gsr <= 300.0:
                     late_q4_log.append(drive_scored)
+                if in_ot and ot_possession_index >= 1 and home_score != away_score:
+                    final_margin = home_score - away_score
+                    break
                 possessions += 1
                 if in_ot:
                     ot_possession_index += 1

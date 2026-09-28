@@ -12,6 +12,10 @@ import pandas as pd
 
 from nfl_ats.data import DataContractError
 from nfl_ats.io import atomic_json, run_id
+from nfl_ats.market_quote_proof import (
+    resolve_exact_market_quote_proofs,
+    verify_exact_market_quote_sources,
+)
 from nfl_ats.prospective_scoring import dedicated_challenger_settlement_arm
 from nfl_ats.published_picks import locked_best_pick
 from nfl_ats.published_probability_history import load_frozen_probability_history
@@ -53,16 +57,18 @@ def load_forecast_probabilities(clv_ledger: pd.DataFrame) -> pd.DataFrame:
             usecols=[
                 "game_id",
                 "spread_line",
-                "home_cover_probability_excluding_push",
+                "home_cover_probability",
                 "home_spread_odds",
                 "away_spread_odds",
+                "market_observed_at_utc",
             ],
         )
         metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
         frame["forecast_artifact"] = forecast_artifact
-        frame["baseline_created_at_utc"] = metadata["created_at_utc"]
-        frame["baseline_sha256"] = hashlib.sha256(csv_path.read_bytes()).hexdigest()
-        rows.append(frame.rename(columns={"spread_line": "baseline_home_spread"}))
+        frame["forecast_created_at_utc"] = metadata["created_at_utc"]
+        frame["forecast_recommendations_sha256"] = hashlib.sha256(csv_path.read_bytes()).hexdigest()
+        frame["forecast_metadata_sha256"] = hashlib.sha256(metadata_path.read_bytes()).hexdigest()
+        rows.append(frame.rename(columns={"spread_line": "forecast_home_spread"}))
     if not rows:
         raise DataContractError("No recorded raw-model and market baselines are available")
     return pd.concat(rows, ignore_index=True)
@@ -92,38 +98,123 @@ def build_served_frame() -> pd.DataFrame:
     ledger = pd.read_parquet(ARTIFACTS / "clv_ledger" / "decisions.parquet")
     ledger = ledger.loc[
         ledger["season"].eq(SEASON),
-        ["game_id", "forecast_artifact", "recorded_at_utc", "forecast_created_at_utc"],
-    ]
+        [
+            "game_id",
+            "forecast_artifact",
+            "recorded_at_utc",
+            "forecast_created_at_utc",
+            "decision_home_spread",
+        ],
+    ].rename(
+        columns={
+            "forecast_artifact": "legacy_forecast_artifact",
+            "recorded_at_utc": "legacy_recorded_at_utc",
+            "forecast_created_at_utc": "legacy_forecast_created_at_utc",
+            "decision_home_spread": "legacy_decision_home_spread",
+        }
+    )
     served = served.merge(ledger, on="game_id", how="left", validate="one_to_one")
-    forecasts = load_forecast_probabilities(ledger)
+    explicit_columns = (
+        "baseline_forecast_artifact",
+        "baseline_created_at_utc",
+        "baseline_home_spread",
+        "baseline_recommendations_sha256",
+        "baseline_metadata_sha256",
+    )
+    explicit_present = served[list(explicit_columns)].notna().any(axis=1)
+    explicit_complete = served[list(explicit_columns)].notna().all(axis=1)
+    served["forecast_artifact"] = served["legacy_forecast_artifact"]
+    served["binding_recorded_at_utc"] = served["legacy_recorded_at_utc"]
+    served["binding_forecast_created_at_utc"] = served["legacy_forecast_created_at_utc"]
+    served["binding_home_spread"] = served["legacy_decision_home_spread"]
+    if explicit_present.any():
+        served.loc[explicit_present, "forecast_artifact"] = served.loc[
+            explicit_present, "baseline_forecast_artifact"
+        ]
+        served.loc[explicit_present, "binding_recorded_at_utc"] = served.loc[
+            explicit_present, "published_at_utc"
+        ]
+        served.loc[explicit_present, "binding_forecast_created_at_utc"] = served.loc[
+            explicit_present, "baseline_created_at_utc"
+        ]
+        served.loc[explicit_present, "binding_home_spread"] = served.loc[
+            explicit_present, "baseline_home_spread"
+        ]
+    served["binding_source"] = np.where(
+        explicit_present, "published_pick", "legacy_decision_ledger"
+    )
+    binding_artifacts = served[["forecast_artifact"]].dropna().drop_duplicates()
+    invalid_artifacts = binding_artifacts["forecast_artifact"].map(
+        lambda value: Path(str(value)).is_absolute() or ".." in Path(str(value)).parts
+    )
+    if invalid_artifacts.any():
+        raise DataContractError("Recorded baseline forecast has an invalid artifact path")
+    forecasts = load_forecast_probabilities(binding_artifacts)
     served = served.merge(
         forecasts,
         on=["game_id", "forecast_artifact"],
         how="left",
         validate="one_to_one",
     )
-    baseline_time = pd.to_datetime(served["baseline_created_at_utc"], utc=True, errors="coerce")
-    binding_time = pd.to_datetime(served["recorded_at_utc"], utc=True, errors="coerce")
+    baseline_time = pd.to_datetime(served["forecast_created_at_utc"], utc=True, errors="coerce")
+    binding_time = pd.to_datetime(served["binding_recorded_at_utc"], utc=True, errors="coerce")
     recorded_forecast_time = pd.to_datetime(
-        served["forecast_created_at_utc"], utc=True, errors="coerce"
+        served["binding_forecast_created_at_utc"], utc=True, errors="coerce"
     )
     published_time = pd.to_datetime(served["published_at_utc"], utc=True, errors="coerce")
     deadlines = pd.to_datetime(served["pick_deadline_utc"], utc=True, errors="coerce")
-    baseline_line = pd.to_numeric(served["baseline_home_spread"], errors="coerce")
+    baseline_line = pd.to_numeric(served["forecast_home_spread"], errors="coerce")
+    binding_line = pd.to_numeric(served["binding_home_spread"], errors="coerce")
     original_line = pd.to_numeric(served["decision_home_spread"], errors="coerce")
-    aligned = baseline_time.notna() & binding_time.notna() & deadlines.notna()
-    aligned &= baseline_time.eq(recorded_forecast_time) & baseline_time.le(binding_time)
-    aligned &= baseline_time.le(published_time) & binding_time.le(published_time)
-    aligned &= baseline_time.lt(deadlines) & binding_time.lt(deadlines)
-    aligned &= np.isclose(baseline_line, original_line, rtol=0, atol=1e-10)
-    served["baseline_status"] = np.where(
-        aligned, "recorded_before_publication_same_line", "unavailable_before_publication_same_line"
+    raw_aligned = baseline_time.notna() & binding_time.notna() & deadlines.notna()
+    raw_aligned &= baseline_time.eq(recorded_forecast_time) & baseline_time.le(binding_time)
+    raw_aligned &= baseline_time.le(published_time) & binding_time.le(published_time)
+    raw_aligned &= baseline_time.le(deadlines) & binding_time.le(deadlines)
+    raw_aligned &= np.isclose(baseline_line, original_line, rtol=0, atol=1e-10)
+    raw_aligned &= np.isclose(binding_line, original_line, rtol=0, atol=1e-10)
+    raw_aligned &= ~explicit_present | explicit_complete
+    recommendations_hash_matches = served["baseline_recommendations_sha256"].eq(
+        served["forecast_recommendations_sha256"]
     )
-    home_market = implied_probability(served["home_spread_odds"])
-    away_market = implied_probability(served["away_spread_odds"])
+    metadata_hash_matches = served["baseline_metadata_sha256"].eq(
+        served["forecast_metadata_sha256"]
+    )
+    raw_aligned &= ~explicit_present | (
+        recommendations_hash_matches.fillna(False) & metadata_hash_matches.fillna(False)
+    )
+    home_odds = pd.to_numeric(served["home_spread_odds"], errors="coerce")
+    away_odds = pd.to_numeric(served["away_spread_odds"], errors="coerce")
+    valid_odds = np.isfinite(home_odds) & np.isfinite(away_odds)
+    valid_odds &= home_odds.ne(0.0) & away_odds.ne(0.0)
+    quote_proofs = resolve_exact_market_quote_proofs(ROOT / "data" / "market" / "raw", served)
+    served = served.merge(quote_proofs, on="game_id", validate="one_to_one")
+    exact_market_ready = served["exact_market_status"].eq("ready")
+    market_aligned = raw_aligned & exact_market_ready & valid_odds
+    served["raw_baseline_status"] = np.where(
+        raw_aligned,
+        np.where(
+            explicit_present,
+            "published_binding_before_publication_same_line",
+            "legacy_binding_before_publication_same_line",
+        ),
+        np.where(
+            explicit_present,
+            "unavailable_published_binding",
+            "unavailable_legacy_binding_before_publication_same_line",
+        ),
+    )
+    served["market_baseline_status"] = served["exact_market_reason"]
+    served.loc[~raw_aligned, "market_baseline_status"] = "unavailable_raw_binding"
+    served["baseline_status"] = np.select(
+        [market_aligned, raw_aligned],
+        ["raw_and_market_ready", "raw_only_ready"],
+        default="unavailable_raw_and_market",
+    )
+    home_market = implied_probability(home_odds)
+    away_market = implied_probability(away_odds)
     served["market_home_probability"] = home_market / (home_market + away_market)
     is_home = served["pick_side"].eq("HOME")
-    raw_home = pd.to_numeric(served["home_cover_probability_excluding_push"], errors="coerce")
+    raw_home = pd.to_numeric(served["home_cover_probability"], errors="coerce")
     served["p_raw"] = raw_home.where(is_home, 1.0 - raw_home)
     served["p_market"] = served["market_home_probability"].where(
         is_home, 1.0 - served["market_home_probability"]
@@ -131,12 +222,15 @@ def build_served_frame() -> pd.DataFrame:
     served["p_neutral"] = 0.5
     for column in ("p_served", "p_raw", "p_market", "p_neutral"):
         values = pd.to_numeric(served[column], errors="coerce")
-        required = (
-            aligned if column in {"p_raw", "p_market"} else pd.Series(True, index=served.index)
-        )
+        required = pd.Series(True, index=served.index)
+        if column == "p_raw":
+            required = raw_aligned
+        elif column == "p_market":
+            required = market_aligned
         if not (np.isfinite(values[required]) & values[required].between(0, 1)).all():
             raise DataContractError(f"Incomplete or invalid matched probability: {column}")
-    served.loc[~aligned, ["p_raw", "p_market", "market_home_probability"]] = np.nan
+    served.loc[~raw_aligned, "p_raw"] = np.nan
+    served.loc[~market_aligned, ["p_market", "market_home_probability"]] = np.nan
     served["y"] = served["outcome"].map({"won": 1.0, "lost": 0.0})
     return served
 
@@ -163,6 +257,38 @@ def probability_block(frame: pd.DataFrame) -> dict[str, object]:
         "served_log_loss": log_loss(decisive["p_served"], y),
         "coinflip_brier": brier(pd.Series(0.5, index=decisive.index), y),
         "coinflip_log_loss": log_loss(pd.Series(0.5, index=decisive.index), y),
+    }
+    raw_matched = decisive.dropna(subset=["p_raw"])
+    result["raw_baseline_comparison"] = {
+        "n": len(raw_matched),
+        "unavailable_games": decisive.loc[decisive["p_raw"].isna(), "game_id"].tolist(),
+        "arms": {
+            arm: {
+                "brier": brier(raw_matched[f"p_{arm}"], raw_matched["y"])
+                if len(raw_matched)
+                else None,
+                "log_loss": log_loss(raw_matched[f"p_{arm}"], raw_matched["y"])
+                if len(raw_matched)
+                else None,
+            }
+            for arm in ("served", "raw", "neutral")
+        },
+    }
+    market_matched = decisive.dropna(subset=["p_market"])
+    result["market_baseline_comparison"] = {
+        "n": len(market_matched),
+        "unavailable_games": decisive.loc[decisive["p_market"].isna(), "game_id"].tolist(),
+        "arms": {
+            arm: {
+                "brier": brier(market_matched[f"p_{arm}"], market_matched["y"])
+                if len(market_matched)
+                else None,
+                "log_loss": log_loss(market_matched[f"p_{arm}"], market_matched["y"])
+                if len(market_matched)
+                else None,
+            }
+            for arm in ("served", "market", "neutral")
+        },
     }
     matched = decisive.dropna(subset=["p_raw", "p_market"])
     result["matched_baseline_comparison"] = {
@@ -366,9 +492,13 @@ def main() -> None:
         Path(__file__),
     ]
     ledger = pd.read_parquet(ARTIFACTS / "clv_ledger" / "decisions.parquet")
-    for artifact in sorted(
-        ledger.loc[ledger["season"].eq(SEASON), "forecast_artifact"].dropna().unique()
-    ):
+    artifact_names = set(
+        ledger.loc[ledger["season"].eq(SEASON), "forecast_artifact"].dropna().astype(str)
+    )
+    published = pd.read_parquet(ARTIFACTS / "clv_ledger" / "published_picks.parquet")
+    if "baseline_forecast_artifact" in published:
+        artifact_names.update(published["baseline_forecast_artifact"].dropna().astype(str))
+    for artifact in sorted(artifact_names):
         source_paths.extend(
             [ARTIFACTS / artifact / "recommendations.csv", ARTIFACTS / artifact / "metadata.json"]
         )
@@ -377,6 +507,19 @@ def main() -> None:
         for path in source_paths
     }
     served = build_served_frame()
+    for payload in served["exact_market_inspected_source_hashes"].dropna():
+        hashes = json.loads(str(payload))
+        if not isinstance(hashes, dict):
+            raise DataContractError("Exact market quote source hashes are invalid")
+        for path_text, expected_hash in hashes.items():
+            path = Path(str(path_text))
+            path = path if path.is_absolute() else ROOT / path
+            digest = hashlib.sha256(path.read_bytes()).hexdigest()
+            if digest != str(expected_hash):
+                raise DataContractError(f"Exact market quote source hash mismatch: {path}")
+            if path not in source_paths:
+                source_paths.append(path)
+            source_hashes[str(path.relative_to(ROOT))] = digest
     decisive_weeks = sorted(
         int(week)
         for week in served.loc[served["outcome"].isin(["won", "lost"]), "week"].dropna().unique()
@@ -410,15 +553,21 @@ def main() -> None:
     summary["probability_event"] = "the frozen played side covers at its recorded original line"
     summary["research_status"] = "descriptive_only_no_selection_or_closure"
     summary["baseline_scope"] = (
-        "Archived paper-recorded raw-model and quoted-market baselines at the same line, "
-        "created and recorded no later than frozen publication. Unavailable bindings stay "
-        "visible and are excluded from all arms of the matched comparison. This is not "
-        "an isolated estimate of the served fitted terms."
+        "Archived paper-recorded raw-model baselines at the same line, created and recorded no "
+        "later than frozen publication. Market comparisons additionally require a completed "
+        "immutable snapshot with the same game, opposing lines and both prices at one bookmaker, "
+        "observed no later than forecast creation. Raw-only evidence remains visible when market "
+        "quote provenance is unavailable. This is not an isolated estimate of the served fitted "
+        "terms."
     )
-    summary["baseline_coverage"] = served["baseline_status"].value_counts().to_dict()
+    summary["baseline_coverage"] = {
+        "combined": served["baseline_status"].value_counts().to_dict(),
+        "raw": served["raw_baseline_status"].value_counts().to_dict(),
+        "market": served["market_baseline_status"].value_counts().to_dict(),
+    }
     summary["look_accounting"] = {
         "family": "prospective_scorecard_frozen_2026_v1",
-        "probability_metric_cells": 12 * (len(served_weeks) + 1),
+        "probability_metric_cells": 24 * (len(served_weeks) + 1),
         "reliability_cells": len(summary["reliability"]),
         "paired_challenger_cells": len(summary["challenger_paired_vs_served"]),
         "record_cells": len(served_weeks) + 1 + len(served_weeks) + 2,
@@ -428,6 +577,7 @@ def main() -> None:
         str(path.relative_to(ROOT)): hashlib.sha256(path.read_bytes()).hexdigest()
         for path in source_paths
     }
+    verify_exact_market_quote_sources(served)
     if source_hashes != after_hashes:
         raise DataContractError("Prospective scorecard inputs changed during measurement")
     summary["sources"] = source_hashes

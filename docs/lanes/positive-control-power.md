@@ -4,28 +4,38 @@
 Measure evaluator power using historically pinned inputs and production bootstrap precision.
 
 ## State
-**Measured:** the predeclared four-cell precision replay completed; all historical
-400-draw cells reproduced exactly. At coefficient 1.80, DPI detection with 20,000
-draws is 34.5% [28.26%, 41.32%], versus 38.5% with 400 draws. Holding is 75.0%
-[68.57%, 80.49%], versus 78.0%. These are Wilson intervals over 200 replicates.
-Paired classification disagreement is 8% for DPI and 6% for holding. Null detection
-remains 1/200 in both controls. This resolves numerical precision for these cells only.
+**Measured:** the entire original 16-cell curve completed at 400/2,000/20,000
+draws, 200 fixed replicates per cell. Strongest-control detection at 20,000 draws
+is DPI 34.5% [28.26%, 41.32%] and holding 75.0% [68.57%, 80.49%]. Null rates
+are 0.5% [0.09%, 2.78%]. These are Wilson intervals, not natural-effect bounds.
+All coefficients are in [the complete curve report](../positive_control_precision_curve_20260928.md).
 
 ## Tried
-The historical reference is `positive_control_power/20260927T042645Z`, not the
-earlier current-model analogue. Fixed outcomes, LOSO fits, and bootstrap seeds;
-400/2,000 draws are strict prefixes of 20,000. All 24 diagnostic looks, 1,202,400
-prediction rows, 2,400 replicate rows, and optimizer evidence are preserved in
-`artifacts/positive_control_precision_replay/20260928T160726Z/`.
-Independent arithmetic/hash checks passed. Full results and uncertainty are in
-[the checkpoint report](../backlog_research_20260928.md); previous methods and
-predeclaration are retained in [history](done/positive-control-power-before-20260928-checkpoint.md).
+The historical reference remains `positive_control_power/20260927T042645Z`.
+Four hash-verified cells were reused and 12 computed, with fixed outcomes, LOSO
+fits, optimizer, seed and strict bootstrap prefixes. All 96 diagnostic summaries,
+4,809,600 predictions and 9,600 replicate-prefix rows are preserved in
+`artifacts/positive_control_precision_curve/historical_v1_checkpoint/`.
+The original declaration is frozen there as `predeclaration.md`. A post-launch
+summary-sorting edit was diagnosed; exact manifest-matching runner bytes were
+recovered and archived with the diff. No numerical code or manifest was rewritten.
+Root's independent verifier passed all 16 exact 400-draw reproductions, prediction
+arithmetic, all 96 summaries and unchanged input hashes.
 
 ## Next
-Use the measured 20,000-draw values for these controls. Predeclare matched-effect
-cells before extending the curve or attempting a natural-signal power bound.
+Any control matched to a natural signal requires a separate declaration with its
+direction and effect size fixed before results. Preserve this completed family;
+do not interpolate, choose a coefficient, or repeat it to seek a better result.
 
 ## Open
-No natural effect is bounded or closed by this sparse precision replay. Zero
+No natural effect is bounded or closed by this full precision curve. Zero
 crossing closes nothing; power must be demonstrated at the relevant effect size.
 One fitted probability continues to select every served side.
+
+The measured natural DPI effect is -0.133 accuracy points, smaller in magnitude
+than and opposite in direction to the smallest non-null DPI control (+0.200599).
+The measured holding effect is -0.599, between but opposite in direction to the
++0.290419 and +0.943114 controls. The original positive-direction curve cannot
+bound either natural signal, and neither interpolation nor absolute-value matching
+is admissible. Any matched negative-effect control requires a separate prospective
+family.

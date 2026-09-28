@@ -334,6 +334,10 @@ def run_capture(
         raise ValueError(f"unknown slot {slot!r}, expected one of {SLOTS}")
 
     moment = now or datetime.now(UTC)
+    if moment.tzinfo is None or moment.utcoffset() is None:
+        moment = moment.replace(tzinfo=UTC)
+    else:
+        moment = moment.astimezone(UTC)
     stamp = moment.strftime("%Y%m%dT%H%M%SZ")
     fetched_at_utc = moment.strftime("%Y-%m-%dT%H:%M:%SZ")
 

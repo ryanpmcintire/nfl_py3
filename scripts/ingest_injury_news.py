@@ -63,6 +63,10 @@ def create_fresh_snapshot_dir(
 ) -> tuple[Path, list[str]]:
 
     now = now or datetime.now(UTC)
+    if now.tzinfo is None or now.utcoffset() is None:
+        now = now.replace(tzinfo=UTC)
+    else:
+        now = now.astimezone(UTC)
     new_id = now.strftime("%Y%m%dT%H%M%SZ")
     snapshot_dir = out_dir / new_id
     snapshot_dir.mkdir(parents=True, exist_ok=True)

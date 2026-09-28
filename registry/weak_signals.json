@@ -184373,6 +184373,118 @@
       "source": "artifacts/sim04_loso/20260926T034537Z/report.json",
       "standard_error": null
     },
+    "sim08-overtime-repair-after-20260928": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Conditional diagnostic on three held-out seasons; neither mechanism refutation nor matched positive-control power established.",
+      "closing_ground": null,
+      "description": "Fixed historical after overtime engine discrete log-loss improvement versus training histogram",
+      "effect": -0.0006560347067164728,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08-historical-overtime-rule-repair",
+      "interval": [
+        -0.013844374163616158,
+        0.014831814490079632
+      ],
+      "league": "nfl",
+      "notes": "Exact27 season-resampling combinations, conditional on fixed simulation distributions. Only three seasons; excludes simulator Monte Carlo, prior model selection and post-diagnosis uncertainty. Historical2015-17 overtime, not2025+ validation. Three arms (including the superseded defective arm) times 33 original diagnostics = 99; four complete overtime histograms over integers0..10 = 44; paired overall and three season log-loss effects =4. All retained; no parameter or served-side selection.",
+      "plain_summary": "Historical overtime rules were repaired. Accuracy remains uncertain and this does not change any served pick.",
+      "probability_positive": 0.37037037037037035,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": 3,
+      "sample_games": 768,
+      "seasons": [
+        2015,
+        2017
+      ],
+      "source": "artifacts\\sim08_overtime_repair\\20260928T171712Z\\uncertainty.json",
+      "standard_error": null
+    },
+    "sim08-overtime-repair-before-20260928": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Conditional diagnostic on three held-out seasons; neither mechanism refutation nor matched positive-control power established.",
+      "closing_ground": null,
+      "description": "Fixed historical before overtime engine discrete log-loss improvement versus training histogram",
+      "effect": 0.0009385864715585774,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08-historical-overtime-rule-repair",
+      "interval": [
+        -0.011430988206595322,
+        0.01592777665097276
+      ],
+      "league": "nfl",
+      "notes": "Exact27 season-resampling combinations, conditional on fixed simulation distributions. Only three seasons; excludes simulator Monte Carlo, prior model selection and post-diagnosis uncertainty. Historical2015-17 overtime, not2025+ validation. Three arms (including the superseded defective arm) times 33 original diagnostics = 99; four complete overtime histograms over integers0..10 = 44; paired overall and three season log-loss effects =4. All retained; no parameter or served-side selection.",
+      "plain_summary": "Historical overtime rules were repaired. Accuracy remains uncertain and this does not change any served pick.",
+      "probability_positive": 0.5925925925925926,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": 3,
+      "sample_games": 768,
+      "seasons": [
+        2015,
+        2017
+      ],
+      "source": "artifacts\\sim08_overtime_repair\\20260928T171712Z\\uncertainty.json",
+      "standard_error": null
+    },
+    "sim08-overtime-repair-paired-20260928": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Added transparent paired diagnostic, not a selected endpoint; no closure or serving decision.",
+      "closing_ground": null,
+      "description": "Final overtime rules versus preceding terminal-rule engine, conditional paired log-loss improvement",
+      "effect": -0.0015946211782750502,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08-historical-overtime-rule-repair",
+      "interval": [
+        -0.0025284301131693184,
+        -0.0007950774448124869
+      ],
+      "league": "nfl",
+      "notes": "Exact27 season-resampling combinations, conditional on fixed simulation distributions. Only three seasons; excludes simulator Monte Carlo, prior model selection and post-diagnosis uncertainty. Historical2015-17 overtime, not2025+ validation. Three arms (including the superseded defective arm) times 33 original diagnostics = 99; four complete overtime histograms over integers0..10 = 44; paired overall and three season log-loss effects =4. All retained; no parameter or served-side selection.",
+      "plain_summary": "Correct overtime termination does not yet establish a predictive improvement.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": 3,
+      "sample_games": 768,
+      "seasons": [
+        2015,
+        2017
+      ],
+      "source": "artifacts\\sim08_overtime_repair\\20260928T171712Z\\uncertainty.json",
+      "standard_error": null
+    },
+    "sim08-overtime-repair-superseded-20260928": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Conditional diagnostic on three held-out seasons; neither mechanism refutation nor matched positive-control power established.",
+      "closing_ground": null,
+      "description": "Fixed historical superseded overtime engine discrete log-loss improvement versus training histogram",
+      "effect": -0.0006560347067164728,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08-historical-overtime-rule-repair",
+      "interval": [
+        -0.013844374163616158,
+        0.014831814490079632
+      ],
+      "league": "nfl",
+      "notes": "Exact27 season-resampling combinations, conditional on fixed simulation distributions. Only three seasons; excludes simulator Monte Carlo, prior model selection and post-diagnosis uncertainty. Historical2015-17 overtime, not2025+ validation. Three arms (including the superseded defective arm) times 33 original diagnostics = 99; four complete overtime histograms over integers0..10 = 44; paired overall and three season log-loss effects =4. All retained; no parameter or served-side selection.",
+      "plain_summary": "Historical overtime rules were repaired. Accuracy remains uncertain and this does not change any served pick.",
+      "probability_positive": 0.37037037037037035,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": 3,
+      "sample_games": 768,
+      "seasons": [
+        2015,
+        2017
+      ],
+      "source": "artifacts\\sim08_overtime_repair\\20260928T171712Z\\uncertainty.json",
+      "standard_error": null
+    },
     "sim08-terminal-repair-after-20260928": {
       "category": "modeling",
       "classification": "unresolved_below_power",

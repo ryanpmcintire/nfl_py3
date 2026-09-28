@@ -7,6 +7,13 @@ with unchanged source hashes and results withheld until its declared cohort ends
 
 ## Frozen prospective scorecard
 
+**Superseded baseline comparison:** the later [seven-category report](seven_backlog_completion_20260928.md)
+requires exact same-book quote proof and corrects the raw baseline from cover mass
+to conditional non-push probability. The current artifact is
+`artifacts/prospective_scorecard/20260928T175751Z/`: 24 raw-eligible games (23 decisive)
+and only three market-eligible games. The historical table below is retained as an
+audit trail, not current comparative evidence. The frozen 28-19 record is unchanged.
+
 **Measured:** the former scorecard reported 30–17 from a different decision ledger.
 Eight sides and 44 displayed probabilities disagreed with the actual 48 frozen
 published rows. The corrected record is **28–19, one pending**; Best Pick is 1–2.

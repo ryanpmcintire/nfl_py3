@@ -59,7 +59,9 @@ Use the locked environment to run `nfl-ats independent-validation`:
   results. `--features PATH` selects an explicit final-outcome artifact.
 
 Scheduled captures run daily at 12:10 ET, Thursday at 19:55 ET, and Sunday at
-08:50 and 12:50 ET. They use the active forecast and honor the normal pool lock,
+08:50 and 12:50 ET. Each scheduler window lasts 60 minutes so queued noon
+refreshes do not skip capture; the game-level eligibility cutoff is unchanged.
+They use the active forecast and honor the normal pool lock,
 including an earlier kickoff. The daily pass supplies a pregame fallback when
 an extra capture is unavailable. Inspect coverage as forecasts move to Week 4;
 an out-of-period rehearsal does not verify an actual future-game capture.

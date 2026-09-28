@@ -18,7 +18,12 @@ ROOT = REPO / "data" / "market" / "raw"
 def _latest_age(source: str, now: datetime) -> float | None:
     latest: pd.Timestamp | None = None
     for path in ROOT.glob("*/manifest.json"):
-        manifest = json.loads(path.read_text(encoding="utf-8"))
+        try:
+            manifest = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        if not isinstance(manifest, dict):
+            continue
         if manifest.get("provider") != source:
             continue
         instant = pd.to_datetime(
@@ -26,7 +31,11 @@ def _latest_age(source: str, now: datetime) -> float | None:
             utc=True,
             errors="coerce",
         )
-        if pd.notna(instant) and (latest is None or instant > latest):
+        if (
+            pd.notna(instant)
+            and instant <= pd.Timestamp(now)
+            and (latest is None or instant > latest)
+        ):
             latest = instant
     return None if latest is None else (pd.Timestamp(now) - latest).total_seconds() / 60
 
