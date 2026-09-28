@@ -5,11 +5,14 @@ Repair transition and terminal-state behavior, then diagnose late-game bias
 without fitting weights or changing served probabilities from these diagnostics.
 
 ## State
-**Measured:** repaired engine checkpoint `a6f4d35` completed 10,002 games in
-166.6 seconds with zero caps; mean margin +0.293, SD 15.0043, total points 40.8859,
-possessions 24.112, plays 146.423. Four of five key-number bands pass; margin 3
-remains deficient. Log-loss difference versus the naive baseline is +0.000884946.
-This validates engine execution, not research promotion or serving.
+**Measured:** September 28 repaired quarter boundaries, zero elapsed transitions,
+and two overtime timeouts. The before/after replay completed 10,002 games per arm,
+zero caps; the before margins exactly reproduce the prior checkpoint. Repaired
+log-loss improvement over the naive histogram is +0.000939 [-0.011431, +0.015928],
+probability_positive 0.5926, conditional on only three validation seasons.
+Three of five key-number bands pass; margins 3 and 17 remain unresolved.
+Both log-loss effects are registered `unresolved_below_power`; no serving change.
+[Full results and all diagnostic looks](../backlog_research_20260928.md).
 
 ## Tried
 - **Measured:** conversion repair reconciles 768/768 final margins. Full repair
@@ -37,10 +40,12 @@ This validates engine execution, not research promotion or serving.
   `done/sim08-late-game-diagnostic-history.md`.
 
 ## Next
-Retain the fourth-look result and frozen replay bundle under
-`artifacts/sim08_reference_bootstrap/20260927T055500Z/`. Predeclare a mechanism-led
-repair or a separate uncertainty expansion before another look. Fixed-selection
-intervals omit neighbor and alpha selection; timeout imbalance remains material.
+Continue the named endgame mechanisms before another parameter or endpoint look.
+The completed predeclaration fixed seed 20260925, 3,334 games per 2015–2017 season,
+training 2009–2014, copied features, both source engines, hashes, and all rows.
+`artifacts/sim08_terminal_repair/20260928T161258Z/` retains the entire diagnostic
+family and added transparent season uncertainty. No endpoint selected a weight.
+Retain the earlier fourth-look bundle and its unresolved uncertainty separately.
 
 ## Open
 Finite-draw probability_positive of 0 or 1 is not impossibility or certainty.

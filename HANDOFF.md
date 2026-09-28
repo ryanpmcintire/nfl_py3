@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-28T15:31:42.951831+00:00`
+Refreshed at: `2026-09-28T16:37:33.571405+00:00`
 
 ## Start here
 
@@ -21,16 +21,29 @@ Refreshed at: `2026-09-28T15:31:42.951831+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `516fcfe3f341` — Refresh current-season PBP and guard served pressure inputs
-- Pending change set: 8 paths
+- Baseline commit: `a7a2cc061edb` — Refresh handoff after pressure-input repair
+- Pending change set: 36 paths
   - ` M AGENTS.md`
+  - `M  CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
+  - `M  README.md`
   - ` M docs/agent_workflow.md`
-  - `?? docs/lanes/windows-shell-popup.md`
-  - `?? registry/experiments/margin-backtest/20260927T134152Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-03-20260927T134352Z.json`
-  - `?? registry/experiments/opener-evaluation/20260927T134738Z.json`
-  - `?? registry/experiments/waterfall-feed/20260927T134851Z.json`
+  - `A  docs/backlog_research_20260928.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - `M  docs/lanes/README.md`
+  - `A  docs/lanes/done/backlog-research-2026-09-28.md`
+  - `A  docs/lanes/done/pool-rank-card-before-20260928-checkpoint.md`
+  - `A  docs/lanes/done/positive-control-power-before-20260928-checkpoint.md`
+  - `M  docs/lanes/pol10-prospective-2026.md`
+  - `M  docs/lanes/pool-rank-card.md`
+  - `M  docs/lanes/positive-control-power.md`
+  - `M  docs/lanes/sim08-simulator-rebuild.md`
+  - `M  docs/model.html`
+  - `A  registry/experiments/margin-backtest/20260928T160842Z.json`
+  - `A  registry/experiments/margin-predict/2026-week-03-20260928T161008Z.json`
+  - ...and 16 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -39,18 +52,18 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `397c9cec7b097082`
+- Model ID: `b40dd36507ccaec0`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20260927T134738Z`)
+- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20260928T161343Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card combines this with the coach component in one fitted calibrated probability, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,103 / 2,107 (52.35%)**
-- Linked forecast: **2026 Week 3**, created `2026-09-27T16:10:13.762139+00:00`
+- Linked forecast: **2026 Week 3**, created `2026-09-28T16:10:08.458340+00:00`
 
 The 52.35% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 3** from model `397c9cec7b097082`, published `2026-09-28T15:08:47.707149+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 3** from model `b40dd36507ccaec0`, published `2026-09-28T16:28:36.661866+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

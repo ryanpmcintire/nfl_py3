@@ -2490,6 +2490,9 @@ def _recent_activity_section_html(activity: RecentActivityView) -> str:
         f"{activity.resolved_count} resolved either way &middot; "
         f"{activity.still_open_count} still open</span>"
         "</div>"
+        '<p class="policy-note">Looking for the weekly results? '
+        '<a href="history.html">See the picks as they were saved</a>, '
+        "graded at their original lines.</p>"
     )
     if activity.is_empty:
         body = '<p class="policy-note">No new screens recorded this week.</p>'

@@ -184373,6 +184373,62 @@
       "source": "artifacts/sim04_loso/20260926T034537Z/report.json",
       "standard_error": null
     },
+    "sim08-terminal-repair-after-20260928": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Engineering diagnostic on three held-out seasons; neither mechanism refutation nor matched positive-control power demonstrated.",
+      "closing_ground": null,
+      "description": "Fixed-seed after engine discrete margin log-loss improvement versus training histogram",
+      "effect": 0.0009385864715585774,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08-terminal-rule-repair-diagnostics",
+      "interval": [
+        -0.011430988206595322,
+        0.01592777665097276
+      ],
+      "league": "nfl",
+      "notes": "Exact 27 season-resampling combinations; conditional on fixed simulation distribution, excludes simulator Monte Carlo and model selection uncertainty. Only three historical validation seasons. All 66 diagnostics retained; no serving or parameter selection.",
+      "plain_summary": "Correct football timing rules are being checked in the simulator. This diagnostic does not change this week's picks.",
+      "probability_positive": 0.5925925925925926,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": 3,
+      "sample_games": 768,
+      "seasons": [
+        2015,
+        2017
+      ],
+      "source": "artifacts\\sim08_terminal_repair\\20260928T161258Z\\uncertainty.json",
+      "standard_error": null
+    },
+    "sim08-terminal-repair-before-20260928": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Engineering diagnostic on three held-out seasons; neither mechanism refutation nor matched positive-control power demonstrated.",
+      "closing_ground": null,
+      "description": "Fixed-seed before engine discrete margin log-loss improvement versus training histogram",
+      "effect": -0.0008849463585212901,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08-terminal-rule-repair-diagnostics",
+      "interval": [
+        -0.012462085899730208,
+        0.012006769445699436
+      ],
+      "league": "nfl",
+      "notes": "Exact 27 season-resampling combinations; conditional on fixed simulation distribution, excludes simulator Monte Carlo and model selection uncertainty. Only three historical validation seasons. All 66 diagnostics retained; no serving or parameter selection.",
+      "plain_summary": "Correct football timing rules are being checked in the simulator. This diagnostic does not change this week's picks.",
+      "probability_positive": 0.37037037037037035,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": 3,
+      "sample_games": 768,
+      "seasons": [
+        2015,
+        2017
+      ],
+      "source": "artifacts\\sim08_terminal_repair\\20260928T161258Z\\uncertainty.json",
+      "standard_error": null
+    },
     "sim08_engine_team_conditioned_raw_vs_discrete_read": {
       "category": "modeling",
       "classification": "refuted_mechanism",

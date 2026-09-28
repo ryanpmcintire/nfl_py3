@@ -1,8 +1,8 @@
 # NFL ATS predictions: 2026 Week 3
 
-Published from the synchronized weak stack model, 2026-09-28 15:08 UTC.
+Published from the synchronized weak stack model, 2026-09-28 16:28 UTC.
 
-<!-- publication: model_id=397c9cec7b097082 published_at_utc=2026-09-28T15:08:47.707149+00:00 -->
+<!-- publication: model_id=b40dd36507ccaec0 published_at_utc=2026-09-28T16:28:36.661866+00:00 -->
 
 > **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 
@@ -44,9 +44,9 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 
 | Matchup    | Previous pick   | New pick   | Cover chance   |
 |:-----------|:----------------|:-----------|:---------------|
-| HOU at IND | HOU             | IND        | 55.5%          |
-| KC at MIA  | KC              | MIA        | 51.0%          |
+| HOU at IND | HOU             | IND        | 54.4%          |
+| KC at MIA  | KC              | MIA        | 50.8%          |
 | LA at DEN  | LA              | DEN        | 50.3%          |
-| MIN at TB  | MIN             | TB         | 53.4%          |
-| SEA at WAS | WAS             | SEA        | 52.1%          |
+| MIN at TB  | MIN             | TB         | 50.7%          |
+| SEA at WAS | WAS             | SEA        | 51.5%          |
 <!-- LATE_WEEK_REFRESH:END -->

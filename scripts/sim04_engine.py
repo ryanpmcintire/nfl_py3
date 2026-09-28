@@ -639,7 +639,7 @@ def build_transition_frame(
 
     gsr_now = df["game_seconds_remaining"].to_numpy()
     raw_elapsed = gsr_now - df["next_gsr"].to_numpy()
-    clock_elapsed = np.where(raw_elapsed < 0, gsr_now, np.clip(raw_elapsed, 1.0, None))
+    clock_elapsed = np.where(raw_elapsed < 0, gsr_now, np.clip(raw_elapsed, 0.0, None))
 
     yards_gained = df["yardline_100"].to_numpy() - df["next_yardline"].to_numpy()
     dist_gained = df["ydstogo"].to_numpy() - df["next_distance"].to_numpy()
@@ -913,7 +913,7 @@ def run_one_game(
         if in_ot:
             qtr = 5
         else:
-            qtr = 4 - int(np.floor(max(gsr, 0.0) / 900.0))
+            qtr = 5 - int(np.ceil(max(gsr, 0.0) / 900.0))
             qtr = min(max(qtr, 1), 4)
         clock_val = ot_clock if in_ot else gsr
 
@@ -1083,7 +1083,7 @@ def run_one_game(
                 offense = "home" if rng.random() < 0.5 else "away"
                 down, distance = 1, 10
                 yardline = float(rng.choice(opening_pool))
-                home_to, away_to = 3, 3
+                home_to, away_to = 2, 2
                 possessions += 1
                 drive_start_qtr = 5
                 drive_start_gsr = ot_clock

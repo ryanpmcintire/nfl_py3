@@ -4,6 +4,14 @@
 Score frozen pregame decisions at the recorded line, retain close grades as secondary evidence, and compare challengers on exactly paired decisive games.
 
 ## State
+**Measured September 28:** the served scorecard now uses actual frozen published
+decisions: 28–19, one pending; Best Pick 1–2. The previous 30–17 reconstruction is
+superseded. Valid pre-publication raw/market bindings exist for 24/48 games, 23
+decisive; all four baseline arms compare those same games. Unavailable bindings
+and unmatched challenger lines remain explicit. Evidence and reliability cells:
+`artifacts/prospective_scorecard/20260928T162048Z/` and
+[the checkpoint report](../backlog_research_20260928.md). No model selection.
+
 **Measured:** `nfl-ats prospective-score --features data/processed/game_features.parquet --start-season 2026 --bootstrap-samples 1000` exited 0 on 2026-09-27. Current artifact: `artifacts/prospective_scoring/20260927T154056Z`. Challenger statuses: 57 scored, one invalid arm, three missing ledgers, three unsupported. A scored status does not imply every game has finished.
 **Measured:** the immutable rookie-crew recorder and paired scorer adapter passed root callable verification. Both probabilities and their lineage survive settlement. Enrollment remains off; the real scorer correctly reports `missing_ledger` for this challenger.
 

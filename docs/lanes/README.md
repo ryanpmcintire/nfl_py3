@@ -20,12 +20,13 @@ modified lane when the prompt just says to continue.
 
 ## Active
 
+- [backlog research checkpoint](done/backlog-research-2026-09-28.md) - 2026-09-28: corrected frozen scorecard and pool chronology; completed four-cell precision replay and simulator terminal-rule repair/regrade.
 - [independent-combination-validation](independent-combination-validation.md) - 2026-09-28: historical selection replay completed on 533 games; calibration-stage diagnostic and 30 registry records saved; untouched Week 4–18 collection remains active.
 - [backlog-batch-2026-09-26](backlog-batch-2026-09-26.md) - 2026-09-26: 16 finished research lanes closed to done/; see State for what each closed on.
 - [sim08-simulator-rebuild](sim08-simulator-rebuild.md) - 2026-09-26: SIM-04 was graded while failing its own key-number gate; rebuild endgame, undamp conditioning, anchor on the opener, re-grade.
 - [lead53-sunday-renomination](lead53-sunday-renomination.md) - 2026-09-24: ranks on the served four-term probability; after Sun 10:00 ET grep BEST-PICK-LEDGER in data/scheduler_log.txt for the Week 3 pairing.
 - [lead64-friday-designations](lead64-friday-designations.md) - 2026-09-24: headline designations lead the official file but only n=3 checkable; not wired; rerun the join after more weeks now that inactives capture works.
-- [pol10-prospective-2026](pol10-prospective-2026.md) - 2026-09-24: prospective scorecard (card 24-8, Best Pick 1-1, n=32); rerun scripts/prospective_scorecard_2026.py after each graded week.
+- [pol10-prospective-2026](pol10-prospective-2026.md) - 2026-09-28: frozen card 28-19, one pending; Best Pick 1-2; 23 decisive games have valid matched baselines. Rerun scripts/prospective_scorecard_2026.py after grading.
 - [positive-control-power](positive-control-power.md) - 2026-09-23: minimum detectable effect harness; decides which unresolved cells are bounded by a control.
 - [free-odds-sources](free-odds-sources.md) - 2026-09-24: Books now shows posted lines (one number or a low-to-high range); no-publication rule removed; mid-week captures back on; direct Bovada capture fixed (v2 endpoint).
 - [news-trigger-refresh](news-trigger-refresh.md) - MKT-08 dispatch implemented and verified; prospective comparison awaits new events.

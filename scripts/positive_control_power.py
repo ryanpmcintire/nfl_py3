@@ -581,6 +581,7 @@ def run_cell(
     seed,
     bootstrap_block,
     fixed_term=None,
+    simulation_callback=None,
 ):
     detections = 0
     points = []
@@ -611,7 +612,7 @@ def run_cell(
         synth_prob = 1.0 / (1.0 + np.exp(-synth_logit))
         synth_outcome = rng.binomial(1, synth_prob).astype(float)
 
-        sim_pop = population[["season", "week", *BASE_TERMS]].copy()
+        sim_pop = population[["game_id", "season", "week", *BASE_TERMS]].copy()
         sim_pop["synthetic_term"] = term_raw
         sim_pop["home_covered"] = synth_outcome
 
@@ -633,6 +634,8 @@ def run_cell(
             continue
         mask = base_oos.notna() & new_oos.notna()
         scored = sim_pop.loc[mask].copy()
+        scored["base_probability"] = base_oos.loc[mask].to_numpy()
+        scored["augmented_probability"] = new_oos.loc[mask].to_numpy()
         scored["base_correct"] = (
             base_oos.loc[mask].ge(0.5).astype(float).eq(scored["home_covered"]).astype(float)
         )
@@ -641,7 +644,7 @@ def run_cell(
         )
         scored["diff_vs_four_term"] = scored["new_correct"] - scored["base_correct"]
 
-        point, low, _high, _pp = block_bootstrap(
+        point, low, high, probability_positive = block_bootstrap(
             scored,
             "diff_vs_four_term",
             draws,
@@ -649,8 +652,22 @@ def run_cell(
             bootstrap_block,
         )
         points.append(point * 100.0)
-        if low > 0.0:
+        detected = low > 0.0
+        if detected:
             detections += 1
+        if simulation_callback is not None:
+            simulation_callback(
+                sim,
+                scored.copy(),
+                {
+                    "draws": draws,
+                    "point": point,
+                    "low": low,
+                    "high": high,
+                    "probability_positive": probability_positive,
+                    "detected": detected,
+                },
+            )
 
     completed_sims = len(points)
     detection_rate = detections / completed_sims if completed_sims else None
