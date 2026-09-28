@@ -22,8 +22,8 @@ ACTIONABLE_STATUSES = frozenset({"🚧", "⬜"})
 
 PHASE_RE = re.compile(r"^## (?P<phase>Phase \d+ .+|Cross-league evidence and transfer.+)$")
 ROW_RE = re.compile(
-    r"^\| (?P<item_id>[A-Z]+-\d+) \| (?P<status>✅|🚧|⬜|🔬|🌙|❌) "
-    r"\| (?P<title>[^|]+) \|"
+    r"^\|\s*(?P<item_id>[A-Z]+-\d+)\s*\|\s*(?P<status>[^|]*)"
+    r"\|\s*(?P<title>[^|]+)\|"
 )
 
 
@@ -66,13 +66,18 @@ def parse_roadmap(text: str) -> list[RoadmapItem]:
         if row_match is None:
             continue
         item_id = row_match.group("item_id")
+        status = row_match.group("status").strip()
+        if status not in STATUS_LABELS:
+            raise ValueError(
+                f"unknown roadmap status {status!r} for {item_id!r} at line {line_number}"
+            )
         if item_id in seen:
             raise ValueError(f"duplicate roadmap item {item_id!r} at line {line_number}")
         seen.add(item_id)
         items.append(
             RoadmapItem(
                 item_id=item_id,
-                status=row_match.group("status"),
+                status=status,
                 title=row_match.group("title").strip(),
                 phase=phase,
             )
@@ -117,7 +122,7 @@ def summarize(items: list[RoadmapItem]) -> Inventory:
 def render_text(inventory: Inventory) -> str:
     lines = [
         (
-            f"roadmap: {inventory.done}/{inventory.total} done; "
+            f"backlog: {inventory.done}/{inventory.total} done; "
             f"{inventory.remaining} remaining; {inventory.actionable} active/planned"
         ),
         "status: "

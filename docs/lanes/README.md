@@ -20,7 +20,6 @@ modified lane when the prompt just says to continue.
 
 ## Active
 
-- [seven-category checkpoint](done/seven-backlog-completion.md) - 2026-09-28: implemented and verified work across all seven; see the saved report for remaining observation limits.
 - [backlog research checkpoint](done/backlog-research-2026-09-28.md) - 2026-09-28: corrected frozen scorecard and pool chronology; completed four-cell precision replay and simulator terminal-rule repair/regrade.
 - [independent-combination-validation](independent-combination-validation.md) - 2026-09-28: all ten capture aliases rehearsed; wider execution windows; unchanged 224-game Week 4-18 enrollment awaits first eligible capture.
 - [backlog-batch-2026-09-26](backlog-batch-2026-09-26.md) - 2026-09-26: 16 finished research lanes closed to done/; see State for what each closed on.
@@ -41,6 +40,9 @@ modified lane when the prompt just says to continue.
 - [sunday-market-probability](sunday-market-probability.md) — activated 2026-09-20 as `leader_median_through_sunday_prekick_v1`; six unresolved metric/protocol cells recorded under `sunday_market_probability_fixed_v1`.
 
 ## Done
+
+- [one backlog](done/backlog-accounting.md) - 2026-09-28: one canonical list and count; unknown statuses fail visibly; selected-batch completion wording corrected.
+- [seven-category implementation batch](done/seven-backlog-completion.md) - 2026-09-28: selected implementation work completed; remaining work stays in the single backlog in ROADMAP.md.
 
 - [current-week-pressure-inputs](done/current-week-pressure-inputs.md) - 2026-09-28: Week 3 updated; current-season PBP ingestion and publication coverage repaired; locked decisions and enrolled model preserved.
 - [backlog-batch-2026-09-25](done/backlog-batch-2026-09-25.md) - 2026-09-25: standing backlog lane; batch 1 = queued registry records + one UI-20 improvement.

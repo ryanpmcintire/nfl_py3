@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-28T18:17:04.250321+00:00`
+Refreshed at: `2026-09-28T18:59:12.204954+00:00`
 
 ## Start here
 
@@ -21,12 +21,21 @@ Refreshed at: `2026-09-28T18:17:04.250321+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `d32583ad32b7` — Complete seven-category backlog checkpoint and repair input provenance
-- Pending change set: 9 paths
+- Baseline commit: `daa972311a1b` — Refresh handoff after seven-category backlog checkpoint
+- Pending change set: 18 paths
   - ` M AGENTS.md`
   - `M  HANDOFF.md`
+  - `M  ROADMAP.md`
   - ` M docs/agent_workflow.md`
+  - ` M docs/findings.html`
+  - ` M docs/history.html`
+  - ` M docs/index.html`
+  - `M  docs/lanes/README.md`
+  - `A  docs/lanes/done/backlog-accounting.md`
   - `M  docs/lanes/done/seven-backlog-completion.md`
+  - ` M docs/model.html`
+  - `M  docs/seven_backlog_completion_20260928.md`
+  - `M  scripts/roadmap_inventory.py`
   - `?? docs/lanes/windows-shell-popup.md`
   - `?? registry/experiments/margin-backtest/20260927T134152Z.json`
   - `?? registry/experiments/margin-predict/2026-week-03-20260927T134352Z.json`

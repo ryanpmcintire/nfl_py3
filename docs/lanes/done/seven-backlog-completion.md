@@ -1,8 +1,10 @@
-# Seven backlog categories
+# Seven-category implementation batch
 
 ## Goal
 Complete the executable work across all seven categories without overfitting or
 inventing historical inputs; retain unresolved science and future observations.
+This was a selected batch within the single backlog in `ROADMAP.md`, not the
+complete set of unfinished backlog items.
 
 ## State
 Checkpoint `d32583a` saves the implementation, reports and regenerated site.

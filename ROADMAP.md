@@ -1,14 +1,23 @@
-# NFL ATS research roadmap
+# NFL ATS backlog
+
+Roadmap and backlog mean this same list. `ROADMAP.md` is the single source of
+backlog items and statuses; lane files and checkpoint reports supply their
+evidence and next steps, not another backlog or another total.
 
 Completed rows and dated wave logs live in [docs/roadmap_archive.md](docs/roadmap_archive.md).
 
-**September 28 seven-category checkpoint:** [implementation and measured evidence](docs/seven_backlog_completion_20260928.md)
+**September 28 selected implementation batch:** [implementation and measured evidence](docs/seven_backlog_completion_20260928.md)
 cover independent-study scheduling, historical overtime rules, full contender
 capture, the complete evaluator precision curve, exact pool/source proof, capture
 reliability, and prospective coverage. Historical input gaps and future observation
 requirements remain open; no challenger was promoted or enrolled study retuned.
 History now explains that saved cover chances stay with their original picks.
 
+
+The batch grouped work into seven categories; seven was not a count of all
+unfinished backlog items. Presenting it as the whole remaining backlog was
+incorrect. The linked checkpoint records its completed work and evidence needs;
+it does not mark the entire backlog complete.
 
 This is the living backlog for the revived project. It deliberately includes
 boring infrastructure, serious research ideas, and moonshots. A feature is not
@@ -119,11 +128,19 @@ daily refreshes write no prospective ledger rows.
 ### Backlog accounting
 
 Run `.\.tools\uv.exe run --no-sync python scripts\roadmap_inventory.py` from
-PowerShell for the live count. The inventory deliberately reports two numbers:
-`remaining` includes every non-done row, while `active/planned` includes only
-🚧 and ⬜ rows. Research questions, moonshots, and declined/blocked work remain
-visible but are not misrepresented as the immediately executable queue. Use
-`--json` for machine-readable totals and per-phase counts.
+PowerShell for the live count. `remaining` is the backlog total: every non-done
+item, counted once by its ID. `active/planned` is a labeled subset of that same
+total, containing only 🚧 and ⬜ rows. Research questions, moonshots, and blocked
+items are still backlog items. Use `--json` for machine-readable totals and
+per-phase counts. Unknown status symbols fail the inventory instead of hiding rows.
+
+When asked what remains, use this total and these items. A priority list, a
+selected batch, or a grouped summary must never replace the backlog total.
+State the selected scope explicitly and link its work to the existing items.
+Reconcile completion against each item's full scope before changing its status;
+a completed implementation step does not settle unresolved research or provide
+future observations. Keep the remaining action with that same item. Do not
+create a separate meaning of "backlog" to explain an inconsistent answer.
 
 ## Phase 13 — general engineering improvements
 
@@ -682,7 +699,7 @@ weeks.
 |---|---|---|---|
 | SIM-04 | ✅ | Full play-by-play simulator | Done 2026-09-26. `scripts/sim04_engine.py` plays every snap from nearest-neighbour real plays (down rules, clock, OT, kneels, returns), team-conditioned by a pregame-EPA kernel with exact home/away matching. Validation 2015-2017: log-loss +0.0045 vs naive, but 2/5 key numbers (3s short: .103 vs .152). Graded leave-one-season-out at the opener 2020-2025 against the served discrete read: raw read refuted (-0.034 log loss, 6/6 seasons adverse); re-centred read refuted as a push-probability source (-0.011); its cover-vs-miss split is a dead heat (unresolved, p(pos) 0.32). Nothing enters the pick. Dashboard shows each game's simulated margin shape. Detail in `docs/sim04_unit_log.md`. |
 | SIM-05 | ✅ | Counterfactual simulator | Done 2026-09-26 (`scripts/sim05_whatif.py`, `artifacts/sim05_whatif/20260926T034314Z`): going for it on 4th-and-3-or-less past midfield moves the average margin -0.2 +/- 0.14 (below power); a backup QB (-0.053 EPA/play, 167 team-seasons) moves it -1.24 +/- 0.14, about 40% of the rating gap, so team conditioning is damped. Research and dashboard only. |
-| SIM-08 | 🔨 | Simulator rebuild to catch the model | **Measured 2026-09-27:** fourth late-game rollout endpoint: -0.751 seconds [-2.728, +1.173], probability_positive 0.2175, fixed-selection paired bootstrap (2,000 draws; 55 actual games). Recorded as unresolved in elapsed_seconds_bias; this nondirectional diagnostic is excluded from directional sign aggregation. Frozen replay bundle: artifacts/sim08_reference_bootstrap/20260927T055500Z/. Neighbor/alpha selection uncertainty and timeout imbalance remain open; no serving change. Current lane: docs/lanes/sim08-simulator-rebuild.md. **2026-09-26 re-grade (measured, `artifacts/sim04_loso/20260926T203158Z/`, `docs/sim04_unit_log.md`):** 1,537 opener games 2020-2025; raw sim -0.0267 and re-centred -0.0070 log loss vs the served read, both refuted wrong-sign; tilt -0.0023 P+ 0.19; served+sim blend +0.0043 P+ 0.93, but -0.0004 [-0.0011,+0.0003] P+ 0.14 against a served-only recalibration, so the gain is shrinkage of an overconfident served probability, not the simulator. Engine shape (mass at 3) is the open defect. Opened 2026-09-26. SIM-04 was graded after failing its own validation gate (2/5 key numbers, 3s .103 vs .152, tied late games reach OT at 31% vs 15%, team effects damped to ~40%) and without the market line as an input, so its losses measure engine defects and the priced-team-quality ceiling, not the simulation idea. Units: (1) endgame finishing: from real 5:00 states the sim puts .133 at 3 vs .152 (CI .138-.167); unit 1 fixed OT neighbour pooling (OT TDs .007 to .017 per play vs .020), mass at 3 still short; (2) undamp team conditioning (kernel bandwidth) so a backup QB moves the full rating gap; (3) market-anchored sim: condition on the opening spread and total so the sim contributes shape and interaction, not strength; (4) re-grade LOSO at the opener against the served discrete read with 1000+ draws, plus a fitted-term blend. Bar: catch the served read on cover-vs-miss and beat it on push pricing. Lane `docs/lanes/sim08-simulator-rebuild.md`. |
+| SIM-08 | 🚧 | Simulator rebuild to catch the model | **Measured 2026-09-27:** fourth late-game rollout endpoint: -0.751 seconds [-2.728, +1.173], probability_positive 0.2175, fixed-selection paired bootstrap (2,000 draws; 55 actual games). Recorded as unresolved in elapsed_seconds_bias; this nondirectional diagnostic is excluded from directional sign aggregation. Frozen replay bundle: artifacts/sim08_reference_bootstrap/20260927T055500Z/. Neighbor/alpha selection uncertainty and timeout imbalance remain open; no serving change. Current lane: docs/lanes/sim08-simulator-rebuild.md. **2026-09-26 re-grade (measured, `artifacts/sim04_loso/20260926T203158Z/`, `docs/sim04_unit_log.md`):** 1,537 opener games 2020-2025; raw sim -0.0267 and re-centred -0.0070 log loss vs the served read, both refuted wrong-sign; tilt -0.0023 P+ 0.19; served+sim blend +0.0043 P+ 0.93, but -0.0004 [-0.0011,+0.0003] P+ 0.14 against a served-only recalibration, so the gain is shrinkage of an overconfident served probability, not the simulator. Engine shape (mass at 3) is the open defect. Opened 2026-09-26. SIM-04 was graded after failing its own validation gate (2/5 key numbers, 3s .103 vs .152, tied late games reach OT at 31% vs 15%, team effects damped to ~40%) and without the market line as an input, so its losses measure engine defects and the priced-team-quality ceiling, not the simulation idea. Units: (1) endgame finishing: from real 5:00 states the sim puts .133 at 3 vs .152 (CI .138-.167); unit 1 fixed OT neighbour pooling (OT TDs .007 to .017 per play vs .020), mass at 3 still short; (2) undamp team conditioning (kernel bandwidth) so a backup QB moves the full rating gap; (3) market-anchored sim: condition on the opening spread and total so the sim contributes shape and interaction, not strength; (4) re-grade LOSO at the opener against the served discrete read with 1000+ draws, plus a fitted-term blend. Bar: catch the served read on cover-vs-miss and beat it on push pricing. Lane `docs/lanes/sim08-simulator-rebuild.md`. |
 | SIM-06 | 🌙 | Differentiable football environment | Learn policy/state transitions jointly without sacrificing auditability |
 | SIM-07 | 🌙 | Multi-agent tactical model | Personnel and scheme interaction below the play level |
 

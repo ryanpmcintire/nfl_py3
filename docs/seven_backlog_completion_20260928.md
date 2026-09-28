@@ -1,8 +1,12 @@
-# Seven backlog categories: September 28 completion report
+# Seven-category implementation batch: September 28 completion report
 
-The owner requested work on all seven remaining categories. This report separates
-implemented and verified work from observations that cannot exist yet. No result
-in this session selects a new served model or retunes the enrolled future study.
+The owner requested work on seven categories presented as the remaining work.
+That presentation incorrectly substituted grouped priorities for the full backlog.
+This report records the completed implementation batch and the observations that
+cannot exist yet; it does not establish that the entire backlog is complete.
+[ROADMAP.md](../ROADMAP.md#backlog-accounting) is the one backlog and owns its
+items, statuses, and remaining count. No result in this session selects a new
+served model or retunes the enrolled future study.
 
 ## Independent validation
 
