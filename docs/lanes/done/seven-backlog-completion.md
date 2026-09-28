@@ -5,6 +5,7 @@ Complete the executable work across all seven categories without overfitting or
 inventing historical inputs; retain unresolved science and future observations.
 
 ## State
+Checkpoint `d32583a` saves the implementation, reports and regenerated site.
 Implementation, code review, final static checks and 1,645 existing tests passed.
 The site was regenerated and its rendered diff reviewed. Frozen Week 3 picks,
 probabilities and Best Pick remain unchanged; Week 4-18 enrollment is untouched.
