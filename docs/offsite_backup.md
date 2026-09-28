@@ -3,7 +3,8 @@
 Set up 2026-09-10. A friend's Linux server (WireGuard peer `10.66.0.1`,
 SSH alias `backup-server`, 100 GiB ZFS quota at `/data`, server-side
 daily snapshots kept 14 days) is the second copy of this project's data
-and, once ported, the second host for the capture schedule.
+and the second host for the capture schedule. The September 28 verification
+below states its current deployment and remaining limits.
 
 ## What lives where on this machine
 
@@ -23,6 +24,56 @@ None of the secrets are in the repository. `git status` must never list them.
 tracked. A fresh checkout therefore includes the fail-closed policy registry
 required before any raw capture; API keys remain in the environment files
 described below.
+
+## September 28 verification and repairs
+
+**Measured:** the primary scheduler reports 230 OK jobs and one acknowledged
+September 22 lock miss; its `--once` check exited 0. The secondary was running an
+older fallback daemon. A code-only archive from checkpoint `916ba64` deployed
+499 allowlisted files after SHA-256 verification, matching dependency-lock and
+Python 3.12 import checks. Overwritten files are retained in a rollback archive.
+The restarted capture-only daemon reports the deployed scheduler hash.
+
+**Measured:** seven previously untried aliases passed on the secondary:
+`public_betting_tue`, `public_betting_thu`, the four `odds_private_*` aliases, and
+`inactives_sun_early`. Five `player_snapshot_*_0915` jobs exited 137; the host's
+cgroup reported 35 OOM kills. No season ranges were shortened to conceal that
+failure. **Read:** the repair in `src/nfl_ats/players.py` loads one season at a
+time, writes and releases each dataset sequentially, and compacts historical
+first-seen keys incrementally. It bypasses nflreadpy caching for the synchronous
+fetch and restores the prior cache mode in `finally`; existing caller cache
+entries remain untouched. Each snapshot is staged outside the visible timestamp
+namespace and renamed only after all datasets and its manifest succeed. **Measured:** fixed-input output values, schemas,
+ordering, postseason inclusion, availability bases, and manifest bindings match
+the prior path; the first-seen probe fell from 245.9 to 183.1 MiB peak working
+set. These local probes do not establish full-history memory use on the server.
+Deployment and the real host rerun remain pending explicit approval after
+automatic approval review rejected sending the new source to that external host.
+
+**Measured:** encrypted backup status reports four snapshots and 3,203,785,390
+stored bytes against the 100 GiB quota. Restoring
+`registry/experiments/margin-backtest/20260927T134152Z.json` returned 1,650 bytes
+with an identical SHA-256 hash. This verifies that file, not all backup coverage.
+**Read:** `scripts/offsite_backup.py` now rejects any missing requested source,
+all nonzero backup exits including restic's incomplete-backup exit 3, and failed
+or missing repository-size results. An incomplete backup cannot reach retention
+pruning or report OK. **Measured:** isolated failure-path probes passed.
+
+**Measured:** the final sync dry run retained five differing observations across
+13 capture roots. Local and existing remote feature-table hashes match. The
+primary's earlier 15:30 run pulled four gap captures and kept five conflicts;
+that run preceded the final removal of all remote snapshot deletion. The final
+live scheduler sync is pending explicit approval after automatic approval review
+rejected its possible feature-table upload. Local integrity probes and independent
+review cover staged transfer, Windows archive paths, empty captures, conflicting
+content, and verified feature-table replacement.
+
+**Measured:** `loginctl enable-linger friend` returned `Access denied`. The
+fallback daemon remains running. Reboot persistence still requires the server
+administrator to enable lingering; no privileged workaround was attempted.
+The deployment staging and rollback files are under
+`/data/nfl_py3/.deploy/backlog-execution-20260928/`. Local command receipts are
+under `.tmp/backlog-execution-20260928/`; raw data and credentials are untracked.
 
 ## Original bring-up order (historical)
 
@@ -59,34 +110,41 @@ slowly growing tree cost roughly the week's new captures, not a full copy.
 **Read, 2026-09-26:** the scheduler selects the platform's uv executable and
 runs only capture jobs under `NFL_ATS_SCHEDULER_ROLE=capture`
 (`scripts/capture_scheduler.py:23`, `:1598`). The portability changes described
-in the original design are implemented. The deployment account below is
-historical; it does not establish the server's current health or deployed revision.
+in the original design are implemented. The September 28 verification above
+records current measured health; the September 10 account below is historical.
 
 The primary scheduler invokes `scripts/sync_captures.py` every three hours.
-Its reconciliation behavior is (**read**, `scripts/sync_captures.py:208`):
+Its reconciliation behavior is (**read**, `scripts/sync_captures.py`):
 
-- An identical snapshot directory name is treated as already present locally;
-  the remote directory is deleted without a file comparison.
-- A local snapshot within that source's dedupe window wins. File names and sizes
-  are summarized in a `DUP` log entry, then the remote directory is deleted,
-  including when sizes differ. Distinct observations are not merged.
-- A remote snapshot that fills a local gap is copied and marked with
-  `capture_host`. Its file names and sizes must match the remote listing before
-  the remote directory is deleted. This check does not compare file contents.
-- `--keep-remote` suppresses all remote snapshot deletion. `--dry` skips copying,
-  deletion, and feature-table upload, but still queries SSH and writes the local
-  reconciliation log.
+- An identical snapshot directory name is compared using a manifest of relative
+  file names and SHA-256 content hashes. Both exact matches and `CONFLICT`
+  differences are retained remotely under the collision policy.
+- A local snapshot within that source's dedupe window is a `DUP` only when its
+  complete manifest exactly matches the remote snapshot. `DUP` and `CONFLICT`
+  snapshots are both retained remotely and are not merged into the local snapshot.
+- A remote snapshot that fills a local gap is extracted into a staging directory.
+  Its content must match stable remote manifests before and after transfer before
+  it is installed locally and marked with `capture_host`.
+- No snapshot is deleted automatically because the capture producers do not yet
+  publish an immutable completion proof. Verified gap fills also remain remotely.
+  A changed, empty, unreadable, malformed, or incomplete transfer fails closed.
+  Stable file hashes do not establish semantic completeness across all sources.
+- `--keep-remote` remains as a compatibility flag; preservation is now the
+  default. `--dry` skips copying and feature-table upload, but still queries SSH,
+  hashes duplicate candidates, and writes the local reconciliation log.
 
-Thus the default sync does not retain both hosts' copies. Restic backup and
-remote capture reconciliation are separate operations. Changing duplicate
-retention or strengthening content verification is future work, not behavior
-already provided by this command.
+The default sync retains every remote snapshot: same-name and near-window
+observations, content-proven copies, verified gap fills, and every distinct or
+unverified observation. Cleanup requires a future immutable completion proof.
+Restic backup and remote capture reconciliation remain separate operations.
 
-The feature table is uploaded when its byte size differs from the remote file
-(**read**, `scripts/sync_captures.py:151`); equal sizes are treated as current.
-That is a size check, not proof that the contents or model provenance match.
-The table and any required private environment values must be deployed before
-all capture jobs can work. Keep credentials outside tracked repository files.
+The feature table is current only when its SHA-256 content hash matches the
+remote file (**read**, `scripts/sync_captures.py`). A changed table uploads to a
+unique staged path; the local file is rehashed after upload and the staged remote
+hash is checked again before atomic replacement. A change or malformed hash
+fails the sync job without replacing the current remote table. The table and any
+required private environment values must be deployed before all capture jobs can
+work. Keep credentials outside tracked repository files.
 
 ### Historical deployment record, 2026-09-10
 
@@ -118,13 +176,13 @@ Code shipped in the repository for the second host:
   publishes a card; 56 `sync_captures_<day>_<hhmm>` jobs every three hours
   on the primary.
 - `scripts/sync_captures.py`: lists the server's snapshot directories over
-  SSH for the twelve capture roots, pulls the ones with no local capture
-  inside the job's dedupe window (tar over ssh), writes a `capture_host`
-  marker in each pulled directory, verifies the pulled listing against
-  the server's, logs `DUP` lines with a file-level size diff for windows
-  both hosts captured, and deletes the server copy once accounted for.
-  `--dry` lists only (measured: `OK pulled=0 duplicates=0 roots=12`
-  against the empty server).
+  SSH for the twelve capture roots, pulls gap fills through a local staging
+  directory, writes a `capture_host` marker, and verifies file names and SHA-256
+  hashes against stable remote manifests. All snapshots remain remotely because
+  the current producers do not publish an immutable completion proof. Content
+  conflicts and invalid or changing snapshots therefore also remain. `--dry`
+  lists only (the historical
+  empty-server measurement was `OK pulled=0 duplicates=0 roots=12`).
 - `scripts/start_capture_scheduler.sh` (nohup, sources
   `~/.config/nfl_py3/env`) and `deploy/nfl-ats-capture.service` (systemd
   user unit, needs `loginctl enable-linger friend` from the server owner to
@@ -141,7 +199,7 @@ the server's schedule shows 81 enabled / 96 disabled jobs.
 `--run-job odds_thu_tnf`: at the time it needed two files that copy lacked.
 `config/source_policies.json` is now tracked and arrives with a fresh checkout.
 `data/processed/game_features.parquet` supplies the game-id lookup for quotes;
-the sync job now pushes the local copy to the server whenever its size changes.
+the sync job now pushes the local copy when its SHA-256 hash differs.
 Memory during the nflverse capture stayed under 200 MB used.
 
 Original deployment checklist (historical; reconcile it with the completed
@@ -166,5 +224,6 @@ steps above before using it for a new deployment):
 
 Reconciliation as built: both hosts capture every window they are awake
 for; this machine's capture is the one served whenever it exists; the
-server's fills gaps; a doubly-captured window is logged with the number of
-files whose sizes differ, never merged or averaged.
+server's fills gaps; every doubly-captured window remains remotely. An exact
+file-name and SHA-256 match is logged as `DUP`; a differing observation is
+logged as `CONFLICT`. Neither is merged, averaged, or deleted automatically.

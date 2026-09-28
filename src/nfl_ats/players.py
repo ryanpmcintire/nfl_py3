@@ -4,9 +4,11 @@ import hashlib
 import json
 import math
 import os
+import shutil
+import tempfile
 import unicodedata
 from collections import defaultdict
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from datetime import UTC, datetime, time, timedelta
 from pathlib import Path
@@ -33,7 +35,7 @@ from nfl_ats.constants import (
 from nfl_ats.data import DataContractError, require_columns
 from nfl_ats.io import atomic_json, atomic_parquet, run_id
 from nfl_ats.nfl_week import week_cycle_sunday
-from nfl_ats.nflverse_current_season import load_seasons_frame
+from nfl_ats.nflverse_current_season import load_season_frame
 from nfl_ats.participation import canonicalize_participation_ratings
 from nfl_ats.pbp import PBP_SNAPSHOT_COLUMNS, season_scope_mask
 from nfl_ats.quarterbacks import build_qb_game_metrics, build_qb_states
@@ -292,7 +294,7 @@ def injury_first_seen_index(
 
     wanted = None if seasons is None else {int(season) for season in seasons}
     columns = [*INJURY_FIRST_SEEN_KEY, "date_modified"]
-    frames: list[pd.DataFrame] = []
+    compact = pd.DataFrame(columns=[*INJURY_FIRST_SEEN_KEY, INJURY_FIRST_SEEN_COLUMN])
     for root in roots:
         directory_root = Path(root)
         if not directory_root.is_dir():
@@ -326,14 +328,16 @@ def injury_first_seen_index(
                 continue
             keyed = _injury_first_seen_keys(rows)
             keyed[INJURY_FIRST_SEEN_COLUMN] = captured_at
-            frames.append(keyed.drop_duplicates(list(INJURY_FIRST_SEEN_KEY)))
-    if not frames:
-        return pd.DataFrame(
-            columns=[*INJURY_FIRST_SEEN_KEY, INJURY_FIRST_SEEN_COLUMN],
-        )
-    stacked = pd.concat(frames, ignore_index=True)
+            keyed = keyed.drop_duplicates(list(INJURY_FIRST_SEEN_KEY))
+            compact = (
+                pd.concat([compact, keyed], ignore_index=True)
+                .groupby(list(INJURY_FIRST_SEEN_KEY), dropna=False, as_index=False)
+                .agg({INJURY_FIRST_SEEN_COLUMN: "min"})
+            )
+    if compact.empty:
+        return compact
     return (
-        stacked.groupby(list(INJURY_FIRST_SEEN_KEY), dropna=False, as_index=False)
+        compact.groupby(list(INJURY_FIRST_SEEN_KEY), dropna=False, as_index=False)
         .agg({INJURY_FIRST_SEEN_COLUMN: "min"})
         .reset_index(drop=True)
     )
@@ -689,6 +693,142 @@ def _injury_basis_counts(injuries: pd.DataFrame, basis: str) -> dict[str, int]:
     }
 
 
+def _load_canonical_player_seasons(
+    dataset: Literal["injuries", "rosters_weekly", "snap_counts"],
+    seasons: list[int],
+    canonicalize: Callable[[pd.DataFrame], pd.DataFrame],
+) -> pd.DataFrame:
+
+    chunks = [canonicalize(load_season_frame(dataset, season)) for season in seasons]
+    if len(chunks) == 1:
+        return chunks[0]
+    combined = pd.concat(chunks, ignore_index=True)
+    del chunks
+    return canonicalize(combined)
+
+
+def _player_snapshot_file(path: Path, frame: pd.DataFrame) -> dict[str, Any]:
+    return {
+        "path": path.name,
+        "rows": len(frame),
+        "columns": frame.columns.tolist(),
+        "sha256": _sha256(path),
+    }
+
+
+def _write_player_snapshot_manifest(
+    snapshot: PlayerSnapshot,
+    *,
+    include_postseason: bool,
+    injury_timestamp_fallback: Literal["drop", "week_proxy"],
+    files: dict[str, dict[str, Any]],
+    n_proxy_rows_per_season: dict[str, int],
+    n_first_seen_rows_per_season: dict[str, int],
+) -> None:
+
+    manifest = {
+        "snapshot_id": snapshot.snapshot_id,
+        "created_at_utc": datetime.now(UTC).isoformat(),
+        "source": "nflverse injuries, weekly rosters, and snap counts via nflreadpy",
+        "contract_version": PLAYER_DATA_VERSION,
+        "include_postseason": bool(include_postseason),
+        "availability_contract": {
+            "injuries": "latest revision with date_modified <= decision timestamp",
+            "weekly_rosters": "strictly earlier season/week only",
+            "snap_counts": "strictly earlier completed games only",
+        },
+        "injury_seasons": list(snapshot.injury_seasons),
+        "roster_seasons": list(snapshot.roster_seasons),
+        "snap_seasons": list(snapshot.snap_seasons),
+        "injury_timestamp_fallback": injury_timestamp_fallback,
+        "injury_proxy_hours_before_kickoff": INJURY_PROXY_HOURS_BEFORE_KICKOFF,
+        "n_proxy_rows_per_season": n_proxy_rows_per_season,
+        "n_first_seen_rows_per_season": n_first_seen_rows_per_season,
+        "files": files,
+    }
+    atomic_json(manifest, snapshot.manifest_path)
+
+
+def _write_canonical_player_snapshot(
+    injury_loader: Callable[[], pd.DataFrame],
+    roster_loader: Callable[[], pd.DataFrame],
+    snap_loader: Callable[[], pd.DataFrame],
+    raw_root: Path,
+    injury_seasons: list[int],
+    roster_seasons: list[int],
+    snap_seasons: list[int],
+    snapshot_id: str | None,
+    *,
+    include_postseason: bool,
+    injury_timestamp_fallback: Literal["drop", "week_proxy"],
+) -> PlayerSnapshot:
+
+    _valid_seasons(injury_seasons, "Injury")
+    _valid_seasons(roster_seasons, "Roster")
+    _valid_seasons(snap_seasons, "Snap")
+    identifier = snapshot_id or run_id()
+    destination = raw_root / identifier
+    if destination.exists():
+        raise FileExistsError(f"Player snapshot already exists: {destination}")
+    raw_root.mkdir(parents=True, exist_ok=True)
+    staging_root = Path(tempfile.mkdtemp(prefix=f".{identifier}.", suffix=".tmp", dir=raw_root))
+    snapshot = PlayerSnapshot(
+        identifier,
+        staging_root,
+        tuple(injury_seasons),
+        tuple(roster_seasons),
+        tuple(snap_seasons),
+    )
+    try:
+        files: dict[str, dict[str, Any]] = {}
+
+        canonical_injuries = injury_loader()
+        atomic_parquet(canonical_injuries, snapshot.injuries_path)
+        files["injuries"] = _player_snapshot_file(snapshot.injuries_path, canonical_injuries)
+        if "observed_at_basis" in canonical_injuries.columns:
+            n_proxy_rows_per_season = _injury_basis_counts(canonical_injuries, "week_proxy")
+            n_first_seen_rows_per_season = _injury_basis_counts(
+                canonical_injuries, "first_seen_capture"
+            )
+        else:
+            n_proxy_rows_per_season = {}
+            n_first_seen_rows_per_season = {}
+        del canonical_injuries
+        del injury_loader
+
+        canonical_rosters = roster_loader()
+        atomic_parquet(canonical_rosters, snapshot.rosters_path)
+        files["weekly_rosters"] = _player_snapshot_file(snapshot.rosters_path, canonical_rosters)
+        del canonical_rosters
+        del roster_loader
+
+        canonical_snaps = snap_loader()
+        atomic_parquet(canonical_snaps, snapshot.snaps_path)
+        files["snap_counts"] = _player_snapshot_file(snapshot.snaps_path, canonical_snaps)
+        del canonical_snaps
+        del snap_loader
+
+        _write_player_snapshot_manifest(
+            snapshot,
+            include_postseason=include_postseason,
+            injury_timestamp_fallback=injury_timestamp_fallback,
+            files=files,
+            n_proxy_rows_per_season=n_proxy_rows_per_season,
+            n_first_seen_rows_per_season=n_first_seen_rows_per_season,
+        )
+        staging_root.rename(destination)
+    except BaseException:
+        shutil.rmtree(staging_root, ignore_errors=True)
+        raise
+    return PlayerSnapshot(
+        identifier,
+        destination,
+        tuple(injury_seasons),
+        tuple(roster_seasons),
+        tuple(snap_seasons),
+    )
+
+
 def write_player_snapshot(
     injuries: pd.DataFrame,
     rosters: pd.DataFrame,
@@ -705,74 +845,24 @@ def write_player_snapshot(
     injury_first_seen: pd.DataFrame | None = None,
 ) -> PlayerSnapshot:
 
-    _valid_seasons(injury_seasons, "Injury")
-    _valid_seasons(roster_seasons, "Roster")
-    _valid_seasons(snap_seasons, "Snap")
-    identifier = snapshot_id or run_id()
-    destination = raw_root / identifier
-    if destination.exists():
-        raise FileExistsError(f"Player snapshot already exists: {destination}")
-    canonical_injuries = canonicalize_injuries(
-        injuries,
+    return _write_canonical_player_snapshot(
+        lambda: canonicalize_injuries(
+            injuries,
+            include_postseason=include_postseason,
+            timestamp_fallback=injury_timestamp_fallback,
+            schedule=injury_schedule,
+            first_seen=injury_first_seen,
+        ),
+        lambda: canonicalize_rosters(rosters, include_postseason=include_postseason),
+        lambda: canonicalize_snaps(snaps, include_postseason=include_postseason),
+        raw_root,
+        injury_seasons,
+        roster_seasons,
+        snap_seasons,
+        snapshot_id,
         include_postseason=include_postseason,
-        timestamp_fallback=injury_timestamp_fallback,
-        schedule=injury_schedule,
-        first_seen=injury_first_seen,
+        injury_timestamp_fallback=injury_timestamp_fallback,
     )
-    canonical_rosters = canonicalize_rosters(rosters, include_postseason=include_postseason)
-    canonical_snaps = canonicalize_snaps(snaps, include_postseason=include_postseason)
-    snapshot = PlayerSnapshot(
-        identifier,
-        destination,
-        tuple(injury_seasons),
-        tuple(roster_seasons),
-        tuple(snap_seasons),
-    )
-    atomic_parquet(canonical_injuries, snapshot.injuries_path)
-    atomic_parquet(canonical_rosters, snapshot.rosters_path)
-    atomic_parquet(canonical_snaps, snapshot.snaps_path)
-    files = {}
-    for name, path, frame in (
-        ("injuries", snapshot.injuries_path, canonical_injuries),
-        ("weekly_rosters", snapshot.rosters_path, canonical_rosters),
-        ("snap_counts", snapshot.snaps_path, canonical_snaps),
-    ):
-        files[name] = {
-            "path": path.name,
-            "rows": len(frame),
-            "columns": frame.columns.tolist(),
-            "sha256": _sha256(path),
-        }
-    if "observed_at_basis" in canonical_injuries.columns:
-        n_proxy_rows_per_season = _injury_basis_counts(canonical_injuries, "week_proxy")
-        n_first_seen_rows_per_season = _injury_basis_counts(
-            canonical_injuries, "first_seen_capture"
-        )
-    else:
-        n_proxy_rows_per_season = {}
-        n_first_seen_rows_per_season = {}
-    manifest = {
-        "snapshot_id": identifier,
-        "created_at_utc": datetime.now(UTC).isoformat(),
-        "source": "nflverse injuries, weekly rosters, and snap counts via nflreadpy",
-        "contract_version": PLAYER_DATA_VERSION,
-        "include_postseason": bool(include_postseason),
-        "availability_contract": {
-            "injuries": "latest revision with date_modified <= decision timestamp",
-            "weekly_rosters": "strictly earlier season/week only",
-            "snap_counts": "strictly earlier completed games only",
-        },
-        "injury_seasons": injury_seasons,
-        "roster_seasons": roster_seasons,
-        "snap_seasons": snap_seasons,
-        "injury_timestamp_fallback": injury_timestamp_fallback,
-        "injury_proxy_hours_before_kickoff": INJURY_PROXY_HOURS_BEFORE_KICKOFF,
-        "n_proxy_rows_per_season": n_proxy_rows_per_season,
-        "n_first_seen_rows_per_season": n_first_seen_rows_per_season,
-        "files": files,
-    }
-    atomic_json(manifest, snapshot.manifest_path)
-    return snapshot
 
 
 def fetch_player_snapshot(
@@ -789,29 +879,53 @@ def fetch_player_snapshot(
     _valid_seasons(injury_seasons, "Injury")
     _valid_seasons(roster_seasons, "Roster")
     _valid_seasons(snap_seasons, "Snap")
-    import nflreadpy as nfl
+    from nflreadpy.config import CacheMode, get_config, update_config
 
-    injuries = load_seasons_frame("injuries", injury_seasons)
-    rosters = load_seasons_frame("rosters_weekly", roster_seasons)
-    snaps = load_seasons_frame("snap_counts", snap_seasons)
-    injury_schedule = None
-    if injury_timestamp_fallback == "week_proxy":
-        schedules = _to_pandas(nfl.load_schedules(seasons=injury_seasons))
-        schedules["kickoff"] = _schedule_kickoff_utc(schedules)
-        injury_schedule = schedules
-    return write_player_snapshot(
-        injuries,
-        rosters,
-        snaps,
-        raw_root,
-        injury_seasons,
-        roster_seasons,
-        snap_seasons,
-        include_postseason=include_postseason,
-        injury_timestamp_fallback=injury_timestamp_fallback,
-        injury_schedule=injury_schedule,
-        injury_first_seen=injury_first_seen,
-    )
+    previous_cache_mode = get_config().cache_mode
+    update_config(cache_mode=CacheMode.OFF)
+    try:
+        injury_schedule = None
+        if injury_timestamp_fallback == "week_proxy":
+            import nflreadpy as nfl
+
+            schedules = _to_pandas(nfl.load_schedules(seasons=injury_seasons))
+            schedules["kickoff"] = _schedule_kickoff_utc(schedules)
+            injury_schedule = schedules.loc[
+                :, ["season", "week", "home_team", "away_team", "kickoff"]
+            ].copy()
+            del schedules
+        return _write_canonical_player_snapshot(
+            lambda: _load_canonical_player_seasons(
+                "injuries",
+                injury_seasons,
+                lambda frame: canonicalize_injuries(
+                    frame,
+                    include_postseason=include_postseason,
+                    timestamp_fallback=injury_timestamp_fallback,
+                    schedule=injury_schedule,
+                    first_seen=injury_first_seen,
+                ),
+            ),
+            lambda: _load_canonical_player_seasons(
+                "rosters_weekly",
+                roster_seasons,
+                lambda frame: canonicalize_rosters(frame, include_postseason=include_postseason),
+            ),
+            lambda: _load_canonical_player_seasons(
+                "snap_counts",
+                snap_seasons,
+                lambda frame: canonicalize_snaps(frame, include_postseason=include_postseason),
+            ),
+            raw_root,
+            injury_seasons,
+            roster_seasons,
+            snap_seasons,
+            None,
+            include_postseason=include_postseason,
+            injury_timestamp_fallback=injury_timestamp_fallback,
+        )
+    finally:
+        update_config(cache_mode=previous_cache_mode)
 
 
 def player_snapshot_from_root(root: Path) -> PlayerSnapshot:

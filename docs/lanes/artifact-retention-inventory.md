@@ -30,11 +30,14 @@ Reports: `.tmp/ops02-reference-report.md` and
 
 ## Next
 
-Resolve whether any generic Python or Node process still owns the five generated
-archive-review subdirectories; process command-line access was unavailable.
-Keep root screenshots, source snapshots, logs, and diffs as review evidence.
-Any pruning decision must name exact paths and account for external hardlinks.
-Do not restore the removed retention planner.
+**Measured 2026-09-28:** approved read-only process inspection read all 16 candidate
+command lines; none referenced `.tmp/archive-review`. The five named generated
+directories still total 553,507,289 bytes and contain no reparse entries. This
+resolves the unavailable command-line check, not every possible open handle.
+The exact deletion scope is awaiting the owner's required approval; no deletion
+has occurred. Retain all root screenshots, source snapshots, logs, and diffs.
+Evidence: `.tmp/backlog-execution-20260928/process-ownership.json` and
+`retention-candidates.json`. Do not restore the removed retention planner.
 
 ## Open
 

@@ -90,17 +90,24 @@ def snapshot_count(binary: str, env: dict[str, str]) -> int:
 def repository_bytes(binary: str, env: dict[str, str]) -> int:
     result = run(binary, ["stats", "--mode", "raw-data", "--json"], env, timeout=600)
     if result.returncode != 0:
-        return -1
-    return int(json.loads(result.stdout).get("total_size", -1))
+        raise failure("stats", result)
+    total_size = json.loads(result.stdout).get("total_size")
+    if total_size is None:
+        raise SystemExit("restic stats returned no total_size")
+    return int(total_size)
 
 
 def backup(binary: str, env: dict[str, str], sources: list[str], *, timeout: int) -> str:
+    paths = [REPO / source for source in sources]
+    missing = [str(path) for path in paths if not path.exists()]
+    if missing:
+        raise SystemExit(f"backup source does not exist: {', '.join(missing)}")
     args = ["backup", "--tag", "scheduled", "--exclude-caches"]
     for pattern in EXCLUDES:
         args += ["--exclude", pattern]
-    args += [str(REPO / source) for source in sources if (REPO / source).exists()]
+    args += [str(path) for path in paths]
     result = run(binary, args, env, timeout=timeout)
-    if result.returncode not in (0, 3):
+    if result.returncode != 0:
         raise failure("backup", result)
     summary = [line for line in (result.stdout or "").splitlines() if line.startswith("snapshot ")]
     return summary[-1] if summary else f"backup exit {result.returncode}"
