@@ -11592,6 +11592,846 @@
       "source": "artifacts/combined_stacker_look/result.json",
       "standard_error": null
     },
+    "combined_vs_raw_historical_nested_20260928_calibration_diagnostic_pre_fixed_vs_fixed_combination_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Post-result diagnostic of a newly added calibration stage; cannot close an underlying signal or undo prior feature-design selection.",
+      "closing_ground": null,
+      "description": "Post-result calibration-stage diagnostic: pre_fixed_vs_fixed_combination",
+      "effect": 6.941838649155723,
+      "effect_units": "accuracy_points",
+      "family": "combined_vs_raw_historical_nested_20260928_calibration_diagnostic",
+      "interval": [
+        1.1320754716981132,
+        12.68939393939394
+      ],
+      "league": "nfl",
+      "notes": "All 15 diagnostic contrasts are retained. No serving change.",
+      "plain_summary": "Reuses stored fitted models to isolate small-block calibration without refitting or replacing the primary historical replay.",
+      "probability_positive": 0.990575,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/independent_historical_validation/20260928_nested/calibration_diagnostic/report.json",
+      "standard_error": null
+    },
+    "combined_vs_raw_historical_nested_20260928_calibration_diagnostic_pre_fixed_vs_fixed_combination_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Post-result diagnostic of a newly added calibration stage; cannot close an underlying signal or undo prior feature-design selection.",
+      "closing_ground": null,
+      "description": "Post-result calibration-stage diagnostic: pre_fixed_vs_fixed_combination",
+      "effect": 0.0044243992977807305,
+      "effect_units": "brier_improvement",
+      "family": "combined_vs_raw_historical_nested_20260928_calibration_diagnostic",
+      "interval": [
+        -0.002562229181724929,
+        0.011555621969729191
+      ],
+      "league": "nfl",
+      "notes": "All 15 diagnostic contrasts are retained. No serving change.",
+      "plain_summary": "Reuses stored fitted models to isolate small-block calibration without refitting or replacing the primary historical replay.",
+      "probability_positive": 0.89275,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/independent_historical_validation/20260928_nested/calibration_diagnostic/report.json",
+      "standard_error": null
+    },
+    "combined_vs_raw_historical_nested_20260928_calibration_diagnostic_pre_fixed_vs_fixed_combination_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Post-result diagnostic of a newly added calibration stage; cannot close an underlying signal or undo prior feature-design selection.",
+      "closing_ground": null,
+      "description": "Post-result calibration-stage diagnostic: pre_fixed_vs_fixed_combination",
+      "effect": 0.008517610101675944,
+      "effect_units": "log_loss_improvement",
+      "family": "combined_vs_raw_historical_nested_20260928_calibration_diagnostic",
+      "interval": [
+        -0.0063444249276508385,
+        0.023668958704166285
+      ],
+      "league": "nfl",
+      "notes": "All 15 diagnostic contrasts are retained. No serving change.",
+      "plain_summary": "Reuses stored fitted models to isolate small-block calibration without refitting or replacing the primary historical replay.",
+      "probability_positive": 0.86735,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/independent_historical_validation/20260928_nested/calibration_diagnostic/report.json",
+      "standard_error": null
+    },
+    "combined_vs_raw_historical_nested_20260928_calibration_diagnostic_pre_fixed_vs_raw_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Post-result diagnostic of a newly added calibration stage; cannot close an underlying signal or undo prior feature-design selection.",
+      "closing_ground": null,
+      "description": "Post-result calibration-stage diagnostic: pre_fixed_vs_raw",
+      "effect": 4.878048780487805,
+      "effect_units": "accuracy_points",
+      "family": "combined_vs_raw_historical_nested_20260928_calibration_diagnostic",
+      "interval": [
+        0.37243947858473,
+        9.55056179775281
+      ],
+      "league": "nfl",
+      "notes": "All 15 diagnostic contrasts are retained. No serving change.",
+      "plain_summary": "Reuses stored fitted models to isolate small-block calibration without refitting or replacing the primary historical replay.",
+      "probability_positive": 0.9832,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/independent_historical_validation/20260928_nested/calibration_diagnostic/report.json",
+      "standard_error": null
+    },
+    "combined_vs_raw_historical_nested_20260928_calibration_diagnostic_pre_fixed_vs_raw_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Post-result diagnostic of a newly added calibration stage; cannot close an underlying signal or undo prior feature-design selection.",
+      "closing_ground": null,
+      "description": "Post-result calibration-stage diagnostic: pre_fixed_vs_raw",
+      "effect": 0.004738206594661082,
+      "effect_units": "brier_improvement",
+      "family": "combined_vs_raw_historical_nested_20260928_calibration_diagnostic",
+      "interval": [
+        -0.003228099882849788,
+        0.013470968608608318
+      ],
+      "league": "nfl",
+      "notes": "All 15 diagnostic contrasts are retained. No serving change.",
+      "plain_summary": "Reuses stored fitted models to isolate small-block calibration without refitting or replacing the primary historical replay.",
+      "probability_positive": 0.87275,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/independent_historical_validation/20260928_nested/calibration_diagnostic/report.json",
+      "standard_error": null
+    },
+    "combined_vs_raw_historical_nested_20260928_calibration_diagnostic_pre_fixed_vs_raw_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Post-result diagnostic of a newly added calibration stage; cannot close an underlying signal or undo prior feature-design selection.",
+      "closing_ground": null,
+      "description": "Post-result calibration-stage diagnostic: pre_fixed_vs_raw",
+      "effect": 0.009267423789840013,
+      "effect_units": "log_loss_improvement",
+      "family": "combined_vs_raw_historical_nested_20260928_calibration_diagnostic",
+      "interval": [
+        -0.00793802616107197,
+        0.02789308883869853
+      ],
+      "league": "nfl",
+      "notes": "All 15 diagnostic contrasts are retained. No serving change.",
+      "plain_summary": "Reuses stored fitted models to isolate small-block calibration without refitting or replacing the primary historical replay.",
+      "probability_positive": 0.8503,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/independent_historical_validation/20260928_nested/calibration_diagnostic/report.json",
+      "standard_error": null
+    },
+    "combined_vs_raw_historical_nested_20260928_calibration_diagnostic_pre_nested_vs_nested_selected_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Post-result diagnostic of a newly added calibration stage; cannot close an underlying signal or undo prior feature-design selection.",
+      "closing_ground": null,
+      "description": "Post-result calibration-stage diagnostic: pre_nested_vs_nested_selected",
+      "effect": 5.816135084427767,
+      "effect_units": "accuracy_points",
+      "family": "combined_vs_raw_historical_nested_20260928_calibration_diagnostic",
+      "interval": [
+        -0.37735849056603776,
+        11.67608286252354
+      ],
+      "league": "nfl",
+      "notes": "All 15 diagnostic contrasts are retained. No serving change.",
+      "plain_summary": "Reuses stored fitted models to isolate small-block calibration without refitting or replacing the primary historical replay.",
+      "probability_positive": 0.966725,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/independent_historical_validation/20260928_nested/calibration_diagnostic/report.json",
+      "standard_error": null
+    },
+    "combined_vs_raw_historical_nested_20260928_calibration_diagnostic_pre_nested_vs_nested_selected_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Post-result diagnostic of a newly added calibration stage; cannot close an underlying signal or undo prior feature-design selection.",
+      "closing_ground": null,
+      "description": "Post-result calibration-stage diagnostic: pre_nested_vs_nested_selected",
+      "effect": 0.004340136822297299,
+      "effect_units": "brier_improvement",
+      "family": "combined_vs_raw_historical_nested_20260928_calibration_diagnostic",
+      "interval": [
+        -0.004057866335291721,
+        0.012566693080782497
+      ],
+      "league": "nfl",
+      "notes": "All 15 diagnostic contrasts are retained. No serving change.",
+      "plain_summary": "Reuses stored fitted models to isolate small-block calibration without refitting or replacing the primary historical replay.",
+      "probability_positive": 0.8493,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/independent_historical_validation/20260928_nested/calibration_diagnostic/report.json",
+      "standard_error": null
+    },
+    "combined_vs_raw_historical_nested_20260928_calibration_diagnostic_pre_nested_vs_nested_selected_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Post-result diagnostic of a newly added calibration stage; cannot close an underlying signal or undo prior feature-design selection.",
+      "closing_ground": null,
+      "description": "Post-result calibration-stage diagnostic: pre_nested_vs_nested_selected",
+      "effect": 0.0076273109554209064,
+      "effect_units": "log_loss_improvement",
+      "family": "combined_vs_raw_historical_nested_20260928_calibration_diagnostic",
+      "interval": [
+        -0.010202505512644379,
+        0.025036420449847413
+      ],
+      "league": "nfl",
+      "notes": "All 15 diagnostic contrasts are retained. No serving change.",
+      "plain_summary": "Reuses stored fitted models to isolate small-block calibration without refitting or replacing the primary historical replay.",
+      "probability_positive": 0.80445,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/independent_historical_validation/20260928_nested/calibration_diagnostic/report.json",
+      "standard_error": null
+    },
+    "combined_vs_raw_historical_nested_20260928_calibration_diagnostic_pre_nested_vs_pre_fixed_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Post-result diagnostic of a newly added calibration stage; cannot close an underlying signal or undo prior feature-design selection.",
+      "closing_ground": null,
+      "description": "Post-result calibration-stage diagnostic: pre_nested_vs_pre_fixed",
+      "effect": -1.5009380863039399,
+      "effect_units": "accuracy_points",
+      "family": "combined_vs_raw_historical_nested_20260928_calibration_diagnostic",
+      "interval": [
+        -4.356267250301877,
+        1.310922908278343
+      ],
+      "league": "nfl",
+      "notes": "All 15 diagnostic contrasts are retained. No serving change.",
+      "plain_summary": "Reuses stored fitted models to isolate small-block calibration without refitting or replacing the primary historical replay.",
+      "probability_positive": 0.150725,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/independent_historical_validation/20260928_nested/calibration_diagnostic/report.json",
+      "standard_error": null
+    },
+    "combined_vs_raw_historical_nested_20260928_calibration_diagnostic_pre_nested_vs_pre_fixed_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Post-result diagnostic of a newly added calibration stage; cannot close an underlying signal or undo prior feature-design selection.",
+      "closing_ground": null,
+      "description": "Post-result calibration-stage diagnostic: pre_nested_vs_pre_fixed",
+      "effect": -0.002680797168718745,
+      "effect_units": "brier_improvement",
+      "family": "combined_vs_raw_historical_nested_20260928_calibration_diagnostic",
+      "interval": [
+        -0.005827977280205073,
+        0.0002445932329553751
+      ],
+      "league": "nfl",
+      "notes": "All 15 diagnostic contrasts are retained. No serving change.",
+      "plain_summary": "Reuses stored fitted models to isolate small-block calibration without refitting or replacing the primary historical replay.",
+      "probability_positive": 0.0355,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/independent_historical_validation/20260928_nested/calibration_diagnostic/report.json",
+      "standard_error": null
+    },
+    "combined_vs_raw_historical_nested_20260928_calibration_diagnostic_pre_nested_vs_pre_fixed_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Post-result diagnostic of a newly added calibration stage; cannot close an underlying signal or undo prior feature-design selection.",
+      "closing_ground": null,
+      "description": "Post-result calibration-stage diagnostic: pre_nested_vs_pre_fixed",
+      "effect": -0.006118830499849216,
+      "effect_units": "log_loss_improvement",
+      "family": "combined_vs_raw_historical_nested_20260928_calibration_diagnostic",
+      "interval": [
+        -0.012956418717936279,
+        0.0001138769371283533
+      ],
+      "league": "nfl",
+      "notes": "All 15 diagnostic contrasts are retained. No serving change.",
+      "plain_summary": "Reuses stored fitted models to isolate small-block calibration without refitting or replacing the primary historical replay.",
+      "probability_positive": 0.0272,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/independent_historical_validation/20260928_nested/calibration_diagnostic/report.json",
+      "standard_error": null
+    },
+    "combined_vs_raw_historical_nested_20260928_calibration_diagnostic_pre_nested_vs_raw_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Post-result diagnostic of a newly added calibration stage; cannot close an underlying signal or undo prior feature-design selection.",
+      "closing_ground": null,
+      "description": "Post-result calibration-stage diagnostic: pre_nested_vs_raw",
+      "effect": 3.377110694183865,
+      "effect_units": "accuracy_points",
+      "family": "combined_vs_raw_historical_nested_20260928_calibration_diagnostic",
+      "interval": [
+        -0.9434408103577409,
+        7.992565055762082
+      ],
+      "league": "nfl",
+      "notes": "All 15 diagnostic contrasts are retained. No serving change.",
+      "plain_summary": "Reuses stored fitted models to isolate small-block calibration without refitting or replacing the primary historical replay.",
+      "probability_positive": 0.931525,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/independent_historical_validation/20260928_nested/calibration_diagnostic/report.json",
+      "standard_error": null
+    },
+    "combined_vs_raw_historical_nested_20260928_calibration_diagnostic_pre_nested_vs_raw_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Post-result diagnostic of a newly added calibration stage; cannot close an underlying signal or undo prior feature-design selection.",
+      "closing_ground": null,
+      "description": "Post-result calibration-stage diagnostic: pre_nested_vs_raw",
+      "effect": 0.0020574094259423366,
+      "effect_units": "brier_improvement",
+      "family": "combined_vs_raw_historical_nested_20260928_calibration_diagnostic",
+      "interval": [
+        -0.005241071186252913,
+        0.010013320954589365
+      ],
+      "league": "nfl",
+      "notes": "All 15 diagnostic contrasts are retained. No serving change.",
+      "plain_summary": "Reuses stored fitted models to isolate small-block calibration without refitting or replacing the primary historical replay.",
+      "probability_positive": 0.70055,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/independent_historical_validation/20260928_nested/calibration_diagnostic/report.json",
+      "standard_error": null
+    },
+    "combined_vs_raw_historical_nested_20260928_calibration_diagnostic_pre_nested_vs_raw_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Post-result diagnostic of a newly added calibration stage; cannot close an underlying signal or undo prior feature-design selection.",
+      "closing_ground": null,
+      "description": "Post-result calibration-stage diagnostic: pre_nested_vs_raw",
+      "effect": 0.003148593289990797,
+      "effect_units": "log_loss_improvement",
+      "family": "combined_vs_raw_historical_nested_20260928_calibration_diagnostic",
+      "interval": [
+        -0.012685237080075205,
+        0.020178981916915584
+      ],
+      "league": "nfl",
+      "notes": "All 15 diagnostic contrasts are retained. No serving change.",
+      "plain_summary": "Reuses stored fitted models to isolate small-block calibration without refitting or replacing the primary historical replay.",
+      "probability_positive": 0.64205,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/independent_historical_validation/20260928_nested/calibration_diagnostic/report.json",
+      "standard_error": null
+    },
+    "combined_vs_raw_historical_nested_20260928_fixed_forward_vs_raw_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Conditional historical audit with prior feature-design selection outside the replay; no admissible mechanism refutation or power bound.",
+      "closing_ground": null,
+      "description": "Declared chronological selection audit: fixed_forward_vs_raw, accuracy_points",
+      "effect": 4.315196998123827,
+      "effect_units": "accuracy_points",
+      "family": "combined_vs_raw_historical_nested_20260928",
+      "interval": [
+        -0.5703693644758279,
+        9.532710280373832
+      ],
+      "league": "nfl",
+      "notes": "Primary contrast is nested-selected versus raw Brier. All 15 declared paired metrics are retained; no post-result subgroup or serving change.",
+      "plain_summary": "Feature subsets and ridge were selected before each outer season. Earlier research choices remain outside this replay.",
+      "probability_positive": 0.955075,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/independent_historical_validation/20260928_nested/report.json",
+      "standard_error": null
+    },
+    "combined_vs_raw_historical_nested_20260928_fixed_forward_vs_raw_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Conditional historical audit with prior feature-design selection outside the replay; no admissible mechanism refutation or power bound.",
+      "closing_ground": null,
+      "description": "Declared chronological selection audit: fixed_forward_vs_raw, brier_improvement",
+      "effect": 0.0055581848128521795,
+      "effect_units": "brier_improvement",
+      "family": "combined_vs_raw_historical_nested_20260928",
+      "interval": [
+        -0.0017920755787190102,
+        0.013737677382976531
+      ],
+      "league": "nfl",
+      "notes": "Primary contrast is nested-selected versus raw Brier. All 15 declared paired metrics are retained; no post-result subgroup or serving change.",
+      "plain_summary": "Feature subsets and ridge were selected before each outer season. Earlier research choices remain outside this replay.",
+      "probability_positive": 0.92695,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/independent_historical_validation/20260928_nested/report.json",
+      "standard_error": null
+    },
+    "combined_vs_raw_historical_nested_20260928_fixed_forward_vs_raw_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Conditional historical audit with prior feature-design selection outside the replay; no admissible mechanism refutation or power bound.",
+      "closing_ground": null,
+      "description": "Declared chronological selection audit: fixed_forward_vs_raw, log_loss_improvement",
+      "effect": 0.011368425366426007,
+      "effect_units": "log_loss_improvement",
+      "family": "combined_vs_raw_historical_nested_20260928",
+      "interval": [
+        -0.0040395688383355706,
+        0.028572752942600397
+      ],
+      "league": "nfl",
+      "notes": "Primary contrast is nested-selected versus raw Brier. All 15 declared paired metrics are retained; no post-result subgroup or serving change.",
+      "plain_summary": "Feature subsets and ridge were selected before each outer season. Earlier research choices remain outside this replay.",
+      "probability_positive": 0.92195,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/independent_historical_validation/20260928_nested/report.json",
+      "standard_error": null
+    },
+    "combined_vs_raw_historical_nested_20260928_nested_selected_vs_fixed_combination_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Conditional historical audit with prior feature-design selection outside the replay; no admissible mechanism refutation or power bound.",
+      "closing_ground": null,
+      "description": "Declared chronological selection audit: nested_selected_vs_fixed_combination, accuracy_points",
+      "effect": -0.37523452157598497,
+      "effect_units": "accuracy_points",
+      "family": "combined_vs_raw_historical_nested_20260928",
+      "interval": [
+        -2.793296089385475,
+        1.9343296897725317
+      ],
+      "league": "nfl",
+      "notes": "Primary contrast is nested-selected versus raw Brier. All 15 declared paired metrics are retained; no post-result subgroup or serving change.",
+      "plain_summary": "Feature subsets and ridge were selected before each outer season. Earlier research choices remain outside this replay.",
+      "probability_positive": 0.37975,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/independent_historical_validation/20260928_nested/report.json",
+      "standard_error": null
+    },
+    "combined_vs_raw_historical_nested_20260928_nested_selected_vs_fixed_combination_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Conditional historical audit with prior feature-design selection outside the replay; no admissible mechanism refutation or power bound.",
+      "closing_ground": null,
+      "description": "Declared chronological selection audit: nested_selected_vs_fixed_combination, brier_improvement",
+      "effect": -0.002596534693235314,
+      "effect_units": "brier_improvement",
+      "family": "combined_vs_raw_historical_nested_20260928",
+      "interval": [
+        -0.005218867175724841,
+        -5.255290813095999e-06
+      ],
+      "league": "nfl",
+      "notes": "Primary contrast is nested-selected versus raw Brier. All 15 declared paired metrics are retained; no post-result subgroup or serving change.",
+      "plain_summary": "Feature subsets and ridge were selected before each outer season. Earlier research choices remain outside this replay.",
+      "probability_positive": 0.02475,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/independent_historical_validation/20260928_nested/report.json",
+      "standard_error": null
+    },
+    "combined_vs_raw_historical_nested_20260928_nested_selected_vs_fixed_combination_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Conditional historical audit with prior feature-design selection outside the replay; no admissible mechanism refutation or power bound.",
+      "closing_ground": null,
+      "description": "Declared chronological selection audit: nested_selected_vs_fixed_combination, log_loss_improvement",
+      "effect": -0.00522853135359418,
+      "effect_units": "log_loss_improvement",
+      "family": "combined_vs_raw_historical_nested_20260928",
+      "interval": [
+        -0.010662822598065303,
+        0.00011833958638723238
+      ],
+      "league": "nfl",
+      "notes": "Primary contrast is nested-selected versus raw Brier. All 15 declared paired metrics are retained; no post-result subgroup or serving change.",
+      "plain_summary": "Feature subsets and ridge were selected before each outer season. Earlier research choices remain outside this replay.",
+      "probability_positive": 0.02805,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/independent_historical_validation/20260928_nested/report.json",
+      "standard_error": null
+    },
+    "combined_vs_raw_historical_nested_20260928_nested_selected_vs_fixed_forward_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Conditional historical audit with prior feature-design selection outside the replay; no admissible mechanism refutation or power bound.",
+      "closing_ground": null,
+      "description": "Declared chronological selection audit: nested_selected_vs_fixed_forward, accuracy_points",
+      "effect": -6.75422138836773,
+      "effect_units": "accuracy_points",
+      "family": "combined_vs_raw_historical_nested_20260928",
+      "interval": [
+        -12.500567150635199,
+        -1.1342155009451795
+      ],
+      "league": "nfl",
+      "notes": "Primary contrast is nested-selected versus raw Brier. All 15 declared paired metrics are retained; no post-result subgroup or serving change.",
+      "plain_summary": "Feature subsets and ridge were selected before each outer season. Earlier research choices remain outside this replay.",
+      "probability_positive": 0.00985,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/independent_historical_validation/20260928_nested/report.json",
+      "standard_error": null
+    },
+    "combined_vs_raw_historical_nested_20260928_nested_selected_vs_fixed_forward_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Conditional historical audit with prior feature-design selection outside the replay; no admissible mechanism refutation or power bound.",
+      "closing_ground": null,
+      "description": "Declared chronological selection audit: nested_selected_vs_fixed_forward, brier_improvement",
+      "effect": -0.007840912209207141,
+      "effect_units": "brier_improvement",
+      "family": "combined_vs_raw_historical_nested_20260928",
+      "interval": [
+        -0.016025575953146957,
+        7.138508659186722e-05
+      ],
+      "league": "nfl",
+      "notes": "Primary contrast is nested-selected versus raw Brier. All 15 declared paired metrics are retained; no post-result subgroup or serving change.",
+      "plain_summary": "Feature subsets and ridge were selected before each outer season. Earlier research choices remain outside this replay.",
+      "probability_positive": 0.02585,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/independent_historical_validation/20260928_nested/report.json",
+      "standard_error": null
+    },
+    "combined_vs_raw_historical_nested_20260928_nested_selected_vs_fixed_forward_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Conditional historical audit with prior feature-design selection outside the replay; no admissible mechanism refutation or power bound.",
+      "closing_ground": null,
+      "description": "Declared chronological selection audit: nested_selected_vs_fixed_forward, log_loss_improvement",
+      "effect": -0.015847143031856113,
+      "effect_units": "log_loss_improvement",
+      "family": "combined_vs_raw_historical_nested_20260928",
+      "interval": [
+        -0.03275603104975325,
+        0.0005572626548165404
+      ],
+      "league": "nfl",
+      "notes": "Primary contrast is nested-selected versus raw Brier. All 15 declared paired metrics are retained; no post-result subgroup or serving change.",
+      "plain_summary": "Feature subsets and ridge were selected before each outer season. Earlier research choices remain outside this replay.",
+      "probability_positive": 0.0293,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/independent_historical_validation/20260928_nested/report.json",
+      "standard_error": null
+    },
+    "combined_vs_raw_historical_nested_20260928_nested_selected_vs_raw_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Conditional historical audit with prior feature-design selection outside the replay; no admissible mechanism refutation or power bound.",
+      "closing_ground": null,
+      "description": "Declared chronological selection audit: nested_selected_vs_raw, accuracy_points",
+      "effect": -2.4390243902439024,
+      "effect_units": "accuracy_points",
+      "family": "combined_vs_raw_historical_nested_20260928",
+      "interval": [
+        -8.067542213883677,
+        3.225806451612903
+      ],
+      "league": "nfl",
+      "notes": "Primary contrast is nested-selected versus raw Brier. All 15 declared paired metrics are retained; no post-result subgroup or serving change.",
+      "plain_summary": "Feature subsets and ridge were selected before each outer season. Earlier research choices remain outside this replay.",
+      "probability_positive": 0.19325,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/independent_historical_validation/20260928_nested/report.json",
+      "standard_error": null
+    },
+    "combined_vs_raw_historical_nested_20260928_nested_selected_vs_raw_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Conditional historical audit with prior feature-design selection outside the replay; no admissible mechanism refutation or power bound.",
+      "closing_ground": null,
+      "description": "Declared chronological selection audit: nested_selected_vs_raw, brier_improvement",
+      "effect": -0.002282727396354963,
+      "effect_units": "brier_improvement",
+      "family": "combined_vs_raw_historical_nested_20260928",
+      "interval": [
+        -0.009488179468290878,
+        0.005479224774050834
+      ],
+      "league": "nfl",
+      "notes": "Primary contrast is nested-selected versus raw Brier. All 15 declared paired metrics are retained; no post-result subgroup or serving change.",
+      "plain_summary": "Feature subsets and ridge were selected before each outer season. Earlier research choices remain outside this replay.",
+      "probability_positive": 0.26605,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/independent_historical_validation/20260928_nested/report.json",
+      "standard_error": null
+    },
+    "combined_vs_raw_historical_nested_20260928_nested_selected_vs_raw_calibrated_accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Conditional historical audit with prior feature-design selection outside the replay; no admissible mechanism refutation or power bound.",
+      "closing_ground": null,
+      "description": "Declared chronological selection audit: nested_selected_vs_raw_calibrated, accuracy_points",
+      "effect": 0.9380863039399625,
+      "effect_units": "accuracy_points",
+      "family": "combined_vs_raw_historical_nested_20260928",
+      "interval": [
+        -2.626641651031895,
+        4.448841432124098
+      ],
+      "league": "nfl",
+      "notes": "Primary contrast is nested-selected versus raw Brier. All 15 declared paired metrics are retained; no post-result subgroup or serving change.",
+      "plain_summary": "Feature subsets and ridge were selected before each outer season. Earlier research choices remain outside this replay.",
+      "probability_positive": 0.698325,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/independent_historical_validation/20260928_nested/report.json",
+      "standard_error": null
+    },
+    "combined_vs_raw_historical_nested_20260928_nested_selected_vs_raw_calibrated_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Conditional historical audit with prior feature-design selection outside the replay; no admissible mechanism refutation or power bound.",
+      "closing_ground": null,
+      "description": "Declared chronological selection audit: nested_selected_vs_raw_calibrated, brier_improvement",
+      "effect": -0.0002677632265925979,
+      "effect_units": "brier_improvement",
+      "family": "combined_vs_raw_historical_nested_20260928",
+      "interval": [
+        -0.0044442029314466025,
+        0.004190179982151142
+      ],
+      "league": "nfl",
+      "notes": "Primary contrast is nested-selected versus raw Brier. All 15 declared paired metrics are retained; no post-result subgroup or serving change.",
+      "plain_summary": "Feature subsets and ridge were selected before each outer season. Earlier research choices remain outside this replay.",
+      "probability_positive": 0.4404,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/independent_historical_validation/20260928_nested/report.json",
+      "standard_error": null
+    },
+    "combined_vs_raw_historical_nested_20260928_nested_selected_vs_raw_calibrated_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Conditional historical audit with prior feature-design selection outside the replay; no admissible mechanism refutation or power bound.",
+      "closing_ground": null,
+      "description": "Declared chronological selection audit: nested_selected_vs_raw_calibrated, log_loss_improvement",
+      "effect": -0.0004527056724915053,
+      "effect_units": "log_loss_improvement",
+      "family": "combined_vs_raw_historical_nested_20260928",
+      "interval": [
+        -0.009043563201577,
+        0.008769850743752139
+      ],
+      "league": "nfl",
+      "notes": "Primary contrast is nested-selected versus raw Brier. All 15 declared paired metrics are retained; no post-result subgroup or serving change.",
+      "plain_summary": "Feature subsets and ridge were selected before each outer season. Earlier research choices remain outside this replay.",
+      "probability_positive": 0.4487,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/independent_historical_validation/20260928_nested/report.json",
+      "standard_error": null
+    },
+    "combined_vs_raw_historical_nested_20260928_nested_selected_vs_raw_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Conditional historical audit with prior feature-design selection outside the replay; no admissible mechanism refutation or power bound.",
+      "closing_ground": null,
+      "description": "Declared chronological selection audit: nested_selected_vs_raw, log_loss_improvement",
+      "effect": -0.0044787176654301104,
+      "effect_units": "log_loss_improvement",
+      "family": "combined_vs_raw_historical_nested_20260928",
+      "interval": [
+        -0.019165709313322343,
+        0.01132729375773851
+      ],
+      "league": "nfl",
+      "notes": "Primary contrast is nested-selected versus raw Brier. All 15 declared paired metrics are retained; no post-result subgroup or serving change.",
+      "plain_summary": "Feature subsets and ridge were selected before each outer season. Earlier research choices remain outside this replay.",
+      "probability_positive": 0.27325,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/independent_historical_validation/20260928_nested/report.json",
+      "standard_error": null
+    },
     "composition_flag_sum__spread_band_chronological_long_accuracy_points": {
       "category": "schedule",
       "classification": "unresolved_below_power",

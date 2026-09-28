@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "study_id": "combined_vs_raw_historical_nested_20260928_calibration_diagnostic",
+  "created_at_utc": "2026-09-28 11:51:11 UTC",
+  "timing": "Declared after the primary replay showed a negative 2024 calibration slope, before computing this diagnostic's outer metrics.",
+  "source_report": "artifacts/independent_historical_validation/20260928_nested/report.json",
+  "purpose": "Isolate the contribution of the added small-block calibration stage using already fitted models. No fitting, selection, threshold changes, or replacement of the primary result.",
+  "arms_added": [
+    "pre_nested",
+    "pre_fixed"
+  ],
+  "contrasts": [
+    [
+      "pre_nested",
+      "raw"
+    ],
+    [
+      "pre_fixed",
+      "raw"
+    ],
+    [
+      "pre_nested",
+      "pre_fixed"
+    ],
+    [
+      "pre_nested",
+      "nested_selected"
+    ],
+    [
+      "pre_fixed",
+      "fixed_combination"
+    ]
+  ],
+  "metrics": [
+    "brier_improvement",
+    "log_loss_improvement",
+    "accuracy_points"
+  ],
+  "bootstrap": {
+    "samples": 20000,
+    "seed": 20260928,
+    "confidence": 0.95
+  },
+  "look_accounting": {
+    "new_fits": 0,
+    "paired_metrics": 15,
+    "pooled_arm_metric_cells": 6,
+    "season_arm_metric_cells": 12,
+    "reliability_cells": 8,
+    "disagreement_nulls": 5
+  },
+  "decision": "Post-result mechanism diagnostic only. Preserve the primary replay and all outcomes. No serving change or terminal signal verdict."
+}

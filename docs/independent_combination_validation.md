@@ -6,6 +6,12 @@ selection overlap and Week 3 trace are recorded in
 [the variance assessment](lanes/done/week03-variance-assessment.md).
 Those historical scores remain development evidence.
 
+The [historical selection replay](independent_combination_historical_replay.md)
+is now complete. It separates selection, validation, calibration, and outer
+test windows and preserves its failed primary result alongside a clearly
+labeled calibration-stage diagnostic. It does not erase the earlier research
+choices or replace the untouched prospective cohort below.
+
 ## Declared comparison
 
 - Cohort: every scheduled 2026 regular-season game in Weeks 4–18, enrolled before

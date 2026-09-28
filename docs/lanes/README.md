@@ -20,7 +20,7 @@ modified lane when the prompt just says to continue.
 
 ## Active
 
-- [independent-combination-validation](independent-combination-validation.md) - 2026-09-28: priority future comparison of frozen combined versus raw probabilities; 2026 Weeks 4–18, no interim performance selection.
+- [independent-combination-validation](independent-combination-validation.md) - 2026-09-28: historical selection replay completed on 533 games; calibration-stage diagnostic and 30 registry records saved; untouched Week 4–18 collection remains active.
 - [backlog-batch-2026-09-26](backlog-batch-2026-09-26.md) - 2026-09-26: 16 finished research lanes closed to done/; see State for what each closed on.
 - [sim08-simulator-rebuild](sim08-simulator-rebuild.md) - 2026-09-26: SIM-04 was graded while failing its own key-number gate; rebuild endgame, undamp conditioning, anchor on the opener, re-grade.
 - [lead53-sunday-renomination](lead53-sunday-renomination.md) - 2026-09-24: ranks on the served four-term probability; after Sun 10:00 ET grep BEST-PICK-LEDGER in data/scheduler_log.txt for the Week 3 pairing.

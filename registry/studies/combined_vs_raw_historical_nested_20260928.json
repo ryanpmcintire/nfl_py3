@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "study_id": "combined_vs_raw_historical_nested_20260928",
+  "created_at_utc": "2026-09-28 11:42:35 UTC",
+  "purpose": "Selection-adjusted historical audit; not an untouched historical test of the previously researched feature universe or raw model.",
+  "input": "artifacts/pick_probability/20260927T161329Z/per_game.parquet",
+  "opener_input": "artifacts/opener_evaluation/20260927T134738Z/per_game.parquet",
+  "outer_test_seasons": [
+    2024,
+    2025
+  ],
+  "game_type": "REG",
+  "flags": [
+    "flag_coach",
+    "flag_division",
+    "flag_arrests",
+    "flag_bye",
+    "flag_cold_visitor",
+    "flag_protection",
+    "flag_tank_zone"
+  ],
+  "candidate_family": "Every subset of the seven active flags, summed into one fitted term; market movement and availability included together or omitted. Raw-model logit and intercept always included. No held member, threshold search, manual flip, or post-result family expansion.",
+  "candidates_per_selection_fold": 256,
+  "training": "For outer year Y, fit candidates on all earlier seasons plus weeks 1-6 of Y-1.",
+  "selection": "Choose minimum Brier on weeks 7-10 of Y-1 using fixed ridge 0.001; ties prefer fewer included signals, no market, then lexical candidate id.",
+  "validation": "Refit the selected feature set on all data through week 10 of Y-1 for each declared ridge; choose minimum Brier on weeks 11-14 of Y-1; ties prefer stronger regularization.",
+  "calibration": "Refit selected features and ridge on all data through week 14 of Y-1. Fit two-parameter logit calibration only on weeks 15-18 of Y-1. Fixed-combination comparator uses the same chronology and fixed ridge 0.001. Raw-calibrated comparator calibrates raw probability only on the same weeks 15-18.",
+  "ridge_grid": [
+    0.001,
+    0.01,
+    0.1,
+    1,
+    10
+  ],
+  "calibration_ridge": 0.001,
+  "arms": [
+    "raw",
+    "neutral_market",
+    "raw_calibrated",
+    "fixed_combination",
+    "fixed_forward",
+    "nested_selected"
+  ],
+  "fixed_forward": "Use the already saved chronological_home_probability from the original fixed feature recipe, fitted on prior seasons; retained as descriptive serving-recipe reference.",
+  "primary": "nested_selected_minus_raw_brier_improvement",
+  "contrasts": [
+    [
+      "nested_selected",
+      "raw"
+    ],
+    [
+      "nested_selected",
+      "raw_calibrated"
+    ],
+    [
+      "nested_selected",
+      "fixed_combination"
+    ],
+    [
+      "nested_selected",
+      "fixed_forward"
+    ],
+    [
+      "fixed_forward",
+      "raw"
+    ]
+  ],
+  "contrast_metrics": [
+    "brier_improvement",
+    "log_loss_improvement",
+    "accuracy_points"
+  ],
+  "bootstrap": {
+    "block": "season_week",
+    "samples": 20000,
+    "seed": 20260928,
+    "confidence": 0.95
+  },
+  "reliability_bands": [
+    0.5,
+    0.55,
+    0.6,
+    0.65,
+    1
+  ],
+  "disagreement_null": "Exact two-sided binomial fair-coin null on decisive disagreements; descriptive, assumes independent games. Clustered uncertainty comes from the paired week bootstrap.",
+  "look_accounting": {
+    "selection_scores": 512,
+    "validation_scores": 10,
+    "final_base_fits": 4,
+    "calibration_fits": 6,
+    "pooled_arm_metric_cells": 18,
+    "season_arm_metric_cells": 36,
+    "reliability_cells": 24,
+    "paired_metric_contrasts": 15,
+    "disagreement_nulls": 5
+  },
+  "decision": "Report every arm, fold, selection result, coefficient, apparent-versus-outer gap and paired result. No automatic serving change or signal closure. Unresolved cells must be recorded with weak-signals record; intervals crossing zero do not close a signal.",
+  "limitations": [
+    "The seven signal definitions, their signs and cutoffs, market feature design and raw-model recipe were developed using these historical seasons.",
+    "Nested selection controls this declared subset and ridge search only; it cannot erase earlier human research choices.",
+    "Two outer seasons do not establish long-run season stability.",
+    "Week 3 outcomes are not used for choosing this family, its parameters or the outer windows.",
+    "Selection, validation and calibration blocks contain only four weeks each. Report fitted coefficient instability and development-versus-outer gaps; do not convert a small-block calibration failure into rejection of an individual signal."
+  ],
+  "input_sha256": "0490c806caf9e9707abe28f3e3e42f85df312084ae52d9d1588d173bba5b01e5",
+  "opener_input_sha256": "de3b0ef63819e3416b4c6698e564b22a63cf43dcbfa6bc94a27f9ee8a477a201",
+  "pre_score_amendment": {
+    "previous_protocol_sha256": "cf907ec2a67fe7e0ff0029aa07f476bf6169e4912fae5473f563710d95a81c7d",
+    "reason": "Input-availability audit before any candidate or outer scoring found market movement absent in 2020-2022 and available for all 2023-2025 rows. Use ordered previous-season blocks so feature selection can observe movement; preserve both declared outer years and every candidate.",
+    "market_available_by_season": {
+      "2020": 0,
+      "2021": 0,
+      "2022": 0,
+      "2023": 266,
+      "2024": 266,
+      "2025": 267
+    }
+  }
+}

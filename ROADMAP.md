@@ -849,11 +849,16 @@ stay unavailable. Published pages were reviewed on desktop and mobile, and the
 
 ## Recommended execution order
 
-1. **Independent combination validation is the research priority.** Freeze the
-   comparison before 2026 Week 4 and collect every declared Week 4–18 game.
-   Primary paired Brier, secondary ATS/log loss/reliability; no interim
-   performance selection or retroactive backfill. The historical feature-choice
-   overlap means prior scores are development evidence. Follow
+1. **Independent combination validation is the research priority.** The historical
+   selection replay is complete: see `docs/independent_combination_historical_replay.md`.
+   **Measured:** the full experimental pipeline went 269-264 versus raw 282-251;
+   Brier improvement -0.002283 [-0.009488,+0.005479], probability_positive 0.266050.
+   The post-result stage diagnostic went 300-233 before extra calibration;
+   +0.002057 [-0.005241,+0.010013], probability_positive 0.700550. The added
+   calibrator reverses the 2024 ordering and is absent from production. These
+   results do not select a replacement or erase earlier feature-design reuse.
+   Collect the enrolled 2026 Week 4–18 cohort, with no interim performance
+   selection or retroactive backfill. Follow
    `docs/lanes/independent-combination-validation.md` and the declared protocol in
    `docs/independent_combination_validation.md` before further tuning.
 2. **Keep Sunday's card current, preserving locked games.** Continue from

@@ -1,39 +1,42 @@
 # Independent combination validation
 
 ## Goal
-Prioritize a declared future comparison of combined versus raw probabilities
-after the Week 3 audit exposed historical feature-selection reuse.
+Complete a useful historical selection replay and preserve the untouched future
+comparison of combined versus raw probabilities.
 
 ## State
-Implementation verified in `src/nfl_ats/independent_validation.py`, the
-`independent-validation` CLI, and ten dedicated scheduler captures. Protocol:
-`registry/studies/combined_vs_raw_2026.json`; design and commands:
-`docs/independent_combination_validation.md`. **Measured:** enrolled 224 future
-games at 2026-09-28T10:44:18Z. Commitment:
-`87d0108b14e14ad1ad530017810da1a6373a2d967e40377bb3bc03f1d64eba4e`.
-Local enrollment: `artifacts/prospective/independent_validation/enrollment.json`.
-Frozen comparison covers 2026 Weeks 4–18; primary paired Brier, secondary
-ATS/log loss/reliability; no interim result-based selection.
+**Measured:** historical replay complete on 533 decisive games in 2024-2025.
+Full experimental pipeline: 269-264 versus raw 282-251; Brier improvement
+-0.002283 [-0.009488,+0.005479], probability_positive 0.266050.
+Post-result diagnostic before extra calibration: 300-233; +0.002057
+[-0.005241,+0.010013], probability_positive 0.700550.
+The added 62-game calibrator reversed the 2024 ordering; it is absent from
+production. All arms, coefficients, reliability and limitations are saved in
+docs/independent_combination_historical_replay.md. Thirty paired metrics are
+recorded as unresolved_below_power in registry/weak_signals.json.
+The untouched future study remains enrolled for 224 Week 4-18 games.
+Enrollment commitment: 87d0108b14e14ad1ad530017810da1a6373a2d967e40377bb3bc03f1d64eba4e.
+Local evidence: artifacts/independent_historical_validation/20260928_nested/;
+future enrollment: artifacts/prospective/independent_validation/enrollment.json.
 
 ## Tried
-**Measured:** `ruff format --check .`, `ruff check .`, `mypy src`, and
-`pytest -q --basetemp .tmp/pytest-independent-final` pass in the locked uv
-environment with `UV_CACHE_DIR=.tmp/uv-cache`. Updated the existing command-list
-fixture. Real enrollment and score commands succeed; score withholds results.
-Scheduler `--rehearse-all --only-prefix independent_validation_ --stop-on-fail`:
-10/10 dry commands pass. Restarted the idle daemon hidden; health exit 0,
-running PID 4264, code and schedule current at 2026-09-28T10:46:45Z. Rehearsal
-uses the current Week 3 forecast and therefore captures no study games.
+**Measured:** both research scripts run; corrected registry-export structure;
+second real replay reproduces every prediction. Independent arithmetic verifies
+eight arms, 30 effects, two selection folds, source hashes and registry counts.
+ruff format --check ., ruff check ., mypy src, and pytest -q --basetemp
+.tmp/pytest-nested-validation all pass. Exact commands are in the report.
+Future-study status still shows source_unchanged=true and awaits Week 4.
 
 ## Next
-Inspect `nfl-ats independent-validation status` after the first Week 4 forecast;
-verify eligible games appear before their pool deadlines. Keep capture coverage
-complete, preserve enrollment, and use `score` only under the declared plan.
+Inspect nfl-ats independent-validation status after the first Week 4 forecast.
+Verify eligible games arrive before pool deadlines and keep coverage complete.
+Use the historical report when assessing changes; do not introduce the
+experimental small-block calibration or treat its failure as a production bug.
 
 ## Open
-No independent result exists yet. Pinned-source or recipe drift must stop the
-capture rather than mix policies. Missing captures prevent complete comparison.
-One season may remain unresolved; no automatic promotion or research closure.
-Proposed removal, owner decision: the existing help-order assertion
-`test_registration_order_is_the_help_listing_order` duplicates parser order
-without checking behavior. No tests were added or deleted in this task.
+Earlier signal design and raw-model selection remain outside the historical
+replay. Two outer seasons cannot establish stable probability improvement.
+No signal is closed or served side changed. The future cohort supplies the
+untouched evaluation; no retrospective backfill or interim selection.
+Prior owner-decision proposal remains: remove the redundant CLI help-order
+assertion; no tests were added or removed here.
