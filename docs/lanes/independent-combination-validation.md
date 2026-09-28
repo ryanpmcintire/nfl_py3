@@ -39,10 +39,11 @@ The good week must count in the diagnosis. Version and per-game checks are in
 docs/week2_week3_combination_comparison.md; old weights changed no traced side.
 
 ## Next
-Next bounded repair: current-season PBP ingestion and a missing-pressure coverage
-check before publication. Preserve locked cards; check enrolled source hashes
-before edits. Diagnosis artifacts: artifacts/diagnostics/2026-three-weeks/.
-Then verify Week 4 study captures. Do not retune from the bad week alone.
+**Measured 2026-09-28:** current-season PBP ingestion and missing-pressure
+publication checks are repaired; all 16 Week 3 windows now have coverage and
+locked decisions are unchanged. See `done/current-week-pressure-inputs.md`.
+Enrolled source hashes still match. Next verify actual Week 4 study captures
+after Tuesday's fresh-data lock; do not retune from the bad week alone.
 
 ## Open
 Earlier signal design and raw-model selection remain outside the historical

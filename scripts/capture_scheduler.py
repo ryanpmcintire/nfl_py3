@@ -2164,7 +2164,8 @@ def dry_command(command: list[str]) -> list[str]:
     if (
         len(stripped) >= 5
         and stripped[3] == "python"
-        and Path(stripped[4]).name in {"refresh_lineup_forecast.py", "refresh_trigger_log.py"}
+        and Path(stripped[4]).name
+        in {"refresh_lineup_forecast.py", "refresh_trigger_log.py", "scheduled_weekly_lock.py"}
         and "--dry-run" not in stripped
     ):
         return [*stripped, "--dry-run"]

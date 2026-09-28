@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-28T14:09:36.256504+00:00`
+Refreshed at: `2026-09-28T15:31:03.793372+00:00`
 
 ## Start here
 
@@ -21,20 +21,29 @@ Refreshed at: `2026-09-28T14:09:36.256504+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `aa09e09c96b8` — Diagnose weekly volatility and missing current-season pressure inputs
-- Pending change set: 12 paths
+- Baseline commit: `d61643bc7fcb` — Refresh handoff after three-week diagnosis
+- Pending change set: 28 paths
   - ` M AGENTS.md`
+  - `M  CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
+  - `M  README.md`
   - ` M docs/agent_workflow.md`
-  - ` M docs/findings.html`
-  - ` M docs/history.html`
-  - ` M docs/index.html`
-  - ` M docs/model.html`
-  - `?? docs/lanes/windows-shell-popup.md`
-  - `?? registry/experiments/margin-backtest/20260927T134152Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-03-20260927T134352Z.json`
-  - `?? registry/experiments/opener-evaluation/20260927T134738Z.json`
-  - `?? registry/experiments/waterfall-feed/20260927T134851Z.json`
+  - `A  docs/current_week_pressure_repair.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - `M  docs/lanes/README.md`
+  - `A  docs/lanes/done/current-week-pressure-inputs.md`
+  - `M  docs/lanes/independent-combination-validation.md`
+  - `M  docs/model.html`
+  - `M  scripts/capture_scheduler.py`
+  - `M  scripts/scheduled_weekly_lock.py`
+  - `M  src/nfl_ats/cli_commands/data.py`
+  - `M  src/nfl_ats/cli_commands/publishing.py`
+  - `M  src/nfl_ats/pbp.py`
+  - `A  src/nfl_ats/pbp_coverage.py`
+  - `M  src/nfl_ats/weekly.py`
+  - ...and 8 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -54,7 +63,7 @@ The 52.35% figure is the distinct secondary close-grade historical classificatio
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 3** from model `397c9cec7b097082`, published `2026-09-27T16:16:50.502320+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 3** from model `397c9cec7b097082`, published `2026-09-28T15:08:47.707149+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

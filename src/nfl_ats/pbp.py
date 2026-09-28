@@ -3,6 +3,8 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+import os
+import shutil
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -10,6 +12,7 @@ from typing import Any
 
 import numpy as np
 import pandas as pd
+import pyarrow.parquet as pq  # type: ignore[import-untyped]
 
 from nfl_ats.constants import (
     DEFAULT_OFFSEASON_RETENTION,
@@ -240,6 +243,7 @@ def fetch_pbp_snapshot(
     raw_root: Path,
     *,
     include_postseason: bool = False,
+    reuse_history: bool = False,
 ) -> PbpSnapshot:
 
     if not seasons or seasons != sorted(set(seasons)):
@@ -247,38 +251,204 @@ def fetch_pbp_snapshot(
     import nflreadpy as nfl
 
     identifier = run_id()
-    destination = raw_root / identifier
+    staging_root = (raw_root.parent / ".staging").resolve()
+    destination = staging_root / identifier
+    final_destination = raw_root / identifier
+    if destination.exists() or final_destination.exists():
+        raise FileExistsError(f"Play-by-play snapshot already exists: {final_destination}")
     partitions: list[dict[str, Any]] = []
-    for season in seasons:
-        canonical = canonicalize_pbp(
-            _to_pandas(nfl.load_pbp(seasons=[season])),
-            season=season,
-            include_postseason=include_postseason,
-        )
-        path = destination / f"season={season}" / "plays.parquet"
-        atomic_parquet(canonical, path)
-        partitions.append(
-            {
+    reused_from: str | None = None
+    try:
+        if reuse_history and len(seasons) > 1:
+            history = seasons[:-1]
+            source, source_partitions = _reusable_pbp_history(
+                raw_root,
+                history,
+                include_postseason=include_postseason,
+            )
+            reused_from = source.snapshot_id
+            for season in history:
+                source_path = source.season_path(season)
+                path = destination / f"season={season}" / "plays.parquet"
+                path.parent.mkdir(parents=True, exist_ok=True)
+                try:
+                    os.link(source_path, path)
+                except OSError as error:
+                    shutil.copy2(source_path, path)
+                    if _sha256(path) != source_partitions[season]["sha256"]:
+                        raise DataContractError(
+                            f"Reused play-by-play partition hash changed during copy: {path}"
+                        ) from error
+                partition = dict(source_partitions[season])
+                partition["path"] = str(partition["path"]).replace("\\", "/")
+                partitions.append(partition)
+
+        fetch_seasons = seasons[-1:] if reuse_history else seasons
+        for season in fetch_seasons:
+            canonical = canonicalize_pbp(
+                _to_pandas(nfl.load_pbp(seasons=[season])),
+                season=season,
+                include_postseason=include_postseason,
+            )
+            path = destination / f"season={season}" / "plays.parquet"
+            atomic_parquet(canonical, path)
+            partition = {
                 "season": season,
                 "rows": len(canonical),
-                "path": str(path.relative_to(destination)),
+                "path": path.relative_to(destination).as_posix(),
                 "sha256": _sha256(path),
             }
+            _validate_reusable_pbp_partition(
+                PbpSnapshot(identifier, destination, tuple(seasons)),
+                season,
+                partition,
+                include_postseason=include_postseason,
+            )
+            partitions.append(partition)
+        partitions.sort(key=lambda partition: int(partition["season"]))
+        manifest = {
+            "snapshot_id": identifier,
+            "created_at_utc": datetime.now(UTC).isoformat(),
+            "source": "nflverse play-by-play via nflreadpy",
+            "seasons": seasons,
+            "include_postseason": bool(include_postseason),
+            "filter_version": PBP_FILTER_VERSION,
+            "feature_version": PBP_FEATURE_VERSION,
+            "columns": list(PBP_SNAPSHOT_COLUMNS),
+            "partitions": partitions,
+            "rows": sum(int(partition["rows"]) for partition in partitions),
+        }
+        if reused_from is not None:
+            manifest["reused_history_snapshot"] = reused_from
+        atomic_json(manifest, destination / "manifest.json")
+        raw_root.mkdir(parents=True, exist_ok=True)
+        destination.replace(final_destination)
+    except Exception as error:
+        if destination.exists():
+            cleanup_target = destination.resolve()
+            if cleanup_target.parent != staging_root:
+                raise RuntimeError(
+                    f"Refusing to remove unexpected path: {cleanup_target}"
+                ) from error
+            shutil.rmtree(cleanup_target)
+        raise
+    return PbpSnapshot(identifier, final_destination, tuple(seasons))
+
+
+def _reusable_pbp_history(
+    raw_root: Path,
+    seasons: list[int],
+    *,
+    include_postseason: bool,
+) -> tuple[PbpSnapshot, dict[int, dict[str, Any]]]:
+
+    rejected: list[str] = []
+    for manifest_path in sorted(raw_root.glob("*/manifest.json"), reverse=True):
+        try:
+            payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as error:
+            rejected.append(f"{manifest_path.parent.name}: unreadable manifest ({error})")
+            continue
+        if payload.get("include_postseason") is not bool(include_postseason):
+            continue
+        if payload.get("filter_version") != PBP_FILTER_VERSION:
+            continue
+        if payload.get("feature_version") != PBP_FEATURE_VERSION:
+            continue
+        if payload.get("columns") != list(PBP_SNAPSHOT_COLUMNS):
+            continue
+        if payload.get("snapshot_id") != manifest_path.parent.name:
+            rejected.append(f"{manifest_path.parent.name}: snapshot id does not match directory")
+            continue
+        try:
+            source_seasons = [int(season) for season in payload["seasons"]]
+        except (KeyError, TypeError, ValueError):
+            rejected.append(f"{manifest_path.parent.name}: invalid seasons")
+            continue
+        if source_seasons != sorted(set(source_seasons)):
+            rejected.append(f"{manifest_path.parent.name}: seasons are not unique and sorted")
+            continue
+        if not set(seasons).issubset(source_seasons):
+            continue
+        try:
+            entries = payload["partitions"]
+            if not isinstance(entries, list):
+                raise TypeError("partitions must be a list")
+            partition_map = {int(entry["season"]): entry for entry in entries}
+            if len(partition_map) != len(entries) or set(partition_map) != set(source_seasons):
+                raise ValueError("partitions do not match manifest seasons")
+            if int(payload["rows"]) != sum(int(entry["rows"]) for entry in entries):
+                raise ValueError("partition rows do not match manifest rows")
+            snapshot = snapshot_from_root(manifest_path.parent)
+            for season in source_seasons:
+                _validate_reusable_pbp_partition(
+                    snapshot,
+                    season,
+                    partition_map[season],
+                    include_postseason=include_postseason,
+                )
+        except (DataContractError, KeyError, OSError, TypeError, ValueError) as error:
+            rejected.append(f"{manifest_path.parent.name}: {error}")
+            continue
+        return snapshot, partition_map
+    detail = f" Rejected candidates: {'; '.join(rejected)}" if rejected else ""
+    raise FileNotFoundError(
+        "No complete matching play-by-play snapshot can supply seasons "
+        f"{min(seasons)}-{max(seasons)}.{detail}"
+    )
+
+
+def _validate_reusable_pbp_partition(
+    snapshot: PbpSnapshot,
+    season: int,
+    partition: dict[str, Any],
+    *,
+    include_postseason: bool,
+) -> None:
+
+    expected_path = f"season={season}/plays.parquet"
+    partition_path = str(partition.get("path", "")).replace("\\", "/")
+    if partition_path != expected_path:
+        raise DataContractError(
+            f"play-by-play partition {season} has unexpected path {partition.get('path')!r}"
         )
-    manifest = {
-        "snapshot_id": identifier,
-        "created_at_utc": datetime.now(UTC).isoformat(),
-        "source": "nflverse play-by-play via nflreadpy",
-        "seasons": seasons,
-        "include_postseason": bool(include_postseason),
-        "filter_version": PBP_FILTER_VERSION,
-        "feature_version": PBP_FEATURE_VERSION,
-        "columns": list(PBP_SNAPSHOT_COLUMNS),
-        "partitions": partitions,
-        "rows": sum(int(partition["rows"]) for partition in partitions),
-    }
-    atomic_json(manifest, destination / "manifest.json")
-    return PbpSnapshot(identifier, destination, tuple(seasons))
+    path = snapshot.season_path(season)
+    if not path.is_file():
+        raise FileNotFoundError(f"Missing play-by-play partition: {path}")
+    expected_hash = partition.get("sha256")
+    if not isinstance(expected_hash, str) or _sha256(path) != expected_hash:
+        raise DataContractError(f"play-by-play partition {season} hash does not match manifest")
+    parquet = pq.ParquetFile(path)
+    if parquet.schema_arrow.names != list(PBP_SNAPSHOT_COLUMNS):
+        raise DataContractError(f"play-by-play partition {season} schema does not match contract")
+    if int(partition.get("rows", -1)) != parquet.metadata.num_rows:
+        raise DataContractError(
+            f"play-by-play partition {season} row count does not match manifest"
+        )
+    frame = pd.read_parquet(path, columns=["season", "season_type", "game_id", "play_id"])
+    if frame[["game_id", "play_id"]].isna().any(axis=None):
+        raise DataContractError(
+            f"play-by-play partition {season} contains null game_id or play_id values"
+        )
+    observed = set(pd.to_numeric(frame["season"], errors="coerce").dropna().astype(int))
+    if observed and observed != {season}:
+        raise DataContractError(
+            f"play-by-play season partition {season} contains seasons {sorted(observed)}"
+        )
+    if frame.duplicated(["game_id", "play_id"]).any():
+        raise DataContractError(
+            f"play-by-play partition {season} contains duplicate game_id/play_id rows"
+        )
+    keep = season_scope_mask(
+        frame["season_type"],
+        include_postseason=include_postseason,
+        dataset=f"play_by_play season partition {season}",
+        column="season_type",
+    )
+    if not keep.all():
+        raise DataContractError(
+            f"play-by-play partition {season} violates the postseason filter contract"
+        )
 
 
 def snapshot_from_root(root: Path) -> PbpSnapshot:

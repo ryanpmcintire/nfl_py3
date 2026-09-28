@@ -73,6 +73,7 @@ def _cmd_pbp_ingest(args: argparse.Namespace) -> None:
         _season_range(args.start_season, args.end_season),
         _data_root() / "pbp" / "raw",
         include_postseason=args.include_postseason,
+        reuse_history=args.reuse_history,
     )
     manifest = json.loads(snapshot.manifest_path.read_text(encoding="utf-8"))
     _print_json(
@@ -268,6 +269,11 @@ def register(
     )
     _add_season_range_args(pbp_ingest, 2009, current_year - 1)
     _add_include_postseason_arg(pbp_ingest)
+    pbp_ingest.add_argument(
+        "--reuse-history",
+        action="store_true",
+        help="reuse verified historical partitions and download only the end season",
+    )
     pbp_ingest.set_defaults(handler=_cmd_pbp_ingest)
 
     depth_ingest = subparsers.add_parser(

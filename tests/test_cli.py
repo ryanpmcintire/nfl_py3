@@ -795,6 +795,7 @@ def test_publish_new_overlay_recorders_are_opt_in(
     monkeypatch.setenv("NFL_ATS_REGISTRY_DIR", str(tmp_path / "registry"))
 
     monkeypatch.setattr(publishing_cmds, "publish_active_predictions", fake_publish)
+    monkeypatch.setattr(publishing_cmds, "_require_served_pick_probability", lambda: None)
     for name in (
         "record_bye_edge_fade_challenger_decisions",
         "record_tank_zone_fade_tilt_challenger_decisions",
@@ -925,6 +926,7 @@ def test_publish_new_overlay_recorder_failures_do_not_unpublish(
     monkeypatch.setenv("NFL_ATS_REGISTRY_DIR", str(tmp_path / "registry"))
 
     monkeypatch.setattr(publishing_cmds, "publish_active_predictions", fake_publish)
+    monkeypatch.setattr(publishing_cmds, "_require_served_pick_probability", lambda: None)
     for name in (
         "record_paper_decisions",
         "record_overlay_challenger_decisions",

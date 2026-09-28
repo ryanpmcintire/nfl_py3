@@ -40,6 +40,7 @@ modified lane when the prompt just says to continue.
 
 ## Done
 
+- [current-week-pressure-inputs](done/current-week-pressure-inputs.md) - 2026-09-28: Week 3 updated; current-season PBP ingestion and publication coverage repaired; locked decisions and enrolled model preserved.
 - [backlog-batch-2026-09-25](done/backlog-batch-2026-09-25.md) - 2026-09-25: standing backlog lane; batch 1 = queued registry records + one UI-20 improvement.
 - [inactives-capture-empty](done/inactives-capture-empty.md) - 2026-09-24: RotoWire fallback now parses (150 rows on an archived page); closed 2026-09-26: live Thursday T-90 capture returned 11 real rows.
 - [lead59-archive-battery](done/lead59-archive-battery.md) - 2026-09-26: referee type-trait bins recorded and committed (93ba72d); ROADMAP LEAD-59 reflects the finding.

@@ -329,8 +329,12 @@ def _site_directory(destination: Path) -> Path:
     return destination.parent if destination.suffix else destination
 
 
-def _write_public_site(destination: Path) -> dict[str, Any]:
+def _write_public_site(
+    destination: Path, *, _served_requirement_checked: bool = False
+) -> dict[str, Any]:
 
+    if not _served_requirement_checked:
+        _require_served_pick_probability()
     directory = _site_directory(destination)
     verify_number_provenance(_artifacts_root())
     pages = build_site(_artifacts_root(), require_fresh_arrest_overlay=True)
@@ -378,6 +382,7 @@ def parse_publish_predictions_request(args: argparse.Namespace) -> PublishPredic
 
 def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[str, Any]:
 
+    _require_served_pick_probability()
     publish_instant = datetime.now(UTC)
     verify_number_provenance(_artifacts_root())
     result = publish_active_predictions(
@@ -391,7 +396,7 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
     if request.with_board:
         try:
             site_destination = cast(Path, request.site_destination or request.board_destination)
-            result.update(_write_public_site(site_destination))
+            result.update(_write_public_site(site_destination, _served_requirement_checked=True))
         except (ValueError, FileNotFoundError) as error:
             result["public_site"] = {"written": False, "error": str(error)}
     if request.record_decisions:
@@ -1392,12 +1397,14 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
 
 def _require_served_pick_probability() -> None:
     from nfl_ats.active_model import load_active_ats_model
+    from nfl_ats.pbp_coverage import require_pressure_coverage_for_unlocked_card
     from nfl_ats.pick_probability import load_pick_probability_model
 
     artifacts_root = _artifacts_root()
     if load_active_ats_model(artifacts_root) is None:
         return
     load_pick_probability_model(artifacts_root)
+    require_pressure_coverage_for_unlocked_card(artifacts_root, _data_root())
 
 
 def _utc_datetime(value: str) -> datetime:
@@ -1408,7 +1415,6 @@ def _utc_datetime(value: str) -> datetime:
 
 
 def _cmd_publish_predictions(args: argparse.Namespace) -> None:
-    _require_served_pick_probability()
     request = parse_publish_predictions_request(args)
     result = orchestrate_publish_predictions(request)
     _print_json(result)
@@ -1418,7 +1424,6 @@ def _cmd_publish_predictions(args: argparse.Namespace) -> None:
 
 
 def _cmd_publish_board(args: argparse.Namespace) -> None:
-    _require_served_pick_probability()
     result = _write_public_site(args.site_destination or args.destination)
     _print_json(result)
     if result.get("written") is False:

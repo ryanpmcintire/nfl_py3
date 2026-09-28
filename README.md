@@ -15,26 +15,26 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 
 **Production policy active:** one calibrated probability combines the model, situational evidence and available line movement to choose each side.
 
-**Best Pick of the week (★):** CHI +3.5 in PHI at CHI. The pool scores one Best Pick per regular-season week. This pick was provisionally chosen because it has the highest estimated chance to cover among eligible games. Its estimated lead over the other picks is uncertain.
+**Best Pick of the week (★):** CAR -2.5 in CAR at CLE. The pool scores one Best Pick per regular-season week. This pick was the star this card carried when the picks locked; once a game is past its deadline the star stays where the pool saw it.
 
 | Date        | Matchup    | ATS prediction   | Cover chance   |
 |:------------|:-----------|:-----------------|:---------------|
 | Thu, Sep 24 | ATL at GB  | ATL +6.5         | 60.5%          |
-| Sun, Sep 27 | ARI at SF  | ARI +8.5         | 50.6%          |
+| Sun, Sep 27 | ARI at SF  | ARI +8.5         | 53.4%          |
 | Sun, Sep 27 | BAL at DAL | DAL +2.5         | 54.1%          |
-| Sun, Sep 27 | CAR at CLE | CAR -2.5         | 57.9%          |
-| Sun, Sep 27 | CIN at PIT | CIN -3.5         | 55.8%          |
+| Sun, Sep 27 | CAR at CLE | ★ CAR -2.5       | 55.1%          |
+| Sun, Sep 27 | CIN at PIT | CIN -3.5         | 53.1%          |
 | Sun, Sep 27 | HOU at IND | IND +2.5         | 55.5%          |
-| Sun, Sep 27 | KC at MIA  | MIA +10.5        | 51.0%          |
+| Sun, Sep 27 | KC at MIA  | MIA +10.5        | 56.5%          |
 | Sun, Sep 27 | LAC at BUF | LAC +7.5         | 50.6%          |
-| Sun, Sep 27 | LA at DEN  | DEN +2.5         | 50.3%          |
-| Sun, Sep 27 | LV at NO   | NO -3.5          | 56.7%          |
+| Sun, Sep 27 | LA at DEN  | DEN +2.5         | 55.8%          |
+| Sun, Sep 27 | LV at NO   | NO -3.5          | 59.4%          |
 | Sun, Sep 27 | MIN at TB  | TB +1.5          | 53.4%          |
 | Sun, Sep 27 | NE at JAX  | JAX -2.5         | 52.3%          |
 | Sun, Sep 27 | NYJ at DET | NYJ +6.5         | 50.8%          |
-| Sun, Sep 27 | SEA at WAS | SEA -6.5         | 52.1%          |
+| Sun, Sep 27 | SEA at WAS | SEA -6.5         | 57.6%          |
 | Sun, Sep 27 | TEN at NYG | TEN +3.5         | 50.4%          |
-| Mon, Sep 28 | PHI at CHI | ★ CHI +3.5       | 64.6%          |
+| Mon, Sep 28 | PHI at CHI | CHI +3.5         | 62.1%          |
 
 [Open the standalone card](CURRENT_PREDICTIONS.md) for provenance and interpretation.
 <!-- CURRENT_PREDICTIONS:END -->

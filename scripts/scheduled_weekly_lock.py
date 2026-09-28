@@ -6,7 +6,7 @@ import re
 import subprocess
 import sys
 import traceback
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo
@@ -71,7 +71,9 @@ def _error_summary(stderr: str | None, *, limit: int = 240) -> str:
     return "(no stderr captured)"
 
 
-def _run_weekly(season: int, week: int, *, replace: bool = False) -> dict[str, Any]:
+def _run_weekly(
+    season: int, week: int, *, replace: bool = False, dry_run: bool = False
+) -> dict[str, Any]:
     command = [
         str(UV),
         "run",
@@ -82,8 +84,9 @@ def _run_weekly(season: int, week: int, *, replace: bool = False) -> dict[str, A
         str(season),
         "--week",
         str(week),
-        "--record-decisions",
-        *(["--replace-week"] if replace else []),
+        "--refresh-player-data",
+        *(["--dry-run"] if dry_run else ["--record-decisions"]),
+        *(["--replace-week"] if replace and not dry_run else []),
     ]
     proc = subprocess.run(
         command,
@@ -120,6 +123,11 @@ def _parse_args(argv: list[str] | None) -> argparse.Namespace:
         action="store_true",
         help="re-record a week that already has rows (previous ledger kept as a .bak)",
     )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="show the next lock plan without writing decisions or publishing",
+    )
     return parser.parse_args(argv)
 
 
@@ -128,7 +136,23 @@ def main(argv: list[str] | None = None) -> int:
     now = datetime.now(tz=ET)
     try:
         schedules, _ = load_verified_snapshot(latest_snapshot(REPO / "data" / "raw"))
-        target = resolve_lock_target(schedules, now=now, season=args.season, week=args.week)
+        target_time = now
+        if args.dry_run and args.season is None and args.week is None:
+            target_time += timedelta(days=(1 - now.weekday()) % 7)
+        target = resolve_lock_target(schedules, now=target_time, season=args.season, week=args.week)
+        if args.dry_run:
+            result = _run_weekly(target.season, target.week, dry_run=True)
+            print(
+                json.dumps(
+                    {
+                        "status": "dry_run",
+                        "season": target.season,
+                        "week": target.week,
+                        "plan": result,
+                    }
+                )
+            )
+            return 0
         require_captured_board(REPO / "data", target.season, target.week)
         result = execute_scheduled_lock(
             schedules,

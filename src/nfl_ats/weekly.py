@@ -163,6 +163,26 @@ def _ingest_step(data_root: Path, season: int, *, skip: bool) -> WeeklyStep:
     )
 
 
+def _pbp_ingest_step(season: int, *, skip: bool) -> WeeklyStep:
+
+    return WeeklyStep(
+        number=1,
+        name="pbp-ingest",
+        description="refresh complete play-by-play history through the active season",
+        command=(
+            "pbp-ingest",
+            "--start-season",
+            "2009",
+            "--end-season",
+            str(season),
+            "--include-postseason",
+            "--reuse-history",
+        ),
+        skipped=skip,
+        notes=("verified historical partitions are reused; the active season is downloaded",),
+    )
+
+
 def _prospective_steps(
     *,
     season: int,
@@ -273,7 +293,10 @@ def plan_weekly_run(
         PLAYER_FEATURE_PROFILE if artifacts_root is None else active_card_profile(artifacts_root)
     )
     player_table = processed / CARD_PATH_TABLES[card_profile]
-    steps = [_ingest_step(data_root, season, skip=skip_ingest)]
+    steps = [
+        _ingest_step(data_root, season, skip=skip_ingest),
+        _pbp_ingest_step(season, skip=skip_ingest),
+    ]
 
     steps.append(
         WeeklyStep(

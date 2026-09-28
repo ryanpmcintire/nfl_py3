@@ -100,6 +100,7 @@ def test_plan_is_the_seven_specified_steps_in_order(tmp_path: Path) -> None:
 
     assert [step.name for step in steps] == [
         "ingest",
+        "pbp-ingest",
         "build-features",
         "build-pbp-features",
         "build-player-features",
@@ -117,7 +118,26 @@ def test_plan_is_the_seven_specified_steps_in_order(tmp_path: Path) -> None:
         "drift-report",
         "publish-board",
     ]
-    assert [step.number for step in steps] == [1, 2, 3, 3, 4, 5, 6, 7, 7, 7, 7, 7, 7, 8, 8, 13, 15]
+    assert [step.number for step in steps] == [
+        1,
+        1,
+        2,
+        3,
+        3,
+        4,
+        5,
+        6,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        8,
+        8,
+        13,
+        15,
+    ]
     assert steps[-2].optional is True
     assert steps[-1].name == "publish-board"
     assert steps[-1].optional is False
@@ -213,6 +233,7 @@ def test_step_failure_names_the_step_and_stops_the_run(tmp_path: Path) -> None:
 
     assert calls == [
         "ingest",
+        "pbp-ingest",
         "build-features",
         "build-pbp-features",
         "build-player-features",
