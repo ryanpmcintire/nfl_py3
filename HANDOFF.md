@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-28T10:49:47.155872+00:00`
+Refreshed at: `2026-09-28T10:50:33.331764+00:00`
 
 ## Start here
 
@@ -21,29 +21,20 @@ Refreshed at: `2026-09-28T10:49:47.155872+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `dd6c140354ca` — Save completed backlog checkpoint and pregame monitoring handoff
-- Pending change set: 24 paths
+- Baseline commit: `ba918e856195` — Freeze prospective combined-versus-raw validation before Week 4
+- Pending change set: 12 paths
   - ` M AGENTS.md`
   - `M  HANDOFF.md`
-  - `M  ROADMAP.md`
   - ` M docs/agent_workflow.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
-  - `A  docs/independent_combination_validation.md`
   - ` M docs/index.html`
-  - `M  docs/lanes/README.md`
-  - `A  docs/lanes/done/week03-early-results-review.md`
-  - `A  docs/lanes/done/week03-pick-change-trace.md`
-  - `A  docs/lanes/done/week03-variance-assessment.md`
-  - `A  docs/lanes/independent-combination-validation.md`
   - ` M docs/model.html`
-  - `A  registry/studies/combined_vs_raw_2026.json`
-  - `M  scripts/capture_scheduler.py`
-  - `M  src/nfl_ats/cli_commands/prospective.py`
-  - `A  src/nfl_ats/independent_validation.py`
-  - `M  tests/fixtures/cli_contract.json`
   - `?? docs/lanes/windows-shell-popup.md`
-  - ...and 4 more
+  - `?? registry/experiments/margin-backtest/20260927T134152Z.json`
+  - `?? registry/experiments/margin-predict/2026-week-03-20260927T134352Z.json`
+  - `?? registry/experiments/opener-evaluation/20260927T134738Z.json`
+  - `?? registry/experiments/waterfall-feed/20260927T134851Z.json`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
