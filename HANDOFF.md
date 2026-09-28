@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-28T16:37:33.571405+00:00`
+Refreshed at: `2026-09-28T16:38:15.709377+00:00`
 
 ## Start here
 
@@ -21,29 +21,16 @@ Refreshed at: `2026-09-28T16:37:33.571405+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `a7a2cc061edb` — Refresh handoff after pressure-input repair
-- Pending change set: 36 paths
+- Baseline commit: `053fdb4781e2` — Correct frozen research evidence and advance precision and simulator backlog
+- Pending change set: 8 paths
   - ` M AGENTS.md`
-  - `M  CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
-  - `M  README.md`
   - ` M docs/agent_workflow.md`
-  - `A  docs/backlog_research_20260928.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - `M  docs/lanes/README.md`
-  - `A  docs/lanes/done/backlog-research-2026-09-28.md`
-  - `A  docs/lanes/done/pool-rank-card-before-20260928-checkpoint.md`
-  - `A  docs/lanes/done/positive-control-power-before-20260928-checkpoint.md`
-  - `M  docs/lanes/pol10-prospective-2026.md`
-  - `M  docs/lanes/pool-rank-card.md`
-  - `M  docs/lanes/positive-control-power.md`
-  - `M  docs/lanes/sim08-simulator-rebuild.md`
-  - `M  docs/model.html`
-  - `A  registry/experiments/margin-backtest/20260928T160842Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-03-20260928T161008Z.json`
-  - ...and 16 more
+  - `?? docs/lanes/windows-shell-popup.md`
+  - `?? registry/experiments/margin-backtest/20260927T134152Z.json`
+  - `?? registry/experiments/margin-predict/2026-week-03-20260927T134352Z.json`
+  - `?? registry/experiments/opener-evaluation/20260927T134738Z.json`
+  - `?? registry/experiments/waterfall-feed/20260927T134851Z.json`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
