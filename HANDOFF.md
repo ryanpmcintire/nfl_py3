@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-28T12:06:30.159736+00:00`
+Refreshed at: `2026-09-28T12:07:27.356092+00:00`
 
 ## Start here
 
@@ -21,29 +21,20 @@ Refreshed at: `2026-09-28T12:06:30.159736+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `d7519527ff21` — Refresh handoff for enrolled independent validation
-- Pending change set: 24 paths
+- Baseline commit: `3deb4fe583f7` — Run chronological combination selection replay and isolate calibration instability
+- Pending change set: 12 paths
   - ` M AGENTS.md`
   - `M  HANDOFF.md`
-  - ` M README.md`
-  - `M  ROADMAP.md`
   - ` M docs/agent_workflow.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
-  - `A  docs/independent_combination_historical_replay.md`
-  - `M  docs/independent_combination_validation.md`
   - ` M docs/index.html`
-  - `M  docs/lanes/README.md`
-  - `M  docs/lanes/independent-combination-validation.md`
   - ` M docs/model.html`
-  - `A  registry/studies/combined_vs_raw_historical_nested_20260928.json`
-  - `A  registry/studies/combined_vs_raw_historical_nested_20260928_calibration_diagnostic.json`
-  - `A  registry/studies/combined_vs_raw_historical_nested_20260928_initial.json`
-  - `M  registry/weak_signals.json`
-  - `A  scripts/independent_combination_calibration_audit.py`
-  - `A  scripts/independent_combination_replay.py`
   - `?? docs/lanes/windows-shell-popup.md`
-  - ...and 4 more
+  - `?? registry/experiments/margin-backtest/20260927T134152Z.json`
+  - `?? registry/experiments/margin-predict/2026-week-03-20260927T134352Z.json`
+  - `?? registry/experiments/opener-evaluation/20260927T134738Z.json`
+  - `?? registry/experiments/waterfall-feed/20260927T134851Z.json`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
