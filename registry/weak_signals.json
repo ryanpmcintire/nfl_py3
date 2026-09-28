@@ -197946,6 +197946,3030 @@
       "source": "docs/team_style.md, artifacts\\team_style_screen\\20260819T210011Z\\results.json",
       "standard_error": null
     },
+    "three_week_diagnosis_20260928_four_season_reference_all_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in all; four_season_reference chronology.",
+      "effect": 4.775549188156638,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        1.5137180700094608,
+        8.108108108108109
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for all. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.998325,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1047,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_all_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in all; four_season_reference chronology.",
+      "effect": 0.006536387542307184,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        0.001919834200742575,
+        0.011325477278420093
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for all. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.99795,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1047,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_away_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in away; four_season_reference chronology.",
+      "effect": 3.4220532319391634,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        -1.5267905361026375,
+        8.522837385482726
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for away. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.9102750000000001,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 526,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_away_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in away; four_season_reference chronology.",
+      "effect": 8.964015383845427e-05,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        -0.005935734982783642,
+        0.006157802842780936
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for away. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.5145,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 526,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_confidence_55_to_60_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in confidence_55_to_60; four_season_reference chronology.",
+      "effect": 7.098765432098766,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        1.1764705882352942,
+        13.201320132013201
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for confidence 55 to 60. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.98925,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 324,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_confidence_55_to_60_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in confidence_55_to_60; four_season_reference chronology.",
+      "effect": 0.009700438565122274,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        0.0016043009012765054,
+        0.01803574118301655
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for confidence 55 to 60. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.99,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 324,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_confidence_at_least_60_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in confidence_at_least_60; four_season_reference chronology.",
+      "effect": 5.0761421319796955,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        -2.4038461538461537,
+        12.568384074941445
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for confidence at least 60. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.9024,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 197,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_confidence_at_least_60_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in confidence_at_least_60; four_season_reference chronology.",
+      "effect": 0.01231074761922985,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        -0.006625890957802639,
+        0.030554959795951863
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for confidence at least 60. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.8963,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 197,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_confidence_below_55_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in confidence_below_55; four_season_reference chronology.",
+      "effect": 3.2319391634980987,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        -2.099236641221374,
+        8.483781861940704
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for confidence below 55. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.8818750000000001,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 526,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_confidence_below_55_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in confidence_below_55; four_season_reference chronology.",
+      "effect": 0.0024247877960222905,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        -0.002745281355340308,
+        0.007563142767307861
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for confidence below 55. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.8235,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 526,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_dominant_intercept_and_availability_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in dominant_intercept_and_availability; four_season_reference chronology.",
+      "effect": 6.944444444444445,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        -8.928571428571429,
+        22.5
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for dominant intercept and availability. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.808025,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 72,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_dominant_intercept_and_availability_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in dominant_intercept_and_availability; four_season_reference chronology.",
+      "effect": 0.001113728221437728,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        -0.0016573399447089056,
+        0.0038038224766166256
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for dominant intercept and availability. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.78805,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 72,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_dominant_market_movement_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in dominant_market_movement; four_season_reference chronology.",
+      "effect": 8.37696335078534,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        -1.5001884422110552,
+        17.89512961508245
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for dominant market movement. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.9531,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 191,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_dominant_market_movement_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in dominant_market_movement; four_season_reference chronology.",
+      "effect": 0.014218426750119367,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        -0.00031066708721407265,
+        0.029550725612761276
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for dominant market movement. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.9722,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 191,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_dominant_raw_model_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in dominant_raw_model; four_season_reference chronology.",
+      "effect": -0.37453183520599254,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        -1.2295081967213115,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for dominant raw model. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.185075,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 267,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_dominant_raw_model_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in dominant_raw_model; four_season_reference chronology.",
+      "effect": 0.0002989634028711453,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        -0.0047225679586721525,
+        0.005310247309503816
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for dominant raw model. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.5454,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 267,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_dominant_situational_flags_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in dominant_situational_flags; four_season_reference chronology.",
+      "effect": 5.802707930367505,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        0.398406374501992,
+        11.11111111111111
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for dominant situational flags. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.9815999999999999,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 517,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_dominant_situational_flags_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in dominant_situational_flags; four_season_reference chronology.",
+      "effect": 0.007674790303699633,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        0.0008357204770045763,
+        0.014505227565211687
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for dominant situational flags. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.98615,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 517,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_favorite_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in favorite; four_season_reference chronology.",
+      "effect": 4.634581105169341,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        0.3490249375193827,
+        8.89622553014358
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for favorite. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.98195,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 561,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_favorite_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in favorite; four_season_reference chronology.",
+      "effect": 0.0075533324687493434,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        0.0008787443333655114,
+        0.014132692432026249
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for favorite. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.98625,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 561,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_flag_arrests_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in flag_arrests; four_season_reference chronology.",
+      "effect": 20.58823529411765,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        5.128205128205129,
+        38.888888888888886
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for flag arrests. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.99515,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 34,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_flag_arrests_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in flag_arrests; four_season_reference chronology.",
+      "effect": 0.04633962583616318,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        0.02448410861803502,
+        0.07078772592765614
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for flag arrests. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 34,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_flag_bye_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in flag_bye; four_season_reference chronology.",
+      "effect": -2.0408163265306123,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        -13.333333333333334,
+        9.75609756097561
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for flag bye. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.36975,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 98,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_flag_bye_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in flag_bye; four_season_reference chronology.",
+      "effect": -0.0034760830947182532,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        -0.02031805400426815,
+        0.014984369599744798
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for flag bye. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.3455,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 98,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_flag_coach_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in flag_coach; four_season_reference chronology.",
+      "effect": 5.357142857142857,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        -4.137931034482759,
+        15.168906994529058
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for flag coach. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.857325,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 168,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_flag_coach_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in flag_coach; four_season_reference chronology.",
+      "effect": 0.006705762557393853,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        -0.0061051113876494515,
+        0.020536963244035467
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for flag coach. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.83855,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 168,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_flag_cold_visitor_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in flag_cold_visitor; four_season_reference chronology.",
+      "effect": 9.70873786407767,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        -0.970873786407767,
+        20.987654320987655
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for flag cold visitor. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.963,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 103,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_flag_cold_visitor_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in flag_cold_visitor; four_season_reference chronology.",
+      "effect": 0.011673671207471193,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        -0.008647843412819264,
+        0.030763191834638475
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for flag cold visitor. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.87595,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 103,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_flag_division_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in flag_division; four_season_reference chronology.",
+      "effect": 8.064516129032258,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        -3.225806451612903,
+        18.099645030425954
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for flag division. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.9248,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 186,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_flag_division_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in flag_division; four_season_reference chronology.",
+      "effect": 0.015399056476812324,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        -0.004371468062915934,
+        0.032867480704852584
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for flag division. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.9382,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 186,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_flag_protection_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in flag_protection; four_season_reference chronology.",
+      "effect": 14.0625,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        5.487804878048781,
+        22.52747252747253
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for flag protection. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.99905,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 192,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_flag_protection_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in flag_protection; four_season_reference chronology.",
+      "effect": 0.01495819823219055,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        0.003600588866554446,
+        0.02625685252491293
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for flag protection. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.9947,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 192,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_flag_tank_zone_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in flag_tank_zone; four_season_reference chronology.",
+      "effect": -14.285714285714286,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        -28.949490662139215,
+        -2.857142857142857
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for flag tank zone. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.00715,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 35,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_flag_tank_zone_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in flag_tank_zone; four_season_reference chronology.",
+      "effect": 0.009074340832298878,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        -0.02796961145167329,
+        0.043259248652565814
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for flag tank zone. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.69475,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 35,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_home_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in home; four_season_reference chronology.",
+      "effect": 6.142034548944338,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        1.8975332068311195,
+        10.609037328094303
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for home. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.998,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 521,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_home_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in home; four_season_reference chronology.",
+      "effect": 0.013045003907632621,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        0.00629902356806006,
+        0.020012061545755647
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for home. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.99995,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 521,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_later_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in later; four_season_reference chronology.",
+      "effect": 4.069767441860465,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        0.3745201602734737,
+        7.877475608840595
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for later. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.9846999999999999,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 860,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_later_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in later; four_season_reference chronology.",
+      "effect": 0.006893459170896764,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        0.0016169003100855233,
+        0.012491359457522841
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for later. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.9949,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 860,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_pickem_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in pickem; four_season_reference chronology.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        -50.0,
+        50.0
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for pickem. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.499025,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 10,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_pickem_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in pickem; four_season_reference chronology.",
+      "effect": 0.003203626398431192,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        -0.07416019743428173,
+        0.06566091449792079
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for pickem. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.5585,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 10,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_raw_agree_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in raw_agree; four_season_reference chronology.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for raw agree. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 693,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_raw_agree_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in raw_agree; four_season_reference chronology.",
+      "effect": 0.0031259552665462726,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        -0.0009372606182485088,
+        0.007161496355951479
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for raw agree. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.9368,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 693,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_raw_disagree_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in raw_disagree; four_season_reference chronology.",
+      "effect": 14.124293785310735,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        4.477611940298507,
+        23.835616438356166
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for raw disagree. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.998325,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 354,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_raw_disagree_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in raw_disagree; four_season_reference chronology.",
+      "effect": 0.01321274225163575,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        0.001921897658730269,
+        0.02498096122229519
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for raw disagree. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.9895,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 354,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_spread_3_through_7_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in spread_3_through_7; four_season_reference chronology.",
+      "effect": 6.172839506172839,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        1.1904256609265098,
+        11.228117084154231
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for spread 3 through 7. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.9927,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 567,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_spread_3_through_7_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in spread_3_through_7; four_season_reference chronology.",
+      "effect": 0.008418263011948174,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        0.0015937322298525346,
+        0.015496228208912508
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for spread 3 through 7. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.9927,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 567,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_spread_above_7_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in spread_above_7; four_season_reference chronology.",
+      "effect": 4.455445544554456,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        -3.278688524590164,
+        12.206641008843755
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for spread above 7. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.873175,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 202,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_spread_above_7_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in spread_above_7; four_season_reference chronology.",
+      "effect": 0.010616534256007329,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        -0.0024088987334699437,
+        0.023554810214881615
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for spread above 7. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.94515,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 202,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_spread_below_3_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in spread_below_3; four_season_reference chronology.",
+      "effect": 2.158273381294964,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        -4.150943396226415,
+        8.434040214913683
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for spread below 3. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.749125,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 278,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_spread_below_3_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in spread_below_3; four_season_reference chronology.",
+      "effect": -0.0002665370168793976,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        -0.009824544220634796,
+        0.009503674390582072
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for spread below 3. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.4834,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 278,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_underdog_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in underdog; four_season_reference chronology.",
+      "effect": 5.042016806722689,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        -0.43862058993637937,
+        10.547667342799189
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for underdog. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.962525,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 476,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_underdog_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in underdog; four_season_reference chronology.",
+      "effect": 0.005407861297989346,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        -0.002114805408089121,
+        0.012675395209263121
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for underdog. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.92435,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 476,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_weeks_1_to_3_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in weeks_1_to_3; four_season_reference chronology.",
+      "effect": 8.02139037433155,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        1.2604381375191587,
+        14.838709677419354
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for weeks 1 to 3. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.98955,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 187,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_four_season_reference_weeks_1_to_3_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in weeks_1_to_3; four_season_reference chronology.",
+      "effect": 0.0048942399455850554,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_four_season_reference",
+      "interval": [
+        -0.0027087949418417123,
+        0.012604001080698576
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for weeks 1 to 3. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.8979,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 187,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_all_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in all; recent chronology.",
+      "effect": 4.315196998123827,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -0.74487895716946,
+        9.444628229363563
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for all. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.9539,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_all_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in all; recent chronology.",
+      "effect": 0.0055581848128521795,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -0.0019989975166520694,
+        0.01355374992533045
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for all. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.9235,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_away_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in away; recent chronology.",
+      "effect": 7.563025210084033,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -1.2767321331151118,
+        16.26984126984127
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for away. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.953675,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 238,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_away_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in away; recent chronology.",
+      "effect": 0.003911602006670099,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -0.006814138285084586,
+        0.014001612462211883
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for away. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.7727,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 238,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_confidence_55_to_60_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in confidence_55_to_60; recent chronology.",
+      "effect": 7.142857142857143,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -2.484472049689441,
+        17.333333333333332
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for confidence 55 to 60. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.92375,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 154,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_confidence_55_to_60_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in confidence_55_to_60; recent chronology.",
+      "effect": 0.007575422549340275,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -0.005575382173636205,
+        0.020983919465669725
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for confidence 55 to 60. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.87025,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 154,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_confidence_at_least_60_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in confidence_at_least_60; recent chronology.",
+      "effect": 8.064516129032258,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -1.834862385321101,
+        18.831404103143214
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for confidence at least 60. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.938225,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 124,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_confidence_at_least_60_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in confidence_at_least_60; recent chronology.",
+      "effect": 0.014689000696661781,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -0.012762775942452792,
+        0.04062638169305473
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for confidence at least 60. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.85005,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 124,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_confidence_below_55_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in confidence_below_55; recent chronology.",
+      "effect": 0.7843137254901961,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -7.335907335907336,
+        9.051724137931034
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for confidence below 55. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.575475,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 255,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_confidence_below_55_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in confidence_below_55; recent chronology.",
+      "effect": -0.00010015158327157348,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -0.007845337590746593,
+        0.007385553028616214
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for confidence below 55. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.4965,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 255,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_dominant_intercept_and_availability_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in dominant_intercept_and_availability; recent chronology.",
+      "effect": 12.5,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -33.333333333333336,
+        57.142857142857146
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for dominant intercept and availability. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.7145964596459646,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 8,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_dominant_intercept_and_availability_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in dominant_intercept_and_availability; recent chronology.",
+      "effect": -0.00037159131439426507,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -0.0023526139685963224,
+        0.0017898023568024234
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for dominant intercept and availability. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.34543454345434543,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 8,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_dominant_market_movement_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in dominant_market_movement; recent chronology.",
+      "effect": 8.37696335078534,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -1.4219702098849016,
+        17.751617541337154
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for dominant market movement. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.95565,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 191,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_dominant_market_movement_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in dominant_market_movement; recent chronology.",
+      "effect": 0.014218426750119367,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -0.00042815484945515805,
+        0.029320177961321664
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for dominant market movement. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.97215,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 191,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_dominant_raw_model_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in dominant_raw_model; recent chronology.",
+      "effect": -1.0869565217391304,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -3.658536585365854,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for dominant raw model. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.18075,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 92,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_dominant_raw_model_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in dominant_raw_model; recent chronology.",
+      "effect": -0.0020000154766390433,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -0.01155689088980482,
+        0.007601074566330599
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for dominant raw model. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.34205,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 92,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_dominant_situational_flags_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in dominant_situational_flags; recent chronology.",
+      "effect": 2.8925619834710745,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -5.3061224489795915,
+        10.869792614153155
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for dominant situational flags. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.7590250000000001,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 242,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_dominant_situational_flags_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in dominant_situational_flags; recent chronology.",
+      "effect": 0.0017924262410882617,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -0.007919750305606958,
+        0.011252417213661488
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for dominant situational flags. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.64075,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 242,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_favorite_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in favorite; recent chronology.",
+      "effect": 5.925925925925926,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        0.0,
+        11.904761904761905
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for favorite. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.9748,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 270,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_favorite_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in favorite; recent chronology.",
+      "effect": 0.008605642803612678,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -0.0021088422058488055,
+        0.018993388964293253
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for favorite. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.94065,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 270,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_flag_arrests_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in flag_arrests; recent chronology.",
+      "effect": 40.0,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        10.0,
+        72.72727272727273
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for flag arrests. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.992275,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 10,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_flag_arrests_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in flag_arrests; recent chronology.",
+      "effect": 0.07675505579356548,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        0.033192240526422036,
+        0.11574411360965496
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for flag arrests. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.99905,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 10,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_flag_bye_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in flag_bye; recent chronology.",
+      "effect": -3.7735849056603774,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -20.967741935483872,
+        15.0
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for flag bye. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.347775,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 53,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_flag_bye_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in flag_bye; recent chronology.",
+      "effect": -0.003589568161382799,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -0.030057712302888978,
+        0.027346076466496543
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for flag bye. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.39115,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 53,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_flag_coach_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in flag_coach; recent chronology.",
+      "effect": 2.380952380952381,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -11.11111111111111,
+        14.851485148514852
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for flag coach. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.6472249999999999,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 84,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_flag_coach_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in flag_coach; recent chronology.",
+      "effect": -0.003077866732170124,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -0.01737648362077085,
+        0.01124676814138012
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for flag coach. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.3209,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 84,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_flag_cold_visitor_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in flag_cold_visitor; recent chronology.",
+      "effect": 1.8867924528301887,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -13.636363636363637,
+        17.142857142857142
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for flag cold visitor. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.6073500000000001,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 53,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_flag_cold_visitor_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in flag_cold_visitor; recent chronology.",
+      "effect": 0.0022136630783246222,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -0.034538903878384895,
+        0.03107512676095433
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for flag cold visitor. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.5657,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 53,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_flag_division_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in flag_division; recent chronology.",
+      "effect": 8.421052631578947,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -10.309278350515465,
+        24.445035460992855
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for flag division. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.816675,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 95,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_flag_division_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in flag_division; recent chronology.",
+      "effect": 0.02031941112990162,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -0.015237683534242206,
+        0.04723097795283608
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for flag division. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.8757,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 95,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_flag_protection_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in flag_protection; recent chronology.",
+      "effect": 18.27956989247312,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        7.291666666666667,
+        30.097087378640776
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for flag protection. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.999425,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 93,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_flag_protection_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in flag_protection; recent chronology.",
+      "effect": 0.01279369069127951,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -0.002456552901730282,
+        0.02862919782530226
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for flag protection. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.95035,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 93,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_flag_tank_zone_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in flag_tank_zone; recent chronology.",
+      "effect": -18.75,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -47.05882352941177,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for flag tank zone. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.06303445516827524,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 16,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_flag_tank_zone_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in flag_tank_zone; recent chronology.",
+      "effect": 0.019383681756807332,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -0.06194899077919041,
+        0.08154008418378962
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for flag tank zone. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.7039555933390008,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 16,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_home_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in home; recent chronology.",
+      "effect": 1.694915254237288,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -2.9508196721311477,
+        6.761699622722275
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for home. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.7502,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 295,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_home_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in home; recent chronology.",
+      "effect": 0.006886614331060097,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -0.0024242408177016627,
+        0.016459577211044473
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for home. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.92125,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 295,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_later_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in later; recent chronology.",
+      "effect": 2.947845804988662,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -2.6259645283888053,
+        8.861172621211583
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for later. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.844975,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 441,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_later_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in later; recent chronology.",
+      "effect": 0.005455294761685944,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -0.003473161659734176,
+        0.014994067680665189
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for later. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.87965,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 441,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_pickem_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in pickem; recent chronology.",
+      "effect": -33.333333333333336,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -100.0,
+        33.333333333333336
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for pickem. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.15868368368368369,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 6,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_pickem_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in pickem; recent chronology.",
+      "effect": -0.006014807118976044,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -0.13650196430672334,
+        0.09200899816326318
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for pickem. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.49234234234234237,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 6,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_raw_agree_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in raw_agree; recent chronology.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for raw agree. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 340,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_raw_agree_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in raw_agree; recent chronology.",
+      "effect": 0.0023503863837416455,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -0.004474548344180355,
+        0.008842579364617294
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for raw agree. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.74985,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 340,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_raw_disagree_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in raw_disagree; recent chronology.",
+      "effect": 11.917098445595855,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -2.0408163265306123,
+        25.654450261780106
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for raw disagree. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.9539,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 193,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_raw_disagree_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in raw_disagree; recent chronology.",
+      "effect": 0.011209228677606486,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -0.005890984256892873,
+        0.029380477610422992
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for raw disagree. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.89325,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 193,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_spread_3_through_7_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in spread_3_through_7; recent chronology.",
+      "effect": 6.896551724137931,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        0.0,
+        13.768115942028986
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for spread 3 through 7. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.9742999999999999,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 290,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_spread_3_through_7_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in spread_3_through_7; recent chronology.",
+      "effect": 0.007759232522549346,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -0.002534497543320456,
+        0.018842023143739464
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for spread 3 through 7. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.9257,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 290,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_spread_above_7_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in spread_above_7; recent chronology.",
+      "effect": 0.9803921568627451,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -9.183673469387756,
+        10.1010101010101
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for spread above 7. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.5815750000000001,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 102,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_spread_above_7_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in spread_above_7; recent chronology.",
+      "effect": 0.008531001336483728,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -0.010461632066359873,
+        0.025678200930743154
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for spread above 7. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.81525,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 102,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_spread_below_3_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in spread_below_3; recent chronology.",
+      "effect": 1.4184397163120568,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -8.861133997453374,
+        11.888528138528102
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for spread below 3. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.60885,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 141,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_spread_below_3_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in spread_below_3; recent chronology.",
+      "effect": -0.0011193408695775776,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -0.017282934637041482,
+        0.015558615752156562
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for spread below 3. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.4474,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 141,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_underdog_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in underdog; recent chronology.",
+      "effect": 3.501945525291829,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -4.838709677419355,
+        11.811023622047244
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for underdog. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.7975249999999999,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 257,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_underdog_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in underdog; recent chronology.",
+      "effect": 0.0026267618326406444,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -0.009204914390571091,
+        0.014105626501450306
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for underdog. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.6795,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 257,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_weeks_1_to_3_accuracy_gain_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in weeks_1_to_3; recent chronology.",
+      "effect": 10.869565217391305,
+      "effect_units": "accuracy_points",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        0.819672131147541,
+        20.27027027027027
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for weeks 1 to 3. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.9810446714743589,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 92,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
+    "three_week_diagnosis_20260928_recent_weeks_1_to_3_brier_gain_over_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic groups after live outcomes; earlier feature design reused the historical seasons. No admissible closing ground established.",
+      "closing_ground": null,
+      "description": "Retrospective diagnostic of combined versus raw predictions in weeks_1_to_3; recent chronology.",
+      "effect": 0.006051386036377294,
+      "effect_units": "brier_improvement",
+      "family": "three_week_diagnosis_20260928_recent",
+      "interval": [
+        -0.0036998492522650264,
+        0.01623600956007038
+      ],
+      "league": "nfl",
+      "notes": "All 27 groups and both historical scopes retained, with week-block intervals and decisive-disagreement nulls. Zero crossing is not a closure reason. Recent 2024-2025 folds contain fitted movement; earlier folds do not.",
+      "plain_summary": "Checks the combined picks against the raw model for weeks 1 to 3. This diagnostic does not change picks or settle the signal.",
+      "probability_positive": 0.8973858173076923,
+      "recorded_at": "2026-09-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 92,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\diagnostics\\2026-three-weeks\\recent-history\\statistical_diagnosis.json",
+      "standard_error": null
+    },
     "tiebreaker_low_side_shading_minus1_ae": {
       "category": "market",
       "classification": "unresolved_below_power",

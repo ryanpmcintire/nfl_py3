@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-28T12:07:27.356092+00:00`
+Refreshed at: `2026-09-28T14:08:58.638991+00:00`
 
 ## Start here
 
@@ -21,15 +21,23 @@ Refreshed at: `2026-09-28T12:07:27.356092+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `3deb4fe583f7` — Run chronological combination selection replay and isolate calibration instability
-- Pending change set: 12 paths
+- Baseline commit: `34b2b1f06a35` — Refresh handoff after historical combination audit
+- Pending change set: 20 paths
   - ` M AGENTS.md`
   - `M  HANDOFF.md`
+  - ` M README.md`
+  - `A  docs/2026_three_week_diagnosis.md`
   - ` M docs/agent_workflow.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
+  - `M  docs/lanes/independent-combination-validation.md`
   - ` M docs/model.html`
+  - `A  docs/week2_week3_combination_comparison.md`
+  - `A  registry/studies/2026_three_week_diagnosis.json`
+  - `M  registry/weak_signals.json`
+  - `A  scripts/audit_three_week_input_replay.py`
+  - `A  scripts/audit_three_week_probabilities.py`
   - `?? docs/lanes/windows-shell-popup.md`
   - `?? registry/experiments/margin-backtest/20260927T134152Z.json`
   - `?? registry/experiments/margin-predict/2026-week-03-20260927T134352Z.json`

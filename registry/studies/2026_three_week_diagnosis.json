@@ -1,0 +1,68 @@
+{
+  "study_id": "2026_three_week_diagnosis",
+  "status": "retrospective_diagnostic",
+  "declared_after_observing": "Week 1 9-7, Week 2 14-2, Week 3 5-10 through Sunday, and four losing Week 3 raw/served disagreements",
+  "goal": "Distinguish ordinary prediction error from a reproducible process weakness, using all three weeks and prior games.",
+  "sources": {
+    "published_grades": "artifacts/diagnostics/2026-three-weeks/published_grades.csv",
+    "historical": "artifacts/pick_probability/20260927T161329Z/per_game.parquet",
+    "historical_probability": "chronological_home_probability",
+    "raw_probability": "model_probability"
+  },
+  "checks": [
+    "Reconstruct published probabilities from pre-publication raw forecasts, fitted coefficients, situational flags, and captured market movement; retain every mismatch.",
+    "Compute the probability of weekly results and the joint weekly dispersion under the stated probabilities, conditional on independence; compare with saved historical weeks.",
+    "Compare chronological combined, raw, and neutral-market Brier score, log loss, calibration, and weekly residual dispersion.",
+    "Compare all declared diagnostic groups in live weeks and historical seasons, rather than select the worst group.",
+    "Audit line signs, original pool lines, chronology, missing input coverage, feature ranges, and coefficient stability before attributing results to a bug."
+  ],
+  "diagnostic_groups": {
+    "raw_disagreement": [
+      "agree",
+      "disagree"
+    ],
+    "picked_side": [
+      "home",
+      "away"
+    ],
+    "picked_market_status": [
+      "favorite",
+      "underdog",
+      "pickem"
+    ],
+    "confidence": [
+      "below_0.55",
+      "0.55_to_0.60",
+      "at_least_0.60"
+    ],
+    "absolute_pool_spread": [
+      "below_3",
+      "3_through_7",
+      "above_7"
+    ],
+    "season_stage": [
+      "weeks_1_to_3",
+      "later"
+    ],
+    "active_flags": [
+      "coach",
+      "division",
+      "arrests",
+      "bye",
+      "cold_visitor",
+      "protection",
+      "tank_zone"
+    ],
+    "dominant_log_odds_term": [
+      "raw_model",
+      "situational_flags",
+      "market_movement",
+      "intercept_and_availability"
+    ]
+  },
+  "look_accounting": "26 declared group labels; seven overlapping flag groups. All observed groups, all seasons and all three baseline arms are reported. Probability tails, calibration fits, sensitivity checks, and historical groups are additional looks counted in the final report. No threshold optimization or new serving model is selected.",
+  "uncertainty": "Week-block bootstrap, seed 20260928, 20000 replicates; probability_positive reported. Zero crossing never closes a signal.",
+  "decision_rule": "A side is chosen by one fitted calibrated probability. A descriptive losing subset cannot create a standalone flip or a signal closure. Record newly adjudicated signal contrasts as unresolved unless an admissible closing ground is established.",
+  "limitations": "All live-week outcomes were known before this diagnostic. Historical feature and recipe design reused prior data. Diagnostic historical evidence is not untouched validation. Week 1 displayed-score semantics must be verified before treating those scores as probabilities.",
+  "historical_scope_amendment": "The initial saved chronological reference included 2022-2025. Inspection of its fold coefficients showed movement weights are zero in 2022-2023 because earlier movement history was unavailable. Keep that reference and repeat the declared diagnostic for 2024-2025, the two folds that include fitted movement like the served recipe; do not choose the more favorable result."
+}

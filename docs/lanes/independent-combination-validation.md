@@ -1,10 +1,13 @@
 # Independent combination validation
 
 ## Goal
-Complete a useful historical selection replay and preserve the untouched future
-comparison of combined versus raw probabilities.
+Diagnose the three-week swing and preserve the untouched future comparison.
 
 ## State
+**Measured:** diagnosis complete in docs/2026_three_week_diagnosis.md. The pressure
+feed ends at 2025: Week 3 has 0/32 usable team windows, silently zeroing every
+matchup flag. That term supplied two winning Week 2 side changes. All 32 Week 2-3
+published probabilities replay exactly. Its Week 3 win cost remains unknown.
 **Measured:** historical replay complete on 533 decisive games in 2024-2025.
 Full experimental pipeline: 269-264 versus raw 282-251; Brier improvement
 -0.002283 [-0.009488,+0.005479], probability_positive 0.266050.
@@ -26,12 +29,20 @@ eight arms, 30 effects, two selection folds, source hashes and registry counts.
 ruff format --check ., ruff check ., mypy src, and pytest -q --basetemp
 .tmp/pytest-nested-validation all pass. Exact commands are in the report.
 Future-study status still shows source_unchanged=true and awaits Week 4.
+**Measured:** frozen published cards regraded through Sunday give Week 1 9-7,
+Week 2 14-2, Week 3 5-10 with one pending: 28-19 (59.6%; descriptive Wilson 95%
+45.3-72.4%). Use published cards, not the discrepant paper settlement ledger.
+Readback: .tmp/2026-three-week-summary.json and matching per-game CSV.
+**Measured:** Week 2 adjustments added 3 wins (14-2 versus raw 11-5);
+Week 3 cost 4 (5-10 versus raw 9-6). Combined: one fewer win than raw.
+The good week must count in the diagnosis. Version and per-game checks are in
+docs/week2_week3_combination_comparison.md; old weights changed no traced side.
 
 ## Next
-Inspect nfl-ats independent-validation status after the first Week 4 forecast.
-Verify eligible games arrive before pool deadlines and keep coverage complete.
-Use the historical report when assessing changes; do not introduce the
-experimental small-block calibration or treat its failure as a production bug.
+Next bounded repair: current-season PBP ingestion and a missing-pressure coverage
+check before publication. Preserve locked cards; check enrolled source hashes
+before edits. Diagnosis artifacts: artifacts/diagnostics/2026-three-weeks/.
+Then verify Week 4 study captures. Do not retune from the bad week alone.
 
 ## Open
 Earlier signal design and raw-model selection remain outside the historical
