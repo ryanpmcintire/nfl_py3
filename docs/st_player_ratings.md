@@ -151,3 +151,67 @@ season-lagged builder + ATS look, wire nothing.
 Recorded via `nfl-ats weak-signals record` (command and output pasted in the
 session report): `st_player_rating_reliability`, units `correlation`,
 `unresolved_below_power`, `--league nfl`, seasons 2019–2024.
+
+## 10. Future season-lagged builder design (added 2026-09-28)
+
+The offline builder produces one pooled special-teams player rating for each
+target season from exactly the prior three complete seasons. A target season
+is rejected unless all three required source seasons are present. The fit never
+uses target-season plays. For the frozen 2019–2024 source population, the
+declared targets are 2022–2025, using 2019–2021 through 2022–2024 respectively.
+The builder retains the historical screen's regular-season-only PBP scope;
+postseason plays are excluded.
+
+The population and model remain the frozen recipe above: either personnel
+string carries a `1 K`, `1 P`, or `1 LS` token; each side supplies 11 unique
+player IDs; one pooled player coefficient spans all special-teams units; Ridge
+alpha is 1000; the possession-team feature scale is 11; EPA is clipped at 5;
+and each coefficient is shrunk by its play count with a 500-play prior. Output
+rows and metadata are canonical and sorted. The artifact retains the exact
+declaration and source manifests and hashes them, and it records the source
+partition hashes used by every fit.
+
+The four target seasons are four fitted looks in the
+`st_player_rating_season_lagged_builder` family. This construction performs
+zero ATS outcome comparisons and makes zero promotion or serving decisions.
+The ratings remain unserved. Any later ATS evaluation requires its own declared
+chronological design, and one fitted calibrated probability must select every
+served side.
+
+
+## 11. Season-lagged construction result, 2026-09-28
+
+**Measured:** `scripts/build_st_player_ratings.py` completed the four declared
+fits with the unchanged recipe, producing **7,413 player-season rows** in
+`artifacts/st_player_ratings/season_lagged_2019_2024/ratings.parquet`.
+
+| Target season | Prior source seasons | Eligible ST plays | Rated players |
+|---|---|---:|---:|
+| 2022 | 2019–2021 | 141 | 1,377 |
+| 2023 | 2020–2022 | 131 | 1,389 |
+| 2024 | 2021–2023 | 7,328 | 2,159 |
+| 2025 | 2022–2024 | 14,545 | 2,488 |
+
+**Measured:** the two disjoint 2019–2021 and 2022–2024 windows together contain
+14,686 eligible plays. The early windows contain only 141 and 131 plays: source
+year presence does not establish dense special-teams coverage. Every declared
+fold is retained. These construction counts establish no ATS effect, stability,
+or promotion decision; the existing research line remains unresolved.
+
+**Measured:** independent artifact verification checked all 12 source partition
+hashes and row counts, retained declaration/source manifests, implementation
+hashes, output schema/hash, unique target/player keys, strict source chronology,
+and 22 player exposures per eligible play. The run records four fitted looks in
+`st_player_rating_season_lagged_builder`, zero ATS comparisons, and zero promotion
+decisions. The artifact's `declaration.md` preserves the exact pre-fit sections
+0–10; `manifest.json` binds it to the inputs, code, and ratings.
+
+Reproduction command (choose a new output directory; existing output is refused):
+
+```powershell
+.tools/uv.exe --cache-dir .tmp/uv-cache run --no-sync python scripts/build_st_player_ratings.py --participation-snapshot data/players/participation/raw/20260813T131635Z --pbp-snapshot data/pbp/raw/20260817T184927Z --declaration artifacts/st_player_ratings/season_lagged_2019_2024/declaration.md --target-seasons 2022 2023 2024 2025 --output artifacts/st_player_ratings/season_lagged_reproduction
+```
+
+The builder implementation is complete. A later ATS evaluation still needs its
+own declared chronological design and coverage accounting. Ratings remain
+unserved; no weak-signal verdict, rotation verdict, card, or model was changed.

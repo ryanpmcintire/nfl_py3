@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-28T20:09:00.347732+00:00`
+Refreshed at: `2026-09-28T20:25:43.146646+00:00`
 
 ## Start here
 
@@ -21,23 +21,27 @@ Refreshed at: `2026-09-28T20:09:00.347732+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `e3506012661e` — Preserve capture evidence and reduce player import memory
-- Pending change set: 15 paths
+- Baseline commit: `1c6d96692b38` — Refresh handoff after operations checkpoint
+- Pending change set: 19 paths
   - ` M AGENTS.md`
   - `M  HANDOFF.md`
+  - `M  ROADMAP.md`
   - ` M docs/agent_workflow.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
+  - `M  docs/lanes/README.md`
+  - `M  docs/lanes/backlog-execution-2026-09-28.md`
   - ` M docs/model.html`
-  - ` M docs/st_player_ratings.md`
+  - `M  docs/offsite_backup.md`
+  - `M  docs/st_player_ratings.md`
+  - `A  scripts/build_st_player_ratings.py`
+  - `A  src/nfl_ats/special_teams.py`
   - `?? docs/lanes/windows-shell-popup.md`
   - `?? registry/experiments/margin-backtest/20260927T134152Z.json`
   - `?? registry/experiments/margin-predict/2026-week-03-20260927T134352Z.json`
   - `?? registry/experiments/opener-evaluation/20260927T134738Z.json`
   - `?? registry/experiments/waterfall-feed/20260927T134851Z.json`
-  - `?? scripts/build_st_player_ratings.py`
-  - `?? src/nfl_ats/special_teams.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

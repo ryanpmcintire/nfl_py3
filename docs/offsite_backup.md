@@ -32,7 +32,9 @@ September 22 lock miss; its `--once` check exited 0. The secondary was running a
 older fallback daemon. A code-only archive from checkpoint `916ba64` deployed
 499 allowlisted files after SHA-256 verification, matching dependency-lock and
 Python 3.12 import checks. Overwritten files are retained in a rollback archive.
-The restarted capture-only daemon reports the deployed scheduler hash.
+The restarted capture-only daemon reports the deployed scheduler hash. A final
+read-only check at 16:24 ET confirmed the same daemon (PID 18320) running.
+Manual rehearsals do not fill the historical missed September 22–27 windows.
 
 **Measured:** seven previously untried aliases passed on the secondary:
 `public_betting_tue`, `public_betting_thu`, the four `odds_private_*` aliases, and
