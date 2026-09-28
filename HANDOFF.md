@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-28T20:26:11.777242+00:00`
+Refreshed at: `2026-09-28T20:45:40.666748+00:00`
 
 ## Start here
 
@@ -21,15 +21,20 @@ Refreshed at: `2026-09-28T20:26:11.777242+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `f3ff113c395d` — Build declared season-lagged special teams ratings
-- Pending change set: 12 paths
+- Baseline commit: `46d1e477c1db` — Refresh handoff after special teams builder checkpoint
+- Pending change set: 17 paths
   - ` M AGENTS.md`
   - `M  HANDOFF.md`
+  - `M  ROADMAP.md`
   - ` M docs/agent_workflow.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
+  - `M  docs/lanes/README.md`
+  - `M  docs/lanes/backlog-execution-2026-09-28.md`
   - ` M docs/model.html`
+  - `M  docs/offsite_backup.md`
+  - `M  scripts/capture_scheduler.py`
   - `?? docs/lanes/windows-shell-popup.md`
   - `?? registry/experiments/margin-backtest/20260927T134152Z.json`
   - `?? registry/experiments/margin-predict/2026-week-03-20260927T134352Z.json`

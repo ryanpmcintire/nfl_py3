@@ -1847,6 +1847,9 @@ _DEFAULT_JOB_HEALTH: dict[str, Any] = {
     "missed_window_count": 0,
 }
 
+_COMPLETED_RUN_STATUSES = frozenset({"OK", "ALREADY-CAPTURED", "OK-MANUAL", "CAUGHT_UP"})
+_PREREQUISITE_RUN_STATUSES = frozenset({"OK", "ALREADY-CAPTURED", "OK-MANUAL"})
+
 
 def _job_health_entry(state: dict[str, Any], job_name: str) -> dict[str, Any]:
     job_health: dict[str, Any] = state.setdefault("job_health", {})
@@ -1921,12 +1924,24 @@ def due_jobs(now: datetime, state: dict[str, Any]) -> list[tuple[Job, datetime]]
 
 def unsatisfied_prerequisites(job: Job, start: datetime, state: dict[str, Any]) -> list[str]:
 
-    accepted = {"OK", "ALREADY-CAPTURED", "OK-MANUAL"}
     blocked = []
     for required_name in job.requires:
         record = state["runs"].get(f"{required_name}@{start.date().isoformat()}", {})
-        if record.get("status") not in accepted:
-            blocked.append(f"{required_name}={record.get('status', 'no record')}")
+        if record.get("status") in _PREREQUISITE_RUN_STATUSES:
+            continue
+        entry = state.get("job_health", {}).get(required_name) or {}
+        manual_status = entry.get("last_manual_status")
+        manual_at = _health_time(entry.get("last_manual_run_at"))
+        if (
+            manual_status == "OK"
+            and manual_at is not None
+            and manual_at.astimezone(ET).date() == start.date()
+        ):
+            continue
+        status = record.get("status", "no record")
+        if manual_status:
+            status = f"{status}; last manual {manual_status}"
+        blocked.append(f"{required_name}={status}")
     return blocked
 
 
@@ -1980,6 +1995,9 @@ def sweep_missed(now: datetime, state: dict[str, Any]) -> None:
                     "window_start": start.isoformat(),
                     "note": "a snapshot exists inside this window (captured by another runner)",
                 }
+                entry = _job_health_entry(state, job.name)
+                entry["last_success_at"] = datetime.now(tz=ET).isoformat(timespec="seconds")
+                entry["consecutive_failures"] = 0
                 continue
             if job.catch_up:
                 run_job(job, start, state, catch_up=True)
@@ -2203,6 +2221,19 @@ def has_ever_executed(state: dict[str, Any], job_name: str) -> bool:
     )
 
 
+def _health_time(value: Any) -> datetime | None:
+
+    if not value:
+        return None
+    try:
+        parsed = datetime.fromisoformat(str(value))
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=ET)
+    return parsed.astimezone(UTC)
+
+
 def run_job_manually(job: Job, state: dict[str, Any], *, dry: bool = False) -> int:
 
     command = dry_command(list(job.command)) if dry else list(job.command)
@@ -2214,18 +2245,27 @@ def run_job_manually(job: Job, state: dict[str, Any], *, dry: bool = False) -> i
         notify_after_job(job, status, detail, stdout)
     fresh = load_state()
     entry = _job_health_entry(fresh, job.name)
-    entry["last_manual_run_at"] = datetime.now(tz=ET).isoformat(timespec="seconds")
-    entry["last_manual_status"] = f"{status}{' (dry)' if dry else ''}"
-    entry["last_manual_detail"] = detail[:300]
-    if status != "OK":
-        entry["last_error"] = detail[:300]
-    if status == "OK" and not dry:
-        key = f"{job.name}@{datetime.now(tz=ET).date().isoformat()}"
-        fresh["runs"][key] = {
-            "status": "OK-MANUAL",
-            "window_start": datetime.now(tz=ET).isoformat(),
-            "note": "exercised by hand; unblocks jobs that require this one today",
-        }
+    ran_at = datetime.now(tz=ET).isoformat(timespec="seconds")
+    if dry:
+        entry["last_dry_run_at"] = ran_at
+        entry["last_dry_status"] = status
+        entry["last_dry_detail"] = detail[:300]
+        if not entry.get("last_manual_run_at"):
+            entry["last_manual_run_at"] = ran_at
+            entry["last_manual_status"] = f"{status} (dry)"
+            entry["last_manual_detail"] = detail[:300]
+    else:
+        entry["last_manual_run_at"] = ran_at
+        entry["last_manual_status"] = status
+        entry["last_manual_detail"] = detail[:300]
+        if status == "OK":
+            entry["last_success_at"] = ran_at
+            entry["consecutive_failures"] = 0
+        else:
+            entry["last_failure_at"] = ran_at
+            entry["consecutive_failures"] = int(entry.get("consecutive_failures", 0)) + 1
+            if detail:
+                entry["last_error"] = detail[:300]
     save_state(fresh)
     _job_health_entry(state, job.name).update(entry)
     print(f"{label} {job.name}: {status}")
@@ -2621,32 +2661,74 @@ def describe_daemon(now: datetime) -> str:
     return f"RUNNING (pid {pid}, last poll {age}s ago, started {heartbeat.get('started_at')})"
 
 
-def job_last(job: Job, start: datetime, now: datetime, state: dict[str, Any]) -> str:
+def _active_manual_failure(state: dict[str, Any], job_name: str) -> tuple[str, str] | None:
+
+    entry = state.get("job_health", {}).get(job_name) or {}
+    status = str(entry.get("last_manual_status") or "")
+    if not status.startswith("FAIL") or status.endswith(" (dry)"):
+        return None
+    failed_raw = str(entry.get("last_manual_run_at") or "")
+    failed_at = _health_time(failed_raw)
+    success_at = _health_time(entry.get("last_success_at"))
+    if failed_at is not None and success_at is not None and success_at > failed_at:
+        return None
+    return status, failed_raw or "unknown time"
+
+
+def _job_status(
+    job: Job, start: datetime, now: datetime, state: dict[str, Any]
+) -> tuple[str, str, bool, bool]:
     key = f"{job.name}@{start.date().isoformat()}"
-    record = state["runs"].get(key)
-    if record:
-        last = f"{record['status']} ({start.date()})"
-        if record.get("status") == "MISSED" and record.get("acknowledged"):
+    record = state.get("runs", {}).get(key)
+    if record is not None:
+        status = str(record.get("status") or "UNKNOWN")
+        last = f"{status} ({start.date()})"
+        if status == "MISSED" and record.get("acknowledged"):
             last = f"MISSED, acknowledged ({start.date()})"
         retries = record.get("retries")
         if retries:
             last += f" after {retries} {'retry' if retries == 1 else 'retries'}"
+        if status in _COMPLETED_RUN_STATUSES:
+            category = "ok"
+        elif status == "MISSED":
+            category = "missed"
+        elif status.startswith("FAIL"):
+            category = "failed"
+        else:
+            category = "unknown"
+    elif not job.enabled:
+        last = "disabled"
+        category = "inactive"
     elif predates_job(job, start):
         last = f"added {job.added_on} (window predates job)"
+        category = "inactive"
     elif job.season_guarded and not season_active(start):
         last = f"offseason ({start.date()})"
+        category = "inactive"
     elif now <= start + timedelta(minutes=job.grace_minutes) and not prerequisites_satisfied(
         job, start, state
     ):
         last = f"waiting for {', '.join(job.requires)}"
+        category = "waiting"
     elif now <= start + timedelta(minutes=job.grace_minutes):
         open_until = (start + timedelta(minutes=job.grace_minutes)).strftime("%H:%M")
         last = f"window OPEN until {open_until}"
+        category = "open"
     else:
         last = f"not run ({start.date()})"
-    if job.enabled and not has_ever_executed(state, job.name):
+        category = "not_run"
+    never = job.enabled and not has_ever_executed(state, job.name)
+    if never:
         last += f" | NEVER RUN (exercise: --run-job {job.name})"
-    return last
+    manual_failure = _active_manual_failure(state, job.name)
+    if manual_failure is not None:
+        status, failed_at = manual_failure
+        last += f" | last manual {status} at {failed_at}"
+    return last, category, never, manual_failure is not None
+
+
+def job_last(job: Job, start: datetime, now: datetime, state: dict[str, Any]) -> str:
+    return _job_status(job, start, now, state)[0]
 
 
 def show_status(now: datetime, state: dict[str, Any], brief: bool = False) -> None:
@@ -2657,43 +2739,47 @@ def show_status(now: datetime, state: dict[str, Any], brief: bool = False) -> No
         print(f"log:   {LOG_PATH}")
         print()
         print(f"{'job':<22} {'when':<14} {'grace':>6}  {'enabled':<8} last occurrence")
-    attention: list[tuple[Job, str]] = []
-    total = len(SCHEDULE)
-    missed = never = open_windows = ok = 0
+    attention: list[str] = []
+    counts = {
+        "ok": 0,
+        "failed": 0,
+        "missed": 0,
+        "unknown": 0,
+        "not_run": 0,
+        "open": 0,
+        "waiting": 0,
+        "inactive": 0,
+    }
+    never = manual_failures = 0
     for job in SCHEDULE:
         start = occurrence(job, now)
-        last = job_last(job, start, now, state)
-        is_missed = "MISSED" in last
-        is_never = "NEVER RUN" in last
-        is_open = "window OPEN" in last
-        if is_missed:
-            missed += 1
-        if is_never:
-            never += 1
-        if is_open:
-            open_windows += 1
+        last, category, is_never, manual_failure = _job_status(job, start, now, state)
+        counts[category] += 1
+        never += int(is_never)
+        manual_failures += int(manual_failure)
         row = (
             f"{job.name:<22} {job.day} {job.at:<10} {job.grace_minutes:>5}m  "
             f"{'yes' if job.enabled else 'no':<8} {last}"
         )
-        if is_missed or is_never or is_open:
-            if brief:
-                attention.append((row, last))
-            else:
-                print(row)
-        else:
-            ok += 1
-            if not brief:
-                print(row)
+        needs_attention = category not in {"ok", "inactive"} or is_never or manual_failure
+        if brief and needs_attention:
+            attention.append(row)
+        elif not brief:
+            print(row)
     if brief:
         if not attention:
             print("all clear")
         else:
-            for row, _ in attention:
+            for row in attention:
                 print(row)
         print(
-            f"summary: {total} jobs, {ok} ok, {missed} missed, "
-            f"{never} never run, {open_windows} windows open"
+            f"summary: {len(SCHEDULE)} jobs, {counts['ok']} completed dated runs, "
+            f"{counts['failed']} failed dated runs, "
+            f"{manual_failures} active manual failures, "
+            f"{counts['missed']} missed, {never} never run, "
+            f"{counts['not_run']} not run, {counts['unknown']} unknown, "
+            f"{counts['open']} windows open, {counts['waiting']} waiting, "
+            f"{counts['inactive']} inactive"
         )
 
 
@@ -2772,7 +2858,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--brief",
         action="store_true",
-        help="with --status: daemon line plus only MISSED, NEVER RUN and window-open rows",
+        help="with --status: daemon line plus rows needing attention and a classified summary",
     )
     parser.add_argument(
         "--health",

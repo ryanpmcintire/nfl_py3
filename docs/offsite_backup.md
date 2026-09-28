@@ -27,14 +27,34 @@ described below.
 
 ## September 28 verification and repairs
 
-**Measured:** the primary scheduler reports 230 OK jobs and one acknowledged
-September 22 lock miss; its `--once` check exited 0. The secondary was running an
-older fallback daemon. A code-only archive from checkpoint `916ba64` deployed
+**Measured:** the primary scheduler's `--once` check exited 0. Its old summary
+reported 230 OK jobs, but the status repair below establishes that this residual
+count included failures and inactive jobs. The secondary was running an older
+fallback daemon. A code-only archive from checkpoint `916ba64` deployed
 499 allowlisted files after SHA-256 verification, matching dependency-lock and
 Python 3.12 import checks. Overwritten files are retained in a rollback archive.
 The restarted capture-only daemon reports the deployed scheduler hash. A final
 read-only check at 16:24 ET confirmed the same daemon (PID 18320) running.
 Manual rehearsals do not fill the historical missed September 22–27 windows.
+
+**Read:** `scripts/capture_scheduler.py` now classifies dated receipts explicitly
+and exposes dated and active manual failures in brief status. Manual runs preserve
+dated history; only a same-day real manual success can satisfy a prerequisite.
+Dry runs cannot replace that receipt. Blank failures preserve prior error detail,
+and later completed captures update health. Dated and manual totals can overlap.
+**Measured:** replaying the saved secondary state with its capture role shows all
+five player `FAIL(137)` receipts; none is counted as a dated completion. The
+primary status shows 177 completed dated runs, four failed dated runs, two active
+manual failures, one acknowledged miss, and 49 inactive jobs. The four dated
+failures are `lineups_tue`, `lineups_sat`, `splash_board_tue`, and
+`refresh_last_call_sat_1215` from September 22–26; they remain outstanding.
+The local daemon was restarted only after its identity and idle state verified;
+PID 28948 reports SHA-256 `5d6933d38c5b37e2c248db830042cd8c17e18d4e9832b865c640a82b372e147a`,
+193 enabled jobs, and an unchanged schedule digest. This status repair is not yet
+deployed to the secondary. Independent review, 57 focused scheduler tests, the
+full 1,645-test suite, Ruff format/lint, and mypy passed. Evidence:
+`.tmp/backlog-execution-20260928/scheduler-capture-role-replay.txt`,
+`primary-status-fixed.log`, `primary-restart-result.json`, and `status-final-*.log`.
 
 **Measured:** seven previously untried aliases passed on the secondary:
 `public_betting_tue`, `public_betting_thu`, the four `odds_private_*` aliases, and
