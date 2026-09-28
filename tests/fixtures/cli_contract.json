@@ -76,6 +76,7 @@
         "market-open-close-backfill",
         "clv-score",
         "clv-ledger",
+        "independent-validation",
         "prospective-record",
         "prospective-score",
         "settle",

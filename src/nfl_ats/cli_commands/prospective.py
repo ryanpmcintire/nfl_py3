@@ -475,10 +475,53 @@ def _cmd_settle(args: argparse.Namespace) -> None:
     )
 
 
+def _cmd_independent_validation(args: argparse.Namespace) -> None:
+    from nfl_ats import independent_validation
+
+    artifacts = _artifacts_root()
+    if args.study_action == "enroll":
+        result = independent_validation.enroll(artifacts, _data_root(), args.protocol)
+    elif args.study_action == "capture":
+        result = independent_validation.capture(artifacts, _data_root(), dry=args.dry)
+    elif args.study_action == "score":
+        result = independent_validation.score(artifacts, _load_features(args.features))
+    else:
+        result = independent_validation.status(artifacts)
+    _print_json(result)
+
+
 def register(
     subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
     current_year: int,
 ) -> None:
+
+    study = subparsers.add_parser(
+        "independent-validation",
+        help="freeze and capture an independent future comparison of combined "
+        "and raw probabilities",
+    )
+    study_actions = study.add_subparsers(dest="study_action", required=True)
+    study_enroll = study_actions.add_parser(
+        "enroll", help="freeze the declared future cohort and model"
+    )
+    study_enroll.add_argument(
+        "--protocol", type=Path, default=Path("registry/studies/combined_vs_raw_2026.json")
+    )
+    study_enroll.set_defaults(handler=_cmd_independent_validation)
+    study_capture = study_actions.add_parser(
+        "capture", help="append paired probabilities before lock"
+    )
+    study_capture.add_argument("--dry", action="store_true")
+    study_capture.set_defaults(handler=_cmd_independent_validation)
+    study_status = study_actions.add_parser(
+        "status", help="show coverage without interim model scores"
+    )
+    study_status.set_defaults(handler=_cmd_independent_validation)
+    study_score = study_actions.add_parser(
+        "score", help="compare models after the complete cohort finishes"
+    )
+    _add_features_arg(study_score)
+    study_score.set_defaults(handler=_cmd_independent_validation)
 
     prospective_record = subparsers.add_parser(
         "prospective-record",

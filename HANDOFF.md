@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-27T16:39:52.550405+00:00`
+Refreshed at: `2026-09-28T10:49:47.155872+00:00`
 
 ## Start here
 
@@ -21,17 +21,29 @@ Refreshed at: `2026-09-27T16:39:52.550405+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `59c152b80001` — Build authenticated paired opener evaluation and preserve bootstrap results
-- Pending change set: 9 paths
+- Baseline commit: `dd6c140354ca` — Save completed backlog checkpoint and pregame monitoring handoff
+- Pending change set: 24 paths
   - ` M AGENTS.md`
   - `M  HANDOFF.md`
+  - `M  ROADMAP.md`
   - ` M docs/agent_workflow.md`
-  - `M  docs/lanes/backlog-watchdog-2026-09-26.md`
+  - ` M docs/findings.html`
+  - ` M docs/history.html`
+  - `A  docs/independent_combination_validation.md`
+  - ` M docs/index.html`
+  - `M  docs/lanes/README.md`
+  - `A  docs/lanes/done/week03-early-results-review.md`
+  - `A  docs/lanes/done/week03-pick-change-trace.md`
+  - `A  docs/lanes/done/week03-variance-assessment.md`
+  - `A  docs/lanes/independent-combination-validation.md`
+  - ` M docs/model.html`
+  - `A  registry/studies/combined_vs_raw_2026.json`
+  - `M  scripts/capture_scheduler.py`
+  - `M  src/nfl_ats/cli_commands/prospective.py`
+  - `A  src/nfl_ats/independent_validation.py`
+  - `M  tests/fixtures/cli_contract.json`
   - `?? docs/lanes/windows-shell-popup.md`
-  - `?? registry/experiments/margin-backtest/20260927T134152Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-03-20260927T134352Z.json`
-  - `?? registry/experiments/opener-evaluation/20260927T134738Z.json`
-  - `?? registry/experiments/waterfall-feed/20260927T134851Z.json`
+  - ...and 4 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -73,9 +85,10 @@ the last published Markdown forecast but must rebuild or transfer local artifact
 
 ## Highest-priority work
 
-1. **Keep Sunday's card current, preserving locked games.** Continue from `docs/lanes/done/sunday-readiness-2026-09-20.md` and `docs/lanes/free-odds-sources.md`; reconcile the paper ledger and inspect the latest scheduled refresh before changing the forecast. Commit and push completed work at verified clear stopping points under the owner's standing authorization.
-2. **Confidence calibration: bounded repair measured 2026-09-20.** The complete candidate replay and two predeclared out-of-season temperature repairs are saved in `docs/confidence_best_pick_sunday_matched.md` and `docs/confidence_top_calibration.md`. Chronological nominee Brier improvement +0.001040 [-0.027412,+0.030943], probability_positive 0.5227, accompanies unstable fitted temperatures and worse all-game Brier. The served probability is unchanged; 28 new cells remain unresolved, not closed. Acquire more timestamped nominees before another declared calibration comparison. State: `docs/lanes/confidence-best-pick-unification.md`. Do not restore a separate ranker or independent side-flip rules.
-3. **Continue from lane files with bounded reads and scoped delegation.** Follow `AGENTS.md` and the applicable procedures in `docs/agent_workflow.md`. Run the scheduler in operational sessions; harness maintenance and read-only work do not trigger operational jobs. Keep uncertainty distinct from research closure and the forced-pick decision. The historical priorities below are preserved context, superseded by these current items.
+1. **Independent combination validation is the research priority.** Freeze the comparison before 2026 Week 4 and collect every declared Week 4–18 game. Primary paired Brier, secondary ATS/log loss/reliability; no interim performance selection or retroactive backfill. The historical feature-choice overlap means prior scores are development evidence. Follow `docs/lanes/independent-combination-validation.md` and the declared protocol in `docs/independent_combination_validation.md` before further tuning.
+2. **Keep Sunday's card current, preserving locked games.** Continue from `docs/lanes/done/sunday-readiness-2026-09-20.md` and `docs/lanes/free-odds-sources.md`; reconcile the paper ledger and inspect the latest scheduled refresh before changing the forecast. Commit and push completed work at verified clear stopping points under the owner's standing authorization.
+3. **Confidence calibration: bounded repair measured 2026-09-20.** The complete candidate replay and two predeclared out-of-season temperature repairs are saved in `docs/confidence_best_pick_sunday_matched.md` and `docs/confidence_top_calibration.md`. Chronological nominee Brier improvement +0.001040 [-0.027412,+0.030943], probability_positive 0.5227, accompanies unstable fitted temperatures and worse all-game Brier. The served probability is unchanged; 28 new cells remain unresolved, not closed. Acquire more timestamped nominees before another declared calibration comparison. State: `docs/lanes/confidence-best-pick-unification.md`. Do not restore a separate ranker or independent side-flip rules.
+4. **Continue from lane files with bounded reads and scoped delegation.** Follow `AGENTS.md` and the applicable procedures in `docs/agent_workflow.md`. Run the scheduler in operational sessions; harness maintenance and read-only work do not trigger operational jobs. Keep uncertainty distinct from research closure and the forced-pick decision. The historical priorities below are preserved context, superseded by these current items.
 
 The roadmap is authoritative. Negative results remain part of the evidence base and
 must not be silently removed or retuned away.

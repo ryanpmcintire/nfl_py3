@@ -383,6 +383,25 @@ def _inactives_capture(slot: str) -> list[str]:
 SCHEDULE: tuple[Job, ...] = (
     *(
         Job(
+            f"independent_validation_{day}_{at.replace(':', '')}",
+            day,
+            at,
+            15,
+            _cli("independent-validation", "capture"),
+            True,
+            "Capture frozen combined and raw probabilities for the declared future cohort; "
+            "retain the last eligible observation before the normal pool lock.",
+            added_on="2026-09-28",
+        )
+        for day, at in (
+            *((day, "12:10") for day in DAYS),
+            ("thu", "19:55"),
+            ("sun", "08:50"),
+            ("sun", "12:50"),
+        )
+    ),
+    *(
+        Job(
             f"lineups_{day}",
             day,
             "14:30" if day == "tue" else "12:00",
@@ -2140,6 +2159,8 @@ RECORDING_FLAGS: frozenset[str] = frozenset(
 
 def dry_command(command: list[str]) -> list[str]:
     stripped = [token for token in command if token not in RECORDING_FLAGS]
+    if "independent-validation" in stripped and "capture" in stripped and "--dry" not in stripped:
+        return [*stripped, "--dry"]
     if (
         len(stripped) >= 5
         and stripped[3] == "python"

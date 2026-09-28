@@ -849,13 +849,20 @@ stay unavailable. Published pages were reviewed on desktop and mobile, and the
 
 ## Recommended execution order
 
-1. **Keep Sunday's card current, preserving locked games.** Continue from
+1. **Independent combination validation is the research priority.** Freeze the
+   comparison before 2026 Week 4 and collect every declared Week 4–18 game.
+   Primary paired Brier, secondary ATS/log loss/reliability; no interim
+   performance selection or retroactive backfill. The historical feature-choice
+   overlap means prior scores are development evidence. Follow
+   `docs/lanes/independent-combination-validation.md` and the declared protocol in
+   `docs/independent_combination_validation.md` before further tuning.
+2. **Keep Sunday's card current, preserving locked games.** Continue from
    `docs/lanes/done/sunday-readiness-2026-09-20.md` and
    `docs/lanes/free-odds-sources.md`; reconcile the paper ledger and inspect the
    latest scheduled refresh before changing the forecast. Commit and push
    completed work at verified clear stopping points under the owner's standing
    authorization.
-2. **Confidence calibration: bounded repair measured 2026-09-20.** The complete
+3. **Confidence calibration: bounded repair measured 2026-09-20.** The complete
    candidate replay and two predeclared out-of-season temperature repairs are
    saved in `docs/confidence_best_pick_sunday_matched.md` and
    `docs/confidence_top_calibration.md`. Chronological nominee Brier improvement
@@ -865,7 +872,7 @@ stay unavailable. Published pages were reviewed on desktop and mobile, and the
    timestamped nominees before another declared calibration comparison. State:
    `docs/lanes/confidence-best-pick-unification.md`. Do not restore a separate
    ranker or independent side-flip rules.
-3. **Continue from lane files with bounded reads and scoped delegation.**
+4. **Continue from lane files with bounded reads and scoped delegation.**
    Follow `AGENTS.md` and the applicable procedures in `docs/agent_workflow.md`.
    Run the scheduler in operational sessions; harness maintenance and read-only
    work do not trigger operational jobs. Keep uncertainty distinct from research
