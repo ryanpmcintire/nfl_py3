@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-28T15:31:03.793372+00:00`
+Refreshed at: `2026-09-28T15:31:42.951831+00:00`
 
 ## Start here
 
@@ -21,29 +21,16 @@ Refreshed at: `2026-09-28T15:31:03.793372+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `d61643bc7fcb` — Refresh handoff after three-week diagnosis
-- Pending change set: 28 paths
+- Baseline commit: `516fcfe3f341` — Refresh current-season PBP and guard served pressure inputs
+- Pending change set: 8 paths
   - ` M AGENTS.md`
-  - `M  CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
-  - `M  README.md`
   - ` M docs/agent_workflow.md`
-  - `A  docs/current_week_pressure_repair.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - `M  docs/lanes/README.md`
-  - `A  docs/lanes/done/current-week-pressure-inputs.md`
-  - `M  docs/lanes/independent-combination-validation.md`
-  - `M  docs/model.html`
-  - `M  scripts/capture_scheduler.py`
-  - `M  scripts/scheduled_weekly_lock.py`
-  - `M  src/nfl_ats/cli_commands/data.py`
-  - `M  src/nfl_ats/cli_commands/publishing.py`
-  - `M  src/nfl_ats/pbp.py`
-  - `A  src/nfl_ats/pbp_coverage.py`
-  - `M  src/nfl_ats/weekly.py`
-  - ...and 8 more
+  - `?? docs/lanes/windows-shell-popup.md`
+  - `?? registry/experiments/margin-backtest/20260927T134152Z.json`
+  - `?? registry/experiments/margin-predict/2026-week-03-20260927T134352Z.json`
+  - `?? registry/experiments/opener-evaluation/20260927T134738Z.json`
+  - `?? registry/experiments/waterfall-feed/20260927T134851Z.json`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
