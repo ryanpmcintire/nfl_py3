@@ -40,11 +40,26 @@ def _latest_age(source: str, now: datetime) -> float | None:
     return None if latest is None else (pd.Timestamp(now) - latest).total_seconds() / 60
 
 
+def _slate_open(features: pd.DataFrame, now: datetime) -> bool:
+    frame = features.assign(kickoff=pd.to_datetime(features["kickoff"], utc=True, errors="coerce"))
+    frame = frame.dropna(subset=["kickoff", "season", "week"])
+    instant = pd.Timestamp(now)
+    upcoming = frame[frame["kickoff"] > instant]
+    if upcoming.empty:
+        return False
+    nxt = upcoming.loc[upcoming["kickoff"].idxmin()]
+    starts = frame[frame["season"] == nxt["season"]].groupby("week")["kickoff"].min().sort_index()
+    cadence = starts.diff().dropna().median()
+    if pd.isna(cadence):
+        return False
+    week_start = starts.loc[nxt["week"]]
+    return bool(week_start - instant <= cadence or week_start <= instant)
+
+
 def capture(features_path: Path, max_age_minutes: int) -> dict[str, Any]:
     now = datetime.now(UTC)
-    features = pd.read_parquet(features_path, columns=["kickoff"])
-    kickoff = pd.to_datetime(features["kickoff"], utc=True, errors="coerce")
-    if not kickoff.between(pd.Timestamp(now), pd.Timestamp(now) + pd.Timedelta(days=3)).any():
+    features = pd.read_parquet(features_path, columns=["season", "week", "kickoff"])
+    if not _slate_open(features, now):
         return {"captured": False, "reason": "no_upcoming_nfl_games"}
     results: dict[str, Any] = {}
     for source, runner in (

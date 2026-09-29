@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-29T20:30:38.330390+00:00`
+Refreshed at: `2026-09-29T20:38:53.377063+00:00`
 
 ## Start here
 
@@ -21,19 +21,29 @@ Refreshed at: `2026-09-29T20:30:38.330390+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `48936e933f47` — Republish the site with the latest settled results
-- Pending change set: 11 paths
+- Baseline commit: `ab91e0ca78d0` — Republish the site with the latest settled results
+- Pending change set: 24 paths
   - ` M AGENTS.md`
   - ` M docs/agent_workflow.md`
-  - `M  docs/index.html`
+  - `A  docs/lanes/backlog-fleet-2026-09-29.md`
+  - `M  docs/lanes/free-odds-sources.md`
+  - `M  scripts/capture_private_sunday_odds.py`
+  - ` M src/nfl_ats/board_content.py`
+  - ` M src/nfl_ats/board_site_content.py`
+  - ` M src/nfl_ats/board_terminal.py`
+  - `?? docs/lanes/st-ratings-ats-study.md`
+  - `?? docs/lanes/tiebreaker-total-study.md`
   - `?? docs/lanes/windows-shell-popup.md`
+  - `?? docs/st_ratings_ats_study.md`
+  - `?? docs/tiebreaker_total_study.md`
+  - `?? docs/xlg09_unit6.md`
   - `?? registry/experiments/margin-backtest/20260927T134152Z.json`
   - `?? registry/experiments/margin-backtest/20260929T183944Z.json`
   - `?? registry/experiments/margin-predict/2026-week-03-20260927T134352Z.json`
   - `?? registry/experiments/margin-predict/2026-week-03-20260929T184122Z.json`
   - `?? registry/experiments/opener-evaluation/20260927T134738Z.json`
   - `?? registry/experiments/waterfall-feed/20260927T134851Z.json`
-  - `?? registry/experiments/waterfall-feed/20260929T184553Z.json`
+  - ...and 4 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

@@ -82,6 +82,8 @@ odds sources.
 
 ## Open
 
+- 2026-09-29 measured: the fixed 3-day constant in `capture_private_sunday_odds.py` is replaced by `_slate_open`: capture when the next unplayed game's week starts within one schedule cadence (median gap between that season's week starts) or has started. Probes: Fri 09-25 16:30Z, Wed 09-23, Mon 09-28 True; June and post-season False. `--run-job odds_private_fri --dry` returned MANUAL-DRY-RUN OK (captured Bovada 16 games, Odds Gap); ruff clean; 64 scheduler tests pass. Confirm next Friday's log reads captured true.
+
 - Two open items, both read-only findings from 2026-09-26, not fixed:
   1. FIXED 2026-09-26: `capture_private_sunday_odds.py:capture` window widened
      to 3 days; at Friday 16:30 UTC it now sees 14 games (was 0, measured
