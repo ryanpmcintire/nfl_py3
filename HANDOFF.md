@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-29T22:24:07.080658+00:00`
+Refreshed at: `2026-09-29T22:24:24.326882+00:00`
 
 ## Start here
 
@@ -21,29 +21,28 @@ Refreshed at: `2026-09-29T22:24:07.080658+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `0a4aaff47d1a` — LEAD-78 unit 2: within-week common-opponent news does not help
-- Pending change set: 26 paths
+- Baseline commit: `b7e179ea2043` — Add a Why this pick disclosure beside every pick
+- Pending change set: 20 paths
   - ` M AGENTS.md`
   - ` M docs/agent_workflow.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
   - ` M docs/lanes/backlog-fleet-2026-09-29.md`
+  - `A  docs/lanes/backlog-sweep-2026-09-29.md`
   - ` M docs/lanes/lead69.md`
   - ` M docs/lanes/lead74.md`
   - ` M docs/lanes/lead77.md`
-  - `A  docs/lanes/ui20-2026-09-29d.md`
-  - `M  docs/model.html`
-  - `M  src/nfl_ats/board_terminal.py`
-  - `M  src/nfl_ats/board_terminal_style.css`
   - `?? bash.exe.stackdump`
-  - `?? docs/lanes/backlog-sweep-2026-09-29.md`
   - `?? docs/lanes/lead69-cfb-replication.md`
   - `?? docs/lanes/windows-shell-popup.md`
   - `?? docs/lead69_unit2.md`
   - `?? registry/experiments/margin-backtest/20260927T134152Z.json`
   - `?? registry/experiments/margin-backtest/20260929T183944Z.json`
-  - ...and 6 more
+  - `?? registry/experiments/margin-predict/2026-week-03-20260927T134352Z.json`
+  - `?? registry/experiments/margin-predict/2026-week-03-20260929T184122Z.json`
+  - `?? registry/experiments/opener-evaluation/20260927T134738Z.json`
+  - `?? registry/experiments/waterfall-feed/20260927T134851Z.json`
+  - `?? registry/experiments/waterfall-feed/20260929T184553Z.json`
+  - `?? scripts/lead69_cfb_replication.py`
+  - `?? scripts/lead69_unit2.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
