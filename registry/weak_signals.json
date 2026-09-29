@@ -48992,6 +48992,90 @@
       "source": "artifacts/lead59_type_trait_bins/20260923T205414Z/summary.json",
       "standard_error": null
     },
+    "lead68_joint_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; four declared looks; 2000 paired season bootstrap draws, seed 68",
+      "closing_ground": null,
+      "description": "Joint model-logit slopes for weeks 1-4, 5-9, 10-18 versus four-term LOSO baseline",
+      "effect": -0.465735196274118,
+      "effect_units": "accuracy_points",
+      "family": "lead68_unit1",
+      "interval": [
+        -1.797603195739015,
+        0.593276203032303
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.25575,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead68_unit1.md",
+      "standard_error": null
+    },
+    "lead68_joint_brier": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; four declared looks; 2000 paired season bootstrap draws, seed 68",
+      "closing_ground": null,
+      "description": "Joint model-logit slopes for weeks 1-4, 5-9, 10-18 versus four-term LOSO baseline",
+      "effect": 0.000136239001138,
+      "effect_units": "brier_improvement",
+      "family": "lead68_unit1",
+      "interval": [
+        -0.000749954878646,
+        0.000965837098743
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.6305,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead68_unit1.md",
+      "standard_error": null
+    },
+    "lead68_joint_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; four declared looks; 2000 paired season bootstrap draws, seed 68",
+      "closing_ground": null,
+      "description": "Joint model-logit slopes for weeks 1-4, 5-9, 10-18 versus four-term LOSO baseline",
+      "effect": 0.000338511692751,
+      "effect_units": "log_loss_improvement",
+      "family": "lead68_unit1",
+      "interval": [
+        -0.001464647300345,
+        0.002021299798674
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.6595,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead68_unit1.md",
+      "standard_error": null
+    },
     "lead_08_injury_trajectory_refresh_cx14": {
       "category": "health",
       "classification": "unresolved_below_power",

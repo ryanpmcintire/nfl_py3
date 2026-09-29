@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-29T20:48:45.729233+00:00`
+Refreshed at: `2026-09-29T21:03:58.547776+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-09-29T20:48:45.729233+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `1ca620df8c32` — Open the private odds capture window from the schedule's week cadence
-- Pending change set: 30 paths
+- Baseline commit: `4af18afd7b11` — Record XLG-09 unit 6, MOD-22 unit 4 and the tiebreaker total study; queue LEAD-66..73
+- Pending change set: 36 paths
   - ` M AGENTS.md`
-  - `M  ROADMAP.md`
   - ` M docs/agent_workflow.md`
-  - `M  docs/lanes/backlog-fleet-2026-09-29.md`
-  - `M  docs/lanes/done/opener-error-transfer.md`
-  - `A  docs/lanes/ideation-2026-09-29.md`
-  - `A  docs/lanes/mod22-qb-expected-starter.md`
-  - `A  docs/lanes/tiebreaker-total-study.md`
-  - `A  docs/tiebreaker_total_study.md`
-  - `A  docs/xlg09_unit6.md`
+  - ` M docs/lanes/backlog-fleet-2026-09-29.md`
+  - `A  docs/lanes/lead68.md`
+  - `A  docs/lead68_unit1.md`
   - `M  registry/weak_signals.json`
-  - `A  scripts/mod22_unit4.py`
-  - `A  scripts/tiebreaker_total_study.py`
-  - `A  scripts/xlg09_unit6.py`
+  - `A  scripts/lead68_unit1.py`
+  - ` M src/nfl_ats/board_assistant.py`
   - ` M src/nfl_ats/board_content.py`
   - ` M src/nfl_ats/board_site_content.py`
   - ` M src/nfl_ats/board_terminal.py`
   - `?? bash.exe.stackdump`
+  - `?? docs/lanes/lead66.md`
+  - `?? docs/lanes/lead67.md`
+  - `?? docs/lanes/lead69.md`
+  - `?? docs/lanes/lead72.md`
   - `?? docs/lanes/st-ratings-ats-study.md`
+  - `?? docs/lanes/ui20-2026-09-29.md`
   - `?? docs/lanes/windows-shell-popup.md`
-  - ...and 10 more
+  - `?? docs/lead67_protocol.md`
+  - ...and 16 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
