@@ -176314,10 +176314,10 @@
     },
     "qb_expected_starter_out_pick_probability_term": {
       "category": "health",
-      "classification": "refuted_mechanism",
-      "classification_evidence": "Whole Brier interval below zero (P+ 0.0215); log loss P+ 0.021 and accuracy -0.67 pts [-1.41,-0.07] also wholly negative; 3 of 16 decisive games (exact p 0.021). Construct-specific: binary expected-starter Out/Doubtful flag with no QB-quality weight; fold coefficients flip sign in 3 of 6 folds, 70 nonzero games.",
-      "closing_ground": "wrong_sign_resolved",
-      "description": "MOD-22 unit 4: expected starting QB (most snaps prior game) listed Out/Doubtful on a report visible at kickoff minus 24h, away-minus-home diff, fitted as a fifth term on the served four-term probability, LOSO 2020-2025",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "18 of 72 flagged team-games use guessed report times; 39 prior-starter name matches fail. Bootstrap reproduces but cannot close the declared report-visible construct.",
+      "closing_ground": null,
+      "description": "MOD-22 unit 4 flawed-run diagnostic; report-visible construct requires remeasurement",
       "effect": -0.00044821193884932593,
       "effect_units": "brier_improvement",
       "family": "qb_expected_starter_v1",
@@ -176326,8 +176326,8 @@
         -1.4867922775387787e-05
       ],
       "league": "nfl",
-      "notes": "",
-      "plain_summary": "Flagging a missing starting quarterback on top of the served probability made held-out picks slightly worse; the market already prices it.",
+      "notes": "Needs remeasurement. Retained effect and interval describe the flawed run only; exclude from decision pooling. No valid corrected effect estimated.",
+      "plain_summary": "We still need to check how losing the usual quarterback affects a pick. Some report times were guessed and one quarterback was missed, so this check changes no picks.",
       "probability_positive": 0.0215,
       "recorded_at": "2026-09-29",
       "reliability": null,
@@ -176337,7 +176337,7 @@
         2020,
         2025
       ],
-      "source": "artifacts/mod22_unit4/20260929T204114Z/summary.json",
+      "source": "docs/lanes/verify-2026-09-29.md",
       "standard_error": null
     },
     "qb_news_backup_visible_by_deadline_screen": {

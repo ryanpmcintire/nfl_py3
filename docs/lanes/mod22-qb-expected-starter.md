@@ -33,3 +33,5 @@ Record commands (root runs; not run here):
 Name-to-gsis match rate in summary.json; QB quality not weighted (binary flag).
 
 **Recorded 2026-09-29 (root):** registry cell `qb_expected_starter_out_pick_probability_term` as refuted_mechanism / wrong_sign_resolved on the Brier interval (whole interval below zero, P+ 0.0215), scoped to this binary construct.
+
+**Corrected 2026-09-29 (root, after verify lane):** the refuted closure was wrong. 18/72 flagged team-games used guessed report timestamps and 39 name matches missed Gardner Minshew II, so the report-visible construct is unverified. Record replaced as unresolved_below_power; remeasure after the timing/name repair.
