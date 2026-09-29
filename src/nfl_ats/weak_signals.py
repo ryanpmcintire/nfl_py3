@@ -63,6 +63,7 @@ EFFECT_UNITS = (
     "mae_improvement",
     "brier_improvement",
     "log_loss_improvement",
+    "rps_improvement",
     "payout_first_pp",
     "elapsed_seconds_bias",
 )

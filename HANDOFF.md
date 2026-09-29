@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-29T21:13:41.424254+00:00`
+Refreshed at: `2026-09-29T21:20:14.231319+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-09-29T21:13:41.424254+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `ac23e2679ec3` — Show the tiebreaker total on its panel header and fix count wording
-- Pending change set: 35 paths
+- Baseline commit: `691feb3968b5` — LEAD-67: key-number-priced late move does not beat the raw move term
+- Pending change set: 40 paths
   - ` M AGENTS.md`
   - ` M docs/agent_workflow.md`
   - ` M docs/lanes/backlog-fleet-2026-09-29.md`
-  - `A  docs/lanes/lead67.md`
-  - `A  docs/lead67_protocol.md`
-  - `A  docs/lead67_report.md`
+  - `A  docs/lanes/lead66.md`
+  - `A  docs/lanes/lead69.md`
+  - `A  docs/lanes/lead71.md`
+  - `A  docs/lead66_protocol.md`
+  - `A  docs/lead66_unit1.md`
+  - `A  docs/lead69_inventory.md`
+  - `A  docs/lead69_pre_slot_fix.md`
+  - `A  docs/lead69_protocol.md`
+  - `A  docs/lead69_registry_payload.md`
+  - `A  docs/lead69_results.md`
+  - `A  docs/lead69_run.md`
+  - `A  docs/lead69_source_diagnostics.md`
+  - `A  docs/lead71_unit1_inventory.md`
   - `M  registry/weak_signals.json`
-  - `A  scripts/lead67_unit1.py`
-  - `?? bash.exe.stackdump`
-  - `?? docs/lanes/lead66.md`
-  - `?? docs/lanes/lead69.md`
-  - `?? docs/lanes/lead70.md`
-  - `?? docs/lanes/lead71.md`
-  - `?? docs/lanes/lead73.md`
-  - `?? docs/lanes/windows-shell-popup.md`
-  - `?? docs/lead66_prediction_scores.md`
-  - `?? docs/lead66_protocol.md`
-  - `?? docs/lead66_unit1.md`
-  - `?? docs/lead69_inventory.md`
-  - `?? docs/lead69_pre_slot_fix.md`
-  - ...and 15 more
+  - `A  scripts/lead66_unit1.py`
+  - `A  scripts/lead69_unit1.py`
+  - `A  scripts/lead71_unit1.py`
+  - ...and 20 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

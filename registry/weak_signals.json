@@ -48992,6 +48992,90 @@
       "source": "artifacts/lead59_type_trait_bins/20260923T205414Z/summary.json",
       "standard_error": null
     },
+    "lead66_model_centred_lattice_vs_market_residual": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "The whole six-season bootstrap 95 percent RPS-improvement interval is on the wrong side of zero.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Model-centred lattice vs market-centred residual PMF",
+      "effect": -0.0377183695,
+      "effect_units": "rps_improvement",
+      "family": "lead66_margin_pmf",
+      "interval": [
+        -0.0818652969,
+        -0.0109540449
+      ],
+      "league": "nfl",
+      "notes": "3 primary contrasts and 15 calibration cells; chronological LOSO PMF fits; frozen walk-forward base; no serving change.",
+      "plain_summary": "Scoring the whole spread of possible final margins, the current lattice centred on the line beats a version centred on our model; the model should not re-centre the margins.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead66_unit1.md",
+      "standard_error": null
+    },
+    "lead66_model_centred_lattice_vs_served_lattice": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "The whole six-season bootstrap 95 percent RPS-improvement interval is on the wrong side of zero.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Model-centred conditioning vs served line conditioning",
+      "effect": -0.0114091385,
+      "effect_units": "rps_improvement",
+      "family": "lead66_margin_pmf",
+      "interval": [
+        -0.019049249,
+        -0.003794314
+      ],
+      "league": "nfl",
+      "notes": "3 primary contrasts and 15 calibration cells; chronological LOSO PMF fits; frozen walk-forward base; no serving change.",
+      "plain_summary": "Scoring the whole spread of possible final margins, the current lattice centred on the line beats a version centred on our model; the model should not re-centre the margins.",
+      "probability_positive": 0.0029,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead66_unit1.md",
+      "standard_error": null
+    },
+    "lead66_served_lattice_vs_market_residual": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; retain the unresolved PMF contrast.",
+      "closing_ground": null,
+      "description": "Served lattice vs market-centred residual PMF",
+      "effect": -0.0263092311,
+      "effect_units": "rps_improvement",
+      "family": "lead66_margin_pmf",
+      "interval": [
+        -0.0706287621,
+        0.0046126176
+      ],
+      "league": "nfl",
+      "notes": "3 primary contrasts and 15 calibration cells; chronological LOSO PMF fits; frozen walk-forward base; no serving change.",
+      "plain_summary": "Scoring the whole spread of possible final margins, the current lattice centred on the line beats a version centred on our model; the model should not re-centre the margins.",
+      "probability_positive": 0.0765,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead66_unit1.md",
+      "standard_error": null
+    },
     "lead67_key_number_move_additive": {
       "category": "market",
       "classification": "unresolved_below_power",
@@ -49130,6 +49214,230 @@
         2025
       ],
       "source": "docs/lead68_unit1.md",
+      "standard_error": null
+    },
+    "lead69_horizon_loso_accuracy": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three season blocks; no admissible closure ground; calibration worsens. Two declared looks; diagnostic cells are correlated.",
+      "closing_ground": null,
+      "description": "LEAD-69 horizon: paired OOS accuracy gain versus refitted four-term base; descriptive if slots.",
+      "effect": 0.291970802919708,
+      "effect_units": "accuracy_points",
+      "family": "lead69_horizon_two_look",
+      "interval": [
+        -0.24853801169590642,
+        0.7794377888398026
+      ],
+      "league": "nfl",
+      "notes": "799 starting games; 114 structural SNF/MNF exclusions; 685 scored. Earliest predeadline captured kickoff. Accuracy units are percentage points. Do not pool unlike metrics. Registry pending orchestrator.",
+      "plain_summary": "Giving line movement different weight by time before kickoff changes a few picks; these seasons do not settle whether it helps.",
+      "probability_positive": 0.7962962962962963,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 3,
+      "sample_games": 685,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead69_results.md",
+      "standard_error": null
+    },
+    "lead69_horizon_loso_brier": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three season blocks; no admissible closure ground; calibration worsens. Two declared looks; diagnostic cells are correlated.",
+      "closing_ground": null,
+      "description": "LEAD-69 horizon: paired OOS brier gain versus refitted four-term base; descriptive if slots.",
+      "effect": -0.0004355076410244651,
+      "effect_units": "brier_improvement",
+      "family": "lead69_horizon_two_look",
+      "interval": [
+        -0.0010165275719631838,
+        5.4996173605733725e-05
+      ],
+      "league": "nfl",
+      "notes": "799 starting games; 114 structural SNF/MNF exclusions; 685 scored. Earliest predeadline captured kickoff. Accuracy units are percentage points. Do not pool unlike metrics. Registry pending orchestrator.",
+      "plain_summary": "Giving line movement different weight by time before kickoff changes a few picks; these seasons do not settle whether it helps.",
+      "probability_positive": 0.14814814814814814,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 3,
+      "sample_games": 685,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead69_results.md",
+      "standard_error": null
+    },
+    "lead69_horizon_loso_line_move": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three season blocks; no admissible closure ground; calibration worsens. Two declared looks; diagnostic cells are correlated.",
+      "closing_ground": null,
+      "description": "LEAD-69 horizon: paired OOS line_move gain versus refitted four-term base; descriptive if slots.",
+      "effect": 0.008759124087591242,
+      "effect_units": "ats_points",
+      "family": "lead69_horizon_two_look",
+      "interval": [
+        0.00533625730994152,
+        0.012165327765541648
+      ],
+      "league": "nfl",
+      "notes": "799 starting games; 114 structural SNF/MNF exclusions; 685 scored. Earliest predeadline captured kickoff. Accuracy units are percentage points. Do not pool unlike metrics. Registry pending orchestrator.",
+      "plain_summary": "Giving line movement different weight by time before kickoff changes a few picks; these seasons do not settle whether it helps.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 3,
+      "sample_games": 685,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead69_results.md",
+      "standard_error": null
+    },
+    "lead69_horizon_loso_log_loss": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three season blocks; no admissible closure ground; calibration worsens. Two declared looks; diagnostic cells are correlated.",
+      "closing_ground": null,
+      "description": "LEAD-69 horizon: paired OOS log_loss gain versus refitted four-term base; descriptive if slots.",
+      "effect": -0.0009797746565871816,
+      "effect_units": "log_loss_improvement",
+      "family": "lead69_horizon_two_look",
+      "interval": [
+        -0.002284630862748496,
+        0.00011037155808688822
+      ],
+      "league": "nfl",
+      "notes": "799 starting games; 114 structural SNF/MNF exclusions; 685 scored. Earliest predeadline captured kickoff. Accuracy units are percentage points. Do not pool unlike metrics. Registry pending orchestrator.",
+      "plain_summary": "Giving line movement different weight by time before kickoff changes a few picks; these seasons do not settle whether it helps.",
+      "probability_positive": 0.14814814814814814,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 3,
+      "sample_games": 685,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead69_results.md",
+      "standard_error": null
+    },
+    "lead69_slots_loso_accuracy": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three season blocks; no admissible closure ground; calibration worsens. Two declared looks; diagnostic cells are correlated.",
+      "closing_ground": null,
+      "description": "LEAD-69 slots: paired OOS accuracy gain versus refitted four-term base; descriptive if slots.",
+      "effect": 0.583941605839416,
+      "effect_units": "accuracy_points",
+      "family": "lead69_horizon_two_look",
+      "interval": [
+        -0.34328979382763475,
+        1.7164489691381721
+      ],
+      "league": "nfl",
+      "notes": "799 starting games; 114 structural SNF/MNF exclusions; 685 scored. Earliest predeadline captured kickoff. Accuracy units are percentage points. Do not pool unlike metrics. Registry pending orchestrator.",
+      "plain_summary": "Giving line movement different weight by time before kickoff changes a few picks; these seasons do not settle whether it helps.",
+      "probability_positive": 0.7222222222222222,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 3,
+      "sample_games": 685,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead69_results.md",
+      "standard_error": null
+    },
+    "lead69_slots_loso_brier": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three season blocks; no admissible closure ground; calibration worsens. Two declared looks; diagnostic cells are correlated.",
+      "closing_ground": null,
+      "description": "LEAD-69 slots: paired OOS brier gain versus refitted four-term base; descriptive if slots.",
+      "effect": -0.0021940856523113856,
+      "effect_units": "brier_improvement",
+      "family": "lead69_horizon_two_look",
+      "interval": [
+        -0.006086763220432313,
+        0.0017366447591596103
+      ],
+      "league": "nfl",
+      "notes": "799 starting games; 114 structural SNF/MNF exclusions; 685 scored. Earliest predeadline captured kickoff. Accuracy units are percentage points. Do not pool unlike metrics. Registry pending orchestrator.",
+      "plain_summary": "Giving line movement different weight by time before kickoff changes a few picks; these seasons do not settle whether it helps.",
+      "probability_positive": 0.14814814814814814,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 3,
+      "sample_games": 685,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead69_results.md",
+      "standard_error": null
+    },
+    "lead69_slots_loso_line_move": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three season blocks; no admissible closure ground; calibration worsens. Two declared looks; diagnostic cells are correlated.",
+      "closing_ground": null,
+      "description": "LEAD-69 slots: paired OOS line_move gain versus refitted four-term base; descriptive if slots.",
+      "effect": -0.04671532846715328,
+      "effect_units": "ats_points",
+      "family": "lead69_horizon_two_look",
+      "interval": [
+        -0.10685958725349154,
+        0.009576023391812825
+      ],
+      "league": "nfl",
+      "notes": "799 starting games; 114 structural SNF/MNF exclusions; 685 scored. Earliest predeadline captured kickoff. Accuracy units are percentage points. Do not pool unlike metrics. Registry pending orchestrator.",
+      "plain_summary": "Giving line movement different weight by time before kickoff changes a few picks; these seasons do not settle whether it helps.",
+      "probability_positive": 0.14814814814814814,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 3,
+      "sample_games": 685,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead69_results.md",
+      "standard_error": null
+    },
+    "lead69_slots_loso_log_loss": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three season blocks; no admissible closure ground; calibration worsens. Two declared looks; diagnostic cells are correlated.",
+      "closing_ground": null,
+      "description": "LEAD-69 slots: paired OOS log_loss gain versus refitted four-term base; descriptive if slots.",
+      "effect": -0.009418119385659398,
+      "effect_units": "log_loss_improvement",
+      "family": "lead69_horizon_two_look",
+      "interval": [
+        -0.024736833360525824,
+        0.00453141219531714
+      ],
+      "league": "nfl",
+      "notes": "799 starting games; 114 structural SNF/MNF exclusions; 685 scored. Earliest predeadline captured kickoff. Accuracy units are percentage points. Do not pool unlike metrics. Registry pending orchestrator.",
+      "plain_summary": "Giving line movement different weight by time before kickoff changes a few picks; these seasons do not settle whether it helps.",
+      "probability_positive": 0.14814814814814814,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 3,
+      "sample_games": 685,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead69_results.md",
       "standard_error": null
     },
     "lead72_push_adjusted_best_pick_2020_2025": {

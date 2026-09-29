@@ -1052,6 +1052,7 @@ _RECENT_ACTIVITY_EFFECT_UNIT_WORDS: dict[str, str] = {
     "brier_improvement": "Brier-score points of improvement",
     "log_loss": "log-loss points",
     "log_loss_improvement": "log-loss points of improvement",
+    "rps_improvement": "ranked-probability-score points of improvement",
     "mae": "points of average error",
     "mae_improvement": "points of average-error improvement",
     "correlation": "correlation",
