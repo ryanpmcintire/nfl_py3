@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-29T21:53:21.328799+00:00`
+Refreshed at: `2026-09-29T21:59:40.312953+00:00`
 
 ## Start here
 
@@ -21,19 +21,19 @@ Refreshed at: `2026-09-29T21:53:21.328799+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `19fc96f1e40b` — LEAD-64: Friday injury captures miss most final designations
-- Pending change set: 21 paths
+- Baseline commit: `a22619193dd5` — MOD-22 unit 5: QB quality-loss term refuted on evidenced report times
+- Pending change set: 24 paths
   - ` M AGENTS.md`
   - ` M docs/agent_workflow.md`
-  - `A  docs/lanes/mod22-unit5-qb-quality.md`
-  - `A  docs/mod22_unit5.md`
-  - `M  registry/weak_signals.json`
-  - `A  scripts/mod22_unit5.py`
+  - ` M docs/lanes/lead71.md`
+  - `A  docs/lanes/lead77.md`
+  - `A  docs/lead77_unit1_inventory.md`
+  - `A  scripts/lead77_unit1.py`
   - `?? bash.exe.stackdump`
-  - `?? docs/lanes/lead77.md`
   - `?? docs/lanes/lead78.md`
   - `?? docs/lanes/lead79.md`
   - `?? docs/lanes/lead80.md`
+  - `?? docs/lanes/lead81.md`
   - `?? docs/lanes/windows-shell-popup.md`
   - `?? docs/lead80_protocol.md`
   - `?? registry/experiments/margin-backtest/20260927T134152Z.json`
@@ -43,7 +43,7 @@ Refreshed at: `2026-09-29T21:53:21.328799+00:00`
   - `?? registry/experiments/opener-evaluation/20260927T134738Z.json`
   - `?? registry/experiments/waterfall-feed/20260927T134851Z.json`
   - `?? registry/experiments/waterfall-feed/20260929T184553Z.json`
-  - ...and 1 more
+  - ...and 4 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
