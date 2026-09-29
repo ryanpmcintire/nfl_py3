@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-29T21:49:59.482147+00:00`
+Refreshed at: `2026-09-29T21:51:34.737833+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-09-29T21:49:59.482147+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `6d777185698e` — LEAD-75 unit 1: wind-forecast change is source-gated
-- Pending change set: 25 paths
+- Baseline commit: `689ae51637b1` — LEAD-71 unit 2: market-implied margin lattice scores better, picks no better
+- Pending change set: 23 paths
   - ` M AGENTS.md`
   - ` M docs/agent_workflow.md`
   - ` M docs/lanes/lead64-friday-designations.md`
-  - `M  docs/lanes/lead71.md`
-  - `A  docs/lead71_unit2.md`
-  - `M  registry/weak_signals.json`
-  - `A  scripts/lead71_unit2.py`
+  - `A  docs/lanes/lead76.md`
+  - `A  docs/lead76_unit1_inventory.md`
+  - `A  scripts/lead76_unit1.py`
   - `?? bash.exe.stackdump`
-  - `?? docs/lanes/lead76.md`
   - `?? docs/lanes/lead77.md`
+  - `?? docs/lanes/lead78.md`
+  - `?? docs/lanes/lead79.md`
   - `?? docs/lanes/mod22-unit5-qb-quality.md`
   - `?? docs/lanes/windows-shell-popup.md`
   - `?? docs/lead64_freshness_audit.md`
-  - `?? docs/lead76_unit1_inventory.md`
   - `?? docs/mod22_unit5.md`
   - `?? registry/experiments/margin-backtest/20260927T134152Z.json`
   - `?? registry/experiments/margin-backtest/20260929T183944Z.json`
   - `?? registry/experiments/margin-predict/2026-week-03-20260927T134352Z.json`
   - `?? registry/experiments/margin-predict/2026-week-03-20260929T184122Z.json`
   - `?? registry/experiments/opener-evaluation/20260927T134738Z.json`
-  - ...and 5 more
+  - `?? registry/experiments/waterfall-feed/20260927T134851Z.json`
+  - ...and 3 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
