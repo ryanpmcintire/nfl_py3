@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-29T22:02:23.630889+00:00`
+Refreshed at: `2026-09-29T22:06:00.424681+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-09-29T22:02:23.630889+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `3a307ab92d8a` — LEAD-78 unit 1: common-opponent news inventory, strict provenance gate
-- Pending change set: 23 paths
+- Baseline commit: `68eff80bdd6c` — LEAD-79 unit 1: lookahead-anchor inventory, strict provenance gate
+- Pending change set: 26 paths
   - ` M AGENTS.md`
   - ` M docs/agent_workflow.md`
+  - ` M docs/lanes/backlog-fleet-2026-09-29.md`
   - ` M docs/lanes/lead71.md`
-  - `A  docs/lanes/lead79.md`
-  - `A  docs/lead79_inventory.md`
-  - `A  scripts/lead79_unit1.py`
+  - ` M docs/lanes/lead78.md`
+  - `A  docs/lanes/lead80.md`
+  - `A  docs/lead80_inventory.md`
+  - `A  docs/lead80_protocol.md`
+  - `A  docs/lead80_source_review.md`
+  - `A  scripts/lead80_unit1.py`
   - `?? bash.exe.stackdump`
-  - `?? docs/lanes/lead80.md`
   - `?? docs/lanes/lead81.md`
   - `?? docs/lanes/quote-provenance.md`
+  - `?? docs/lanes/ui20-2026-09-29c.md`
   - `?? docs/lanes/windows-shell-popup.md`
-  - `?? docs/lead80_inventory.md`
-  - `?? docs/lead80_protocol.md`
+  - `?? docs/lead71_unit3.md`
+  - `?? docs/lead81_unit1.md`
   - `?? registry/experiments/margin-backtest/20260927T134152Z.json`
   - `?? registry/experiments/margin-backtest/20260929T183944Z.json`
   - `?? registry/experiments/margin-predict/2026-week-03-20260927T134352Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-03-20260929T184122Z.json`
-  - `?? registry/experiments/opener-evaluation/20260927T134738Z.json`
-  - `?? registry/experiments/waterfall-feed/20260927T134851Z.json`
-  - `?? registry/experiments/waterfall-feed/20260929T184553Z.json`
-  - ...and 3 more
+  - ...and 6 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
