@@ -426,6 +426,90 @@
       "source": "docs/lead73_unit2.md",
       "standard_error": 0.002165061023835147
     },
+    "LEAD74-unit2-pressure-vs-four_term-accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Conditional historical availability; no positive-control or reliability closure ground established; descriptive baseline contrasts do not refute the price-pressure mechanism",
+      "closing_ground": null,
+      "description": "Chronological opener comparison: combined versus four_term; positive is improvement",
+      "effect": 0.8310249307479224,
+      "effect_units": "accuracy_points",
+      "family": "LEAD74-unit2-within-spread-price",
+      "interval": [
+        -1.3124222958972234,
+        2.849002849002849
+      ],
+      "league": "nfl",
+      "notes": "173 reserved looks; one primary accuracy contrast; paired week bootstrap; provider observed time assumed available; 9 correlated metric contrasts are not independent evidence",
+      "plain_summary": "Books sometimes change the price while leaving the spread alone. This check asks whether those price changes help our opener picks; keep the current picks while the evidence remains unresolved.",
+      "probability_positive": 0.7966500000000001,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 361,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "docs/lead74_unit2.md",
+      "standard_error": 1.0443475900535002
+    },
+    "LEAD74-unit2-pressure-vs-four_term-brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Conditional historical availability; no positive-control or reliability closure ground established; descriptive baseline contrasts do not refute the price-pressure mechanism",
+      "closing_ground": null,
+      "description": "Chronological opener comparison: combined versus four_term; positive is improvement",
+      "effect": -0.0007110665043468997,
+      "effect_units": "brier_improvement",
+      "family": "LEAD74-unit2-within-spread-price",
+      "interval": [
+        -0.0029257714348541065,
+        0.0013118361810839513
+      ],
+      "league": "nfl",
+      "notes": "173 reserved looks; one primary accuracy contrast; paired week bootstrap; provider observed time assumed available; 9 correlated metric contrasts are not independent evidence",
+      "plain_summary": "Books sometimes change the price while leaving the spread alone. This check asks whether those price changes help our opener picks; keep the current picks while the evidence remains unresolved.",
+      "probability_positive": 0.2614,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 361,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "docs/lead74_unit2.md",
+      "standard_error": 0.0010876152219086277
+    },
+    "LEAD74-unit2-pressure-vs-four_term-log_loss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Conditional historical availability; no positive-control or reliability closure ground established; descriptive baseline contrasts do not refute the price-pressure mechanism",
+      "closing_ground": null,
+      "description": "Chronological opener comparison: combined versus four_term; positive is improvement",
+      "effect": -0.001724865306072348,
+      "effect_units": "log_loss_improvement",
+      "family": "LEAD74-unit2-within-spread-price",
+      "interval": [
+        -0.006414315301565882,
+        0.0025945549589312215
+      ],
+      "league": "nfl",
+      "notes": "173 reserved looks; one primary accuracy contrast; paired week bootstrap; provider observed time assumed available; 9 correlated metric contrasts are not independent evidence",
+      "plain_summary": "Books sometimes change the price while leaving the spread alone. This check asks whether those price changes help our opener picks; keep the current picks while the evidence remains unresolved.",
+      "probability_positive": 0.2294,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 361,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "docs/lead74_unit2.md",
+      "standard_error": 0.002301115380750875
+    },
     "all_star_crew_underdog_on_production": {
       "category": "onfield",
       "classification": "unresolved_below_power",
