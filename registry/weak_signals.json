@@ -118,6 +118,230 @@
       "source": "docs/lead71_unit3.md",
       "standard_error": 0.000513855014418
     },
+    "LEAD69-unit2-horizon-accuracy": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control established; owner reviews correlated metrics together.",
+      "closing_ground": null,
+      "description": "Six-season LOSO horizon versus served four-term specification; opener grade; positive gain is better.",
+      "effect": -0.622568093385214,
+      "effect_units": "accuracy_points",
+      "family": "LEAD69-unit2-horizon",
+      "interval": [
+        -1.238390092879257,
+        -0.07656675143187645
+      ],
+      "league": "nfl",
+      "notes": "Two research looks; 660 correlated reporting looks; 33 fits; 10000 season-stratified week-block draws; no tuning or serving action. Slots descriptive; continuity replay is not independent evidence.",
+      "plain_summary": "This check asks whether a sportsbook move should count differently when its starting quote had more time before picks were due. The evidence does not yet settle whether that improves the picks.",
+      "probability_positive": 0.0174,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1285,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead69_unit2.md",
+      "standard_error": 0.30270414852469046
+    },
+    "LEAD69-unit2-horizon-brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control established; owner reviews correlated metrics together.",
+      "closing_ground": null,
+      "description": "Six-season LOSO horizon versus served four-term specification; opener grade; positive gain is better.",
+      "effect": -0.00024162894378371486,
+      "effect_units": "brier_improvement",
+      "family": "LEAD69-unit2-horizon",
+      "interval": [
+        -0.001173926007285656,
+        0.0006842167650820609
+      ],
+      "league": "nfl",
+      "notes": "Two research looks; 660 correlated reporting looks; 33 fits; 10000 season-stratified week-block draws; no tuning or serving action. Slots descriptive; continuity replay is not independent evidence.",
+      "plain_summary": "This check asks whether a sportsbook move should count differently when its starting quote had more time before picks were due. The evidence does not yet settle whether that improves the picks.",
+      "probability_positive": 0.3148,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1285,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead69_unit2.md",
+      "standard_error": 0.0004830472579694606
+    },
+    "LEAD69-unit2-horizon-line_move": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control established; owner reviews correlated metrics together.",
+      "closing_ground": null,
+      "description": "Six-season LOSO horizon versus served four-term specification; opener grade; positive gain is better.",
+      "effect": -0.0015564202334630351,
+      "effect_units": "ats_points",
+      "family": "LEAD69-unit2-horizon",
+      "interval": [
+        -0.015760441292356184,
+        0.012480742789430543
+      ],
+      "league": "nfl",
+      "notes": "Two research looks; 660 correlated reporting looks; 33 fits; 10000 season-stratified week-block draws; no tuning or serving action. Slots descriptive; continuity replay is not independent evidence.",
+      "plain_summary": "This check asks whether a sportsbook move should count differently when its starting quote had more time before picks were due. The evidence does not yet settle whether that improves the picks.",
+      "probability_positive": 0.4155,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1285,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead69_unit2.md",
+      "standard_error": 0.20317482536972734
+    },
+    "LEAD69-unit2-horizon-log_loss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control established; owner reviews correlated metrics together.",
+      "closing_ground": null,
+      "description": "Six-season LOSO horizon versus served four-term specification; opener grade; positive gain is better.",
+      "effect": -0.0005042920195432913,
+      "effect_units": "log_loss_improvement",
+      "family": "LEAD69-unit2-horizon",
+      "interval": [
+        -0.002549151384814148,
+        0.001524984452288004
+      ],
+      "league": "nfl",
+      "notes": "Two research looks; 660 correlated reporting looks; 33 fits; 10000 season-stratified week-block draws; no tuning or serving action. Slots descriptive; continuity replay is not independent evidence.",
+      "plain_summary": "This check asks whether a sportsbook move should count differently when its starting quote had more time before picks were due. The evidence does not yet settle whether that improves the picks.",
+      "probability_positive": 0.325,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1285,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead69_unit2.md",
+      "standard_error": 0.001055866461483968
+    },
+    "LEAD69-unit2-slots-accuracy": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control established; owner reviews correlated metrics together.",
+      "closing_ground": null,
+      "description": "Six-season LOSO slots versus served four-term specification; opener grade; positive gain is better.",
+      "effect": -0.311284046692607,
+      "effect_units": "accuracy_points",
+      "family": "LEAD69-unit2-horizon",
+      "interval": [
+        -1.1015165688867963,
+        0.5372424423505618
+      ],
+      "league": "nfl",
+      "notes": "Two research looks; 660 correlated reporting looks; 33 fits; 10000 season-stratified week-block draws; no tuning or serving action. Slots descriptive; continuity replay is not independent evidence.",
+      "plain_summary": "This check asks whether a sportsbook move should count differently when its starting quote had more time before picks were due. The evidence does not yet settle whether that improves the picks.",
+      "probability_positive": 0.22515,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1285,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead69_unit2.md",
+      "standard_error": 0.41825959037119154
+    },
+    "LEAD69-unit2-slots-brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control established; owner reviews correlated metrics together.",
+      "closing_ground": null,
+      "description": "Six-season LOSO slots versus served four-term specification; opener grade; positive gain is better.",
+      "effect": -0.0006726853246761741,
+      "effect_units": "brier_improvement",
+      "family": "LEAD69-unit2-horizon",
+      "interval": [
+        -0.0017770581721987947,
+        0.0004865481661493691
+      ],
+      "league": "nfl",
+      "notes": "Two research looks; 660 correlated reporting looks; 33 fits; 10000 season-stratified week-block draws; no tuning or serving action. Slots descriptive; continuity replay is not independent evidence.",
+      "plain_summary": "This check asks whether a sportsbook move should count differently when its starting quote had more time before picks were due. The evidence does not yet settle whether that improves the picks.",
+      "probability_positive": 0.1203,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1285,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead69_unit2.md",
+      "standard_error": 0.0005767976815766661
+    },
+    "LEAD69-unit2-slots-line_move": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control established; owner reviews correlated metrics together.",
+      "closing_ground": null,
+      "description": "Six-season LOSO slots versus served four-term specification; opener grade; positive gain is better.",
+      "effect": -0.0178988326848249,
+      "effect_units": "ats_points",
+      "family": "LEAD69-unit2-horizon",
+      "interval": [
+        -0.044996994395963934,
+        0.006854924042022517
+      ],
+      "league": "nfl",
+      "notes": "Two research looks; 660 correlated reporting looks; 33 fits; 10000 season-stratified week-block draws; no tuning or serving action. Slots descriptive; continuity replay is not independent evidence.",
+      "plain_summary": "This check asks whether a sportsbook move should count differently when its starting quote had more time before picks were due. The evidence does not yet settle whether that improves the picks.",
+      "probability_positive": 0.07635,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1285,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead69_unit2.md",
+      "standard_error": 0.20258577128178523
+    },
+    "LEAD69-unit2-slots-log_loss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or powered positive control established; owner reviews correlated metrics together.",
+      "closing_ground": null,
+      "description": "Six-season LOSO slots versus served four-term specification; opener grade; positive gain is better.",
+      "effect": -0.0012538367495202964,
+      "effect_units": "log_loss_improvement",
+      "family": "LEAD69-unit2-horizon",
+      "interval": [
+        -0.004050970228004838,
+        0.0016646643213908921
+      ],
+      "league": "nfl",
+      "notes": "Two research looks; 660 correlated reporting looks; 33 fits; 10000 season-stratified week-block draws; no tuning or serving action. Slots descriptive; continuity replay is not independent evidence.",
+      "plain_summary": "This check asks whether a sportsbook move should count differently when its starting quote had more time before picks were due. The evidence does not yet settle whether that improves the picks.",
+      "probability_positive": 0.1906,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1285,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead69_unit2.md",
+      "standard_error": 0.00145739835256433
+    },
     "LEAD73-unit2-extended-vs-current-accuracy_points": {
       "category": "market",
       "classification": "unresolved_below_power",
