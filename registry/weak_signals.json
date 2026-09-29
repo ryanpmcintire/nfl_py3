@@ -62,6 +62,62 @@
       "source": "docs/lead71_unit2.md",
       "standard_error": 0.000400826685553
     },
+    "LEAD-71-unit3-brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No closure or serving decision; paired week bootstrap with inherited LOSO folds",
+      "closing_ground": null,
+      "description": "Frozen-opener push brier; 2 primary and 125 descriptive looks",
+      "effect": -2.1862293285e-05,
+      "effect_units": "brier_improvement",
+      "family": "LEAD-71-unit3",
+      "interval": [
+        -0.000160194332112,
+        0.000127629197674
+      ],
+      "league": "nfl",
+      "notes": "2 primary endpoints; 127 total estimands; unadjusted intervals; no new fits",
+      "plain_summary": "We checked how often a game lands exactly on the pool spread. The market prices and the current margin table give different chances. This check leaves the idea open and does not change any pool pick.",
+      "probability_positive": 0.3718,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 103,
+      "sample_games": 1480,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead71_unit3.md",
+      "standard_error": 7.3328728204e-05
+    },
+    "LEAD-71-unit3-logloss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No closure or serving decision; paired week bootstrap with inherited LOSO folds",
+      "closing_ground": null,
+      "description": "Frozen-opener push logloss; 2 primary and 125 descriptive looks",
+      "effect": 1.12700029517e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "LEAD-71-unit3",
+      "interval": [
+        -0.000903542138385,
+        0.00107979328137
+      ],
+      "league": "nfl",
+      "notes": "2 primary endpoints; 127 total estimands; unadjusted intervals; no new fits",
+      "plain_summary": "We checked how often a game lands exactly on the pool spread. The market prices and the current margin table give different chances. This check leaves the idea open and does not change any pool pick.",
+      "probability_positive": 0.4851,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 103,
+      "sample_games": 1480,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead71_unit3.md",
+      "standard_error": 0.000513855014418
+    },
     "LEAD73-unit2-extended-vs-current-accuracy_points": {
       "category": "market",
       "classification": "unresolved_below_power",
