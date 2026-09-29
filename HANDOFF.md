@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-29T21:43:42.217160+00:00`
+Refreshed at: `2026-09-29T21:48:49.048700+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-09-29T21:43:42.217160+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `a0d46fe5d63a` — MOD-22 unit 4 remeasured on evidenced report times: QB-out term refuted
-- Pending change set: 28 paths
+- Baseline commit: `7749f6b5719e` — LEAD-74 unit 1: price-revision quotes exist but lack ingestion times
+- Pending change set: 30 paths
   - ` M AGENTS.md`
   - ` M docs/agent_workflow.md`
   - ` M docs/lanes/lead64-friday-designations.md`
   - ` M docs/lanes/lead71.md`
-  - ` M docs/lanes/lead73.md`
-  - `A  docs/lanes/lead74.md`
-  - `A  docs/lead74_unit1_inventory.md`
-  - `A  scripts/lead74_unit1.py`
+  - `M  docs/lanes/lead73.md`
+  - `A  docs/lead73_unit2.md`
+  - `M  registry/weak_signals.json`
+  - `A  scripts/lead73_unit2.py`
   - `?? bash.exe.stackdump`
   - `?? docs/lanes/lead75.md`
   - `?? docs/lanes/lead76.md`
+  - `?? docs/lanes/lead77.md`
   - `?? docs/lanes/mod22-unit5-qb-quality.md`
   - `?? docs/lanes/windows-shell-popup.md`
+  - `?? docs/lead64_freshness_audit.md`
   - `?? docs/lead71_unit2.md`
-  - `?? docs/lead73_unit2.md`
+  - `?? docs/lead75_inventory.md`
   - `?? docs/mod22_unit5.md`
   - `?? registry/experiments/margin-backtest/20260927T134152Z.json`
   - `?? registry/experiments/margin-backtest/20260929T183944Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-03-20260927T134352Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-03-20260929T184122Z.json`
-  - ...and 8 more
+  - ...and 10 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

@@ -6,6 +6,90 @@
     "A pooled estimate justifies ONE predeclared combined look on a rotation window none of the inputs touched. It is never itself a finding."
   ],
   "signals": {
+    "LEAD73-unit2-extended-vs-current-accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Accuracy interval sits just below zero after 144 reporting looks while log loss and Brier are flat and the move coefficient is positive in 6 of 6 folds; the move mechanism is not refuted, only this source extension fails to help.",
+      "closing_ground": null,
+      "description": "LOSO extended versus current: positive accuracy_points gain.",
+      "effect": -1.66333998669328,
+      "effect_units": "accuracy_points",
+      "family": "LEAD73-unit2-source-extension",
+      "interval": [
+        -3.2754010695187166,
+        -0.0665335994677312
+      ],
+      "league": "nfl",
+      "notes": "One primary source-extension comparison; 144 reporting looks including diagnostics; 10000 season-stratified paired week-block resamples. Frozen upstream model/composition; six LOSO calibration folds; fixed-prediction uncertainty. Nine correlated contrasts, not independent evidence and not pooled across units.",
+      "plain_summary": "Adding older sportsbook line moves to the same game predictions produced fewer winning picks than the current version. Keep the current version.",
+      "probability_positive": 0.0202,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead73_unit2.md",
+      "standard_error": 0.8183219213853475
+    },
+    "LEAD73-unit2-extended-vs-current-brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No closure ground established for this metric; no positive control or split-half reliability experiment was run.",
+      "closing_ground": null,
+      "description": "LOSO extended versus current: positive brier_improvement gain.",
+      "effect": -0.00014484049689524124,
+      "effect_units": "brier_improvement",
+      "family": "LEAD73-unit2-source-extension",
+      "interval": [
+        -0.0022259507015657395,
+        0.001832298558039195
+      ],
+      "league": "nfl",
+      "notes": "One primary source-extension comparison; 144 reporting looks including diagnostics; 10000 season-stratified paired week-block resamples. Frozen upstream model/composition; six LOSO calibration folds; fixed-prediction uncertainty. Nine correlated contrasts, not independent evidence and not pooled across units.",
+      "plain_summary": "This check compares the version with older sportsbook line moves against the current picks. It does not establish that older moves should change the current picks.",
+      "probability_positive": 0.4496,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead73_unit2.md",
+      "standard_error": 0.001032961270410631
+    },
+    "LEAD73-unit2-extended-vs-current-log_loss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No closure ground established for this metric; no positive control or split-half reliability experiment was run.",
+      "closing_ground": null,
+      "description": "LOSO extended versus current: positive log_loss_improvement gain.",
+      "effect": -0.00018247638923657412,
+      "effect_units": "log_loss_improvement",
+      "family": "LEAD73-unit2-source-extension",
+      "interval": [
+        -0.004530419524716089,
+        0.003981382207551997
+      ],
+      "league": "nfl",
+      "notes": "One primary source-extension comparison; 144 reporting looks including diagnostics; 10000 season-stratified paired week-block resamples. Frozen upstream model/composition; six LOSO calibration folds; fixed-prediction uncertainty. Nine correlated contrasts, not independent evidence and not pooled across units.",
+      "plain_summary": "This check compares the version with older sportsbook line moves against the current picks. It does not establish that older moves should change the current picks.",
+      "probability_positive": 0.4707,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead73_unit2.md",
+      "standard_error": 0.002165061023835147
+    },
     "all_star_crew_underdog_on_production": {
       "category": "onfield",
       "classification": "unresolved_below_power",
