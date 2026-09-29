@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-29T21:59:40.312953+00:00`
+Refreshed at: `2026-09-29T22:01:34.900403+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-09-29T21:59:40.312953+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `a22619193dd5` — MOD-22 unit 5: QB quality-loss term refuted on evidenced report times
-- Pending change set: 24 paths
+- Baseline commit: `17aeb27989fc` — LEAD-77 unit 1: quote-freshness data present, ingestion provenance missing
+- Pending change set: 26 paths
   - ` M AGENTS.md`
   - ` M docs/agent_workflow.md`
   - ` M docs/lanes/lead71.md`
-  - `A  docs/lanes/lead77.md`
-  - `A  docs/lead77_unit1_inventory.md`
-  - `A  scripts/lead77_unit1.py`
+  - `A  docs/lanes/lead78.md`
+  - `A  docs/lead78_unit1.md`
+  - `A  scripts/lead78_unit1.py`
   - `?? bash.exe.stackdump`
-  - `?? docs/lanes/lead78.md`
   - `?? docs/lanes/lead79.md`
   - `?? docs/lanes/lead80.md`
   - `?? docs/lanes/lead81.md`
+  - `?? docs/lanes/quote-provenance.md`
   - `?? docs/lanes/windows-shell-popup.md`
+  - `?? docs/lead79_inventory.md`
+  - `?? docs/lead80_inventory.md`
   - `?? docs/lead80_protocol.md`
   - `?? registry/experiments/margin-backtest/20260927T134152Z.json`
   - `?? registry/experiments/margin-backtest/20260929T183944Z.json`
   - `?? registry/experiments/margin-predict/2026-week-03-20260927T134352Z.json`
   - `?? registry/experiments/margin-predict/2026-week-03-20260929T184122Z.json`
   - `?? registry/experiments/opener-evaluation/20260927T134738Z.json`
-  - `?? registry/experiments/waterfall-feed/20260927T134851Z.json`
-  - `?? registry/experiments/waterfall-feed/20260929T184553Z.json`
-  - ...and 4 more
+  - ...and 6 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
