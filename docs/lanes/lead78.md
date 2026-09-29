@@ -1,51 +1,31 @@
 # LEAD-78: within-week common-opponent news
 
 ## Goal
-Execute the fixed unit-one protocol without changing the served card.
+Measure one fitted fifth term without changing the served card.
 
 ## State
-**Measured:** unit one complete; source gap. Twelve schedule schemas, zero recognized final/completion fields, zero 2020-2025 Splash captures/locks; 1,615 calendar games. No fit or score.
+**Measured:** unit two complete: 1,503 games, decisive 4-9-0; accuracy -0.332668 points [95% -0.805369, +0.133511], probability_positive 0.08435. Log-loss gain -0.000566351 [-0.001148588, -0.000027260], probability_positive 0.0197; Brier gain -0.000283074 [-0.000568985, -0.000017961], probability_positive 0.0181. Provisional unresolved_below_power; registry pending. Full tables, original declaration and limitations: `docs/lead78_unit2.md`.
 
-### Predeclared protocol (verbatim words; wrapped for the bounded reader)
-| LEAD-78 | ⬜ | Within-week common-opponent news (batch B rank 5 of 8) | **Inferred proposal, 2026-09-29; unmeasured.** Mechanism: a completed Thursday or Saturday game changes what
-earlier performances against those teams mean; Tuesday's pool line cannot contain that update for Sunday's teams. Predeclare 2020-2025 REG games with a later pick deadline, preserving
-every eligible game rather than selecting surprising early results. Build one score-based common-opponent state update from games publicly final between Tuesday and the target deadline,
-holding the earlier-season-trained rating architecture fixed. Feature: updated-minus-Tuesday implied home margin propagated through the already-observed opponent graph; enter it
-alongside the existing market move so news already absorbed by books is controlled. No target-game plays, unfinished games or later stat corrections; retain published-final timestamps.
-Protocol B supplies chronology-purged LOSO, paired baselines, IS/OOS gap, calibration and season intervals. B=3 (state-update specification, delta term, joint fit), F=6, E=0; 298
-counted looks. **Read/checked:** PBP-05, RWB-01, MOD-06/10/21 and LEAD-68. Those cover opponent adjustment, season state, dynamic/graph ratings and seasonal calibration; the new
-estimand is the incremental information arriving within the target week, not a replacement rating system or a rerun of closing-line ratings. Units: as-of completion/state-delta audit,
-15-20 calls; cached score-only replay, 20-25. Rank rationale: no new external feed and many historical weeks; expected effect is smaller because only a few early games inform each
-slate. |
-
-Rows fix population, terms, target, units and specification budget B. Inventory metadata first; require issuance/ingestion before the pool deadline. Grade authentic frozen openers.
-Missing archives are data gaps, never replaced by closes, realized weather or retrospective news.
-
-Chronology-purged LOSO excludes target/later seasons from fitting; separate earlier training, selection and calibration seasons. Folds lacking training remain unavailable. Reuse
-certified pregame predictions; choose coefficients/penalties on earlier seasons without new grids. Freeze before prospective evaluation. One calibrated discrete-margin distribution
-combines information; its cover probability selects the side.
-
-Pair combined-model, model-only, market-only and Elo baselines. Report IS/OOS opener accuracy, Brier, log loss and margin MAE, their gap, decisive-game record first, fold coefficients,
-season stability, five training-quantile reliability bands, season-block 95% intervals and `probability_positive`. Zero crossing closes nothing; unresolved effects remain
-`unresolved_below_power`.
-
-Count reporting cells too: L = (B + 36 + 8E)(F + 1) + 25 for F scheduled folds, E extra endpoints: B candidate/four baseline specifications, four-comparator IS/OOS metric cells per
-fold/pooled, five bands for five models. Identical nested refits add no specification. New splits/specifications need separate preregistration. Correlated cells are not independent
-evidence.
-
-LEAD-78 budget: B=3, F=6, E=0; L=298.
+### Unit-two amendment (declared before outcomes)
+Use the historical OPENER as the frozen-line proxy on the same 1,503 non-push 2020-2025 REG games, with the served four-term probability as base (`artifacts/pick_probability/20260929T192747Z/per_game.parquet`). Replace nonexistent published-final timestamps with scheduled kickoff + 4 hours from `data/raw/20260908T162105Z/schedules.parquet`; assert each included Thursday/Saturday result completes after Tuesday noon and strictly before the target deadline, the earlier of kickoff and Sunday 12:45 Eastern. These are explicit proxies, not reconstructed pool captures or verified final-publication times.
+Retain the original score-state delta as ONE fifth term, market-move control, six season holdouts, paired metrics and B=3/F=6/E=0: the look budget is unchanged at 298. Per the unit-two packet, use the standard retrospective LOSO (other five seasons train each held-out season) and season-stratified week-block bootstrap (10,000 draws; seed 78); disclose that this is not forward-only evaluation. No searches, extra endpoints, or selected subsets.
+Freeze one rating implementation: ridge team-margin graph with unit prior precision, prior ratings and home advantage estimated only from the preceding season. At Tuesday noon fit current-season completed scores around that prior; append all eligible Thursday/Saturday scores, then subtract Tuesday home-minus-away rating from the updated rating difference. The fixed graph propagates information through already played opponents; unavailable early news gives zero. Refit all four existing terms plus this delta with the existing ridge 0.001 and training-only standardization in every fold. Fixed baselines: served four-term, raw discrete model, even market, and score-only Elo (K=20, scale=400, offseason carry=0.75; training-fold logistic opener calibration). No data-chosen cutoffs or grids.
+Report decisive W-L-P before overall accuracy; paired accuracy-point, log-loss and Brier gains with 95% intervals and `probability_positive`; train/test/gap pooled and by season; every fold's natural coefficients; five training-quantile reliability bands. Margin MAE uses fold-trained linear margin calibrations of the same score (reporting only). Preserve all prediction rows and timing audit in `tests/scratch/codex/lead78_unit2/`. An interval crossing zero closes nothing; one fitted calibrated probability selects the side.
 
 ## Tried
-**Measured:** `.tools/uv.exe run --no-sync python scripts/lead78_unit1.py` ran once, exit 0.
-Scoped `ruff format --check` and `ruff check` passed. UV used a temporary cache after the user cache denied access; offline, at most two Arrow workers.
-Report: `docs/lead78_unit1.md`; 298 planned looks, zero outcome looks, zero fitted folds/scored games.
-IS/OOS metrics/gaps, fold coefficients, decisive W-L-P, 95% intervals and `probability_positive` are unavailable; inventory counts have no sampling interval.
+**Measured:** `.tools/uv.exe run --no-sync python scripts/lead78_unit2.py`: one pre-fit opener-sign validation failure, then one completed scoring run, exit 0 (8.9 seconds). Two numerical threads; 1,886 timing pairs passed; base reproduction error 2.22e-16. Ruff format/check, scoped diff check and saved-artifact review pass (rows, timing, decisive record, four record cells). Predictions, audit, summary, logs and record batch: `tests/scratch/codex/lead78_unit2/`. No tests added or registry writes.
 
 ## Record commands
-None: metadata-only source gap, no estimate or adjudication. No registry write ran; do not fabricate an effect or closure command.
+Prepared only; batch holds the four primary metric cells with intervals and plain-English summaries (diagnostic baseline comparisons are not separate signals).
+```bash
+UV_CACHE_DIR=tests/scratch/codex/lead78_unit2/uv-cache UV_OFFLINE=1 .tools/uv.exe run --no-sync nfl-ats weak-signals record \
+  --batch tests/scratch/codex/lead78_unit2/registry_batch.json \
+  --source docs/lead78_unit2.md \
+  --plain-summary 'Using early results to revisit common opponents lost five extra picks. Keep the current picks; the idea remains unresolved.'
+```
 
 ## Next
-Orchestrator: recover deadline-valid historical openers/locks and published-final/ingestion timestamps, then authorize the cached score-only replay under this unchanged declaration.
+Orchestrator: review and run the prepared record command serially; retain research-only status. No commit, push, publication or served-card change by this worker.
 
 ## Open
-**Inferred:** source gap leaves the mechanism unmeasured, not closed. Inventory covers the production schedule/Splash paths and the referenced baseline header; no claim of an exhaustive filesystem audit.
+**Inferred:** opener/completion proxies and retrospective LOSO limit prospective interpretation. Proper-score deterioration does not alone refute the mechanism (news coefficient positive 4/6); no power control was established. Registry entries are not yet settled.

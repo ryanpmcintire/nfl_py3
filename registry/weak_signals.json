@@ -49748,6 +49748,118 @@
       "source": "docs/lead72_results.md",
       "standard_error": 2.29016759302
     },
+    "lead78_unit2_common_opponent_accuracy_points": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Decisive 4-9; accuracy interval spans favorable and unfavorable effects; news coefficient positive in four of six folds. Proper-score deterioration does not by itself refute the common-opponent mechanism; no power control.",
+      "closing_ground": null,
+      "description": "Common-opponent fifth term versus served four-term: accuracy_points",
+      "effect": -0.33266799733865604,
+      "effect_units": "accuracy_points",
+      "family": "lead78_within_week_common_opponent",
+      "interval": [
+        -0.8053691275167785,
+        0.13351134846461948
+      ],
+      "league": "nfl",
+      "notes": "298 predeclared looks; 10000 season-stratified week-block draws, seed 78; retrospective LOSO, historical opener and kickoff-plus-four-hours proxies. Primary comparison only; baseline diagnostics are not separate signals.",
+      "plain_summary": "Using early results to revisit common opponents lost five extra picks. Keep the current picks; the idea remains unresolved.",
+      "probability_positive": 0.08435000000000001,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead78_unit2.md",
+      "standard_error": 0.24536148425470417
+    },
+    "lead78_unit2_common_opponent_brier": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Decisive 4-9; accuracy interval spans favorable and unfavorable effects; news coefficient positive in four of six folds. Proper-score deterioration does not by itself refute the common-opponent mechanism; no power control.",
+      "closing_ground": null,
+      "description": "Common-opponent fifth term versus served four-term: brier",
+      "effect": -0.0002830740875817042,
+      "effect_units": "brier_improvement",
+      "family": "lead78_within_week_common_opponent",
+      "interval": [
+        -0.0005689854029502066,
+        -1.796093588194037e-05
+      ],
+      "league": "nfl",
+      "notes": "298 predeclared looks; 10000 season-stratified week-block draws, seed 78; retrospective LOSO, historical opener and kickoff-plus-four-hours proxies. Primary comparison only; baseline diagnostics are not separate signals.",
+      "plain_summary": "Using early results made the pick chances slightly less accurate. Keep the current picks; the idea remains unresolved.",
+      "probability_positive": 0.0181,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead78_unit2.md",
+      "standard_error": 0.00013902158710465205
+    },
+    "lead78_unit2_common_opponent_log_loss": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Decisive 4-9; accuracy interval spans favorable and unfavorable effects; news coefficient positive in four of six folds. Proper-score deterioration does not by itself refute the common-opponent mechanism; no power control.",
+      "closing_ground": null,
+      "description": "Common-opponent fifth term versus served four-term: log_loss",
+      "effect": -0.0005663510368328372,
+      "effect_units": "log_loss_improvement",
+      "family": "lead78_within_week_common_opponent",
+      "interval": [
+        -0.001148587746054113,
+        -2.7259755078389782e-05
+      ],
+      "league": "nfl",
+      "notes": "298 predeclared looks; 10000 season-stratified week-block draws, seed 78; retrospective LOSO, historical opener and kickoff-plus-four-hours proxies. Primary comparison only; baseline diagnostics are not separate signals.",
+      "plain_summary": "Using early results made the pick chances slightly less accurate. Keep the current picks; the idea remains unresolved.",
+      "probability_positive": 0.0197,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead78_unit2.md",
+      "standard_error": 0.00028338712633860816
+    },
+    "lead78_unit2_common_opponent_margin_mae": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Decisive 4-9; accuracy interval spans favorable and unfavorable effects; news coefficient positive in four of six folds. Proper-score deterioration does not by itself refute the common-opponent mechanism; no power control.",
+      "closing_ground": null,
+      "description": "Common-opponent fifth term versus served four-term: margin_mae",
+      "effect": -0.00732440307759742,
+      "effect_units": "mae_improvement",
+      "family": "lead78_within_week_common_opponent",
+      "interval": [
+        -0.016144225572307106,
+        0.0005293176307961789
+      ],
+      "league": "nfl",
+      "notes": "298 predeclared looks; 10000 season-stratified week-block draws, seed 78; retrospective LOSO, historical opener and kickoff-plus-four-hours proxies. Primary comparison only; baseline diagnostics are not separate signals.",
+      "plain_summary": "Using early results did not improve predicted winning margins. Keep the current picks; the idea remains unresolved.",
+      "probability_positive": 0.0336,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead78_unit2.md",
+      "standard_error": 0.004180869461975329
+    },
     "lead_08_injury_trajectory_refresh_cx14": {
       "category": "health",
       "classification": "unresolved_below_power",
