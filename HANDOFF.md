@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-29T22:50:25.214425+00:00`
+Refreshed at: `2026-09-29T22:51:20.976618+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-09-29T22:50:25.214425+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `a8e000cda1bd` — LEAD-82 and LEAD-83 unit 1: features built, replays pending
-- Pending change set: 27 paths
+- Baseline commit: `23efb44a7212` — LEAD-77 unit 2: quote-freshness correction is unresolved
+- Pending change set: 24 paths
   - ` M AGENTS.md`
   - ` M docs/agent_workflow.md`
   - ` M docs/lanes/backlog-fleet-2026-09-29.md`
-  - `M  docs/lanes/lead77.md`
   - ` M docs/lanes/lead79.md`
-  - `A  docs/lead77_unit2.md`
-  - `M  registry/weak_signals.json`
-  - `A  scripts/lead77_unit2.py`
+  - `A  docs/lanes/lead84.md`
+  - `A  docs/lead84_unit1.md`
+  - `A  scripts/lead84_unit1.py`
   - `?? bash.exe.stackdump`
-  - `?? docs/lanes/lead84.md`
   - `?? docs/lanes/lead85.md`
   - `?? docs/lanes/lead86.md`
   - `?? docs/lanes/lead87.md`
   - `?? docs/lanes/move-feature-audit.md`
   - `?? docs/lanes/windows-shell-popup.md`
-  - `?? docs/lead84_unit1.md`
   - `?? docs/lead87_protocol.md`
+  - `?? docs/lead88_protocol.md`
   - `?? registry/experiments/margin-backtest/20260927T134152Z.json`
   - `?? registry/experiments/margin-backtest/20260929T183944Z.json`
   - `?? registry/experiments/margin-predict/2026-week-03-20260927T134352Z.json`
-  - ...and 7 more
+  - `?? registry/experiments/margin-predict/2026-week-03-20260929T184122Z.json`
+  - `?? registry/experiments/opener-evaluation/20260927T134738Z.json`
+  - ...and 4 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
