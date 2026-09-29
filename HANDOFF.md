@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-29T22:59:09.922288+00:00`
+Refreshed at: `2026-09-29T23:08:17.156759+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-09-29T22:59:09.922288+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `2825d2608945` — LEAD-85 unit 1, LEAD-79 unit 2, LEAD-87 unit 1
-- Pending change set: 22 paths
+- Baseline commit: `6a8335c6bdb5` — Fix the sharp-book snapshot cutoff; the served move input checks out
+- Pending change set: 26 paths
   - ` M AGENTS.md`
   - ` M docs/agent_workflow.md`
-  - `M  docs/lanes/backlog-fleet-2026-09-29.md`
-  - `A  docs/lanes/move-feature-audit.md`
-  - `A  docs/move_feature_audit.md`
-  - `M  src/nfl_ats/sharp_book_movement_features.py`
+  - ` M docs/lanes/lead82.md`
+  - ` M docs/lanes/lead83.md`
+  - ` M docs/lanes/lead84.md`
+  - ` M docs/lanes/lead85.md`
+  - `A  docs/lanes/lead88.md`
+  - `A  docs/lead88_protocol.md`
+  - `A  docs/lead88_unit1.md`
+  - `A  scripts/lead88_unit1.py`
   - `?? bash.exe.stackdump`
   - `?? docs/lanes/lead86.md`
-  - `?? docs/lanes/lead88.md`
   - `?? docs/lanes/lead89.md`
   - `?? docs/lanes/windows-shell-popup.md`
   - `?? docs/lead86_protocol.md`
-  - `?? docs/lead88_protocol.md`
+  - `?? docs/lead86_unit1.md`
+  - `?? docs/lead89_unit1.md`
   - `?? registry/experiments/margin-backtest/20260927T134152Z.json`
   - `?? registry/experiments/margin-backtest/20260929T183944Z.json`
   - `?? registry/experiments/margin-predict/2026-week-03-20260927T134352Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-03-20260929T184122Z.json`
-  - `?? registry/experiments/opener-evaluation/20260927T134738Z.json`
-  - `?? registry/experiments/waterfall-feed/20260927T134851Z.json`
-  - `?? registry/experiments/waterfall-feed/20260929T184553Z.json`
-  - ...and 2 more
+  - ...and 6 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
