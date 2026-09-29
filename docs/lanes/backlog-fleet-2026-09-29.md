@@ -48,10 +48,22 @@ at least seven parallel workers, committing and pushing at each verified return.
 - Queue now: LEAD-79 unit 2, then LEAD-82..89 (prompts ready in
   tests/scratch/codex/lead8N.prompt.md), then backlog-sweep packets.
 
+- Shared blocker: LEAD-83/87/89 need a strictly season-held-out four-term base
+  (loso-base worker builds artifacts/loso_base/). LEAD-89 unit 2 waits on it.
+- Lint: 492 ruff errors in today's scripts; lint-cleanup worker running. Preamble
+  now requires ruff check+format on every touched file.
+
 ## Tried
 - `codex --no-daemon exec` launcher: blocked by permission classifier.
 
 ## Next
+- Session stopped at Claude usage limit 2026-09-29. Codex workers still running
+  when it stopped (outputs land UNCOMMITTED in tests/scratch/codex/<lane>.final.md
+  and their lane files): lead82u2, lead83u2, lead84u2, lead85u2, lead87u2,
+  lead88u2, lint, losobase. Next session: read each .final.md, run its lane's
+  record commands (candidate-vs-served cells only, add --plain-summary), commit,
+  push; then LEAD-89 unit 2 on artifacts/loso_base/.
+
 - Launch wave 1; on each return verify, run record commands serially, commit,
   push, refill from ideation rows.
 

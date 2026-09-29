@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-29T23:14:35.199933+00:00`
+Refreshed at: `2026-09-29T23:15:16.545315+00:00`
 
 ## Start here
 
@@ -21,22 +21,22 @@ Refreshed at: `2026-09-29T23:14:35.199933+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `61485ff31e79` — LEAD-86 unit 1: a market-probability penalty in training is unresolved
+- Baseline commit: `7114038b0fd4` — LEAD-89 unit 1: nomination states built, scoring gated on season-clean base
 - Pending change set: 26 paths
   - ` M AGENTS.md`
   - ` M docs/agent_workflow.md`
   - ` M docs/findings.html`
   - ` M docs/index.html`
+  - `M  docs/lanes/backlog-fleet-2026-09-29.md`
   - ` M docs/lanes/lead82.md`
   - ` M docs/lanes/lead83.md`
   - ` M docs/lanes/lead84.md`
   - ` M docs/lanes/lead85.md`
   - ` M docs/lanes/lead88.md`
-  - `A  docs/lanes/lead89.md`
-  - `A  docs/lead89_unit1.md`
-  - `A  scripts/lead89_unit1.py`
   - `?? bash.exe.stackdump`
   - `?? docs/lanes/windows-shell-popup.md`
+  - `?? docs/lead82_unit2.md`
+  - `?? docs/lead83_unit2.md`
   - `?? docs/lead85_unit2.md`
   - `?? registry/experiments/margin-backtest/20260927T134152Z.json`
   - `?? registry/experiments/margin-backtest/20260929T183944Z.json`
