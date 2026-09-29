@@ -2189,6 +2189,13 @@ def _history_pick_row_html(row: HistoryPickRow) -> str:
     best = '<span class="best-flag">Best pick</span>' if row.best_pick else ""
     confidence = f"{row.confidence:.1%}" if row.confidence is not None else "--"
     line = row.pick_line_text
+    close_line = (
+        f"<b>{escape(row.pick_team)} {escape(row.close_line_text)}</b>"
+        if row.status in {"settled", "push"}
+        and row.close_status in {"settled", "push"}
+        and row.close_home_spread is not None
+        else ""
+    )
     row_class = "game is-best" if row.best_pick else "game"
     return (
         f'<tr class="{row_class}">'
@@ -2198,7 +2205,7 @@ def _history_pick_row_html(row: HistoryPickRow) -> str:
         f'<td data-label="Pick"><b>{escape(row.pick_team)}</b> {escape(line)} {best}</td>'
         f'<td data-label="Saved cover chance" class="prob">{confidence}</td>'
         f'<td data-label="Outcome">{_history_status_html(row)}</td>'
-        f'<td data-label="Vs. the close"><span class="game-sub">'
+        f'<td data-label="Vs. the close">{close_line}<span class="game-sub">'
         f"{escape(row.close_outcome_text)}</span></td>"
         "</tr>"
     )

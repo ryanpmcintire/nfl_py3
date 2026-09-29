@@ -249,6 +249,7 @@ class HistoryPickRow:
     score_text: str | None
     close_status: str = "pending"
     close_correct: bool | None = None
+    close_home_spread: float | None = None
 
     @property
     def pick_team(self) -> str:
@@ -263,6 +264,13 @@ class HistoryPickRow:
         if self.decision_home_spread is None:
             return "--"
         line = -self.decision_home_spread if self.pick_side == "HOME" else self.decision_home_spread
+        return "PK" if line == 0.0 else f"{line:+g}"
+
+    @property
+    def close_line_text(self) -> str:
+        if self.close_home_spread is None:
+            return "--"
+        line = -self.close_home_spread if self.pick_side == "HOME" else self.close_home_spread
         return "PK" if line == 0.0 else f"{line:+g}"
 
     @property
@@ -1289,6 +1297,7 @@ def _history_pick_rows(
                 ),
                 close_status=close_status,
                 close_correct=close_correct,
+                close_home_spread=_number(row.get("close_home_spread")),
             )
         )
     return tuple(rows)
