@@ -49076,6 +49076,34 @@
       "source": "docs/lead68_unit1.md",
       "standard_error": null
     },
+    "lead72_push_adjusted_best_pick_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No closing ground established; reliability and power control not measured",
+      "closing_ground": null,
+      "description": "Two fixed Best Pick rankings; pool-grade accuracy; pushes score 0.5",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "lead72_push_adjusted_best_pick",
+      "interval": [
+        -4.67289719626,
+        4.67289719626
+      ],
+      "league": "nfl",
+      "notes": "2 ranking looks; decisive n=13: 0 pp, CI [-38.4615,38.4615], probability_positive=0.50175; fixed w=0.5; no fitting",
+      "plain_summary": "Counting a push as half a win when choosing the Best Pick changed the choice in only 6 of 107 weeks and made no difference to the record.",
+      "probability_positive": 0.5016,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead72_results.md",
+      "standard_error": 2.29016759302
+    },
     "lead_08_injury_trajectory_refresh_cx14": {
       "category": "health",
       "classification": "unresolved_below_power",

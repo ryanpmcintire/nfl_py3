@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-29T21:05:20.652866+00:00`
+Refreshed at: `2026-09-29T21:06:23.864358+00:00`
 
 ## Start here
 
@@ -21,15 +21,16 @@ Refreshed at: `2026-09-29T21:05:20.652866+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `313106d3596c` — LEAD-68: season-phase model slopes stay unresolved out of season
-- Pending change set: 38 paths
+- Baseline commit: `418d45bf8201` — Declared ATS study of the season-lagged special teams ratings
+- Pending change set: 35 paths
   - ` M AGENTS.md`
   - ` M docs/agent_workflow.md`
   - ` M docs/lanes/backlog-fleet-2026-09-29.md`
-  - `A  docs/lanes/st-ratings-ats-study.md`
-  - `A  docs/st_ratings_ats_study.md`
+  - `A  docs/lanes/lead72.md`
+  - `A  docs/lead72_results.md`
+  - `A  docs/lead72_weekly.md`
   - `M  registry/weak_signals.json`
-  - `A  scripts/st_ratings_ats_study.py`
+  - `A  scripts/lead72_unit1.py`
   - ` M src/nfl_ats/board_assistant.py`
   - ` M src/nfl_ats/board_content.py`
   - ` M src/nfl_ats/board_site_content.py`
@@ -39,11 +40,10 @@ Refreshed at: `2026-09-29T21:05:20.652866+00:00`
   - `?? docs/lanes/lead67.md`
   - `?? docs/lanes/lead69.md`
   - `?? docs/lanes/lead70.md`
-  - `?? docs/lanes/lead72.md`
   - `?? docs/lanes/ui20-2026-09-29.md`
   - `?? docs/lanes/windows-shell-popup.md`
   - `?? docs/lead67_predictions.md`
-  - ...and 18 more
+  - ...and 15 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
