@@ -93,7 +93,7 @@ def _run_weekly(
         cwd=REPO,
         capture_output=True,
         text=True,
-        timeout=1800,
+        timeout=3300,
         check=False,
     )
     if proc.returncode:

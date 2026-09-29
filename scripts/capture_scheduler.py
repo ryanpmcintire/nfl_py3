@@ -1580,6 +1580,25 @@ SCHEDULE: tuple[Job, ...] = (
         )
         for day in ("wed", "thu", "sun", "mon")
     ),
+    *(
+        Job(
+            f"publish_site_{day}_{at.replace(':', '')}",
+            day,
+            at,
+            180,
+            [str(UV), "run", "--no-sync", "python", str(REPO / "scripts" / "publish_site.py")],
+            True,
+            "2026-09-29: nothing republished or pushed the public site after settlement, so "
+            "the board's results and tiebreaker record only moved when a session published "
+            "by hand. This rebuilds the site from current artifacts and commits and pushes "
+            "only the site files: after each night's settlement (Fri, Mon and Tue 00:30 ET) "
+            "and after the Tuesday lock window closes (Tue 14:30 ET).",
+            season_guarded=True,
+            added_on="2026-09-29",
+            catch_up=True,
+        )
+        for day, at in (("fri", "00:30"), ("mon", "00:30"), ("tue", "00:30"), ("tue", "14:30"))
+    ),
     Job(
         "verify_full_weekly",
         "mon",

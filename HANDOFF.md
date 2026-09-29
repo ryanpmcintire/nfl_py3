@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-29T20:20:48.852555+00:00`
+Refreshed at: `2026-09-29T20:26:26.618931+00:00`
 
 ## Start here
 
@@ -21,15 +21,14 @@ Refreshed at: `2026-09-29T20:20:48.852555+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `863df86d1c53` — Publish 2026 Week 4 card and board from the Tuesday pool lines
-- Pending change set: 15 paths
+- Baseline commit: `88992503289b` — Order the dashboard's games as the pool board lists them
+- Pending change set: 14 paths
   - ` M AGENTS.md`
   - ` M docs/agent_workflow.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - `M  docs/model.html`
-  - `M  src/nfl_ats/board_content.py`
+  - ` M docs/index.html`
+  - `M  scripts/capture_scheduler.py`
+  - `A  scripts/publish_site.py`
+  - `M  scripts/scheduled_weekly_lock.py`
   - `?? docs/lanes/windows-shell-popup.md`
   - `?? registry/experiments/margin-backtest/20260927T134152Z.json`
   - `?? registry/experiments/margin-backtest/20260929T183944Z.json`
