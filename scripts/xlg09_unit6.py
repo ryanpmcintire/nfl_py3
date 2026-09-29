@@ -64,10 +64,7 @@ def pooled_logit_for(
 def nested_column(cfb_all: pd.DataFrame, nfl: pd.DataFrame, held: int) -> pd.Series:
     col = pd.Series(np.nan, index=nfl.index, dtype=float)
     for s in sorted(int(v) for v in nfl["season"].unique()):
-        if s == held:
-            exclude = {held}
-        else:
-            exclude = {s, held}
+        exclude = {held} if s == held else {s, held}
         col.loc[nfl["season"].eq(s)] = pooled_logit_for(cfb_all, nfl, s, exclude)
     return col
 
@@ -110,7 +107,9 @@ def base_p_linemove(nfl: pd.DataFrame) -> pd.Series:
         train = nfl.loc[nfl["season"].ne(held)]
         test = nfl.loc[nfl["season"].eq(held)]
         m, s = standardize(train, cols)
-        b = fit_logit_beta(design(train, cols, m, s), train["home_covered"].astype(float).to_numpy())
+        b = fit_logit_beta(
+            design(train, cols, m, s), train["home_covered"].astype(float).to_numpy()
+        )
         out.loc[test.index] = predict_logit(test, cols, b, m, s)
     return out
 
@@ -122,7 +121,7 @@ def summarize_beta(betas: dict[str, float]) -> dict[str, float]:
         "max": float(vals.max()),
         "mean": float(vals.mean()),
         "n_negative": int((vals < 0).sum()),
-        "n_folds": int(len(vals)),
+        "n_folds": len(vals),
     }
 
 
@@ -145,9 +144,9 @@ def main() -> None:
     lm, _prov2, _meta2 = load_line_move_population()
     p_lb = base_p_linemove(lm)
     p_ln, lm_betas = nested_loso(lm, cfb_all, list(BASE_FEATURES))
-    lm["diff_lm"] = (
-        np.where(p_ln.ge(0.5), 1.0, -1.0) - np.where(p_lb.ge(0.5), 1.0, -1.0)
-    ) * lm["open_move"]
+    lm["diff_lm"] = (np.where(p_ln.ge(0.5), 1.0, -1.0) - np.where(p_lb.ge(0.5), 1.0, -1.0)) * lm[
+        "open_move"
+    ]
     lm_sub = lm.loc[lm["season"].ge(2020)].reset_index(drop=True)
     keys = (
         "mean_points",
@@ -178,7 +177,9 @@ def main() -> None:
     stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
     out_dir = REPO / "artifacts/xlg09_unit6" / stamp
     out_dir.mkdir(parents=True, exist_ok=True)
-    (out_dir / "summary.json").write_text(json.dumps(result, indent=2, default=str), encoding="utf-8")
+    (out_dir / "summary.json").write_text(
+        json.dumps(result, indent=2, default=str), encoding="utf-8"
+    )
     print(f"artifact_dir={out_dir}")
     print(json.dumps(result, default=str))
 

@@ -24,7 +24,9 @@ def load():
     sched = pd.read_parquet(sorted(glob.glob(str(REPO / "data/raw/*/schedules.parquet")))[-1])
     p = p.merge(sched[["game_id", "gametime"]], on="game_id", how="left")
     p["key"] = p["gameday"].astype(str) + " " + p["gametime"].astype(str).fillna("")
-    p = p.dropna(subset=["market_total", "actual_total", "predicted_residual"]).reset_index(drop=True)
+    p = p.dropna(subset=["market_total", "actual_total", "predicted_residual"]).reset_index(
+        drop=True
+    )
     idx = p.sort_values("key").groupby(["season", "week"]).tail(1).index
     p["last"] = p.index.isin(idx)
     return p

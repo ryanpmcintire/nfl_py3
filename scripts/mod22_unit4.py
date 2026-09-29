@@ -12,7 +12,7 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from players_on_field_rating_eval import (  # noqa: E402
+from players_on_field_rating_eval import (
     ARTIFACTS_ROOT,
     BOOTSTRAP_DRAWS,
     BOOTSTRAP_SEED,
@@ -23,10 +23,10 @@ from players_on_field_rating_eval import (  # noqa: E402
     in_sample_fit,
     loso,
 )
-from players_on_field_rating_unit2 import evaluate_candidate  # noqa: E402
+from players_on_field_rating_unit2 import evaluate_candidate
 
-from nfl_ats.pick_probability_fit import FIT_FEATURES, build_fit_population  # noqa: E402
-from nfl_ats.signal_atlas import _metrics as signal_metrics  # noqa: E402
+from nfl_ats.pick_probability_fit import FIT_FEATURES, build_fit_population
+from nfl_ats.signal_atlas import _metrics as signal_metrics
 
 SNAPSHOT = DATA_ROOT / "players" / "raw" / "20260910T205112Z"
 FEATURE_TABLE = DATA_ROOT / "processed" / "game_features_weak_stack.parquet"
@@ -83,8 +83,15 @@ def main() -> None:
     injuries = pd.read_parquet(
         SNAPSHOT / "injuries.parquet",
         columns=[
-            "season", "week", "team", "gsis_id", "report_status", "date_modified",
-            "effective_observed_at", "observed_at_basis", "observed_at_is_proxy",
+            "season",
+            "week",
+            "team",
+            "gsis_id",
+            "report_status",
+            "date_modified",
+            "effective_observed_at",
+            "observed_at_basis",
+            "observed_at_is_proxy",
         ],
     )
     injuries["effective_observed_at"] = pd.to_datetime(
@@ -99,7 +106,7 @@ def main() -> None:
         & injuries["effective_observed_at"].eq(injuries["date_modified"])
     )
     injuries["evidenced_report_at"] = injuries["date_modified"].where(evidenced)
-    inj_index = {key: frame for key, frame in injuries.groupby(["season", "week", "team"])}
+    inj_index = {key: frame for key, frame in injuries.groupby(["season", "week", "team"])}  # noqa: C416
 
     match_total = match_eligible = match_hit = 0
     matched_names = Counter()
@@ -112,11 +119,17 @@ def main() -> None:
         for side, team in (("home", game.home_team), ("away", game.away_team)):
             flag = 0.0
             audit = {
-                "game_id": game.game_id, "side": side, "team": team,
-                "decision_at": game.decision_at, "expected_starter": None,
-                "matched_ids": 0, "cutoff_only_flag": False,
-                "excluded_proxy_reports": 0, "excluded_unevidenced_reports": 0,
-                "excluded_late_reports": 0, "earliest_evidenced_report_at": pd.NaT,
+                "game_id": game.game_id,
+                "side": side,
+                "team": team,
+                "decision_at": game.decision_at,
+                "expected_starter": None,
+                "matched_ids": 0,
+                "cutoff_only_flag": False,
+                "excluded_proxy_reports": 0,
+                "excluded_unevidenced_reports": 0,
+                "excluded_late_reports": 0,
+                "earliest_evidenced_report_at": pd.NaT,
             }
             frame_team = starts_by_team.get(team)
             prior = None
@@ -231,9 +244,7 @@ def main() -> None:
                 (scored_audit["cutoff_only_flag"] & ~scored_audit["qb_out"]).sum()
             ),
             "excluded_proxy_reports": int(scored_audit["excluded_proxy_reports"].sum()),
-            "excluded_unevidenced_reports": int(
-                scored_audit["excluded_unevidenced_reports"].sum()
-            ),
+            "excluded_unevidenced_reports": int(scored_audit["excluded_unevidenced_reports"].sum()),
             "excluded_late_reports": int(scored_audit["excluded_late_reports"].sum()),
         },
         "look_qb_out_diff": result,
@@ -247,14 +258,19 @@ def main() -> None:
     audit_frame.to_parquet(out / "team_game_audit.parquet", index=False)
     print(str(out.relative_to(REPO_ROOT)))
     cell = result["paired_cell"]
-    print(json.dumps({
-        "games": len(population),
-        "name_to_gsis_match_rate": summary["name_to_gsis_match_rate"],
-        "timestamp_audit": summary["timestamp_audit_scored_team_games"],
-        "brier_improvement": cell["brier_improvement"],
-        "brier_interval": cell["brier_interval"],
-        "probability_positive": cell["brier_probability_positive"],
-    }, sort_keys=True))
+    print(
+        json.dumps(
+            {
+                "games": len(population),
+                "name_to_gsis_match_rate": summary["name_to_gsis_match_rate"],
+                "timestamp_audit": summary["timestamp_audit_scored_team_games"],
+                "brier_improvement": cell["brier_improvement"],
+                "brier_interval": cell["brier_interval"],
+                "probability_positive": cell["brier_probability_positive"],
+            },
+            sort_keys=True,
+        )
+    )
 
 
 if __name__ == "__main__":

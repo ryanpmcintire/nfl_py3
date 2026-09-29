@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-29T23:15:16.545315+00:00`
+Refreshed at: `2026-09-29T23:41:50.144632+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-09-29T23:15:16.545315+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `7114038b0fd4` — LEAD-89 unit 1: nomination states built, scoring gated on season-clean base
-- Pending change set: 26 paths
+- Baseline commit: `fc677f7aabe4` — Record fleet state at the session stop
+- Pending change set: 45 paths
   - ` M AGENTS.md`
   - ` M docs/agent_workflow.md`
   - ` M docs/findings.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/backlog-fleet-2026-09-29.md`
   - ` M docs/lanes/lead82.md`
   - ` M docs/lanes/lead83.md`
   - ` M docs/lanes/lead84.md`
   - ` M docs/lanes/lead85.md`
+  - ` M docs/lanes/lead87.md`
   - ` M docs/lanes/lead88.md`
-  - `?? bash.exe.stackdump`
-  - `?? docs/lanes/windows-shell-popup.md`
-  - `?? docs/lead82_unit2.md`
-  - `?? docs/lead83_unit2.md`
-  - `?? docs/lead85_unit2.md`
-  - `?? registry/experiments/margin-backtest/20260927T134152Z.json`
-  - `?? registry/experiments/margin-backtest/20260929T183944Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-03-20260927T134352Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-03-20260929T184122Z.json`
-  - `?? registry/experiments/opener-evaluation/20260927T134738Z.json`
-  - ...and 6 more
+  - `A  docs/lanes/lint-cleanup-2026-09-29.md`
+  - `M  scripts/lead69_cfb_replication.py`
+  - `M  scripts/lead73_unit1.py`
+  - `M  scripts/lead81_unit1.py`
+  - `M  scripts/lead82_unit1.py`
+  - `M  scripts/lead87_unit1.py`
+  - `M  scripts/lead88_unit1.py`
+  - `M  scripts/mod22_unit4.py`
+  - `M  scripts/mod22_unit5.py`
+  - `M  scripts/st_ratings_ats_study.py`
+  - ...and 25 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
