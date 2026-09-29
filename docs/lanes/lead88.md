@@ -1,55 +1,36 @@
-# LEAD-88 - observed total news
+# LEAD-88 unit 3 - total response with identity at zero
 
 ## Goal
-Replay one fitted total-move response against the served score-lattice guess; research only.
+Isolate total-news response from lattice reprojection; research only.
 
 ## State
-**Measured:** one response replay complete; 1333/1,343 games and 101/101 last games scored.
-All 33 missing base rows retained; 10 production-declined guesses remain in scratch evidence, outside paired MAE.
-Diagnostic: 26 zero-move guesses changed through lattice reprojection; this mixes mechanisms.
-Last-game MAE gain 0.069307 [-0.089109, 0.237624]; probability_positive=0.8006.
-All-game gain 0.008252 [-0.045902, 0.061013]; probability_positive=0.6293.
-Proposed unresolved status; report `docs/lead88_unit2.md`; no registry writes.
+**Measured:** one declared replay complete, 2 candidate-versus-served looks; 1,333/1,343 games and 101 last games scored.
+Zero-move changes: 0; zero-coefficient identity: 1,333/1,333 team-score pairs.
+last: MAE improvement 0.099010 [-0.019802, 0.217822]; probability_positive=0.952550.
+all: MAE improvement 0.053263 [0.009901, 0.097524]; probability_positive=0.992300.
+Proposed unresolved_below_power; no registry writes. Report: docs/lead88_unit3.md.
 
 ## Protocol (frozen before outcomes)
-Owner amendment: baseline is served lattice guess; half-up market total is a comparator only.
-One LAD response to Tuesday-to-deadline total move, six LOSO seasons 2020-2025, pushes retained.
-One fixed fitted probability selects sides; no standalone flips. 82 bounded looks within parent 713 looks.
-Full declaration saved before scoring in `tests/scratch/codex/lead88_unit2/protocol.md`, copied in report.
+Original declaration saved before scoring in tests/scratch/codex/lead88_unit3/protocol.md and copied verbatim into the report.
+Protocol SHA256: 001b5dc1868c7639aa7d4c84624e10a769e5cc112ec2fb14f865f302b7cf47c0.
+Same 2020-2025 population, opener proxy, four-term side, LAD LOSO response; adjust continuous centre only across a team-score lattice cell.
+Two looks: last/all MAE; week-block intervals, exact closer null, fold slopes and IS/OOS gap. No outcome-driven revisions.
 
 ## Tried
-**Measured:** `.tools/uv.exe run --no-sync python scripts/lead88_unit2.py`; local UV_CACHE_DIR used.
-Frozen quote clocks, base probability reproduction and retained-row checks executed in the real command.
+**Measured:** .tools/uv.exe run --no-sync python scripts/lead88_unit3.py; local UV_CACHE_DIR; one job, at most two compute threads.
+Replay guards passed; source hashes, clocks, zero identity, retained rows, same response slopes and fixed side checked.
+**Measured:** .tools/uv.exe run --no-sync ruff check scripts/lead88_unit3.py and ruff format --check scripts/lead88_unit3.py both passed (exit 0).
 
 ## Record commands
-Orchestrator only; candidate versus served, execute serially.
+Orchestrator only; serial bash commands, candidate versus served.
 ```bash
-.tools/uv.exe run --no-sync --no-cache nfl-ats weak-signals record \
-  --name lead88_unit2_last_mae --family lead88_total_response \
-  --description 'Fitted total response plus lattice reprojection versus served guess on the final game of the week; 82 looks' \
-  --source docs/lead88_unit2.md --league nfl --season-start 2020 --season-end 2025 \
-  --effect 0.0693069306931 --effect-units mae_improvement \
-  --interval-low -0.0891089108911 --interval-high 0.237623762376 \
-  --standard-error 0.0820544998779 --probability-positive 0.80055 \
-  --sample-games 101 --sample-blocks 101 --classification unresolved_below_power \
-  --classification-evidence 'Retrospective LOSO; 82 looks; zero-move guesses can change; no power control or mechanism refutation' \
-  --plain-summary 'For the final game of the week, this study nudges the score guess using changing sportsbook totals, then rounds the scores again. Keep the current guess while the effects of the nudge and rounding remain unresolved.'
-
-.tools/uv.exe run --no-sync --no-cache nfl-ats weak-signals record \
-  --name lead88_unit2_all_mae --family lead88_total_response \
-  --description 'Fitted total response plus lattice reprojection versus served guess on games with a served score guess; 82 looks' \
-  --source docs/lead88_unit2.md --league nfl --season-start 2020 --season-end 2025 \
-  --effect 0.00825206301575 --effect-units mae_improvement \
-  --interval-low -0.045901768417 --interval-high 0.0610128822588 \
-  --standard-error 0.0266996876959 --probability-positive 0.6293 \
-  --sample-games 1333 --sample-blocks 107 --classification unresolved_below_power \
-  --classification-evidence 'Retrospective LOSO; 82 looks; zero-move guesses can change; no power control or mechanism refutation' \
-  --plain-summary 'For games with a served score guess, this study nudges the score guess using changing sportsbook totals, then rounds the scores again. Keep the current guess while the effects of the nudge and rounding remain unresolved.'
+.tools/uv.exe run --no-sync --no-cache nfl-ats weak-signals record --name lead88_unit3_last_mae --family lead88_total_response --description 'Changing totals versus the current score guess on the final game of the week; 2 looks' --source docs/lead88_unit3.md --league nfl --season-start 2020 --season-end 2025 --effect 0.0990099009901 --effect-units mae_improvement --interval-low -0.019801980198 --interval-high 0.217821782178 --standard-error 0.0600535346539 --probability-positive 0.95255 --sample-games 101 --sample-blocks 101 --classification unresolved_below_power --classification-evidence 'Two declared looks; no refuted mechanism or powered control; pending review' --plain-summary 'For the final game of the week, the score guess follows changes in sportsbook totals only far enough to change a whole score cell. No change in the total leaves the current guess alone. These results do not settle whether this helps; keep the current guess.'
+.tools/uv.exe run --no-sync --no-cache nfl-ats weak-signals record --name lead88_unit3_all_mae --family lead88_total_response --description 'Changing totals versus the current score guess on all scored games; 2 looks' --source docs/lead88_unit3.md --league nfl --season-start 2020 --season-end 2025 --effect 0.053263315829 --effect-units mae_improvement --interval-low 0.00990080172401 --interval-high 0.0975243810953 --standard-error 0.0222866473083 --probability-positive 0.9923 --sample-games 1333 --sample-blocks 107 --classification unresolved_below_power --classification-evidence 'Two declared looks; no refuted mechanism or powered control; pending review' --plain-summary 'For all scored games, the score guess follows changes in sportsbook totals only far enough to change a whole score cell. No change in the total leaves the current guess alone. These results do not settle whether this helps; keep the current guess.'
 ```
 
 ## Next
-Orchestrator reviews/records; next unit must predeclare a zero-adjustment identity before further scoring.
+Orchestrator reviews the report and runs the two record commands serially; any further study needs a new declaration.
 
 ## Open
-Retrospective upstream/feature-vintage limits remain. No prospective or pool-rank claim; zero crossing closes nothing.
-No serving change, registry write, publication, new tests, commit or push by this worker.
+Retrospective feature-vintage and power limits remain. Zero crossing closes nothing; one fitted probability selects the side.
+No serving change, publication, tests, commit or push. Scratch rows and summary: tests/scratch/codex/lead88_unit3/.

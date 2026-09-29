@@ -51120,6 +51120,62 @@
       "source": "docs/lead88_unit2.md",
       "standard_error": 0.0820544998779
     },
+    "lead88_unit3_all_mae": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Two declared looks; no refuted mechanism or powered control; pending review",
+      "closing_ground": null,
+      "description": "Changing totals versus the current score guess on all scored games; 2 looks",
+      "effect": 0.053263315829,
+      "effect_units": "mae_improvement",
+      "family": "lead88_total_response",
+      "interval": [
+        0.00990080172401,
+        0.0975243810953
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "For all scored games, the score guess follows changes in sportsbook totals only far enough to change a whole score cell. No change in the total leaves the current guess alone. These results do not settle whether this helps; keep the current guess.",
+      "probability_positive": 0.9923,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1333,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead88_unit3.md",
+      "standard_error": 0.0222866473083
+    },
+    "lead88_unit3_last_mae": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Two declared looks; no refuted mechanism or powered control; pending review",
+      "closing_ground": null,
+      "description": "Changing totals versus the current score guess on the final game of the week; 2 looks",
+      "effect": 0.0990099009901,
+      "effect_units": "mae_improvement",
+      "family": "lead88_total_response",
+      "interval": [
+        -0.019801980198,
+        0.217821782178
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "For the final game of the week, the score guess follows changes in sportsbook totals only far enough to change a whole score cell. No change in the total leaves the current guess alone. These results do not settle whether this helps; keep the current guess.",
+      "probability_positive": 0.95255,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 101,
+      "sample_games": 101,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead88_unit3.md",
+      "standard_error": 0.0600535346539
+    },
     "lead_08_injury_trajectory_refresh_cx14": {
       "category": "health",
       "classification": "unresolved_below_power",
