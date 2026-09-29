@@ -513,6 +513,7 @@ def test_live_margin_command_refuses_zero_injury_inputs(
         ridge_alpha=10.0,
         probability_method="gaussian",
         line_sweep=False,
+        no_activate=False,
     )
     with pytest.raises(PredictionSafetyError, match="injury_feature_presence"):
         prediction._cmd_margin_predict(args)

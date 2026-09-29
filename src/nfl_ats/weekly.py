@@ -236,9 +236,10 @@ def _prospective_steps(
                 str(processed / WEAK_STACK_FEATURE_TABLE),
                 "--feature-profile",
                 WEAK_STACK_FEATURE_PROFILE,
+                "--no-activate",
             ),
             optional=True,
-            notes=("stays UNLINKED from the active model by construction",),
+            notes=("--no-activate preserves the served weekly forecast and keeps this UNLINKED",),
         ),
         WeeklyStep(
             number=11,

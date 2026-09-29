@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-29T21:20:14.231319+00:00`
+Refreshed at: `2026-09-29T21:24:52.865055+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-09-29T21:20:14.231319+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `691feb3968b5` — LEAD-67: key-number-priced late move does not beat the raw move term
-- Pending change set: 40 paths
+- Baseline commit: `d9d4245508cf` — LEAD-66, LEAD-69 and LEAD-71 unit 1; accept RPS as a registry unit
+- Pending change set: 31 paths
   - ` M AGENTS.md`
   - ` M docs/agent_workflow.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
   - ` M docs/lanes/backlog-fleet-2026-09-29.md`
-  - `A  docs/lanes/lead66.md`
-  - `A  docs/lanes/lead69.md`
-  - `A  docs/lanes/lead71.md`
-  - `A  docs/lead66_protocol.md`
-  - `A  docs/lead66_unit1.md`
-  - `A  docs/lead69_inventory.md`
-  - `A  docs/lead69_pre_slot_fix.md`
-  - `A  docs/lead69_protocol.md`
-  - `A  docs/lead69_registry_payload.md`
-  - `A  docs/lead69_results.md`
-  - `A  docs/lead69_run.md`
-  - `A  docs/lead69_source_diagnostics.md`
-  - `A  docs/lead71_unit1_inventory.md`
-  - `M  registry/weak_signals.json`
-  - `A  scripts/lead66_unit1.py`
-  - `A  scripts/lead69_unit1.py`
-  - `A  scripts/lead71_unit1.py`
-  - ...and 20 more
+  - `A  docs/lanes/tiebreaker-forecast-pointer.md`
+  - `M  docs/model.html`
+  - `M  src/nfl_ats/cli_commands/prediction.py`
+  - `M  src/nfl_ats/weekly.py`
+  - `M  tests/test_prediction_safety.py`
+  - `?? bash.exe.stackdump`
+  - `?? docs/lanes/ideation-2026-09-29b.md`
+  - `?? docs/lanes/lead70.md`
+  - `?? docs/lanes/lead73.md`
+  - `?? docs/lanes/mod22-unit5-qb-quality.md`
+  - `?? docs/lanes/verify-2026-09-29.md`
+  - `?? docs/lanes/windows-shell-popup.md`
+  - `?? docs/lead70_inventory.md`
+  - `?? docs/lead70_predictions.md`
+  - ...and 11 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -57,7 +57,7 @@ trust live Git output after checkout.
 - Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20260929T192743Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card combines this with the coach component in one fitted calibrated probability, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,114 / 2,123 (52.47%)**
-- Linked forecast: **2026 Week 4**, created `2026-09-29T19:42:13.061024+00:00`
+- Linked forecast: **2026 Week 4**, created `2026-09-29T19:24:03.442455+00:00`
 
 The 52.47% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 

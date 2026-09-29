@@ -158,6 +158,7 @@ class MarginPredictRequest:
     ridge_alpha: float
     probability_method: ResidualSmoothingMethod
     line_sweep: bool
+    activate: bool = True
 
 
 def parse_margin_predict_request(args: argparse.Namespace) -> MarginPredictRequest:
@@ -173,6 +174,7 @@ def parse_margin_predict_request(args: argparse.Namespace) -> MarginPredictReque
         ridge_alpha=args.ridge_alpha,
         probability_method=args.probability_method,
         line_sweep=bool(args.line_sweep),
+        activate=not args.no_activate,
     )
 
 
@@ -380,7 +382,11 @@ def orchestrate_margin_predict(request: MarginPredictRequest) -> PredictionArtif
                 else "smooth_gaussian_median_every_line"
             ),
         }
-    active_model = activate_matching_ats_model(_artifacts_root(), output, metadata)
+    active_model = (
+        activate_matching_ats_model(_artifacts_root(), output, metadata)
+        if request.activate
+        else None
+    )
     if active_model is None:
         metadata["synchronization_status"] = "UNLINKED"
     else:
@@ -899,6 +905,11 @@ def register(
         action=argparse.BooleanOptionalAction,
         default=True,
         help="also write a per-game line-sweep confidence table (line_sweep.parquet)",
+    )
+    margin_predict.add_argument(
+        "--no-activate",
+        action="store_true",
+        help="write an unlinked challenger forecast without replacing the active weekly forecast",
     )
     margin_predict.set_defaults(handler=_cmd_margin_predict)
 
