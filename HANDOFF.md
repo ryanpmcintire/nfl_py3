@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-29T22:13:58.642631+00:00`
+Refreshed at: `2026-09-29T22:16:34.570579+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-09-29T22:13:58.642631+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `752307dcc363` — LEAD-71 unit 3: market-implied lattice gives no better push probabilities
-- Pending change set: 27 paths
+- Baseline commit: `c2f38cb72e75` — Summarize the source check in one plain line above its rows
+- Pending change set: 22 paths
   - ` M AGENTS.md`
+  - ` M ROADMAP.md`
   - ` M docs/agent_workflow.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
   - ` M docs/lanes/backlog-fleet-2026-09-29.md`
   - ` M docs/lanes/lead69.md`
   - ` M docs/lanes/lead78.md`
-  - `A  docs/lanes/ui20-2026-09-29c.md`
-  - `M  docs/model.html`
-  - `M  src/nfl_ats/board_terminal.py`
-  - `M  src/nfl_ats/board_terminal_style.css`
+  - `A  docs/lanes/quote-provenance.md`
+  - `A  docs/quote_provenance.md`
+  - `A  scripts/quote_provenance_check.py`
   - `?? bash.exe.stackdump`
   - `?? docs/lanes/ideation-2026-09-29c.md`
   - `?? docs/lanes/lead69-cfb-replication.md`
-  - `?? docs/lanes/quote-provenance.md`
+  - `?? docs/lanes/ui20-2026-09-29d.md`
   - `?? docs/lanes/windows-shell-popup.md`
-  - `?? docs/quote_provenance.md`
   - `?? registry/experiments/margin-backtest/20260927T134152Z.json`
   - `?? registry/experiments/margin-backtest/20260929T183944Z.json`
-  - ...and 7 more
+  - `?? registry/experiments/margin-predict/2026-week-03-20260927T134352Z.json`
+  - `?? registry/experiments/margin-predict/2026-week-03-20260929T184122Z.json`
+  - `?? registry/experiments/opener-evaluation/20260927T134738Z.json`
+  - `?? registry/experiments/waterfall-feed/20260927T134851Z.json`
+  - ...and 2 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
