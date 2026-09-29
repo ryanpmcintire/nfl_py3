@@ -594,6 +594,118 @@
       "source": "docs/lead77_unit2.md",
       "standard_error": null
     },
+    "LEAD86-regularized-vs-four-term-accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism, zero split-half reliability, or calibrated positive control was established. A zero-crossing interval closes nothing.",
+      "closing_ground": null,
+      "description": "Selected market penalty: positive accuracy_points gain.",
+      "effect": 0.1434720229555237,
+      "effect_units": "accuracy_points",
+      "family": "LEAD86-fixed-market-penalty",
+      "interval": [
+        -0.7225433526011561,
+        1.1347517730496455
+      ],
+      "league": "nfl",
+      "notes": "505 declared looks; three chronological outer seasons; fit through Y-3, select Y-2, calibrate Y-1. Frozen predictions; 10000 paired season-stratified week-block resamples. Brier is primary. Upstream feature selection is retrospective. Source limitation: 1 game has conflicting sportsbook prices; 3 market fits miss a quoted probability by over one percentage point. The frozen population was retained without an outcome-driven exclusion or refit.",
+      "plain_summary": "Teaching the model to stay closer to the available sportsbook prices gave a small, uncertain improvement. Keep the current picks while this is studied. One set of conflicting sportsbook prices still needs checking.",
+      "probability_positive": 0.608,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead86_unit1.md",
+      "standard_error": null
+    },
+    "LEAD86-regularized-vs-four-term-brier": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism, zero split-half reliability, or calibrated positive control was established. A zero-crossing interval closes nothing.",
+      "closing_ground": null,
+      "description": "Selected market penalty: positive brier_improvement gain.",
+      "effect": 0.0005194492141427145,
+      "effect_units": "brier_improvement",
+      "family": "LEAD86-fixed-market-penalty",
+      "interval": [
+        -0.0010654569040281692,
+        0.0021697122429940457
+      ],
+      "league": "nfl",
+      "notes": "505 declared looks; three chronological outer seasons; fit through Y-3, select Y-2, calibrate Y-1. Frozen predictions; 10000 paired season-stratified week-block resamples. Brier is primary. Upstream feature selection is retrospective. Source limitation: 1 game has conflicting sportsbook prices; 3 market fits miss a quoted probability by over one percentage point. The frozen population was retained without an outcome-driven exclusion or refit.",
+      "plain_summary": "Teaching the model to stay closer to the available sportsbook prices gave a small, uncertain improvement. Keep the current picks while this is studied. One set of conflicting sportsbook prices still needs checking.",
+      "probability_positive": 0.732,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead86_unit1.md",
+      "standard_error": null
+    },
+    "LEAD86-regularized-vs-four-term-log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism, zero split-half reliability, or calibrated positive control was established. A zero-crossing interval closes nothing.",
+      "closing_ground": null,
+      "description": "Selected market penalty: positive log_loss_improvement gain.",
+      "effect": 0.0010730186174131686,
+      "effect_units": "log_loss_improvement",
+      "family": "LEAD86-fixed-market-penalty",
+      "interval": [
+        -0.0023383938047305945,
+        0.0045614053015935315
+      ],
+      "league": "nfl",
+      "notes": "505 declared looks; three chronological outer seasons; fit through Y-3, select Y-2, calibrate Y-1. Frozen predictions; 10000 paired season-stratified week-block resamples. Brier is primary. Upstream feature selection is retrospective. Source limitation: 1 game has conflicting sportsbook prices; 3 market fits miss a quoted probability by over one percentage point. The frozen population was retained without an outcome-driven exclusion or refit.",
+      "plain_summary": "Teaching the model to stay closer to the available sportsbook prices gave a small, uncertain improvement. Keep the current picks while this is studied. One set of conflicting sportsbook prices still needs checking.",
+      "probability_positive": 0.7288,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead86_unit1.md",
+      "standard_error": null
+    },
+    "LEAD86-regularized-vs-four-term-rps": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism, zero split-half reliability, or calibrated positive control was established. A zero-crossing interval closes nothing.",
+      "closing_ground": null,
+      "description": "Selected market penalty: positive rps_improvement gain.",
+      "effect": 0.010165452700717345,
+      "effect_units": "rps_improvement",
+      "family": "LEAD86-fixed-market-penalty",
+      "interval": [
+        -0.008868237640715279,
+        0.029146719613677537
+      ],
+      "league": "nfl",
+      "notes": "505 declared looks; three chronological outer seasons; fit through Y-3, select Y-2, calibrate Y-1. Frozen predictions; 10000 paired season-stratified week-block resamples. Brier is primary. Upstream feature selection is retrospective. Source limitation: 1 game has conflicting sportsbook prices; 3 market fits miss a quoted probability by over one percentage point. The frozen population was retained without an outcome-driven exclusion or refit.",
+      "plain_summary": "Teaching the model to stay closer to the available sportsbook prices gave a small, uncertain improvement. Keep the current picks while this is studied. One set of conflicting sportsbook prices still needs checking.",
+      "probability_positive": 0.8563,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead86_unit1.md",
+      "standard_error": null
+    },
     "all_star_crew_underdog_on_production": {
       "category": "onfield",
       "classification": "unresolved_below_power",

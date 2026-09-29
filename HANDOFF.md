@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-29T23:08:17.156759+00:00`
+Refreshed at: `2026-09-29T23:13:41.393188+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-09-29T23:08:17.156759+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `6a8335c6bdb5` — Fix the sharp-book snapshot cutoff; the served move input checks out
-- Pending change set: 26 paths
+- Baseline commit: `ae667d3adbca` — LEAD-88 unit 1: paired total quotes joined for tiebreaker news
+- Pending change set: 30 paths
   - ` M AGENTS.md`
   - ` M docs/agent_workflow.md`
+  - ` M docs/findings.html`
+  - ` M docs/index.html`
   - ` M docs/lanes/lead82.md`
   - ` M docs/lanes/lead83.md`
   - ` M docs/lanes/lead84.md`
   - ` M docs/lanes/lead85.md`
-  - `A  docs/lanes/lead88.md`
-  - `A  docs/lead88_protocol.md`
-  - `A  docs/lead88_unit1.md`
-  - `A  scripts/lead88_unit1.py`
+  - `A  docs/lanes/lead86.md`
+  - ` M docs/lanes/lead88.md`
+  - `A  docs/lead86_protocol.md`
+  - `A  docs/lead86_unit1.md`
+  - `M  registry/weak_signals.json`
+  - `A  scripts/lead86_unit1.py`
   - `?? bash.exe.stackdump`
-  - `?? docs/lanes/lead86.md`
   - `?? docs/lanes/lead89.md`
   - `?? docs/lanes/windows-shell-popup.md`
-  - `?? docs/lead86_protocol.md`
-  - `?? docs/lead86_unit1.md`
   - `?? docs/lead89_unit1.md`
   - `?? registry/experiments/margin-backtest/20260927T134152Z.json`
   - `?? registry/experiments/margin-backtest/20260929T183944Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-03-20260927T134352Z.json`
-  - ...and 6 more
+  - ...and 10 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
