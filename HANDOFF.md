@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-29T20:27:44.938639+00:00`
+Refreshed at: `2026-09-29T20:28:42.321025+00:00`
 
 ## Start here
 
@@ -21,11 +21,11 @@ Refreshed at: `2026-09-29T20:27:44.938639+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `6ce02105fe25` — Republish the site with the latest settled results
+- Baseline commit: `37dac2e207b8` — Commit the site through the normal index so the handoff refresh lands
 - Pending change set: 11 paths
   - ` M AGENTS.md`
   - ` M docs/agent_workflow.md`
-  - `M  scripts/publish_site.py`
+  - `M  docs/index.html`
   - `?? docs/lanes/windows-shell-popup.md`
   - `?? registry/experiments/margin-backtest/20260927T134152Z.json`
   - `?? registry/experiments/margin-backtest/20260929T183944Z.json`
