@@ -6,6 +6,62 @@
     "A pooled estimate justifies ONE predeclared combined look on a rotation window none of the inputs touched. It is never itself a finding."
   ],
   "signals": {
+    "LEAD-71-unit2-look1": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "The margin-lattice mechanism remains open; no admissible closure established",
+      "closing_ground": null,
+      "description": "Reserved market-implied lattice look 1; two-look family",
+      "effect": 0.0348581399733,
+      "effect_units": "rps_improvement",
+      "family": "LEAD-71-unit2",
+      "interval": [
+        -0.000317990775327,
+        0.0858635838172
+      ],
+      "league": "nfl",
+      "notes": "Proposed serial record; 2 primary contrasts; diagnostic looks listed in source",
+      "plain_summary": "Moneyline, spread and total prices gave a slightly better picture of final margins. That result leaves this idea open; the pool picks are unchanged.",
+      "probability_positive": 0.9741,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1480,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead71_unit2.md",
+      "standard_error": 0.0226235062059
+    },
+    "LEAD-71-unit2-look2": {
+      "category": "market",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Fixed fifth-term extension only: log-loss improvement interval entirely negative; the margin-lattice family remains open",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Reserved market-implied lattice look 2; two-look family",
+      "effect": -0.00117333787234,
+      "effect_units": "log_loss_improvement",
+      "family": "LEAD-71-unit2",
+      "interval": [
+        -0.00198424742371,
+        -0.000436330749859
+      ],
+      "league": "nfl",
+      "notes": "Proposed serial record; 2 primary contrasts; diagnostic looks listed in source",
+      "plain_summary": "Adding the new market chance to the pick formula made held-out chances worse. This finding concerns that extra term; the separate margin table idea remains open.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 5,
+      "sample_games": 1273,
+      "seasons": [
+        2021,
+        2025
+      ],
+      "source": "docs/lead71_unit2.md",
+      "standard_error": 0.000400826685553
+    },
     "LEAD73-unit2-extended-vs-current-accuracy_points": {
       "category": "market",
       "classification": "unresolved_below_power",

@@ -1,40 +1,47 @@
-# LEAD-71 — market-implied margin lattice, unit 1
+# LEAD-71 ` unit 2 complete; serial records pending
 
 ## Goal
-Inventory local Tuesday-open Odds API `h2h`, spread and total coverage for 2020–2025.
+Execute ROADMAP.md:854's two reserved market-implied-lattice contrasts.
 
 ## State
-**Measured:** unit 1 complete, exit 0; 1,602/1,693 games (94.62%) have all three markets;
-1,601 at the same book. All six seasons exceed 80%; zero archive errors. Exact census: no CI.
-**Read:** ROADMAP.md:854 declaration below was saved before source counts or outcomes.
-
-### Predeclared protocol (verbatim roadmap row)
-| LEAD-71 | ⬜ | Market-implied margin lattice from moneyline, spread and total (rank 6 of 8) | **Added 2026-09-29 (unmeasured).** Mechanism: the spread quotes one point of the distribution, but the moneyline prices P(win) and the total prices scoring, together a market-implied lattice for the margin whose mass near 3 and 7 can differ from the pooled empirical residual PMF the served discrete read uses; the pool line is exactly where a difference is a mispricing of push and cover mass. Unit 1 is a source inventory: which seasons of the Odds API archive carry `h2h` at the Tuesday open beside spreads and totals (a grep of this file found no moneyline row). Unit 2, only if 2020-2025 coverage exceeds 80% of games: build the implied lattice (family and fitting choices predeclared), grade it with the LEAD-66 whole-PMF score against the empirical-residual lattice, LOSO by season, 2 looks, then enter the implied cover probability as one fitted term in the four-term model. Never a flip rule. Checked, not duplicated: MOD-18 K1-K3 (empirical residual lattice), SKY-04 (book timing, not products), LEAD-61 (half-game markets). About 25 tool calls across two units. |
-
-Unit 1 reads source metadata and quote fields only; no game outcomes, fitting or scoring.
-Population: 2020–2025 games; target: pregame Tuesday-open availability of all three markets.
-Terms/folds: none in inventory; unit 2 reserves LOSO season folds and two predictive looks.
-Metric: source coverage, with seasons and denominator stated; unit 2 requires strictly >80%.
-IS/OOS, gap, coefficients, probability_positive and decisive-game record are not estimable in unit 1.
-Zero crossing never closes a signal; one fitted calibrated probability selects the side.
+**Measured:** 1,480 opener games, 34 pushes; 1,446 decisive games.
+Implied lattice: 727-719 (50.28%, Wilson 95% [47.70%, 52.85%]);
+served lattice: 762-684 (52.70%, [50.12%, 55.26%]).
+RPS improvement 0.034858, 95% [-0.000318, 0.085864], probability_positive 0.9741.
+**Measured:** extra fitted term: 720-553 versus four-term 732-541, n=1,273;
+log-loss improvement -0.001173, 95% [-0.001984, -0.000436], probability_positive 0.
+**Inferred:** lattice mechanism stays open; proposed wrong-sign closure concerns
+only the fixed extra-term extension, pending the orchestrator's serial record.
+**Read:** the protocol was saved here before outcome reads; its unchanged full copy
+is in [the report](../lead71_unit2.md#predeclared-protocol).
+Two reserved contrasts; all diagnostic look counts, IS/OOS gaps, coefficient stability,
+reliability bands and per-season scores are reported there.
 
 ## Tried
-**Measured:** `.tools/uv.exe run --no-sync python scripts/lead71_unit1.py` executed once;
-initial uv launch failed before execution (shared-cache access denied), then used
-`UV_CACHE_DIR="$TMPDIR/lead71-uv-cache"` (Windows: `$env:TEMP`) and thread limits of 2.
-**Measured:** 8,834 manifests scanned, 131 valid Tuesday snapshots; report:
-`docs/lead71_unit1_inventory.md`. Per-season coverage: 84.76%, 88.42%, 94.37%,
-99.65%, 100%, 100%. Predictive looks: 0; reserved for unit 2: 2.
-**Measured:** Python 3.12.13; `ruff check --no-cache scripts/lead71_unit1.py` passes after style-only fixes.
+**Measured:** `.tools/uv.exe run --no-sync python scripts/lead71_unit2.py` completed,
+exit 0, threads <=2. Two earlier incomplete attempts stopped at timestamp and solver
+checks; no family or parameter search. Final source checks exclude 46 timestamp-invalid
+model rows and 11 missing quote matches; all 2,960 price fits pass KKT <=8.05e-8.
+Max quote-probability error 2.50e-6. Ruff format/check, AST and whitespace checks pass.
+Report-only regeneration used saved scores; no additional fits or predictive looks.
+Owned changes: script, report and this lane. Rows/hashes: `tests/scratch/codex/lead71_unit2/`.
+No test additions, registry writes, publication, Git mutation or served-card changes.
 
 ## Next
-Predeclare unit 2 lattice family/fitting choices and use the LEAD-66 whole-PMF score,
-LOSO, then the fitted four-term model. The >80% source gate is met.
+Orchestrator reviews and executes the two commands below serially.
 
 ## Open
-Unit 2 remains unmeasured; no outcome read, fitted coefficient, IS/OOS gap,
-probability_positive or decisive-game record exists from this inventory.
+Market lattice remains unresolved_below_power. Exact margin log score is infinite for
+65 OOS served-lattice zero-mass outcomes. Combined inputs include archived prekick flags
+and movement; only the new market feature freezes Tuesday. No serving decision.
 
 ## Record commands
-None: source inventory estimates no signal; a weak-signals/rotation command would invent an effect.
-No registry command, test addition, publication or Git mutation was performed.
+Proposed only; Bash-compatible, with pool-player explanations. Read-only closure validation passed.
+
+```bash
+.tools/uv.exe run --no-sync nfl-ats weak-signals record --name LEAD-71-unit2-look1 --description 'Reserved market-implied lattice look 1; two-look family' --source docs/lead71_unit2.md --league nfl --category market --effect=0.0348581399733 --effect-units rps_improvement --standard-error=0.0226235062059 --interval-low=-0.000317990775327 --interval-high=0.0858635838172 --probability-positive=0.9741 --sample-games 1480 --sample-blocks 6 --season-start 2020 --season-end 2025 --family LEAD-71-unit2 --classification unresolved_below_power --classification-evidence 'The margin-lattice mechanism remains open; no admissible closure established' --plain-summary 'Moneyline, spread and total prices gave a slightly better picture of final margins. That result leaves this idea open; the pool picks are unchanged.' --notes 'Proposed serial record; 2 primary contrasts; diagnostic looks listed in source'
+```
+
+```bash
+.tools/uv.exe run --no-sync nfl-ats weak-signals record --name LEAD-71-unit2-look2 --description 'Reserved market-implied lattice look 2; two-look family' --source docs/lead71_unit2.md --league nfl --category market --effect=-0.00117333787234 --effect-units log_loss_improvement --standard-error=0.000400826685553 --interval-low=-0.00198424742371 --interval-high=-0.000436330749859 --probability-positive=0 --sample-games 1273 --sample-blocks 5 --season-start 2021 --season-end 2025 --family LEAD-71-unit2 --classification refuted_mechanism --closing-ground wrong_sign_resolved --classification-evidence 'Fixed fifth-term extension only: log-loss improvement interval entirely negative; the margin-lattice family remains open' --plain-summary 'Adding the new market chance to the pick formula made held-out chances worse. This finding concerns that extra term; the separate margin table idea remains open.' --notes 'Proposed serial record; 2 primary contrasts; diagnostic looks listed in source'
+```
