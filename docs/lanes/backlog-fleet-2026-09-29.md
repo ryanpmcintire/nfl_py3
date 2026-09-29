@@ -40,6 +40,14 @@ at least seven parallel workers, committing and pushing at each verified return.
 - Verify lane reopened MOD-22 unit 4 (guessed report times); record replaced
   as unresolved. XLG-09 unit 6 and ST lag re-derive exactly.
 
+- Batch B lessons: LEAD-74/75/76/77/78/79 stopped at inventory; most demanded
+  pre-2026 pool captures or ingestion times. Preamble now fixes the historical
+  standard (opener proxy, 2020-2025, four-term base). Pending units 2: LEAD-78
+  (running), LEAD-74/77/79 after docs/quote_provenance.md lands.
+
+- Queue now: LEAD-79 unit 2, then LEAD-82..89 (prompts ready in
+  tests/scratch/codex/lead8N.prompt.md), then backlog-sweep packets.
+
 ## Tried
 - `codex --no-daemon exec` launcher: blocked by permission classifier.
 

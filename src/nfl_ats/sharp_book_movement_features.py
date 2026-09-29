@@ -116,7 +116,7 @@ def sharp_book_movement_features(
         q["home_spread_line"] = pd.to_numeric(q.home_spread_line, errors="coerce")
         q = q.loc[
             q.observed_at_utc.lt(q.cutoff_utc)
-            & (~include_sunday | q.snapshot_timestamp_utc.lt(q.cutoff_utc))
+            & ((not include_sunday) | q.snapshot_timestamp_utc.lt(q.cutoff_utc))
             & q.quote_as_of_utc.le(q.observed_at_utc)
             & q.observed_at_utc.ge(q._monday)
             & (include_sunday | q.observed_at_utc.lt(q._sunday))
