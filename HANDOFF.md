@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-29T21:52:17.856720+00:00`
+Refreshed at: `2026-09-29T21:53:21.328799+00:00`
 
 ## Start here
 
@@ -21,20 +21,21 @@ Refreshed at: `2026-09-29T21:52:17.856720+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `4e065239f0ee` — LEAD-76 unit 1: rule-aware margin prior is source-gated
+- Baseline commit: `19fc96f1e40b` — LEAD-64: Friday injury captures miss most final designations
 - Pending change set: 21 paths
   - ` M AGENTS.md`
   - ` M docs/agent_workflow.md`
-  - `M  docs/lanes/lead64-friday-designations.md`
-  - `A  docs/lead64_freshness_audit.md`
-  - `A  scripts/lead64_freshness_audit.py`
+  - `A  docs/lanes/mod22-unit5-qb-quality.md`
+  - `A  docs/mod22_unit5.md`
+  - `M  registry/weak_signals.json`
+  - `A  scripts/mod22_unit5.py`
   - `?? bash.exe.stackdump`
   - `?? docs/lanes/lead77.md`
   - `?? docs/lanes/lead78.md`
   - `?? docs/lanes/lead79.md`
-  - `?? docs/lanes/mod22-unit5-qb-quality.md`
+  - `?? docs/lanes/lead80.md`
   - `?? docs/lanes/windows-shell-popup.md`
-  - `?? docs/mod22_unit5.md`
+  - `?? docs/lead80_protocol.md`
   - `?? registry/experiments/margin-backtest/20260927T134152Z.json`
   - `?? registry/experiments/margin-backtest/20260929T183944Z.json`
   - `?? registry/experiments/margin-predict/2026-week-03-20260927T134352Z.json`
@@ -42,7 +43,6 @@ Refreshed at: `2026-09-29T21:52:17.856720+00:00`
   - `?? registry/experiments/opener-evaluation/20260927T134738Z.json`
   - `?? registry/experiments/waterfall-feed/20260927T134851Z.json`
   - `?? registry/experiments/waterfall-feed/20260929T184553Z.json`
-  - `?? scripts/lead77_unit1.py`
   - ...and 1 more
 
 The baseline commit and pending paths were observed before the automatic refresh.

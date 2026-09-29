@@ -176508,6 +176508,34 @@
       "source": "scripts/qb_backup_news_visibility.py; artifacts/qb_news_channel/20260820T093852Z/result.json; docs/qb_news_channel.md",
       "standard_error": 0.21321917853617764
     },
+    "qb_quality_loss_fifth_term_brier": {
+      "category": "health",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Paired 95% Brier improvement is wholly negative; closure covers only this quality proxy, timing gate and fitted fifth term",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "MOD-22 unit 5: evidenced QB quality-loss fifth term; single-look remeasurement",
+      "effect": -0.00105984891368009,
+      "effect_units": "brier_improvement",
+      "family": "qb_quality_loss_v1",
+      "interval": [
+        -0.0031624546186375373,
+        -8.005893897342283e-05
+      ],
+      "league": "nfl",
+      "notes": "Look count remains 1; 18 proxy reports excluded; no split-half reliability measured; broader QB-quality mechanisms remain open",
+      "plain_summary": "When the expected quarterback is out or doubtful after Tuesday, using last year's gap to his backup made predictions worse. Keep this adjustment out of the picks.",
+      "probability_positive": 0.0045,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/mod22_unit5.md",
+      "standard_error": null
+    },
     "qb_revenge_deadline_drag_stack_promotion_eval_20260905": {
       "category": "modeling",
       "classification": "unresolved_below_power",
