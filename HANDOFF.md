@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-29T21:06:23.864358+00:00`
+Refreshed at: `2026-09-29T21:11:47.061026+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-09-29T21:06:23.864358+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `418d45bf8201` — Declared ATS study of the season-lagged special teams ratings
-- Pending change set: 35 paths
+- Baseline commit: `827eaa09e95f` — LEAD-72: push-adjusted Best Pick ranking ties the current one
+- Pending change set: 40 paths
   - ` M AGENTS.md`
   - ` M docs/agent_workflow.md`
+  - `M  docs/findings.html`
+  - `M  docs/index.html`
   - ` M docs/lanes/backlog-fleet-2026-09-29.md`
-  - `A  docs/lanes/lead72.md`
-  - `A  docs/lead72_results.md`
-  - `A  docs/lead72_weekly.md`
-  - `M  registry/weak_signals.json`
-  - `A  scripts/lead72_unit1.py`
-  - ` M src/nfl_ats/board_assistant.py`
-  - ` M src/nfl_ats/board_content.py`
-  - ` M src/nfl_ats/board_site_content.py`
-  - ` M src/nfl_ats/board_terminal.py`
+  - `A  docs/lanes/ui20-2026-09-29.md`
+  - `M  src/nfl_ats/board_assistant.py`
+  - `M  src/nfl_ats/board_content.py`
+  - `M  src/nfl_ats/board_site_content.py`
+  - `M  src/nfl_ats/board_terminal.py`
   - `?? bash.exe.stackdump`
   - `?? docs/lanes/lead66.md`
   - `?? docs/lanes/lead67.md`
   - `?? docs/lanes/lead69.md`
   - `?? docs/lanes/lead70.md`
-  - `?? docs/lanes/ui20-2026-09-29.md`
+  - `?? docs/lanes/lead71.md`
+  - `?? docs/lanes/lead73.md`
   - `?? docs/lanes/windows-shell-popup.md`
-  - `?? docs/lead67_predictions.md`
-  - ...and 15 more
+  - `?? docs/lead66_prediction_scores.md`
+  - `?? docs/lead66_unit1.md`
+  - ...and 20 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

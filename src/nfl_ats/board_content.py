@@ -736,7 +736,7 @@ def injury_feed_coverage_note(
             status = (
                 f"Game-status designations in hand for {len(pending_designated)} "
                 f"player{'s' if len(pending_designated) != 1 else ''} on "
-                f"{len(pending_teams)} of the {len(pending)} teams still to play"
+                f"{len(pending_teams)} of the {count_noun(len(pending), 'team')} still to play"
             )
     else:
         status = "Every game this week has kicked off, so no designations are pending"
@@ -1333,7 +1333,8 @@ def _build_rival_rules(
     mirror_count = full_count - len(rows)
     if rows:
         summary = (
-            f"Of the {full_count} that pick a whole card, {len(rows)} take a different team "
+            f"Of the {full_count} that {'picks' if full_count == 1 else 'pick'} a whole card, "
+            f"{len(rows)} {'takes' if len(rows) == 1 else 'take'} a different team "
             "somewhere this week."
         )
     elif full_count:
@@ -1631,7 +1632,7 @@ def _week_change_summary(rows: tuple[WeekChangeRow, ...], n_games: int) -> tuple
     verb = "have" if sides != 1 else "has"
     star = ", and the star moved to a different game" if sides != len(rows) else ""
     return (
-        f"{sides} of this week's {n_games} picks {verb} changed side since Tuesday's "
+        f"{sides} of this week's {count_noun(n_games, 'pick')} {verb} changed side since Tuesday's "
         f"lock{star}.{tail}",
         f"{sides} of {n_games} moved",
     )
@@ -2019,7 +2020,8 @@ def _served_path_loso_record(
     games = wins + losses
     if games <= 0:
         return None
-    return wins / games, f"{wins:,}-{losses:,} across {games:,} past games"
+    record = f"{wins:,}-{losses:,} across {count_noun(games, 'past game', grouped=True)}"
+    return wins / games, record
 
 
 def _served_path_decisive_record(
@@ -2133,7 +2135,8 @@ def _build_headline_stats(
     decisive_text = ""
     if served_loso is not None and decisive is not None:
         decisive_text = (
-            f" When the card disagreed with the model alone ({decisive[2]:,} past games), "
+            f" When the card disagreed with the model alone "
+            f"({count_noun(decisive[2], 'past game', grouped=True)}), "
             f"the card's side won {decisive[0]:,} of them."
         )
     if served_loso is not None:
@@ -2145,13 +2148,15 @@ def _build_headline_stats(
         played_union_fraction = served_union.accuracy
         played_card_pct = played_union_fraction * 100
         played_card_stale = False
-        played_games_text = f"{served_union.scored_games:,}"
+        played_games_text = count_noun(served_union.scored_games, "game", grouped=True)
     else:
         played_card_pct = None
         played_card_stale = True
-        played_games_text = "an unpublished count of"
+        played_games_text = "an unpublished count of games"
     games_text = (
-        f"{scored_games_int:,}" if scored_games_int is not None else "an unpublished count of"
+        count_noun(scored_games_int, "paired game", grouped=True)
+        if scored_games_int is not None
+        else "an unpublished count of paired games"
     )
     played_card_caption = (
         (
@@ -2159,8 +2164,9 @@ def _build_headline_stats(
             "by a model fit that had not seen it, the served adjustments only."
             f"{decisive_text}"
             if served_loso is not None
-            else f"Opener-graded accuracy across {played_games_text} past games -- the full set of "
-            "adjustments that is actually on the board this week, not a hypothetical."
+            else f"Opener-graded accuracy across {played_games_text} from the past -- "
+            "the full set of adjustments that is actually on the board this week, "
+            "not a hypothetical."
         )
         if not played_card_stale
         else "Archive score not recomputed for this model yet."
@@ -2169,7 +2175,7 @@ def _build_headline_stats(
         (
             f"{served_loso_text} · the served card held out, opener-graded"
             if served_loso is not None
-            else f"{played_games_text} opener-graded games · the card as played"
+            else f"{played_games_text} graded at the opener · the card as played"
         )
         if not played_card_stale
         else "archive score not recomputed for this model"
@@ -2186,7 +2192,7 @@ def _build_headline_stats(
         f"card is tracked on fresh paired games against the former four-adjustment card "
         f"({prior_chain_text} in this archive)."
     )
-    prior_chain_caption = f"{games_text} paired games · reference point, no interval attached."
+    prior_chain_caption = f"{games_text} · reference point, no interval attached."
     season_count = 0
     seasons_above_coin_flip = None
     raw_model_season_note = None
@@ -2197,7 +2203,7 @@ def _build_headline_stats(
         )
     else:
         raw_model_caption = (
-            f"{baseline.games:,} paired games."
+            f"{count_noun(baseline.games, 'paired game', grouped=True)}."
             if baseline
             else "Baseline not recomputed for this model."
         )
@@ -2228,7 +2234,8 @@ def _build_headline_stats(
             f"Tuesday score {chain.tuesday_card_accuracy * 100:.1f}%."
         )
         refresh_chain_foot_text = (
-            f"{chain.scored_games:,} opener-graded games · {chain.picks_changed:,} picks moved · "
+            f"{count_noun(chain.scored_games, 'opener-graded game', grouped=True)} · "
+            f"{count_noun(chain.picks_changed, 'pick', grouped=True)} moved · "
             f"the week rules only reach {first}-{last}, where hour-by-hour lines and injury "
             "news exist"
         )
@@ -2373,7 +2380,7 @@ def _build_prospective_scoreboard(
         "Prospective record against the same games: the card as played "
         f"{_record_text(played_wins, played_losses, played_pushes)} vs. the former rule chain "
         f"{_record_text(prior_wins, prior_losses, prior_pushes)} -- "
-        f"{settled} of {len(played)} recorded games settled."
+        f"{settled} of {count_noun(len(played), 'recorded game')} settled."
     )
     detail_text = (
         f"{played_pending} recorded game{'s' if played_pending != 1 else ''} not yet kicked off."
@@ -2683,6 +2690,12 @@ def _build_cover_curve(
                 )
             )
     return ()
+
+
+def count_noun(count: int, singular: str, *, grouped: bool = False) -> str:
+    word = singular if count == 1 else f"{singular}s"
+    number = f"{count:,}" if grouped else str(count)
+    return f"{number} {word}"
 
 
 def _flip_line(
@@ -3081,8 +3094,8 @@ def _build_findings(
         tag="NOTE // OVERLAY REACH",
         text=(
             "The overlay nudges picks, it doesn't rebuild them. This week's active overlay "
-            f"policy touched {flip_count} of this week's {len(games)} picks -- small, "
-            "deliberate, and reported separately from the computer's first read so each "
+            f"policy touched {flip_count} of this week's {count_noun(len(games), 'pick')} -- "
+            "small, deliberate, and reported separately from the computer's first read so each "
             "layer's contribution stays visible."
         ),
     )

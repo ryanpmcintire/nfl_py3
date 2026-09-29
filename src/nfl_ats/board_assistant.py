@@ -24,6 +24,7 @@ from nfl_ats.board_content import (
     HeadlineStats,
     SourcePolicyView,
     TiebreakerView,
+    count_noun,
     human_update_time,
     pick_lock_window_text,
 )
@@ -1244,7 +1245,7 @@ def _dog_favorite_answer(
             topic=key,
             text=(
                 f"No {label.lower()} picks this week -- every pick lays "
-                f"points across all {total} games.{flat_text}"
+                f"points across {count_noun(total, 'game')}.{flat_text}"
             ),
             anchors=("index.html",),
         )
@@ -1255,7 +1256,12 @@ def _dog_favorite_answer(
     ]
     return AssistantAnswer(
         topic=key,
-        text=(f"{label} picks ({len(ids)} of {total}): " + ", ".join(items) + "." + flat_text),
+        text=(
+            f"{label} {'pick' if len(ids) == 1 else 'picks'} ({len(ids)} of {total}): "
+            + ", ".join(items)
+            + "."
+            + flat_text
+        ),
         anchors=tuple(str(lookup[game_id]["anchor"]) for game_id in ids),
     )
 

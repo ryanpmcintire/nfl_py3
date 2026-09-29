@@ -17,6 +17,7 @@ from nfl_ats.board_content import (
     NumberProvenanceError,
     TickerChrome,
     _load_game_outcomes,
+    count_noun,
     load_board_content,
     verify_number_provenance,
 )
@@ -498,9 +499,9 @@ def _season_challenger_rows(
         key=lambda item: (-item[0], item[1].display_name),
     )
     count = len(graded)
-    rules = "rule" if count == 1 else "rules"
+    verb = "has" if count == 1 else "have"
     summary = (
-        f"{count} {rules} being tried out alongside the card have graded picks this "
+        f"{count_noun(count, 'rule')} being tried out alongside the card {verb} graded picks this "
         f"season: {ahead} got more right than the card, {level} got the same number "
         f"right, {behind} got fewer. Every one was written down before kickoff and is "
         "graded on the same games as the card."
@@ -680,8 +681,9 @@ def _ledger_row_view(row: LedgerRow) -> ModelLedgerRowView:
     if row.agreement is not None:
         agreement_text = (
             f"Agrees with the promoted card on {row.agreement.agree} of "
-            f"{row.agreement.vs_promoted_games} games this week "
-            f"({row.agreement.disagree} disagree)"
+            f"{count_noun(row.agreement.vs_promoted_games, 'game')} this week "
+            f"({row.agreement.disagree} "
+            f"{'disagrees' if row.agreement.disagree == 1 else 'disagree'})"
         )
     return ModelLedgerRowView(
         arm_id=row.arm_id,
@@ -921,8 +923,9 @@ def _load_model_page_content(
         link_preview=LinkPreview(
             title="ATS Terminal — The Model",
             description=(
-                f"{above} of {len(season_rows)} seasons finished above the coin flip -- the "
-                "played policy, its measured record, and every arm tracked against it."
+                f"{above} of {count_noun(len(season_rows), 'season')} "
+                "finished above the coin flip -- "
+                "the played policy, its measured record, and every arm tracked against it."
             ),
         ),
         number_provenance=number_provenance,
@@ -1821,8 +1824,9 @@ def _load_findings_content(
         link_preview=LinkPreview(
             title="ATS Terminal — What We've Learned",
             description=(
-                f"{ledger_summary.total_signals} recorded signals, grouped by verdict -- "
-                "curated findings, open leads, and the honesty rules that keep them straight."
+                f"{count_noun(ledger_summary.total_signals, 'recorded signal')}, "
+                "grouped by verdict -- curated findings, open leads, "
+                "and the honesty rules that keep them straight."
             ),
         ),
         atlas=(

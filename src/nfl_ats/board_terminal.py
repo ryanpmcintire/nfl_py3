@@ -25,6 +25,7 @@ from nfl_ats.board_content import (
     SourcePolicyView,
     TickerChrome,
     TiebreakerView,
+    count_noun,
 )
 from nfl_ats.board_site_content import (
     SEASON_SO_FAR_TITLE,
@@ -641,15 +642,23 @@ def _tiebreaker_panel_html(view: TiebreakerView) -> str:
     else:
         guess_line = f", guess {escape(view.guess_score_text)}" if view.guess_score_text else ""
         body = (
-            f'<p class="game-sub">{escape(view.matchup_text)}: market total '
-            f"{escape(view.market_total_text)}, blended total "
-            f"{escape(view.blended_total_text)}, projected margin "
+            f'<p class="game-sub">{escape(view.matchup_text)}: sportsbook total '
+            f"{escape(view.market_total_text)}, our estimated total "
+            f"{escape(view.blended_total_text)}, estimated winning margin "
             f"{escape(view.implied_margin_text)}{guess_line}.</p>"
             f'<p class="micro">{escape(view.note)}</p>' + season_line
         )
+    if view.recorded and view.guess_home is not None and view.guess_away is not None:
+        total_text = count_noun(view.guess_home + view.guess_away, "total point")
+        summary = f"<b>{total_text}</b> &middot; Tiebreaker guess"
+    else:
+        summary = "Not available yet &middot; Tiebreaker guess"
     return (
         '<details class="policy-note"><summary class="micro" style="cursor:pointer;">'
-        "Tiebreaker guess</summary>" + body + "</details>"
+        + summary
+        + "</summary>"
+        + body
+        + "</details>"
     )
 
 
@@ -998,7 +1007,8 @@ def _board_section(content: BoardContent, *, archived: bool = False) -> str:
     return (
         '<section aria-labelledby="board-h" class="board-col"><div class="section-head">'
         f'<h2 id="board-h">{escape(content.week_label)} board &middot; forced picks</h2>'
-        f'<span class="sub">{len(content.games)} games &middot; every pool card played '
+        f'<span class="sub">{count_noun(len(content.games), "game")} '
+        "&middot; every pool card played "
         "&middot; click a row to inspect</span>"
         "</div>"
         f"{_board_sort_toggle_html()}"
@@ -1092,8 +1102,9 @@ def _sim_margin_html(dive: GameDive) -> str:
     )
     return (
         '<div class="sim-block">'
-        f'<div class="chart-cap">How this game could finish &middot; {chart.n:,} simulated '
-        "games played out snap by snap</div>"
+        '<div class="chart-cap">How this game could finish &middot; '
+        f"{count_noun(chart.n, 'simulated game', grouped=True)} "
+        "played out snap by snap</div>"
         f"{svg}"
         f'<div class="curve-legend"><span>x &middot; {escape(dive.pick_team)} final margin</span>'
         '<span class="sim-key-cover">&#9632; covers</span>'
@@ -1268,7 +1279,8 @@ def _lineup_team_html(lineup: TeamLineup | None) -> str:
         if rows:
             sections.append(
                 f'<div class="lineup-unit" data-lineup-unit="{unit}">'
-                f'<div class="lineup-unit-head">{label}<span>{len(rows)} players</span></div>'
+                f'<div class="lineup-unit-head">{label}'
+                f"<span>{count_noun(len(rows), 'player')}</span></div>"
                 f"{''.join(rows)}</div>"
             )
     source = (
@@ -1764,7 +1776,10 @@ def _season_honesty_sentence(content: ModelPageContent) -> str:
     total = len(content.seasons)
     if total == 0:
         return ""
-    sentence = f"{content.seasons_above_coin_flip} of {total} seasons finished above the coin flip"
+    sentence = (
+        f"{content.seasons_above_coin_flip} of {count_noun(total, 'season')} "
+        "finished above the coin flip"
+    )
     if content.seasons_even:
         even_listed = ", ".join(content.seasons_even)
         sentence += f", {len(content.seasons_even)} landed exactly at it ({even_listed})"
@@ -1886,7 +1901,8 @@ def render_model_page(content: ModelPageContent) -> str:
     long_run_html = ""
     if content.long_run_range is not None:
         correct_text = (
-            f"{content.long_run_correct:,} of {content.long_run_games:,} games"
+            f"{content.long_run_correct:,} of "
+            f"{count_noun(content.long_run_games, 'game', grouped=True)}"
             if content.long_run_correct is not None and content.long_run_games is not None
             else ""
         )
@@ -2003,7 +2019,7 @@ def render_model_page(content: ModelPageContent) -> str:
     weak_spots_html += (
         '<div class="section-head ledger-group-head">'
         '<h3 id="weak-spots-home-h">Home favourite or home underdog</h3>'
-        f'<span class="sub">{len(content.weak_spots.home_split)} rows</span></div>'
+        f'<span class="sub">{count_noun(len(content.weak_spots.home_split), "row")}</span></div>'
     )
     if content.weak_spots.home_split:
         split_headers = (
@@ -2037,7 +2053,8 @@ def render_model_page(content: ModelPageContent) -> str:
     weak_spots_html += (
         '<div class="section-head ledger-group-head">'
         '<h3 id="weak-spots-push-h">The home-side push</h3>'
-        f'<span class="sub">{len(correction.rows) if correction else 0} rows</span></div>'
+        '<span class="sub">'
+        f"{count_noun(len(correction.rows) if correction else 0, 'row')}</span></div>"
     )
     if correction is not None and correction.rows:
         push_headers = (
@@ -2073,7 +2090,7 @@ def render_model_page(content: ModelPageContent) -> str:
     weak_spots_html += (
         '<div class="section-head ledger-group-head">'
         '<h3 id="weak-spots-season-h">Early season vs. late season</h3>'
-        f'<span class="sub">{len(season_timing.rows)} rows</span></div>'
+        f'<span class="sub">{count_noun(len(season_timing.rows), "row")}</span></div>'
     )
     if season_timing.available:
         season_headers = (
@@ -2406,7 +2423,7 @@ def render_history_page(content: HistoryPageContent) -> str:
         + _season_so_far_section_html(content.season_so_far)
         + '<section aria-labelledby="history-picks-h"><div class="section-head">'
         '<h2 id="history-picks-h">Model picks</h2>'
-        f'<span class="sub">{len(content.picks)} recorded rows</span></div>'
+        f'<span class="sub">{count_noun(len(content.picks), "recorded row")}</span></div>'
         f"{picks_section}</section>"
         + _history_grading_section_html(content)
         + '<section aria-labelledby="history-challengers-h"><div class="section-head">'
@@ -2489,7 +2506,7 @@ def _recent_activity_section_html(activity: RecentActivityView) -> str:
     header = (
         '<section aria-labelledby="recentactivity-h"><div class="section-head">'
         '<h2 id="recentactivity-h">Research this week</h2>'
-        f'<span class="sub">{activity.screened_count} signals looked at &middot; '
+        f'<span class="sub">{count_noun(activity.screened_count, "signal")} looked at &middot; '
         f"{activity.resolved_count} resolved either way &middot; "
         f"{activity.still_open_count} still open</span>"
         "</div>"
@@ -2540,7 +2557,7 @@ def _ledger_summary_section_html(content: FindingsPageContent) -> str:
     return (
         '<section aria-labelledby="ledgersummary-h"><div class="section-head">'
         '<h2 id="ledgersummary-h">Signal registry</h2>'
-        f'<span class="sub">{summary.total_signals} signals recorded</span></div>'
+        f'<span class="sub">{count_noun(summary.total_signals, "signal")} recorded</span></div>'
         f'<div class="kpi-grid">{counts_html}</div>'
         f"{table}"
         '<p class="policy-note">Highest-confidence entries shown above; every recorded '
@@ -2552,6 +2569,13 @@ def _ledger_summary_section_html(content: FindingsPageContent) -> str:
 
 def _atlas_float(value: Any) -> float:
     return float(value)
+
+
+def _atlas_games_phrase(value: Any) -> str:
+    try:
+        return count_noun(int(value), "game")
+    except (TypeError, ValueError):
+        return "— games"
 
 
 def _atlas_signed(value: Any, *, digits: int = 1, suffix: str = "") -> str:
@@ -2634,9 +2658,10 @@ def _atlas_evaluation_html(
         f"{escape(str(cell['label']))}</th>"
         f'<td data-label="Games">{int(cell["games"])}</td>'
         '<td data-label="Different picks"><b>'
-        f'{int(cell["decisive_games"])} games</b><span class="atlas-cell-note">'
-        f"Full {int(cell['full_decisive_wins'])} &middot; Reduced "
-        f'{int(cell["reduced_decisive_wins"])} wins</span><span class="atlas-cell-note">'
+        f'{count_noun(int(cell["decisive_games"]), "game")}</b><span class="atlas-cell-note">'
+        f"Full {count_noun(int(cell['full_decisive_wins']), 'win')} &middot; Reduced "
+        f"{count_noun(int(cell['reduced_decisive_wins']), 'win')}</span>"
+        '<span class="atlas-cell-note">'
         "Under an even-chance comparison, "
         f"{_atlas_percent(cell['exact_null_p'])} chance of a split at least this lopsided"
         "</span></td>"
@@ -2804,7 +2829,7 @@ def _atlas_explorer_html(cells: list[dict[str, Any]]) -> str:
             "<p>This signal may add more information in some situations than others. "
             "It contributes to one combined probability, never a standalone pick.</p></div>"
             '<div class="atlas-detail-section"><h4>What the history suggests</h4>'
-            f"<p>{escape(str(cell.get('games', '—')))} games: "
+            f"<p>{_atlas_games_phrase(cell.get('games'))}: "
             f"{_atlas_signed(cell.get('accuracy_delta_points'))} points in accuracy, "
             f"with a 95% range of {_atlas_interval(cell.get('accuracy_interval', []))}."
             "</p></div>"
@@ -2855,14 +2880,18 @@ def _signal_atlas_family_panel_html(
             "A larger positive gap means the same-year result looks better.</p>"
         )
     inventory = family.get("look_inventory")
-    inventory_html = f"{look_count} version &times; time-window &times; evaluation comparisons"
+    comparison_label = "version &times; time-window &times; evaluation comparison"
+    inventory_html = count_noun(look_count, comparison_label)
     if inventory is not None:
+        comparison_count = int(inventory["arm_cell_evaluation_combinations"])
+        paired_count = int(inventory["paired_metric_comparisons"])
+        range_count = int(inventory["reliability_bins_declared_per_arm"])
         inventory_html = (
-            f"{int(inventory['arm_cell_evaluation_combinations'])} version &times; time-window "
-            f"&times; evaluation comparisons; {int(inventory['paired_metric_comparisons'])} "
-            f"paired score comparisons; {int(inventory['fitted_models'])} fitted versions; "
-            f"{int(inventory['reliability_bins_declared_per_arm'])} pre-set reliability ranges "
-            f"per version; and {int(inventory['year_breakdowns'])} year-by-year rows"
+            f"{count_noun(comparison_count, comparison_label)}; "
+            f"{count_noun(paired_count, 'paired score comparison')}; "
+            f"{count_noun(int(inventory['fitted_models']), 'fitted version')}; "
+            f"{count_noun(range_count, 'pre-set reliability range')} per version; "
+            f"and {count_noun(int(inventory['year_breakdowns']), 'year-by-year row')}"
         )
     family_id = escape(str(family["family"]))
     return (
@@ -3020,7 +3049,7 @@ def render_findings_page(content: FindingsPageContent) -> str:
         '<div class="section-head">'
         '<h2 id="watching-h">What we&#39;re watching</h2>'
         f'<span class="sub">{len(content.watching_leads)} of '
-        f"{content.ledger_summary.total_signals} recorded signals</span></div>"
+        f"{count_noun(content.ledger_summary.total_signals, 'recorded signal')}</span></div>"
         f"{leads_html}</section>"
         + _recent_activity_section_html(content.recent_activity)
         + '</div></details><details class="findings-disclosure">'
