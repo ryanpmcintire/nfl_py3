@@ -510,6 +510,90 @@
       "source": "docs/lead74_unit2.md",
       "standard_error": 0.002301115380750875
     },
+    "LEAD77-unit2-freshness-vs-four_term-accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No mechanism closure or detecting positive control established; conditional historical availability and fixed-prediction week-block uncertainty.",
+      "closing_ground": null,
+      "description": "Chronology-purged quote-freshness correction versus four_term; positive means improvement in accuracy_points.",
+      "effect": 0.18761726078798802,
+      "effect_units": "accuracy_points",
+      "family": "LEAD77-unit2-quote-freshness",
+      "interval": [
+        -2.0447048520972206,
+        2.247191011235955
+      ],
+      "league": "nfl",
+      "notes": "Historical opener proxy, conditional provider availability; 158 reporting looks within 162 ceiling, one primary freshness versus four-term accuracy contrast. Nine correlated contrasts are not independent evidence.",
+      "plain_summary": "Older sportsbook prices were compared with recently updated prices before the pick deadline. This check does not establish that quote age should change the current pool picks.",
+      "probability_positive": 0.57205,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "docs/lead77_unit2.md",
+      "standard_error": null
+    },
+    "LEAD77-unit2-freshness-vs-four_term-brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No mechanism closure or detecting positive control established; conditional historical availability and fixed-prediction week-block uncertainty.",
+      "closing_ground": null,
+      "description": "Chronology-purged quote-freshness correction versus four_term; positive means improvement in brier.",
+      "effect": -0.0007876822797633076,
+      "effect_units": "brier_improvement",
+      "family": "LEAD77-unit2-quote-freshness",
+      "interval": [
+        -0.002443241705141814,
+        0.0008541084095005245
+      ],
+      "league": "nfl",
+      "notes": "Historical opener proxy, conditional provider availability; 158 reporting looks within 162 ceiling, one primary freshness versus four-term accuracy contrast. Nine correlated contrasts are not independent evidence.",
+      "plain_summary": "Older sportsbook prices were compared with recently updated prices before the pick deadline. This check does not establish that quote age should change the current pool picks.",
+      "probability_positive": 0.1754,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "docs/lead77_unit2.md",
+      "standard_error": null
+    },
+    "LEAD77-unit2-freshness-vs-four_term-log_loss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No mechanism closure or detecting positive control established; conditional historical availability and fixed-prediction week-block uncertainty.",
+      "closing_ground": null,
+      "description": "Chronology-purged quote-freshness correction versus four_term; positive means improvement in log_loss.",
+      "effect": -0.0014538515293537335,
+      "effect_units": "log_loss_improvement",
+      "family": "LEAD77-unit2-quote-freshness",
+      "interval": [
+        -0.004871166231115673,
+        0.0019462164314347351
+      ],
+      "league": "nfl",
+      "notes": "Historical opener proxy, conditional provider availability; 158 reporting looks within 162 ceiling, one primary freshness versus four-term accuracy contrast. Nine correlated contrasts are not independent evidence.",
+      "plain_summary": "Older sportsbook prices were compared with recently updated prices before the pick deadline. This check does not establish that quote age should change the current pool picks.",
+      "probability_positive": 0.2032,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "docs/lead77_unit2.md",
+      "standard_error": null
+    },
     "all_star_crew_underdog_on_production": {
       "category": "onfield",
       "classification": "unresolved_below_power",
