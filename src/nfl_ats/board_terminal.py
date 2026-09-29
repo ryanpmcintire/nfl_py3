@@ -110,6 +110,7 @@ _DIVE_SCRIPT = """
 
   document.querySelectorAll('table.board tr.game').forEach(function (row) {
     row.addEventListener('click', function (evt) {
+      if (evt.target.closest('.pick-explanation')) return;
       var gameId = row.dataset.gameId;
       if (!gameId) return;
       // Keeps the board in place: a row click swaps the inspector panel
@@ -908,6 +909,11 @@ def _board_section(content: BoardContent, *, archived: bool = False) -> str:
                     f'<span class="best-flag" title="{escape(flag_title)}">'
                     f"{escape(flag_label)}</span>"
                 )
+            pick_cell += (
+                '<details class="pick-explanation">'
+                f'<summary aria-label="Why this pick: {pick_text}">Why this pick</summary>'
+                f"<p>{escape(game.explanation_text)}</p></details>"
+            )
             row_classes = ["game"]
             if game.is_best:
                 row_classes.append("is-best")
