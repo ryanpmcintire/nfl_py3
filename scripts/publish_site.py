@@ -67,13 +67,20 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps({"status": "dry_run", "changed": changed.splitlines()}))
         return 0
 
-    commit = _git(
-        "commit",
-        "-m",
-        "Republish the site with the latest settled results",
-        "--",
-        *tracked,
-    )
+    staged = {
+        line.strip()
+        for line in _git("diff", "--cached", "--name-only").stdout.splitlines()
+        if line.strip()
+    }
+    foreign = sorted(staged - set(tracked) - {"HANDOFF.md", "README.md"})
+    if foreign:
+        print(json.dumps({"status": "skipped", "reason": "other staged changes", "paths": foreign}))
+        return 1
+    add = _git("add", "--", *tracked)
+    if add.returncode != 0:
+        print(json.dumps({"status": "failed", "step": "add", "error": add.stderr.strip()}))
+        return 1
+    commit = _git("commit", "-m", "Republish the site with the latest settled results")
     if commit.returncode != 0:
         print(json.dumps({"status": "failed", "step": "commit", "error": commit.stderr.strip()}))
         return 1
