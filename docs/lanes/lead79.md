@@ -1,30 +1,67 @@
-# LEAD-79 — earlier fixture lookahead anchor
+# LEAD-79 - earlier fixture lookahead anchor
 
 ## Goal
-Execute LEAD-79 unit 1: local provenance/coverage inventory; replay only if authentic sources pass the declared gate. No served changes or registry writes.
+Evaluate an earlier same-fixture price as a fitted addition to the four-term base.
 
 ## State
-**Measured:** Unit 1 complete; source gap, no research closure. 8,832 quote files / 6,189,933 rows; 5,941,819 rows fall in target-season calendar dates, but 0 authentic pool-capture files for 2020-2025 in the canonical store. Four capture files cover 2026 only. No fit or score. Protocol below was copied before execution; report: docs/lead79_inventory.md.
+**Measured:** unit 2 ran once, exit 0; 1,059 eligible games, 970 OOS, 76 week blocks.
+Changed picks: 8-14; accuracy 36.36% [15.99%, 60.00%]. Overall: 553-417,
+57.01% [54.03%, 59.94%]; base 559-411. Paired accuracy: -0.61856 points
+[-1.61780, 0.41537], probability_positive=0.1182. LL/Brier gains are adverse;
+full intervals, IS/OOS gaps, reliability and fold coefficients: `docs/lead79_unit2.md`.
 
-### Declaration (fixed before outcomes)
-Mechanism: Tuesday's opener may overreact to one noisy intervening game relative to the market's earlier assessment of that exact matchup. Predeclare 2020-2025 REG games with a dated lookahead quote published before either team's intervening game, plus the authentic Tuesday pool line. One feature is lookahead-implied home margin minus Tuesday-implied home margin; fit its coefficient alongside the current model, availability terms and observed pre-deadline movement. No proxy assembled from other games' closing lines, no largest-revision screen and no automatic fade. Target opener cover probability under Protocol B's chronological LOSO, four paired baselines, IS/OOS gap, calibration and uncertainty. B=2 (anchor term, joint fit), F=6, E=0; 291 counted looks.
-
-Rows fix population, terms, target, units and specification budget B. Inventory metadata first; require issuance/ingestion before the pool deadline. Grade authentic frozen openers. Missing archives are data gaps, never replaced by closes, realized weather or retrospective news.
-
-Chronology-purged LOSO excludes target/later seasons from fitting; separate earlier training, selection and calibration seasons. Folds lacking training remain unavailable. Reuse certified pregame predictions; choose coefficients/penalties on earlier seasons without new grids. Freeze before prospective evaluation. One calibrated discrete-margin distribution combines information; its cover probability selects the side.
-
-Pair combined-model, model-only, market-only and Elo baselines. Report IS/OOS opener accuracy, Brier, log loss and margin MAE, their gap, decisive-game record first, fold coefficients, season stability, five training-quantile reliability bands, season-block 95% intervals and `probability_positive`. Zero crossing closes nothing; unresolved effects remain `unresolved_below_power`.
-
-Count reporting cells too: L = (B + 36 + 8E)(F + 1) + 25 for F scheduled folds, E extra endpoints: B candidate/four baseline specifications, four-comparator IS/OOS metric cells per fold/pooled, five bands for five models. Identical nested refits add no specification. New splits/specifications need separate preregistration. Correlated cells are not independent evidence.
+### Unit-2 amendment (saved before outcomes; unchanged)
+2020-2025 REG, historical OPENER proxy, served four-term inputs; availability
+assumes provider observed_at_utc under the root provenance Decision. Latest complete
+same-fixture snapshot before BOTH previous same-season games and Tuesday 09:00 ET;
+equal-book median. Term: lookahead-implied margin minus opener-implied margin.
+Earlier seasons train each held-out season; fixed ridge 0.001, no tuning; one fitted
+probability selects the side. Opener grading retains the served pregame movement horizon.
+Accuracy/Brier/log loss, available cached MAE, paired baselines, IS/OOS gaps,
+coefficients, reliability, decisive record; 10,000 week-block draws, seed 79.
+B=2/F=6/E=0, 291-look ceiling, 209 numeric reporting looks. Original full declaration
+is copied verbatim in the report appendix and saved/hashed in scratch. Zero crossing
+closes nothing; no power control or reliability closure is claimed.
 
 ## Tried
-**Measured:** `UV_CACHE_DIR=.uv-cache .tools/uv.exe run --no-sync python scripts/lead79_unit1.py` ran once, exit 0; 0 read errors. Scoped `ruff check`, `ruff format --check`, and `git diff --check` passed. Identity/timestamp fields only, Arrow threads capped at 2. IS/OOS metrics and gap, 95% intervals, `probability_positive`, decisive-game record and all six fold coefficients are unavailable: 0 games scored, 0 outcome looks used (291 planned).
+**Measured:** `.tools/uv.exe run --no-sync python scripts/lead79_unit2.py` with
+UV_NO_CACHE=1; lint/format, saved-row arithmetic, chronology and syntax checks passed.
+No new tests. Run log: `%TEMP%/lead79-unit2-run.log`; rows/summary in
+`tests/scratch/codex/lead79_unit2/`. No registry command was run.
 
 ## Record commands
-None: inventory only, with no fitted effect or research verdict to record. No registry command was run; do not invent a numerical record for missing sources.
+Orchestrator only; exact bash loop records eight paired OOS endpoints serially.
+They overlap and are not independent evidence; primary accuracy remains unresolved.
+```bash
+while read -r comparator units effect low high positive se; do
+  UV_NO_CACHE=1 .tools/uv.exe run --no-sync nfl-ats weak-signals record \
+    --name "lead79_unit2_${comparator}_${units}" --source docs/lead79_unit2.md \
+    --description "Earlier matchup price versus ${comparator}, ${units}" \
+    --effect="$effect" --effect-units="$units" --interval-low="$low" --interval-high="$high" \
+    --probability-positive="$positive" --standard-error="$se" --sample-games 970 --sample-blocks 76 \
+    --classification unresolved_below_power --league nfl --season-start 2021 --season-end 2025 \
+    --family lead79_same_fixture_anchor --category market \
+    --classification-evidence 'No closure requested; retain adverse losses and uncertain accuracy.' \
+    --notes 'Provider clock assumed available; five forward folds; overlapping comparisons; no reliability estimate.' \
+    --plain-summary 'Using an earlier matchup price lost 14 of 22 changed picks against the current method. This study does not support changing the pool picks.'
+done <<'RESULTS'
+four_term accuracy_points -0.6185567010309279 -1.6177957532861476 0.4153686396677051 0.1182 0.5134330489278933
+four_term log_loss_improvement -0.002114363572317551 -0.004281188727584316 -5.598091357649272e-05 0.0218 0.0010793929114343618
+four_term brier_improvement -0.0010119157608972815 -0.002038667943899945 -3.9532948170922026e-05 0.0193 0.0005101045794968037
+model accuracy_points 3.2989690721649483 0.0 6.673618352450469 0.97575 1.7023907981246138
+model log_loss_improvement 0.007425979287467152 -0.005003368655367486 0.02007039451150739 0.8822 0.006352988058260747
+model brier_improvement 0.0040465224089098065 -0.001755005774931721 0.009963487468937786 0.9157 0.002974942104480966
+market log_loss_improvement 0.006138367955529108 -0.00749228379604952 0.019709829233888497 0.8109 0.006980514241032028
+market brier_improvement 0.003497407042699485 -0.00290831643311551 0.00986872045755164 0.8587 0.0032708506965016737
+RESULTS
+```
 
 ## Next
-Orchestrator: source authentic 2020-2025 Tuesday pool captures, then certify same-fixture quote issuance before both intervening games and ingestion before the deadline; only then run the predeclared paired cached replay. No commit or publication by this worker.
+Orchestrator: review loss evidence, execute the commands serially, and choose the next unit.
 
 ## Open
-**Measured:** canonical target-season pool coverage is absent. **Unverified:** lookahead timing/ingestion and other unnamed custom stores; generic historical quotes are not certified lookahead quotes. Three lookahead-named files are existing screen result artifacts; no outcomes from them were read. No effect estimate, interval, or closure claim exists.
+**Inferred:** no serving change; accuracy remains unresolved pending registry review.
+Elo lacks a matching cached prediction; candidate margin MAE is undefined for a probability fit.
+No registry/served edits, publication, commits, or other lane changes.
+
+**Recorded 2026-09-29 (root):** the three four_term comparison cells only, unresolved_below_power.

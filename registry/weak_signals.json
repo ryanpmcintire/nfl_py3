@@ -50336,6 +50336,174 @@
       "source": "docs/lead78_unit2.md",
       "standard_error": 0.004180869461975329
     },
+    "lead79_unit2_four_term_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No closure requested; retain adverse losses and uncertain accuracy.",
+      "closing_ground": null,
+      "description": "Earlier matchup price versus four_term, accuracy_points",
+      "effect": -0.6185567010309279,
+      "effect_units": "accuracy_points",
+      "family": "lead79_same_fixture_anchor",
+      "interval": [
+        -1.6177957532861476,
+        0.4153686396677051
+      ],
+      "league": "nfl",
+      "notes": "Provider clock assumed available; five forward folds; overlapping comparisons; no reliability estimate.",
+      "plain_summary": "Using an earlier matchup price lost 14 of 22 changed picks against the current method. This study does not support changing the pool picks.",
+      "probability_positive": 0.1182,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 76,
+      "sample_games": 970,
+      "seasons": [
+        2021,
+        2025
+      ],
+      "source": "docs/lead79_unit2.md",
+      "standard_error": 0.5134330489278933
+    },
+    "lead79_unit2_four_term_brier_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No closure requested; retain adverse losses and uncertain accuracy.",
+      "closing_ground": null,
+      "description": "Earlier matchup price versus four_term, brier_improvement",
+      "effect": -0.0010119157608972815,
+      "effect_units": "brier_improvement",
+      "family": "lead79_same_fixture_anchor",
+      "interval": [
+        -0.002038667943899945,
+        -3.9532948170922026e-05
+      ],
+      "league": "nfl",
+      "notes": "Provider clock assumed available; five forward folds; overlapping comparisons; no reliability estimate.",
+      "plain_summary": "Using an earlier matchup price lost 14 of 22 changed picks against the current method. This study does not support changing the pool picks.",
+      "probability_positive": 0.0193,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 76,
+      "sample_games": 970,
+      "seasons": [
+        2021,
+        2025
+      ],
+      "source": "docs/lead79_unit2.md",
+      "standard_error": 0.0005101045794968037
+    },
+    "lead79_unit2_four_term_log_loss_improvement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No closure requested; retain adverse losses and uncertain accuracy.",
+      "closing_ground": null,
+      "description": "Earlier matchup price versus four_term, log_loss_improvement",
+      "effect": -0.002114363572317551,
+      "effect_units": "log_loss_improvement",
+      "family": "lead79_same_fixture_anchor",
+      "interval": [
+        -0.004281188727584316,
+        -5.598091357649272e-05
+      ],
+      "league": "nfl",
+      "notes": "Provider clock assumed available; five forward folds; overlapping comparisons; no reliability estimate.",
+      "plain_summary": "Using an earlier matchup price lost 14 of 22 changed picks against the current method. This study does not support changing the pool picks.",
+      "probability_positive": 0.0218,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 76,
+      "sample_games": 970,
+      "seasons": [
+        2021,
+        2025
+      ],
+      "source": "docs/lead79_unit2.md",
+      "standard_error": 0.0010793929114343618
+    },
+    "lead85_unit1_pooled_brier": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Nominee Brier primary remains unmeasured in adapter unit; no admissible closing ground. Zero crossing closes nothing.",
+      "closing_ground": null,
+      "description": "LEAD-85 unit 1: 20-node coefficient integration minus separately calibrated four-term point fit; chronological outer 2023-2025; ordinary opener diagnostics.",
+      "effect": 5.616995073146058e-05,
+      "effect_units": "brier_improvement",
+      "family": "lead85_coefficient_uncertainty",
+      "interval": [
+        -3.1107055278461325e-05,
+        0.00017559326039240166
+      ],
+      "league": "nfl",
+      "notes": "713 predeclared study looks; two-arm ordinary-endpoint subset. 10000 paired season/week bootstrap draws; positive means candidate improvement. Previously examined archives; no served change. No split-half reliability measured.",
+      "plain_summary": "Allowing for uncertainty in the football estimates slightly improved the overall probability scores, but helped in two seasons and hurt in the third. The picks stayed the same; the weekly Best Pick comparison is still to come.",
+      "probability_positive": 0.8465,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead85_unit1.md",
+      "standard_error": null
+    },
+    "lead85_unit1_pooled_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Nominee Brier primary remains unmeasured in adapter unit; no admissible closing ground. Zero crossing closes nothing.",
+      "closing_ground": null,
+      "description": "LEAD-85 unit 1: 20-node coefficient integration minus separately calibrated four-term point fit; chronological outer 2023-2025; ordinary opener diagnostics.",
+      "effect": 0.00012859075151339106,
+      "effect_units": "log_loss_improvement",
+      "family": "lead85_coefficient_uncertainty",
+      "interval": [
+        -6.655179866669469e-05,
+        0.0004025024786123791
+      ],
+      "league": "nfl",
+      "notes": "713 predeclared study looks; two-arm ordinary-endpoint subset. 10000 paired season/week bootstrap draws; positive means candidate improvement. Previously examined archives; no served change. No split-half reliability measured.",
+      "plain_summary": "Allowing for uncertainty in the football estimates slightly improved the overall probability scores, but helped in two seasons and hurt in the third. The picks stayed the same; the weekly Best Pick comparison is still to come.",
+      "probability_positive": 0.8487,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead85_unit1.md",
+      "standard_error": null
+    },
+    "lead85_unit1_pooled_rps": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Nominee Brier primary remains unmeasured in adapter unit; no admissible closing ground. Zero crossing closes nothing.",
+      "closing_ground": null,
+      "description": "LEAD-85 unit 1: 20-node coefficient integration minus separately calibrated four-term point fit; chronological outer 2023-2025; ordinary opener diagnostics.",
+      "effect": 0.0003553369255371308,
+      "effect_units": "rps_improvement",
+      "family": "lead85_coefficient_uncertainty",
+      "interval": [
+        -0.0005252382088594798,
+        0.0016845234951484709
+      ],
+      "league": "nfl",
+      "notes": "713 predeclared study looks; two-arm ordinary-endpoint subset. 10000 paired season/week bootstrap draws; positive means candidate improvement. Previously examined archives; no served change. No split-half reliability measured.",
+      "plain_summary": "Allowing for uncertainty in the football estimates slightly improved the overall probability scores, but helped in two seasons and hurt in the third. The picks stayed the same; the weekly Best Pick comparison is still to come.",
+      "probability_positive": 0.6767,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 816,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead85_unit1.md",
+      "standard_error": null
+    },
     "lead_08_injury_trajectory_refresh_cx14": {
       "category": "health",
       "classification": "unresolved_below_power",
