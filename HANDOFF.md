@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-29T20:29:33.487866+00:00`
+Refreshed at: `2026-09-29T20:29:46.162141+00:00`
 
 ## Start here
 
@@ -21,11 +21,11 @@ Refreshed at: `2026-09-29T20:29:33.487866+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `c44370ad1299` — Republish the site with the latest settled results
+- Baseline commit: `79486bd31f48` — Record the site auto-publish lane
 - Pending change set: 11 paths
   - ` M AGENTS.md`
   - ` M docs/agent_workflow.md`
-  - `A  docs/lanes/done/site-auto-publish.md`
+  - `M  docs/index.html`
   - `?? docs/lanes/windows-shell-popup.md`
   - `?? registry/experiments/margin-backtest/20260927T134152Z.json`
   - `?? registry/experiments/margin-backtest/20260929T183944Z.json`
