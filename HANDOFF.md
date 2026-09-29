@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-29T21:26:00.428884+00:00`
+Refreshed at: `2026-09-29T21:27:51.257648+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-09-29T21:26:00.428884+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `41ae595a91a2` — Keep the weekly challenger forecast from replacing the served one
-- Pending change set: 26 paths
+- Baseline commit: `ee565b652a17` — LEAD-73 unit 1: 757 pre-2023 games carry a pre-deadline line move
+- Pending change set: 23 paths
   - ` M AGENTS.md`
   - ` M ROADMAP.md`
   - ` M docs/agent_workflow.md`
   - ` M docs/lanes/backlog-fleet-2026-09-29.md`
+  - `A  docs/lanes/lead70.md`
   - ` M docs/lanes/lead71.md`
-  - `A  docs/lanes/lead73.md`
-  - `A  docs/lead73_unit1.md`
-  - `A  scripts/lead73_unit1.py`
+  - `A  docs/lead70_inventory.md`
+  - `A  docs/lead70_protocol.md`
+  - `A  docs/lead70_results.md`
+  - `M  registry/weak_signals.json`
+  - `A  scripts/lead70_unit1.py`
   - `?? bash.exe.stackdump`
   - `?? docs/lanes/ideation-2026-09-29b.md`
-  - `?? docs/lanes/lead70.md`
   - `?? docs/lanes/mod22-unit5-qb-quality.md`
   - `?? docs/lanes/verify-2026-09-29.md`
   - `?? docs/lanes/windows-shell-popup.md`
-  - `?? docs/lead70_inventory.md`
-  - `?? docs/lead70_predictions.md`
-  - `?? docs/lead70_protocol.md`
-  - `?? docs/lead70_results.md`
   - `?? registry/experiments/margin-backtest/20260927T134152Z.json`
   - `?? registry/experiments/margin-backtest/20260929T183944Z.json`
-  - ...and 6 more
+  - `?? registry/experiments/margin-predict/2026-week-03-20260927T134352Z.json`
+  - `?? registry/experiments/margin-predict/2026-week-03-20260929T184122Z.json`
+  - ...and 3 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

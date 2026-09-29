@@ -49440,6 +49440,90 @@
       "source": "docs/lead69_results.md",
       "standard_error": null
     },
+    "lead70_disagreement_vs_four_term_accuracy": {
+      "category": null,
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Incremental effects have wholly adverse intervals; other references do not isolate the modifier",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "LOSO disagreement modifier; fixed preserved challenger panel",
+      "effect": -0.465735196274,
+      "effect_units": "accuracy_points",
+      "family": "lead70_disagreement_v1",
+      "interval": [
+        -0.816326530612,
+        -0.13698630137
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Trusting the model less when earlier model versions disagreed about a game made held-out picks worse.",
+      "probability_positive": 0.0005,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead70_results.md",
+      "standard_error": 0.171681920725
+    },
+    "lead70_disagreement_vs_four_term_brier": {
+      "category": null,
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Incremental effects have wholly adverse intervals; other references do not isolate the modifier",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "LOSO disagreement modifier; fixed preserved challenger panel",
+      "effect": -0.000294475101834,
+      "effect_units": "brier_improvement",
+      "family": "lead70_disagreement_v1",
+      "interval": [
+        -0.000452993339221,
+        -0.000143756666829
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Trusting the model less when earlier model versions disagreed about a game made held-out picks worse.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead70_results.md",
+      "standard_error": 8.06009395718e-05
+    },
+    "lead70_disagreement_vs_four_term_log_loss": {
+      "category": null,
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Incremental effects have wholly adverse intervals; other references do not isolate the modifier",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "LOSO disagreement modifier; fixed preserved challenger panel",
+      "effect": -0.000602733258864,
+      "effect_units": "log_loss_improvement",
+      "family": "lead70_disagreement_v1",
+      "interval": [
+        -0.000921038437556,
+        -0.000305375027671
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Trusting the model less when earlier model versions disagreed about a game made held-out picks worse.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead70_results.md",
+      "standard_error": 0.000160787789008
+    },
     "lead72_push_adjusted_best_pick_2020_2025": {
       "category": "modeling",
       "classification": "unresolved_below_power",
