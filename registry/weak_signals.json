@@ -49636,6 +49636,90 @@
       "source": "docs/lead68_unit1.md",
       "standard_error": null
     },
+    "lead69_cfb_horizon_accuracy_v1": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CFB first-observed opener horizon interaction; LOSO; accuracy",
+      "effect": -0.0841042893188,
+      "effect_units": "accuracy_points",
+      "family": "lead69_cfb_horizon_v1",
+      "interval": [
+        -0.360848444928,
+        0.205362104486
+      ],
+      "league": "cfb",
+      "notes": "",
+      "plain_summary": "We tested giving college line moves different weight based on how long the opening line had been up. It did not improve this sample; picks stay unchanged.",
+      "probability_positive": 0.267,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 45,
+      "sample_games": 2378,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead69_cfb_replication.md",
+      "standard_error": 0.143495229879
+    },
+    "lead69_cfb_horizon_brier_v1": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CFB first-observed opener horizon interaction; LOSO; brier",
+      "effect": -0.000104173685209,
+      "effect_units": "brier_improvement",
+      "family": "lead69_cfb_horizon_v1",
+      "interval": [
+        -0.000281190554013,
+        7.20098001834e-05
+      ],
+      "league": "cfb",
+      "notes": "",
+      "plain_summary": "We tested giving college line moves different weight based on how long the opening line had been up. It did not improve this sample; picks stay unchanged.",
+      "probability_positive": 0.126,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 45,
+      "sample_games": 2378,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead69_cfb_replication.md",
+      "standard_error": 8.94880068494e-05
+    },
+    "lead69_cfb_horizon_log_loss_v1": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CFB first-observed opener horizon interaction; LOSO; log_loss",
+      "effect": -0.000196512663956,
+      "effect_units": "log_loss_improvement",
+      "family": "lead69_cfb_horizon_v1",
+      "interval": [
+        -0.000619399182504,
+        0.000228611628916
+      ],
+      "league": "cfb",
+      "notes": "",
+      "plain_summary": "We tested giving college line moves different weight based on how long the opening line had been up. It did not improve this sample; picks stay unchanged.",
+      "probability_positive": 0.1835,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 45,
+      "sample_games": 2378,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead69_cfb_replication.md",
+      "standard_error": 0.000213980556289
+    },
     "lead69_horizon_loso_accuracy": {
       "category": "schedule",
       "classification": "unresolved_below_power",
