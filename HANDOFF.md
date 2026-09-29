@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-29T23:43:34.126177+00:00`
+Refreshed at: `2026-09-29T23:44:31.899723+00:00`
 
 ## Start here
 
@@ -21,29 +21,21 @@ Refreshed at: `2026-09-29T23:43:34.126177+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `36a714f8f9e0` — Bring today's research scripts to ruff check and format
-- Pending change set: 34 paths
+- Baseline commit: `cef49366c738` — Record LEAD-82..88 unit 2 replays and the season-held-out base builder
+- Pending change set: 13 paths
   - ` M AGENTS.md`
   - ` M docs/agent_workflow.md`
   - ` M docs/findings.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/lead82.md`
-  - `M  docs/lanes/lead83.md`
-  - `M  docs/lanes/lead84.md`
-  - `M  docs/lanes/lead85.md`
-  - `M  docs/lanes/lead87.md`
-  - `M  docs/lanes/lead88.md`
-  - `A  docs/lanes/loso-base-artifact.md`
-  - `A  docs/lead82_unit2.md`
-  - `A  docs/lead83_unit2.md`
-  - `A  docs/lead84_unit2.md`
-  - `A  docs/lead85_unit2.md`
-  - `A  docs/lead87_unit2.md`
-  - `A  docs/lead88_unit2.md`
-  - `A  docs/loso_base_artifact.md`
-  - `M  registry/weak_signals.json`
-  - `A  scripts/build_loso_base.py`
-  - ...and 14 more
+  - `M  docs/lanes/backlog-fleet-2026-09-29.md`
+  - `?? docs/lanes/windows-shell-popup.md`
+  - `?? registry/experiments/margin-backtest/20260927T134152Z.json`
+  - `?? registry/experiments/margin-backtest/20260929T183944Z.json`
+  - `?? registry/experiments/margin-predict/2026-week-03-20260927T134352Z.json`
+  - `?? registry/experiments/margin-predict/2026-week-03-20260929T184122Z.json`
+  - `?? registry/experiments/opener-evaluation/20260927T134738Z.json`
+  - `?? registry/experiments/waterfall-feed/20260927T134851Z.json`
+  - `?? registry/experiments/waterfall-feed/20260929T184553Z.json`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

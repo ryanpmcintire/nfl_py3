@@ -57,12 +57,9 @@ at least seven parallel workers, committing and pushing at each verified return.
 - `codex --no-daemon exec` launcher: blocked by permission classifier.
 
 ## Next
-- Session stopped at Claude usage limit 2026-09-29. Codex workers still running
-  when it stopped (outputs land UNCOMMITTED in tests/scratch/codex/<lane>.final.md
-  and their lane files): lead82u2, lead83u2, lead84u2, lead85u2, lead87u2,
-  lead88u2, lint, losobase. Next session: read each .final.md, run its lane's
-  record commands (candidate-vs-served cells only, add --plain-summary), commit,
-  push; then LEAD-89 unit 2 on artifacts/loso_base/.
+- Resumed after usage reset: LEAD-82..88 unit 2 recorded and committed; lint round 1
+  committed. Running: lint2, upstreamloso, lead88u3, lead86u2, ideationD (rows go in
+  its lane, orchestrator appends LEAD-90..97), ui20e, roadmapsync (owns ROADMAP.md).
 
 - Launch wave 1; on each return verify, run record commands serially, commit,
   push, refill from ideation rows.
