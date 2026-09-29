@@ -2428,6 +2428,27 @@ def _build_pool_line_note(
     )
 
 
+def _pool_board_order(
+    data_root: Path | None,
+    *,
+    season: Any,
+    week: Any,
+) -> dict[str, int]:
+
+    if data_root is None or season is None or week is None:
+        return {}
+    from nfl_ats.data import DataContractError
+    from nfl_ats.splash_lines import load_splash_capture
+
+    try:
+        capture = load_splash_capture(Path(data_root), int(season), int(week))
+    except DataContractError:
+        return {}
+    if capture is None:
+        return {}
+    return {game.game_id: index for index, game in enumerate(capture.games)}
+
+
 def _build_season_record(
     paper_decisions: pd.DataFrame,
     outcomes: pd.DataFrame,
@@ -3628,8 +3649,16 @@ def load_board_content(
         strength_bands = StrengthBands(
             lean_min=pick_probability.lean_minimum, strong_min=pick_probability.strong_minimum
         )
-    sort_columns = [column for column in ("kickoff", "game_id") if column in final]
+    pool_order = _pool_board_order(
+        resolved_data_root,
+        season=artifacts.metadata.get("season"),
+        week=artifacts.metadata.get("week"),
+    )
+    if pool_order and "game_id" in final:
+        final = final.assign(_pool_order=final["game_id"].astype(str).map(pool_order))
+    sort_columns = [column for column in ("_pool_order", "kickoff", "game_id") if column in final]
     ordered = final.sort_values(sort_columns, na_position="last") if sort_columns else final
+    ordered = ordered.drop(columns="_pool_order", errors="ignore")
 
     flip_member_ids_by_game: dict[str, tuple[str, ...]] = {}
     if view is not None and view.production_overlay is not None:

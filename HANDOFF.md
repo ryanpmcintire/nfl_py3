@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-29T19:52:20.664098+00:00`
+Refreshed at: `2026-09-29T20:20:48.852555+00:00`
 
 ## Start here
 
@@ -21,29 +21,23 @@ Refreshed at: `2026-09-29T19:52:20.664098+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `ebefbdd4438e` — Refresh handoff after scheduler status checkpoint
-- Pending change set: 26 paths
+- Baseline commit: `863df86d1c53` — Publish 2026 Week 4 card and board from the Tuesday pool lines
+- Pending change set: 15 paths
   - ` M AGENTS.md`
-  - `M  CURRENT_PREDICTIONS.md`
-  - `M  HANDOFF.md`
-  - ` M README.md`
   - ` M docs/agent_workflow.md`
   - `M  docs/findings.html`
   - `M  docs/history.html`
   - `M  docs/index.html`
-  - `A  docs/lanes/done/week4-tuesday-lock.md`
   - `M  docs/model.html`
-  - `A  registry/experiments/margin-backtest/20260929T192312Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-04-20260929T192403Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-04-20260929T194213Z.json`
-  - `A  registry/experiments/opener-evaluation/20260929T192743Z.json`
-  - `A  registry/experiments/prospective-score/20260929T194214Z.json`
-  - `A  registry/experiments/waterfall-feed/20260929T192907Z.json`
-  - `M  src/nfl_ats/board_terminal.py`
-  - `M  tiebreaker.json`
+  - `M  src/nfl_ats/board_content.py`
   - `?? docs/lanes/windows-shell-popup.md`
   - `?? registry/experiments/margin-backtest/20260927T134152Z.json`
-  - ...and 6 more
+  - `?? registry/experiments/margin-backtest/20260929T183944Z.json`
+  - `?? registry/experiments/margin-predict/2026-week-03-20260927T134352Z.json`
+  - `?? registry/experiments/margin-predict/2026-week-03-20260929T184122Z.json`
+  - `?? registry/experiments/opener-evaluation/20260927T134738Z.json`
+  - `?? registry/experiments/waterfall-feed/20260927T134851Z.json`
+  - `?? registry/experiments/waterfall-feed/20260929T184553Z.json`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
