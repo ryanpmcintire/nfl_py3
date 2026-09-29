@@ -118,6 +118,118 @@
       "source": "docs/lead71_unit3.md",
       "standard_error": 0.000513855014418
     },
+    "LEAD-84-unit2-accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground for this endpoint; no power-matched control",
+      "closing_ground": null,
+      "description": "LEAD-84 candidate versus served four-term recipe; accuracy_points",
+      "effect": -0.860832137733,
+      "effect_units": "accuracy_points",
+      "family": "LEAD-84-unit2",
+      "interval": [
+        -3.55113636364,
+        1.17651390453
+      ],
+      "league": "nfl",
+      "notes": "505 looks; opener; season/week bootstrap; unadjusted intervals",
+      "plain_summary": "Combining book prices this way has not yet shown a clear improvement. This question remains open and pool picks stay unchanged.",
+      "probability_positive": 0.22955,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead84_unit2.md",
+      "standard_error": 1.20096008226
+    },
+    "LEAD-84-unit2-brier": {
+      "category": "market",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Fixed fifth-term extension has a wholly negative improvement interval on brier; this does not close the separate primary RPS mixture question",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "LEAD-84 candidate versus served four-term recipe; brier",
+      "effect": -0.00117551685789,
+      "effect_units": "brier_improvement",
+      "family": "LEAD-84-unit2",
+      "interval": [
+        -0.00233034204847,
+        -8.30993338884e-05
+      ],
+      "league": "nfl",
+      "notes": "505 looks; opener; season/week bootstrap; unadjusted intervals",
+      "plain_summary": "Adding this book information made the stated opener chances less accurate. This concerns this version of the formula; pool picks stay unchanged.",
+      "probability_positive": 0.016,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead84_unit2.md",
+      "standard_error": 0.000573305261894
+    },
+    "LEAD-84-unit2-log_loss": {
+      "category": "market",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Fixed fifth-term extension has a wholly negative improvement interval on log_loss; this does not close the separate primary RPS mixture question",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "LEAD-84 candidate versus served four-term recipe; log_loss",
+      "effect": -0.00247633567504,
+      "effect_units": "log_loss_improvement",
+      "family": "LEAD-84-unit2",
+      "interval": [
+        -0.00487561659388,
+        -0.000194787186053
+      ],
+      "league": "nfl",
+      "notes": "505 looks; opener; season/week bootstrap; unadjusted intervals",
+      "plain_summary": "Adding this book information made the stated opener chances less accurate. This concerns this version of the formula; pool picks stay unchanged.",
+      "probability_positive": 0.0157,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead84_unit2.md",
+      "standard_error": 0.00120363858404
+    },
+    "LEAD-84-unit2-rps": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground for this endpoint; no power-matched control",
+      "closing_ground": null,
+      "description": "LEAD-84 candidate versus served four-term recipe; rps",
+      "effect": -0.00938541374734,
+      "effect_units": "rps_improvement",
+      "family": "LEAD-84-unit2",
+      "interval": [
+        -0.0242296707192,
+        0.00596906494894
+      ],
+      "league": "nfl",
+      "notes": "505 looks; opener; season/week bootstrap; unadjusted intervals",
+      "plain_summary": "Combining book prices this way has not yet shown a clear improvement. This question remains open and pool picks stay unchanged.",
+      "probability_positive": 0.1048,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 714,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead84_unit2.md",
+      "standard_error": 0.00751534844707
+    },
     "LEAD69-unit2-horizon-accuracy": {
       "category": "market",
       "classification": "unresolved_below_power",
@@ -50532,6 +50644,202 @@
       "source": "docs/lead79_unit2.md",
       "standard_error": 0.0010793929114343618
     },
+    "lead82_tuesday_hourly_vs_served_accuracy_points_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong-sign interval, split-half refutation, or powered positive control; retain unresolved under AGENTS.md:65-84.",
+      "closing_ground": null,
+      "description": "One hourly Tuesday move coefficient added to the served four-term probability; LOSO 2023-2025.",
+      "effect": -1.2515644555694618,
+      "effect_units": "accuracy_points",
+      "family": "lead82_tuesday_hourly",
+      "interval": [
+        -3.101736972704715,
+        0.37037037037037035
+      ],
+      "league": "nfl",
+      "notes": "216 reporting looks within a 261-look ceiling; fixed ridge; 10000 paired season-stratified week bootstrap draws; retrospective selected-feature replay. Positive means improvement. Three correlated candidate-versus-served endpoints; binary RPS duplicates Brier and is not recorded twice.",
+      "plain_summary": "Adding Tuesday afternoon line moves slightly improved the confidence estimates, but the changed picks went 13-23. Keep the current picks while this is studied further.",
+      "probability_positive": 0.0606,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead82_unit2.md",
+      "standard_error": 0.8688956123605536
+    },
+    "lead82_tuesday_hourly_vs_served_brier_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong-sign interval, split-half refutation, or powered positive control; retain unresolved under AGENTS.md:65-84.",
+      "closing_ground": null,
+      "description": "One hourly Tuesday move coefficient added to the served four-term probability; LOSO 2023-2025.",
+      "effect": 0.00024235772562066968,
+      "effect_units": "brier_improvement",
+      "family": "lead82_tuesday_hourly",
+      "interval": [
+        -0.0011366360947698752,
+        0.0015717489544428823
+      ],
+      "league": "nfl",
+      "notes": "216 reporting looks within a 261-look ceiling; fixed ridge; 10000 paired season-stratified week bootstrap draws; retrospective selected-feature replay. Positive means improvement. Three correlated candidate-versus-served endpoints; binary RPS duplicates Brier and is not recorded twice.",
+      "plain_summary": "Adding Tuesday afternoon line moves slightly improved the confidence estimates, but the changed picks went 13-23. Keep the current picks while this is studied further.",
+      "probability_positive": 0.6467,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead82_unit2.md",
+      "standard_error": 0.0006876527490532985
+    },
+    "lead82_tuesday_hourly_vs_served_log_loss_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong-sign interval, split-half refutation, or powered positive control; retain unresolved under AGENTS.md:65-84.",
+      "closing_ground": null,
+      "description": "One hourly Tuesday move coefficient added to the served four-term probability; LOSO 2023-2025.",
+      "effect": 0.0005574718712427691,
+      "effect_units": "log_loss_improvement",
+      "family": "lead82_tuesday_hourly",
+      "interval": [
+        -0.0023892457172547533,
+        0.003383471953780184
+      ],
+      "league": "nfl",
+      "notes": "216 reporting looks within a 261-look ceiling; fixed ridge; 10000 paired season-stratified week bootstrap draws; retrospective selected-feature replay. Positive means improvement. Three correlated candidate-versus-served endpoints; binary RPS duplicates Brier and is not recorded twice.",
+      "plain_summary": "Adding Tuesday afternoon line moves slightly improved the confidence estimates, but the changed picks went 13-23. Keep the current picks while this is studied further.",
+      "probability_positive": 0.6567,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead82_unit2.md",
+      "standard_error": 0.0014679833151037447
+    },
+    "lead83_unit2_pooled_accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Pooled primary Brier remains unresolved; no closure is claimed for this cell.",
+      "closing_ground": null,
+      "description": "Noisy movement shrinkage versus refitted four-term base: pooled",
+      "effect": 0.143472022956,
+      "effect_units": "accuracy_points",
+      "family": "lead83_unit2_501_looks",
+      "interval": [
+        -0.99573257468,
+        1.70212765957
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When books disagree, this softens their line move before making the pick. It has not shown a dependable improvement over the usual calculation.",
+      "probability_positive": 0.499,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead83_unit2.md",
+      "standard_error": null
+    },
+    "lead83_unit2_pooled_brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Pooled primary Brier remains unresolved; no closure is claimed for this cell.",
+      "closing_ground": null,
+      "description": "Noisy movement shrinkage versus refitted four-term base: pooled",
+      "effect": -0.000169845047236,
+      "effect_units": "brier_improvement",
+      "family": "lead83_unit2_501_looks",
+      "interval": [
+        -0.000690244164975,
+        0.000176408547523
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When books disagree, this softens their line move before making the pick. It has not shown a dependable improvement over the usual calculation.",
+      "probability_positive": 0.24715,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead83_unit2.md",
+      "standard_error": null
+    },
+    "lead83_unit2_pooled_log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Pooled primary Brier remains unresolved; no closure is claimed for this cell.",
+      "closing_ground": null,
+      "description": "Noisy movement shrinkage versus refitted four-term base: pooled",
+      "effect": -0.000350039475421,
+      "effect_units": "log_loss_improvement",
+      "family": "lead83_unit2_501_looks",
+      "interval": [
+        -0.00141863156756,
+        0.000353458946242
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When books disagree, this softens their line move before making the pick. It has not shown a dependable improvement over the usual calculation.",
+      "probability_positive": 0.24515,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead83_unit2.md",
+      "standard_error": null
+    },
+    "lead83_unit2_pooled_rps_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Pooled primary Brier remains unresolved; no closure is claimed for this cell.",
+      "closing_ground": null,
+      "description": "Noisy movement shrinkage versus refitted four-term base: pooled",
+      "effect": -0.00640220529344,
+      "effect_units": "rps_improvement",
+      "family": "lead83_unit2_501_looks",
+      "interval": [
+        -0.0140197048332,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When books disagree, this softens their line move before making the pick. It has not shown a dependable improvement over the usual calculation.",
+      "probability_positive": 0.02965,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead83_unit2.md",
+      "standard_error": null
+    },
     "lead85_unit1_pooled_brier": {
       "category": "modeling",
       "classification": "unresolved_below_power",
@@ -50615,6 +50923,202 @@
       ],
       "source": "docs/lead85_unit1.md",
       "standard_error": null
+    },
+    "lead85_unit2_nominee_brier_2023_2025": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground established",
+      "closing_ground": null,
+      "description": "Uncertainty versus served weekly Best Pick",
+      "effect": 0.000214435973170224,
+      "effect_units": "brier_improvement",
+      "family": "lead85_weekly_nominee_brier",
+      "interval": [
+        -0.000321153866561299,
+        0.000895861378439068
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Accounting for uncertainty slightly improved the weekly Best Pick probability scores; this small replay does not settle the benefit.",
+      "probability_positive": 0.7375,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead85_unit2.md",
+      "standard_error": 0.000317601855592181
+    },
+    "lead85_unit2_weekly_reward_2023_2025": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground established",
+      "closing_ground": null,
+      "description": "Uncertainty versus served weekly Best Pick",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "lead85_weekly_weekly_reward",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Both versions chose the same Best Pick in all 54 weeks: 30 wins, 22 losses and 2 ties. There were no changed picks to compare.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead85_unit2.md",
+      "standard_error": null
+    },
+    "lead87_unit2_postseason_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground established; fixed 497-look family.",
+      "closing_ground": null,
+      "description": "Playoff training added to the regular-season four-term recipe: accuracy_points",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "lead87_postseason_joint_likelihood",
+      "interval": [
+        -0.43165467625898674,
+        0.4341534008683041
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Use playoff games to help judge how a moving line should change a regular-season pick. The added games left the score nearly unchanged; keep this idea under study.",
+      "probability_positive": 0.4936,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 686,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead87_unit2.md",
+      "standard_error": 0.19884527856331308
+    },
+    "lead87_unit2_postseason_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground established; fixed 497-look family.",
+      "closing_ground": null,
+      "description": "Playoff training added to the regular-season four-term recipe: brier",
+      "effect": -3.5700307536579157e-06,
+      "effect_units": "brier_improvement",
+      "family": "lead87_postseason_joint_likelihood",
+      "interval": [
+        -0.00012558885904129236,
+        0.00011852125055055381
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Use playoff games to help judge how a moving line should change a regular-season pick. The added games left the score nearly unchanged; keep this idea under study.",
+      "probability_positive": 0.4865,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 686,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead87_unit2.md",
+      "standard_error": 6.238661257911377e-05
+    },
+    "lead87_unit2_postseason_log_loss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground established; fixed 497-look family.",
+      "closing_ground": null,
+      "description": "Playoff training added to the regular-season four-term recipe: log_loss",
+      "effect": -1.2695663796913337e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "lead87_postseason_joint_likelihood",
+      "interval": [
+        -0.00027160633303257296,
+        0.0002480422463890741
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Use playoff games to help judge how a moving line should change a regular-season pick. The added games left the score nearly unchanged; keep this idea under study.",
+      "probability_positive": 0.4705,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 686,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead87_unit2.md",
+      "standard_error": 0.00013249659747407836
+    },
+    "lead88_unit2_all_mae": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective LOSO; 82 looks; zero-move guesses can change; no power control or mechanism refutation",
+      "closing_ground": null,
+      "description": "Fitted total response plus lattice reprojection versus served guess on games with a served score guess; 82 looks",
+      "effect": 0.00825206301575,
+      "effect_units": "mae_improvement",
+      "family": "lead88_total_response",
+      "interval": [
+        -0.045901768417,
+        0.0610128822588
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "For games with a served score guess, this study nudges the score guess using changing sportsbook totals, then rounds the scores again. Keep the current guess while the effects of the nudge and rounding remain unresolved.",
+      "probability_positive": 0.6293,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1333,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead88_unit2.md",
+      "standard_error": 0.0266996876959
+    },
+    "lead88_unit2_last_mae": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective LOSO; 82 looks; zero-move guesses can change; no power control or mechanism refutation",
+      "closing_ground": null,
+      "description": "Fitted total response plus lattice reprojection versus served guess on the final game of the week; 82 looks",
+      "effect": 0.0693069306931,
+      "effect_units": "mae_improvement",
+      "family": "lead88_total_response",
+      "interval": [
+        -0.0891089108911,
+        0.237623762376
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "For the final game of the week, this study nudges the score guess using changing sportsbook totals, then rounds the scores again. Keep the current guess while the effects of the nudge and rounding remain unresolved.",
+      "probability_positive": 0.80055,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 101,
+      "sample_games": 101,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead88_unit2.md",
+      "standard_error": 0.0820544998779
     },
     "lead_08_injury_trajectory_refresh_cx14": {
       "category": "health",

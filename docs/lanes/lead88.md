@@ -1,28 +1,55 @@
-# LEAD-88 — observed total news
+# LEAD-88 - observed total news
 
 ## Goal
-Execute the declared total-response replay in `scripts/lead88_unit1.py`; research only.
+Replay one fitted total-move response against the served score-lattice guess; research only.
 
 ## State
-**Measured:** paired-total unit complete; 262 verified files / 316,530 rows → 16,720 book pairs, 1,343 games, 101/107 weekly last games. Replay is not complete. No outcomes loaded, fits or scores; 0 of 713 statistical looks executed. Verbatim declaration: `docs/lead88_protocol.md`; results: `docs/lead88_unit1.md`.
+**Measured:** one response replay complete; 1333/1,343 games and 101/101 last games scored.
+All 33 missing base rows retained; 10 production-declined guesses remain in scratch evidence, outside paired MAE.
+Diagnostic: 26 zero-move guesses changed through lattice reprojection; this mixes mechanisms.
+Last-game MAE gain 0.069307 [-0.089109, 0.237624]; probability_positive=0.8006.
+All-game gain 0.008252 [-0.045902, 0.061013]; probability_positive=0.6293.
+Proposed unresolved status; report `docs/lead88_unit2.md`; no registry writes.
 
 ## Protocol (frozen before outcomes)
-Predeclare total centre = Tuesday total + b × (Sunday-12:30 total minus Tuesday total), with one b fitted on earlier REG games under absolute loss and a separately calibrated discrete total law. Keep the margin probability, sides and Best Pick fixed; choose the integer total by the existing rounding rule. Fit on all source-complete REG games; last-game MAE is primary, all-game MAE secondary. Protocol C: F=3, B=6, K=6, **713 looks**. Total-endpoint controls are Tuesday total, deadline total, earlier-season intercept-adjusted deadline total and earlier-season unconditional median; ordinary ATS comparisons retain C's baselines.
-
-Population: 2020–2025 archived frozen openers, row-specific source-complete subsets. Preserve pushes for distributions/nomination; exclude only from conditional cover fitting. Enforce target-week, observation, bookmaker and kickoff clocks. Historical `tue_open` captures precede noon: available anchors, not noon-capture evidence. No closing inputs.
-
-Chronological LOSO: outer 2023/2024/2025; fit through Y−3, tune on Y−2, calibrate on Y−1. Reconstruct timestamp-matched moves for candidate/comparator in every year, replacing missing-archive zeros. Verify upstream training cutoffs. Reused archives are retrospective; freeze survivors prospectively.
-
-One calibrated discrete-margin probability selects sides. Pair candidate, current four-term recipe, model-only, timestamp-matched market and Elo. Report decisive records first; optimistic IS/OOS and gaps, fold coefficients/stability, opener accuracy/Brier/log loss/RPS, five equal-width reliability bands, season/week-block 95% intervals and `probability_positive`. Zero crossing closes nothing; default `unresolved_below_power`. L=(27K+B+4)(F+1)+25: five arms and four contrasts × IS/OOS/gap × K, B fit/coefficient summaries, four decisive records per fold/pooled panel, plus 25 reliability cells; no unlisted variants. MAE is not evidence of a measured pool-rank gain.
+Owner amendment: baseline is served lattice guess; half-up market total is a comparator only.
+One LAD response to Tuesday-to-deadline total move, six LOSO seasons 2020-2025, pushes retained.
+One fixed fitted probability selects sides; no standalone flips. 82 bounded looks within parent 713 looks.
+Full declaration saved before scoring in `tests/scratch/codex/lead88_unit2/protocol.md`, copied in report.
 
 ## Tried
-**Measured:** `.tools/uv.exe run --no-sync python scripts/lead88_unit1.py` exits 0; verified source hashes and pregame clocks. Corrected an overly conservative date-audit assumption and reran without outcomes. AST/token check: 0 comments/docstrings; recorded script hash matches. Use `UV_CACHE_DIR` in a writable temporary directory. Scratch: `tests/scratch/codex/lead88_unit1/`.
+**Measured:** `.tools/uv.exe run --no-sync python scripts/lead88_unit2.py`; local UV_CACHE_DIR used.
+Frozen quote clocks, base probability reproduction and retained-row checks executed in the real command.
 
 ## Record commands
-None: no effect estimated or adjudicated; do not invent a record or probability_positive. Future replay commands require `--plain-summary` and orchestrator execution.
+Orchestrator only; candidate versus served, execute serially.
+```bash
+.tools/uv.exe run --no-sync --no-cache nfl-ats weak-signals record \
+  --name lead88_unit2_last_mae --family lead88_total_response \
+  --description 'Fitted total response plus lattice reprojection versus served guess on the final game of the week; 82 looks' \
+  --source docs/lead88_unit2.md --league nfl --season-start 2020 --season-end 2025 \
+  --effect 0.0693069306931 --effect-units mae_improvement \
+  --interval-low -0.0891089108911 --interval-high 0.237623762376 \
+  --standard-error 0.0820544998779 --probability-positive 0.80055 \
+  --sample-games 101 --sample-blocks 101 --classification unresolved_below_power \
+  --classification-evidence 'Retrospective LOSO; 82 looks; zero-move guesses can change; no power control or mechanism refutation' \
+  --plain-summary 'For the final game of the week, this study nudges the score guess using changing sportsbook totals, then rounds the scores again. Keep the current guess while the effects of the nudge and rounding remain unresolved.'
+
+.tools/uv.exe run --no-sync --no-cache nfl-ats weak-signals record \
+  --name lead88_unit2_all_mae --family lead88_total_response \
+  --description 'Fitted total response plus lattice reprojection versus served guess on games with a served score guess; 82 looks' \
+  --source docs/lead88_unit2.md --league nfl --season-start 2020 --season-end 2025 \
+  --effect 0.00825206301575 --effect-units mae_improvement \
+  --interval-low -0.045901768417 --interval-high 0.0610128822588 \
+  --standard-error 0.0266996876959 --probability-positive 0.6293 \
+  --sample-games 1333 --sample-blocks 107 --classification unresolved_below_power \
+  --classification-evidence 'Retrospective LOSO; 82 looks; zero-move guesses can change; no power control or mechanism refutation' \
+  --plain-summary 'For games with a served score guess, this study nudges the score guess using changing sportsbook totals, then rounds the scores again. Keep the current guess while the effects of the nudge and rounding remain unresolved.'
+```
 
 ## Next
-Resolve rounding entry point before the outcome replay: cited study's half-up rule versus current served score lattice. Preserve all pushes, reconstruct the fixed four-term base/lineage, then fit b and the separate discrete law under the frozen folds; report every declared comparison.
+Orchestrator reviews/records; next unit must predeclare a zero-adjustment identity before further scoring.
 
 ## Open
-**Measured:** totals exist locally; this is not an absent-total-source gate. 33 paired games lack decisive-only four-term rows; outer folds have 239/238/237 games, each with 18 last games. IS/OOS, gap, coefficients, intervals, probability_positive and decisive records remain uncomputed. Two scope/rounding questions are pending. No closure or serving claim.
+Retrospective upstream/feature-vintage limits remain. No prospective or pool-rank claim; zero crossing closes nothing.
+No serving change, registry write, publication, new tests, commit or push by this worker.

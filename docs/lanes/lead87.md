@@ -1,44 +1,34 @@
 # LEAD-87
+
 ## Goal
-Complete the declared first unit: postseason clock/label join for the shared news-response coefficient.
+Refit the four-term base with whole-season exclusion and execute the postseason joint-likelihood replay once.
+
 ## State
-**Measured:** join complete; 262 verified quote files, 52 paired POST games (8/9/9/8/9/9), one push, 51 conditional-fit rows. All 1,503 frozen REG rows retained; 1,272 have leader pairs (686 in outer 2023–2025). No fit or score.
-**Measured:** companion cutoffs precede the game for 1,503/1,503 REG rows; 1,415 use earlier games within their own season. Strict outer-season exclusion and exact opener lineage remain unverified.
-## Protocol declaration — copied before outcomes; unchanged
-| LEAD-87 | ⬜ | Borrow postseason games for the news-response coefficient (batch C rank 6 of 8) | **Inferred mechanism:** a Tuesday price also becomes stale before playoff
-kickoffs; excluding those independent NFL games discards evidence about how observed price corrections map to cover probability. Predeclare one joint likelihood: retain every REG
-model term, add a postseason-only intercept, and share only the move coefficient with an auxiliary postseason market-only logit. Do not fabricate postseason model/flag columns: no
-matching cached margin-model predictions were found. Keep every headline grade on the original REG frozen-opener population; postseason games are training evidence only and all
-games from the held-out/later season are excluded. **Measured inputs:** `data/raw/20260908T162105Z/schedules.parquet` (4,902 rows);
-`data/market/raw/20210105T135500Z/quotes.parquet` (576) is a playoff-source witness; the existing Tuesday/Sunday archive supplies 52 paired postseason games (8/9/9/8/9/9 by
-2020–2025). `artifacts/pick_probability/20260929T192747Z/per_game.parquet` has 1,503 REG rows. Protocol C: opener Brier primary, F=3, B=6, K=4, **497 looks**; one auxiliary arm,
-unchanged as more eligible seasons accrue. **Read/checked:** MOD-20/21, XLG-09, LEAD-73/76/77. This borrows same-league postseason news-response labels, not older rule-shape
-priors, cross-league opener residuals or extra quote rows presented as games. Units: playoff clock/label join, 10–15 calls; joint likelihood replay, 20–25. Rank rationale: actual
-extra independent games with no new source, but only 52 available games and an explicit transportability assumption. |
+**Measured:** replay completed once (exit 0): 686 outer REG games, 54 week blocks; candidate/served both 385-301, decisive 1-1. Brier gain -0.000003570 [-0.000125589, 0.000118521], probability_positive 0.4865. Provisional unresolved_below_power; not recorded or closed.
 
-## Protocol C
+## Amendment declared before scoring
+The immutable mechanism/family remain `docs/lead87_protocol.md`: one auxiliary POST likelihood shares only the move slope with all four REG terms, plus its own intercept. Historical opener is the frozen pool-line proxy; no pre-2026 Splash captures. Population: original 2020–2025 REG opener rows with admissible leader-book pairs. Missing moves are excluded, never imputed as no movement. Target: home cover at opener conditional on no push; POST pushes stay in evidence, not fitting.
 
-Population: 2020–2025 archived frozen openers, row-specific source-complete subsets. Preserve pushes for distributions/nomination; exclude only from conditional cover fitting.
-Enforce target-week, observation, bookmaker and kickoff clocks. Historical `tue_open` captures precede noon: available anchors, not noon-capture evidence. LEAD-82 uses the hourly
-noon boundary. No closing inputs.
+Replace cached model logits: for each 2020–2025 season refit the configured weak-stack ridge margin model on completed earlier seasons only; refit residual distribution, discrete line-conditional margin reader, and home-side offset using earlier seasons only. Score at the historical opener. Pregame rolling features may use earlier games as observed information; no fitted parameter, residual pool, or offset uses held-out-season outcomes. Retain source features/flags; do not rebuild history. Save training IDs/cutoffs, hashes, and prediction rows in scratch.
 
-Chronological LOSO: outer 2023/2024/2025; fit through Y−3, tune on Y−2, calibrate on Y−1. Reconstruct timestamp-matched moves for candidate/comparator in every year, replacing
-missing-archive zeros. LEAD-82 alone fits 2023, calibrates 2024, scores 2025 with existing ridge; one outer season cannot establish stability. Verify upstream training cutoffs.
-Reused archives are retrospective; freeze survivors prospectively.
+Retain chronological outer 2023/2024/2025: joint fit through Y−3, Y−2 reserved for tuning (no selection: one fixed specification), REG-only Platt calibration on Y−1, score Y. POST training also ends Y−3. Fixed served ridge 0.001, margin ridge 10; no search. Independently refit identical four-term REG-only comparator. One calibrated probability selects the side. Baselines: season-excluded discrete model-only, timestamp-matched discrete market (opener plus paired move), opener/Elo logistic; calibration excludes Y. Report optimistic fit-set IS, outer OOS, OOS−IS gaps.
 
-One calibrated discrete-margin probability selects sides. Pair candidate, current four-term recipe, model-only, timestamp-matched market and Elo. Report decisive records first;
-optimistic IS/OOS and gaps, fold coefficients/stability, opener accuracy/Brier/log loss/RPS, five equal-width reliability bands, season/week-block 95% intervals and
-`probability_positive`. Zero crossing closes nothing; default `unresolved_below_power`.
+Primary endpoint opener Brier; also log loss, accuracy points, conditional binary RPS (= Brier). Decisive side-disagreement records precede effects. Report natural fold coefficients/calibration slopes, five fixed equal-width reliability bands, 10,000 paired week-block bootstrap draws stratified by outer season, seed 20260929, 95% percentile intervals, half-credit ties in probability_positive. Intervals condition on fitted models, not refit uncertainty. Family remains 497 looks (F=3, B=6, K=4), no added arms or outcome-driven revision. Zero crossing closes nothing; provisional unresolved_below_power pending orchestrator recording.
 
-Looks: L=(27K+B+4)(F+1)+25. F=outer seasons; B=candidate/nuisance specifications plus four baselines; K=endpoint/population series. Each fold/pooled panel: five arms and four
-contrasts × IS/OOS/gap × K, B fit/coefficient summaries, four decisive records; add 25 reliability cells. Identical refits add no specification. K=4 ordinarily; 85/89 add weekly
-reward/nominee Brier; 88 adds all-game/last-game total MAE. No unlisted variants.
 ## Tried
-**Measured:** `.tools/uv.exe run --no-sync python scripts/lead87_unit1.py` completed, exit 0, after two guard diagnostics: cache arm disambiguation and separation of pregame from prior-season chronology. Resource caps: two threads; one process.
-**Measured:** docs/lead87_unit1.md contains counts and folds; tests/scratch/codex/lead87_unit1/ contains joins, book evidence, source hashes, cutoff audit, summary, and run logs. UV cache redirected to tests/scratch/codex/lead87_uv_cache because the default cache was inaccessible.
+**Measured:** `.tools/uv.exe run --no-sync python scripts/lead87_unit2.py` ran once. Verified 20,893 training memberships exclude target/later seasons; 1,503 fresh base rows; 686 unique outer predictions; mass and metric arithmetic agree. Report: `docs/lead87_unit2.md`; evidence/log/amendment: `tests/scratch/codex/lead87_unit2/`.
+
 ## Record commands
-None: unit 1 fits/scores zero looks and makes no signal verdict. Orchestrator alone records after the replay; commands must be bash-compatible and include --plain-summary in pool-player English.
+Not run; orchestrator only. Positive favors candidate; RPS duplicates Brier, so no duplicate record.
+
+```bash
+.tools/uv.exe run --no-sync nfl-ats weak-signals record --name lead87_unit2_postseason_brier --description 'Playoff training added to the regular-season four-term recipe: brier' --source docs/lead87_unit2.md --effect=-3.5700307536579157e-06 --effect-units brier_improvement --standard-error 6.2386612579113773e-05 --interval-low=-0.00012558885904129236 --interval-high 0.00011852125055055381 --probability-positive 0.48649999999999999 --sample-games 686 --sample-blocks 54 --classification unresolved_below_power --league nfl --season-start 2023 --season-end 2025 --family lead87_postseason_joint_likelihood --category market --classification-evidence 'No admissible closing ground established; fixed 497-look family.' --plain-summary 'Use playoff games to help judge how a moving line should change a regular-season pick. The added games left the score nearly unchanged; keep this idea under study.'
+.tools/uv.exe run --no-sync nfl-ats weak-signals record --name lead87_unit2_postseason_log_loss --description 'Playoff training added to the regular-season four-term recipe: log_loss' --source docs/lead87_unit2.md --effect=-1.2695663796913337e-05 --effect-units log_loss_improvement --standard-error 0.00013249659747407836 --interval-low=-0.00027160633303257296 --interval-high 0.0002480422463890741 --probability-positive 0.47049999999999997 --sample-games 686 --sample-blocks 54 --classification unresolved_below_power --league nfl --season-start 2023 --season-end 2025 --family lead87_postseason_joint_likelihood --category market --classification-evidence 'No admissible closing ground established; fixed 497-look family.' --plain-summary 'Use playoff games to help judge how a moving line should change a regular-season pick. The added games left the score nearly unchanged; keep this idea under study.'
+.tools/uv.exe run --no-sync nfl-ats weak-signals record --name lead87_unit2_postseason_accuracy_points --description 'Playoff training added to the regular-season four-term recipe: accuracy_points' --source docs/lead87_unit2.md --effect 0 --effect-units accuracy_points --standard-error 0.19884527856331308 --interval-low=-0.43165467625898674 --interval-high 0.43415340086830412 --probability-positive 0.49359999999999998 --sample-games 686 --sample-blocks 54 --classification unresolved_below_power --league nfl --season-start 2023 --season-end 2025 --family lead87_postseason_joint_likelihood --category market --classification-evidence 'No admissible closing ground established; fixed 497-look family.' --plain-summary 'Use playoff games to help judge how a moving line should change a regular-season pick. The added games left the score nearly unchanged; keep this idea under study.'
+```
+
 ## Next
-Joint-likelihood replay under the unchanged declaration, after verifying opener lineage/fold eligibility; this first-unit packet did not fit the auxiliary arm.
+Orchestrator reviews the report, runs the three record commands serially, and commits this packet. No additional scored arm authorized.
+
 ## Open
-Decisive record, IS/OOS and gap, per-fold coefficients, effect intervals, probability_positive and calibration remain unmeasured. Local postseason source is present; no closure or promotion decision. No Git mutation, registry write, publication, new tests, or served change.
+Inherited feature/flag clocks were not re-audited; offsets cold-start in 2020; bootstrap conditions on fitted models. Only 8/17/26 POST labels enter chronological fits. No served-card or Git changes.

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-29T23:41:50.144632+00:00`
+Refreshed at: `2026-09-29T23:43:34.126177+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-09-29T23:41:50.144632+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `fc677f7aabe4` — Record fleet state at the session stop
-- Pending change set: 45 paths
+- Baseline commit: `36a714f8f9e0` — Bring today's research scripts to ruff check and format
+- Pending change set: 34 paths
   - ` M AGENTS.md`
   - ` M docs/agent_workflow.md`
   - ` M docs/findings.html`
   - ` M docs/index.html`
-  - ` M docs/lanes/lead82.md`
-  - ` M docs/lanes/lead83.md`
-  - ` M docs/lanes/lead84.md`
-  - ` M docs/lanes/lead85.md`
-  - ` M docs/lanes/lead87.md`
-  - ` M docs/lanes/lead88.md`
-  - `A  docs/lanes/lint-cleanup-2026-09-29.md`
-  - `M  scripts/lead69_cfb_replication.py`
-  - `M  scripts/lead73_unit1.py`
-  - `M  scripts/lead81_unit1.py`
-  - `M  scripts/lead82_unit1.py`
-  - `M  scripts/lead87_unit1.py`
-  - `M  scripts/lead88_unit1.py`
-  - `M  scripts/mod22_unit4.py`
-  - `M  scripts/mod22_unit5.py`
-  - `M  scripts/st_ratings_ats_study.py`
-  - ...and 25 more
+  - `M  docs/lanes/lead82.md`
+  - `M  docs/lanes/lead83.md`
+  - `M  docs/lanes/lead84.md`
+  - `M  docs/lanes/lead85.md`
+  - `M  docs/lanes/lead87.md`
+  - `M  docs/lanes/lead88.md`
+  - `A  docs/lanes/loso-base-artifact.md`
+  - `A  docs/lead82_unit2.md`
+  - `A  docs/lead83_unit2.md`
+  - `A  docs/lead84_unit2.md`
+  - `A  docs/lead85_unit2.md`
+  - `A  docs/lead87_unit2.md`
+  - `A  docs/lead88_unit2.md`
+  - `A  docs/loso_base_artifact.md`
+  - `M  registry/weak_signals.json`
+  - `A  scripts/build_loso_base.py`
+  - ...and 14 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

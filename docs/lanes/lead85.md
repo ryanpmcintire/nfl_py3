@@ -1,26 +1,46 @@
-# LEAD-85: coefficient uncertainty adapter
+# LEAD-85: coefficient uncertainty and weekly Best Pick
 
 ## Goal
-Execute the declared adapter unit; preserve its outputs for the separate paired nomination replay.
+Complete the assigned candidate-versus-served weekly nomination replay.
 
 ## State
-**Measured:** unit 1 complete; one research run exited 0. The declaration was saved before outcomes; its unchanged snapshot is copied to [lead85_protocol.md](../lead85_protocol.md). Fixed 20-node integration; 713 study looks. Original declaration SHA-256: `cf45b05eb22564630d795565a0349dc674c159380300049890ee257310de9cce`.
-**Measured:** 1,531 source-complete opener games (34 pushes); six missing-move exclusions. Outer 2023-2025: 799 non-push games, both arms 456-343; decisive record 0-0. Candidate Brier IS/OOS/gap: 0.244725/0.245552/+0.000828.
-**Measured:** OOS Brier improvement +0.00005617 [-0.00003111,+0.00017559], probability_positive 0.8465; log loss +0.00012859 [-0.00006655,+0.00040250], 0.8487; RPS +0.00035534 [-0.00052524,+0.00168452], 0.6767. Brier improves in 2023/2024 and worsens in 2025. **Inferred:** unresolved_below_power, not a serving verdict.
+**Measured:** unit 2 exited 0; 54 held-out weeks, zero changed nominees.
+Both arms 30-22-2; nonpush cover 57.69% [95% Wilson 44.19,70.13].
+Reward difference 0 pp [0,0], probability_positive 0.5; exact paired p=1,
+zero discordant weeks (no nomination-effect information).
+Nominee Brier improvement +0.00021444 [-0.00032115,+0.00089586],
+probability_positive 0.7375; candidate IS/OOS/gap 0.234435/0.246434/+0.011999.
+**Read:** root recorded unit 1's three pooled probability-score cells.
+
+## Protocol fixed before outcomes
+Unchanged full declaration: `tests/scratch/codex/lead85_unit2/protocol_declaration.md`;
+original study: `docs/lead85_protocol.md`. Historical 2020-2025 OPENER proxy;
+outer 2023/2024/2025, fit through Y-3, reserve Y-2, calibrate Y-1. Reuse frozen
+four-term/integrated fits; common post-Sunday-12:45 contenders and dispersion pool.
+Rank calibrated unconditional cover + 0.5 push with LEAD-53 ties; one probability
+selects each side. Conditional nominee Brier primary; reward secondary; IS/OOS/gap,
+reliability, changed records, Wilson intervals and exact weekly arm-label-swap null.
+10,000 hierarchical season/week draws, base seed 85, half-credit zero draws.
+110 unit-2 cells; 713 reserved study looks + 28 supplemental = 741 charged.
+No protocol revision, refit, search, or side flip. Zero crossing closes nothing.
 
 ## Tried
-`.tools/uv.exe run --no-sync python scripts/lead85_unit1.py` once (exit 0); two threads. Source hashes, dated move parity, upstream dates, discrete PMF reconstruction (max error 2.13e-13), node-mixture identity and push preservation passed. Script Ruff and scoped whitespace checks passed. No new tests, registry writes, publication or Git mutation.
+Ran `.tools/uv.exe run --no-sync python scripts/lead85_unit2.py` once (exit 0),
+two threads. Scoped Ruff checks passed. PMF/chronology/side parity passed.
+Report: `docs/lead85_unit2.md`; rows, frozen declaration, hashes and log:
+`tests/scratch/codex/lead85_unit2/`. No registry, publication or Git mutation.
 
 ## Record commands
-Prepared, not executed; one serial batch records the 16 fold/pooled held-out diagnostic cells, with player-readable text on every cell. Bash-compatible:
+Prepared only; orchestrator executes serially. Bash-compatible, candidate versus served:
 ```bash
-.tools/uv.exe run --no-sync nfl-ats weak-signals record --batch tests/scratch/codex/lead85_unit1/registry_batch.json --plain-summary 'Allowing for uncertainty in the football estimates slightly improved the overall probability scores, but helped in two seasons and hurt in the third. The picks stayed the same; the weekly Best Pick comparison is still to come.'
+.tools/uv.exe run --no-sync nfl-ats weak-signals record --name lead85_unit2_nominee_brier_2023_2025 --description 'Uncertainty versus served weekly Best Pick' --source docs/lead85_unit2.md --effect-units brier_improvement --effect 0.000214435973170224 --standard-error 0.000317601855592181 --interval-low -0.000321153866561299 --interval-high 0.000895861378439068 --probability-positive 0.7375 --sample-blocks 54 --classification unresolved_below_power --league nfl --season-start 2023 --season-end 2025 --family lead85_weekly_nominee_brier --classification-evidence 'No admissible closing ground established' --plain-summary 'Accounting for uncertainty slightly improved the weekly Best Pick probability scores; this small replay does not settle the benefit.'
+.tools/uv.exe run --no-sync nfl-ats weak-signals record --name lead85_unit2_weekly_reward_2023_2025 --description 'Uncertainty versus served weekly Best Pick' --source docs/lead85_unit2.md --effect-units accuracy_points --effect 0 --interval-low 0 --interval-high 0 --probability-positive 0.5 --sample-blocks 54 --classification unresolved_below_power --league nfl --season-start 2023 --season-end 2025 --family lead85_weekly_weekly_reward --classification-evidence 'No admissible closing ground established' --plain-summary 'Both versions chose the same Best Pick in all 54 weeks: 30 wins, 22 losses and 2 ties. There were no changed picks to compare.'
 ```
 
 ## Next
-Orchestrator records the batch, then assigns unit 2: identical weekly contender replay with model-only, dated market and Elo baselines, nominee Brier primary, weekly reward and existing push/tie rules. Script, report and full declaration are in scripts/lead85_unit1.py, docs/lead85_unit1.md and docs/lead85_protocol.md; predictions, PMFs and batch are under tests/scratch/codex/lead85_unit1/.
+Orchestrator reviews the report and runs the two prepared record commands.
 
 ## Open
-Weekly nomination effects and five-arm comparison remain unmeasured. Three outer seasons; previously examined archives. Reliability for research closure is unmeasured. No primary-endpoint verdict or serving change. Full-repository integration checks remain with the orchestrator.
-
-**Recorded 2026-09-29 (root):** pooled Brier, log-loss and RPS cells only (per-season and zero-change accuracy cells not recorded), unresolved_below_power.
+**Inferred:** unresolved_below_power, pending registry entry; no closing ground.
+Three reused outer seasons; no prospective serving conclusion. Original five-arm
+model-only/dated-market/Elo comparison remains outside this two-arm packet.

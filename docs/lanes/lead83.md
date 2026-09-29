@@ -1,30 +1,67 @@
 # LEAD-83 — shrink noisy move measurements
 
 ## Goal
-Execute the declared variance-feature unit and its cached replay when source and upstream chronology permit, within the worker packet; no served changes or registry writes.
+Replay noisy-book shrinkage beside the original move. Historical 2020–2025 OPENER
+is the frozen pool-line proxy; the refitted served four-term recipe is the base.
 
 ## State
-Protocol frozen before any outcome computation. **Measured:** variance-feature unit complete: 1,311 declared games plus 33 retained pushes; 131 Tuesday/131 Sunday files (145,340/171,190 rows). **Read:** declaration below is ROADMAP.md:866 and ideation-2026-09-29c.md:9–16. Cached replay remains unscored.
-
-## Protocol (predeclared)
-**Inferred mechanism:** post-Tuesday news makes the pool opener stale, but a move supported by disagreeing books is a noisier estimate of that news than an equally sized unanimous move. Predeclare a game-level empirical-Bayes move: multiply the matched-book median move by tau²/(tau²+v), where v is its leave-book-out jackknife variance and tau² is nonnegative between-game signal variance estimated only on training seasons; no book ranking or outcome-selected bands. Add the shrunk move alongside the original move in the calibrated probability. Fixed population: the 1,311 target-week games with at least two common books before Sunday 12:30. Inputs: `artifacts/pick_probability/20260929T192747Z/per_game.parquet` and the 131 Tuesday/131 Sunday quote files, including `data/market/raw/20200908T125500Z/quotes.parquet` and `data/market/raw/20200913T162500Z/quotes.parquet`.
-
-Population: 2020–2025 archived frozen openers, row-specific source-complete subsets. Preserve pushes for distributions/nomination; exclude only from conditional cover fitting. Enforce target-week, observation, bookmaker and kickoff clocks. Historical `tue_open` captures precede noon: available anchors, not noon-capture evidence. No closing inputs. Use the historical opener as the frozen pool-line proxy and the served four-term probability as the base; no pre-2026 pool captures.
-
-Chronological LOSO: outer 2023/2024/2025; fit through Y−3, tune on Y−2, calibrate on Y−1. Reconstruct timestamp-matched moves for candidate/comparator in every year, replacing missing-archive zeros. Verify upstream training cutoffs. Reused archives are retrospective; freeze survivors prospectively.
-
-One calibrated discrete-margin probability selects sides. Pair candidate, current four-term recipe, model-only, timestamp-matched market and Elo. Report decisive records first; optimistic IS/OOS and gaps, fold coefficients/stability, opener accuracy/Brier/log loss/RPS, five equal-width reliability bands, season/week-block 95% intervals and `probability_positive`. Zero crossing closes nothing; default `unresolved_below_power`. Primary endpoint: opener Brier. F=3, B=7, K=4; L=(27K+B+4)(F+1)+25=501 looks. Book rows never multiply independent games. No unlisted variants.
+**Measured:** unit 2 complete: 697 outer games, candidate 362–335, base 361–336;
+decisive 24–23. Brier improvement −0.000170 [−0.000690,+0.000176],
+probability_positive=0.24715; accuracy +0.143 points [−0.996,+1.702], 0.4990.
+**Inferred:** unresolved_below_power, pending serial records; no serving change.
 
 ## Tried
-- Frozen implementation: tau²=max(0, sample variance of training game medians − mean jackknife variance); zero weight if tau²+v=0; train through Y−3. Preserve pushes; require the declared 1,311 non-push games.
-- **Measured:** `.tools/uv.exe run --no-sync --no-cache python scripts/lead83_unit1.py` exited 0 once; scoped Ruff format/check pass. Cached verification corrected the variance fit to retain pushes (Protocol C), without outcomes or a repeat source scan. Final tau²=2.31476587/2.71310943/2.37679326 for outer 2023/24/25; variance-fit n=198/414/630, outer non-push n=233/232/232. Zero outcome looks; IS/OOS/gap, probability coefficients, intervals, decisive record, and probability_positive remain unestimated. `cache-verification.log` supersedes the original variance estimates in `run.log`.
-- **Read:** `src/nfl_ats/clv.py:2177–2189` trains the named opener parent weekly on all completed prior games. **Measured:** parent rows have no training-cutoff columns. **Inferred:** this cache cannot substantiate Protocol C's fixed upstream Y−3 cutoff; no score or research verdict follows.
+The pre-outcome amendment is preserved verbatim in docs/lead83_unit2.md and
+tests/scratch/codex/lead83_unit2/protocol.md: fit through Y−3, tune Y−2, calibrate
+Y−1; outer 2023/24/25; five arms; 501 looks. **Measured:** upstream fixed-cutoff
+margin/discrete/four-term refits resolved the weekly-cache blocker. One calibrated
+probability selected sides. All declared non-push rows were retained; pushes
+remained in upstream distributions. Real replay exited 0 once; scoped Ruff and diff checks passed. All 16 command expansions parsed without calling handlers.
+Candidate IS/OOS accuracy 58.81%/51.94%, gap −6.87 points; 2024 tune slope zero.
+Only this packet's script/report/lane and scratch outputs changed; no registry,
+Git mutation, publication, or new test. LEAD-84 is outside this packet.
 
 ## Record commands
-None: feature construction supplies no outcome estimate or research verdict to record. The orchestrator alone runs subsequent bash-compatible commands with `--plain-summary` in pool-player English.
+Bash loop expands to 16 exact candidate-versus-base OOS commands (season panels
+and pooled; no other baseline contrasts). Orchestrator runs serially; not run here.
+
+```bash
+while read -r panel first last games blocks units effect low high pp; do
+.tools/uv.exe run --no-sync --no-cache nfl-ats weak-signals record \
+  --name "lead83_unit2_${panel}_${units}" --league nfl \
+  --description "Noisy movement shrinkage versus refitted four-term base: ${panel}" \
+  --source docs/lead83_unit2.md --family lead83_unit2_501_looks \
+  --season-start "$first" --season-end "$last" --sample-games "$games" --sample-blocks "$blocks" \
+  --effect-units "$units" --effect "$effect" --interval-low "$low" --interval-high "$high" \
+  --probability-positive "$pp" --classification unresolved_below_power \
+  --classification-evidence "Pooled primary Brier remains unresolved; no closure is claimed for this cell." \
+  --plain-summary "When books disagree, this softens their line move before making the pick. It has not shown a dependable improvement over the usual calculation."
+done <<'CELLS'
+2023 2023 2023 233 18 accuracy_points 0.858369098712 -2.53164556962 4.31034482759 0.684300000000
+2023 2023 2023 233 18 log_loss_improvement 0.0000951070833658 -0.000889153855018 0.000967703784076 0.600600000000
+2023 2023 2023 233 18 brier_improvement 0.0000480297250444 -0.000443335290368 0.000483585087652 0.601300000000
+2023 2023 2023 233 18 rps_improvement -0.0122876398807 -0.0221377685270 -0.00348538815843 0.00110000000000
+2024 2024 2024 232 18 accuracy_points 0.00000000000 0.00000000000 0.00000000000 0.500000000000
+2024 2024 2024 232 18 log_loss_improvement 0.00000000000 0.00000000000 0.00000000000 0.500000000000
+2024 2024 2024 232 18 brier_improvement 0.00000000000 0.00000000000 0.00000000000 0.500000000000
+2024 2024 2024 232 18 rps_improvement 0.00000000000 0.00000000000 0.00000000000 0.500000000000
+2025 2025 2025 232 18 accuracy_points -0.431034482759 -1.33333333333 0.00000000000 0.179400000000
+2025 2025 2025 232 18 log_loss_improvement -0.00114714424479 -0.00298553450760 0.000416050392457 0.0843000000000
+2025 2025 2025 232 18 brier_improvement -0.000558503982151 -0.00145016975323 0.000199523774716 0.0849000000000
+2025 2025 2025 232 18 rps_improvement -0.00689360774707 -0.0169840578496 0.00220299728483 0.0758000000000
+pooled 2023 2025 697 54 accuracy_points 0.143472022956 -0.995732574680 1.70212765957 0.499000000000
+pooled 2023 2025 697 54 log_loss_improvement -0.000350039475421 -0.00141863156756 0.000353458946242 0.245150000000
+pooled 2023 2025 697 54 brier_improvement -0.000169845047236 -0.000690244164975 0.000176408547523 0.247150000000
+pooled 2023 2025 697 54 rps_improvement -0.00640220529344 -0.0140197048332 0.00000000000 0.0296500000000
+CELLS
+```
 
 ## Next
-Fresh-thread cached replay: reconstruct/verify fold-specific upstream discrete probabilities under Protocol C before fitting the five arms. Reuse `tests/scratch/codex/lead83_unit1/`; report is `docs/lead83_unit1.md`.
+Orchestrator reviews docs/lead83_unit2.md and executes the commands above serially;
+then chooses the next bounded task. Rows and lineage: tests/scratch/codex/lead83_unit2/.
 
 ## Open
-Named sources are present; a protocol-compliant upstream cache is not established. No full-history rebuild, registry write, served change, Git mutation, or new test. IS/OOS findings remain outstanding; no signal is closed.
+Three outer seasons, optimistic upstream training reads, and retrospective source
+reuse limit inference. Three Tuesday totals are missing; no outcome-selected
+repair. No closure or promotion; 2023 secondary RPS worsened despite unresolved
+pooled primary Brier. Zero tuning slope is not a split-half reliability result.
