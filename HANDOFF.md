@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-29T21:29:18.847894+00:00`
+Refreshed at: `2026-09-29T21:29:44.604360+00:00`
 
 ## Start here
 
@@ -21,19 +21,17 @@ Refreshed at: `2026-09-29T21:29:18.847894+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `9cc3861ff2ee` — LEAD-70: challenger disagreement as a model-slope modifier is refuted
-- Pending change set: 22 paths
+- Baseline commit: `163363bdc189` — Reopen MOD-22 unit 4: its QB-out closure rested on guessed report times
+- Pending change set: 20 paths
   - ` M AGENTS.md`
-  - ` M ROADMAP.md`
+  - `M  ROADMAP.md`
   - ` M docs/agent_workflow.md`
   - ` M docs/lanes/backlog-fleet-2026-09-29.md`
+  - `A  docs/lanes/ideation-2026-09-29b.md`
   - ` M docs/lanes/lead64-friday-designations.md`
   - ` M docs/lanes/lead71.md`
-  - `M  docs/lanes/mod22-qb-expected-starter.md`
-  - `A  docs/lanes/verify-2026-09-29.md`
-  - `M  registry/weak_signals.json`
+  - ` M docs/lanes/lead73.md`
   - `?? bash.exe.stackdump`
-  - `?? docs/lanes/ideation-2026-09-29b.md`
   - `?? docs/lanes/mod22-unit5-qb-quality.md`
   - `?? docs/lanes/ui20-2026-09-29b.md`
   - `?? docs/lanes/windows-shell-popup.md`
@@ -43,7 +41,8 @@ Refreshed at: `2026-09-29T21:29:18.847894+00:00`
   - `?? registry/experiments/margin-predict/2026-week-03-20260929T184122Z.json`
   - `?? registry/experiments/opener-evaluation/20260927T134738Z.json`
   - `?? registry/experiments/waterfall-feed/20260927T134851Z.json`
-  - ...and 2 more
+  - `?? registry/experiments/waterfall-feed/20260929T184553Z.json`
+  - `?? scripts/mod22_unit5.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
