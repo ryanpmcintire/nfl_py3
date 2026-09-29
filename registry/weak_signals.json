@@ -48992,6 +48992,62 @@
       "source": "artifacts/lead59_type_trait_bins/20260923T205414Z/summary.json",
       "standard_error": null
     },
+    "lead67_key_number_move_additive": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three-season paired bootstrap; no admissible closure established",
+      "closing_ground": null,
+      "description": "LOSO discrete frozen-opener versus late-leader price added to four-term base; 9-14 decisive",
+      "effect": -0.625782227785,
+      "effect_units": "accuracy_points",
+      "family": "lead67_key_number_move",
+      "interval": [
+        -1.87969924812,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Two declared arm looks; endpoint and pool-leader basis are inseparable in this unit",
+      "plain_summary": "Weighting late line moves by key-number crossings did not beat the current probability out of season.",
+      "probability_positive": 0.1489,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 3,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead67_report.md",
+      "standard_error": 0.507915253872
+    },
+    "lead67_key_number_move_replacement": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three-season paired bootstrap; no admissible closure established",
+      "closing_ground": null,
+      "description": "LOSO replacement of raw move by discrete frozen-opener versus late-leader price; 40-51 decisive",
+      "effect": -1.376720901126,
+      "effect_units": "accuracy_points",
+      "family": "lead67_key_number_move",
+      "interval": [
+        -3.007518796992,
+        0.374531835206
+      ],
+      "league": "nfl",
+      "notes": "Two declared arm looks; endpoint and pool-leader basis are inseparable in this unit",
+      "plain_summary": "Weighting late line moves by key-number crossings did not beat the current probability out of season.",
+      "probability_positive": 0.036,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 3,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead67_report.md",
+      "standard_error": 0.794514448847
+    },
     "lead68_joint_accuracy": {
       "category": "modeling",
       "classification": "unresolved_below_power",

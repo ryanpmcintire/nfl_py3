@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-29T21:11:47.061026+00:00`
+Refreshed at: `2026-09-29T21:13:41.424254+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-09-29T21:11:47.061026+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `827eaa09e95f` — LEAD-72: push-adjusted Best Pick ranking ties the current one
-- Pending change set: 40 paths
+- Baseline commit: `ac23e2679ec3` — Show the tiebreaker total on its panel header and fix count wording
+- Pending change set: 35 paths
   - ` M AGENTS.md`
   - ` M docs/agent_workflow.md`
-  - `M  docs/findings.html`
-  - `M  docs/index.html`
   - ` M docs/lanes/backlog-fleet-2026-09-29.md`
-  - `A  docs/lanes/ui20-2026-09-29.md`
-  - `M  src/nfl_ats/board_assistant.py`
-  - `M  src/nfl_ats/board_content.py`
-  - `M  src/nfl_ats/board_site_content.py`
-  - `M  src/nfl_ats/board_terminal.py`
+  - `A  docs/lanes/lead67.md`
+  - `A  docs/lead67_protocol.md`
+  - `A  docs/lead67_report.md`
+  - `M  registry/weak_signals.json`
+  - `A  scripts/lead67_unit1.py`
   - `?? bash.exe.stackdump`
   - `?? docs/lanes/lead66.md`
-  - `?? docs/lanes/lead67.md`
   - `?? docs/lanes/lead69.md`
   - `?? docs/lanes/lead70.md`
   - `?? docs/lanes/lead71.md`
   - `?? docs/lanes/lead73.md`
   - `?? docs/lanes/windows-shell-popup.md`
   - `?? docs/lead66_prediction_scores.md`
+  - `?? docs/lead66_protocol.md`
   - `?? docs/lead66_unit1.md`
-  - ...and 20 more
+  - `?? docs/lead69_inventory.md`
+  - `?? docs/lead69_pre_slot_fix.md`
+  - ...and 15 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
