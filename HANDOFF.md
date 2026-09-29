@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-29T21:24:52.865055+00:00`
+Refreshed at: `2026-09-29T21:26:00.428884+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-09-29T21:24:52.865055+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `d9d4245508cf` — LEAD-66, LEAD-69 and LEAD-71 unit 1; accept RPS as a registry unit
-- Pending change set: 31 paths
+- Baseline commit: `41ae595a91a2` — Keep the weekly challenger forecast from replacing the served one
+- Pending change set: 26 paths
   - ` M AGENTS.md`
+  - ` M ROADMAP.md`
   - ` M docs/agent_workflow.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
   - ` M docs/lanes/backlog-fleet-2026-09-29.md`
-  - `A  docs/lanes/tiebreaker-forecast-pointer.md`
-  - `M  docs/model.html`
-  - `M  src/nfl_ats/cli_commands/prediction.py`
-  - `M  src/nfl_ats/weekly.py`
-  - `M  tests/test_prediction_safety.py`
+  - ` M docs/lanes/lead71.md`
+  - `A  docs/lanes/lead73.md`
+  - `A  docs/lead73_unit1.md`
+  - `A  scripts/lead73_unit1.py`
   - `?? bash.exe.stackdump`
   - `?? docs/lanes/ideation-2026-09-29b.md`
   - `?? docs/lanes/lead70.md`
-  - `?? docs/lanes/lead73.md`
   - `?? docs/lanes/mod22-unit5-qb-quality.md`
   - `?? docs/lanes/verify-2026-09-29.md`
   - `?? docs/lanes/windows-shell-popup.md`
   - `?? docs/lead70_inventory.md`
   - `?? docs/lead70_predictions.md`
-  - ...and 11 more
+  - `?? docs/lead70_protocol.md`
+  - `?? docs/lead70_results.md`
+  - `?? registry/experiments/margin-backtest/20260927T134152Z.json`
+  - `?? registry/experiments/margin-backtest/20260929T183944Z.json`
+  - ...and 6 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
