@@ -2552,6 +2552,17 @@ def _recent_activity_section_html(activity: RecentActivityView) -> str:
         '<p class="policy-note">Looking for the weekly results? '
         '<a href="history.html">See the picks as they were saved</a>, '
         "graded at their original lines.</p>"
+        '<details class="board-column-guide"><summary>How to read these results</summary><dl>'
+        "<dt>Accuracy points</dt><dd>A gain of 1 accuracy point means one extra correct "
+        "pick per 100 games.</dd>"
+        "<dt>Chance it helps</dt><dd>How likely an idea is to improve the picks, based on "
+        "past games. For a game's chance to cover, "
+        '<a href="index.html">see This Week</a>.</dd>'
+        "<dt>Still open</dt><dd>More evidence is needed. These ideas have not been "
+        "ruled out.</dd>"
+        "<dt>Highlights</dt><dd>The summaries below are selected updates. The counts "
+        "above include every check recorded this week.</dd>"
+        "</dl></details>"
     )
     if activity.is_empty:
         body = '<p class="policy-note">No new screens recorded this week.</p>'

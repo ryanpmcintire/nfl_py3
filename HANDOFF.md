@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-29T23:55:17.021197+00:00`
+Refreshed at: `2026-09-29T23:58:49.631020+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-09-29T23:55:17.021197+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `ffee7bffb556` — Pass repo-wide ruff check; fix a mis-encoded LEAD-69 doc
-- Pending change set: 23 paths
+- Baseline commit: `6946d5172897` — Re-encode the LEAD-69 inventory doc from UTF-16 to UTF-8
+- Pending change set: 25 paths
   - ` M AGENTS.md`
   - ` M ROADMAP.md`
   - ` M docs/agent_workflow.md`
-  - ` M docs/findings.html`
-  - ` M docs/index.html`
+  - `M  docs/findings.html`
+  - `M  docs/index.html`
   - ` M docs/lanes/lead86.md`
   - ` M docs/lanes/lead88.md`
   - ` M docs/lanes/loso-base-artifact.md`
-  - `M  docs/lead69_inventory.md`
-  - ` M src/nfl_ats/board_site_content.py`
-  - ` M src/nfl_ats/board_terminal.py`
+  - `A  docs/lanes/ui20-2026-09-29e.md`
+  - `M  src/nfl_ats/board_terminal.py`
+  - `?? docs/lanes/code-review-2026-09-29.md`
   - `?? docs/lanes/roadmap-sync-2026-09-29.md`
-  - `?? docs/lanes/ui20-2026-09-29e.md`
   - `?? docs/lanes/windows-shell-popup.md`
+  - `?? docs/lead88_unit3.md`
   - `?? docs/research_digest_2026-09-29.md`
   - `?? registry/experiments/margin-backtest/20260927T134152Z.json`
   - `?? registry/experiments/margin-backtest/20260929T183944Z.json`
   - `?? registry/experiments/margin-predict/2026-week-03-20260927T134352Z.json`
   - `?? registry/experiments/margin-predict/2026-week-03-20260929T184122Z.json`
   - `?? registry/experiments/opener-evaluation/20260927T134738Z.json`
-  - ...and 3 more
+  - ...and 5 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
