@@ -1,24 +1,25 @@
-# Research script lint cleanup — 2026-09-29
+﻿# Research script lint cleanup — 2026-09-29
 
 ## Goal
-Clear Ruff lint and formatting failures in the packet's scripts without changing computed results.
+Make repository Ruff checks pass with behavior-preserving Python cleanup; no experiments.
 
 ## State
-Complete; ready for the orchestrator to commit. **Measured:** allowed scope went from 400 lint errors / 11 unformatted files to 0 / 0; all 11 scripts passed `py_compile` and scoped `git diff --check`.
-
-Scope, all under `scripts/`: `lead69_cfb_replication.py`, `lead73_unit1.py`, `lead81_unit1.py`, `lead82_unit1.py`, `lead87_unit1.py`, `lead88_unit1.py`, `mod22_unit4.py`, `mod22_unit5.py`, `st_ratings_ats_study.py`, `tiebreaker_total_study.py`, `xlg09_unit6.py`.
+Python scope complete. **Measured:** repo-wide lint **275 → 0** (final exit 0); files needing formatting **4 → 1**, plus the same one unreadable Markdown file (final exit 2). Final format scan: 1,328 already formatted. Remaining blockers are outside this packet's edit scope.
 
 ## Tried
-- Saved original sources; formatted and applied safe fixes while excluding C416 until reviewed. Kept five pandas groupby comprehensions with targeted C416 pragmas; removed four unused E402 pragmas. Replaced thread-limit loops with environment updates before NumPy imports, retained import paths, and made equivalent list/conditional edits.
-- Wrapped report strings and escaped ambiguous Unicode without changing their runtime contents. **Measured:** 74/80 function ASTs are identical; the remaining six differ only by six list-unpacking edits, one conditional assignment, and removal of `int(len(...))`. All match after those reviewed syntax changes; startup environment values and paths match.
-- Commands, with `SCOPE` expanded to the 11 paths above: `.tools/uv.exe run --no-sync ruff check SCOPE`; `.tools/uv.exe run --no-sync ruff format --check SCOPE`; `.tools/uv.exe run --no-sync python -m py_compile SCOPE`; `git diff --check -- SCOPE docs/lanes/lint-cleanup-2026-09-29.md`. All exit 0. Used temporary UV/cache directories; ran no experiments or tests.
-- Logs, originals, exact verification argv, and semantic review: `%TEMP%/nfl-lint-cleanup-20260929-25kt_qew/`.
+- Changed only `scripts/lead82_unit2.py`, `scripts/lead87_unit2.py`, `scripts/lead88_unit2.py`, and this lane. The other four named scripts were already clean and remain byte-identical to their starting copies.
+- **Measured:** AST review of all seven scripts permits exactly two list-unpacking changes, one `pairwise` change, and one `dict.fromkeys` change in LEAD-82. All other non-import ASTs and all report-string values are identical. Wrapped 152 long literals; preserved Unicode via escapes. No new suppressions, comments, docstrings, or tests.
+- **Measured:** `.tools/uv.exe run --no-sync ruff check . --output-format json` passes. `.tools/uv.exe run --no-sync ruff format --check .` reports only the two Markdown blockers below. Both scoped Ruff commands pass for all three touched scripts.
+- **Measured:** `.tools/uv.exe run --no-sync python -m py_compile scripts/lead82_unit2.py scripts/lead87_unit2.py scripts/lead88_unit2.py` and scoped `git diff --check` pass.
+- **Measured:** `.tools/uv.exe run --no-sync mypy src`: 253 source files pass. `.tools/uv.exe run --no-sync pytest -q --basetemp "$LINT_LOG_ROOT/pytest-run"`: 1,645 passed, 81 warnings, 65.24 seconds. The initial pytest launch could not access its default temporary directory; the retry used a fresh directory.
+- `LINT_LOG_ROOT=%TEMP%/nfl-lint-remaining-20260929-63d2465386044ef79f33eda3fe94acc7/` holds originals, logs, `semantic-review.json`, exact verification argv, and `verification-summary.json`. `UV_CACHE_DIR` used its `uv-cache` child because the default uv cache was inaccessible; test thread limits were 2.
+- Earlier packet remains complete: 11 scripts, 400 lint errors / 11 unformatted files to zero; review retained in `%TEMP%/nfl-lint-cleanup-20260929-25kt_qew/`. No experiments, registry writes, publication, or Git mutations ran.
 
 ## Next
-Orchestrator reviews and commits these changes, then repeats repository-wide checks after the other workers finish.
+Orchestrator assigns the two Markdown fixes to their owners, reruns repository formatting, and commits the reviewed cleanup.
 
 ## Open
-**Measured:** repository baseline was 469 errors / 12 unformatted files, versus the packet's reported 492 / 12. Latest whole-repository check has 251 errors, all in excluded `lead82_unit2.py`, `lead87_unit2.py`, and `lead88_unit2.py`; those three remain unformatted. Formatting also reports invalid UTF-8 in `docs/lead69_inventory.md`. Default formatting diagnostics crashed; `--output-format=concise` exposed these remaining failures. Concurrent counts are not attributable solely to this lane. No excluded files or generated reports were edited. No commits or publication.
+**Measured:** `docs/lead69_inventory.md:1` is invalid UTF-8; `docs/loso_base_artifact.md:110` needs code-block formatting. No authority to edit either file was received. Another worker's transient `board_terminal.py` formatting warning cleared without an edit here.
 
 ## Record commands
-None: lint-only work; no research outcomes were fitted, scored, or adjudicated.
+None: lint maintenance performs no fitting, scoring, or research adjudication.
