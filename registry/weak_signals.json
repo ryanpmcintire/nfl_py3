@@ -196774,6 +196774,174 @@
       "source": "artifacts/st_player_ratings/20260903T200725Z/results.json",
       "standard_error": null
     },
+    "st_rating_ats_all_accuracy": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign or powered positive control established.",
+      "closing_ground": null,
+      "description": "One lagged ST term added to the four-term fitted opener probability; LOSO.",
+      "effect": -0.7318695941450433,
+      "effect_units": "accuracy_points",
+      "family": "st_rating_ats_study",
+      "interval": [
+        -1.6427340977175122,
+        0.198415981217106
+      ],
+      "league": "nfl",
+      "notes": "Six correlated OOS cells; 86 total declared looks; 20000 season-week draws; unserved.",
+      "plain_summary": "Adding a special-teams rating on top of the current pick probability made held-out picks slightly worse; not significant.",
+      "probability_positive": 0.058925,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/st_ratings_ats_study.md",
+      "standard_error": null
+    },
+    "st_rating_ats_all_brier": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign or powered positive control established.",
+      "closing_ground": null,
+      "description": "One lagged ST term added to the four-term fitted opener probability; LOSO.",
+      "effect": -0.0014049854928483401,
+      "effect_units": "brier_improvement",
+      "family": "st_rating_ats_study",
+      "interval": [
+        -0.00314813178000208,
+        0.00010285268115910278
+      ],
+      "league": "nfl",
+      "notes": "Six correlated OOS cells; 86 total declared looks; 20000 season-week draws; unserved.",
+      "plain_summary": "Adding a special-teams rating on top of the current pick probability made held-out picks slightly worse; not significant.",
+      "probability_positive": 0.0327,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/st_ratings_ats_study.md",
+      "standard_error": null
+    },
+    "st_rating_ats_all_log_loss": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign or powered positive control established.",
+      "closing_ground": null,
+      "description": "One lagged ST term added to the four-term fitted opener probability; LOSO.",
+      "effect": -0.002980551372153013,
+      "effect_units": "log_loss_improvement",
+      "family": "st_rating_ats_study",
+      "interval": [
+        -0.006622670051855266,
+        0.0001528280301996564
+      ],
+      "league": "nfl",
+      "notes": "Six correlated OOS cells; 86 total declared looks; 20000 season-week draws; unserved.",
+      "plain_summary": "Adding a special-teams rating on top of the current pick probability made held-out picks slightly worse; not significant.",
+      "probability_positive": 0.03075,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/st_ratings_ats_study.md",
+      "standard_error": null
+    },
+    "st_rating_ats_covered_accuracy": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign or powered positive control established.",
+      "closing_ground": null,
+      "description": "One lagged ST term added to the four-term fitted opener probability; LOSO.",
+      "effect": -1.740506329113924,
+      "effect_units": "accuracy_points",
+      "family": "st_rating_ats_study",
+      "interval": [
+        -3.8110091374007578,
+        0.3478412361763356
+      ],
+      "league": "nfl",
+      "notes": "Six correlated OOS cells; 86 total declared looks; 20000 season-week draws; unserved.",
+      "plain_summary": "Adding a special-teams rating on top of the current pick probability made held-out picks slightly worse; not significant.",
+      "probability_positive": 0.053925,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 632,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "docs/st_ratings_ats_study.md",
+      "standard_error": null
+    },
+    "st_rating_ats_covered_brier": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign or powered positive control established.",
+      "closing_ground": null,
+      "description": "One lagged ST term added to the four-term fitted opener probability; LOSO.",
+      "effect": -0.0033578744671419925,
+      "effect_units": "brier_improvement",
+      "family": "st_rating_ats_study",
+      "interval": [
+        -0.00727229080329442,
+        0.0002569366431942202
+      ],
+      "league": "nfl",
+      "notes": "Six correlated OOS cells; 86 total declared looks; 20000 season-week draws; unserved.",
+      "plain_summary": "Adding a special-teams rating on top of the current pick probability made held-out picks slightly worse; not significant.",
+      "probability_positive": 0.0355,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 632,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "docs/st_ratings_ats_study.md",
+      "standard_error": null
+    },
+    "st_rating_ats_covered_log_loss": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign or powered positive control established.",
+      "closing_ground": null,
+      "description": "One lagged ST term added to the four-term fitted opener probability; LOSO.",
+      "effect": -0.007120845912028226,
+      "effect_units": "log_loss_improvement",
+      "family": "st_rating_ats_study",
+      "interval": [
+        -0.015294009109094429,
+        0.00040325958872591074
+      ],
+      "league": "nfl",
+      "notes": "Six correlated OOS cells; 86 total declared looks; 20000 season-week draws; unserved.",
+      "plain_summary": "Adding a special-teams rating on top of the current pick probability made held-out picks slightly worse; not significant.",
+      "probability_positive": 0.0322,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 632,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "docs/st_ratings_ats_study.md",
+      "standard_error": null
+    },
     "strength_band_tertile_nested_loso_separation": {
       "category": "modeling",
       "classification": "unresolved_below_power",
