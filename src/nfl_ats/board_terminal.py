@@ -608,6 +608,30 @@ def _source_policy_panel_html(view: SourcePolicyView) -> str:
             "metadata.json).</p>"
         )
     else:
+        summary_labels = {
+            "complete": "fresh enough to use",
+            "degraded": "using an older copy",
+            "blocked": "too old or missing",
+            "not_due": "not due yet",
+            "not_configured": "not set up",
+            "unobserved": "with unknown freshness",
+        }
+        source_counts = dict.fromkeys(summary_labels, 0)
+        for row in view.rows:
+            state = row.state if row.state in summary_labels else "unobserved"
+            source_counts[state] += 1
+        summary_text = "; ".join(
+            f"{count_noun(source_counts[state], 'source')} {description}"
+            for state, description in summary_labels.items()
+            if source_counts[state]
+        )
+        summary_title = (
+            "Latest source check"
+            if view.computed_live
+            else "Source check saved with these picks"
+            if view.recorded
+            else "Source check"
+        )
         rows_html = "".join(
             '<div class="src-row">'
             f'<span class="src-name">{escape(humanize_identifier(row.source_id))}</span>'
@@ -623,6 +647,8 @@ def _source_policy_panel_html(view: SourcePolicyView) -> str:
         )
         live_note = f" {escape(SOURCE_POLICY_COMPUTED_LIVE_NOTE)}" if view.computed_live else ""
         body = (
+            f'<p class="src-summary"><b>{escape(summary_title)}:</b> '
+            f"{escape(summary_text)}.</p>"
             f'<div class="src-rows">{rows_html}</div>'
             f'<p class="src-evaluated">Checked {escape(_humanize_timestamp(view.evaluated_at))}. '
             "Source ages are measured from that check."
