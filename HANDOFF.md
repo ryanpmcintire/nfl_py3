@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-29T20:26:26.618931+00:00`
+Refreshed at: `2026-09-29T20:27:01.271512+00:00`
 
 ## Start here
 
@@ -21,14 +21,11 @@ Refreshed at: `2026-09-29T20:26:26.618931+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `88992503289b` — Order the dashboard's games as the pool board lists them
-- Pending change set: 14 paths
+- Baseline commit: `72517c00b932` — Republish and push the site after each settlement and the Tuesday lock
+- Pending change set: 11 paths
   - ` M AGENTS.md`
   - ` M docs/agent_workflow.md`
-  - ` M docs/index.html`
-  - `M  scripts/capture_scheduler.py`
-  - `A  scripts/publish_site.py`
-  - `M  scripts/scheduled_weekly_lock.py`
+  - `M  docs/index.html`
   - `?? docs/lanes/windows-shell-popup.md`
   - `?? registry/experiments/margin-backtest/20260927T134152Z.json`
   - `?? registry/experiments/margin-backtest/20260929T183944Z.json`
