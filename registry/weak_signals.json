@@ -176314,21 +176314,21 @@
     },
     "qb_expected_starter_out_pick_probability_term": {
       "category": "health",
-      "classification": "unresolved_below_power",
-      "classification_evidence": "18 of 72 flagged team-games use guessed report times; 39 prior-starter name matches fail. Bootstrap reproduces but cannot close the declared report-visible construct.",
-      "closing_ground": null,
-      "description": "MOD-22 unit 4 flawed-run diagnostic; report-visible construct requires remeasurement",
-      "effect": -0.00044821193884932593,
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Corrected paired Brier improvement is wholly negative at 95%; 55 evidenced flags; closure limited to this binary fitted addition",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "MOD-22 unit 4: evidenced expected-starter absence; same single-look LOSO protocol remeasured",
+      "effect": -0.0006153808242152587,
       "effect_units": "brier_improvement",
       "family": "qb_expected_starter_v1",
       "interval": [
-        -0.0011119749921918553,
-        -1.4867922775387787e-05
+        -0.001312913598693687,
+        -8.336869502941536e-05
       ],
       "league": "nfl",
-      "notes": "Needs remeasurement. Retained effect and interval describe the flawed run only; exclude from decision pooling. No valid corrected effect estimated.",
-      "plain_summary": "We still need to check how losing the usual quarterback affects a pick. Some report times were guessed and one quarterback was missed, so this check changes no picks.",
-      "probability_positive": 0.0215,
+      "notes": "Look count remains 1 (remeasurement); 18 guessed flags excluded; all 39 Minshew II matches restored; no split-half reliability estimated; broader QB injury effects remain open",
+      "plain_summary": "When the previous starting quarterback was ruled out or doubtful at least a day before kickoff, this simple adjustment made our predictions worse. Keep this adjustment out of the picks; quarterback injuries may still matter.",
+      "probability_positive": 0.008,
       "recorded_at": "2026-09-29",
       "reliability": null,
       "sample_blocks": 107,
@@ -176337,7 +176337,7 @@
         2020,
         2025
       ],
-      "source": "docs/lanes/verify-2026-09-29.md",
+      "source": "tests/scratch/codex/mod22_unit4/20260929T213636Z/summary.json",
       "standard_error": null
     },
     "qb_news_backup_visible_by_deadline_screen": {

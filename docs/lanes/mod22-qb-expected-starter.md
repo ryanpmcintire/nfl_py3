@@ -1,37 +1,67 @@
-# mod22-qb-expected-starter (ROADMAP MOD-22, unit 4)
+# MOD-22 unit 4: expected-starter report repair
 
 ## Goal
-New construct, not a transform of diff_lineup_total: the team's expected starting QB
-(the QB with most offense snaps in the team's previous game, strictly earlier kickoff)
-listed Out or Doubtful on an injury report visible by the decision time (kickoff - 24h).
-Mechanism: the frozen Tuesday line prices the usual QB; a report visible later that
-removes him is information the Tuesday line could not price.
+Require evidenced pregame injury times, repair QB suffix matching, remeasure once.
 
-## Declaration (written before any outcome was looked at, 2026-09-29)
-- Population: 2020-2025 REG games in `build_fit_population` with tue_open_home_spread; snap counts and injuries from data/players/raw/20260910T205112Z.
-- Term `qb_out_diff` = away_qb_out - home_qb_out (positive favours home). qb_out is 1 when the expected starter has a report_status of Out or Doubtful with effective_observed_at <= decision_at. Runtime asserts: prior game kickoff < decision_at, every used report timestamp <= decision_at.
-- One look: qb_out_diff added as the 5th fitted term to the four-term served base, LOSO by season, via evaluate_candidate (accuracy points, Brier, log loss, decisive-game record, IS-OOS gap, per-fold coefficients). Look count 1, family qb_expected_starter_v1.
-- Also reported, not looks: number of games with a nonzero term, name-to-gsis match rate.
-- No revision after results.
+## Protocol (declared before corrected outcomes, 2026-09-29; unchanged)
+2020?2025 REG `build_fit_population` games with Tuesday opener; target `home_covered`;
+player snapshot `20260910T205112Z`. Starter: highest-snap QB in previous team game
+before kickoff minus 24h. Same `qb_out_diff` = away minus home Out/Doubtful flag,
+requiring evidenced times by that cutoff; exclude/count guessed/missing/late reports.
+Normalize punctuation and terminal Jr./Sr./II/III/IV/V; report matching without selection.
+Same four base terms plus this fitted term, LOSO settings/folds and IS diagnostic.
+One calibrated probability selects the side; family `qb_expected_starter_v1`, look **1**,
+a remeasurement. Same accuracy/Brier/log-loss, decisive/null, calibration, IS/OOS gaps,
+season/fold reports; 2,000 season/week bootstrap draws, seed 20260923, 95% intervals,
+reliability edges [0,.4,.45,.5,.55,.6,1]. Report probability_positive; zero crossing
+never closes a signal. No protocol revision.
 
 ## State
-Script scripts/mod22_unit4.py (see Tried/Open for run result).
+**Measured:** exit 0; 1,503 games/107 blocks, 55 evidenced flags (29 home/26 away),
+53 nonzero games; 18 guessed flags excluded from 73 cutoff-only flags, one late
+report excluded. Matches 3,230/3,230 source team-games (100%), 3,006/3,006 scored;
+all 39 Gardner Minshew II matches restored; zero missing or ambiguous identities.
+Decisive record **3?10**, exact-null p=0.0922852, before headline comparison:
+accuracy -0.465735 points, 95% [-1.144499, 0.064857], probability_positive=0.04825;
+Brier -0.000615381, 95% [-0.001312914,-0.000083369], probability_positive=0.008;
+log-loss -0.001280602, 95% [-0.002717481,-0.000163914], probability_positive=0.0075.
+IS/OOS Brier improvement -0.000000040/-0.000615381, gap +0.000615341;
+candidate accuracy 57.4185%/56.6866%, gap +0.7319 points (base 57.3520%/57.1524%).
+OOS Brier candidate/base/model/market: .246002912/.245387531/.251715273/.250000000.
+QB coefficients 2020?25: +.23615,+.00186,-.11373,+.17714,-.26013,+.01475;
+Brier worsened in all six seasons; full coefficients and reliability tables saved.
+**Inferred:** this binary fitted addition meets AGENTS.md's `wrong_sign_resolved`
+ground on corrected Brier; proposed closure is scoped to this addition, pending
+root recording. Broader QB injury mechanisms remain open; no serving change.
 
 ## Tried
-Ran `.tools/uv.exe run --no-sync python scripts/mod22_unit4.py` once (exit 0) -> artifacts/mod22_unit4/20260929T204114Z/summary.json.
-1,503 games; 72 team-games with expected QB Out/Doubtful visible by decision (home 38, away 34); 70 games nonzero term.
-Added term, LOSO: accuracy -0.665 pts, 95% CI [-1.410, -0.065], P+ ~0.01 (interval fully negative); Brier and log loss intervals fully negative (P+ 0.022, 0.021); decisive 16 games, full model won 3 (exact-null p 0.021); IS-OOS gap 0.0080 vs base 0.0020; per-fold coefficient +0.032, -0.086, -0.178, +0.033, -0.284, +0.054 (in-sample -0.074, wrong sign vs mechanism, sign flips 3 of 6 folds).
-Read: fitted term on 70 sparse games adds noise, does not help; coefficient sign unstable so this is not a resolved mechanism reversal, only a term that does not earn its place. Not served.
+Ran `.tools/uv.exe run --no-sync python scripts/mod22_unit4.py` **once**, exit 0,
+with repository-local UV cache and OMP/OpenBLAS/MKL/NumExpr threads capped at 2.
+New artifact: `tests/scratch/codex/mod22_unit4/20260929T213636Z/`
+(summary, per-game fitted probabilities, team-game evidence); run log:
+`tests/scratch/codex/mod22-unit4-remeasurement.log`. **Measured:** saved population,
+targets, opener and base IS/OOS probabilities equal the old artifact; all 55 flags
+pass the cutoff. Replacement CLI parsing, coherence and closure validation passed
+without invoking its handler; diff check passed. Old run remains diagnostic history.
 
 ## Next
-Root: adjudicate classification. Candidate: unresolved_below_power (only 70 nonzero games, unstable fold signs, split-half not measured); wrong_sign_resolved needs a stable wrong-sign coefficient and does not hold.
-Record commands (root runs; not run here):
-- nfl-ats weak-signals record --name qb_expected_starter_out_pick_probability_term --family qb_expected_starter_v1 --league nfl --season-start 2020 --season-end 2025 --effect -0.6653359946773121 --effect-units accuracy_points --interval-low -1.410458562718959 --interval-high -0.06518798652901232 --probability-positive 0.01 --sample-games 1503 --sample-blocks 6 --classification unresolved_below_power --reliability 0.5 --category onfield --source artifacts/mod22_unit4/20260929T204114Z/summary.json --classification-evidence "70 nonzero games, 16 decisive; per-fold coefficient flips sign 3 of 6 folds" --description "expected starting QB Out/Doubtful visible at decision time, home-away diff, 5th fitted term LOSO, MOD-22 unit 4"
-  (adjust probability-positive and reliability to the exact summary values before running; reliability is a placeholder, not measured)
+Orchestrator reviews/runs replacement below serially; worker did not record it.
 
 ## Open
-Name-to-gsis match rate in summary.json; QB quality not weighted (binary flag).
+Binary absence omits QB quality; fold signs vary; split-half reliability unmeasured.
 
-**Recorded 2026-09-29 (root):** registry cell `qb_expected_starter_out_pick_probability_term` as refuted_mechanism / wrong_sign_resolved on the Brier interval (whole interval below zero, P+ 0.0215), scoped to this binary construct.
-
-**Corrected 2026-09-29 (root, after verify lane):** the refuted closure was wrong. 18/72 flagged team-games used guessed report timestamps and 39 name matches missed Gardner Minshew II, so the report-visible construct is unverified. Record replaced as unresolved_below_power; remeasure after the timing/name repair.
+## Record commands
+```bash
+nfl-ats weak-signals record --replace \
+  --name qb_expected_starter_out_pick_probability_term --family qb_expected_starter_v1 \
+  --category health --league nfl --season-start 2020 --season-end 2025 \
+  --description "MOD-22 unit 4: evidenced expected-starter absence; same single-look LOSO protocol remeasured" \
+  --source "tests/scratch/codex/mod22_unit4/20260929T213636Z/summary.json" \
+  --effect=-0.0006153808242152587 --effect-units brier_improvement \
+  --interval-low=-0.001312913598693687 --interval-high=-8.336869502941536e-05 \
+  --probability-positive 0.008 --sample-games 1503 --sample-blocks 107 \
+  --classification refuted_mechanism --closing-ground wrong_sign_resolved \
+  --classification-evidence "Corrected paired Brier improvement is wholly negative at 95%; 55 evidenced flags; closure limited to this binary fitted addition" \
+  --notes "Look count remains 1 (remeasurement); 18 guessed flags excluded; all 39 Minshew II matches restored; no split-half reliability estimated; broader QB injury effects remain open" \
+  --plain-summary "When the previous starting quarterback was ruled out or doubtful at least a day before kickoff, this simple adjustment made our predictions worse. Keep this adjustment out of the picks; quarterback injuries may still matter."
+```

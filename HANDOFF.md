@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-29T21:36:55.534956+00:00`
+Refreshed at: `2026-09-29T21:41:15.128671+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-09-29T21:36:55.534956+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `63c18ffa030a` — Queue LEAD-74..81: second batch of predeclared accuracy leads
-- Pending change set: 28 paths
+- Baseline commit: `510755d5b23c` — History shows the closing spread above each close result
+- Pending change set: 27 paths
   - ` M AGENTS.md`
   - ` M docs/agent_workflow.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/lanes/backlog-fleet-2026-09-29.md`
   - ` M docs/lanes/lead64-friday-designations.md`
   - ` M docs/lanes/lead71.md`
   - ` M docs/lanes/lead73.md`
-  - ` M docs/lanes/mod22-qb-expected-starter.md`
-  - `A  docs/lanes/ui20-2026-09-29b.md`
-  - ` M scripts/mod22_unit4.py`
-  - `M  src/nfl_ats/board_site_content.py`
-  - `M  src/nfl_ats/board_terminal.py`
+  - `M  docs/lanes/mod22-qb-expected-starter.md`
+  - `M  registry/weak_signals.json`
+  - `M  scripts/mod22_unit4.py`
   - `?? bash.exe.stackdump`
   - `?? docs/lanes/lead74.md`
+  - `?? docs/lanes/lead75.md`
   - `?? docs/lanes/mod22-unit5-qb-quality.md`
   - `?? docs/lanes/windows-shell-popup.md`
+  - `?? docs/lead74_unit1_inventory.md`
   - `?? docs/mod22_unit5.md`
   - `?? registry/experiments/margin-backtest/20260927T134152Z.json`
   - `?? registry/experiments/margin-backtest/20260929T183944Z.json`
-  - ...and 8 more
+  - `?? registry/experiments/margin-predict/2026-week-03-20260927T134352Z.json`
+  - `?? registry/experiments/margin-predict/2026-week-03-20260929T184122Z.json`
+  - `?? registry/experiments/opener-evaluation/20260927T134738Z.json`
+  - ...and 7 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
