@@ -382,16 +382,17 @@ def _motion_status_rail(chrome: TickerChrome) -> str:
     frames = (
         f'<span class="status-frame" style="--frame-index:0">'
         f'<span class="rail-number" data-roll-to="{game_count}">{game_count}</span> '
-        "GAMES / "
+        f"{'GAME' if game_count == 1 else 'GAMES'} / "
         f'<span class="rail-number" data-roll-to="{strong_count}">{strong_count}</span> '
-        "STRONG READS</span>",
+        f"{'STRONG READ' if strong_count == 1 else 'STRONG READS'}</span>",
         f'<span class="status-frame" style="--frame-index:1">MODEL '
         f'<span class="rail-accent">{escape(chrome.model_method_label)}</span></span>',
         f'<span class="status-frame" style="--frame-index:2">{best_html}</span>',
         f'<span class="status-frame" style="--frame-index:3">{escape(season_week)}</span>',
     )
     accessible_summary = (
-        f"Board snapshot: {game_count} games, {strong_count} strong reads. "
+        f"Board snapshot: {game_count} {'game' if game_count == 1 else 'games'}, "
+        f"{strong_count} {'strong read' if strong_count == 1 else 'strong reads'}. "
         f"Model {chrome.model_method_label}. "
         f"{best_text}. {season_week}."
     )

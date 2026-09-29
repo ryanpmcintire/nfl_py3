@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-28T20:46:16.868779+00:00`
+Refreshed at: `2026-09-29T19:52:20.664098+00:00`
 
 ## Start here
 
@@ -21,20 +21,29 @@ Refreshed at: `2026-09-28T20:46:16.868779+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `1c2ea7a1eba3` — Expose scheduler failures and preserve manual run history
-- Pending change set: 12 paths
+- Baseline commit: `ebefbdd4438e` — Refresh handoff after scheduler status checkpoint
+- Pending change set: 26 paths
   - ` M AGENTS.md`
+  - `M  CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
+  - ` M README.md`
   - ` M docs/agent_workflow.md`
-  - ` M docs/findings.html`
-  - ` M docs/history.html`
-  - ` M docs/index.html`
-  - ` M docs/model.html`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - `A  docs/lanes/done/week4-tuesday-lock.md`
+  - `M  docs/model.html`
+  - `A  registry/experiments/margin-backtest/20260929T192312Z.json`
+  - `A  registry/experiments/margin-predict/2026-week-04-20260929T192403Z.json`
+  - `A  registry/experiments/margin-predict/2026-week-04-20260929T194213Z.json`
+  - `A  registry/experiments/opener-evaluation/20260929T192743Z.json`
+  - `A  registry/experiments/prospective-score/20260929T194214Z.json`
+  - `A  registry/experiments/waterfall-feed/20260929T192907Z.json`
+  - `M  src/nfl_ats/board_terminal.py`
+  - `M  tiebreaker.json`
   - `?? docs/lanes/windows-shell-popup.md`
   - `?? registry/experiments/margin-backtest/20260927T134152Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-03-20260927T134352Z.json`
-  - `?? registry/experiments/opener-evaluation/20260927T134738Z.json`
-  - `?? registry/experiments/waterfall-feed/20260927T134851Z.json`
+  - ...and 6 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -43,18 +52,18 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `b40dd36507ccaec0`
+- Model ID: `b578fbea1c5c706f`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20260928T161343Z`)
+- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20260929T192743Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card combines this with the coach component in one fitted calibrated probability, while paired prospective tracking continues
-- Secondary close-grade historical classification: **1,103 / 2,107 (52.35%)**
-- Linked forecast: **2026 Week 3**, created `2026-09-28T16:10:08.458340+00:00`
+- Secondary close-grade historical classification: **1,114 / 2,123 (52.47%)**
+- Linked forecast: **2026 Week 4**, created `2026-09-29T19:42:13.061024+00:00`
 
-The 52.35% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
+The 52.47% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 3** from model `b40dd36507ccaec0`, published `2026-09-28T16:28:36.661866+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 4** from model `b578fbea1c5c706f`, published `2026-09-29T19:29:10.768601+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 
