@@ -96,3 +96,7 @@ term.
   source before 2012 to thicken early folds; (c) why the pooled model's own
   coefficient is uniformly negative while the CFB-only term's is uniformly
   positive — worth a mechanism note if this family reopens.
+
+## Unit 6 (2026-09-29, worker)
+
+Nested-LOSO rerun of the pooled arm to test whether unit 5's negative beta was a stacking leak. Refuted: nested beta negative 13/13 folds; line move -0.088 [-0.127,-0.054] all-graded, -0.085 [-0.149,-0.031] 2020-2025 (P+ 0.0); accuracy +0.46 [-0.78,+1.78] P+ 0.75 and -1.00 [-2.38,+0.38] P+ 0.08. Declaration, results, and Record commands (not run) in `docs/xlg09_unit6.md`; script `scripts/xlg09_unit6.py`. Next: orchestrator records the four cells; pooling stays closed on line movement.

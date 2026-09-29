@@ -13,6 +13,13 @@ at least seven parallel workers, committing and pushing at each verified return.
 - Wave 1 packets: `tests/scratch/codex/*.md` (preamble + odds-fri, ui20,
   ideation, st-study, tiebreaker, xlg09, mod22).
 
+- Owner wants Codex workers (2026-09-29). Decision: the four Claude subagents
+  already running (ui20, ideation, st-study, mod22) finish so their work is not
+  discarded; every new lane launches as `codex --no-daemon exec` once the allow
+  rule exists. No new Claude subagents.
+- Uncommitted returns: tiebreaker (docs/tiebreaker_total_study.md), XLG-09 unit 6
+  (docs/xlg09_unit6.md, four record commands pending).
+
 ## Tried
 - `codex --no-daemon exec` launcher: blocked by permission classifier.
 

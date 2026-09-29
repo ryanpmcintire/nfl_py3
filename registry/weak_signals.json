@@ -175752,6 +175752,34 @@
       "source": "docs/qb_exit_mixture.md",
       "standard_error": null
     },
+    "qb_expected_starter_out_pick_probability_term": {
+      "category": "health",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Whole Brier interval below zero (P+ 0.0215); log loss P+ 0.021 and accuracy -0.67 pts [-1.41,-0.07] also wholly negative; 3 of 16 decisive games (exact p 0.021). Construct-specific: binary expected-starter Out/Doubtful flag with no QB-quality weight; fold coefficients flip sign in 3 of 6 folds, 70 nonzero games.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "MOD-22 unit 4: expected starting QB (most snaps prior game) listed Out/Doubtful on a report visible at kickoff minus 24h, away-minus-home diff, fitted as a fifth term on the served four-term probability, LOSO 2020-2025",
+      "effect": -0.00044821193884932593,
+      "effect_units": "brier_improvement",
+      "family": "qb_expected_starter_v1",
+      "interval": [
+        -0.0011119749921918553,
+        -1.4867922775387787e-05
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Flagging a missing starting quarterback on top of the served probability made held-out picks slightly worse; the market already prices it.",
+      "probability_positive": 0.0215,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod22_unit4/20260929T204114Z/summary.json",
+      "standard_error": null
+    },
     "qb_news_backup_visible_by_deadline_screen": {
       "category": "health",
       "classification": "unresolved_below_power",
@@ -201810,6 +201838,34 @@
       "source": "artifacts/tiebreaker_total/20260910T043514Z/results.json",
       "standard_error": 0.501782
     },
+    "tiebreaker_total_loso_shade_vs_market": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval spans zero; neither a resolved wrong sign nor a control bound. Closing-grade totals, LOSO by season, 18 looks.",
+      "closing_ground": null,
+      "description": "Tiebreaker combined-score guess: LOSO-chosen integer shade of the market total vs entering the market total, MAE reduction in points, all REG games",
+      "effect": 0.01,
+      "effect_units": "mae_improvement",
+      "family": "tiebreaker_total_v1",
+      "interval": [
+        -0.021,
+        0.042
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Adjusting the sportsbook total did not reliably beat simply entering it for the tiebreaker.",
+      "probability_positive": 0.73,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 3407,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "docs/tiebreaker_total_study.md",
+      "standard_error": null
+    },
     "tiebreaker_total_offset_minus35_expected_share_posthoc_2020_2025": {
       "category": "modeling",
       "classification": "unresolved_below_power",
@@ -201921,6 +201977,34 @@
       ],
       "source": "artifacts/tiebreaker_total/20260910T043514Z/results.json",
       "standard_error": 0.758117
+    },
+    "tiebreaker_total_served_proxy_vs_market": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval spans zero; neither a resolved wrong sign nor a control bound. Closing-grade totals, LOSO by season, 18 looks.",
+      "closing_ground": null,
+      "description": "Tiebreaker combined-score guess: served guess proxy (0.1 x totals residual minus 1) vs entering the market total, MAE reduction in points, all REG games",
+      "effect": -0.002,
+      "effect_units": "mae_improvement",
+      "family": "tiebreaker_total_v1",
+      "interval": [
+        -0.042,
+        0.038
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Adjusting the sportsbook total did not reliably beat simply entering it for the tiebreaker.",
+      "probability_positive": 0.47,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 3407,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "docs/tiebreaker_total_study.md",
+      "standard_error": null
     },
     "total_conditioned_key_number_lattice_accuracy": {
       "category": "modeling",
@@ -208040,6 +208124,118 @@
         2025
       ],
       "source": "artifacts/xlg06_rookie_priors/prior_results.json",
+      "standard_error": null
+    },
+    "xlg09_unit6_nested_pooled_vs_base_accuracy_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Same, 2020-2025 subset",
+      "effect": -0.9980039920159722,
+      "effect_units": "accuracy_points",
+      "family": "xlg09_unit6_nested_pooled",
+      "interval": [
+        -2.3826208829712647,
+        0.37523452157598447
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Negative point estimate on six seasons; interval reaches above zero, not resolved.",
+      "probability_positive": 0.07925,
+      "recorded_at": "2026-09-29",
+      "reliability": 0.14132263925353555,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg09_unit6/20260929T203851Z/summary.json",
+      "standard_error": null
+    },
+    "xlg09_unit6_nested_pooled_vs_base_accuracy_all_graded": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Nested pooled term as 5th fitted term, accuracy vs four-term base, 2013-2025",
+      "effect": 0.4638218923933235,
+      "effect_units": "accuracy_points",
+      "family": "xlg09_unit6_nested_pooled",
+      "interval": [
+        -0.7827359921758633,
+        1.7759792467429907
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Small positive accuracy point estimate, not resolvable at this size.",
+      "probability_positive": 0.7485,
+      "recorded_at": "2026-09-29",
+      "reliability": 0.14132263925353555,
+      "sample_blocks": 13,
+      "sample_games": 3234,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/xlg09_unit6/20260929T203851Z/summary.json",
+      "standard_error": null
+    },
+    "xlg09_unit6_nested_pooled_vs_base_linemove_2020_2025": {
+      "category": "market",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Whole season-block interval below zero; same mechanism",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Same as all-graded, 2020-2025 subset",
+      "effect": -0.0854956753160346,
+      "effect_units": "ats_points",
+      "family": "xlg09_unit6_nested_pooled",
+      "interval": [
+        -0.14940517844646606,
+        -0.031270572745227126
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "On the last six seasons the leak-free pooled term still moves the line the wrong way.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-29",
+      "reliability": 0.14132263925353555,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg09_unit6/20260929T203851Z/summary.json",
+      "standard_error": null
+    },
+    "xlg09_unit6_nested_pooled_vs_base_linemove_all_graded": {
+      "category": "market",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Whole season-block interval below zero and nested beta negative in 13 of 13 folds; leak-free replication of unit 5",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Unit 6 nested-LOSO pooled two-league term (stacking leak removed) as 3rd fitted term, line movement toward pick vs Tuesday base, 2013-2025",
+      "effect": -0.08797155225726655,
+      "effect_units": "ats_points",
+      "family": "xlg09_unit6_nested_pooled",
+      "interval": [
+        -0.1265123323864504,
+        -0.05385010217488092
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Removing a stacking artifact does not rescue the pooled college-plus-NFL term; it still moves the line away from the pick.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-29",
+      "reliability": 0.14132263925353555,
+      "sample_blocks": 13,
+      "sample_games": 3234,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/xlg09_unit6/20260929T203851Z/summary.json",
       "standard_error": null
     }
   },
