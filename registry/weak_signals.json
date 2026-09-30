@@ -172093,6 +172093,90 @@
       "source": "docs/mod23_unit2.md",
       "standard_error": null
     },
+    "mod23_unit3_add_adjusted": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval crosses zero; no closing ground applies",
+      "closing_ground": null,
+      "description": "MOD-23 unit 3: adds 36 opponent-adjusted columns beside the raw set, model alone at the opener",
+      "effect": -1.46,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit3_opponent_adjusted_inputs",
+      "interval": [
+        -3.239,
+        0.329
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.051,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/mod23_unit3.md",
+      "standard_error": null
+    },
+    "mod23_unit3_compact_net": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval crosses zero; no closing ground applies",
+      "closing_ground": null,
+      "description": "MOD-23 unit 3: replaces the 39 offense and defense columns with 9 adjusted net-efficiency columns, model alone at the opener",
+      "effect": -1.13,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit3_opponent_adjusted_inputs",
+      "interval": [
+        -3.196,
+        0.814
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.131,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/mod23_unit3.md",
+      "standard_error": null
+    },
+    "mod23_unit3_replace_adjusted": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval crosses zero; no closing ground applies",
+      "closing_ground": null,
+      "description": "MOD-23 unit 3: replaces the 39 raw offense and defense columns with opponent-adjusted counterparts, model alone at the opener",
+      "effect": -0.8,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit3_opponent_adjusted_inputs",
+      "interval": [
+        -2.649,
+        1.051
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.181,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/mod23_unit3.md",
+      "standard_error": null
+    },
     "motivation_ladder_elim_visitor_alive_host": {
       "category": "schedule",
       "classification": "unresolved_below_power",
