@@ -118,6 +118,62 @@
       "source": "docs/lead71_unit3.md",
       "standard_error": 0.000513855014418
     },
+    "LEAD-71-unit4-all": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closure established; descriptive exact null only",
+      "closing_ground": null,
+      "description": "Market joint score tiebreaker versus served; all eligible games; two-look family",
+      "effect": 0.199048913043,
+      "effect_units": "mae_improvement",
+      "family": "LEAD-71-unit4",
+      "interval": [
+        0.0488773533357,
+        0.366853830509
+      ],
+      "league": "nfl",
+      "notes": "Proposed serial record; two primary MAE contrasts; week-block intervals condition on predictions; retrospective four-term base",
+      "plain_summary": "Using the market score table made the total guess 0.199 points closer on average for all eligible games. The result is still uncertain and the pool guesses stay unchanged.",
+      "probability_positive": 0.9972,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 103,
+      "sample_games": 1472,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead71_unit4.md",
+      "standard_error": 0.0811389775323
+    },
+    "LEAD-71-unit4-last": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closure established; descriptive exact null only",
+      "closing_ground": null,
+      "description": "Market joint score tiebreaker versus served; last game each week; two-look family",
+      "effect": 0.0714285714286,
+      "effect_units": "mae_improvement",
+      "family": "LEAD-71-unit4",
+      "interval": [
+        -0.326530612245,
+        0.438775510204
+      ],
+      "league": "nfl",
+      "notes": "Proposed serial record; two primary MAE contrasts; week-block intervals condition on predictions; retrospective four-term base",
+      "plain_summary": "Using the market score table made the total guess 0.071 points closer on average for last game each week. The result is still uncertain and the pool guesses stay unchanged.",
+      "probability_positive": 0.6538,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 98,
+      "sample_games": 98,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead71_unit4.md",
+      "standard_error": 0.195866397605
+    },
     "LEAD-84-unit2-accuracy_points": {
       "category": "market",
       "classification": "unresolved_below_power",
