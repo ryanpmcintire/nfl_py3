@@ -29,12 +29,15 @@ Done = a change that beats that baseline out of sample, or each unit recorded.
 - MOD-22 players-on-field was graded only as an add-on to the four-term card.
 
 ## Next
-- Unit 5 (decides the direction): is the served model's pick edge real? Its
-  earlier-season margin error always prefers the smallest served weight
-  (unit 4), yet full-strength picks score 53.36%. Run the same walk-forward
-  model-alone opener test on 2011-2019 (openers permitting) and report the
-  record and probability_positive vs 50% per season, beside the 2020-2025 run.
-- Only then: finer shrink grid (s 0.05-0.25, residual only, offset unshrunk).
+- Verified 2026-09-30: unit 4's three 785-718 records recomputed from picks
+  and results; the arms disagree on 276-316 games and each pair splits them
+  exactly evenly (joint chance about 1 in 500). Real, unexplained.
+- Unit 4 says the served lean is too large (earlier seasons prefer 1/4 size),
+  not that its direction is wrong: shrunk, the home-side offset and key-number
+  mapping overrule it on 333 games and those cost 17 net wins (158 vs 175).
+- Unit 5: shrink the lean and the home-side offset together so the model's
+  side is kept and only its confidence is fixed; also run the walk-forward
+  model-alone test on 2011-2019 as a robustness check of 802-701.
 
 ## Open
 - Fit gain (MSE, log loss) does not convert to picks; consider grading on a smaller-model probability, not a pick swap.

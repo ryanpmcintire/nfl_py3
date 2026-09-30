@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-30T12:20:22.892924+00:00`
+Refreshed at: `2026-09-30T12:51:08.892608+00:00`
 
 ## Start here
 
@@ -21,7 +21,7 @@ Refreshed at: `2026-09-30T12:20:22.892924+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `f7b39207f720` — MOD-23 unit 4: blend and shrink the served model on the model-alone opener test
+- Baseline commit: `be3892ef689c` — MOD-23 lane: next unit tests whether the served pick edge holds before 2020
 - Pending change set: 1 paths
   - `M  docs/lanes/mod23-base-model.md`
 
