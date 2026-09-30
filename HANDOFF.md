@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-29T23:59:20.103521+00:00`
+Refreshed at: `2026-09-30T00:01:48.436135+00:00`
 
 ## Start here
 
@@ -21,21 +21,19 @@ Refreshed at: `2026-09-29T23:59:20.103521+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `bd3eadbbad60` — Explain how to read the research results on the board
-- Pending change set: 22 paths
+- Baseline commit: `6a1b7f5ccb1d` — LEAD-88 unit 3: tiebreaker guess improves when it follows the total move
+- Pending change set: 20 paths
   - ` M AGENTS.md`
-  - ` M ROADMAP.md`
+  - `M  ROADMAP.md`
   - ` M docs/agent_workflow.md`
+  - ` M docs/lanes/ideation-2026-09-29c.md`
   - ` M docs/lanes/lead86.md`
-  - `M  docs/lanes/lead88.md`
   - ` M docs/lanes/loso-base-artifact.md`
-  - `A  docs/lead88_unit3.md`
-  - `M  registry/weak_signals.json`
-  - `A  scripts/lead88_unit3.py`
+  - `A  docs/lanes/roadmap-sync-2026-09-29.md`
+  - `A  docs/research_digest_2026-09-29.md`
   - `?? docs/lanes/code-review-2026-09-29.md`
-  - `?? docs/lanes/roadmap-sync-2026-09-29.md`
+  - `?? docs/lanes/tiebreaker-total-move-serve.md`
   - `?? docs/lanes/windows-shell-popup.md`
-  - `?? docs/research_digest_2026-09-29.md`
   - `?? registry/experiments/margin-backtest/20260927T134152Z.json`
   - `?? registry/experiments/margin-backtest/20260929T183944Z.json`
   - `?? registry/experiments/margin-predict/2026-week-03-20260927T134352Z.json`
@@ -43,7 +41,8 @@ Refreshed at: `2026-09-29T23:59:20.103521+00:00`
   - `?? registry/experiments/opener-evaluation/20260927T134738Z.json`
   - `?? registry/experiments/waterfall-feed/20260927T134851Z.json`
   - `?? registry/experiments/waterfall-feed/20260929T184553Z.json`
-  - ...and 2 more
+  - `?? scripts/build_loso_upstream.py`
+  - `?? scripts/lead86_unit2.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
