@@ -53,6 +53,12 @@ at least seven parallel workers, committing and pushing at each verified return.
 - Lint: 492 ruff errors in today's scripts; lint-cleanup worker running. Preamble
   now requires ruff check+format on every touched file.
 
+- OPEN, release-blocking: LEAD-89 unit 2 found 814/816 Tuesday candidates use
+  injury inputs observed after Tuesday. Audit lane
+  docs/lanes/injury-timing-leakage-audit.md (worker running).
+- Served today: publish retries (restart pid 32860), paired wind capture (15
+  jobs, restart pid 21428). Tiebreaker total-move serve worker running.
+
 ## Tried
 - `codex --no-daemon exec` launcher: blocked by permission classifier.
 
