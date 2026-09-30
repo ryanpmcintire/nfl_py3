@@ -21,6 +21,8 @@ Done = a change that beats that baseline out of sample, or each unit recorded.
 
 - Unit 4 DONE (docs/mod23_unit4.md, scripts/mod23_unit4.py, artifacts/mod23_unit4/): blend with compact_net, blend with unit 1 trimmed, shrink served; all 785-718 (-1.13, P>0 0.13-0.18), LL 0.6944/0.6928/0.6933, Brier 0.2506/0.2498/0.2501; every season chose the grid edge (w=0, s=0.25); recorded unresolved_below_power x3. unit3 main() now import-guarded.
 
+- Unit 5 DONE (docs/mod23_unit5.md, scripts/mod23_unit5.py, artifacts/mod23_unit5/): coverage data usable 2018+ (zero-filled before). a man/zone 809-694 (+0.47, [-0.66,1.66], P>0 0.77, LL 0.6964, Brier 0.2515), b coverage type 805-698 (+0.20), c both 801-702 (-0.07); b/c LL 0.738 from a 2020 blowup. Term alone vs margin_vs_open corr 0.001-0.004. Recorded unresolved_below_power x6.
+
 ## Tried (earlier, on the model alone or older profiles)
 - Recency weighting flat; 2011-2025 training no better; trees worse; market
   ratings (MOD-21) wrong sign; graph ratings never selected.
@@ -29,16 +31,14 @@ Done = a change that beats that baseline out of sample, or each unit recorded.
 - MOD-22 players-on-field was graded only as an add-on to the four-term card.
 
 ## Next
-- Decided 2026-09-30: units 1-4 re-ran ideas already tested (August nested
-  selection, PBP-05, MOD-22); no further reshuffles of existing inputs.
-- Unit 5 (decided): coverage matchup. `defense_man_zone_type` and
-  `defense_coverage_type` are loaded in `src/nfl_ats/participation.py:49-50`
-  and used nowhere else (grep of src, scripts, docs, both roadmaps). Build
-  each team's pre-game man/zone mix and its offense's efficiency against each,
-  from strictly earlier games; grade on the model-alone opener test vs 802-701.
-- Not pursued: paid grades (PFF). Free coverage data is tested first.
-- Unit 4's three identical 785-718 records: verified from picks and results;
-  arms disagree on 276-316 games and each pair splits evenly (about 1 in 500).
+- Unit 5 done (docs/mod23_unit5.md): man/zone matchup 809-694, +0.47 pts
+  [-0.66, +1.66], P+ 0.77; standalone correlation with the opener margin
+  +0.004. Coverage is charted on 38-50% of plays, 2018+ only.
+- Next: log the man/zone arm's picks weekly beside the served model through
+  2026 Week 18 (no tuning), and explain the 2020 log-loss blowup in the
+  coverage-type arms before any reuse.
+- Free public data for the model by itself is otherwise covered by past
+  tests (inventory 2026-09-30: ~7,700 registry cells, 328 families).
 
 ## Open
 - Fit gain (MSE, log loss) does not convert to picks; consider grading on a smaller-model probability, not a pick swap.

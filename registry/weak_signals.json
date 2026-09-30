@@ -172261,6 +172261,174 @@
       "source": "docs/mod23_unit4.md",
       "standard_error": null
     },
+    "mod23_unit5_arm_a_man_zone_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval spans zero with no wrong-sign resolution; no positive control; no admissible closing ground.",
+      "closing_ground": null,
+      "description": "Model-alone opener test 2020-2025: served 90 inputs plus coverage matchup columns (arm_a_man_zone), ridge alpha 10; coverage terms zero-filled before 2018; rolling 16 games, shrink 100 plays.",
+      "effect": 0.4657351962741184,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit5_coverage_matchup",
+      "interval": [
+        -0.6648936170212766,
+        1.6556291390728477
+      ],
+      "league": "nfl",
+      "notes": "Three outer arms plus three correlation reads; zero crossing is not a closure reason.",
+      "plain_summary": "Tests whether how each offense does against man versus zone, matched to how the opposing defense plays, helps pick against the opener.",
+      "probability_positive": 0.77075,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/mod23_unit5.md",
+      "standard_error": null
+    },
+    "mod23_unit5_arm_b_coverage_type_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval spans zero with no wrong-sign resolution; no positive control; no admissible closing ground.",
+      "closing_ground": null,
+      "description": "Model-alone opener test 2020-2025: served 90 inputs plus coverage matchup columns (arm_b_coverage_type), ridge alpha 10; coverage terms zero-filled before 2018; rolling 16 games, shrink 100 plays.",
+      "effect": 0.19960079840319359,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit5_coverage_matchup",
+      "interval": [
+        -1.06314059517919,
+        1.481531430283959
+      ],
+      "league": "nfl",
+      "notes": "Three outer arms plus three correlation reads; zero crossing is not a closure reason.",
+      "plain_summary": "Same test using the specific coverage shell (cover 0/1/2/3/4/6) instead of man versus zone.",
+      "probability_positive": 0.59975,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/mod23_unit5.md",
+      "standard_error": null
+    },
+    "mod23_unit5_arm_c_both_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval spans zero with no wrong-sign resolution; no positive control; no admissible closing ground.",
+      "closing_ground": null,
+      "description": "Model-alone opener test 2020-2025: served 90 inputs plus coverage matchup columns (arm_c_both), ridge alpha 10; coverage terms zero-filled before 2018; rolling 16 games, shrink 100 plays.",
+      "effect": -0.0665335994677312,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit5_coverage_matchup",
+      "interval": [
+        -1.7532040616160642,
+        1.5686530989112455
+      ],
+      "league": "nfl",
+      "notes": "Three outer arms plus three correlation reads; zero crossing is not a closure reason.",
+      "plain_summary": "Both coverage matchup terms together.",
+      "probability_positive": 0.4535,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/mod23_unit5.md",
+      "standard_error": null
+    },
+    "mod23_unit5_diff_cov_both_corr_margin_vs_open": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval spans zero with no wrong-sign resolution; no positive control; no admissible closing ground.",
+      "closing_ground": null,
+      "description": "Correlation of the diff_cov_both coverage matchup term with margin minus opener, 2020-2025, no fitting.",
+      "effect": 0.002909183538690925,
+      "effect_units": "correlation",
+      "family": "mod23_unit5_coverage_matchup",
+      "interval": [
+        -0.055556210015710664,
+        0.06039455911934387
+      ],
+      "league": "nfl",
+      "notes": "Three outer arms plus three correlation reads; zero crossing is not a closure reason.",
+      "plain_summary": "Checks whether the coverage matchup lean alone predicts how the game lands against the opener.",
+      "probability_positive": 0.52725,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/mod23_unit5.md",
+      "standard_error": null
+    },
+    "mod23_unit5_diff_cov_ct_corr_margin_vs_open": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval spans zero with no wrong-sign resolution; no positive control; no admissible closing ground.",
+      "closing_ground": null,
+      "description": "Correlation of the diff_cov_ct coverage matchup term with margin minus opener, 2020-2025, no fitting.",
+      "effect": 0.00138753637594232,
+      "effect_units": "correlation",
+      "family": "mod23_unit5_coverage_matchup",
+      "interval": [
+        -0.05634526303748228,
+        0.0586361022634894
+      ],
+      "league": "nfl",
+      "notes": "Three outer arms plus three correlation reads; zero crossing is not a closure reason.",
+      "plain_summary": "Checks whether the coverage matchup lean alone predicts how the game lands against the opener.",
+      "probability_positive": 0.509,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/mod23_unit5.md",
+      "standard_error": null
+    },
+    "mod23_unit5_diff_cov_mz_corr_margin_vs_open": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval spans zero with no wrong-sign resolution; no positive control; no admissible closing ground.",
+      "closing_ground": null,
+      "description": "Correlation of the diff_cov_mz coverage matchup term with margin minus opener, 2020-2025, no fitting.",
+      "effect": 0.003963644739544191,
+      "effect_units": "correlation",
+      "family": "mod23_unit5_coverage_matchup",
+      "interval": [
+        -0.05487516934183521,
+        0.060517360058525656
+      ],
+      "league": "nfl",
+      "notes": "Three outer arms plus three correlation reads; zero crossing is not a closure reason.",
+      "plain_summary": "Checks whether the coverage matchup lean alone predicts how the game lands against the opener.",
+      "probability_positive": 0.54325,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/mod23_unit5.md",
+      "standard_error": null
+    },
     "motivation_ladder_elim_visitor_alive_host": {
       "category": "schedule",
       "classification": "unresolved_below_power",
