@@ -86,6 +86,10 @@ at least seven parallel workers, committing and pushing at each verified return.
   audit recorded; release block lifted (kickoff-24 h precedes pick deadline),
   Tuesday-card skew open in its lane. Record gotchas: pass `--effect=` form for
   negative sci-notation; new unit `pool_points_per_week`. Codex leftovers: none.
+- OPEN (measured in LEAD-91/92/97): the shared LEAD-83 calibration step picks
+  slope ~0.008 (2023) and 0 (2024), so both arms output a constant in two of
+  three outer folds; LEAD-90..97 are effectively 2025-only (~232 games). Next:
+  audit that temperature/slope selection before any further LEAD-9x unit.
 
 ## Open
 - Codex workers need an owner Bash allow rule for `codex --no-daemon exec`.

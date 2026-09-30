@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-30T11:22:41.549454+00:00`
+Refreshed at: `2026-09-30T11:23:07.024000+00:00`
 
 ## Start here
 
@@ -21,29 +21,9 @@ Refreshed at: `2026-09-30T11:22:41.549454+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `211157c382fd` — Record headless-shell policy, popup lane, and pending experiment registry entries
-- Pending change set: 41 paths
-  - `M  ROADMAP.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - `A  docs/injury_timing_audit.md`
+- Baseline commit: `362c2dd548fd` — Finish Codex leftovers: LEAD-90..97 unit 1 and the injury timing audit
+- Pending change set: 1 paths
   - `M  docs/lanes/backlog-fleet-2026-09-29.md`
-  - `A  docs/lanes/done/lead90.md`
-  - `R  docs/lanes/lead91.md -> docs/lanes/done/lead91.md`
-  - `A  docs/lanes/done/lead92.md`
-  - `A  docs/lanes/done/lead93.md`
-  - `A  docs/lanes/done/lead94.md`
-  - `A  docs/lanes/done/lead95.md`
-  - `A  docs/lanes/done/lead96.md`
-  - `A  docs/lanes/done/lead97.md`
-  - `M  docs/lanes/injury-timing-leakage-audit.md`
-  - `D  docs/lanes/lead90.md`
-  - `D  docs/lanes/lead94.md`
-  - `A  docs/lead90_unit1.md`
-  - `A  docs/lead91_unit1.md`
-  - `R  docs/lanes/lead92.md -> docs/lead92_protocol.md`
-  - ...and 21 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
