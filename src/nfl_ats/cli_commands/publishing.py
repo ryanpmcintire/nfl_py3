@@ -148,6 +148,7 @@ from nfl_ats.third_down_reversion_fade_overlay import (
     record_third_down_reversion_fade_challenger_decisions,
 )
 from nfl_ats.tiebreaker_shade_prospective import record_tiebreaker_shade_decisions
+from nfl_ats.tiebreaker_total_move import refresh_total_move
 from nfl_ats.total_conditioned_lattice_challenger import (
     record_total_conditioned_lattice_decisions,
 )
@@ -1431,6 +1432,9 @@ def _cmd_publish_board(args: argparse.Namespace) -> None:
 
 
 def _cmd_refresh_picks(args: argparse.Namespace) -> None:
+    dry_run = getattr(args, "dry_run", False)
+    if dry_run and (args.record_decisions or args.publish_card):
+        raise ValueError("--dry-run cannot record decisions or publish a card")
     _require_served_pick_probability()
     season, week = _resolve_active_forecast_season_week(args, _artifacts_root())
     plan = plan_refresh(
@@ -1442,6 +1446,11 @@ def _cmd_refresh_picks(args: argparse.Namespace) -> None:
         min_train_games=args.min_train_games,
     )
     result = refresh_summary(plan, record_decisions=args.record_decisions)
+    if dry_run:
+        result["tiebreaker_total_move"] = refresh_total_move(_artifacts_root(), _data_root(), plan)
+        result["dry_run"] = True
+        _print_json(result)
+        return
     try:
         renomination = plan_best_pick_renomination(_artifacts_root(), _data_root(), plan)
         result["best_pick_renomination"] = renomination_summary(renomination)
@@ -1485,6 +1494,18 @@ def _cmd_refresh_picks(args: argparse.Namespace) -> None:
         )
     except Exception as error:
         result["ledger"] = {"recorded": 0, "error": str(error)}
+    try:
+        result["tiebreaker_total_move"] = refresh_total_move(
+            _artifacts_root(),
+            _data_root(),
+            plan,
+            write=bool(
+                (args.record_decisions or args.publish_card) and not result["ledger"].get("error")
+            ),
+            destination=args.destination,
+        )
+    except (OSError, ValueError, KeyError) as error:
+        result["tiebreaker_total_move"] = {"written": False, "error": str(error)}
     try:
         result["injury_signal_refresh_tilt"] = record_injury_signal_refresh_tilt(
             _artifacts_root(), _data_root(), plan, record_decisions=args.record_decisions
@@ -1700,6 +1721,11 @@ def register(
         ),
     )
     _add_active_forecast_season_week_args(refresh_picks)
+    refresh_picks.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="preview the picks and tiebreaker adjustment without recording or publishing",
+    )
     refresh_picks.add_argument(
         "--features",
         type=Path,

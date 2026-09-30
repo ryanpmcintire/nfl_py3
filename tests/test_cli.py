@@ -845,6 +845,9 @@ def test_refresh_crew_recorder_is_gated_and_fails_open(
     monkeypatch.setattr(publishing_cmds, "plan_refresh", lambda *_args, **_kwargs: plan)
     monkeypatch.setattr(publishing_cmds, "_require_served_pick_probability", lambda: None)
     monkeypatch.setattr(publishing_cmds, "refresh_summary", lambda *_args, **_kwargs: {})
+    monkeypatch.setattr(
+        publishing_cmds, "refresh_total_move", lambda *_args, **_kwargs: {"written": False}
+    )
     monkeypatch.setattr(publishing_cmds, "record_plan", lambda *_args, **_kwargs: {"recorded": 1})
     monkeypatch.setattr(
         publishing_cmds,

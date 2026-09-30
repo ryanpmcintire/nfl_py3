@@ -79,6 +79,7 @@ from nfl_ats.tiebreaker import (
     tiebreaker_report,
 )
 from nfl_ats.tiebreaker_history import record_tiebreaker
+from nfl_ats.tiebreaker_total_move import initialize_total_move
 
 TIEBREAKER_ARTIFACT_FILENAME = "tiebreaker.json"
 
@@ -292,39 +293,41 @@ def _tiebreaker_json_payload(
     forecast_artifact: str | None,
 ) -> dict[str, Any]:
 
-    return {
-        "schema_version": 1,
-        "game_id": guess.game_id,
-        "season": season,
-        "week": week,
-        "forecast_artifact": forecast_artifact,
-        "home": guess.home,
-        "away": guess.away,
-        "guess_home": guess.guess_home,
-        "guess_away": guess.guess_away,
-        "projected_total": guess.guess_home + guess.guess_away,
-        "market_total": guess.consensus.total_line,
-        "blended_total": guess.guess_total_line,
-        "served_total": guess.served_total,
-        "served_total_method": guess.served_total_method,
-        "comparison_total_blend_k01": guess.comparison_total_blend_k01,
-        "total_low_side_shade_points": guess.low_side_shade_points,
-        "total_low_side_shade_source": guess.low_side_shade_source,
-        "implied_margin": guess.guess_home - guess.guess_away,
-        "pick_side": guess.pick_side,
-        "lattice_centre_margin": (
-            guess.lattice_centre_margin
-            if guess.lattice_centre_margin is not None
-            else guess.guess_margin
-        ),
-        "pick_spread_line": guess.pick_spread_line,
-        "pick_cover_probability": guess.pick_cover_probability,
-        "pick_push_probability": guess.pick_push_probability,
-        "consistency_note": guess.consistency_note,
-        "method_note": "one lattice, one margin, one total -- see docs/tiebreaker.md",
-        "generated_at_utc": generated_at.astimezone(UTC).isoformat(),
-        "model_id": model_id,
-    }
+    return initialize_total_move(
+        {
+            "schema_version": 1,
+            "game_id": guess.game_id,
+            "season": season,
+            "week": week,
+            "forecast_artifact": forecast_artifact,
+            "home": guess.home,
+            "away": guess.away,
+            "guess_home": guess.guess_home,
+            "guess_away": guess.guess_away,
+            "projected_total": guess.guess_home + guess.guess_away,
+            "market_total": guess.consensus.total_line,
+            "blended_total": guess.guess_total_line,
+            "served_total": guess.served_total,
+            "served_total_method": guess.served_total_method,
+            "comparison_total_blend_k01": guess.comparison_total_blend_k01,
+            "total_low_side_shade_points": guess.low_side_shade_points,
+            "total_low_side_shade_source": guess.low_side_shade_source,
+            "implied_margin": guess.guess_home - guess.guess_away,
+            "pick_side": guess.pick_side,
+            "lattice_centre_margin": (
+                guess.lattice_centre_margin
+                if guess.lattice_centre_margin is not None
+                else guess.guess_margin
+            ),
+            "pick_spread_line": guess.pick_spread_line,
+            "pick_cover_probability": guess.pick_cover_probability,
+            "pick_push_probability": guess.pick_push_probability,
+            "consistency_note": guess.consistency_note,
+            "method_note": "one lattice, one margin, one total -- see docs/tiebreaker.md",
+            "generated_at_utc": generated_at.astimezone(UTC).isoformat(),
+            "model_id": model_id,
+        }
+    )
 
 
 def _tiebreaker_card_line(guess: TiebreakerReport) -> str:

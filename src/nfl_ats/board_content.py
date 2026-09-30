@@ -3421,7 +3421,7 @@ def _load_tiebreaker_view(
 
     home = str(block.get("home") or "")
     away = str(block.get("away") or "")
-    market_total = _number(block.get("market_total"))
+    market_total = _number(block.get("current_median_total", block.get("market_total")))
     blended_total = _number(block.get("blended_total"))
     if not home or not away or market_total is None or blended_total is None:
         return _default_tiebreaker_view()
@@ -3438,7 +3438,12 @@ def _load_tiebreaker_view(
         implied_margin=_number(block.get("lattice_centre_margin", block.get("implied_margin"))),
         guess_home=guess_home,
         guess_away=guess_away,
-        note=TIEBREAKER_NUDGE_NOTE,
+        note=(
+            "The score guess follows changes in the market total before picks lock. "
+            "It stays consistent with our pick."
+            if block.get("total_move_status") == "adjusted"
+            else TIEBREAKER_NUDGE_NOTE
+        ),
     )
 
 
