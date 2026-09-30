@@ -19,6 +19,8 @@ Done = a change that beats that baseline out of sample, or each unit recorded.
 
 - Unit 3 DONE (docs/mod23_unit3.md, scripts/mod23_unit3.py, artifacts/mod23_unit3/): opponent-adjusted (leak-free additive, six pairs) replace 790-713 (-0.80), add 780-723 (-1.46), compact net 785-718 (-1.13, LL 0.6944, Brier 0.2506); all intervals cross zero; recorded unresolved_below_power x3.
 
+- Unit 4 DONE (docs/mod23_unit4.md, scripts/mod23_unit4.py, artifacts/mod23_unit4/): blend with compact_net, blend with unit 1 trimmed, shrink served; all 785-718 (-1.13, P>0 0.13-0.18), LL 0.6944/0.6928/0.6933, Brier 0.2506/0.2498/0.2501; every season chose the grid edge (w=0, s=0.25); recorded unresolved_below_power x3. unit3 main() now import-guarded.
+
 ## Tried (earlier, on the model alone or older profiles)
 - Recency weighting flat; 2011-2025 training no better; trees worse; market
   ratings (MOD-21) wrong sign; graph ratings never selected.
@@ -27,7 +29,7 @@ Done = a change that beats that baseline out of sample, or each unit recorded.
 - MOD-22 players-on-field was graded only as an add-on to the four-term card.
 
 ## Next
-- Unit 4 candidate: compact net rating gives better LL/Brier but not picks; try it as a probability input, or smaller-column arms.
+- Unit 5 candidate: declared finer grid at the edge (w 0..0.25, s 0.05..0.25) plus shrinking the residual without shrinking the home-side offset; test whether any served weight beats w=0 on MSE and picks.
 
 ## Open
 - Fit gain (MSE, log loss) does not convert to picks; consider grading on a smaller-model probability, not a pick swap.

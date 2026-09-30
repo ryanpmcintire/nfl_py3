@@ -239,4 +239,5 @@ def main():
     print(json.dumps(report, indent=2, default=str))
 
 
-main()
+if __name__ == "__main__":
+    main()
