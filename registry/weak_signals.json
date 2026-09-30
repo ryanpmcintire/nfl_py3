@@ -51036,6 +51036,62 @@
       "source": "docs/lead85_unit2.md",
       "standard_error": null
     },
+    "lead86-unit2-candidate-vs-served-accuracy": {
+      "category": "market",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "The full accuracy interval is negative for this specified workflow, not the broader regularization mechanism.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Price-filtered training workflow versus served LOSO: opener accuracy.",
+      "effect": -2.75019098549,
+      "effect_units": "accuracy_points",
+      "family": "lead86-unit2-filtered-regularization",
+      "interval": [
+        -4.2113323124,
+        -1.24315301972
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "After dropping conflicting sportsbook prices, this trial made fewer correct pool picks. Keep the current picks; the broader training idea remains open.",
+      "probability_positive": 0.0003,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1309,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead86_unit2.md",
+      "standard_error": null
+    },
+    "lead86-unit2-candidate-vs-served-brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible Brier closing ground established.",
+      "closing_ground": null,
+      "description": "Price-filtered training workflow versus served LOSO: opener brier.",
+      "effect": -0.000901410060267,
+      "effect_units": "brier_improvement",
+      "family": "lead86-unit2-filtered-regularization",
+      "interval": [
+        -0.00257271593288,
+        0.000615710049488
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "After dropping conflicting sportsbook prices, using their prices in training gave no clear forecast improvement. Keep the current pool picks.",
+      "probability_positive": 0.1343,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1309,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead86_unit2.md",
+      "standard_error": null
+    },
     "lead87_unit2_postseason_accuracy_points": {
       "category": "market",
       "classification": "unresolved_below_power",

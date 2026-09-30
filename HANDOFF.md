@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-30T00:22:02.224732+00:00`
+Refreshed at: `2026-09-30T00:22:26.720008+00:00`
 
 ## Start here
 
@@ -21,17 +21,16 @@ Refreshed at: `2026-09-30T00:22:02.224732+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `970056b1bac0` — LEAD-71 unit 4: market-implied lattice improves the combined-score guess
+- Baseline commit: `3692c97b6278` — LEAD-86 unit 2: the market penalty loses picks once prices are cleaned
 - Pending change set: 26 paths
   - ` M AGENTS.md`
   - ` M docs/agent_workflow.md`
-  - `M  docs/lanes/lead86.md`
-  - `A  docs/lead86_unit2.md`
-  - `A  scripts/lead86_unit2.py`
+  - `M  registry/weak_signals.json`
   - ` M src/nfl_ats/board_content.py`
   - ` M src/nfl_ats/cli_commands/publishing.py`
   - ` M src/nfl_ats/publishing.py`
   - ` M tests/test_cli.py`
+  - `?? docs/lanes/injury-timing-leakage-audit.md`
   - `?? docs/lanes/lead90.md`
   - `?? docs/lanes/lead91.md`
   - `?? docs/lanes/lead92.md`
@@ -43,6 +42,7 @@ Refreshed at: `2026-09-30T00:22:02.224732+00:00`
   - `?? registry/experiments/margin-backtest/20260927T134152Z.json`
   - `?? registry/experiments/margin-backtest/20260929T183944Z.json`
   - `?? registry/experiments/margin-predict/2026-week-03-20260927T134352Z.json`
+  - `?? registry/experiments/margin-predict/2026-week-03-20260929T184122Z.json`
   - ...and 6 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
