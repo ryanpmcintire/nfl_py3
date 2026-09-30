@@ -109,7 +109,9 @@ if not base["same_season_training_rows"].eq(0).all():
     raise ValueError("Calibration season overlap")
 joined = research_rows.merge(
     base[["game_id", "season", "base_home_probability"]],
-    on=["game_id", "season"], how="left", validate="one_to_one",
+    on=["game_id", "season"],
+    how="left",
+    validate="one_to_one",
 )
 if joined["base_home_probability"].isna().any():
     raise ValueError("Research population is not covered by this base")

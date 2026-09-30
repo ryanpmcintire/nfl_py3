@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-30T00:05:23.701800+00:00`
+Refreshed at: `2026-09-30T00:05:55.790797+00:00`
 
 ## Start here
 
@@ -21,17 +21,16 @@ Refreshed at: `2026-09-30T00:05:23.701800+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `9c0c6bfe6d26` — Sync LEAD-66..89, MOD-22 and XLG-09 roadmap rows; add research digest
-- Pending change set: 20 paths
+- Baseline commit: `2b874000c282` — Build fully season-held-out upstream forecasts
+- Pending change set: 19 paths
   - ` M AGENTS.md`
+  - `M  ROADMAP.md`
   - ` M docs/agent_workflow.md`
-  - ` M docs/lanes/ideation-2026-09-29c.md`
+  - `M  docs/lanes/ideation-2026-09-29c.md`
   - ` M docs/lanes/lead71.md`
   - ` M docs/lanes/lead75.md`
   - ` M docs/lanes/lead86.md`
-  - `M  docs/lanes/loso-base-artifact.md`
   - `M  docs/loso_base_artifact.md`
-  - `A  scripts/build_loso_upstream.py`
   - `?? docs/lanes/code-review-2026-09-29.md`
   - `?? docs/lanes/tiebreaker-total-move-serve.md`
   - `?? docs/lanes/windows-shell-popup.md`
