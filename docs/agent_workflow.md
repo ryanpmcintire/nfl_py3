@@ -52,15 +52,15 @@ tool guards and status integrations that enforce repository contracts.
 
 ## Explicit backlog sessions
 
-When the owner explicitly requests backlog work, the primary orchestrator keeps
-available subagents assigned to concrete bounded useful tasks while advancing
-its own root-owned work. Give each subagent the required context packet, review
-its return, and assign another independent authorized item within the current
-bounded backlog batch when one is available. Stop replenishing assignments when
-the batch reaches a clear stopping point or remaining work is blocked, dependent,
-destructive, outside scope, or requires new authority. Complete the batch and
-save a short handoff before starting a fresh thread. Do not create an automatic
-queue or an open-ended goal.
+When the owner explicitly requests backlog work, follow the requested scope,
+duration, concurrency, and cadence. Keep available subagents assigned to concrete
+useful tasks while advancing root-owned work. Give each subagent the required
+context packet, review its return, and refill completed assignments while
+independent authorized work remains. Automatic queues and open-ended work require
+an explicit owner request. Save verified checkpoints and a short handoff without
+treating a checkpoint as cancellation of requested continuous work. Stop affected
+work when the owner directs it or an actual blocker prevents safe progress, and
+state the blocker. Never create filler assignments to maintain a worker count.
 
 A commentary or status update does not complete backlog work. Carry each ready
 unit through review, applicable verification, lane and handoff refresh, commit,

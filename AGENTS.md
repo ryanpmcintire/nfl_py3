@@ -1,5 +1,16 @@
 # NFL ATS repository instructions
 
+## Headless Windows execution
+
+Use a launch path that actually hides console windows for every Windows shell
+command. Shell-level hidden flags and a successful exit do not verify that the
+outer launcher stayed hidden. If the owner reports popups, stop using the
+affected launch path immediately and use direct file-editing tools for already
+understood changes. Preserve shell access through mechanisms verified to be
+headless, and track the unresolved launcher in
+`docs/lanes/windows-shell-popup.md`; do not claim it is repaired without that
+verification.
+
 This file is the repository's normative agent policy. `docs/agents_history.md`
 is historical rationale, not an additional source of requirements. Conditional
 commands and session procedures live in `docs/agent_workflow.md`.
@@ -15,12 +26,13 @@ commands and session procedures live in `docs/agent_workflow.md`.
   do not trigger operational jobs, dashboard work, publication, or handoff.
 - Delegate with a small context packet naming files or functions, scope,
   constraints, and verification. Every coding packet says `no code comments`.
-- In an explicit backlog session, the primary orchestrator keeps available
-  subagents on concrete bounded useful work while progressing its own task.
-  Refill completed assignments within the current bounded backlog batch while
-  independent authorized work remains. Finish verification, commit, push, and a
-  short handoff at a clear stopping point before starting a fresh thread. Never
-  create automatic or open-ended goals.
+- In an explicit backlog session, follow the owner's stated scope, duration,
+  concurrency, and cadence while the primary orchestrator progresses its own
+  task. Keep available subagents on concrete bounded useful work and refill
+  completed assignments while independent authorized work remains. Create an
+  automatic queue or open-ended goal only when the owner explicitly requests
+  it. Save verified checkpoints at clear stopping points and honor every stop
+  instruction.
 - Do not hardcode changing repository counts, current model names, or agent
   tiers in general policy.
 
