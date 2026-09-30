@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-30T00:01:48.436135+00:00`
+Refreshed at: `2026-09-30T00:05:23.701800+00:00`
 
 ## Start here
 
@@ -21,16 +21,17 @@ Refreshed at: `2026-09-30T00:01:48.436135+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `6a1b7f5ccb1d` — LEAD-88 unit 3: tiebreaker guess improves when it follows the total move
+- Baseline commit: `9c0c6bfe6d26` — Sync LEAD-66..89, MOD-22 and XLG-09 roadmap rows; add research digest
 - Pending change set: 20 paths
   - ` M AGENTS.md`
-  - `M  ROADMAP.md`
   - ` M docs/agent_workflow.md`
   - ` M docs/lanes/ideation-2026-09-29c.md`
+  - ` M docs/lanes/lead71.md`
+  - ` M docs/lanes/lead75.md`
   - ` M docs/lanes/lead86.md`
-  - ` M docs/lanes/loso-base-artifact.md`
-  - `A  docs/lanes/roadmap-sync-2026-09-29.md`
-  - `A  docs/research_digest_2026-09-29.md`
+  - `M  docs/lanes/loso-base-artifact.md`
+  - `M  docs/loso_base_artifact.md`
+  - `A  scripts/build_loso_upstream.py`
   - `?? docs/lanes/code-review-2026-09-29.md`
   - `?? docs/lanes/tiebreaker-total-move-serve.md`
   - `?? docs/lanes/windows-shell-popup.md`
@@ -41,7 +42,6 @@ Refreshed at: `2026-09-30T00:01:48.436135+00:00`
   - `?? registry/experiments/opener-evaluation/20260927T134738Z.json`
   - `?? registry/experiments/waterfall-feed/20260927T134851Z.json`
   - `?? registry/experiments/waterfall-feed/20260929T184553Z.json`
-  - `?? scripts/build_loso_upstream.py`
   - `?? scripts/lead86_unit2.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.

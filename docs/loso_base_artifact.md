@@ -1,5 +1,7 @@
 # Shared four-term LOSO base
 
+**Measured:** the new [upstream LOSO artifact](#upstream-loso-artifact) now refits the margin model and learned input stages. The original calibration-only artifact below remains separately documented.
+
 **Measured:** `artifacts/loso_base/20260929T232711656489Z/` contains
 `predictions.parquet` and `metadata.json`, built by
 `scripts/build_loso_base.py`. All 1,503 eligible regular-season opener games from
@@ -177,3 +179,148 @@ remain negative. Model-logit slopes range 0.177916–0.341480 and availability s
 The source fit-table SHA-256 is
 `0490c806caf9e9707abe28f3e3e42f85df312084ae52d9d1588d173bba5b01e5`.
 The concise run log is `tests/scratch/codex/build_loso_base.log`.
+
+## Upstream LOSO artifact
+
+**Measured:** `artifacts/loso_upstream/20260929T235904133782Z/` contains
+`predictions.parquet` and `metadata.json`, built by
+`scripts/build_loso_upstream.py`. It covers all 1,537 frozen opener games,
+including 34 pushes; calibration and accuracy use the 1,503 decisive games.
+The feature table SHA-256 is
+`a3eedb0323818f95b029047c5b80de3ce8d458a48b82ae4489c1fb70d16d5685`,
+matching the active model. The opener source is
+`artifacts/opener_evaluation/20260929T192743Z/per_game.parquet`.
+Metadata hashes every source, the builder, and the saved predictions.
+
+**Measured:** six outer calibration folds exclude their prediction season.
+Each calibration training row comes from an inner margin fit excluding both
+that row's season and the outer season. The served margin fitter uses ridge
+alpha 10, the `weak_stack` features, and its chronological 80/20 residual split.
+Its training pool includes all available completed regular-season feature rows
+through 2025 except the excluded seasons. The line passed to each prediction
+is the frozen historical opener.
+
+**Measured:** the discrete line-conditional reader, fitted location correction,
+and learned protection quartiles also exclude the relevant seasons. Location
+training points use another level of cross-fitting; 41 distinct excluded-season
+sets cover these dependencies. Existing fixed flags and movement inputs were
+reproduced exactly before the replay; the original protection flags were also
+reproduced before refitting their thresholds. Every margin and calibration
+training-season check passed, as did the discrete, location, and protection
+checks. Independent saved-row verification reconstructed the four-term
+probabilities from fold coefficients with maximum error 1.11e-16.
+
+**Measured:** results below use the same decisive opener rows. Intervals are
+95% season-block bootstrap intervals, 10,000 draws, seed 20260929.
+
+| Probability | Record | Accuracy, 95% interval | Log loss, 95% interval | Brier |
+| --- | --- | --- | --- | --- |
+| Upstream LOSO four-term | 865–638 | 57.552% [56.223, 58.721] | 0.681819 [0.678980, 0.684150] | 0.244338 |
+| Served evaluation | 863–640 | 57.418% [56.254, 58.784] | 0.682774 [0.680279, 0.685145] | 0.244838 |
+| Upstream model only | 785–718 | 52.229% [51.057, 53.254] | 0.694954 [0.692731, 0.696769] | 0.250823 |
+| Even market | No directional pick | — | 0.693147 | 0.250000 |
+
+**Measured:** pooled calibration-training accuracy is 57.312%, log loss
+0.680746, and Brier 0.243848 over 7,515 fold-training appearances. Held-out minus
+training gaps are +0.240 accuracy points, +0.001073 log loss, and +0.000490 Brier.
+Against the served evaluation, the paired accuracy gain is +0.133 points
+[-1.361, +1.563], probability_positive 0.55925; log-loss reduction is 0.000955
+[-0.000076, +0.002103], probability_positive 0.9632. These are baseline sanity
+checks and do not authorize serving or settle a research mechanism.
+
+| Held-out season | Decisive games | Wins | Accuracy | Log loss |
+| --- | --- | --- | --- | --- |
+| 2020 | 220 | 120 | 54.545% | 0.682637 |
+| 2021 | 236 | 134 | 56.780% | 0.685498 |
+| 2022 | 248 | 143 | 57.661% | 0.680401 |
+| 2023 | 266 | 158 | 59.398% | 0.675500 |
+| 2024 | 266 | 158 | 59.398% | 0.683979 |
+| 2025 | 267 | 152 | 56.929% | 0.683353 |
+
+**Measured:** natural-scale coefficients below use an intercept and the four
+declared terms. Exact values, standardizers, per-fold training metrics, and gaps
+are saved in `calibration_folds`. All four slopes remain positive; coefficient
+standard deviations are 0.0913, 0.0210, 0.0176, and 0.0208 respectively.
+
+| Fold | Intercept | Model logit | Composition | Move | Available |
+| --- | --- | --- | --- | --- | --- |
+| 2020 | -0.14904 | 0.39681 | 0.25217 | 0.22271 | 0.14816 |
+| 2021 | -0.11752 | 0.24557 | 0.27852 | 0.22525 | 0.08912 |
+| 2022 | -0.15449 | 0.55769 | 0.24628 | 0.21665 | 0.11234 |
+| 2023 | -0.13843 | 0.43128 | 0.24493 | 0.22888 | 0.08734 |
+| 2024 | -0.12472 | 0.39990 | 0.26832 | 0.24818 | 0.09558 |
+| 2025 | -0.13463 | 0.38260 | 0.30431 | 0.18901 | 0.11214 |
+
+**Measured:** fixed home-probability reliability bins:
+
+| Probability band | Games | Mean probability | Home-cover rate |
+| --- | --- | --- | --- |
+| [0, .40) | 144 | 35.819% | 38.194% |
+| [.40, .45) | 260 | 42.821% | 45.000% |
+| [.45, .50) | 447 | 47.591% | 43.400% |
+| [.50, .55) | 326 | 52.561% | 53.681% |
+| [.55, .60) | 187 | 57.004% | 60.963% |
+| [.60, 1] | 139 | 64.428% | 65.468% |
+
+**Measured:** the declared diagnostic family has 53 summaries/cells: four arms
+across overall, six seasons, and six reliability bins, plus pooled training.
+The fixed fit inventory is 41 margin-model calls (82 ridge estimator fits,
+including residual-split estimators), six four-term fits, 642 location fits
+with five predefined buckets each, and 1,284 protection quartile-pair
+calculations. No candidate or parameter was selected from these results.
+
+### Loading and limits
+
+Pin this directory explicitly. `base_home_probability` and
+`four_term_probability` are identical calibrated home probabilities conditional
+on no push. `model_logit` is the season-held-out discrete opener input.
+`push_probability` is upstream discrete push mass; the two upstream
+unconditional masses are `home_cover_probability_excluding_push` and
+`home_loss_probability`, whose sum with push mass equals one.
+Push rows have null `home_covered` and `base_correct`.
+Training-season columns and zero overlap counts accompany every row.
+
+```python
+import hashlib
+import json
+from pathlib import Path
+
+import pandas as pd
+
+root = Path("artifacts/loso_upstream/20260929T235904133782Z")
+metadata = json.loads((root / "metadata.json").read_text())
+path = root / "predictions.parquet"
+if hashlib.sha256(path.read_bytes()).hexdigest() != metadata["predictions_sha256"]:
+    raise ValueError("Upstream prediction artifact hash mismatch")
+base = pd.read_parquet(path)
+if base.duplicated(["game_id", "season"]).any():
+    raise ValueError("Duplicate upstream predictions")
+for column in ("upstream_training_seasons", "base_training_seasons"):
+    if any(str(s) in training.split(",") for s, training in zip(base.season, base[column])):
+        raise ValueError("Same-season training")
+joined = research_rows.merge(base, on=["game_id", "season"], how="left", validate="one_to_one")
+if joined["base_home_probability"].isna().any():
+    raise ValueError("Research population exceeds upstream coverage")
+```
+
+**Read:** `docs/lead89_unit1.md:91` still requires stage-matched inputs.
+**Inferred:** this artifact establishes exclusion in the refitted margin,
+residual, calibration, location, discrete, and protection-threshold stages.
+It does not certify the frozen feature builder's internal learned inputs,
+feature-selection independence, or Tuesday/Thursday availability of Sunday
+movement. Earlier same-season games may supply legitimate pregame rolling
+covariates. Later seasons can train earlier LOSO folds; this is not a
+chronological prospective evaluation. LEAD-89's stage-availability gate and
+each consumer's fold-specific fitting obligations remain.
+
+**Measured:** the real command and both required lint checks exited 0:
+
+```bash
+UV_CACHE_DIR=tests/scratch/codex/loso_upstream_uv_cache .tools/uv.exe run --no-sync python scripts/build_loso_upstream.py
+.tools/uv.exe run --no-sync ruff check scripts/build_loso_upstream.py
+.tools/uv.exe run --no-sync ruff format --check scripts/build_loso_upstream.py
+```
+
+The replay caps numerical and Arrow threads at two and runs one fit at a time.
+The execution log is `tests/scratch/codex/loso_upstream_run.log`. No source modules,
+tests, served artifacts, registries, or Git history were changed.
