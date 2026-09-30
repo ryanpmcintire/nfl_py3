@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-30T11:02:39.976073+00:00`
+Refreshed at: `2026-09-30T11:22:41.549454+00:00`
 
 ## Start here
 
@@ -21,18 +21,29 @@ Refreshed at: `2026-09-30T11:02:39.976073+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `24cc63154690` — Record the open injury-timing audit and the Codex stop
-- Pending change set: 10 paths
-  - `M  AGENTS.md`
-  - `M  docs/agent_workflow.md`
-  - `A  docs/lanes/windows-shell-popup.md`
-  - `A  registry/experiments/margin-backtest/20260927T134152Z.json`
-  - `A  registry/experiments/margin-backtest/20260929T183944Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-03-20260927T134352Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-03-20260929T184122Z.json`
-  - `A  registry/experiments/opener-evaluation/20260927T134738Z.json`
-  - `A  registry/experiments/waterfall-feed/20260927T134851Z.json`
-  - `A  registry/experiments/waterfall-feed/20260929T184553Z.json`
+- Baseline commit: `211157c382fd` — Record headless-shell policy, popup lane, and pending experiment registry entries
+- Pending change set: 41 paths
+  - `M  ROADMAP.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - `A  docs/injury_timing_audit.md`
+  - `M  docs/lanes/backlog-fleet-2026-09-29.md`
+  - `A  docs/lanes/done/lead90.md`
+  - `R  docs/lanes/lead91.md -> docs/lanes/done/lead91.md`
+  - `A  docs/lanes/done/lead92.md`
+  - `A  docs/lanes/done/lead93.md`
+  - `A  docs/lanes/done/lead94.md`
+  - `A  docs/lanes/done/lead95.md`
+  - `A  docs/lanes/done/lead96.md`
+  - `A  docs/lanes/done/lead97.md`
+  - `M  docs/lanes/injury-timing-leakage-audit.md`
+  - `D  docs/lanes/lead90.md`
+  - `D  docs/lanes/lead94.md`
+  - `A  docs/lead90_unit1.md`
+  - `A  docs/lead91_unit1.md`
+  - `R  docs/lanes/lead92.md -> docs/lead92_protocol.md`
+  - ...and 21 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

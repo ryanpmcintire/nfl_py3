@@ -65,6 +65,7 @@ EFFECT_UNITS = (
     "log_loss_improvement",
     "rps_improvement",
     "payout_first_pp",
+    "pool_points_per_week",
     "elapsed_seconds_bias",
 )
 

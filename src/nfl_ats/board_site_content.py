@@ -1066,6 +1066,7 @@ _RECENT_ACTIVITY_EFFECT_UNIT_WORDS: dict[str, str] = {
     "correlation": "correlation",
     "elapsed_seconds_bias": "seconds of difference between simulated and real play times",
     "payout_first_pp": "percentage points of simulated chance of finishing first",
+    "pool_points_per_week": "pool points per week",
 }
 
 

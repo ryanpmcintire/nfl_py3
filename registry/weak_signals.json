@@ -45554,6 +45554,34 @@
       "source": "artifacts/injury_signal_on_refresh_card/20260909T231954Z/metadata.json",
       "standard_error": null
     },
+    "injury_timing_availability_repair": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "One declared repair comparison; interval straddles zero; log loss also unresolved; no refuted mechanism or powered control",
+      "closing_ground": null,
+      "description": "Served pick model with every injury-report input removed, minus the same model with them; 2020-2025 opener; 1 declared repair comparison",
+      "effect": -0.1996007984,
+      "effect_units": "accuracy_points",
+      "family": "injury_timing_audit",
+      "interval": [
+        -1.2743553328,
+        0.81083824014
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Injury news that only shows up late in the week is worth about 0.2 points of picks at most in the past, far too small to tell apart from luck. Taking it out leaves the record at 862-641 instead of 865-638, so the past record does not depend on knowing injuries too early.",
+      "probability_positive": 0.34075,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/injury_timing_audit.md",
+      "standard_error": 0.53171
+    },
     "injury_value_lost_gradient": {
       "category": "health",
       "classification": "unresolved_below_power",
@@ -51287,6 +51315,4710 @@
       ],
       "source": "docs/lead88_unit3.md",
       "standard_error": 0.0600535346539
+    },
+    "lead90_unit1_2023-accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 605 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fitting the whole score spread near the pool line versus the usual four-term calculation: 2023 accuracy_points",
+      "effect": -1.71673819742,
+      "effect_units": "accuracy_points",
+      "family": "lead90_unit1_605_looks",
+      "interval": [
+        -3.94736842105,
+        0.431034482759
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to care most about scores right around the pool line instead of far-off blowouts. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.0601,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead90_unit1.md",
+      "standard_error": null
+    },
+    "lead90_unit1_2023-brier": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 605 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fitting the whole score spread near the pool line versus the usual four-term calculation: 2023 brier",
+      "effect": -0.000306595845908,
+      "effect_units": "brier_improvement",
+      "family": "lead90_unit1_605_looks",
+      "interval": [
+        -0.00050334228612,
+        -0.000102448418794
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to care most about scores right around the pool line instead of far-off blowouts. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.0021,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead90_unit1.md",
+      "standard_error": null
+    },
+    "lead90_unit1_2023-local_rps": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 605 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fitting the whole score spread near the pool line versus the usual four-term calculation: 2023 local_rps",
+      "effect": -0.00147249487991,
+      "effect_units": "rps_improvement",
+      "family": "lead90_unit1_605_looks",
+      "interval": [
+        -0.00601247181991,
+        0.0028044335735
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to care most about scores right around the pool line instead of far-off blowouts. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.2568,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead90_unit1.md",
+      "standard_error": null
+    },
+    "lead90_unit1_2023-log_loss": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 605 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fitting the whole score spread near the pool line versus the usual four-term calculation: 2023 log_loss",
+      "effect": -0.00061393397695,
+      "effect_units": "log_loss_improvement",
+      "family": "lead90_unit1_605_looks",
+      "interval": [
+        -0.00100803405531,
+        -0.000205137476738
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to care most about scores right around the pool line instead of far-off blowouts. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.0021,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead90_unit1.md",
+      "standard_error": null
+    },
+    "lead90_unit1_2023-rps": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 605 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fitting the whole score spread near the pool line versus the usual four-term calculation: 2023 rps",
+      "effect": -0.264810240142,
+      "effect_units": "rps_improvement",
+      "family": "lead90_unit1_605_looks",
+      "interval": [
+        -0.491446892877,
+        -0.0580818204913
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to care most about scores right around the pool line instead of far-off blowouts. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.0046,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead90_unit1.md",
+      "standard_error": null
+    },
+    "lead90_unit1_2024-accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 605 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fitting the whole score spread near the pool line versus the usual four-term calculation: 2024 accuracy_points",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "lead90_unit1_605_looks",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to care most about scores right around the pool line instead of far-off blowouts. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead90_unit1.md",
+      "standard_error": null
+    },
+    "lead90_unit1_2024-brier": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 605 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fitting the whole score spread near the pool line versus the usual four-term calculation: 2024 brier",
+      "effect": 0.0,
+      "effect_units": "brier_improvement",
+      "family": "lead90_unit1_605_looks",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to care most about scores right around the pool line instead of far-off blowouts. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead90_unit1.md",
+      "standard_error": null
+    },
+    "lead90_unit1_2024-local_rps": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 605 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fitting the whole score spread near the pool line versus the usual four-term calculation: 2024 local_rps",
+      "effect": 0.00432077590327,
+      "effect_units": "rps_improvement",
+      "family": "lead90_unit1_605_looks",
+      "interval": [
+        0.000883055535884,
+        0.00764472185378
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to care most about scores right around the pool line instead of far-off blowouts. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.9932,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead90_unit1.md",
+      "standard_error": null
+    },
+    "lead90_unit1_2024-log_loss": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 605 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fitting the whole score spread near the pool line versus the usual four-term calculation: 2024 log_loss",
+      "effect": 0.0,
+      "effect_units": "log_loss_improvement",
+      "family": "lead90_unit1_605_looks",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to care most about scores right around the pool line instead of far-off blowouts. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead90_unit1.md",
+      "standard_error": null
+    },
+    "lead90_unit1_2024-rps": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 605 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fitting the whole score spread near the pool line versus the usual four-term calculation: 2024 rps",
+      "effect": 0.101080765726,
+      "effect_units": "rps_improvement",
+      "family": "lead90_unit1_605_looks",
+      "interval": [
+        0.00764510920701,
+        0.197201361066
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to care most about scores right around the pool line instead of far-off blowouts. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.9833,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead90_unit1.md",
+      "standard_error": null
+    },
+    "lead90_unit1_2025-accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 605 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fitting the whole score spread near the pool line versus the usual four-term calculation: 2025 accuracy_points",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "lead90_unit1_605_looks",
+      "interval": [
+        -1.74672489083,
+        1.70212765957
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to care most about scores right around the pool line instead of far-off blowouts. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.50035,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead90_unit1.md",
+      "standard_error": null
+    },
+    "lead90_unit1_2025-brier": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 605 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fitting the whole score spread near the pool line versus the usual four-term calculation: 2025 brier",
+      "effect": 0.000191397225387,
+      "effect_units": "brier_improvement",
+      "family": "lead90_unit1_605_looks",
+      "interval": [
+        -0.000251865220854,
+        0.000625774510886
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to care most about scores right around the pool line instead of far-off blowouts. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.8047,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead90_unit1.md",
+      "standard_error": null
+    },
+    "lead90_unit1_2025-local_rps": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 605 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fitting the whole score spread near the pool line versus the usual four-term calculation: 2025 local_rps",
+      "effect": 0.000736487859893,
+      "effect_units": "rps_improvement",
+      "family": "lead90_unit1_605_looks",
+      "interval": [
+        -0.000739096452159,
+        0.00237627852287
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to care most about scores right around the pool line instead of far-off blowouts. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.8239,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead90_unit1.md",
+      "standard_error": null
+    },
+    "lead90_unit1_2025-log_loss": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 605 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fitting the whole score spread near the pool line versus the usual four-term calculation: 2025 log_loss",
+      "effect": 0.000394095666472,
+      "effect_units": "log_loss_improvement",
+      "family": "lead90_unit1_605_looks",
+      "interval": [
+        -0.000504732185815,
+        0.00128590765245
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to care most about scores right around the pool line instead of far-off blowouts. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.8045,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead90_unit1.md",
+      "standard_error": null
+    },
+    "lead90_unit1_2025-rps": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 605 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fitting the whole score spread near the pool line versus the usual four-term calculation: 2025 rps",
+      "effect": 0.0239562050447,
+      "effect_units": "rps_improvement",
+      "family": "lead90_unit1_605_looks",
+      "interval": [
+        -0.026422562011,
+        0.0795920996223
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to care most about scores right around the pool line instead of far-off blowouts. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.813,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead90_unit1.md",
+      "standard_error": null
+    },
+    "lead90_unit1_pooled-accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 605 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fitting the whole score spread near the pool line versus the usual four-term calculation: pooled accuracy_points",
+      "effect": -0.573888091822,
+      "effect_units": "accuracy_points",
+      "family": "lead90_unit1_605_looks",
+      "interval": [
+        -2.01446105364,
+        0.56657223796
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to care most about scores right around the pool line instead of far-off blowouts. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.20095,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead90_unit1.md",
+      "standard_error": null
+    },
+    "lead90_unit1_pooled-brier": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 605 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fitting the whole score spread near the pool line versus the usual four-term calculation: pooled brier",
+      "effect": -3.8784326839e-05,
+      "effect_units": "brier_improvement",
+      "family": "lead90_unit1_605_looks",
+      "interval": [
+        -0.000307850125186,
+        0.000262450268741
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to care most about scores right around the pool line instead of far-off blowouts. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.3824,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead90_unit1.md",
+      "standard_error": null
+    },
+    "lead90_unit1_pooled-local_rps": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 605 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fitting the whole score spread near the pool line versus the usual four-term calculation: pooled local_rps",
+      "effect": 0.00119182914772,
+      "effect_units": "rps_improvement",
+      "family": "lead90_unit1_605_looks",
+      "interval": [
+        -0.00212077853022,
+        0.0044789589475
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to care most about scores right around the pool line instead of far-off blowouts. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.7629,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead90_unit1.md",
+      "standard_error": null
+    },
+    "lead90_unit1_pooled-log_loss": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 605 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fitting the whole score spread near the pool line versus the usual four-term calculation: pooled log_loss",
+      "effect": -7.40551248321e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "lead90_unit1_605_looks",
+      "interval": [
+        -0.000616940124831,
+        0.000540103773051
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to care most about scores right around the pool line instead of far-off blowouts. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.3865,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead90_unit1.md",
+      "standard_error": null
+    },
+    "lead90_unit1_pooled-rps": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 605 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fitting the whole score spread near the pool line versus the usual four-term calculation: pooled rps",
+      "effect": -0.0469955245875,
+      "effect_units": "rps_improvement",
+      "family": "lead90_unit1_605_looks",
+      "interval": [
+        -0.265258245433,
+        0.108088187267
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to care most about scores right around the pool line instead of far-off blowouts. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.3636,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead90_unit1.md",
+      "standard_error": null
+    },
+    "lead91_unit1_2023-accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 601 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fit for the hardest season versus the usual four-term calculation: 2023",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "lead91_unit1_601_looks",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This gives the hardest training season more say in the pick calculation. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead91_unit1.md",
+      "standard_error": null
+    },
+    "lead91_unit1_2023-brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 601 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fit for the hardest season versus the usual four-term calculation: 2023",
+      "effect": -2.36919095453e-11,
+      "effect_units": "brier_improvement",
+      "family": "lead91_unit1_601_looks",
+      "interval": [
+        -4.18835537086e-10,
+        3.50934095672e-10
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This gives the hardest training season more say in the pick calculation. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.44875,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead91_unit1.md",
+      "standard_error": null
+    },
+    "lead91_unit1_2023-log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 601 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fit for the hardest season versus the usual four-term calculation: 2023",
+      "effect": -4.72426542331e-11,
+      "effect_units": "log_loss_improvement",
+      "family": "lead91_unit1_601_looks",
+      "interval": [
+        -8.37916394603e-10,
+        7.02703029098e-10
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This gives the hardest training season more say in the pick calculation. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.449,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead91_unit1.md",
+      "standard_error": null
+    },
+    "lead91_unit1_2023-rps_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 601 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fit for the hardest season versus the usual four-term calculation: 2023",
+      "effect": 7.49254169818e-09,
+      "effect_units": "rps_improvement",
+      "family": "lead91_unit1_601_looks",
+      "interval": [
+        2.20031737275e-09,
+        1.3111652053e-08
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This gives the hardest training season more say in the pick calculation. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.9975,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead91_unit1.md",
+      "standard_error": null
+    },
+    "lead91_unit1_2023-worst_season_log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 601 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fit for the hardest season versus the usual four-term calculation: 2023",
+      "effect": -4.72425432108e-11,
+      "effect_units": "log_loss_improvement",
+      "family": "lead91_unit1_601_looks",
+      "interval": [
+        -8.37916394603e-10,
+        7.02703029098e-10
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This gives the hardest training season more say in the pick calculation. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.449,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead91_unit1.md",
+      "standard_error": null
+    },
+    "lead91_unit1_2024-accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 601 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fit for the hardest season versus the usual four-term calculation: 2024",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "lead91_unit1_601_looks",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This gives the hardest training season more say in the pick calculation. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead91_unit1.md",
+      "standard_error": null
+    },
+    "lead91_unit1_2024-brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 601 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fit for the hardest season versus the usual four-term calculation: 2024",
+      "effect": -0.0,
+      "effect_units": "brier_improvement",
+      "family": "lead91_unit1_601_looks",
+      "interval": [
+        -0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This gives the hardest training season more say in the pick calculation. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead91_unit1.md",
+      "standard_error": null
+    },
+    "lead91_unit1_2024-log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 601 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fit for the hardest season versus the usual four-term calculation: 2024",
+      "effect": -0.0,
+      "effect_units": "log_loss_improvement",
+      "family": "lead91_unit1_601_looks",
+      "interval": [
+        -0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This gives the hardest training season more say in the pick calculation. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead91_unit1.md",
+      "standard_error": null
+    },
+    "lead91_unit1_2024-rps_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 601 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fit for the hardest season versus the usual four-term calculation: 2024",
+      "effect": -0.0,
+      "effect_units": "rps_improvement",
+      "family": "lead91_unit1_601_looks",
+      "interval": [
+        -0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This gives the hardest training season more say in the pick calculation. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead91_unit1.md",
+      "standard_error": null
+    },
+    "lead91_unit1_2024-worst_season_log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 601 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fit for the hardest season versus the usual four-term calculation: 2024",
+      "effect": -0.0,
+      "effect_units": "log_loss_improvement",
+      "family": "lead91_unit1_601_looks",
+      "interval": [
+        -0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This gives the hardest training season more say in the pick calculation. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead91_unit1.md",
+      "standard_error": null
+    },
+    "lead91_unit1_2025-accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 601 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fit for the hardest season versus the usual four-term calculation: 2025",
+      "effect": -4.31034482759,
+      "effect_units": "accuracy_points",
+      "family": "lead91_unit1_601_looks",
+      "interval": [
+        -8.62068965517,
+        -0.420168067227
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This gives the hardest training season more say in the pick calculation. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.0166,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead91_unit1.md",
+      "standard_error": null
+    },
+    "lead91_unit1_2025-brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 601 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fit for the hardest season versus the usual four-term calculation: 2025",
+      "effect": 0.0014138669508,
+      "effect_units": "brier_improvement",
+      "family": "lead91_unit1_601_looks",
+      "interval": [
+        -0.00345650356064,
+        0.00689891148475
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This gives the hardest training season more say in the pick calculation. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.6942,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead91_unit1.md",
+      "standard_error": null
+    },
+    "lead91_unit1_2025-log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 601 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fit for the hardest season versus the usual four-term calculation: 2025",
+      "effect": 0.00342529073766,
+      "effect_units": "log_loss_improvement",
+      "family": "lead91_unit1_601_looks",
+      "interval": [
+        -0.00716005824717,
+        0.0157739375672
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This gives the hardest training season more say in the pick calculation. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.713,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead91_unit1.md",
+      "standard_error": null
+    },
+    "lead91_unit1_2025-rps_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 601 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fit for the hardest season versus the usual four-term calculation: 2025",
+      "effect": 0.0418007460124,
+      "effect_units": "rps_improvement",
+      "family": "lead91_unit1_601_looks",
+      "interval": [
+        -0.0150022092958,
+        0.105158141516
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This gives the hardest training season more say in the pick calculation. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.9202,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead91_unit1.md",
+      "standard_error": null
+    },
+    "lead91_unit1_2025-worst_season_log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 601 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fit for the hardest season versus the usual four-term calculation: 2025",
+      "effect": 0.00342529073766,
+      "effect_units": "log_loss_improvement",
+      "family": "lead91_unit1_601_looks",
+      "interval": [
+        -0.00716005824717,
+        0.0157739375672
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This gives the hardest training season more say in the pick calculation. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.713,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead91_unit1.md",
+      "standard_error": null
+    },
+    "lead91_unit1_pooled-accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 601 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fit for the hardest season versus the usual four-term calculation: pooled",
+      "effect": -1.43472022956,
+      "effect_units": "accuracy_points",
+      "family": "lead91_unit1_601_looks",
+      "interval": [
+        -4.55882352941,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This gives the hardest training season more say in the pick calculation. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.152,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead91_unit1.md",
+      "standard_error": null
+    },
+    "lead91_unit1_pooled-brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 601 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fit for the hardest season versus the usual four-term calculation: pooled",
+      "effect": 0.000470612807843,
+      "effect_units": "brier_improvement",
+      "family": "lead91_unit1_601_looks",
+      "interval": [
+        -0.00108703142412,
+        0.00282260689032
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This gives the hardest training season more say in the pick calculation. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.6393,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead91_unit1.md",
+      "standard_error": null
+    },
+    "lead91_unit1_pooled-log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 601 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fit for the hardest season versus the usual four-term calculation: pooled",
+      "effect": 0.00114012545212,
+      "effect_units": "log_loss_improvement",
+      "family": "lead91_unit1_601_looks",
+      "interval": [
+        -0.00220455627288,
+        0.00644580034753
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This gives the hardest training season more say in the pick calculation. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.6537,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead91_unit1.md",
+      "standard_error": null
+    },
+    "lead91_unit1_pooled-rps_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 601 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fit for the hardest season versus the usual four-term calculation: pooled",
+      "effect": 0.0139135937168,
+      "effect_units": "rps_improvement",
+      "family": "lead91_unit1_601_looks",
+      "interval": [
+        -0.00250124484781,
+        0.0506974388317
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This gives the hardest training season more say in the pick calculation. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.93985,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead91_unit1.md",
+      "standard_error": null
+    },
+    "lead91_unit1_pooled-worst_season_log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 601 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fit for the hardest season versus the usual four-term calculation: pooled",
+      "effect": -0.0,
+      "effect_units": "log_loss_improvement",
+      "family": "lead91_unit1_601_looks",
+      "interval": [
+        -0.00640725893792,
+        0.00358508040566
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This gives the hardest training season more say in the pick calculation. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.48215,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead91_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_2023_accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: 2023",
+      "effect": 0.429184549356,
+      "effect_units": "accuracy_points",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        -0.892857142857,
+        1.72413793103
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.71665,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_2023_brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: 2023",
+      "effect": -1.33572538364e-05,
+      "effect_units": "brier_improvement",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        -5.75896682096e-05,
+        3.44857497169e-05
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.2776,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_2023_log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: 2023",
+      "effect": -2.66709129713e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        -0.000115219178069,
+        6.9093149542e-05
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.2782,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_2023_nominee_brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: 2023",
+      "effect": 2.05749299764e-05,
+      "effect_units": "brier_improvement",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        -0.000191126991015,
+        0.000236399776279
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.5684,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_2023_pool_points_per_week": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: 2023",
+      "effect": 0.0,
+      "effect_units": "pool_points_per_week",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_2023_rps_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: 2023",
+      "effect": 0.00110596696045,
+      "effect_units": "rps_improvement",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        0.000191948601016,
+        0.00210785461422
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.9934,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_2024_accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: 2024",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_2024_brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: 2024",
+      "effect": -0.0,
+      "effect_units": "brier_improvement",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        -0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_2024_log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: 2024",
+      "effect": -0.0,
+      "effect_units": "log_loss_improvement",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        -0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_2024_nominee_brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: 2024",
+      "effect": -0.0,
+      "effect_units": "brier_improvement",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        -0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_2024_pool_points_per_week": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: 2024",
+      "effect": 0.0,
+      "effect_units": "pool_points_per_week",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_2024_rps_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: 2024",
+      "effect": -0.0,
+      "effect_units": "rps_improvement",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        -0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_2025_accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: 2025",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        -1.29310344828,
+        1.2987012987
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.4994,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_2025_brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: 2025",
+      "effect": -2.33649965378e-05,
+      "effect_units": "brier_improvement",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        -0.000376162773204,
+        0.000365568529551
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.4367,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_2025_log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: 2025",
+      "effect": -4.11532358817e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        -0.000783182898111,
+        0.000784049890724
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.4456,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_2025_nominee_brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: 2025",
+      "effect": -0.00408609851276,
+      "effect_units": "brier_improvement",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        -0.0132816749496,
+        0.00105451910854
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.0938,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_2025_pool_points_per_week": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: 2025",
+      "effect": -0.0277777777778,
+      "effect_units": "pool_points_per_week",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        -0.0833333333333,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.1806,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_2025_rps_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: 2025",
+      "effect": -0.00257321467337,
+      "effect_units": "rps_improvement",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        -0.00729446487043,
+        0.00282894256162
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.1559,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_pooled_accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: pooled",
+      "effect": 0.143472022956,
+      "effect_units": "accuracy_points",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        -0.441176470588,
+        0.860832137733
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.65305,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_pooled_brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: pooled",
+      "effect": -1.22423519953e-05,
+      "effect_units": "brier_improvement",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        -0.000144366709961,
+        0.000124160091312
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.37435,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_pooled_log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: pooled",
+      "effect": -2.261387869e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        -0.000299395115779,
+        0.00026909096707
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.37975,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_pooled_nominee_brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: pooled",
+      "effect": -0.0014091231005,
+      "effect_units": "brier_improvement",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        -0.00531486727095,
+        0.000201165008128
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.21525,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_pooled_pool_points_per_week": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: pooled",
+      "effect": -0.00925925925926,
+      "effect_units": "pool_points_per_week",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        -0.037037037037,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.2399,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_pooled_rps_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: pooled",
+      "effect": -0.000486794121146,
+      "effect_units": "rps_improvement",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        -0.00332846602366,
+        0.00132538493595
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.42935,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead93_unit1_2023_accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "College-shaped uncertainty around the pool line versus the usual four-term calculation: 2023 accuracy_points",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "lead93_unit1_609_looks",
+      "interval": [
+        -2.18340611354,
+        2.5641025641
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This borrows how spread misses are shaped in college football to set how wide the pick calculation's uncertainty is, without using any college picks. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.48105,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead93_unit1.md",
+      "standard_error": null
+    },
+    "lead93_unit1_2023_brier": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "College-shaped uncertainty around the pool line versus the usual four-term calculation: 2023 brier",
+      "effect": 6.2848734384e-06,
+      "effect_units": "brier_improvement",
+      "family": "lead93_unit1_609_looks",
+      "interval": [
+        -5.01990686502e-05,
+        5.99600630813e-05
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This borrows how spread misses are shaped in college football to set how wide the pick calculation's uncertainty is, without using any college picks. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.6021,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead93_unit1.md",
+      "standard_error": null
+    },
+    "lead93_unit1_2023_log_loss": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "College-shaped uncertainty around the pool line versus the usual four-term calculation: 2023 log_loss",
+      "effect": 1.25088237711e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "lead93_unit1_609_looks",
+      "interval": [
+        -0.000100658551201,
+        0.000119998207559
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This borrows how spread misses are shaped in college football to set how wide the pick calculation's uncertainty is, without using any college picks. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.6022,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead93_unit1.md",
+      "standard_error": null
+    },
+    "lead93_unit1_2023_rps": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "College-shaped uncertainty around the pool line versus the usual four-term calculation: 2023 rps",
+      "effect": 0.000311899245983,
+      "effect_units": "rps_improvement",
+      "family": "lead93_unit1_609_looks",
+      "interval": [
+        -0.0366535048257,
+        0.0344576739283
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This borrows how spread misses are shaped in college football to set how wide the pick calculation's uncertainty is, without using any college picks. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.5149,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead93_unit1.md",
+      "standard_error": null
+    },
+    "lead93_unit1_2023_tail_rps": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "College-shaped uncertainty around the pool line versus the usual four-term calculation: 2023 tail_rps",
+      "effect": -0.0180107419325,
+      "effect_units": "rps_improvement",
+      "family": "lead93_unit1_609_looks",
+      "interval": [
+        -0.0274062264658,
+        -0.00957888669759
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This borrows how spread misses are shaped in college football to set how wide the pick calculation's uncertainty is, without using any college picks. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead93_unit1.md",
+      "standard_error": null
+    },
+    "lead93_unit1_2024_accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "College-shaped uncertainty around the pool line versus the usual four-term calculation: 2024 accuracy_points",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "lead93_unit1_609_looks",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This borrows how spread misses are shaped in college football to set how wide the pick calculation's uncertainty is, without using any college picks. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead93_unit1.md",
+      "standard_error": null
+    },
+    "lead93_unit1_2024_brier": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "College-shaped uncertainty around the pool line versus the usual four-term calculation: 2024 brier",
+      "effect": -0.0,
+      "effect_units": "brier_improvement",
+      "family": "lead93_unit1_609_looks",
+      "interval": [
+        -0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This borrows how spread misses are shaped in college football to set how wide the pick calculation's uncertainty is, without using any college picks. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead93_unit1.md",
+      "standard_error": null
+    },
+    "lead93_unit1_2024_log_loss": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "College-shaped uncertainty around the pool line versus the usual four-term calculation: 2024 log_loss",
+      "effect": -0.0,
+      "effect_units": "log_loss_improvement",
+      "family": "lead93_unit1_609_looks",
+      "interval": [
+        -0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This borrows how spread misses are shaped in college football to set how wide the pick calculation's uncertainty is, without using any college picks. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead93_unit1.md",
+      "standard_error": null
+    },
+    "lead93_unit1_2024_rps": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "College-shaped uncertainty around the pool line versus the usual four-term calculation: 2024 rps",
+      "effect": -0.0518580143351,
+      "effect_units": "rps_improvement",
+      "family": "lead93_unit1_609_looks",
+      "interval": [
+        -0.0724216477946,
+        -0.0315266232768
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This borrows how spread misses are shaped in college football to set how wide the pick calculation's uncertainty is, without using any college picks. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead93_unit1.md",
+      "standard_error": null
+    },
+    "lead93_unit1_2024_tail_rps": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "College-shaped uncertainty around the pool line versus the usual four-term calculation: 2024 tail_rps",
+      "effect": -0.0201382926025,
+      "effect_units": "rps_improvement",
+      "family": "lead93_unit1_609_looks",
+      "interval": [
+        -0.0266861692555,
+        -0.0138418043201
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This borrows how spread misses are shaped in college football to set how wide the pick calculation's uncertainty is, without using any college picks. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead93_unit1.md",
+      "standard_error": null
+    },
+    "lead93_unit1_2025_accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "College-shaped uncertainty around the pool line versus the usual four-term calculation: 2025 accuracy_points",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "lead93_unit1_609_looks",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This borrows how spread misses are shaped in college football to set how wide the pick calculation's uncertainty is, without using any college picks. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead93_unit1.md",
+      "standard_error": null
+    },
+    "lead93_unit1_2025_brier": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "College-shaped uncertainty around the pool line versus the usual four-term calculation: 2025 brier",
+      "effect": -6.21744941012e-05,
+      "effect_units": "brier_improvement",
+      "family": "lead93_unit1_609_looks",
+      "interval": [
+        -0.000284331944708,
+        0.00014886240329
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This borrows how spread misses are shaped in college football to set how wide the pick calculation's uncertainty is, without using any college picks. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.2881,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead93_unit1.md",
+      "standard_error": null
+    },
+    "lead93_unit1_2025_log_loss": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "College-shaped uncertainty around the pool line versus the usual four-term calculation: 2025 log_loss",
+      "effect": -0.000126231935562,
+      "effect_units": "log_loss_improvement",
+      "family": "lead93_unit1_609_looks",
+      "interval": [
+        -0.000583410491739,
+        0.000310174587247
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This borrows how spread misses are shaped in college football to set how wide the pick calculation's uncertainty is, without using any college picks. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.2919,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead93_unit1.md",
+      "standard_error": null
+    },
+    "lead93_unit1_2025_rps": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "College-shaped uncertainty around the pool line versus the usual four-term calculation: 2025 rps",
+      "effect": -0.00659611635152,
+      "effect_units": "rps_improvement",
+      "family": "lead93_unit1_609_looks",
+      "interval": [
+        -0.0159148892526,
+        0.00245553552247
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This borrows how spread misses are shaped in college football to set how wide the pick calculation's uncertainty is, without using any college picks. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.076,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead93_unit1.md",
+      "standard_error": null
+    },
+    "lead93_unit1_2025_tail_rps": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "College-shaped uncertainty around the pool line versus the usual four-term calculation: 2025 tail_rps",
+      "effect": -0.00263275807028,
+      "effect_units": "rps_improvement",
+      "family": "lead93_unit1_609_looks",
+      "interval": [
+        -0.00355395352714,
+        -0.00180577478676
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This borrows how spread misses are shaped in college football to set how wide the pick calculation's uncertainty is, without using any college picks. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead93_unit1.md",
+      "standard_error": null
+    },
+    "lead93_unit1_pooled_accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "College-shaped uncertainty around the pool line versus the usual four-term calculation: pooled accuracy_points",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "lead93_unit1_609_looks",
+      "interval": [
+        -0.860832137733,
+        0.870827285922
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This borrows how spread misses are shaped in college football to set how wide the pick calculation's uncertainty is, without using any college picks. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.48375,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead93_unit1.md",
+      "standard_error": null
+    },
+    "lead93_unit1_pooled_brier": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "College-shaped uncertainty around the pool line versus the usual four-term calculation: pooled brier",
+      "effect": -1.85941278628e-05,
+      "effect_units": "brier_improvement",
+      "family": "lead93_unit1_609_looks",
+      "interval": [
+        -0.000118759484509,
+        5.13063434604e-05
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This borrows how spread misses are shaped in college football to set how wide the pick calculation's uncertainty is, without using any college picks. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.37045,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead93_unit1.md",
+      "standard_error": null
+    },
+    "lead93_unit1_pooled_log_loss": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "College-shaped uncertainty around the pool line versus the usual four-term calculation: pooled log_loss",
+      "effect": -3.78353703181e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "lead93_unit1_609_looks",
+      "interval": [
+        -0.00024467226811,
+        0.000105296489169
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This borrows how spread misses are shaped in college football to set how wide the pick calculation's uncertainty is, without using any college picks. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.37175,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead93_unit1.md",
+      "standard_error": null
+    },
+    "lead93_unit1_pooled_rps": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "College-shaped uncertainty around the pool line versus the usual four-term calculation: pooled rps",
+      "effect": -0.0193524903802,
+      "effect_units": "rps_improvement",
+      "family": "lead93_unit1_609_looks",
+      "interval": [
+        -0.0498506825355,
+        0.00843051206064
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This borrows how spread misses are shaped in college football to set how wide the pick calculation's uncertainty is, without using any college picks. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.1016,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead93_unit1.md",
+      "standard_error": null
+    },
+    "lead93_unit1_pooled_tail_rps": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "College-shaped uncertainty around the pool line versus the usual four-term calculation: pooled tail_rps",
+      "effect": -0.0136002677566,
+      "effect_units": "rps_improvement",
+      "family": "lead93_unit1_609_looks",
+      "interval": [
+        -0.0222369162414,
+        -0.00274756342712
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This borrows how spread misses are shaped in college football to set how wide the pick calculation's uncertainty is, without using any college picks. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead93_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2023-adjusted_deadline-all_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2023-adjusted_deadline-all_mae",
+      "effect": -0.0585774058577,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.145228215768,
+        0.0208333333333
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.0789,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 239,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2023-adjusted_deadline-last_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2023-adjusted_deadline-last_mae",
+      "effect": 0.0555555555556,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.222222222222,
+        0.333333333333
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.6453,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2023-deadline-all_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2023-deadline-all_mae",
+      "effect": -0.0836820083682,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.195744680851,
+        0.0158761904762
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.04985,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 239,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2023-deadline-last_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2023-deadline-last_mae",
+      "effect": 0.0555555555556,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.222222222222,
+        0.333333333333
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.6434,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2023-median-all_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2023-median-all_mae",
+      "effect": 1.87447698745,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        0.874014947827,
+        2.78111587983
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.9999,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 239,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2023-median-last_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2023-median-last_mae",
+      "effect": 1.33333333333,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.944444444444,
+        3.38888888889
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.884,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2023-tuesday-all_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2023-tuesday-all_mae",
+      "effect": 0.112970711297,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        0.0207468879668,
+        0.210300429185
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.99125,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 239,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2023-tuesday-last_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2023-tuesday-last_mae",
+      "effect": 0.277777777778,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.166666666667,
+        0.777777777778
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.8843,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2024-adjusted_deadline-all_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2024-adjusted_deadline-all_mae",
+      "effect": -0.126050420168,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.262717343659,
+        0.0125013075314
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.0351,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 238,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2024-adjusted_deadline-last_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2024-adjusted_deadline-last_mae",
+      "effect": -0.111111111111,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.555555555556,
+        0.333333333333
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.322,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2024-deadline-all_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2024-deadline-all_mae",
+      "effect": -0.126050420168,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.262717343659,
+        0.0125013075314
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.0351,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 238,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2024-deadline-last_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2024-deadline-last_mae",
+      "effect": -0.111111111111,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.555555555556,
+        0.333333333333
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.322,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2024-median-all_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2024-median-all_mae",
+      "effect": 0.273109243697,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.320516877637,
+        0.828451882845
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.82245,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 238,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2024-median-last_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2024-median-last_mae",
+      "effect": -0.388888888889,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -2.0,
+        1.11111111111
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.31075,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2024-tuesday-all_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2024-tuesday-all_mae",
+      "effect": -0.22268907563,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.497992367878,
+        0.0480585509313
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.0544,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 238,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2024-tuesday-last_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2024-tuesday-last_mae",
+      "effect": 0.111111111111,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.777777777778,
+        1.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.5966,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2025-adjusted_deadline-all_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2025-adjusted_deadline-all_mae",
+      "effect": -0.168776371308,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.337606837607,
+        -0.00847457627119
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.0192,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 237,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2025-adjusted_deadline-last_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2025-adjusted_deadline-last_mae",
+      "effect": 0.111111111111,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.333333333333,
+        0.611111111111
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.6623,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2025-deadline-all_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2025-deadline-all_mae",
+      "effect": -0.198312236287,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.338983050847,
+        -0.0635593220339
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.00215,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 237,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2025-deadline-last_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2025-deadline-last_mae",
+      "effect": 0.111111111111,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.277777777778,
+        0.5
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.72075,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2025-median-all_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2025-median-all_mae",
+      "effect": 0.324894514768,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.0808510638298,
+        0.758931260757
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.9352,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 237,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2025-median-last_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2025-median-last_mae",
+      "effect": 0.0555555555556,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -1.72222222222,
+        1.94444444444
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.5185,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2025-tuesday-all_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2025-tuesday-all_mae",
+      "effect": -0.232067510549,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.502092050209,
+        0.00862256371814
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.03055,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 237,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2025-tuesday-last_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2025-tuesday-last_mae",
+      "effect": 0.111111111111,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.555555555556,
+        0.777777777778
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.61865,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_pooled-adjusted_deadline-all_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: pooled-adjusted_deadline-all_mae",
+      "effect": -0.117647058824,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.217573372481,
+        -0.0334704756141
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.0015,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 714,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_pooled-adjusted_deadline-last_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: pooled-adjusted_deadline-last_mae",
+      "effect": 0.0185185185185,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.259259259259,
+        0.277777777778
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.55295,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 54,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_pooled-deadline-all_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: pooled-deadline-all_mae",
+      "effect": -0.135854341737,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.229020695578,
+        -0.0500695410292
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.0009,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 714,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_pooled-deadline-last_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: pooled-deadline-last_mae",
+      "effect": 0.0185185185185,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.240740740741,
+        0.240740740741
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.56965,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 54,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_pooled-median-all_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: pooled-median-all_mae",
+      "effect": 0.826330532213,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        0.0923262713572,
+        1.86217908203
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.9937,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 714,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_pooled-median-last_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: pooled-median-last_mae",
+      "effect": 0.333333333333,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.925925925926,
+        1.75925925926
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.6652,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 54,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_pooled-tuesday-all_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: pooled-tuesday-all_mae",
+      "effect": -0.113445378151,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.336643619286,
+        0.108386251032
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.1711,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 714,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_pooled-tuesday-last_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: pooled-tuesday-last_mae",
+      "effect": 0.166666666667,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.259259259259,
+        0.555555555556
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.7903,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 54,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead95_unit1_2023_accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "Regulation-margin fit with overtime settlement versus the usual four-term calculation: 2023 accuracy_points",
+      "effect": -1.28755364807,
+      "effect_units": "accuracy_points",
+      "family": "lead95_unit1_609_looks",
+      "interval": [
+        -4.70085470085,
+        2.13675213675
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This trains the pick calculation on the score at the end of regulation and treats overtime as a separate coin flip on tied games. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.2322,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead95_unit1.md",
+      "standard_error": null
+    },
+    "lead95_unit1_2023_brier": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "Regulation-margin fit with overtime settlement versus the usual four-term calculation: 2023 brier",
+      "effect": -1.61078376114e-05,
+      "effect_units": "brier_improvement",
+      "family": "lead95_unit1_609_looks",
+      "interval": [
+        -0.000264225910398,
+        0.000208053302213
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This trains the pick calculation on the score at the end of regulation and treats overtime as a separate coin flip on tied games. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.4711,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead95_unit1.md",
+      "standard_error": null
+    },
+    "lead95_unit1_2023_log_loss": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "Regulation-margin fit with overtime settlement versus the usual four-term calculation: 2023 log_loss",
+      "effect": -3.27844502123e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "lead95_unit1_609_looks",
+      "interval": [
+        -0.000530139301349,
+        0.000416390488676
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This trains the pick calculation on the score at the end of regulation and treats overtime as a separate coin flip on tied games. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.4702,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead95_unit1.md",
+      "standard_error": null
+    },
+    "lead95_unit1_2023_regulation_log_score": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "Regulation-margin fit with overtime settlement versus the usual four-term calculation: 2023 regulation_log_score",
+      "effect": 0.0815312298652,
+      "effect_units": "log_loss_improvement",
+      "family": "lead95_unit1_609_looks",
+      "interval": [
+        0.0312995641662,
+        0.135292267365
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This trains the pick calculation on the score at the end of regulation and treats overtime as a separate coin flip on tied games. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.9997,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead95_unit1.md",
+      "standard_error": null
+    },
+    "lead95_unit1_2023_rps": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "Regulation-margin fit with overtime settlement versus the usual four-term calculation: 2023 rps",
+      "effect": -0.00161799089093,
+      "effect_units": "rps_improvement",
+      "family": "lead95_unit1_609_looks",
+      "interval": [
+        -0.0126245282584,
+        0.00961992899573
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This trains the pick calculation on the score at the end of regulation and treats overtime as a separate coin flip on tied games. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.3902,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead95_unit1.md",
+      "standard_error": null
+    },
+    "lead95_unit1_2024_accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "Regulation-margin fit with overtime settlement versus the usual four-term calculation: 2024 accuracy_points",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "lead95_unit1_609_looks",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This trains the pick calculation on the score at the end of regulation and treats overtime as a separate coin flip on tied games. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead95_unit1.md",
+      "standard_error": null
+    },
+    "lead95_unit1_2024_brier": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "Regulation-margin fit with overtime settlement versus the usual four-term calculation: 2024 brier",
+      "effect": -0.0,
+      "effect_units": "brier_improvement",
+      "family": "lead95_unit1_609_looks",
+      "interval": [
+        -0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This trains the pick calculation on the score at the end of regulation and treats overtime as a separate coin flip on tied games. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead95_unit1.md",
+      "standard_error": null
+    },
+    "lead95_unit1_2024_log_loss": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "Regulation-margin fit with overtime settlement versus the usual four-term calculation: 2024 log_loss",
+      "effect": -0.0,
+      "effect_units": "log_loss_improvement",
+      "family": "lead95_unit1_609_looks",
+      "interval": [
+        -0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This trains the pick calculation on the score at the end of regulation and treats overtime as a separate coin flip on tied games. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead95_unit1.md",
+      "standard_error": null
+    },
+    "lead95_unit1_2024_regulation_log_score": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "Regulation-margin fit with overtime settlement versus the usual four-term calculation: 2024 regulation_log_score",
+      "effect": 0.158256022705,
+      "effect_units": "log_loss_improvement",
+      "family": "lead95_unit1_609_looks",
+      "interval": [
+        0.0574990672918,
+        0.268251598875
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This trains the pick calculation on the score at the end of regulation and treats overtime as a separate coin flip on tied games. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.9995,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead95_unit1.md",
+      "standard_error": null
+    },
+    "lead95_unit1_2024_rps": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "Regulation-margin fit with overtime settlement versus the usual four-term calculation: 2024 rps",
+      "effect": 0.00699440262574,
+      "effect_units": "rps_improvement",
+      "family": "lead95_unit1_609_looks",
+      "interval": [
+        -0.00619389067503,
+        0.02108739463
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This trains the pick calculation on the score at the end of regulation and treats overtime as a separate coin flip on tied games. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.8441,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead95_unit1.md",
+      "standard_error": null
+    },
+    "lead95_unit1_2025_accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "Regulation-margin fit with overtime settlement versus the usual four-term calculation: 2025 accuracy_points",
+      "effect": 0.431034482759,
+      "effect_units": "accuracy_points",
+      "family": "lead95_unit1_609_looks",
+      "interval": [
+        0.0,
+        1.31578947368
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This trains the pick calculation on the score at the end of regulation and treats overtime as a separate coin flip on tied games. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.82105,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead95_unit1.md",
+      "standard_error": null
+    },
+    "lead95_unit1_2025_brier": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "Regulation-margin fit with overtime settlement versus the usual four-term calculation: 2025 brier",
+      "effect": 0.000539867060056,
+      "effect_units": "brier_improvement",
+      "family": "lead95_unit1_609_looks",
+      "interval": [
+        -0.000419373269161,
+        0.00154102213021
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This trains the pick calculation on the score at the end of regulation and treats overtime as a separate coin flip on tied games. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.8619,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead95_unit1.md",
+      "standard_error": null
+    },
+    "lead95_unit1_2025_log_loss": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "Regulation-margin fit with overtime settlement versus the usual four-term calculation: 2025 log_loss",
+      "effect": 0.00106544849016,
+      "effect_units": "log_loss_improvement",
+      "family": "lead95_unit1_609_looks",
+      "interval": [
+        -0.000876663867944,
+        0.00310625002998
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This trains the pick calculation on the score at the end of regulation and treats overtime as a separate coin flip on tied games. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.855,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead95_unit1.md",
+      "standard_error": null
+    },
+    "lead95_unit1_2025_regulation_log_score": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "Regulation-margin fit with overtime settlement versus the usual four-term calculation: 2025 regulation_log_score",
+      "effect": 0.0878946349229,
+      "effect_units": "log_loss_improvement",
+      "family": "lead95_unit1_609_looks",
+      "interval": [
+        0.0001100234284,
+        0.202683028444
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This trains the pick calculation on the score at the end of regulation and treats overtime as a separate coin flip on tied games. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.9752,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead95_unit1.md",
+      "standard_error": null
+    },
+    "lead95_unit1_2025_rps": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "Regulation-margin fit with overtime settlement versus the usual four-term calculation: 2025 rps",
+      "effect": 0.0136675572514,
+      "effect_units": "rps_improvement",
+      "family": "lead95_unit1_609_looks",
+      "interval": [
+        -0.00995266221057,
+        0.0414527290233
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This trains the pick calculation on the score at the end of regulation and treats overtime as a separate coin flip on tied games. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.8501,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead95_unit1.md",
+      "standard_error": null
+    },
+    "lead95_unit1_pooled_accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "Regulation-margin fit with overtime settlement versus the usual four-term calculation: pooled accuracy_points",
+      "effect": -0.286944045911,
+      "effect_units": "accuracy_points",
+      "family": "lead95_unit1_609_looks",
+      "interval": [
+        -2.03193033382,
+        0.860832137733
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This trains the pick calculation on the score at the end of regulation and treats overtime as a separate coin flip on tied games. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.4283,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead95_unit1.md",
+      "standard_error": null
+    },
+    "lead95_unit1_pooled_brier": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "Regulation-margin fit with overtime settlement versus the usual four-term calculation: pooled brier",
+      "effect": 0.00017431281459,
+      "effect_units": "brier_improvement",
+      "family": "lead95_unit1_609_looks",
+      "interval": [
+        -0.000126531156662,
+        0.000726056111247
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This trains the pick calculation on the score at the end of regulation and treats overtime as a separate coin flip on tied games. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.75755,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead95_unit1.md",
+      "standard_error": null
+    },
+    "lead95_unit1_pooled_log_loss": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "Regulation-margin fit with overtime settlement versus the usual four-term calculation: pooled log_loss",
+      "effect": 0.000343680448806,
+      "effect_units": "log_loss_improvement",
+      "family": "lead95_unit1_609_looks",
+      "interval": [
+        -0.000264339857128,
+        0.00145687470087
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This trains the pick calculation on the score at the end of regulation and treats overtime as a separate coin flip on tied games. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.75295,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead95_unit1.md",
+      "standard_error": null
+    },
+    "lead95_unit1_pooled_regulation_log_score": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "Regulation-margin fit with overtime settlement versus the usual four-term calculation: pooled regulation_log_score",
+      "effect": 0.109187559725,
+      "effect_units": "log_loss_improvement",
+      "family": "lead95_unit1_609_looks",
+      "interval": [
+        0.0518163032268,
+        0.179592633066
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This trains the pick calculation on the score at the end of regulation and treats overtime as a separate coin flip on tied games. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead95_unit1.md",
+      "standard_error": null
+    },
+    "lead95_unit1_pooled_rps": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "Regulation-margin fit with overtime settlement versus the usual four-term calculation: pooled rps",
+      "effect": 0.00633656070863,
+      "effect_units": "rps_improvement",
+      "family": "lead95_unit1_609_looks",
+      "interval": [
+        -0.00460845118064,
+        0.0207411678532
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This trains the pick calculation on the score at the end of regulation and treats overtime as a separate coin flip on tied games. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.8403,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead95_unit1.md",
+      "standard_error": null
+    },
+    "lead96_unit1_2023_accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Older seasons reweighted to look like recent ones versus the usual four-term calculation: 2023",
+      "effect": 0.858369098712,
+      "effect_units": "accuracy_points",
+      "family": "lead96_unit1_497_looks",
+      "interval": [
+        -1.65992392808,
+        3.04347826087
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets older seasons that resemble today count in the pick calculation and older ones that do not count less. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.7634,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead96_unit1.md",
+      "standard_error": null
+    },
+    "lead96_unit1_2023_brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Older seasons reweighted to look like recent ones versus the usual four-term calculation: 2023",
+      "effect": 0.000189977709693,
+      "effect_units": "brier_improvement",
+      "family": "lead96_unit1_497_looks",
+      "interval": [
+        -2.4370787089e-06,
+        0.000374176382639
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets older seasons that resemble today count in the pick calculation and older ones that do not count less. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.9739,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead96_unit1.md",
+      "standard_error": null
+    },
+    "lead96_unit1_2023_log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Older seasons reweighted to look like recent ones versus the usual four-term calculation: 2023",
+      "effect": 0.000379765059343,
+      "effect_units": "log_loss_improvement",
+      "family": "lead96_unit1_497_looks",
+      "interval": [
+        -4.92849316003e-06,
+        0.000748429423848
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets older seasons that resemble today count in the pick calculation and older ones that do not count less. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.9739,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead96_unit1.md",
+      "standard_error": null
+    },
+    "lead96_unit1_2023_rps_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Older seasons reweighted to look like recent ones versus the usual four-term calculation: 2023",
+      "effect": -0.00101828729527,
+      "effect_units": "rps_improvement",
+      "family": "lead96_unit1_497_looks",
+      "interval": [
+        -0.00471388435117,
+        0.00246214548268
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets older seasons that resemble today count in the pick calculation and older ones that do not count less. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.2964,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead96_unit1.md",
+      "standard_error": null
+    },
+    "lead96_unit1_2024_accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Older seasons reweighted to look like recent ones versus the usual four-term calculation: 2024",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "lead96_unit1_497_looks",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets older seasons that resemble today count in the pick calculation and older ones that do not count less. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead96_unit1.md",
+      "standard_error": null
+    },
+    "lead96_unit1_2024_brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Older seasons reweighted to look like recent ones versus the usual four-term calculation: 2024",
+      "effect": -0.0,
+      "effect_units": "brier_improvement",
+      "family": "lead96_unit1_497_looks",
+      "interval": [
+        -0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets older seasons that resemble today count in the pick calculation and older ones that do not count less. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead96_unit1.md",
+      "standard_error": null
+    },
+    "lead96_unit1_2024_log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Older seasons reweighted to look like recent ones versus the usual four-term calculation: 2024",
+      "effect": -0.0,
+      "effect_units": "log_loss_improvement",
+      "family": "lead96_unit1_497_looks",
+      "interval": [
+        -0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets older seasons that resemble today count in the pick calculation and older ones that do not count less. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead96_unit1.md",
+      "standard_error": null
+    },
+    "lead96_unit1_2024_rps_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Older seasons reweighted to look like recent ones versus the usual four-term calculation: 2024",
+      "effect": -0.0,
+      "effect_units": "rps_improvement",
+      "family": "lead96_unit1_497_looks",
+      "interval": [
+        -0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets older seasons that resemble today count in the pick calculation and older ones that do not count less. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead96_unit1.md",
+      "standard_error": null
+    },
+    "lead96_unit1_2025_accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Older seasons reweighted to look like recent ones versus the usual four-term calculation: 2025",
+      "effect": -2.58620689655,
+      "effect_units": "accuracy_points",
+      "family": "lead96_unit1_497_looks",
+      "interval": [
+        -6.25,
+        0.440577365405
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets older seasons that resemble today count in the pick calculation and older ones that do not count less. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.06175,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead96_unit1.md",
+      "standard_error": null
+    },
+    "lead96_unit1_2025_brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Older seasons reweighted to look like recent ones versus the usual four-term calculation: 2025",
+      "effect": 0.00331189816672,
+      "effect_units": "brier_improvement",
+      "family": "lead96_unit1_497_looks",
+      "interval": [
+        -0.00151949133668,
+        0.00863251325031
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets older seasons that resemble today count in the pick calculation and older ones that do not count less. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.9054,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead96_unit1.md",
+      "standard_error": null
+    },
+    "lead96_unit1_2025_log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Older seasons reweighted to look like recent ones versus the usual four-term calculation: 2025",
+      "effect": 0.00735996175766,
+      "effect_units": "log_loss_improvement",
+      "family": "lead96_unit1_497_looks",
+      "interval": [
+        -0.00301453616822,
+        0.0192600346645
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets older seasons that resemble today count in the pick calculation and older ones that do not count less. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.9098,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead96_unit1.md",
+      "standard_error": null
+    },
+    "lead96_unit1_2025_rps_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Older seasons reweighted to look like recent ones versus the usual four-term calculation: 2025",
+      "effect": 0.0902865767106,
+      "effect_units": "rps_improvement",
+      "family": "lead96_unit1_497_looks",
+      "interval": [
+        0.0337811244938,
+        0.154269097156
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets older seasons that resemble today count in the pick calculation and older ones that do not count less. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.9999,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead96_unit1.md",
+      "standard_error": null
+    },
+    "lead96_unit1_pooled_accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Older seasons reweighted to look like recent ones versus the usual four-term calculation: pooled",
+      "effect": -0.573888091822,
+      "effect_units": "accuracy_points",
+      "family": "lead96_unit1_497_looks",
+      "interval": [
+        -2.93255131965,
+        1.27659574468
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets older seasons that resemble today count in the pick calculation and older ones that do not count less. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.33345,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead96_unit1.md",
+      "standard_error": null
+    },
+    "lead96_unit1_pooled_brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Older seasons reweighted to look like recent ones versus the usual four-term calculation: pooled",
+      "effect": 0.00116588978628,
+      "effect_units": "brier_improvement",
+      "family": "lead96_unit1_497_looks",
+      "interval": [
+        -0.000223237512824,
+        0.00417837396642
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets older seasons that resemble today count in the pick calculation and older ones that do not count less. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.93435,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead96_unit1.md",
+      "standard_error": null
+    },
+    "lead96_unit1_pooled_log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Older seasons reweighted to look like recent ones versus the usual four-term calculation: pooled",
+      "effect": 0.00257675234807,
+      "effect_units": "log_loss_improvement",
+      "family": "lead96_unit1_497_looks",
+      "interval": [
+        -0.000432096048912,
+        0.00924959342654
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets older seasons that resemble today count in the pick calculation and older ones that do not count less. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.93605,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead96_unit1.md",
+      "standard_error": null
+    },
+    "lead96_unit1_pooled_rps_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Older seasons reweighted to look like recent ones versus the usual four-term calculation: pooled",
+      "effect": 0.0297119438408,
+      "effect_units": "rps_improvement",
+      "family": "lead96_unit1_497_looks",
+      "interval": [
+        -0.00170277868542,
+        0.0901430420198
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets older seasons that resemble today count in the pick calculation and older ones that do not count less. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.79265,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead96_unit1.md",
+      "standard_error": null
+    },
+    "lead97_unit1_2023_accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no held-out game had an unavailable move, so the mechanism was not exercised. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Averaging over unavailable late line moves versus the usual four-term calculation: 2023",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "lead97_unit1_497_looks",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When a late line move is missing, this averages over the moves that usually happen instead of assuming none. Every recent game had its move, so it made no difference; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead97_unit1.md",
+      "standard_error": null
+    },
+    "lead97_unit1_2023_brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no held-out game had an unavailable move, so the mechanism was not exercised. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Averaging over unavailable late line moves versus the usual four-term calculation: 2023",
+      "effect": -5.37391837944e-09,
+      "effect_units": "brier_improvement",
+      "family": "lead97_unit1_497_looks",
+      "interval": [
+        -1.08203237604e-08,
+        5.67421943769e-11
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When a late line move is missing, this averages over the moves that usually happen instead of assuming none. Every recent game had its move, so it made no difference; pool picks have not changed.",
+      "probability_positive": 0.0259,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead97_unit1.md",
+      "standard_error": null
+    },
+    "lead97_unit1_2023_log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no held-out game had an unavailable move, so the mechanism was not exercised. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Averaging over unavailable late line moves versus the usual four-term calculation: 2023",
+      "effect": -1.0747112821e-08,
+      "effect_units": "log_loss_improvement",
+      "family": "lead97_unit1_497_looks",
+      "interval": [
+        -2.16425116152e-08,
+        1.16453722946e-10
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When a late line move is missing, this averages over the moves that usually happen instead of assuming none. Every recent game had its move, so it made no difference; pool picks have not changed.",
+      "probability_positive": 0.02595,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead97_unit1.md",
+      "standard_error": null
+    },
+    "lead97_unit1_2023_rps_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no held-out game had an unavailable move, so the mechanism was not exercised. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Averaging over unavailable late line moves versus the usual four-term calculation: 2023",
+      "effect": -7.68269325239e-08,
+      "effect_units": "rps_improvement",
+      "family": "lead97_unit1_497_looks",
+      "interval": [
+        -1.65345197449e-07,
+        9.24983599102e-09
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When a late line move is missing, this averages over the moves that usually happen instead of assuming none. Every recent game had its move, so it made no difference; pool picks have not changed.",
+      "probability_positive": 0.0395,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead97_unit1.md",
+      "standard_error": null
+    },
+    "lead97_unit1_2024_accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no held-out game had an unavailable move, so the mechanism was not exercised. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Averaging over unavailable late line moves versus the usual four-term calculation: 2024",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "lead97_unit1_497_looks",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When a late line move is missing, this averages over the moves that usually happen instead of assuming none. Every recent game had its move, so it made no difference; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead97_unit1.md",
+      "standard_error": null
+    },
+    "lead97_unit1_2024_brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no held-out game had an unavailable move, so the mechanism was not exercised. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Averaging over unavailable late line moves versus the usual four-term calculation: 2024",
+      "effect": 0.0,
+      "effect_units": "brier_improvement",
+      "family": "lead97_unit1_497_looks",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When a late line move is missing, this averages over the moves that usually happen instead of assuming none. Every recent game had its move, so it made no difference; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead97_unit1.md",
+      "standard_error": null
+    },
+    "lead97_unit1_2024_log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no held-out game had an unavailable move, so the mechanism was not exercised. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Averaging over unavailable late line moves versus the usual four-term calculation: 2024",
+      "effect": 0.0,
+      "effect_units": "log_loss_improvement",
+      "family": "lead97_unit1_497_looks",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When a late line move is missing, this averages over the moves that usually happen instead of assuming none. Every recent game had its move, so it made no difference; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead97_unit1.md",
+      "standard_error": null
+    },
+    "lead97_unit1_2024_rps_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no held-out game had an unavailable move, so the mechanism was not exercised. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Averaging over unavailable late line moves versus the usual four-term calculation: 2024",
+      "effect": 0.0,
+      "effect_units": "rps_improvement",
+      "family": "lead97_unit1_497_looks",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When a late line move is missing, this averages over the moves that usually happen instead of assuming none. Every recent game had its move, so it made no difference; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead97_unit1.md",
+      "standard_error": null
+    },
+    "lead97_unit1_2025_accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no held-out game had an unavailable move, so the mechanism was not exercised. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Averaging over unavailable late line moves versus the usual four-term calculation: 2025",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "lead97_unit1_497_looks",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When a late line move is missing, this averages over the moves that usually happen instead of assuming none. Every recent game had its move, so it made no difference; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead97_unit1.md",
+      "standard_error": null
+    },
+    "lead97_unit1_2025_brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no held-out game had an unavailable move, so the mechanism was not exercised. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Averaging over unavailable late line moves versus the usual four-term calculation: 2025",
+      "effect": -2.62090662361e-08,
+      "effect_units": "brier_improvement",
+      "family": "lead97_unit1_497_looks",
+      "interval": [
+        -1.12816718945e-07,
+        4.65791382444e-08
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When a late line move is missing, this averages over the moves that usually happen instead of assuming none. Every recent game had its move, so it made no difference; pool picks have not changed.",
+      "probability_positive": 0.2678,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead97_unit1.md",
+      "standard_error": null
+    },
+    "lead97_unit1_2025_log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no held-out game had an unavailable move, so the mechanism was not exercised. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Averaging over unavailable late line moves versus the usual four-term calculation: 2025",
+      "effect": -5.27801271567e-08,
+      "effect_units": "log_loss_improvement",
+      "family": "lead97_unit1_497_looks",
+      "interval": [
+        -2.3024303317e-07,
+        9.60966856811e-08
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When a late line move is missing, this averages over the moves that usually happen instead of assuming none. Every recent game had its move, so it made no difference; pool picks have not changed.",
+      "probability_positive": 0.2719,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead97_unit1.md",
+      "standard_error": null
+    },
+    "lead97_unit1_2025_rps_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no held-out game had an unavailable move, so the mechanism was not exercised. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Averaging over unavailable late line moves versus the usual four-term calculation: 2025",
+      "effect": -4.04872262632e-08,
+      "effect_units": "rps_improvement",
+      "family": "lead97_unit1_497_looks",
+      "interval": [
+        -1.15890388602e-06,
+        8.38208501567e-07
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When a late line move is missing, this averages over the moves that usually happen instead of assuming none. Every recent game had its move, so it made no difference; pool picks have not changed.",
+      "probability_positive": 0.497,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead97_unit1.md",
+      "standard_error": null
+    },
+    "lead97_unit1_pooled_accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no held-out game had an unavailable move, so the mechanism was not exercised. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Averaging over unavailable late line moves versus the usual four-term calculation: pooled",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "lead97_unit1_497_looks",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When a late line move is missing, this averages over the moves that usually happen instead of assuming none. Every recent game had its move, so it made no difference; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead97_unit1.md",
+      "standard_error": null
+    },
+    "lead97_unit1_pooled_brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no held-out game had an unavailable move, so the mechanism was not exercised. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Averaging over unavailable late line moves versus the usual four-term calculation: pooled",
+      "effect": -1.0520267359e-08,
+      "effect_units": "brier_improvement",
+      "family": "lead97_unit1_497_looks",
+      "interval": [
+        -4.78423476892e-08,
+        1.29122157103e-08
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When a late line move is missing, this averages over the moves that usually happen instead of assuming none. Every recent game had its move, so it made no difference; pool picks have not changed.",
+      "probability_positive": 0.16025,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead97_unit1.md",
+      "standard_error": null
+    },
+    "lead97_unit1_pooled_log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no held-out game had an unavailable move, so the mechanism was not exercised. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Averaging over unavailable late line moves versus the usual four-term calculation: pooled",
+      "effect": -2.11607844873e-08,
+      "effect_units": "log_loss_improvement",
+      "family": "lead97_unit1_497_looks",
+      "interval": [
+        -9.7283615599e-08,
+        2.68080531549e-08
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When a late line move is missing, this averages over the moves that usually happen instead of assuming none. Every recent game had its move, so it made no difference; pool picks have not changed.",
+      "probability_positive": 0.16335,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead97_unit1.md",
+      "standard_error": null
+    },
+    "lead97_unit1_pooled_rps_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no held-out game had an unavailable move, so the mechanism was not exercised. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Averaging over unavailable late line moves versus the usual four-term calculation: pooled",
+      "effect": -3.91588404177e-08,
+      "effect_units": "rps_improvement",
+      "family": "lead97_unit1_497_looks",
+      "interval": [
+        -4.46271670163e-07,
+        2.91289536541e-07
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When a late line move is missing, this averages over the moves that usually happen instead of assuming none. Every recent game had its move, so it made no difference; pool picks have not changed.",
+      "probability_positive": 0.33205,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead97_unit1.md",
+      "standard_error": null
     },
     "lead_08_injury_trajectory_refresh_cx14": {
       "category": "health",

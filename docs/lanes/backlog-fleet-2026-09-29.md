@@ -77,5 +77,15 @@ at least seven parallel workers, committing and pushing at each verified return.
 - Launch wave 1; on each return verify, run record commands serially, commit,
   push, refill from ideation rows.
 
+- 2026-09-30 Claude resumed Codex leftovers: committed 211157c (policy, popup
+  lane, registry). Wave running as Claude subagents: injury audit, LEAD-91
+  verify, LEAD-90, LEAD-92, LEAD-94. Queue after: LEAD-93/95/96/97 prompts in
+  tests/scratch/codex/, then record commands serially, commit, push.
+- DONE 2026-09-30: LEAD-90..97 unit 1 all ran and recorded (168 cells, all
+  unresolved_below_power; lanes in docs/lanes/done/; ROADMAP rows ✅). Injury
+  audit recorded; release block lifted (kickoff-24 h precedes pick deadline),
+  Tuesday-card skew open in its lane. Record gotchas: pass `--effect=` form for
+  negative sci-notation; new unit `pool_points_per_week`. Codex leftovers: none.
+
 ## Open
 - Codex workers need an owner Bash allow rule for `codex --no-daemon exec`.

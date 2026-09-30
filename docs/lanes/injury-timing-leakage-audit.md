@@ -1,31 +1,38 @@
-# Injury timing leakage audit (release-blocking, OPEN)
+# Injury timing leakage audit (release block lifted; Tuesday-card skew open)
 
 ## Goal
 Confirm or rule out look-ahead in the served model's historical injury inputs.
 
 ## State
-- **Measured (LEAD-89 unit 2, docs/lead89_unit2.md):** 814 of 816 Tuesday Best
-  Pick candidates (2023-2025) carry injury inputs observed after the Tuesday
-  decision time.
-- **Measured (root, 2026-09-29):** the served profile (football_weak_stack, 88
-  features, src/nfl_ats/constants.py:565) includes 9 injury-derived columns:
-  diff_injury_{offense,defense,special_teams,offensive_line,skill,front,
-  secondary}_unavailability, diff_injury_skill_epa_value_lost,
-  diff_injury_defense_disruption_value_lost.
-- Not yet known: the timestamp each historical row's injury value used, the
-  prediction timestamp the historical evaluation assumes, whether the runtime
-  leakage guard covers these columns, and the live Tuesday card's snapshot.
-- The Codex audit worker failed at the Codex usage limit (resets 2026-10-06
-  16:33); its packet is tests/scratch/codex/leakaudit.prompt.md.
+- **Measured (docs/injury_timing_audit.md):** 1,534 of 1,537 opener games use
+  injury observations after Tuesday noon ET (median lag 75.8 h). 11 served
+  columns: 9 `diff_injury_*` plus `diff_qb_expected_epa_per_dropback`,
+  `diff_qb_start_probability`.
+- **Read:** the builder clock is kickoff minus 24 h (`players.py:1824`); every
+  row passed it. The pick deadline is min(kickoff, Sunday 4 PM ET), so
+  kickoff-24 h is before the deadline: **inferred** not a leak against the
+  pick deadline, only against a Tuesday-timestamped card. Release block lifted.
+- **Measured:** repair replay (11 columns zeroed, nested LOSO 2020-2025):
+  862-641 vs original 865-638; repaired minus original -0.20 accuracy pts
+  [-1.27, +0.81], probability_positive 0.341; log loss unresolved. Recorded as
+  `injury_timing_availability_repair` (unresolved_below_power).
+- **Measured:** live Week 4 Tuesday lock used the 2026-09-27 snapshot; its
+  injury block is all zero while 95-100% of training rows are nonzero:
+  train/serve skew on the Tuesday card. Refresh paths (`pick_refresh.py`,
+  `inactives_refresh_overlay.py`, `refresh_triggers.py`) feed later news.
 
 ## Tried
-- Nothing scored; served card unchanged.
+- Proposed guard option `decision_clock="tuesday_noon"` for
+  `enrich_with_player_features`: tests/scratch/codex/injury_timing_audit/injury_clock_guard.diff
+  (compiles, not applied; default behaviour unchanged).
 
 ## Next
-- Run the packet: map each injury column to its report timestamp, compare with
-  the evaluation's prediction timestamp, check the guard, then refit LOSO with
-  timestamp-valid injury inputs and report the held-out accuracy change.
+- Verify the Saturday/Sunday refresh rebuilds the 11 injury columns for the
+  served card (not only overlays); if it does, the Tuesday card is a
+  preliminary and the skew only affects early picks.
+- LEAD-89's larger question: the market-move term is a Sunday quantity and
+  carries most of the 57.6% vs model-only 52.2% gap; same deadline logic.
 
 ## Open
-- If historical rows use Friday reports for a Tuesday-timestamped evaluation, the
-  published historical accuracy is optimistic and the guard needs a fix.
+- Whether to add a runtime guard comparing each feature clock to the card's
+  own timestamp rather than kickoff minus 24 h.

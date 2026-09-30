@@ -1,12 +1,4 @@
-# LEAD-92
-
-## Goal
-
-Execute the declared within-week Best Pick ordering study; research only.
-
-## State
-
-Protocol copied before computing outcomes; local source inventory pending.
+# LEAD-92 protocol saved before outcomes
 
 ## Protocol declaration (verbatim text, wrapped)
 
@@ -57,19 +49,3 @@ Use 10,000 paired season/week-block resamples, seed 20260929, fixed fitted predi
 IS means optimistic fitting-year predictions, gap is OOS minus IS. Positive contrasts
 mean challenger improvements. All four baselines receive the same source-complete games.
 The sixth specification counted in B is the upstream margin/discrete nuisance fit.
-
-## Tried
-
-Read the task row and binding research rules. No fitting or scoring yet.
-
-## Next
-
-Inventory the declared sources, implement scripts/lead92_unit1.py, run once if complete.
-
-## Open
-
-Source completeness and exact protocol feasibility remain unverified.
-
-## Record commands
-
-Pending measured results; orchestrator alone executes registry commands.
