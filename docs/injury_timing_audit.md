@@ -71,6 +71,14 @@ LEAD-89 note that the market-movement input is a Sunday quantity applies to the
 same evaluation and is outside this injury-only repair; it is the larger open
 timing question.
 
+**Measured:** the "Model only" arm here is not the headline model-alone number.
+That number is 802-701 (53.36%) on the same 1,503 decisive opener games, from
+the walk-forward `opener_evaluation/20260929T192743Z`. The arms in this table
+use the retrospective leave-one-season-out upstream
+(`loso_upstream/20260929T235904133782Z`), whose margin model also trains on
+later seasons. Compare its 57.55% with 52.23% inside this replay, not with the
+headline 53.36%.
+
 ## Source audit
 
 1. **Injury-derived served columns (read, `src/nfl_ats/constants.py:565`,
