@@ -171869,6 +171869,62 @@
       "source": "artifacts/mod18_spread_regime/20260924T183858Z/summary.json",
       "standard_error": null
     },
+    "mod23_unit1_nested_alpha_only": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "alpha choice is a tuning look, not a mechanism; single arm, six seasons",
+      "closing_ground": null,
+      "description": "Base model alone: nested walk-forward ridge alpha only, all families kept, vs 802-701",
+      "effect": -1.2,
+      "effect_units": "accuracy_points",
+      "family": "mod23_base_model",
+      "interval": [
+        -2.17,
+        -0.13
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.01,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/mod23_unit1.md",
+      "standard_error": null
+    },
+    "mod23_unit1_nested_family_alpha_selection": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval spans zero; no refuted mechanism or positive control",
+      "closing_ground": null,
+      "description": "Base model alone: nested walk-forward family drop plus ridge alpha vs 802-701 baseline",
+      "effect": -1.06,
+      "effect_units": "accuracy_points",
+      "family": "mod23_base_model",
+      "interval": [
+        -3.18,
+        0.98
+      ],
+      "league": "nfl",
+      "notes": "alpha-only arm -1.20 [-2.17,-0.13] pp positive 0.01; greedy arm log loss 0.6928 vs baseline 0.6969",
+      "plain_summary": null,
+      "probability_positive": 0.15,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 102,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/mod23_unit1.md",
+      "standard_error": null
+    },
     "motivation_ladder_elim_visitor_alive_host": {
       "category": "schedule",
       "classification": "unresolved_below_power",
