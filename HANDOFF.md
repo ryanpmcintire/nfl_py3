@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-30T00:05:55.790797+00:00`
+Refreshed at: `2026-09-30T00:09:58.258479+00:00`
 
 ## Start here
 
@@ -21,27 +21,29 @@ Refreshed at: `2026-09-30T00:05:55.790797+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `2b874000c282` — Build fully season-held-out upstream forecasts
-- Pending change set: 19 paths
+- Baseline commit: `205c9ff11ef9` — Queue LEAD-90..97: fourth batch, modeling and grading changes
+- Pending change set: 28 paths
   - ` M AGENTS.md`
-  - `M  ROADMAP.md`
   - ` M docs/agent_workflow.md`
-  - `M  docs/lanes/ideation-2026-09-29c.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
   - ` M docs/lanes/lead71.md`
   - ` M docs/lanes/lead75.md`
   - ` M docs/lanes/lead86.md`
-  - `M  docs/loso_base_artifact.md`
+  - ` M docs/lanes/lead89.md`
+  - `M  docs/model.html`
+  - ` M scripts/capture_scheduler.py`
+  - ` M scripts/publish_site.py`
   - `?? docs/lanes/code-review-2026-09-29.md`
+  - `?? docs/lanes/lead90.md`
+  - `?? docs/lanes/lead91.md`
   - `?? docs/lanes/tiebreaker-total-move-serve.md`
   - `?? docs/lanes/windows-shell-popup.md`
   - `?? registry/experiments/margin-backtest/20260927T134152Z.json`
   - `?? registry/experiments/margin-backtest/20260929T183944Z.json`
   - `?? registry/experiments/margin-predict/2026-week-03-20260927T134352Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-03-20260929T184122Z.json`
-  - `?? registry/experiments/opener-evaluation/20260927T134738Z.json`
-  - `?? registry/experiments/waterfall-feed/20260927T134851Z.json`
-  - `?? registry/experiments/waterfall-feed/20260929T184553Z.json`
-  - `?? scripts/lead86_unit2.py`
+  - ...and 8 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
