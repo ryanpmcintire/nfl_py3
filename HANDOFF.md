@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-30T00:25:31.185397+00:00`
+Refreshed at: `2026-09-30T00:26:12.593673+00:00`
 
 ## Start here
 
@@ -21,29 +21,25 @@ Refreshed at: `2026-09-30T00:25:31.185397+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `086a3bcfea36` — Record LEAD-86 unit 2 cells
-- Pending change set: 22 paths
+- Baseline commit: `f64b0b67fc8b` — Serve the tiebreaker total-move adjustment
+- Pending change set: 17 paths
   - ` M AGENTS.md`
   - ` M docs/agent_workflow.md`
-  - `M  docs/findings.html`
-  - `A  docs/lanes/tiebreaker-total-move-serve.md`
-  - `M  src/nfl_ats/board_content.py`
-  - `M  src/nfl_ats/cli_commands/publishing.py`
-  - `M  src/nfl_ats/publishing.py`
-  - `A  src/nfl_ats/tiebreaker_total_move.py`
-  - `M  tests/test_cli.py`
-  - `?? docs/lanes/injury-timing-leakage-audit.md`
-  - `?? docs/lanes/lead90.md`
-  - `?? docs/lanes/lead91.md`
-  - `?? docs/lanes/lead92.md`
-  - `?? docs/lanes/lead94.md`
+  - `M  docs/lanes/backlog-fleet-2026-09-29.md`
+  - `A  docs/lanes/injury-timing-leakage-audit.md`
+  - `A  docs/lanes/lead90.md`
+  - `A  docs/lanes/lead91.md`
+  - `A  docs/lanes/lead92.md`
+  - `A  docs/lanes/lead94.md`
   - `?? docs/lanes/windows-shell-popup.md`
+  - `?? docs/lead94_protocol.md`
   - `?? registry/experiments/margin-backtest/20260927T134152Z.json`
   - `?? registry/experiments/margin-backtest/20260929T183944Z.json`
   - `?? registry/experiments/margin-predict/2026-week-03-20260927T134352Z.json`
   - `?? registry/experiments/margin-predict/2026-week-03-20260929T184122Z.json`
   - `?? registry/experiments/opener-evaluation/20260927T134738Z.json`
-  - ...and 2 more
+  - `?? registry/experiments/waterfall-feed/20260927T134851Z.json`
+  - `?? registry/experiments/waterfall-feed/20260929T184553Z.json`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

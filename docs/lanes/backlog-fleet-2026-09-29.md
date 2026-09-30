@@ -63,6 +63,13 @@ at least seven parallel workers, committing and pushing at each verified return.
 - `codex --no-daemon exec` launcher: blocked by permission classifier.
 
 ## Next
+- Codex usage limit hit 2026-09-29 ~20:30 ET (resets 2026-10-06 16:33). Workers
+  lead90/91/92/93/95 and the injury audit failed; partial files moved to
+  tests/scratch/codex/partial/. First after reset: injury audit
+  (docs/lanes/injury-timing-leakage-audit.md), then LEAD-90..97 prompts in
+  tests/scratch/codex/. Served today: tiebreaker total move, publish retries,
+  paired wind capture.
+
 - Resumed after usage reset: LEAD-82..88 unit 2 recorded and committed; lint round 1
   committed. Running: lint2, upstreamloso, lead88u3, lead86u2, ideationD (rows go in
   its lane, orchestrator appends LEAD-90..97), ui20e, roadmapsync (owns ROADMAP.md).
