@@ -171925,6 +171925,174 @@
       "source": "docs/mod23_unit1.md",
       "standard_error": null
     },
+    "mod23_unit2_divergence": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval crosses zero, no admissible closing ground; six arms in the family, no split-half or positive control",
+      "closing_ground": null,
+      "description": "MOD-23 unit 2: MOD-22 construction divergence added to the served 90-column ridge input set, opener walk-forward, decisive record 795-708 vs 802-701",
+      "effect": -0.4657351962741184,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit2_players_on_field",
+      "interval": [
+        -1.4706868001892446,
+        0.5984142088164098
+      ],
+      "league": "nfl",
+      "notes": "clock kickoff minus 24h evidenced injury reports only; six looks",
+      "plain_summary": "Adding this players-on-the-field measure to the base model alone did not raise its record against the opening line in this test; unresolved, not closed.",
+      "probability_positive": 0.17325,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/mod23_unit2.md",
+      "standard_error": null
+    },
+    "mod23_unit2_full_strength": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval crosses zero, no admissible closing ground; six arms in the family, no split-half or positive control",
+      "closing_ground": null,
+      "description": "MOD-23 unit 2: MOD-22 construction full_strength added to the served 90-column ridge input set, opener walk-forward, decisive record 798-705 vs 802-701",
+      "effect": -0.2661343978709248,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit2_players_on_field",
+      "interval": [
+        -0.9333644859813084,
+        0.39552399107389774
+      ],
+      "league": "nfl",
+      "notes": "clock kickoff minus 24h evidenced injury reports only; six looks",
+      "plain_summary": "Adding this players-on-the-field measure to the base model alone did not raise its record against the opening line in this test; unresolved, not closed.",
+      "probability_positive": 0.18425,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/mod23_unit2.md",
+      "standard_error": null
+    },
+    "mod23_unit2_lineup_and_divergence": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval crosses zero, no admissible closing ground; six arms in the family, no split-half or positive control",
+      "closing_ground": null,
+      "description": "MOD-23 unit 2: MOD-22 construction lineup_and_divergence added to the served 90-column ridge input set, opener walk-forward, decisive record 788-715 vs 802-701",
+      "effect": -0.9314703925482368,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit2_players_on_field",
+      "interval": [
+        -2.076603011866881,
+        0.1341381623071764
+      ],
+      "league": "nfl",
+      "notes": "clock kickoff minus 24h evidenced injury reports only; six looks",
+      "plain_summary": "Adding this players-on-the-field measure to the base model alone did not raise its record against the opening line in this test; unresolved, not closed.",
+      "probability_positive": 0.04075,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/mod23_unit2.md",
+      "standard_error": null
+    },
+    "mod23_unit2_lineup_total": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval crosses zero, no admissible closing ground; six arms in the family, no split-half or positive control",
+      "closing_ground": null,
+      "description": "MOD-23 unit 2: MOD-22 construction lineup_total added to the served 90-column ridge input set, opener walk-forward, decisive record 792-711 vs 802-701",
+      "effect": -0.665335994677312,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit2_players_on_field",
+      "interval": [
+        -1.3925960460380293,
+        0.06635700066357
+      ],
+      "league": "nfl",
+      "notes": "clock kickoff minus 24h evidenced injury reports only; six looks",
+      "plain_summary": "Adding this players-on-the-field measure to the base model alone did not raise its record against the opening line in this test; unresolved, not closed.",
+      "probability_positive": 0.0275,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/mod23_unit2.md",
+      "standard_error": null
+    },
+    "mod23_unit2_qb_out": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval crosses zero, no admissible closing ground; six arms in the family, no split-half or positive control",
+      "closing_ground": null,
+      "description": "MOD-23 unit 2: MOD-22 construction qb_out added to the served 90-column ridge input set, opener walk-forward, decisive record 797-706 vs 802-701",
+      "effect": -0.332667997338656,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit2_players_on_field",
+      "interval": [
+        -1.2541461213492553,
+        0.5968467178370949
+      ],
+      "league": "nfl",
+      "notes": "clock kickoff minus 24h evidenced injury reports only; six looks",
+      "plain_summary": "Adding this players-on-the-field measure to the base model alone did not raise its record against the opening line in this test; unresolved, not closed.",
+      "probability_positive": 0.223,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/mod23_unit2.md",
+      "standard_error": null
+    },
+    "mod23_unit2_qb_quality_loss": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval crosses zero, no admissible closing ground; six arms in the family, no split-half or positive control",
+      "closing_ground": null,
+      "description": "MOD-23 unit 2: MOD-22 construction qb_quality_loss added to the served 90-column ridge input set, opener walk-forward, decisive record 800-703 vs 802-701",
+      "effect": -0.1330671989354624,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit2_players_on_field",
+      "interval": [
+        -0.922327055518716,
+        0.6605238235026876
+      ],
+      "league": "nfl",
+      "notes": "clock kickoff minus 24h evidenced injury reports only; six looks",
+      "plain_summary": "Adding this players-on-the-field measure to the base model alone did not raise its record against the opening line in this test; unresolved, not closed.",
+      "probability_positive": 0.3385,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/mod23_unit2.md",
+      "standard_error": null
+    },
     "motivation_ladder_elim_visitor_alive_host": {
       "category": "schedule",
       "classification": "unresolved_below_power",
