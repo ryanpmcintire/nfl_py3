@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-30T00:18:11.481699+00:00`
+Refreshed at: `2026-09-30T00:19:20.567007+00:00`
 
 ## Start here
 
@@ -21,19 +21,19 @@ Refreshed at: `2026-09-30T00:18:11.481699+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `10756402d65b` — Retry site publication and push stranded commits
-- Pending change set: 32 paths
+- Baseline commit: `7b9070ebf751` — Capture same-product wind forecasts at Tuesday and the pick deadline
+- Pending change set: 30 paths
   - ` M AGENTS.md`
   - ` M docs/agent_workflow.md`
   - ` M docs/lanes/lead71.md`
-  - `M  docs/lanes/lead75.md`
   - ` M docs/lanes/lead86.md`
-  - ` M docs/lanes/lead89.md`
-  - `A  scripts/capture_paired_wind_forecast.py`
-  - `M  scripts/capture_scheduler.py`
+  - `M  docs/lanes/lead89.md`
+  - `A  docs/lead89_unit2.md`
+  - `A  scripts/lead89_unit2.py`
   - ` M src/nfl_ats/board_content.py`
   - ` M src/nfl_ats/cli_commands/publishing.py`
   - ` M src/nfl_ats/publishing.py`
+  - ` M tests/test_cli.py`
   - `?? docs/lanes/lead90.md`
   - `?? docs/lanes/lead91.md`
   - `?? docs/lanes/lead92.md`
@@ -41,9 +41,9 @@ Refreshed at: `2026-09-30T00:18:11.481699+00:00`
   - `?? docs/lanes/windows-shell-popup.md`
   - `?? docs/lead71_unit4.md`
   - `?? docs/lead86_unit2.md`
-  - `?? docs/lead89_unit2.md`
   - `?? docs/lead92_protocol.md`
-  - ...and 12 more
+  - `?? registry/experiments/margin-backtest/20260927T134152Z.json`
+  - ...and 10 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
