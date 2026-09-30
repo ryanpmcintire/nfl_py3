@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-30T00:21:21.338594+00:00`
+Refreshed at: `2026-09-30T00:22:02.224732+00:00`
 
 ## Start here
 
@@ -21,15 +21,13 @@ Refreshed at: `2026-09-30T00:21:21.338594+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `58640ba2535a` — Record open injury-timing audit in the fleet lane
-- Pending change set: 29 paths
+- Baseline commit: `970056b1bac0` — LEAD-71 unit 4: market-implied lattice improves the combined-score guess
+- Pending change set: 26 paths
   - ` M AGENTS.md`
   - ` M docs/agent_workflow.md`
-  - `M  docs/lanes/lead71.md`
-  - ` M docs/lanes/lead86.md`
-  - `A  docs/lead71_unit4.md`
-  - `M  registry/weak_signals.json`
-  - `A  scripts/lead71_unit4.py`
+  - `M  docs/lanes/lead86.md`
+  - `A  docs/lead86_unit2.md`
+  - `A  scripts/lead86_unit2.py`
   - ` M src/nfl_ats/board_content.py`
   - ` M src/nfl_ats/cli_commands/publishing.py`
   - ` M src/nfl_ats/publishing.py`
@@ -40,10 +38,12 @@ Refreshed at: `2026-09-30T00:21:21.338594+00:00`
   - `?? docs/lanes/lead94.md`
   - `?? docs/lanes/tiebreaker-total-move-serve.md`
   - `?? docs/lanes/windows-shell-popup.md`
-  - `?? docs/lead86_unit2.md`
+  - `?? docs/lead91_unit1.md`
   - `?? docs/lead92_protocol.md`
   - `?? registry/experiments/margin-backtest/20260927T134152Z.json`
-  - ...and 9 more
+  - `?? registry/experiments/margin-backtest/20260929T183944Z.json`
+  - `?? registry/experiments/margin-predict/2026-week-03-20260927T134352Z.json`
+  - ...and 6 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

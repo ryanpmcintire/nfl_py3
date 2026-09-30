@@ -1,43 +1,46 @@
-# LEAD-86: observed-market training regularization
+# LEAD-86 unit 2: filtered market regularization
 
 ## Goal
-Execute the fixed LEAD-86 protocol without changing the served card.
+One declared LOSO replay against the pinned served base; no served changes.
 
 ## State
-**Measured:** complete: 262 captures / 316,530 quotes; 1,309 eligible games,
-697 outer-season games. Candidate 399-298; current four-term 398-299.
-Decisive record 5-4, 55.56% [26.67%, 81.12%] Wilson interval.
-Brier improvement +0.00051945 [-0.00106546, +0.00216971],
-probability_positive 0.7320. Candidate IS/OOS Brier 0.243733/0.243387;
-OOS-minus-IS gap -0.000346 [-0.008289, +0.007592].
-Penalties 2023/2024/2025: 1/0/0.1; 505 declared looks.
-**Inferred:** provisional, unresolved_below_power; no closing ground or promotion.
-Protocol copied here before outcomes; exact pre-run snapshot retained in
-[lead86_protocol.md](../lead86_protocol.md). Full fold coefficients, stability,
-IS/OOS/gaps, baseline comparisons and reliability: [report](../lead86_unit1.md).
+**Measured:** complete; 1,309 games / 107 week blocks; candidate 721-588,
+served 757-552. Decisive 34-70, 32.69% [24.14%, 41.84%].
+Brier improvement -0.000901 [-0.002573, +0.000616], probability_positive 0.1343;
+accuracy -2.7502 points [-4.2113, -1.2432], probability_positive 0.0003.
+24 price panels dropped; maximum projection error 0.000972 points.
+Penalties (2020-25): 0.1/1/0/0/0/0.1. Candidate Brier IS/OOS
+0.244502/0.245404; gap +0.000903 [-0.001088, +0.003055].
+**Inferred:** primary Brier/regularization mechanism unresolved; proposed
+accuracy-cell wrong_sign_resolved applies only to this training workflow.
+Frozen pre-score protocol: docs/lead86_unit2.md (Frozen protocol), also
+tests/scratch/codex/lead86_unit2/protocol.md. Two decision comparisons;
+851 diagnostic looks disclosed; no outcome-driven protocol changes.
 
 ## Tried
-**Measured:** one successful full replay:
-.tools/uv.exe run --no-sync --no-cache python scripts/lead86_unit1.py.
-An earlier inventory attempt stopped on a college-football manifest before
-outcome access; fixed the NFL source filter. Report/record batch finalized
-from cached predictions, without refitting. Scoped Ruff format/check pass.
-Scratch: tests/scratch/codex/lead86_unit1/; log: lead86_run.log beside it.
+**Measured:** real replay exited 0; cached-report refresh and independent
+base/row audit passed. Ruff check and format --check passed for the script.
+Commands: .tools/uv.exe run --no-sync python scripts/lead86_unit2.py;
+same uv prefix with ruff check / ruff format --check scripts/lead86_unit2.py.
+Use scratch UV_CACHE_DIR as in report; run/audit logs under tests/scratch/codex/.
 
 ## Record commands
-Prepared, not executed; four paired current-model comparisons (Brier primary).
+Prepared only; orchestrator executes serially. Both compare candidate to served.
 ~~~bash
-.tools/uv.exe run --no-sync --no-cache nfl-ats weak-signals record \
-  --batch tests/scratch/codex/lead86_unit1/registry_batch.json \
-  --plain-summary 'Training on sportsbook prices gave a small, uncertain gain. One conflicting price pair needs checking; keep the current picks.'
+export UV_CACHE_DIR=tests/scratch/codex/lead86_unit2_uv_cache
+.tools/uv.exe run --no-sync nfl-ats weak-signals record \
+  --name lead86-unit2-candidate-vs-served-brier --description 'Price-filtered training workflow versus served LOSO: opener brier.' --source docs/lead86_unit2.md --effect=-0.000901410060267 --effect-units brier_improvement --classification unresolved_below_power --league nfl --season-start 2020 --season-end 2025 --interval-low=-0.00257271593288 --interval-high=0.000615710049488 --probability-positive 0.1343 --sample-games 1309 --sample-blocks 107 --family lead86-unit2-filtered-regularization --category market --plain-summary 'After dropping conflicting sportsbook prices, using their prices in training gave no clear forecast improvement. Keep the current pool picks.' --classification-evidence 'No admissible Brier closing ground established.'
+.tools/uv.exe run --no-sync nfl-ats weak-signals record \
+  --name lead86-unit2-candidate-vs-served-accuracy --description 'Price-filtered training workflow versus served LOSO: opener accuracy.' --source docs/lead86_unit2.md --effect=-2.75019098549 --effect-units accuracy_points --classification refuted_mechanism --league nfl --season-start 2020 --season-end 2025 --interval-low=-4.2113323124 --interval-high=-1.24315301972 --probability-positive 0.0003 --sample-games 1309 --sample-blocks 107 --family lead86-unit2-filtered-regularization --category market --plain-summary 'After dropping conflicting sportsbook prices, this trial made fewer correct pool picks. Keep the current picks; the broader training idea remains open.' --closing-ground wrong_sign_resolved --classification-evidence 'The full accuracy interval is negative for this specified workflow, not the broader regularization mechanism.'
 ~~~
 
 ## Next
-Orchestrator reviews the source discrepancy and records four cells serially;
-fresh thread for source reconciliation. No additional replay for this unit.
+Orchestrator records the two cells, then reviews the training-design mismatch
+in a fresh bounded task; do not rerun this unit.
 
 ## Open
-**Measured:** one inconsistent 2021 LV-DEN bookmaker pair drives a maximum
-16.99-point quoted-price error in 3/3,231 market fits; no exclusion/refit.
-Retrospective upstream selection; nine decisive games; varying penalty and
-model-logit sign. Pushes retained in lattice training; scored rows exclude pushes.
+**Read:** docs/loso_base_artifact.md:26-41 retains upstream holdout limitations.
+**Inferred:** served fits five seasons; candidate fits three with separate
+selection/calibration. Matched-zero Brier +0.000074 [-0.000045, +0.000178],
+probability_positive 0.8984, decisive 3-1: broader mechanism remains unresolved.
+Full losses, intervals, coefficients, gaps and reliability: docs/lead86_unit2.md.
