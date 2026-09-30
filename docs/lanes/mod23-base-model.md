@@ -29,15 +29,16 @@ Done = a change that beats that baseline out of sample, or each unit recorded.
 - MOD-22 players-on-field was graded only as an add-on to the four-term card.
 
 ## Next
-- Verified 2026-09-30: unit 4's three 785-718 records recomputed from picks
-  and results; the arms disagree on 276-316 games and each pair splits them
-  exactly evenly (joint chance about 1 in 500). Real, unexplained.
-- Unit 4 says the served lean is too large (earlier seasons prefer 1/4 size),
-  not that its direction is wrong: shrunk, the home-side offset and key-number
-  mapping overrule it on 333 games and those cost 17 net wins (158 vs 175).
-- Unit 5: shrink the lean and the home-side offset together so the model's
-  side is kept and only its confidence is fixed; also run the walk-forward
-  model-alone test on 2011-2019 as a robustness check of 802-701.
+- Decided 2026-09-30: units 1-4 re-ran ideas already tested (August nested
+  selection, PBP-05, MOD-22); no further reshuffles of existing inputs.
+- Unit 5 (decided): coverage matchup. `defense_man_zone_type` and
+  `defense_coverage_type` are loaded in `src/nfl_ats/participation.py:49-50`
+  and used nowhere else (grep of src, scripts, docs, both roadmaps). Build
+  each team's pre-game man/zone mix and its offense's efficiency against each,
+  from strictly earlier games; grade on the model-alone opener test vs 802-701.
+- Not pursued: paid grades (PFF). Free coverage data is tested first.
+- Unit 4's three identical 785-718 records: verified from picks and results;
+  arms disagree on 276-316 games and each pair splits evenly (about 1 in 500).
 
 ## Open
 - Fit gain (MSE, log loss) does not convert to picks; consider grading on a smaller-model probability, not a pick swap.
