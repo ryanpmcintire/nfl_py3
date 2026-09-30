@@ -484,6 +484,72 @@ SCHEDULE: tuple[Job, ...] = (
         requires=("splash_board_tue",),
     ),
     Job(
+        "paired_wind_tue",
+        "tue",
+        "12:05",
+        15,
+        [
+            str(UV),
+            "run",
+            "--no-sync",
+            "python",
+            str(REPO / "scripts" / "capture_paired_wind_forecast.py"),
+            "--phase",
+            "tuesday",
+        ],
+        True,
+        "Archive GFS and extended-range MEX wind separately at the frozen-line "
+        "checkpoint. Deadline captures reuse each product's exact Tuesday valid "
+        "time. Actual post-response timestamps exclude late receipts; no catch-up "
+        "because a later forecast cannot replace the Tuesday observation.",
+        season_guarded=True,
+        added_on="2026-09-29",
+        catch_up=False,
+    ),
+    *(
+        Job(
+            f"paired_wind_{day}_{at.replace(':', '')}",
+            day,
+            at,
+            15,
+            [
+                str(UV),
+                "run",
+                "--no-sync",
+                "python",
+                str(REPO / "scripts" / "capture_paired_wind_forecast.py"),
+                "--phase",
+                "deadline",
+            ],
+            True,
+            "Collect the same GFS/MEX products and exact valid times as Tuesday "
+            "within 90 minutes of each pick deadline. Slots cover the scheduled "
+            "kickoff clusters, including early overseas games and the Sunday "
+            "16:00 ET cap for late Sunday and Monday games. The collector skips "
+            "games outside their window and marks post-deadline receipts ineligible; "
+            "catch-up cannot recover a missed forecast observation.",
+            season_guarded=True,
+            added_on="2026-09-29",
+            catch_up=False,
+        )
+        for day, at in (
+            ("tue", "18:50"),
+            ("wed", "18:50"),
+            ("thu", "11:45"),
+            ("thu", "15:15"),
+            ("thu", "19:05"),
+            ("fri", "11:45"),
+            ("fri", "13:45"),
+            ("fri", "15:15"),
+            ("fri", "18:50"),
+            ("sat", "15:45"),
+            ("sat", "18:50"),
+            ("sun", "08:15"),
+            ("sun", "11:45"),
+            ("sun", "14:45"),
+        )
+    ),
+    Job(
         "airnow_tue_checkpoint",
         "tue",
         "11:40",
