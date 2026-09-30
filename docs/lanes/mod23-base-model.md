@@ -29,7 +29,12 @@ Done = a change that beats that baseline out of sample, or each unit recorded.
 - MOD-22 players-on-field was graded only as an add-on to the four-term card.
 
 ## Next
-- Unit 5 candidate: declared finer grid at the edge (w 0..0.25, s 0.05..0.25) plus shrinking the residual without shrinking the home-side offset; test whether any served weight beats w=0 on MSE and picks.
+- Unit 5 (decides the direction): is the served model's pick edge real? Its
+  earlier-season margin error always prefers the smallest served weight
+  (unit 4), yet full-strength picks score 53.36%. Run the same walk-forward
+  model-alone opener test on 2011-2019 (openers permitting) and report the
+  record and probability_positive vs 50% per season, beside the 2020-2025 run.
+- Only then: finer shrink grid (s 0.05-0.25, residual only, offset unshrunk).
 
 ## Open
 - Fit gain (MSE, log loss) does not convert to picks; consider grading on a smaller-model probability, not a pick swap.
