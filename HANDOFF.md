@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-30T00:09:58.258479+00:00`
+Refreshed at: `2026-09-30T00:11:27.884714+00:00`
 
 ## Start here
 
@@ -21,21 +21,21 @@ Refreshed at: `2026-09-30T00:09:58.258479+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `205c9ff11ef9` — Queue LEAD-90..97: fourth batch, modeling and grading changes
+- Baseline commit: `77f76cc69ca4` — Republish the site with the latest settled results
 - Pending change set: 28 paths
   - ` M AGENTS.md`
   - ` M docs/agent_workflow.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
+  - `A  docs/lanes/code-review-2026-09-29.md`
   - ` M docs/lanes/lead71.md`
   - ` M docs/lanes/lead75.md`
   - ` M docs/lanes/lead86.md`
   - ` M docs/lanes/lead89.md`
-  - `M  docs/model.html`
-  - ` M scripts/capture_scheduler.py`
-  - ` M scripts/publish_site.py`
-  - `?? docs/lanes/code-review-2026-09-29.md`
+  - `M  scripts/capture_scheduler.py`
+  - `M  scripts/publish_site.py`
+  - ` M src/nfl_ats/board_content.py`
+  - ` M src/nfl_ats/cli_commands/publishing.py`
+  - ` M src/nfl_ats/publishing.py`
+  - `M  tests/test_capture_scheduler.py`
   - `?? docs/lanes/lead90.md`
   - `?? docs/lanes/lead91.md`
   - `?? docs/lanes/tiebreaker-total-move-serve.md`

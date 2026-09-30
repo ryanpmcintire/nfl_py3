@@ -61,6 +61,12 @@ def main(argv: list[str] | None = None) -> int:
     tracked = [path for path in SITE_PATHS if (REPO / path).exists()]
     changed = _git("status", "--porcelain", "--", *tracked).stdout.strip()
     if not changed:
+        if not args.dry:
+            push = _git("push", "origin", "master", timeout=300)
+            if push.returncode != 0:
+                error = push.stderr.strip()
+                print(json.dumps({"status": "failed", "step": "push", "error": error}))
+                return 1
         print(json.dumps({"status": "unchanged"}))
         return 0
     if args.dry:

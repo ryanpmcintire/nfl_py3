@@ -773,7 +773,14 @@ def test_tuesday_opener_is_captured_after_the_pool_locks_at_noon() -> None:
 
 
 def test_retry_is_opt_in_and_every_pre_existing_job_defaults_off() -> None:
-    opted_in = {"player_arrests_tue", "splash_board_tue"}
+    opted_in = {
+        "player_arrests_tue",
+        "splash_board_tue",
+        "publish_site_fri_0030",
+        "publish_site_mon_0030",
+        "publish_site_tue_0030",
+        "publish_site_tue_1430",
+    }
     for job in capture_scheduler.SCHEDULE:
         if job.name in opted_in:
             continue

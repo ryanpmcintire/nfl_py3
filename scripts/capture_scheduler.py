@@ -1596,6 +1596,8 @@ SCHEDULE: tuple[Job, ...] = (
             season_guarded=True,
             added_on="2026-09-29",
             catch_up=True,
+            retry_backoff_minutes=15,
+            max_retries=8,
         )
         for day, at in (("fri", "00:30"), ("mon", "00:30"), ("tue", "00:30"), ("tue", "14:30"))
     ),
