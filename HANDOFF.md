@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-01T18:17:42.511926+00:00`
+Refreshed at: `2026-10-01T18:20:06.340509+00:00`
 
 ## Start here
 
@@ -21,11 +21,14 @@ Refreshed at: `2026-10-01T18:17:42.511926+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `85da54b3dbbd` — MOD-24 U7c: dropped; buyer side already graded as LEAD-23, too few events
-- Pending change set: 4 paths
-  - `M  docs/lanes/acc-u7b-luck-stripped-inputs.md`
-  - `M  registry/weak_signals.json`
-  - `A  scripts/mod24_u7b.py`
+- Baseline commit: `d414cb5f709e` — MOD-24 U7b: luck-stripped rolling inputs graded; no arm beats base (3 cells unresolved)
+- Pending change set: 7 paths
+  - `M  ROADMAP.md`
+  - `D  docs/lanes/acc-u7a-availability-history.md`
+  - `A  docs/lanes/acc-u8-prediction-markets.md`
+  - `A  docs/lanes/acc-u9-beat-reporters.md`
+  - `A  docs/lanes/done/acc-u7a-availability-history.md`
+  - ` M registry/weak_signals.json`
   - `?? scripts/mod24_u7a.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
