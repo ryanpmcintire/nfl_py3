@@ -47,6 +47,14 @@ The former 15-minute window missed Monday behind the noon refresh; it is now
 zero rows because the active forecast is Week 3. Enrollment/source hashes match;
 224 future games remain unobserved and interim scoring stays withheld.
 Next verify actual Week 4 study captures after Tuesday's fresh-data lock.
+**Measured 2026-10-01:** capture is STOPPED by the pinned-source guard. The
+Wed 12:10 job failed: "source changed; do not mix model versions". Changed since
+enrollment: cli_commands/prediction.py (41ae595) and
+sharp_book_movement_features.py (6a8335c). The Thu 12:10 and 19:55 jobs will
+fail the same way, so no Week 4 row is captured, PIT at CLE included. Protocol
+forbids a silent reset. Remedy: an explicit, documented v2 enrollment of the
+games not yet kicked off, pinned to the current sources, kept separate from v1.
+It must land before 2026-10-01 20:15 ET to include PIT at CLE.
 
 ## Open
 Earlier signal design and raw-model selection remain outside the historical

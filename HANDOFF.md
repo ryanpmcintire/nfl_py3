@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-01T13:35:12.990536+00:00`
+Refreshed at: `2026-10-01T13:35:34.083434+00:00`
 
 ## Start here
 
@@ -21,23 +21,9 @@ Refreshed at: `2026-10-01T13:35:12.990536+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `cb502ae780a9` — MOD-23 unit 5: unused man/zone coverage data as a matchup input
-- Pending change set: 15 paths
-  - `M  CURRENT_PREDICTIONS.md`
-  - `M  README.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - `M  docs/model.html`
-  - `A  registry/experiments/margin-backtest/20260930T160854Z.json`
-  - `A  registry/experiments/margin-backtest/20261001T005339Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-04-20260930T161016Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-04-20261001T005428Z.json`
-  - `A  registry/experiments/opener-evaluation/20260930T161346Z.json`
-  - `A  registry/experiments/opener-evaluation/20261001T005800Z.json`
-  - `A  registry/experiments/waterfall-feed/20260930T161441Z.json`
-  - `A  registry/experiments/waterfall-feed/20261001T005900Z.json`
-  - `M  tiebreaker.json`
+- Baseline commit: `1e049ce3ae98` — Publish the Wednesday-night Week 4 refresh before Thursday kickoff
+- Pending change set: 1 paths
+  - `M  docs/lanes/independent-combination-validation.md`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
