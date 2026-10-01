@@ -252,11 +252,18 @@ def d_batch(task):
     to_arr = _G["to_arr"]
     rows, margins = [], []
     ep, yd = t["attrs"]["epa"], t["attrs"]["yards"]
+    hr = ar = None
+    if _G["cfg"].get("avg"):
+        import mod25_generator as gen
+
+        lo, ld = gen.league_means()
+        hr = {"off": gen.quant(lo), "def": gen.quant(ld)}
+        ar = dict(hr)
     for gi in range(n):
         _G["log"].clear()
         ns["PLAYLOG"].clear()
         state = sim.initial_kickoff_state(rng, t["opening_pool"])
-        rec, _ = ns["run_one_game"](state, t, rng, 600.0, _G["pol"], sim.K_NEIGHBORS, sim.MAX_PLAYS_PER_GAME)
+        rec, _ = ns["run_one_game"](state, t, rng, 600.0, _G["pol"], sim.K_NEIGHBORS, sim.MAX_PLAYS_PER_GAME, hr, ar)
         a = np.array(_G["log"], dtype=np.float64).reshape(-1, 12)
         ix = a[:, 11].astype(np.int64)
         rows.append(np.column_stack([np.full(len(a), gi), a[:, :11], tov[ix], to_arr[ix], ep[ix], yd[ix]]))
@@ -271,10 +278,12 @@ def run_neutral(variant, games, workers, seed):
     import multiprocessing as mp
 
     c25.ensure_policies()
-    cfg = dict(c25.VARIANTS[variant], seed=seed)
+    cfg = dict(DV[variant], seed=seed)
+    if cfg.get("resid"):
+        cfg.update(DEC_COND)
     per = max(50, games // (workers * 4))
     tasks = [(seed * 100000 + i, per) for i in range((games + per - 1) // per)]
-    with mp.get_context("spawn").Pool(workers, initializer=c25.c_init, initargs=(TRAIN, json.dumps(cfg))) as pool:
+    with mp.get_context("spawn").Pool(workers, initializer=d_init, initargs=(TRAIN, json.dumps(cfg))) as pool:
         res = pool.map(d_batch, tasks, chunksize=1)
     frames, ms, off = [], [], 0
     for _, a, m in res:
@@ -348,6 +357,28 @@ def blup_rows(pbp, trans, train):
     return ok.map(omap).fillna(0.0).to_numpy(), fk.map(fmap).fillna(0.0).to_numpy()
 
 
+IPW_BINS = [-99, -14, -8, -4, -1, 0, 3, 7, 13, 99]
+
+
+def ipw_fit(trans, eo, ef, shrink=50.0, lo=0.25, hi=4.0):
+    sd = np.clip(trans["sc_raw"].to_numpy(dtype=float), -24, 24)
+    qt = np.minimum(trans["qtr_actual"].to_numpy(), 5)
+    cell = (pd.cut(sd, IPW_BINS, labels=False).astype(int) * 6 + qt).astype(int)
+    ncell = int(cell.max()) + 1
+    n = np.bincount(cell, minlength=ncell).astype(float)
+    logw = np.zeros(len(cell))
+    info = {}
+    for nm, x in (("off", eo), ("def", ef)):
+        mu0 = float(x.mean())
+        m = np.bincount(cell, weights=x, minlength=ncell) / np.maximum(n, 1)
+        mc = mu0 + n / (n + shrink) * (m - mu0)
+        s2 = float(((x - mc[cell]) ** 2).mean())
+        logw += -0.5 * (((x - mu0) ** 2 - (x - mc[cell]) ** 2) / s2)
+        info[nm] = {"mu0": mu0, "s2": s2}
+    w = np.clip(np.exp(logw), lo, hi)
+    return w, cell, info
+
+
 def d_init(train, cfg_json):
     cfg = json.loads(cfg_json)
     c25.c_init(train, cfg_json)
@@ -366,6 +397,20 @@ def d_init(train, cfg_json):
     a["off_row"] = (lo + eo).astype(np.float64)
     a["def_row"] = (ld + ef).astype(np.float64)
     t["team_kernel_h"] = sim.TEAM_KERNEL_H_SCALE * float(np.std(eo))
+    if cfg.get("repa"):
+        ep0 = np.asarray(t["attrs"]["epa"], dtype=np.float64)
+        assert len(ep0) == len(eo)
+        t["attrs"] = dict(t["attrs"], epa=ep0 - eo - ef, adv=eo + ef)
+    if cfg.get("ipw"):
+        import inspect
+
+        w, _, _ = ipw_fit(trans, eo, ef)
+        src = inspect.getsource(sim.pick_index_nn_conditioned)
+        old = "weights = np.exp(-dist_sq / (2.0 * h * h))"
+        assert old in src
+        ns = _G["ns"]
+        exec(src.replace(old, old + " * IPW[neighbors]"), ns)
+        ns["IPW"] = w
     t["nn_weight_cache_cond"].clear()
 
 
@@ -378,6 +423,48 @@ def d_gen_init(setting):
 DV = dict(c25.VARIANTS)
 DV["cr"] = dict(c25.VARIANTS["c"], resid=1)
 DV["b_r"] = dict(c25.VARIANTS["b"], resid=1)
+DV["cre"] = dict(DV["cr"], repa=1)
+DV["crw"] = dict(DV["cre"], ipw=1)
+DEC_COND = dict(condition=1, yard_gain=2.0, def_sign=1.0, yard_bias=0.75, avg=1)
+
+
+def d_play_season(task):
+    tables = _G["tables"]
+    arr = tables["attrs"]
+    if "adv" not in arr:
+        return c25.c_play_season(task)
+    ns = _G["ns"]
+    cfg = _G["cfg"]
+    gain, bias = float(cfg["yard_gain"]), float(cfg["yard_bias"])
+    world, sidx, seed, sched, ratings = task
+    import mod25_generator as gen
+
+    rng = np.random.default_rng(seed)
+    gm_rows, chunks = [], []
+    for gi, (week, h, a) in enumerate(sched):
+        state = sim.initial_kickoff_state(rng, tables["opening_pool"])
+        ns["PLAYLOG"].clear()
+        _G["log"].clear()
+        hr = {"off": gen.quant(ratings[week][h][0]), "def": gen.quant(ratings[week][h][1])}
+        ar = {"off": gen.quant(ratings[week][a][0]), "def": gen.quant(ratings[week][a][1])}
+        rec, cap_hit = ns["run_one_game"](state, tables, rng, 600.0, _G["pol"], sim.K_NEIGHBORS, sim.MAX_PLAYS_PER_GAME, hr, ar)
+        tables["nn_weight_cache_cond"].clear()
+        log = np.array(ns["PLAYLOG"], dtype=np.float64).reshape(-1, 3)
+        idx = log[:, 1].astype(np.int64)
+        code = arr["code"][idx]
+        keep = (code == 0) | (code == 1)
+        idx = idx[keep]
+        shift = log[keep, 2]
+        offhome = log[keep, 0].astype(np.int8)
+        kind = np.where(code[keep] == 0, 0, np.where(arr["sack"][idx] == 1, 2, 1)).astype(np.int8)
+        epa = arr["epa"][idx] + (shift - bias) / gain + arr["adv"][idx]
+        yards = arr["yards"][idx] + shift
+        turn = np.where(arr["int"][idx] == 1, 1, np.where(arr["fl"][idx] == 1, 2, 0)).astype(np.int8)
+        chunks.append(np.rec.fromarrays([np.full(len(idx), gi, dtype=np.int16), offhome, kind, epa.astype(np.float32), yards.astype(np.float32), turn], names="g,offhome,kind,epa,yards,turn"))
+        total, margin = float(rec["total"]), float(rec["margin"])
+        gm_rows.append((gi, (total + margin) / 2.0, (total - margin) / 2.0, bool(rec["went_ot"]), bool(cap_hit)))
+    plays = np.concatenate(chunks) if chunks else np.empty(0)
+    return world, sidx, gm_rows, plays
 
 
 def gen_eval_d(variant, scale, yard_gain, worlds, seasons, workers, seed, yard_bias):
@@ -388,7 +475,7 @@ def gen_eval_d(variant, scale, yard_gain, worlds, seasons, workers, seed, yard_b
     setting = dict(gen.SETTING_DEFAULTS)
     setting.update({"scale": scale, "yard_gain": yard_gain, "def_sign": 1.0, "yard_bias": yard_bias, "drift": 1.0, "mech": cfgj})
     gen.init_worker = d_gen_init
-    gen.play_season = c25.c_play_season
+    gen.play_season = d_play_season
     games, plays, latents, elapsed = gen.run_generation(setting, worlds, seasons, workers, seed, progress=False)
     ts = gen.team_stats_from_plays(plays)
     keep = [w * 1000 + s + 1 for w in range(worlds) for s in range(2, seasons)]
@@ -445,6 +532,23 @@ def cmd_tilt(args):
     t.to_csv(OUT / "tilt.csv")
 
 
+def cmd_ipwcheck(args):
+    P, M, meta, pbp = real_load(TRAIN)
+    trans = sim.build_transition_frame(pbp)
+    eo, ef = blup_rows(pbp, trans, TRAIN)
+    w, cell, info = ipw_fit(trans, eo, ef)
+    sd = np.clip(trans["sc_raw"].to_numpy(dtype=float), -24, 24)
+    b = pd.cut(sd, IPW_BINS)
+    h = trans["qtr_actual"].to_numpy() <= 2
+    rows = []
+    for lab, g in pd.DataFrame({"b": b, "h": h, "o": eo, "d": ef, "w": w}).groupby(["b"], observed=True):
+        rows.append({"bin": str(lab), "n": len(g), "off_raw": g["o"].mean(), "off_w": np.average(g["o"], weights=g["w"]), "def_raw": g["d"].mean(), "def_w": np.average(g["d"], weights=g["w"]), "net_raw": (g["o"] + g["d"]).mean(), "net_w": np.average(g["o"] + g["d"], weights=g["w"])})
+    t = pd.DataFrame(rows)
+    print(t.to_string())
+    t.to_csv(OUT / "ipwcheck.csv", index=False)
+    print("weight mean sd min max", float(w.mean()), float(w.std()), float(w.min()), float(w.max()), "ess frac", float(w.sum() ** 2 / (w ** 2).sum() / len(w)), info)
+
+
 def main():
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -457,6 +561,7 @@ def main():
     d.add_argument("--skip-sim", dest="skip_sim", action="store_true")
     d.add_argument("--cache", default="C:/Users/Ryan/AppData/Local/Temp/claude/F--Repos-nfl-py3/f6b7873f-565c-422a-9dee-b6963fcaad49/scratchpad")
     sub.add_parser("tilt")
+    sub.add_parser("ipwcheck")
     for nm in ("grid", "gate"):
         g = sub.add_parser(nm)
         g.add_argument("--variant", default="cr")
@@ -471,7 +576,7 @@ def main():
         g.add_argument("--yard-bias", dest="yard_bias", type=float, default=0.75)
         g.add_argument("--tag", default="g1")
     args = ap.parse_args()
-    {"decomp": cmd_decomp, "tilt": cmd_tilt, "grid": cmd_grid, "gate": cmd_gate}[args.cmd](args)
+    {"decomp": cmd_decomp, "tilt": cmd_tilt, "ipwcheck": cmd_ipwcheck, "grid": cmd_grid, "gate": cmd_gate}[args.cmd](args)
 
 
 if __name__ == "__main__":

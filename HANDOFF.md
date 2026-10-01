@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-01T21:34:54.933375+00:00`
+Refreshed at: `2026-10-01T22:50:38.642136+00:00`
 
 ## Start here
 
@@ -21,17 +21,16 @@ Refreshed at: `2026-10-01T21:34:54.933375+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `342967fb8536` — MOD-25c: ball security, timeouts, clock burn and OT pool fitted; noise excess not from those (refuted); clock burn fixes autocorrelation
-- Pending change set: 15 paths
+- Baseline commit: `b45061e2e6cb` — MOD-25d: excess noise traced to a score-state selection leak in the play pool (fake momentum); shrunk team effects close about a third
+- Pending change set: 14 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - ` M README.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `A  docs/lanes/mod25d-variance-source.md`
+  - `M  docs/lanes/mod25d-variance-source.md`
   - ` M docs/model.html`
   - ` M registry/weak_signals.json`
-  - `A  scripts/mod25d_variance.py`
+  - `M  scripts/mod25d_variance.py`
   - ` M tiebreaker.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-predict/2026-week-04-20261001T211240Z.json`

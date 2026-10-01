@@ -12,9 +12,13 @@ Fix implemented: variant cr = c + shrunk (BLUP) offense/defense team-season EPA 
 
 ## Tried
 Neutral variant c only; no balanced-pool neutral test (neutral path ignores ratings).
+D3 (2026-10-01, scripts/mod25d_variance.py variants cre = cr + epa residualized, crw = cre + inverse-propensity pool weights; commands ipwcheck, decomp, grid, gate; run_d3.sh): weights from team-season off/def effects within score-bin x quarter cells, fit 2009-2017, clipped .25-4, ess .92; net tilt at leads >13 .044 -> .005, at deficits >14 -.035 -> 0 (in sample, ipwcheck.csv). Gate epa = residual + (shift-bias)/gain + drawn effect (full transport; the old .07*shift mapping dropped R2 to 0 once epa was residualized). Scoring result not residualized separately: the balance removes its tilt in the draw. Weights applied to the base draw only, not class swaps (policy swaps are state-only).
+Decomp d3 (12000 games, average-strength teams, real train/eval | c neutral, cr, crw): slope2700 .090/.059 | .034 -.075 -.118; slope1800 -.061/-.033 | -.057 -.130 -.158; cov_total -40/-64 | -31 -79 -83 (lags5-21 -44/-54 | -28 -55 -60); poss var 10.7/9.2 | 13.0 12.2 12.1; corr(n,pts) .054/.048 | .277 .318 .307; margin var 177.5 real nonstrength (eval gate) vs 217 c, 185 cr, 178 crw. Slope now overshoots negative; reversion is now stronger than real raw.
+Scale grid loss (same as 25c): crw .5 93.6 .75 57.9 1.0 20.3 1.5 46.6 2.0 136.5 (min 1.0); cre min 1.0 (26.2).
+Gate g3 (8 worlds x 8 seasons, real 2018-25; c scale 3, cr 1.5, cre/crw 1.0): see gate_d3_table.txt. crw: sd 14.34 (real 14.31), nonstrength var 195 (177.5; c 247, cr 223), autocorr .148, home edge 1.84, mass10/17 inside; mass3 .123 (.144), mass7 .078 (.085), mass14 .032 (.051), le3 .213 (.247), R2 .028/.063/.053 (real .105/.126/.150).
 
 ## Next
-Residualize scoring on the drawn play (TD/FG share by team-season) and reweight pool for score-state tilt; re-measure early-game momentum slope (+.045 sim) with decomp.
+Fail set after crw: (1) R2 about a third of real: strength moves only yards and epa, not scoring finish, turnovers or kicking, so team strength barely reaches margin; fit team-season effects on point conversion (TD/FG per drive, turnover rate) and transport them. (2) corr(possession count, total points) .31 vs .05 persists: pace/clock coupling mechanism. (3) mass 3/14 low: check FG attempt mechanics (kick range, coach 4th down by score) as a mechanism, not target.
 
 ## Open
-Scoring outcomes (points on drawn play) are not residualized, only yards and neighbour weights.
+Weights not applied to class-swap draws. Real strength-removed slope/cov are inferred, not measured.
