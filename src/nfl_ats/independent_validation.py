@@ -24,7 +24,8 @@ from nfl_ats.provenance import sha256_file
 from nfl_ats.published_picks import game_deadlines
 from nfl_ats.tiebreaker import newest_schedules_path
 
-STUDY_DIRECTORY = Path("prospective") / "independent_validation"
+STUDY_ROOT = Path("prospective")
+DEFAULT_STUDY = "independent_validation_v2"
 RECIPE_KEYS = (
     "ats_method",
     "regressor",
@@ -68,8 +69,8 @@ def _sources() -> dict[str, str]:
     return {path.relative_to(root).as_posix(): sha256_file(path) for path in sorted(paths)}
 
 
-def _root(artifacts_root: Path) -> Path:
-    return artifacts_root / STUDY_DIRECTORY
+def _root(artifacts_root: Path, study: str = DEFAULT_STUDY) -> Path:
+    return artifacts_root / STUDY_ROOT / study
 
 
 def _read(path: Path) -> dict[str, Any]:
@@ -79,8 +80,10 @@ def _read(path: Path) -> dict[str, Any]:
     return value
 
 
-def _enrollment(artifacts_root: Path, *, check_sources: bool = False) -> dict[str, Any]:
-    envelope = _read(_root(artifacts_root) / "enrollment.json")
+def _enrollment(
+    artifacts_root: Path, *, check_sources: bool = False, study: str = DEFAULT_STUDY
+) -> dict[str, Any]:
+    envelope = _read(_root(artifacts_root, study) / "enrollment.json")
     payload = envelope["enrollment"]
     if _digest(payload) != envelope["sha256"]:
         raise DataContractError("Independent-validation enrollment was altered")
@@ -89,8 +92,10 @@ def _enrollment(artifacts_root: Path, *, check_sources: bool = False) -> dict[st
     return envelope
 
 
-def enroll(artifacts_root: Path, data_root: Path, protocol_path: Path) -> dict[str, Any]:
-    destination = _root(artifacts_root) / "enrollment.json"
+def enroll(
+    artifacts_root: Path, data_root: Path, protocol_path: Path, *, study: str = DEFAULT_STUDY
+) -> dict[str, Any]:
+    destination = _root(artifacts_root, study) / "enrollment.json"
     if destination.exists():
         raise DataContractError(
             "Independent validation is already enrolled; enrollment is immutable"
@@ -109,12 +114,16 @@ def enroll(artifacts_root: Path, data_root: Path, protocol_path: Path) -> dict[s
         & schedule.week.between(int(protocol["start_week"]), int(protocol["end_week"]))
         & schedule.game_type.eq(protocol["game_type"])
     ].copy()
+    kickoffs = pd.to_datetime(
+        cohort.gameday.astype(str) + " " + cohort.gametime.astype(str), errors="raise"
+    ).dt.tz_localize("America/New_York")
+    cohort = cohort.loc[kickoffs.gt(now)].copy()
     if cohort.empty or cohort.game_id.duplicated().any():
         raise DataContractError("Independent validation needs a nonempty unique future cohort")
     if cohort[["home_score", "away_score"]].notna().any(axis=None):
         raise DataContractError("Independent-validation cohort already has observed outcomes")
     days = pd.to_datetime(cohort.gameday, errors="raise", utc=True)
-    if days.isna().any() or days.le(now).any():
+    if days.isna().any():
         raise DataContractError("Every declared game must be strictly after enrollment")
     cohort["scheduled_gameday"] = days.dt.strftime("%Y-%m-%d")
     active = load_active_ats_model(artifacts_root)
@@ -139,12 +148,14 @@ def enroll(artifacts_root: Path, data_root: Path, protocol_path: Path) -> dict[s
     }
     envelope = {"enrollment": payload, "sha256": _digest(payload)}
     atomic_json(envelope, destination)
-    return status(artifacts_root)
+    return status(artifacts_root, study)
 
 
-def _captures(artifacts_root: Path, envelope: dict[str, Any]) -> pd.DataFrame:
+def _captures(
+    artifacts_root: Path, envelope: dict[str, Any], study: str = DEFAULT_STUDY
+) -> pd.DataFrame:
     rows: list[dict[str, Any]] = []
-    for path in sorted((_root(artifacts_root) / "captures").glob("*.json")):
+    for path in sorted((_root(artifacts_root, study) / "captures").glob("*.json")):
         capture = _read(path)
         payload = capture["capture"]
         if (
@@ -176,12 +187,12 @@ def _captures(artifacts_root: Path, envelope: dict[str, Any]) -> pd.DataFrame:
     return frame.sort_values("recorded_at_utc").groupby("game_id", as_index=False).tail(1)
 
 
-def status(artifacts_root: Path) -> dict[str, Any]:
-    if not (_root(artifacts_root) / "enrollment.json").exists():
-        return {"status": "not_enrolled"}
-    envelope = _enrollment(artifacts_root)
+def status(artifacts_root: Path, study: str = DEFAULT_STUDY) -> dict[str, Any]:
+    if not (_root(artifacts_root, study) / "enrollment.json").exists():
+        return {"status": "not_enrolled", "study": study}
+    envelope = _enrollment(artifacts_root, study=study)
     enrollment = envelope["enrollment"]
-    frame = _captures(artifacts_root, envelope)
+    frame = _captures(artifacts_root, envelope, study)
     return {
         "status": "collecting" if not frame.empty else "awaiting_first_capture",
         "study_id": enrollment["protocol"]["study_id"],
@@ -194,10 +205,12 @@ def status(artifacts_root: Path) -> dict[str, Any]:
     }
 
 
-def capture(artifacts_root: Path, data_root: Path, *, dry: bool = False) -> dict[str, Any]:
+def capture(
+    artifacts_root: Path, data_root: Path, *, dry: bool = False, study: str = DEFAULT_STUDY
+) -> dict[str, Any]:
     from nfl_ats.clv import current_played_card_view
 
-    envelope = _enrollment(artifacts_root, check_sources=True)
+    envelope = _enrollment(artifacts_root, check_sources=True, study=study)
     enrollment = envelope["enrollment"]
     protocol = enrollment["protocol"]
     active = load_active_ats_model(artifacts_root)
@@ -274,7 +287,7 @@ def capture(artifacts_root: Path, data_root: Path, *, dry: bool = False) -> dict
     )
     deadlines = game_deadlines(raw)
     known = {row["game_id"] for row in enrollment["cohort"]}
-    existing = _captures(artifacts_root, envelope)
+    existing = _captures(artifacts_root, envelope, study)
     old_lines = {} if existing.empty else existing.set_index("game_id").spread_line.to_dict()
     rows = []
     for index, row in frame.iterrows():
@@ -324,20 +337,22 @@ def capture(artifacts_root: Path, data_root: Path, *, dry: bool = False) -> dict
         return {"status": "no_eligible_pregame_games", "recorded": 0, "dry": dry}
     payload = {"enrollment_sha256": envelope["sha256"], "source_sha256": before, "rows": rows}
     if not dry:
-        path = _root(artifacts_root) / "captures" / f"{run_id(now)}.json"
+        path = _root(artifacts_root, study) / "captures" / f"{run_id(now)}.json"
         if path.exists():
             raise DataContractError("Independent-validation capture already exists")
         atomic_json({"capture": payload, "sha256": _digest(payload)}, path)
     return {"status": "dry_run" if dry else "captured", "recorded": len(rows), "dry": dry}
 
 
-def score(artifacts_root: Path, outcomes: pd.DataFrame) -> dict[str, Any]:
+def score(
+    artifacts_root: Path, outcomes: pd.DataFrame, study: str = DEFAULT_STUDY
+) -> dict[str, Any]:
     from nfl_ats.clv import week_blocked_bootstrap
 
-    envelope = _enrollment(artifacts_root)
+    envelope = _enrollment(artifacts_root, study=study)
     enrollment = envelope["enrollment"]
     cohort = pd.DataFrame(enrollment["cohort"])
-    frame = _captures(artifacts_root, envelope)
+    frame = _captures(artifacts_root, envelope, study)
     required = {"game_id", "home_score", "away_score"}
     if not required.issubset(outcomes.columns):
         raise DataContractError("Independent-validation scoring requires final game scores")
@@ -345,7 +360,7 @@ def score(artifacts_root: Path, outcomes: pd.DataFrame) -> dict[str, Any]:
     if finals.game_id.duplicated().any():
         raise DataContractError("Independent-validation outcomes contain duplicate games")
     finals = finals.dropna(subset=["home_score", "away_score"])
-    coverage = status(artifacts_root)
+    coverage = status(artifacts_root, study)
     coverage["final_games"] = len(finals)
     if (
         len(finals) != len(cohort)

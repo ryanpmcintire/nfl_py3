@@ -80,3 +80,12 @@ making a decision. Follow the research rules in `AGENTS.md`: an inconclusive
 result remains `unresolved_below_power`; zero crossing does not close a signal.
 Any eventual terminal verdict needs an admissible registry closing ground.
 The study does not automatically choose the served card.
+
+## Version 2 enrollment (2026-10-01)
+
+Version 1 recorded zero captures before two pinned prediction sources changed,
+so its guard stopped capture. Version 2 is a separate, explicit enrollment
+under `registry/studies/combined_vs_raw_2026_v2.json`, stored in
+`artifacts/prospective/independent_validation_v2/`, restricted to games whose
+scheduled kickoff follows enrollment. Version 1 remains frozen and is never
+blended with version 2. Commands use `--study` (default v2).

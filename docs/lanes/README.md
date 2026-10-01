@@ -22,7 +22,7 @@ modified lane when the prompt just says to continue.
 
 - [backlog execution](backlog-execution-2026-09-28.md) - 2026-09-28: operations fixes and truthful scheduler status verified; special-teams season-lagged builder produced 7,413 ratings across four declared fits; host verification awaits explicit approval.
 - [backlog research checkpoint](done/backlog-research-2026-09-28.md) - 2026-09-28: corrected frozen scorecard and pool chronology; completed four-cell precision replay and simulator terminal-rule repair/regrade.
-- [independent-combination-validation](independent-combination-validation.md) - 2026-09-28: all ten capture aliases rehearsed; wider execution windows; unchanged 224-game Week 4-18 enrollment awaits first eligible capture.
+- [independent-combination-validation](independent-combination-validation.md) - 2026-10-01: v1 stopped by source guard; v2 enrolled, all 16 Week 4 games captured pregame.
 - [backlog-batch-2026-09-26](backlog-batch-2026-09-26.md) - 2026-09-26: 16 finished research lanes closed to done/; see State for what each closed on.
 - [sim08-simulator-rebuild](sim08-simulator-rebuild.md) - 2026-09-28: historical overtime terminal rules repaired and regraded; 30,006 simulations retained, four unresolved records; simulator remains unserved.
 - [lead53-sunday-renomination](lead53-sunday-renomination.md) - 2026-09-24: ranks on the served four-term probability; after Sun 10:00 ET grep BEST-PICK-LEDGER in data/scheduler_log.txt for the Week 3 pairing.

@@ -47,14 +47,17 @@ The former 15-minute window missed Monday behind the noon refresh; it is now
 zero rows because the active forecast is Week 3. Enrollment/source hashes match;
 224 future games remain unobserved and interim scoring stays withheld.
 Next verify actual Week 4 study captures after Tuesday's fresh-data lock.
-**Measured 2026-10-01:** capture is STOPPED by the pinned-source guard. The
-Wed 12:10 job failed: "source changed; do not mix model versions". Changed since
-enrollment: cli_commands/prediction.py (41ae595) and
-sharp_book_movement_features.py (6a8335c). The Thu 12:10 and 19:55 jobs will
-fail the same way, so no Week 4 row is captured, PIT at CLE included. Protocol
-forbids a silent reset. Remedy: an explicit, documented v2 enrollment of the
-games not yet kicked off, pinned to the current sources, kept separate from v1.
-It must land before 2026-10-01 20:15 ET to include PIT at CLE.
+**Measured 2026-10-01 17:08Z:** v1 stopped by the pinned-source guard (sources
+changed in 41ae595 and 6a8335c before any capture); it stays frozen with zero
+captures and is never blended. v2 enrolled explicitly:
+registry/studies/combined_vs_raw_2026_v2.json, artifacts/prospective/
+independent_validation_v2/, digest 42ac842e..., 224 games, cohort limited to
+games kicking off after enrollment. CLI `--study` defaults to v2; v1 is
+`--study independent_validation`. First capture recorded all 16 Week 4 games,
+PIT at CLE included. Scheduled capture jobs now write v2 unchanged.
+Next: confirm Thursday 19:55 and Sunday captures succeed; any further pinned-
+source edit stops v2 the same way, so batch model-source edits after Week 18
+or enroll v3 explicitly.
 
 ## Open
 Earlier signal design and raw-model selection remain outside the historical

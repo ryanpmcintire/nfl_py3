@@ -480,13 +480,17 @@ def _cmd_independent_validation(args: argparse.Namespace) -> None:
 
     artifacts = _artifacts_root()
     if args.study_action == "enroll":
-        result = independent_validation.enroll(artifacts, _data_root(), args.protocol)
+        result = independent_validation.enroll(
+            artifacts, _data_root(), args.protocol, study=args.study
+        )
     elif args.study_action == "capture":
-        result = independent_validation.capture(artifacts, _data_root(), dry=args.dry)
+        result = independent_validation.capture(
+            artifacts, _data_root(), dry=args.dry, study=args.study
+        )
     elif args.study_action == "score":
-        result = independent_validation.score(artifacts, _load_features(args.features))
+        result = independent_validation.score(artifacts, _load_features(args.features), args.study)
     else:
-        result = independent_validation.status(artifacts)
+        result = independent_validation.status(artifacts, args.study)
     _print_json(result)
 
 
@@ -501,24 +505,32 @@ def register(
         "and raw probabilities",
     )
     study_actions = study.add_subparsers(dest="study_action", required=True)
+    study_choice = argparse.ArgumentParser(add_help=False)
+    study_choice.add_argument(
+        "--study",
+        default="independent_validation_v2",
+        help="study directory under artifacts/prospective; v1 is independent_validation",
+    )
     study_enroll = study_actions.add_parser(
-        "enroll", help="freeze the declared future cohort and model"
+        "enroll", help="freeze the declared future cohort and model", parents=[study_choice]
     )
     study_enroll.add_argument(
-        "--protocol", type=Path, default=Path("registry/studies/combined_vs_raw_2026.json")
+        "--protocol", type=Path, default=Path("registry/studies/combined_vs_raw_2026_v2.json")
     )
     study_enroll.set_defaults(handler=_cmd_independent_validation)
     study_capture = study_actions.add_parser(
-        "capture", help="append paired probabilities before lock"
+        "capture", help="append paired probabilities before lock", parents=[study_choice]
     )
     study_capture.add_argument("--dry", action="store_true")
     study_capture.set_defaults(handler=_cmd_independent_validation)
     study_status = study_actions.add_parser(
-        "status", help="show coverage without interim model scores"
+        "status", help="show coverage without interim model scores", parents=[study_choice]
     )
     study_status.set_defaults(handler=_cmd_independent_validation)
     study_score = study_actions.add_parser(
-        "score", help="compare models after the complete cohort finishes"
+        "score",
+        help="compare models after the complete cohort finishes",
+        parents=[study_choice],
     )
     _add_features_arg(study_score)
     study_score.set_defaults(handler=_cmd_independent_validation)
