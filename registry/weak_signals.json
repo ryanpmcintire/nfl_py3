@@ -173577,6 +173577,90 @@
       "source": "artifacts/mod24_u3b/results.json",
       "standard_error": null
     },
+    "mod24_u5_t1_epa_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from season-blocked bootstrap.",
+      "closing_ground": null,
+      "description": "Model-alone opener test 2011-2025, train on EPA margin target (total EPA home minus away scaled by out-of-season slope); paired vs base, pooled record 1934-1800 vs 1944-1790.",
+      "effect": -0.2678093197643278,
+      "effect_units": "accuracy_points",
+      "family": "mod24_denoised_target",
+      "interval": [
+        -0.96411355115158,
+        0.2999073362294472
+      ],
+      "league": "nfl",
+      "notes": "Training target changed, inputs identical, base ridge alpha 10; graded on real margin vs opener (SBR open 2011-2019, Tuesday open 2020-2025); season-blocked 20000 draws.",
+      "plain_summary": "Trains the model on a less luck-driven version of each past game's result and asks whether its picks against the opening line improve.",
+      "probability_positive": 0.1987,
+      "recorded_at": "2026-10-01",
+      "reliability": null,
+      "sample_blocks": 15,
+      "sample_games": 3734,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/mod24_u5/report.json",
+      "standard_error": null
+    },
+    "mod24_u5_t2_deserved_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from season-blocked bootstrap.",
+      "closing_ground": null,
+      "description": "Model-alone opener test 2011-2025, train on deserved-margin target (scrimmage EPA and success, fumble-recovery luck replaced, win probability 0.05-0.95 only, return plays excluded); paired vs base, pooled record 1938-1796 vs 1944-1790.",
+      "effect": -0.16068559185859668,
+      "effect_units": "accuracy_points",
+      "family": "mod24_denoised_target",
+      "interval": [
+        -1.570120903351823,
+        1.3329956503463558
+      ],
+      "league": "nfl",
+      "notes": "Training target changed, inputs identical, base ridge alpha 10; graded on real margin vs opener (SBR open 2011-2019, Tuesday open 2020-2025); season-blocked 20000 draws.",
+      "plain_summary": "Trains the model on a less luck-driven version of each past game's result and asks whether its picks against the opening line improve.",
+      "probability_positive": 0.38785,
+      "recorded_at": "2026-10-01",
+      "reliability": null,
+      "sample_blocks": 15,
+      "sample_games": 3734,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/mod24_u5/report.json",
+      "standard_error": null
+    },
+    "mod24_u5_t3_blend_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from season-blocked bootstrap.",
+      "closing_ground": null,
+      "description": "Model-alone opener test 2011-2025, train on blend of real margin and deserved margin with lambda chosen per season on inner seasons; paired vs base, pooled record 1924-1810 vs 1944-1790.",
+      "effect": -0.5356186395286556,
+      "effect_units": "accuracy_points",
+      "family": "mod24_denoised_target",
+      "interval": [
+        -1.621186990823169,
+        0.3699813033605887
+      ],
+      "league": "nfl",
+      "notes": "Training target changed, inputs identical, base ridge alpha 10; graded on real margin vs opener (SBR open 2011-2019, Tuesday open 2020-2025); season-blocked 20000 draws.",
+      "plain_summary": "Trains the model on a less luck-driven version of each past game's result and asks whether its picks against the opening line improve.",
+      "probability_positive": 0.13975,
+      "recorded_at": "2026-10-01",
+      "reliability": null,
+      "sample_blocks": 15,
+      "sample_games": 3734,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/mod24_u5/report.json",
+      "standard_error": null
+    },
     "motivation_ladder_elim_visitor_alive_host": {
       "category": "schedule",
       "classification": "unresolved_below_power",
