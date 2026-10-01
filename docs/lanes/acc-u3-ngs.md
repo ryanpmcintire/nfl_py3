@@ -16,7 +16,10 @@ Data + features DONE (no grading). Measured:
 Fixed two bugs in-session: shrink constant used full-table volume (future volume leak, caught by truncation check); initial opener sign wrong (opener spread has spread_line sign: margin vs opener = result - opener).
 
 ## Next
-Unit acc-u3b: grade the diff_ngs_* columns on the model alone (leave-one-season-out, same opener test), 24 features = 24 looks in one family declared now; record via weak-signals record. Zero crossing closes nothing.
+NGS model-alone is done and negative-leaning (U3b). Next: no NGS arm adds to the base; only revisit with a forward log. Pool across families via weak-signals pool when asked.
+
+## U3b result (measured, scripts/mod24_u3b.py, artifacts/mod24_u3b/{results.csv,json,run.log,weak_signals_batch.json})
+Base reproduced 802-701. Arms declared before scoring: a all24, b compact6 own, c compact6 + allowed. 3 arms x 5 metrics x 2 training variants + 6 coefficient reads = about 36 looks. Zero-fill: a 798-705 acc -0.27 P+ 0.29; b 791-712 -0.73 P+ 0.11; c 776-727 -1.73 P+ 0.012 (CI -3.07..-0.19). Recal log loss diff (positive better): a -0.00045 P+ 0.29, b -0.00045 P+ 0.10, c -0.00047 P+ 0.19; Brier same sign; RPS all negative (P+ 0.20/0.24/0.08). Flip W-L (arm-correct): a 153-157, b 70-81, c 110-136. Train-2016+ variant (own base): acc +0.60/+0.53/-0.67, LL P+ 0.012/0.081/0.014 (arms worse). Arm b coefficients mostly sign-stable (time to throw, aggressiveness, RYOE all negative 6/6; 8+ defenders positive 5/6; separation and CPOE mixed). 3 LL cells recorded (family mod24_ngs_model_alone, unresolved_below_power). Wrong-sign not claimed as closure (6 season blocks).
 
 ## Open
 Opener coverage 1613/1693 games for 2020-2025 (80 lack Tuesday opener). Week-of-game NGS for week w is not used by design (published after games).

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-01T17:39:13.600562+00:00`
+Refreshed at: `2026-10-01T17:43:23.282372+00:00`
 
 ## Start here
 
@@ -21,9 +21,11 @@ Refreshed at: `2026-10-01T17:39:13.600562+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `5bf25e978f00` — MOD-24 units 2-4: proper-score regrade, NGS features, forward man/zone log
-- Pending change set: 2 paths
-  - `M  docs/lanes/acc-u4-forward-log.md`
+- Baseline commit: `34cc4c67bd86` — MOD-24 U4: 2026 man/zone participation data not yet published (404); forward arm runs on 2025 tendencies until it is
+- Pending change set: 4 paths
+  - `M  docs/lanes/acc-u3-ngs.md`
+  - `M  registry/weak_signals.json`
+  - `A  scripts/mod24_u3b.py`
   - `?? scripts/mod24_u1.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.

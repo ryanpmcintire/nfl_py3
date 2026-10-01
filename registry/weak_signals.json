@@ -173381,6 +173381,90 @@
       "source": "artifacts/mod24_u2b/results.json",
       "standard_error": null
     },
+    "mod24_u3b_ngs_a_all24_recal_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval not resolved to wrong side; no positive control.",
+      "closing_ground": null,
+      "description": "NGS family arm a_all24 added to the 90-input base, model alone, opener 2020-2025: paired cover log loss after out-of-season temperature recalibration of both sides (positive = arm better); season-blocked bootstrap.",
+      "effect": -0.0004519592491995231,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_ngs_model_alone",
+      "interval": [
+        -0.00198173014285001,
+        0.0011073733221228725
+      ],
+      "league": "nfl",
+      "notes": "None",
+      "plain_summary": "Checks whether adding tracked passing, rushing and receiving measures of each team improves the quality of the model's own cover probabilities.",
+      "probability_positive": 0.2888,
+      "recorded_at": "2026-10-01",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_u3b/results.json",
+      "standard_error": null
+    },
+    "mod24_u3b_ngs_b_compact6_recal_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval not resolved to wrong side; no positive control.",
+      "closing_ground": null,
+      "description": "NGS family arm b_compact6 added to the 90-input base, model alone, opener 2020-2025: paired cover log loss after out-of-season temperature recalibration of both sides (positive = arm better); season-blocked bootstrap.",
+      "effect": -0.00045121370731352584,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_ngs_model_alone",
+      "interval": [
+        -0.0010040045879227085,
+        0.00034348123607329966
+      ],
+      "league": "nfl",
+      "notes": "None",
+      "plain_summary": "Checks whether adding tracked passing, rushing and receiving measures of each team improves the quality of the model's own cover probabilities.",
+      "probability_positive": 0.0997,
+      "recorded_at": "2026-10-01",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_u3b/results.json",
+      "standard_error": null
+    },
+    "mod24_u3b_ngs_c_compact6_plus_allowed_recal_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval not resolved to wrong side; no positive control.",
+      "closing_ground": null,
+      "description": "NGS family arm c_compact6_plus_allowed added to the 90-input base, model alone, opener 2020-2025: paired cover log loss after out-of-season temperature recalibration of both sides (positive = arm better); season-blocked bootstrap.",
+      "effect": -0.0004669718629112867,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_ngs_model_alone",
+      "interval": [
+        -0.0014232129391605793,
+        0.0006369530661409408
+      ],
+      "league": "nfl",
+      "notes": null,
+      "plain_summary": "Checks whether adding tracked passing, rushing and receiving measures of each team improves the quality of the model's own cover probabilities.",
+      "probability_positive": 0.1917,
+      "recorded_at": "2026-10-01",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_u3b/results.json",
+      "standard_error": null
+    },
     "motivation_ladder_elim_visitor_alive_host": {
       "category": "schedule",
       "classification": "unresolved_below_power",
