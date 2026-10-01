@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-01T17:45:24.707147+00:00`
+Refreshed at: `2026-10-01T17:56:16.430016+00:00`
 
 ## Start here
 
@@ -21,13 +21,11 @@ Refreshed at: `2026-10-01T17:45:24.707147+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `125f605f893b` — MOD-24 U3b: Next Gen Stats family graded on the model alone; no arm beats base (3 cells unresolved)
-- Pending change set: 5 paths
+- Baseline commit: `18d6b9e470a5` — MOD-24 U1: extended 2011-2025 paired grade; no arm beats base; parent lane verdict
+- Pending change set: 3 paths
   - `M  ROADMAP.md`
-  - `M  docs/lanes/acc-u1-extended-grade.md`
-  - `M  docs/lanes/accuracy-ceiling-theory.md`
-  - `M  registry/weak_signals.json`
-  - `A  scripts/mod24_u1.py`
+  - `A  docs/lanes/acc-u5-denoised-target.md`
+  - `A  docs/lanes/acc-u6-half-labels.md`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
