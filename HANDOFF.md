@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-01T20:40:00.503316+00:00`
+Refreshed at: `2026-10-01T21:34:54.933375+00:00`
 
 ## Start here
 
@@ -21,12 +21,22 @@ Refreshed at: `2026-10-01T20:40:00.503316+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `46c4d955b2a7` — MOD-25b: learned 4th-down, late-clock and 2-point policies plus finer state matching; held-out mass at 3 .089 to .109 (real .143)
-- Pending change set: 5 paths
-  - `A  docs/lanes/mod25c-noise-mechanisms.md`
+- Baseline commit: `342967fb8536` — MOD-25c: ball security, timeouts, clock burn and OT pool fitted; noise excess not from those (refuted); clock burn fixes autocorrelation
+- Pending change set: 15 paths
+  - ` M CURRENT_PREDICTIONS.md`
+  - ` M README.md`
+  - ` M docs/findings.html`
+  - ` M docs/history.html`
+  - ` M docs/index.html`
+  - `A  docs/lanes/mod25d-variance-source.md`
+  - ` M docs/model.html`
   - ` M registry/weak_signals.json`
-  - `A  scripts/mod25c_noise.py`
+  - `A  scripts/mod25d_variance.py`
   - ` M tiebreaker.json`
+  - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
+  - `?? registry/experiments/margin-predict/2026-week-04-20261001T211240Z.json`
+  - `?? registry/experiments/opener-evaluation/20261001T211624Z.json`
+  - `?? registry/experiments/waterfall-feed/20261001T211747Z.json`
   - `?? scripts/mod24_u7a.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
@@ -36,18 +46,18 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `a8621cb3f3b86035`
+- Model ID: `c029e2382c11dffe`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261001T161430Z`)
+- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261001T211624Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card combines this with the coach component in one fitted calibrated probability, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,114 / 2,123 (52.47%)**
-- Linked forecast: **2026 Week 4**, created `2026-10-01T16:11:06.090646+00:00`
+- Linked forecast: **2026 Week 4**, created `2026-10-01T21:12:40.916240+00:00`
 
 The 52.47% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 4** from model `a8621cb3f3b86035`, published `2026-10-01T16:18:06.703360+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 4** from model `c029e2382c11dffe`, published `2026-10-01T21:21:01.756071+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 
