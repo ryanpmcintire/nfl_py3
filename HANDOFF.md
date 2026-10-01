@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-01T19:32:32.810120+00:00`
+Refreshed at: `2026-10-01T20:40:00.503316+00:00`
 
 ## Start here
 
@@ -21,11 +21,11 @@ Refreshed at: `2026-10-01T19:32:32.810120+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `233423c11cfe` — MOD-24 U8: backfill complete; markets track the book close within 0.4 pts
+- Baseline commit: `46c4d955b2a7` — MOD-25b: learned 4th-down, late-clock and 2-point policies plus finer state matching; held-out mass at 3 .089 to .109 (real .143)
 - Pending change set: 5 paths
-  - `A  docs/lanes/mod25b-mechanisms.md`
+  - `A  docs/lanes/mod25c-noise-mechanisms.md`
   - ` M registry/weak_signals.json`
-  - `A  scripts/mod25_mechanisms.py`
+  - `A  scripts/mod25c_noise.py`
   - ` M tiebreaker.json`
   - `?? scripts/mod24_u7a.py`
 
