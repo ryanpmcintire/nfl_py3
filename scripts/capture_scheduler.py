@@ -402,6 +402,26 @@ SCHEDULE: tuple[Job, ...] = (
     ),
     *(
         Job(
+            f"mod24_forward_log_{day}_{at.replace(':', '')}",
+            day,
+            at,
+            60,
+            [
+                str(UV),
+                "run",
+                "--no-sync",
+                "python",
+                str(REPO / "scripts" / "mod24_forward_log.py"),
+            ],
+            True,
+            "Log the frozen MOD-23 man/zone challenger's pregame picks beside the served "
+            "model for the MOD-24 forward study.",
+            added_on="2026-10-01",
+        )
+        for day, at in (("thu", "19:00"), ("sun", "11:00"))
+    ),
+    *(
+        Job(
             f"lineups_{day}",
             day,
             "14:30" if day == "tue" else "12:00",
