@@ -47,3 +47,16 @@ targets (points per game, EPA spread), never to the margin shape.
 
 ## Open
 Interval crossing zero closes nothing here; gates are fidelity filters, not signal tests.
+
+## Grid result 2026-10-01 (measured, orchestrator read)
+10 settings, 8,160 games each. None passes every gate. The best on structure,
+g_d1_s2.5_y3_dr2, passes all three predictability gates, home edge and mass
+at 10, 14 and 17. It fails margin SD (16.7 vs 14.5 [14.0,14.9]), EPA
+autocorrelation (.19 vs .156), mass at 3 (.084 vs .143), mass at 7 (.058 vs
+.088) and share decided by 3 or fewer (.18 vs .24). Every setting fails the
+same way: margins too wide and too few close games. Inferred: the missing
+mechanism is game-state behaviour (leaders killing clock, trailers playing for
+the FG, 4th-down choices by score and time). MOD-25b is fixing that.
+The setting key fg_boost exists in scripts/mod25_generator.py at 0.0 and must
+stay 0: it would target the shape directly. No bulk synthetic production until
+MOD-25b's held-out shape check passes.
