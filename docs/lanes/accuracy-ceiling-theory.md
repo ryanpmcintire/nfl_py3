@@ -1,34 +1,33 @@
-# Why accuracy is stuck, and how to get past it
+# Why accuracy is stuck, and how to get past it (MOD-24 parent)
 
 ## Goal
-Name what keeps the model's own record against the opener stuck near 53.4%
-(802-701, 2020-2025), and pick the work most likely to raise it.
+Raise the model's own record against the opener (802-701, 53.36%, 2020-2025)
+by fixing the grading instrument and adding information the opener lacks.
 
 ## State
-2026-10-01: theory written (in the conversation, summarized here). Four limits:
-1. Information: the inputs are public team data the opener already prices.
-   Even perfect knowledge of team strength moved error by only 0.013 points.
-2. Resolution: 1,503 games give a standard error of about 1.3 points. A real
-   gain of about 0.5-1 point can't be seen by win-loss grading. MOD-23 unit 1
-   improved log loss and margin error in 5 of 6 seasons and still lost.
-3. Noise: the margin varies by about 13 points and the edge is about 1 point.
-   88 ridge inputs fit noise, and every blend or shrink chose "add nothing".
-4. Reuse: about 7,700 tests on the same 2020-2025 games.
+2026-10-01 theory: (1) inputs are public team data the opener prices; the
+team-quality ceiling is 0.013 pts; (2) 1,503 games give an SE of about
+1.3 pts, so win-loss can't see gains of 0.5-1 pt; (3) noise of 13 pts vs an
+edge of 1 pt; (4) about 7,700 tests reuse 2020-2025.
+Correction: the extended population is not new. docs/proxy_opener_replication.md
+(2026-08-19) graded the served model on SBR opens: 2011-2019 50.38%, against
+53.36% for 2020-2025. The SBR open differs from the Tuesday line by 1.36 pts
+on average, so it was kept out of the headline. XLG-09 already used a
+2011-2025 population. New here: paired candidate-vs-base grading on it.
+Owner approved all four units 2026-10-01. ROADMAP MOD-24.
 
-## Next (ranked)
-1. Extend the model-alone opener test to 2011-2025 using sbr_odds openers.
-   That is about 2.5 times the games and a standard error near 0.8. Check
-   first that the SBR open matches the Tuesday pool line.
-2. Promote on proper scores (log loss and margin score) with picks as a
-   secondary. Re-grade MOD-23 unit 1 under that rule.
-3. Add data the opener doesn't use: tracking and charting (Next Gen Stats,
-   FTN charting). Unit 5 coverage charting was the only positive model-alone
-   arm (+0.47, P+ 0.77). No ROADMAP row for NGS or FTN was found.
-4. Grade all the above on the v2 forward cohort, untouched.
+## Next (one lane each)
+- U1 docs/lanes/acc-u1-extended-grade.md
+- U2 docs/lanes/acc-u2-proper-scores.md
+- U3 docs/lanes/acc-u3-ngs.md
+- U4 docs/lanes/acc-u4-forward-log.md (logs MOD-23 unit-5a man/zone first;
+  arms that U1-U3 favor get added later)
 
-## Tried
-See docs/lanes/mod23-base-model.md units 1-5, plus the team-quality ceiling
-and MKT-20 (move as target, closed).
+## Hazard
+Editing any pinned source (src/nfl_ats: names in PINNED_NAMES, *features.py,
+*_overlay.py, names containing margin or model, cli_commands/prediction.py)
+stops the v2 validation capture. All MOD-24 code goes in scripts/.
 
 ## Open
-Does the SBR open match the Tuesday Splash line closely enough to grade on?
+Why does the 2011-2019 proxy grade sit 3 pts below 2020-2025: line noise,
+era, or 2020-2025 selection reuse? U1 reports it per era.
