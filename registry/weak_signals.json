@@ -172429,6 +172429,118 @@
       "source": "docs/mod23_unit5.md",
       "standard_error": null
     },
+    "mod24_extended_u1_alpha_only_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; record states probability_positive from season-blocked bootstrap.",
+      "closing_ground": null,
+      "description": "Model-alone opener test 2011-2025 (SBR open 2011-2019, Tuesday open 2020-2025), MOD-23 unit 1 ridge alpha only, chosen out of season, paired vs base, pooled; log loss diff -0.0047 brier diff -0.0008 (negative is better).",
+      "effect": -1.0176754151044456,
+      "effect_units": "accuracy_points",
+      "family": "mod24_extended_grade",
+      "interval": [
+        -1.731613447445653,
+        -0.2898512555678972
+      ],
+      "league": "nfl",
+      "notes": "Four arms graded; season-blocked 20000 draws; proxy era uses SBR open, not the Tuesday open.",
+      "plain_summary": "Pairs each MOD-23 variant against the served model on fifteen seasons of opening lines and asks whether picks against the opener improve.",
+      "probability_positive": 0.00305,
+      "recorded_at": "2026-10-01",
+      "reliability": null,
+      "sample_blocks": 15,
+      "sample_games": 3734,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/mod24_u1/report.json",
+      "standard_error": null
+    },
+    "mod24_extended_u1_nested_families_alpha_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; record states probability_positive from season-blocked bootstrap.",
+      "closing_ground": null,
+      "description": "Model-alone opener test 2011-2025 (SBR open 2011-2019, Tuesday open 2020-2025), MOD-23 unit 1 nested families plus alpha, chosen out of season on 4 inner seasons, paired vs base, pooled; log loss diff -0.0120 brier diff -0.0039 (negative is better).",
+      "effect": -0.241028387787895,
+      "effect_units": "accuracy_points",
+      "family": "mod24_extended_grade",
+      "interval": [
+        -1.592365003076616,
+        1.0809528276936016
+      ],
+      "league": "nfl",
+      "notes": "Four arms graded; season-blocked 20000 draws; proxy era uses SBR open, not the Tuesday open.",
+      "plain_summary": "Pairs each MOD-23 variant against the served model on fifteen seasons of opening lines and asks whether picks against the opener improve.",
+      "probability_positive": 0.34925,
+      "recorded_at": "2026-10-01",
+      "reliability": null,
+      "sample_blocks": 15,
+      "sample_games": 3734,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/mod24_u1/report.json",
+      "standard_error": null
+    },
+    "mod24_extended_u3_compact_net_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; record states probability_positive from season-blocked bootstrap.",
+      "closing_ground": null,
+      "description": "Model-alone opener test 2011-2025 (SBR open 2011-2019, Tuesday open 2020-2025), MOD-23 unit 3 compact opponent-adjusted net EPA columns, paired vs base, pooled; log loss diff -0.0066 brier diff -0.0019 (negative is better).",
+      "effect": -0.2678093197643278,
+      "effect_units": "accuracy_points",
+      "family": "mod24_extended_grade",
+      "interval": [
+        -1.9670542135785432,
+        1.4489031169346827
+      ],
+      "league": "nfl",
+      "notes": "Four arms graded; season-blocked 20000 draws; proxy era uses SBR open, not the Tuesday open.",
+      "plain_summary": "Pairs each MOD-23 variant against the served model on fifteen seasons of opening lines and asks whether picks against the opener improve.",
+      "probability_positive": 0.3677,
+      "recorded_at": "2026-10-01",
+      "reliability": null,
+      "sample_blocks": 15,
+      "sample_games": 3734,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/mod24_u1/report.json",
+      "standard_error": null
+    },
+    "mod24_extended_u5a_man_zone_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; record states probability_positive from season-blocked bootstrap.",
+      "closing_ground": null,
+      "description": "Model-alone opener test 2011-2025 (SBR open 2011-2019, Tuesday open 2020-2025), MOD-23 unit 5a man/zone coverage matchup, zero before 2018, paired vs base, pooled; log loss diff 0.0007 brier diff 0.0004 (negative is better).",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod24_extended_grade",
+      "interval": [
+        -0.3775620280474649,
+        0.39798883251326583
+      ],
+      "league": "nfl",
+      "notes": "Four arms graded; season-blocked 20000 draws; proxy era uses SBR open, not the Tuesday open.",
+      "plain_summary": "Pairs each MOD-23 variant against the served model on fifteen seasons of opening lines and asks whether picks against the opener improve.",
+      "probability_positive": 0.4681,
+      "recorded_at": "2026-10-01",
+      "reliability": null,
+      "sample_blocks": 15,
+      "sample_games": 3734,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/mod24_u1/report.json",
+      "standard_error": null
+    },
     "mod24_u2_u1_alpha_only_log_loss_improvement": {
       "category": "modeling",
       "classification": "unresolved_below_power",
@@ -173451,7 +173563,7 @@
         0.0006369530661409408
       ],
       "league": "nfl",
-      "notes": null,
+      "notes": "None",
       "plain_summary": "Checks whether adding tracked passing, rushing and receiving measures of each team improves the quality of the model's own cover probabilities.",
       "probability_positive": 0.1917,
       "recorded_at": "2026-10-01",

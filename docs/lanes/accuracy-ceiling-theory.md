@@ -16,12 +16,29 @@ on average, so it was kept out of the headline. XLG-09 already used a
 2011-2025 population. New here: paired candidate-vs-base grading on it.
 Owner approved all four units 2026-10-01. ROADMAP MOD-24.
 
-## Next (one lane each)
-- U1 docs/lanes/acc-u1-extended-grade.md
-- U2 docs/lanes/acc-u2-proper-scores.md
-- U3 docs/lanes/acc-u3-ngs.md
-- U4 docs/lanes/acc-u4-forward-log.md (logs MOD-23 unit-5a man/zone first;
-  arms that U1-U3 favor get added later)
+## Results 2026-10-01 (measured, all unresolved_below_power, 58 cells)
+- U1 extended 2011-2025 (3,734 games): base 51.19% proxy era, 53.36% true
+  era, 52.06% pooled. Week-blocked intervals 25-50% narrower than with
+  2020-2025 alone. Pooled accuracy diffs: unit 1 nested -0.24 (P+ .35),
+  alpha-only -1.02 [-1.73,-0.29], compact net -0.27 (.37), man/zone 0.00 (.47).
+- U2/U2b: base raw probabilities are overconfident (temperature about 0.34);
+  recalibrated base log loss 0.6922 vs 0.6931 for a coin. Raw proper-score
+  gains of units 1, 3, 4 are calibration. Survivors: compact net +0.0005
+  (P+ .79), man/zone +0.0001 (P+ .90).
+- U3/U3b: Next Gen Stats ingested (2016+, 24 leak-free inputs); all three
+  arms are slightly worse than base on proper scores; |r| with margin vs the
+  opener is 0.046 or less.
+- U4: man/zone forward log running Thu 19:00 / Sun 11:00 through Week 18.
+  The 2026 participation file is 404, so the 2026 coverage inputs are 2025
+  tendencies.
+Verdict: theory point 1 (information) is binding. Better grading confirmed
+no hidden winner. Alpha-only tuning lost in both eras; it is left unresolved
+because recalibrated scores disagree and it is one of about 50 looks.
+
+## Next
+Only information the opener cannot have at posting time can move the model
+alone. Inventory candidates against registry families before proposing any
+(check-history rule). Keep U4 running and score it after Week 18.
 
 ## Hazard
 Editing any pinned source (src/nfl_ats: names in PINNED_NAMES, *features.py,
