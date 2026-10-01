@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-01T19:27:21.337338+00:00`
+Refreshed at: `2026-10-01T19:29:13.835315+00:00`
 
 ## Start here
 
@@ -21,12 +21,10 @@ Refreshed at: `2026-10-01T19:27:21.337338+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `097709044bc9` — MOD-25a: season generator and verifier; grid fails the same way everywhere (too wide, too few close games), so mechanisms come first
-- Pending change set: 8 paths
+- Baseline commit: `c2174e0da4a9` — MOD-24 U8: Kalshi and Polymarket acquisition (Polymarket 2024+, Kalshi 2025+); forward capture jobs including the Tuesday-noon freeze
+- Pending change set: 6 paths
   - `M  docs/lanes/acc-u8-prediction-markets.md`
   - ` M registry/weak_signals.json`
-  - `M  scripts/capture_scheduler.py`
-  - `A  scripts/mod24_u8_markets.py`
   - ` M tiebreaker.json`
   - `?? docs/lanes/mod25b-mechanisms.md`
   - `?? scripts/mod24_u7a.py`

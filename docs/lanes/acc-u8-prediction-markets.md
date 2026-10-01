@@ -21,3 +21,17 @@ Kalshi spread-ladder implied spread = logit interpolation of P(home margin > x)=
 
 ## Open
 Pool opener comparison uses the book opener archive, not the Splash pool line (Splash only 2026). Polymarket price semantics (trade vs mid) are source-defined.
+
+## Orchestrator read 2026-10-01 (measured)
+Backfill done (run 20261001-backfill, manifest written). Usable spread at the
+Tuesday freeze: Kalshi 216 (2025) + 64 (2026); Polymarket 84 (2025) + 58 (2026),
+none in 2024 (moneyline only). The script's freeze-vs-open line has a sign bug:
+implied_home_spread is in line convention, while the schedule's spread_line is
+in home-margin convention. After the sign flip, the markets track the
+sportsbook close tightly: mean abs diff to spread_line 0.37-0.45 pts at the
+deadline and kickoff (corr .994-.996), 0.73-0.77 at the freeze (corr .98).
+Inferred: these markets mostly mirror the books. Their candidate edge is the
+freeze price versus the pool line (an early read on the move), which is small
+n until 2026 accrues.
+Next: grade (freeze market spread minus pool opener) as a term on 2025 and the
+2026 forward weeks; fix the report sign.
