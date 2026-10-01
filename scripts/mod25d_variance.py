@@ -379,8 +379,179 @@ def ipw_fit(trans, eo, ef, shrink=50.0, lo=0.25, hi=4.0):
     return w, cell, info
 
 
+RATE_NAMES = ["rz_td", "conv", "expl", "sack", "tov"]
+RATE_MIX = (0, 1, 2, 3)
+
+
+def rate_defs(trans, at):
+    code = trans["play_type_code"].to_numpy()
+    rp = np.isin(code, (0, 1))
+    down = trans["down_i"].to_numpy()
+    fp = trans["fp_raw"].to_numpy(dtype=float)
+    dist = trans["dist_raw"].to_numpy(dtype=float)
+    yg = trans["yards_gained"].to_numpy(dtype=float)
+    po = trans["points_off"].to_numpy(dtype=float)
+    af = trans["auto_first"].to_numpy().astype(bool)
+    tov = at["tov"].astype(bool)
+    sack = at["sack"].astype(bool)
+    yds = at["yards"].astype(float)
+    D, I = [], []
+    d = rp & (fp <= 20)
+    D.append(d)
+    I.append(d & (po >= 6))
+    d = rp & np.isin(down, (3, 4))
+    D.append(d)
+    I.append(d & ~tov & ((yg >= dist) | af | (po >= 6)))
+    d = rp & ~sack
+    D.append(d)
+    I.append(d & (((code == 0) & (yds >= 10)) | ((code == 1) & (yds >= 20))))
+    d = code == 1
+    D.append(d)
+    I.append(d & sack)
+    d = rp
+    D.append(d)
+    I.append(d & tov)
+    return np.column_stack(D), np.column_stack(I)
+
+
+def team_keys(pbp, trans):
+    meta = pbp[["game_id", "play_id", "season", "posteam", "defteam"]].drop_duplicates(["game_id", "play_id"])
+    t = trans[["game_id", "play_id"]].merge(meta, on=["game_id", "play_id"], how="left")
+    ok = (t["season"].astype(str) + "_" + t["posteam"].astype(str)).to_numpy()
+    fk = (t["season"].astype(str) + "_" + t["defteam"].astype(str)).to_numpy()
+    return ok, fk
+
+
+def rate_effects(trans, pbp, at, train):
+    D, I = rate_defs(trans, at)
+    ok, fk = team_keys(pbp, trans)
+    d0 = team_effects_plays(pbp, list(train), "epa")
+    _, (oc, fc, eo, ef, ou, fu, mu) = fit_play_effects(d0, "epa")
+    epa_o = pd.Series(eo, index=ou)
+    epa_d = pd.Series(ef, index=fu)
+    res = []
+    for k in range(len(RATE_NAMES)):
+        m = D[:, k] & pd.notna(ok) & pd.notna(fk)
+        d = pd.DataFrame({"o": ok[m], "f": fk[m], "y": I[m, k].astype(float)})
+        st, (oc, fc, eo, ef, ou, fu, mu) = fit_play_effects(d, "y")
+        so = pd.Series(eo, index=ou)
+        sd_ = pd.Series(ef, index=fu)
+        co = so.index.intersection(epa_o.index)
+        cd = sd_.index.intersection(epa_d.index)
+        res.append({
+            "name": RATE_NAMES[k], "p": float(I[D[:, k], k].mean()), "off_sd": st["off_sd"], "def_sd": st["def_sd"],
+            "off_corr_epa": float(np.corrcoef(so[co], epa_o[co])[0, 1]), "def_corr_epa": float(np.corrcoef(sd_[cd], epa_d[cd])[0, 1]),
+        })
+    return res, D, I
+
+
+def fit_tilt(cfg, pbp, trans, ns):
+    import mod25_generator as gen
+
+    at = c25.attrs_from(pbp, trans)
+    res, D, I = rate_effects(trans, pbp, at, TRAIN)
+    fit = gen.load_fit()
+    qb = fit["qb"]
+    var_off = max(1e-6, fit["off"]["var_mu"] - qb["backup_rate"] * (1 - qb["backup_rate"]) * qb["backup_off_epa_effect"] ** 2)
+    zo, zd = float(np.sqrt(var_off)), float(np.sqrt(fit["def"]["var_mu"]))
+    mult = float(cfg.get("tilt_mult", 1.0))
+    ao = np.array([np.sign(r["off_corr_epa"]) * r["off_sd"] / (r["p"] * (1 - r["p"]) * zo) for r in res]) * mult
+    ad = np.array([np.sign(r["def_corr_epa"]) * r["def_sd"] / (r["p"] * (1 - r["p"]) * zd) for r in res]) * mult
+    if cfg.get("tilt_file"):
+        tf = json.loads(Path(cfg["tilt_file"]).read_text())
+        ao = np.array([tf[n]["off"] for n in RATE_NAMES]) * mult
+        ad = np.array([tf[n]["def"] for n in RATE_NAMES]) * mult
+    lo, ld = gen.league_means()
+    pbar = np.array([r["p"] for r in res])
+    T = (I + (~D) * pbar[None, :]).astype(np.float64)
+    ns["TILT_T"] = T[:, list(RATE_MIX)]
+    ns["TILT_AO"] = ao[list(RATE_MIX)]
+    ns["TILT_AD"] = ad[list(RATE_MIX)]
+    ns["TILT_LO"] = lo
+    ns["TILT_LD"] = ld
+    c25.TOV_AO, c25.TOV_AD, c25.TOV_LO, c25.TOV_LD = float(ao[4]), float(ad[4]), lo, ld
+    ns["RATING_CTX"] = c25.RATING_CTX
+    _G["rates"] = (D, I)
+    _G["rate_info"] = res
+
+
+def tiltp(p):
+    th = c25.TOV_AO * (c25.RATING_CTX[0] - c25.TOV_LO) + c25.TOV_AD * (c25.RATING_CTX[1] - c25.TOV_LD)
+    p = min(max(float(p), 1e-6), 1 - 1e-6)
+    q = p / (1 - p) * float(np.exp(th))
+    return q / (1 + q)
+
+
+def install_tilt():
+    import inspect
+
+    if getattr(c25, "_TILT", False):
+        return
+    c25.RATING_CTX = [0.0, 0.0]
+    c25.TOV_AO = c25.TOV_AD = c25.TOV_LO = c25.TOV_LD = 0.0
+    c25.TILTP = tiltp
+    src = inspect.getsource(c25.make_c_decide)
+    old = "tv_t = 1 if rng2.random() < p else 0"
+    assert old in src
+    exec(src.replace(old, "tv_t = 1 if rng2.random() < TILTP(p) else 0"), c25.__dict__)
+    c25._TILT = True
+
+
+EL_MAX = 60.0
+
+
+def clean_clock(trans):
+    el = trans["clock_elapsed"].to_numpy(dtype=float).copy()
+    art = el > EL_MAX
+    code = trans["play_type_code"].to_numpy()
+    flip = trans["possession_flip"].to_numpy().astype(bool)
+    cl = c25.cls_of(code, flip, trans["points_off"].to_numpy(), trans["points_def"].to_numpy(), trans["yards_gained"].to_numpy())
+    zn = c25.zone_v(trans["qtr_actual"].to_numpy(), trans["gsr_actual"].to_numpy())
+    sb = c25.sb_v(trans["sc_raw"].to_numpy())
+    key = (cl * 8 + zn) * 8 + sb
+    ok = ~art
+    n = 64 * 8 * 8
+    cnt = np.bincount(key[ok], minlength=n)
+    sm = np.bincount(key[ok], weights=el[ok], minlength=n)
+    zk = cl * 8 + zn
+    zc = np.bincount(zk[ok], minlength=512)
+    zs = np.bincount(zk[ok], weights=el[ok], minlength=512)
+    cc = np.bincount(cl[ok], minlength=64)
+    cs = np.bincount(cl[ok], weights=el[ok], minlength=64)
+    full = np.full(n, np.nan)
+    for k in range(n):
+        if cnt[k] >= 40:
+            full[k] = sm[k] / cnt[k]
+        elif zc[k // 8] >= 40:
+            full[k] = zs[k // 8] / zc[k // 8]
+        elif cc[k // 64] >= 40:
+            full[k] = cs[k // 64] / cc[k // 64]
+    rep = full[key]
+    rep = np.where(np.isnan(rep), float(el[ok].mean()), rep)
+    el[art] = rep[art]
+    return trans.assign(clock_elapsed=el), int(art.sum())
+
+
+def install_clean_clock():
+    if getattr(sim, "_CLEAN_CLOCK", False):
+        return
+    orig = sim.build_transition_frame
+
+    def wrapped(pbp, team_ratings=None):
+        t = orig(pbp, team_ratings=team_ratings)
+        t, _ = clean_clock(t)
+        return t
+
+    sim.build_transition_frame = wrapped
+    sim._CLEAN_CLOCK = True
+
+
 def d_init(train, cfg_json):
     cfg = json.loads(cfg_json)
+    if cfg.get("clean"):
+        install_clean_clock()
+    if cfg.get("tilt"):
+        install_tilt()
     c25.c_init(train, cfg_json)
     if not cfg.get("resid"):
         return
@@ -401,16 +572,26 @@ def d_init(train, cfg_json):
         ep0 = np.asarray(t["attrs"]["epa"], dtype=np.float64)
         assert len(ep0) == len(eo)
         t["attrs"] = dict(t["attrs"], epa=ep0 - eo - ef, adv=eo + ef)
-    if cfg.get("ipw"):
+    if cfg.get("resid") and not cfg.get("tilt"):
+        _G["rates"] = rate_defs(trans, c25.attrs_from(pbp, trans))
+    if cfg.get("ipw") or cfg.get("tilt"):
         import inspect
 
-        w, _, _ = ipw_fit(trans, eo, ef)
         src = inspect.getsource(sim.pick_index_nn_conditioned)
         old = "weights = np.exp(-dist_sq / (2.0 * h * h))"
-        assert old in src
+        hdr = "    down_key = down if down in (1, 2, 3, 4) else 4\n    entry = tables"
+        assert old in src and hdr in src
         ns = _G["ns"]
-        exec(src.replace(old, old + " * IPW[neighbors]"), ns)
-        ns["IPW"] = w
+        extra = ""
+        if cfg.get("ipw"):
+            w, _, _ = ipw_fit(trans, eo, ef)
+            ns["IPW"] = w
+            extra += " * IPW[neighbors]"
+        if cfg.get("tilt"):
+            fit_tilt(cfg, pbp, trans, ns)
+            extra += " * np.exp(TILT_T[neighbors] @ (TILT_AO * (off_sim - TILT_LO) + TILT_AD * (def_sim - TILT_LD)))"
+        ctx = "    RATING_CTX[0] = off_sim\n    RATING_CTX[1] = def_sim\n" if cfg.get("tilt") else ""
+        exec(src.replace(old, old + extra).replace(hdr, ctx + hdr), ns)
     t["nn_weight_cache_cond"].clear()
 
 
@@ -425,6 +606,9 @@ DV["cr"] = dict(c25.VARIANTS["c"], resid=1)
 DV["b_r"] = dict(c25.VARIANTS["b"], resid=1)
 DV["cre"] = dict(DV["cr"], repa=1)
 DV["crw"] = dict(DV["cre"], ipw=1)
+DV["crk"] = dict(DV["crw"], clean=1)
+DV["crt"] = dict(DV["crk"], tilt=1, tilt_file=str(OUT / "tilt_coef.json"))
+DV["crwt"] = dict(DV["crw"], tilt=1)
 DEC_COND = dict(condition=1, yard_gain=2.0, def_sign=1.0, yard_bias=0.75, avg=1)
 
 
@@ -441,6 +625,10 @@ def d_play_season(task):
 
     rng = np.random.default_rng(seed)
     gm_rows, chunks = [], []
+    rates = _G.get("rates")
+    if rates is not None:
+        K = rates[0].shape[1]
+        dg = {n: np.zeros((32, K)) for n in ("on", "od", "dn", "dd")}
     for gi, (week, h, a) in enumerate(sched):
         state = sim.initial_kickoff_state(rng, tables["opening_pool"])
         ns["PLAYLOG"].clear()
@@ -457,6 +645,13 @@ def d_play_season(task):
         shift = log[keep, 2]
         offhome = log[keep, 0].astype(np.int8)
         kind = np.where(code[keep] == 0, 0, np.where(arr["sack"][idx] == 1, 2, 1)).astype(np.int8)
+        if rates is not None:
+            offt = np.where(offhome == 1, h, a)
+            deft = np.where(offhome == 1, a, h)
+            np.add.at(dg["on"], offt, rates[1][idx].astype(float))
+            np.add.at(dg["od"], offt, rates[0][idx].astype(float))
+            np.add.at(dg["dn"], deft, rates[1][idx].astype(float))
+            np.add.at(dg["dd"], deft, rates[0][idx].astype(float))
         epa = arr["epa"][idx] + (shift - bias) / gain + arr["adv"][idx]
         yards = arr["yards"][idx] + shift
         turn = np.where(arr["int"][idx] == 1, 1, np.where(arr["fl"][idx] == 1, 2, 0)).astype(np.int8)
@@ -464,6 +659,10 @@ def d_play_season(task):
         total, margin = float(rec["total"]), float(rec["margin"])
         gm_rows.append((gi, (total + margin) / 2.0, (total - margin) / 2.0, bool(rec["went_ot"]), bool(cap_hit)))
     plays = np.concatenate(chunks) if chunks else np.empty(0)
+    if rates is not None:
+        dd = OUT / "diag"
+        dd.mkdir(parents=True, exist_ok=True)
+        np.savez(dd / f"{cfg.get('name', 'x')}_{world}_{sidx}.npz", **dg)
     return world, sidx, gm_rows, plays
 
 
@@ -471,7 +670,7 @@ def gen_eval_d(variant, scale, yard_gain, worlds, seasons, workers, seed, yard_b
     c25.ensure_policies()
     import mod25_generator as gen
 
-    cfgj = json.dumps(dict(DV[variant], seed=seed))
+    cfgj = json.dumps(dict(DV[variant], seed=seed, name=f"{variant}_s{scale:g}"))
     setting = dict(gen.SETTING_DEFAULTS)
     setting.update({"scale": scale, "yard_gain": yard_gain, "def_sign": 1.0, "yard_bias": yard_bias, "drift": 1.0, "mech": cfgj})
     gen.init_worker = d_gen_init
@@ -562,6 +761,19 @@ def main():
     d.add_argument("--cache", default="C:/Users/Ryan/AppData/Local/Temp/claude/F--Repos-nfl-py3/f6b7873f-565c-422a-9dee-b6963fcaad49/scratchpad")
     sub.add_parser("tilt")
     sub.add_parser("ipwcheck")
+    tc = sub.add_parser("tiltcoef")
+    tc.add_argument("--base", default="crk_s1")
+    rd = sub.add_parser("ratediag")
+    rd.add_argument("--variants", default="crt")
+    rd.add_argument("--tag", default="r1")
+    pdg = sub.add_parser("pacediag")
+    pdg.add_argument("--variants", default="crw")
+    pdg.add_argument("--tag", default="e1")
+    pdg.add_argument("--cache", default="C:/Users/Ryan/AppData/Local/Temp/claude/F--Repos-nfl-py3/f6b7873f-565c-422a-9dee-b6963fcaad49/scratchpad")
+    cd = sub.add_parser("corrdiag")
+    cd.add_argument("--variants", default="crw")
+    cd.add_argument("--tag", default="e1")
+    cd.add_argument("--cache", default="C:/Users/Ryan/AppData/Local/Temp/claude/F--Repos-nfl-py3/f6b7873f-565c-422a-9dee-b6963fcaad49/scratchpad")
     for nm in ("grid", "gate"):
         g = sub.add_parser(nm)
         g.add_argument("--variant", default="cr")
@@ -576,7 +788,215 @@ def main():
         g.add_argument("--yard-bias", dest="yard_bias", type=float, default=0.75)
         g.add_argument("--tag", default="g1")
     args = ap.parse_args()
-    {"decomp": cmd_decomp, "tilt": cmd_tilt, "ipwcheck": cmd_ipwcheck, "grid": cmd_grid, "gate": cmd_gate}[args.cmd](args)
+    {"decomp": cmd_decomp, "tilt": cmd_tilt, "ipwcheck": cmd_ipwcheck, "grid": cmd_grid, "gate": cmd_gate, "corrdiag": cmd_corrdiag, "pacediag": cmd_pacediag, "ratediag": cmd_ratediag, "tiltcoef": cmd_tiltcoef}[args.cmd](args)
+
+
+
+def corr_blocks(pk):
+    pk = pk.copy()
+    pk["pts"] = pk["po"] + pk["pdf"]
+    pk["td"] = ((pk["po"] >= 6) | (pk["pdf"] >= 6)).astype(float)
+    pk["fgp"] = ((pk["po"] == 3) | (pk["pdf"] == 3)).astype(float)
+    out = {}
+    g = pk.groupby("g")
+    n = g.size()
+    pts = g["pts"].sum()
+    out["corr_n_pts"] = float(np.corrcoef(n, pts)[0, 1])
+    out["corr_n_tdpts"] = float(np.corrcoef(n, g["td"].sum())[0, 1])
+    out["corr_n_fgcount"] = float(np.corrcoef(n, g["fgp"].sum())[0, 1])
+    out["corr_n_secs"] = float(np.corrcoef(n, g["secs"].sum())[0, 1])
+    out["secs_total_mean"] = float(g["secs"].sum().mean())
+    out["secs_total_sd"] = float(g["secs"].sum().std())
+    out["n_sd"] = float(n.std())
+    out["corr_n_plays"] = float(np.corrcoef(n, g["n"].sum())[0, 1])
+    out["plays_total_sd"] = float(g["n"].sum().std())
+    avg_secs = g["secs"].sum() / n
+    ppp = pts / n
+    out["corr_avgsecs_ppp"] = float(np.corrcoef(avg_secs, ppp)[0, 1])
+    out["corr_avgsecs_n"] = float(np.corrcoef(avg_secs, n)[0, 1])
+    out["avgsecs_sd"] = float(avg_secs.std())
+    for nm, qs in (("h1", (1, 2)), ("h2", (3, 4))):
+        d = pk[pk["q0"].isin(qs)]
+        gg = d.groupby("g")
+        nn = gg.size()
+        pp = gg["pts"].sum()
+        out[f"corr_n_pts_{nm}"] = float(np.corrcoef(nn, pp.reindex(nn.index))[0, 1])
+        out[f"n_sd_{nm}"] = float(nn.std())
+    d = pk[pk["q0"].isin((1, 2, 3))]
+    out["corr_secs_pts_poss_q13"] = float(np.corrcoef(d["secs"], d["pts"])[0, 1])
+    out["corr_plays_pts_poss_q13"] = float(np.corrcoef(d["n"], d["pts"])[0, 1])
+    for nm, m_ in (("td", d["td"] == 1), ("fg", d["fgp"] == 1), ("none", (d["td"] == 0) & (d["fgp"] == 0))):
+        out[f"secs_{nm}_mean"] = float(d.loc[m_, "secs"].mean())
+        out[f"secs_{nm}_sd"] = float(d.loc[m_, "secs"].std())
+        out[f"plays_{nm}_mean"] = float(d.loc[m_, "n"].mean())
+        out[f"share_{nm}"] = float(m_.mean())
+    d2 = pk[pk["q0"].isin((1, 2, 3))].copy()
+    d2["prev_secs"] = d2.groupby("g")["secs"].shift(1)
+    d2["prev_td"] = d2.groupby("g")["td"].shift(1)
+    d2 = d2.dropna(subset=["prev_secs"])
+    out["corr_prevsecs_secs"] = float(np.corrcoef(d2["prev_secs"], d2["secs"])[0, 1])
+    out["secs_after_td"] = float(d2.loc[d2["prev_td"] == 1, "secs"].mean())
+    out["secs_after_nontd"] = float(d2.loc[d2["prev_td"] == 0, "secs"].mean())
+    gs = g["secs"].sum()
+    out["corr_gsecs_pts"] = float(np.corrcoef(gs, pts)[0, 1])
+    return out
+
+
+def cmd_corrdiag(args):
+    res = {}
+    for nm, ss in (("real_train", TRAIN), ("real_eval", EVAL)):
+        P, M, meta, pbp = real_load(ss)
+        r, pk = poss_analysis(P, M)
+        res[nm] = corr_blocks(pk)
+    for v in args.variants.split(","):
+        S = pd.read_parquet(Path(args.cache) / f"sim_{v}.parquet")
+        MS = pd.Series(pd.read_parquet(Path(args.cache) / f"simM_{v}.parquet")["m"].to_numpy())
+        r, pk = poss_analysis(S, MS)
+        res["sim_" + v] = corr_blocks(pk)
+    names = list(res)
+    print(f"{'key':28s} " + " ".join(f"{n:>12s}" for n in names))
+    for k in res[names[0]]:
+        print(f"{k:28s} " + " ".join(f"{res[n][k]:12.4f}" for n in names))
+    (OUT / f"corrdiag_{args.tag}.json").write_text(json.dumps(res, indent=1))
+
+
+
+def pace_blocks(P):
+    P = P[P["qtr"] <= 4].sort_values("g", kind="stable").reset_index(drop=True)
+    out = {}
+    el = P["el"].to_numpy(dtype=float)
+    out["el_mean"] = float(el.mean())
+    out["el_median"] = float(np.median(el))
+    out["el_sd"] = float(el.std())
+    out["el_gt60"] = float(np.mean(el > 60))
+    out["el_gt45"] = float(np.mean(el > 45))
+    out["el_eq0"] = float(np.mean(el == 0))
+    n = P.groupby("g").size()
+    out["plays_mean"] = float(n.mean())
+    out["plays_sd"] = float(n.std())
+    out["g_el_sum_mean"] = float(P.groupby("g")["el"].sum().mean())
+    out["g_el_sum_sd"] = float(P.groupby("g")["el"].sum().std())
+    gg = P["g"].to_numpy()
+    for L in (1, 2, 3):
+        ok = gg[L:] == gg[:-L]
+        out[f"el_ac{L}"] = float(np.corrcoef(el[:-L][ok], el[L:][ok])[0, 1])
+    rp = P["code"].isin([0, 1]).to_numpy()
+    for c in (0, 1, 2, 3, 6):
+        m = (P["code"] == c).to_numpy()
+        out[f"el_mean_code{c}"] = float(el[m].mean())
+        out[f"el_sd_code{c}"] = float(el[m].std())
+        out[f"share_code{c}"] = float(m.mean())
+    out["g_mean_el_sd"] = float((P.groupby("g")["el"].mean()).std())
+    for q in (1, 2, 3, 4):
+        m = (P["qtr"] == q).to_numpy()
+        out[f"plays_q{q}"] = float(m.sum() / P["g"].nunique())
+        out[f"el_mean_q{q}"] = float(el[m].mean())
+    q = P.groupby(["g", "qtr"]).size().unstack().fillna(0)
+    for c_ in q.columns:
+        out[f"plays_sd_q{c_}"] = float(q[c_].std())
+    gs = P["gsr"].to_numpy(dtype=float)
+    ng = P["g"].nunique()
+    for lo, hi in ((2700, 3601), (1920, 2700), (1800, 1920), (900, 1800), (300, 900), (120, 300), (0, 120)):
+        m = (gs >= lo) & (gs < hi)
+        w = P[m].groupby("g").size().reindex(n.index).fillna(0)
+        out[f"w{lo}_mean"] = float(w.mean())
+        out[f"w{lo}_sd"] = float(w.std())
+        out[f"w{lo}_el_mean"] = float(el[m].mean())
+        out[f"w{lo}_el_sd"] = float(el[m].std())
+        out[f"w{lo}_el_p99"] = float(np.quantile(el[m], 0.99))
+        out[f"w{lo}_el_max"] = float(el[m].max())
+    out["plays_cov_between_qtrs"] = float(np.cov(q.to_numpy().T)[np.triu_indices(4, 1)].mean())
+    out["plays_var_sum_qtrs"] = float(q.var().sum())
+    return out
+
+
+def cmd_pacediag(args):
+    res = {}
+    for nm, ss in (("real_train", TRAIN), ("real_eval", EVAL)):
+        P, M, meta, pbp = real_load(ss)
+        res[nm] = pace_blocks(P)
+    for v in args.variants.split(","):
+        S = pd.read_parquet(Path(args.cache) / f"sim_{v}.parquet")
+        res["sim_" + v] = pace_blocks(S)
+    names = list(res)
+    print(f"{'key':28s} " + " ".join(f"{n:>12s}" for n in names))
+    for k in res[names[0]]:
+        print(f"{k:28s} " + " ".join(f"{res[n][k]:12.4f}" for n in names))
+    (OUT / f"pacediag_{args.tag}.json").write_text(json.dumps(res, indent=1))
+
+
+
+def mom_sd(num, den, floor=200):
+    m = den >= floor
+    r = num[m] / den[m]
+    p = num[m].sum() / den[m].sum()
+    nv = float((p * (1 - p) / den[m]).mean())
+    return float(np.sqrt(max(float(r.var(ddof=1)) - nv, 0.0)))
+
+
+def real_rate_spread(seasons):
+    sim.PBP_SNAPSHOT_DIR = m25.SNAP
+    pbp = sim.load_reg_seasons(tuple(seasons))
+    trans = sim.build_transition_frame(pbp)
+    at = c25.attrs_from(pbp, trans)
+    D, I = rate_defs(trans, at)
+    ok, fk = team_keys(pbp, trans)
+    out = {}
+    for side, key in (("off", ok), ("def", fk)):
+        for k, nm in enumerate(RATE_NAMES):
+            df = pd.DataFrame({"t": key, "n": I[:, k].astype(float), "d": D[:, k].astype(float)}).groupby("t").sum()
+            out[f"{side}_{nm}"] = mom_sd(df["n"].to_numpy(), df["d"].to_numpy())
+    return out
+
+
+def cmd_ratediag(args):
+    res = {"real_train": real_rate_spread(TRAIN), "real_eval": real_rate_spread(EVAL)}
+    for v in args.variants.split(","):
+        fs = sorted((OUT / "diag").glob(f"{v}_*.npz"))
+        acc = {n: np.concatenate([np.load(f)[n] for f in fs]) for n in ("on", "od", "dn", "dd")}
+        o = {}
+        for k, nm in enumerate(RATE_NAMES):
+            o[f"off_{nm}"] = mom_sd(acc["on"][:, k], acc["od"][:, k])
+            o[f"def_{nm}"] = mom_sd(acc["dn"][:, k], acc["dd"][:, k])
+        res["sim_" + v] = o
+    names = list(res)
+    print(f"{'rate sd':16s} " + " ".join(f"{n:>12s}" for n in names))
+    for k in res[names[0]]:
+        print(f"{k:16s} " + " ".join(f"{res[n][k]:12.5f}" for n in names))
+    (OUT / f"ratediag_{args.tag}.json").write_text(json.dumps(res, indent=1))
+
+
+
+def cmd_tiltcoef(args):
+    import mod25_generator as gen
+
+    sim.PBP_SNAPSHOT_DIR = m25.SNAP
+    pbp = sim.load_reg_seasons(tuple(TRAIN))
+    trans = sim.build_transition_frame(pbp)
+    at = c25.attrs_from(pbp, trans)
+    res, D, I = rate_effects(trans, pbp, at, TRAIN)
+    fit = gen.load_fit()
+    qb = fit["qb"]
+    var_off = max(1e-6, fit["off"]["var_mu"] - qb["backup_rate"] * (1 - qb["backup_rate"]) * qb["backup_off_epa_effect"] ** 2)
+    zo, zd = float(np.sqrt(var_off)), float(np.sqrt(fit["def"]["var_mu"]))
+    real = real_rate_spread(TRAIN)
+    fs = sorted((OUT / "diag").glob(f"{args.base}_*.npz"))
+    acc = {n: np.concatenate([np.load(f)[n] for f in fs]) for n in ("on", "od", "dn", "dd")}
+    out = {}
+    for k, r in enumerate(res):
+        nm = r["name"]
+        so = mom_sd(acc["on"][:, k], acc["od"][:, k])
+        sd_ = mom_sd(acc["dn"][:, k], acc["dd"][:, k])
+        pq = r["p"] * (1 - r["p"])
+        out[nm] = {
+            "off": float(np.sign(r["off_corr_epa"]) * max(0.0, real[f"off_{nm}"] - so) / (pq * zo)),
+            "def": float(np.sign(r["def_corr_epa"]) * max(0.0, real[f"def_{nm}"] - sd_) / (pq * zd)),
+            "real_off": real[f"off_{nm}"], "real_def": real[f"def_{nm}"], "base_off": so, "base_def": sd_,
+            "p": r["p"], "off_corr_epa": r["off_corr_epa"], "def_corr_epa": r["def_corr_epa"],
+        }
+    (OUT / "tilt_coef.json").write_text(json.dumps(out, indent=1))
+    for nm, v in out.items():
+        print(nm, json.dumps({a: round(b, 5) for a, b in v.items()}))
 
 
 if __name__ == "__main__":
