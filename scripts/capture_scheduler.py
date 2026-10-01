@@ -422,6 +422,27 @@ SCHEDULE: tuple[Job, ...] = (
     ),
     *(
         Job(
+            f"beat_reporters_{day}",
+            day,
+            "07:30",
+            120,
+            [
+                str(UV),
+                "run",
+                "--no-sync",
+                "python",
+                str(REPO / "scripts" / "mod24_u9_beat.py"),
+                "capture",
+            ],
+            True,
+            "Timestamped NFL beat-reporter posts from Bluesky for the MOD-24 new-information "
+            "study.",
+            added_on="2026-10-01",
+        )
+        for day in DAYS
+    ),
+    *(
+        Job(
             f"lineups_{day}",
             day,
             "14:30" if day == "tue" else "12:00",

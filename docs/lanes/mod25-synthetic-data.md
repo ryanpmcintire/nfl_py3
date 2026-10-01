@@ -23,6 +23,15 @@ mass .103 vs .152, team effects damped to about 40%; see SIM-08 lane).
   the real ridge shrinks toward that, with strength chosen out of season.
   Graded on the real opener 2020-2025 and 2011-2019 separately.
 
+## Rule (owner 2026-10-01)
+The key-number shape is a held-out check that the generator reflects football,
+never a target. No parameter, reweighting or repair may aim at mass on 3, 7,
+10, 14 or 17. A shape failure points to a wrong mechanism, such as coach
+decisions by score, time and field (4th down, playing for the field goal),
+endgame and clock behaviour, or scoring units. Fix the mechanism and re-check.
+Scoring-level and strength parameters are fitted only to their own real
+targets (points per game, EPA spread), never to the margin shape.
+
 ## Next
 Unit a: generator plus verifier (docs/lanes/mod25a-generator.md).
 
