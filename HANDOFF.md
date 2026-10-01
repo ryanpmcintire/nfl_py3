@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-01T18:58:36.687384+00:00`
+Refreshed at: `2026-10-01T19:27:21.337338+00:00`
 
 ## Start here
 
@@ -21,15 +21,15 @@ Refreshed at: `2026-10-01T18:58:36.687384+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `b34ae96ed504` — MOD-24 U9 beat-reporter feed; MOD-25 shape rule
+- Baseline commit: `097709044bc9` — MOD-25a: season generator and verifier; grid fails the same way everywhere (too wide, too few close games), so mechanisms come first
 - Pending change set: 8 paths
-  - ` M docs/lanes/acc-u8-prediction-markets.md`
-  - `M  docs/lanes/mod25a-generator.md`
+  - `M  docs/lanes/acc-u8-prediction-markets.md`
   - ` M registry/weak_signals.json`
-  - `A  scripts/mod25_generator.py`
-  - `A  scripts/mod25_produce.py`
+  - `M  scripts/capture_scheduler.py`
+  - `A  scripts/mod24_u8_markets.py`
+  - ` M tiebreaker.json`
+  - `?? docs/lanes/mod25b-mechanisms.md`
   - `?? scripts/mod24_u7a.py`
-  - `?? scripts/mod24_u8_markets.py`
   - `?? scripts/mod25_mechanisms.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.

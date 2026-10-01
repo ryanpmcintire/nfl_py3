@@ -443,6 +443,37 @@ SCHEDULE: tuple[Job, ...] = (
     ),
     *(
         Job(
+            f"prediction_markets_{day}_{at.replace(':', '')}",
+            day,
+            at,
+            45,
+            [
+                str(UV),
+                "run",
+                "--no-sync",
+                "python",
+                str(REPO / "scripts" / "mod24_u8_markets.py"),
+                "capture",
+            ],
+            True,
+            "Snapshot Kalshi and Polymarket NFL game prices for the MOD-24 new-information "
+            "study; the Tuesday 12:00 run marks the pool freeze.",
+            added_on="2026-10-01",
+        )
+        for day, at in (
+            ("tue", "12:00"),
+            ("wed", "12:00"),
+            ("thu", "12:00"),
+            ("thu", "19:30"),
+            ("fri", "12:00"),
+            ("sat", "12:00"),
+            ("sun", "11:30"),
+            ("sun", "15:30"),
+            ("mon", "19:30"),
+        )
+    ),
+    *(
+        Job(
             f"lineups_{day}",
             day,
             "14:30" if day == "tue" else "12:00",
