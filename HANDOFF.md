@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-01T17:11:10.382565+00:00`
+Refreshed at: `2026-10-01T17:28:31.832530+00:00`
 
 ## Start here
 
@@ -21,25 +21,9 @@ Refreshed at: `2026-10-01T17:11:10.382565+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `3a991397e464` — Validation lane: capture stopped by the pinned-source guard
-- Pending change set: 17 paths
-  - `M  CURRENT_PREDICTIONS.md`
-  - `M  README.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/independent_combination_validation.md`
-  - `M  docs/index.html`
-  - `M  docs/lanes/README.md`
-  - `M  docs/lanes/independent-combination-validation.md`
-  - `M  docs/model.html`
-  - `A  registry/experiments/margin-backtest/20261001T161019Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-04-20261001T161106Z.json`
-  - `A  registry/experiments/opener-evaluation/20261001T161430Z.json`
-  - `A  registry/experiments/waterfall-feed/20261001T161524Z.json`
-  - `A  registry/studies/combined_vs_raw_2026_v2.json`
-  - `M  src/nfl_ats/cli_commands/prospective.py`
-  - `M  src/nfl_ats/independent_validation.py`
-  - `M  tiebreaker.json`
+- Baseline commit: `f2d787c05423` — Thursday Week 4 refresh and v2 independent-validation enrollment
+- Pending change set: 1 paths
+  - `A  docs/lanes/accuracy-ceiling-theory.md`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
