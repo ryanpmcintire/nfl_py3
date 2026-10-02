@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-02T04:57:50.992493+00:00`
+Refreshed at: `2026-10-02T05:08:12.743254+00:00`
 
 ## Start here
 
@@ -21,11 +21,11 @@ Refreshed at: `2026-10-02T04:57:50.992493+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `d6a1f9bf08a9` — Republish the site with the latest settled results
+- Baseline commit: `6238958421bc` — MOD-25 v2: distillation from a 130k-game synthetic world
 - Pending change set: 8 paths
   - `M  docs/lanes/mod25-pipeline.md`
   - `M  registry/weak_signals.json`
-  - `M  scripts/mod25_pipeline.py`
+  - `A  scripts/mod25_linemove.py`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-predict/2026-week-04-20261001T211240Z.json`
   - `?? registry/experiments/opener-evaluation/20261001T211624Z.json`

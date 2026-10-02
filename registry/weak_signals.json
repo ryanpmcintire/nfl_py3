@@ -173941,6 +173941,342 @@
       "source": "artifacts/mod25_pipeline_v2/grade_hgb_nomkt.json",
       "standard_error": 0.0004
     },
+    "mod25 distillation linemove hgb_nomkt 2011_2019 mae_gain": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval and sign not resolved against a positive control; no refuted mechanism or bound",
+      "closing_ground": null,
+      "description": "hgb_nomkt 2011_2019: held-out move MAE gain vs zero-move baseline, leave-one-season-out line move regressed on distilled-minus-opener",
+      "effect": 0.000452,
+      "effect_units": "mae_improvement",
+      "family": "mod25_distillation_linemove",
+      "interval": [
+        -0.020042,
+        0.026133
+      ],
+      "league": "nfl",
+      "notes": "q=distilled minus opener, no market columns, season-block bootstrap 20000 draws. Move: Tuesday opener to close 2020-2025, SBR open to close 2011-2019. 24 looks counted (2 students x 3 scopes x 4 cells: A, A matched, B with base edge control, direction); 12 recorded here. Direction slope positive in all seasons per era.",
+      "plain_summary": "Does the synthetic-trained rating anticipate where the line moves after the opener (hgb_nomkt, 2011_2019).",
+      "probability_positive": 0.4878,
+      "recorded_at": "2026-10-02",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2304,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod25_pipeline_v2/linemove/linemove.json",
+      "standard_error": 0.011779
+    },
+    "mod25 distillation linemove hgb_nomkt 2011_2019 toward_q": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval and sign not resolved against a positive control; no refuted mechanism or bound",
+      "closing_ground": null,
+      "description": "hgb_nomkt 2011_2019: mean signed opener-to-close line move toward the distilled side, in points",
+      "effect": 0.411675,
+      "effect_units": "ats_points",
+      "family": "mod25_distillation_linemove",
+      "interval": [
+        0.302734,
+        0.558377
+      ],
+      "league": "nfl",
+      "notes": "q=distilled minus opener, no market columns, season-block bootstrap 20000 draws. Move: Tuesday opener to close 2020-2025, SBR open to close 2011-2019. 24 looks counted (2 students x 3 scopes x 4 cells: A, A matched, B with base edge control, direction); 12 recorded here. Direction slope positive in all seasons per era.",
+      "plain_summary": "Does the synthetic-trained rating anticipate where the line moves after the opener (hgb_nomkt, 2011_2019).",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-10-02",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2304,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod25_pipeline_v2/linemove/linemove.json",
+      "standard_error": 0.1499016901824439
+    },
+    "mod25 distillation linemove hgb_nomkt 2020_2025 mae_gain": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval and sign not resolved against a positive control; no refuted mechanism or bound",
+      "closing_ground": null,
+      "description": "hgb_nomkt 2020_2025: held-out move MAE gain vs zero-move baseline, leave-one-season-out line move regressed on distilled-minus-opener",
+      "effect": -0.014848,
+      "effect_units": "mae_improvement",
+      "family": "mod25_distillation_linemove",
+      "interval": [
+        -0.026404,
+        -0.005915
+      ],
+      "league": "nfl",
+      "notes": "q=distilled minus opener, no market columns, season-block bootstrap 20000 draws. Move: Tuesday opener to close 2020-2025, SBR open to close 2011-2019. 24 looks counted (2 students x 3 scopes x 4 cells: A, A matched, B with base edge control, direction); 12 recorded here. Direction slope positive in all seasons per era.",
+      "plain_summary": "Does the synthetic-trained rating anticipate where the line moves after the opener (hgb_nomkt, 2020_2025).",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-10-02",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod25_pipeline_v2/linemove/linemove.json",
+      "standard_error": 0.005227
+    },
+    "mod25 distillation linemove hgb_nomkt 2020_2025 toward_q": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval and sign not resolved against a positive control; no refuted mechanism or bound",
+      "closing_ground": null,
+      "description": "hgb_nomkt 2020_2025: mean signed opener-to-close line move toward the distilled side, in points",
+      "effect": 0.163468,
+      "effect_units": "ats_points",
+      "family": "mod25_distillation_linemove",
+      "interval": [
+        0.127918,
+        0.197065
+      ],
+      "league": "nfl",
+      "notes": "q=distilled minus opener, no market columns, season-block bootstrap 20000 draws. Move: Tuesday opener to close 2020-2025, SBR open to close 2011-2019. 24 looks counted (2 students x 3 scopes x 4 cells: A, A matched, B with base edge control, direction); 12 recorded here. Direction slope positive in all seasons per era.",
+      "plain_summary": "Does the synthetic-trained rating anticipate where the line moves after the opener (hgb_nomkt, 2020_2025).",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-10-02",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod25_pipeline_v2/linemove/linemove.json",
+      "standard_error": 0.18262120700126114
+    },
+    "mod25 distillation linemove hgb_nomkt pooled mae_gain": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval and sign not resolved against a positive control; no refuted mechanism or bound",
+      "closing_ground": null,
+      "description": "hgb_nomkt pooled: held-out move MAE gain vs zero-move baseline, leave-one-season-out line move regressed on distilled-minus-opener",
+      "effect": -0.015096,
+      "effect_units": "mae_improvement",
+      "family": "mod25_distillation_linemove",
+      "interval": [
+        -0.034173,
+        0.004884
+      ],
+      "league": "nfl",
+      "notes": "q=distilled minus opener, no market columns, season-block bootstrap 20000 draws. Move: Tuesday opener to close 2020-2025, SBR open to close 2011-2019. 24 looks counted (2 students x 3 scopes x 4 cells: A, A matched, B with base edge control, direction); 12 recorded here. Direction slope positive in all seasons per era.",
+      "plain_summary": "Does the synthetic-trained rating anticipate where the line moves after the opener (hgb_nomkt, pooled).",
+      "probability_positive": 0.0707,
+      "recorded_at": "2026-10-02",
+      "reliability": null,
+      "sample_blocks": 15,
+      "sample_games": 3841,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/mod25_pipeline_v2/linemove/linemove.json",
+      "standard_error": 0.009964
+    },
+    "mod25 distillation linemove hgb_nomkt pooled toward_q": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval and sign not resolved against a positive control; no refuted mechanism or bound",
+      "closing_ground": null,
+      "description": "hgb_nomkt pooled: mean signed opener-to-close line move toward the distilled side, in points",
+      "effect": 0.312354,
+      "effect_units": "ats_points",
+      "family": "mod25_distillation_linemove",
+      "interval": [
+        0.224903,
+        0.424337
+      ],
+      "league": "nfl",
+      "notes": "q=distilled minus opener, no market columns, season-block bootstrap 20000 draws. Move: Tuesday opener to close 2020-2025, SBR open to close 2011-2019. 24 looks counted (2 students x 3 scopes x 4 cells: A, A matched, B with base edge control, direction); 12 recorded here. Direction slope positive in all seasons per era.",
+      "plain_summary": "Does the synthetic-trained rating anticipate where the line moves after the opener (hgb_nomkt, pooled).",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-10-02",
+      "reliability": null,
+      "sample_blocks": 15,
+      "sample_games": 3841,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/mod25_pipeline_v2/linemove/linemove.json",
+      "standard_error": 0.11518171590554357
+    },
+    "mod25 distillation linemove ridge_nomkt 2011_2019 mae_gain": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval and sign not resolved against a positive control; no refuted mechanism or bound",
+      "closing_ground": null,
+      "description": "ridge_nomkt 2011_2019: held-out move MAE gain vs zero-move baseline, leave-one-season-out line move regressed on distilled-minus-opener",
+      "effect": 0.001858,
+      "effect_units": "mae_improvement",
+      "family": "mod25_distillation_linemove",
+      "interval": [
+        -0.020727,
+        0.029103
+      ],
+      "league": "nfl",
+      "notes": "q=distilled minus opener, no market columns, season-block bootstrap 20000 draws. Move: Tuesday opener to close 2020-2025, SBR open to close 2011-2019. 24 looks counted (2 students x 3 scopes x 4 cells: A, A matched, B with base edge control, direction); 12 recorded here. Direction slope positive in all seasons per era.",
+      "plain_summary": "Does the synthetic-trained rating anticipate where the line moves after the opener (ridge_nomkt, 2011_2019).",
+      "probability_positive": 0.5285,
+      "recorded_at": "2026-10-02",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2304,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod25_pipeline_v2/linemove/linemove.json",
+      "standard_error": 0.012712
+    },
+    "mod25 distillation linemove ridge_nomkt 2011_2019 toward_q": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval and sign not resolved against a positive control; no refuted mechanism or bound",
+      "closing_ground": null,
+      "description": "ridge_nomkt 2011_2019: mean signed opener-to-close line move toward the distilled side, in points",
+      "effect": 0.381727,
+      "effect_units": "ats_points",
+      "family": "mod25_distillation_linemove",
+      "interval": [
+        0.287326,
+        0.510634
+      ],
+      "league": "nfl",
+      "notes": "q=distilled minus opener, no market columns, season-block bootstrap 20000 draws. Move: Tuesday opener to close 2020-2025, SBR open to close 2011-2019. 24 looks counted (2 students x 3 scopes x 4 cells: A, A matched, B with base edge control, direction); 12 recorded here. Direction slope positive in all seasons per era.",
+      "plain_summary": "Does the synthetic-trained rating anticipate where the line moves after the opener (ridge_nomkt, 2011_2019).",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-10-02",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2304,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod25_pipeline_v2/linemove/linemove.json",
+      "standard_error": 0.1508828559485727
+    },
+    "mod25 distillation linemove ridge_nomkt 2020_2025 mae_gain": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval and sign not resolved against a positive control; no refuted mechanism or bound",
+      "closing_ground": null,
+      "description": "ridge_nomkt 2020_2025: held-out move MAE gain vs zero-move baseline, leave-one-season-out line move regressed on distilled-minus-opener",
+      "effect": -0.0149,
+      "effect_units": "mae_improvement",
+      "family": "mod25_distillation_linemove",
+      "interval": [
+        -0.026334,
+        -0.005976
+      ],
+      "league": "nfl",
+      "notes": "q=distilled minus opener, no market columns, season-block bootstrap 20000 draws. Move: Tuesday opener to close 2020-2025, SBR open to close 2011-2019. 24 looks counted (2 students x 3 scopes x 4 cells: A, A matched, B with base edge control, direction); 12 recorded here. Direction slope positive in all seasons per era.",
+      "plain_summary": "Does the synthetic-trained rating anticipate where the line moves after the opener (ridge_nomkt, 2020_2025).",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-10-02",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod25_pipeline_v2/linemove/linemove.json",
+      "standard_error": 0.005193
+    },
+    "mod25 distillation linemove ridge_nomkt 2020_2025 toward_q": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval and sign not resolved against a positive control; no refuted mechanism or bound",
+      "closing_ground": null,
+      "description": "ridge_nomkt 2020_2025: mean signed opener-to-close line move toward the distilled side, in points",
+      "effect": 0.170299,
+      "effect_units": "ats_points",
+      "family": "mod25_distillation_linemove",
+      "interval": [
+        0.124437,
+        0.221306
+      ],
+      "league": "nfl",
+      "notes": "q=distilled minus opener, no market columns, season-block bootstrap 20000 draws. Move: Tuesday opener to close 2020-2025, SBR open to close 2011-2019. 24 looks counted (2 students x 3 scopes x 4 cells: A, A matched, B with base edge control, direction); 12 recorded here. Direction slope positive in all seasons per era.",
+      "plain_summary": "Does the synthetic-trained rating anticipate where the line moves after the opener (ridge_nomkt, 2020_2025).",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-10-02",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod25_pipeline_v2/linemove/linemove.json",
+      "standard_error": 0.18391002067909187
+    },
+    "mod25 distillation linemove ridge_nomkt pooled mae_gain": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval and sign not resolved against a positive control; no refuted mechanism or bound",
+      "closing_ground": null,
+      "description": "ridge_nomkt pooled: held-out move MAE gain vs zero-move baseline, leave-one-season-out line move regressed on distilled-minus-opener",
+      "effect": -0.014614,
+      "effect_units": "mae_improvement",
+      "family": "mod25_distillation_linemove",
+      "interval": [
+        -0.033764,
+        0.005917
+      ],
+      "league": "nfl",
+      "notes": "q=distilled minus opener, no market columns, season-block bootstrap 20000 draws. Move: Tuesday opener to close 2020-2025, SBR open to close 2011-2019. 24 looks counted (2 students x 3 scopes x 4 cells: A, A matched, B with base edge control, direction); 12 recorded here. Direction slope positive in all seasons per era.",
+      "plain_summary": "Does the synthetic-trained rating anticipate where the line moves after the opener (ridge_nomkt, pooled).",
+      "probability_positive": 0.0782,
+      "recorded_at": "2026-10-02",
+      "reliability": null,
+      "sample_blocks": 15,
+      "sample_games": 3841,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/mod25_pipeline_v2/linemove/linemove.json",
+      "standard_error": 0.010123
+    },
+    "mod25 distillation linemove ridge_nomkt pooled toward_q": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval and sign not resolved against a positive control; no refuted mechanism or bound",
+      "closing_ground": null,
+      "description": "ridge_nomkt pooled: mean signed opener-to-close line move toward the distilled side, in points",
+      "effect": 0.297123,
+      "effect_units": "ats_points",
+      "family": "mod25_distillation_linemove",
+      "interval": [
+        0.218637,
+        0.396239
+      ],
+      "league": "nfl",
+      "notes": "q=distilled minus opener, no market columns, season-block bootstrap 20000 draws. Move: Tuesday opener to close 2020-2025, SBR open to close 2011-2019. 24 looks counted (2 students x 3 scopes x 4 cells: A, A matched, B with base edge control, direction); 12 recorded here. Direction slope positive in all seasons per era.",
+      "plain_summary": "Does the synthetic-trained rating anticipate where the line moves after the opener (ridge_nomkt, pooled).",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-10-02",
+      "reliability": null,
+      "sample_blocks": 15,
+      "sample_games": 3841,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/mod25_pipeline_v2/linemove/linemove.json",
+      "standard_error": 0.11617526348178774
+    },
     "mod25 distillation ridge_nomkt proxy acc_diff_points": {
       "category": "modeling",
       "classification": "unresolved_below_power",

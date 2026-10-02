@@ -42,8 +42,27 @@ Student (holdout worlds): ridge R2 vs true .513, vs realized .128 (realized-labe
 Grades vs base 802-701 (recorded, family mod25_distillation, unresolved_below_power): ridge 2020-25 805-698, acc +0.20 [-0.63,1.21] P+ .58, recal LL +.00016 P+ .68, seasons+ 3/6, flips 88-85; 2011-19 1156-1075 vs 1142-1089, +0.63 [-1.08,2.86] P+ .70, LL +.00101 P+ .96. HGB 2020-25 798-705 (-0.27, P+ .33, LL +.00021 P+ .71), 2011-19 1162-1069 (+0.90, P+ .89, LL +.00111 P+ .98). Weight w fell .69 (2010) to .19 (2025).
 Diagnostics: distilled corr close .84, open .85; q=(distilled-open) corr with margin-vs-open .018 (2020-25), .004 (2011-19); partial given base .026; corr(q, close-minus-open move) .09 / .26.
 
+## Line-move test of q (measured 2026-10-02; scripts/mod25_linemove.py, artifacts/mod25_pipeline_v2/linemove/)
+Move = close - opener (Tuesday opener 2020-25 n 1537; SBR open 2011-19 n 2304), LOSO by season. Verified: 88 nomkt cols, none market-named; spread_line/total_line excluded; 34 cols constant in synthetic (player, weather, rest, cpoe) so zero weight. Real features read as pregame (walk-forward z from prior seasons).
+Held-out slope of move on q: positive in 9/9 (2011-19, mean b .17-.18, corr .25-.26), 6/6 (2020-25, b .05-.06, corr .11-.12), 15/15 pooled. MAE vs zero-move: no gain (2011-19 +.002 P+ .53; 2020-25 -.015 P+ 0; pooled -.015 P+ .07); adding base edge control moves it to +.007 / -.009. Slope is real but too small to beat a zero-move MAE.
+Direction (sign q): mean move toward q 2011-19 +.38 pts (hgb +.41), 2020-25 +.17 (hgb +.16), pooled +.30/+.31, P+ 1.00 (6-9 season blocks), seasons+ all; moved toward q 49/43% of games, away 32/33%, zero 19/25% (toward 60/56% of moved games).
+Recorded 12 cells, family mod25_distillation_linemove, unresolved_below_power (registry widened the toward_q SEs). 24 looks counted (12 unrecorded: matched A and base-edge-control B arms, in linemove.json).
+Inferred: q = rating-consensus minus opener, so move toward q may be public-rating reversion rather than information the opener lacks; it says nothing yet about margin vs open (corr .02).
+
 ## Next
-Gauge whether q's line-move anticipation (corr .26 in 2011-19) predicts the opener-to-close move out of season; more seasons are the only power source. Generator still fails margin SD, non-strength variance, late R2 gates.
+Whether line value converts to cover accuracy: q partial given base vs margin-vs-open is .026 (diag). Pick toward q only enters as the one fitted TwoStage term (done, unresolved). Rerun all when generator passes gates.
 
 ## Open
-Weak-signal cells: 8 looks (2 students x 2 eras x 2 metrics). Raw (unmatched) standardisation not graded.
+Weak-signal cells: 8 grade looks + 24 linemove looks. Raw (unmatched) standardisation not graded. 2011-19 SBR open is not a Tuesday opener.
+
+## Orchestrator check 2026-10-02 (measured, linemove_frame.parquet)
+Line value gained by picking each side (mean move toward the side, points).
+Base model: +0.05 (2011-19) and +0.09 (2020-25). Distilled q: +0.38 and +0.17.
+Where q disagrees with base (54-55% of games), q's side still gains +0.31
+(n 1252) and +0.07 (n 838). Since q's direction comes from a student trained only on
+synthetic games, with no real outcomes fitted, its direction carries no
+real-data selection. Inferred: the market moves toward the synthetic model's
+view more than toward the base model's, which is information the opener
+lacks, stronger in the older era. Cover accuracy stays below power. Next: log q
+forward with the 2026 weekly picks, and a calibrated fitted term combining q
+with the base model (out-of-season weight).
