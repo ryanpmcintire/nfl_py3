@@ -55,7 +55,7 @@ def cmd_sim(args):
     dv.c25.ensure_policies()
     cfgj = json.dumps(dict(dv.DV[args.variant], seed=args.seed, name=f"{args.variant}_s{args.scale:g}"))
     setting = dict(gen.SETTING_DEFAULTS)
-    setting.update({"scale": args.scale, "yard_gain": args.yard_gain, "def_sign": 1.0, "yard_bias": 0.75, "drift": 1.0, "mech": cfgj})
+    setting.update({"scale": args.scale, "yard_gain": args.yard_gain, "def_sign": 1.0, "yard_bias": 0.0, "drift": 1.0, "mech": cfgj})
     gen.init_worker = e_init
     gen.play_season = e_play_season
     games, plays, latents, el = gen.run_generation(setting, args.worlds, args.seasons, args.workers, args.seed, progress=True)
@@ -151,12 +151,12 @@ def main():
     sub = ap.add_subparsers(dest="cmd", required=True)
     s = sub.add_parser("sim")
     s.add_argument("--variant", default="crj")
-    s.add_argument("--scale", type=float, default=0.9)
+    s.add_argument("--scale", type=float, default=1.0)
     s.add_argument("--worlds", type=int, default=8)
     s.add_argument("--seasons", type=int, default=8)
     s.add_argument("--workers", type=int, default=4)
     s.add_argument("--seed", type=int, default=9)
-    s.add_argument("--yard-gain", dest="yard_gain", type=float, default=2.0)
+    s.add_argument("--yard-gain", dest="yard_gain", type=float, default=0.0)
     b = sub.add_parser("budget")
     b.add_argument("--boot", type=int, default=2000)
     ap.add_argument("--out-dir", dest="out_dir", default=None)

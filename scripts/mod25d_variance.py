@@ -960,7 +960,7 @@ def d_init(train, cfg_json):
 
 def d_gen_init(setting):
     cfg = json.loads(setting["mech"])
-    cfg.update(condition=1, yard_gain=setting["yard_gain"], def_sign=1.0, yard_bias=cfg.get("ybias", setting.get("yard_bias", 0.75)))
+    cfg.update(condition=1, yard_gain=setting["yard_gain"], def_sign=1.0, yard_bias=cfg.get("ybias", setting.get("yard_bias", 0.0)))
     d_init(TRAIN, json.dumps(cfg))
 
 
@@ -989,7 +989,8 @@ for _h in (4, 6, 10, 20):
     DV[f"crk{_h:02d}"] = dict(DV["crq0"], dkern=_h / 10.0, fined=1.0)
 DV["crf4"] = dict(DV["crk06"], fdnb=1)
 DV["crf4m"] = dict(DV["crf4"])
-DEC_COND = dict(condition=1, yard_gain=2.0, def_sign=1.0, yard_bias=0.75, avg=1)
+DV["crz"] = dict(DV["crf4"], yard_gain=0.0, scale=1.0)
+DEC_COND = dict(condition=1, yard_gain=0.0, def_sign=1.0, yard_bias=0.0, avg=1)
 
 
 def d_play_season(task):
@@ -1263,13 +1264,13 @@ def main():
         g.add_argument("--variant", default="cr")
         g.add_argument("--variants", default="cr")
         g.add_argument("--scales", default="3,4,5,6")
-        g.add_argument("--scale", type=float, default=3.0)
+        g.add_argument("--scale", type=float, default=1.0)
         g.add_argument("--worlds", type=int, default=8 if nm == "gate" else 6)
         g.add_argument("--seasons", type=int, default=8)
         g.add_argument("--workers", type=int, default=6)
         g.add_argument("--seed", type=int, default=9 if nm == "gate" else 21)
-        g.add_argument("--yard-gain", dest="yard_gain", type=float, default=2.0)
-        g.add_argument("--yard-bias", dest="yard_bias", type=float, default=0.75)
+        g.add_argument("--yard-gain", dest="yard_gain", type=float, default=0.0)
+        g.add_argument("--yard-bias", dest="yard_bias", type=float, default=0.0)
         g.add_argument("--tag", default="g1")
     args = ap.parse_args()
     {"decomp": cmd_decomp, "tilt": cmd_tilt, "ipwcheck": cmd_ipwcheck, "grid": cmd_grid, "gate": cmd_gate, "corrdiag": cmd_corrdiag, "pacediag": cmd_pacediag, "ratediag": cmd_ratediag, "tiltcoef": cmd_tiltcoef, "ablate": cmd_ablate, "pacefit": cmd_pacefit, "simcache": cmd_simcache, "possdiag": cmd_possdiag, "strdiag": cmd_strdiag, "epadiag": cmd_epadiag, "epfit": cmd_epfit, "grid2": cmd_grid2, "covdecomp": cmd_covdecomp, "downdiag": cmd_downdiag, "covsim": cmd_covsim}[args.cmd](args)
@@ -1747,7 +1748,7 @@ def cmd_possdiag(args):
     print("\n".join(lines))
 
 
-def gen_full(variant, scale, worlds, seasons, workers, seed, yard_gain=2.0, yard_bias=0.75):
+def gen_full(variant, scale, worlds, seasons, workers, seed, yard_gain=0.0, yard_bias=0.0):
     c25.ensure_policies()
     import mod25_generator as gen
 
