@@ -48,37 +48,34 @@ U3b (scripts/sim09_posture.py, artifacts/sim09/u3b/*; variant crzp = crz + postu
 U3d (scripts/sim09_u3d.py; variant crzk = crz + tfix; artifacts/sim09/u3d/anatomy_*.csv, play_crzk, u3d_analyze.log). Anatomy real v crz, trailer drives starting in last 2 min of Q4: snaps/drive 4.62 v 3.53, drives/game 0.46 v 0.73, ending on downs .117 v .214, last play at down 1-3 in 64% of sim downs-endings (real 1%). Mechanism: pool rows that are the last row of a game or of Q2 carry an artifact transition (game_last forced flip, next_down 1, own 25; Q2-last row flip = Q3 first-play posteam), so a drawn end-of-game or end-of-half kneel/spike/incomplete flips possession mid-clock and fdnb reads next_down 1 as a conversion. Fix install_tfix: for those rows with no score and no turnover set flip False and next_down NaN (engine then derives the continuation from yards; 4th down flips by rule). 2717 rows repaired. crzk v real: plays/drive trailer final2 -.199 (crz -.46, real -.082), drives/g 22.78 v 22.67, Q4 trailer TD .217 v .234, Q4 leader .127 v .131, 4th-down conv .511 v .498, Q2 trailer drive snaps 4.14 v 4.15. Remaining: trailer TD/drive -.0195 v -.0119, Q2 window drives/game .64 v .75. Caution: u3a to_pbp maps code 0 to pass but engine code 0 is run, 1 pass.
 U3d e5 status: seeds 11,12,13 of crzk running sequentially in background (3 workers); s11 e5.json landed at artifacts/mod25e3/e5_crzk_s11/e5.json (not yet compared to crf4 s11: SD 15.23, nonstr 209.6, r2 .107, margin var 231.9, strength 49.6, noise 182.9, Q4 slope -.044, drives 23.86); s12, s13 land in e5_crzk_s12/e5_crzk_s13, logs artifacts/sim09/u3d/e5_crzk_1*.log. Compare each to artifacts/mod25e3/e5_crf4_s1*/e5.json.
 
+U3e (scripts/sim09_hk.py = crzhk crz+half+tfix; artifacts/sim09/u3e/{an_crz,an_crzh,an_crzk,analyze_crzhk}/cmp_*.csv, logs; chain hk_all.sh in scratchpad). Rerun analyze after the run/pass fix: crz tables identical to u3a (max abs diff 0.0 in all 5 cmp csv), so no U3a conclusion changed. 6x8 sim (crz/crzh/crzk/crzhk/real): leader Q3 air -.142/-.179/-.132/-.179/-.222; 2H air slope .364/.567/.339/.493/.550; 2H risk .092/.257/.121/.206/.213; 2H ypp -.013/.085/.015/.030/.065; trailer final2 plays -.460/-.447/-.199/-.181/-.082; trailer final2 TD -.029/-.029/-.020/-.020/-.012; Q4 trailer TD .200/.206/.217/.221/.234; Q4 leader TD .121/.119/.127/.127/.132; 4th conv .522/.519/.511/.513/.498; drives/g 23.35/23.32/22.79/22.79/22.67. Half split fixes 2H level (crzh overshoots on risk/ypp, crzhk between), tfix fixes drives/g and about 60% of the trailer plays gap. e5 mean+-seed SD (n=3; crzhk n=2 at write time, s13 in e5_crzhk_s13 then recompute with scratchpad tab.py): margin SD crf4 15.16+-.12, crzh 15.22+-.14, crzk 15.16+-.02; nonstr 207.4+-2.4/209.9+-3.1/208.5+-.9; r2 w10-18 .112+-.005/.100+-.007/.104+-.003; strength RE 49.8+-2.8/49.2+-1.0/48.5+-1.0; noise RE 180.0+-2.5/182.5+-3.0/181.4+-1.0; xq cov 7.5+-3.0/6.9+-3.3/6.3+-1.4 (real eval -12.0); Q4 slope -.041+-.003/-.036+-.008/-.042+-.003 (real -.073); drives/g 23.83/23.37/22.85 (real 21.3 eval, 22.7 train); pts/g 42.0/42.5/42.6; mass3 .117/.118/.120 (check only). crzhk s11-12 within seed SD of crzk/crzh on every gate metric (s11: SD 15.08, nonstr 206.8, r2 .107, xq cov 2.4, drives 22.84). Gaps left vs real: cross-quarter cov sign (sim + vs real -), Q4 slope half the real size, trailer late-drive length and TD, leader Q3 air/ypp, 4th conv +1.5pp.
+
+U4b (scripts/sim09_u4b.py, modes none/2/3; crzk v real 2009-17). (1) NH faced coef is a persistence gap: P(NH|prev NH) .149 sim v .461 real, sd of prior-10 NH share .098 v .159; NH draws sit in the right phase (97% same phase; own-NH ypp +.48 v +.53); fix: NH as drive-level Markov state fitted to real P(NH|prev,phase,down,margin), draw rows conditioned on the flag. (2) 4th conv: yards-only .447 v .487 (-4.0pp), but engine adds next_down==1 no-flip on yards<dist at .064 v .011 (source row's own first down read at the sim's wider dist; source dist 4.60 v sim 5.62); mix effect -.007, within-bucket +.0205; fix: conv = yards>=sim dist OR source-row penalty first down (real rate by dist bucket), match 4th-down source dist to sim dist; run share too high at 4th&1-3 (pass .38/.58 v .27/.77). (3) Q2 window drives starting 1.29 v 1.51: window FG attempts/game .312 v .389 (4th yl<=10 FG .648 v .807, go .297 v .144), 4th-down plays .967 v 1.074, last Q2 play FG 12.7% v 26.8%, pass 34.6% v 20.4%, kneel 25% v 31%; fix: fit end-of-half 4th/FG/kneel decision on clock x yl x margin, not row neighbours. Gap per snap matches.
+U4d (scripts/sim09_u4d.py, artifacts/sim09/u4d/{sim_bandwidth,real_kernel}.json, sim.log, real.log; 2 analyses, 3 outcomes x coordinate descent over a,b,T,K,half, tuned fit 2009-13 val 2014-15, tested fit 2009-15 test 2016-17). Score blur is NOT the cause: crzk Q3 lead-7 draws have |ds| .72, 70% exact, 0.1% drawn at <=0, mean drawn +7.49 (crzh |ds| 1.38). Half dilution is real in crzk (57% same-half draws in Q3, crzh 97%) and time blur ~76 s. Held-out optima are blurrier, not sharper: pass LL a 5.6 b 11.2 T 2400 K 78 (.5795 -> .5730), yards CRPS a 16 b 15.7 T 300 K 320 (4.123 -> 4.038), air CRPS a 16 b 11.2 T 1680 K 224 (5.194 -> 5.090); half split not chosen. Q3 lead 5-9 test (n 1724) air vs all-Q3 8.30: real 7.96, kernel current 8.10, LL-optimum 8.20: sharper kernel cannot close the leader gap; gap is in the kernel mean level (+.14 air, unresolved at n). crzh 2H gap table not rerun.
+U4f (scripts/sim09_u4f.py, artifacts/sim09/u4f/*): joint (type,yards)+air pmf log score declared first, REJECTED (kernel pmf worse than marginal baseline, picked K cap 400, score scale flat, pass LL .582->.612; kernel_consts_joint_rejected.json). Declared fallback: J = passLL/yardsCRPS/airCRPS each over current-constant value on val 2014-15; half weight picked .5 with it (kernel_consts_with_half.json) but engine feature_matrix has no half, so rerun H=0. Chosen a4 b8 T840 D.875 F10 O1 K200 (168/106 evals); test 2016-17 vs current: pass LL .5818->.5614 (-.020), yards CRPS 4.0453->4.0425 (-.003, p+ .97), air CRPS 5.120->5.102 (-.019); coverage ok (K/min pool .06). DV["crzkl"]=crzk+kl constants (auto-registered from kernel_consts.json). sim 6x8 seed21 done (play_crzkl, analyze/ vs crzk: u3d/analyze, q4_trailer_td .2181 v real .2341 not closed). e5 NOT run (cap): python scripts/sim09_u4f.py e5 --seed 11 --workers 3; team bandwidth not searched.
+U4c (stakes; scripts/sim09_stakes_gen.py, artifacts/sim09/u4c/). Generator tracks synthetic standings per week (S.simulate method, 6000 MC, K=6, rating k=12 with zero prior-season term, divisions by team index, weeks 10+). Pool rows tagged with real stakes; logit behaviour models (no_huddle, shotgun, INT, 4th go) with ridge on 12 stakes terms, lambda by leave-one-season-out: LOSO picks NO stakes for no_huddle and 4th go (no held-out gain), tiny gain for shotgun (.575188 to .574322) and INT. Variant crzs = crzk + LOSO model; crzt = forced lambda 100 challenger. 4th-down go tilted via pol4 logit shift. Smoke: stakes means match real (lev ~.12, elim .2-.45, clinch .07-.19). RESULTS PENDING: chain run_all.sh (post, sim crzs, e5 crzs s11-13, sim+e5 crzt) writes alldone.txt; then run `sim09_stakes_gen.py val` and `mod25e_scorestate.py e5report --variants crzk,crzs,crzt`.
+
 ## Next
-2026-10-02: fixed run/pass code swap in sim09_u3a.py to_pbp (engine 0=run,
-1=pass): every U3a/U3c/U3d analyze table so far is suspect for run/pass
-split metrics; rerun analyze for crz (u3a_play), crzh (u3c/play_crzh),
-crzk (u3d/play_crzk). U3d found pool rows at game/half end with fabricated
-flips (crzk tfix, scripts/sim09_u3d.py) - real bug fix; e5 seeds for crzk
-and crzh running (artifacts/mod25e3/e5_crz{k,h}_s11-13). Next: merge
-crzk+crzh -> crzhk and gate.
-U3c IN FLIGHT: crzh (crz + exact half split, Q3 phase 5 pool; min pool
-7,799, fallback 0) in scripts/sim09_half.py; chain artifacts/sim09/u3c/
-run_all.sh writes alldone.txt when done. Then compare analyze.log with
-u3a/analyze.log and e5_crzh_s11-13 with e5_crf4_s11-13 (artifacts/mod25e3).
-U3b done: posture reweighting (crzp, scripts/sim09_posture.py) changes
-nothing; the kernel already carries real posture mix. crzp seed 11 e5 may
-still be running (artifacts/mod25e3/e5_crzp_s11/e5.json); read it, run
-seeds 12-13 only if it differs from crz. Structural defect found: the
-engine's time feature folds halves (time_raw = seconds left in half; phase
-0 shared by Q1 and Q3), so second-half behaviour is diluted by first-half
-neighbours (U1 2H air +.55 real vs +.36 sim). U3c: add half to the state
-match. U3d: trailer final-2 drive anatomy (drive-end reasons, sec/snap by
-outcome, timeouts, out of bounds) and fix.
-U3b done: posture adds nothing because the kernel already carries it. Remaining
-trailer final-2 gap is in drive structure, not drawn-play posture: investigate
-(1) per-play clock/elapsed used in the final 2 min vs real (plays/drive -.46 v
--.08 while no-huddle and shotgun slopes match), (2) the engine's time feature
-has no half (time_raw = gsr-1800 in Q1/Q2, gsr in Q3/Q4, so Q1 and Q3 states
-share neighbours; only Q2-end and Q4 phases flag), (3) drive-end rule when the
-clock expires inside a drive. Then second-half level, prior-drive fatigue,
-no-huddle-faced overshoot, 4th-down conv, stakes, A4. Seeds 12 and 13 of crzp
-e5 (python scripts/sim09_posture.py e5 --variant crzp --seed 12 --workers 3,
-about 75 min each) if the seed-11 gate/budget differs from crf4.
+Integration (after U4a/U4c/U4e and sim-speed land): build one variant on
+crzhk with each keeper (U4e NH/4th/end-half, U4a fatigue, U4c stakes, U4f
+kernel constants from artifacts/sim09/u4f/kernel_consts.json), run with
+SIM_FAST once sim-speed proves equality, 3 e5 seeds each, diff analyze vs
+real. crzhk 3 seeds complete (artifacts/mod25e3/e5_crzhk_s11-13).
+Running 2026-10-02 ~15:40 (5 agents): U3e merge crzhk + reruns
+(scripts/sim09_hk.py); U4a fatigue state (sim09_fatigue.py); U4b no-huddle,
+4th/3rd conversion, Q2 window diagnosis (sim09_u4b.py, analysis); U4c
+in-season stakes in generator (sim09_stakes_gen.py); U4d kernel score/time
+scales by held-out play likelihood (sim09_u4d.py, analysis).
+U3e done except crzhk e5 s13 (see Tried U3e). Current plan: install crzhk as
+the base for U4 work (second-half level fixed by half split, game-end flips
+fixed by tfix). Next mechanisms, in order: (1) trailer final-2 plays/drive
+(-.18 v -.08) and trailer TD/drive (-.020 v -.012): clock use and drive end
+inside the last 2 min (U4b item 3 end-of-half decision); (2) leader Q3 air
+(-.18 v -.22) and ypp/risk level: kernel mean level, not blur (U4d); (3)
+no-huddle faced persistence and 4th-down conversion (U4b); (4) fatigue (U4a),
+stakes (U4c). Gate each on e5 3 seeds vs crf4.
+U3b/U3c/U3d background chains are finished; crzp s11 never compared (posture
+changed nothing, drop).
 
 ## Open
 Full-column pbp for 2018-25 is not downloaded (needed for held-out checks).

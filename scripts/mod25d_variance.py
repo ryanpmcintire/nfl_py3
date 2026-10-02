@@ -839,14 +839,16 @@ def chain_epa(log, offhome, tab):
 
 
 def install_pace(sigma, seed):
-    import os
 
     base = _G["pol"]
-    rng = np.random.default_rng(seed * 7919 + os.getpid())
-    st = {"m": 1.0}
+    st = {"m": 1.0, "k": None, "rng": None}
 
     def pol(down, distance, yardline, score_diff, qtr, clock_val, drawn):
         if qtr == 1 and clock_val >= 3599.5:
+            if st["k"] != _G.get("task_key"):
+                st["k"] = _G.get("task_key")
+                st["rng"] = task_rng(7919, seed)
+            rng = st["rng"]
             st["m"] = float(np.exp(sigma * rng.standard_normal() - 0.5 * sigma * sigma))
         if qtr <= 4 and st["m"] != 1.0:
             drawn = dict(drawn)
@@ -871,6 +873,17 @@ def install_fined(rd):
 
 
 def d_init(train, cfg_json):
+    import sim_fast
+
+    fast = sim_fast.enabled(json.loads(cfg_json))
+    if fast:
+        sim_fast.activate()
+    _d_init(train, cfg_json)
+    if fast:
+        sim_fast.finish()
+
+
+def _d_init(train, cfg_json):
     cfg = json.loads(cfg_json)
     if cfg.get("ydsc"):
         sim.SCALE_YDSTOGO = float(cfg["ydsc"])
@@ -993,7 +1006,13 @@ DV["crz"] = dict(DV["crf4"], yard_gain=0.0, scale=1.0)
 DEC_COND = dict(condition=1, yard_gain=0.0, def_sign=1.0, yard_bias=0.0, avg=1)
 
 
+def task_rng(salt, cfg_seed):
+    key = _G.get("task_key", (0, 0, 0))
+    return np.random.default_rng([int(cfg_seed), int(salt), int(key[0]), int(key[1]), int(key[2])])
+
+
 def d_play_season(task):
+    _G["task_key"] = (task[0], task[1], task[2])
     tables = _G["tables"]
     arr = tables["attrs"]
     if "adv" not in arr:

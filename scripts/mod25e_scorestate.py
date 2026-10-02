@@ -281,13 +281,17 @@ def s_gen_init(setting):
 
 
 def install_lattice():
-    import os
 
     base_pol = dv._G["pol"]
     arrays = dv._G["tables"]["arrays"]
-    rng = np.random.default_rng(int(dv._G["cfg"].get("seed", 3)) * 7919 + os.getpid())
+    st = {"k": None, "rng": None}
+    cseed = int(dv._G["cfg"].get("seed", 3))
 
     def pol(down, distance, yardline, score_diff, qtr, clock_val, drawn):
+        if st["k"] != dv._G.get("task_key"):
+            st["k"] = dv._G.get("task_key")
+            st["rng"] = dv.task_rng(7920, cseed)
+        rng = st["rng"]
         i = drawn["idx"]
         b = float(arrays["yards_gained"][i])
         x = float(drawn["yards_gained"])

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-02T19:48:15.790462+00:00`
+Refreshed at: `2026-10-02T20:53:12.693357+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-10-02T19:48:15.790462+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `39a83de3392d` — SIM-09 U3: posture policy (no effect), half-aware matching, end-of-half/game pool flip fix, sim-vs-real behaviour comparison; run/pass code swap fixed
-- Pending change set: 24 paths
-  - `M  AGENTS.md`
+- Baseline commit: `d2b1810959ba` — AGENTS.md: never poll with sleep loops; background jobs with notification; agents reap their processes
+- Pending change set: 28 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - ` M docs/lanes/sim09-urgency-stakes.md`
+  - `A  docs/lanes/sim-speed.md`
+  - `M  docs/lanes/sim09-urgency-stakes.md`
   - ` M docs/model.html`
+  - `M  scripts/mod25d_variance.py`
+  - `M  scripts/mod25e_scorestate.py`
+  - `A  scripts/sim09_fatigue.py`
+  - `A  scripts/sim09_hk.py`
+  - `A  scripts/sim09_stakes_gen.py`
+  - `A  scripts/sim09_u4b.py`
+  - `A  scripts/sim09_u4d.py`
+  - `A  scripts/sim09_u4e.py`
+  - `A  scripts/sim09_u4f.py`
+  - `A  scripts/sim_fast.py`
   - ` M tiebreaker.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-04-20261001T211240Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-04-20261002T161446Z.json`
-  - `?? registry/experiments/opener-evaluation/20261001T211624Z.json`
-  - `?? registry/experiments/opener-evaluation/20261002T161817Z.json`
-  - `?? registry/experiments/waterfall-feed/20261001T211747Z.json`
-  - `?? registry/experiments/waterfall-feed/20261002T162022Z.json`
-  - `?? scripts/_u3d_tmp.py`
-  - `?? scripts/mod24_u7a.py`
-  - `?? scripts/sim09_fatigue.py`
-  - `?? scripts/sim09_hk.py`
-  - ...and 4 more
+  - ...and 8 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
