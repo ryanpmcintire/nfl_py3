@@ -31,6 +31,7 @@ BW = BWJ.get("chosen_h")
 BETA = BWJ.get("chosen_beta")
 dv.DV["crI"] = dict(dv.DV["crzhk"], fdnb=0, e1=1, e2=1, fat=1, fh=BW, fb=BETA, intc=1, kl=u4f.REG)
 dv.DV["crIs"] = dict(dv.DV["crI"], fh=BWJ.get("silverman_h"), fb=None)
+dv.DV["crIk"] = dict(dv.DV["crI"], kl=None)
 dv.DV["crIn"] = dict(dv.DV["crI"], fat=0, fh=None, fb=None)
 DIAG = {"n": 0, "ess0": 0.0, "ess1": 0.0, "ess2": 0.0, "gap1": 0.0, "gap2": 0.0, "iters": 0}
 

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-02T22:15:25.135729+00:00`
+Refreshed at: `2026-10-02T23:34:19.895883+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-10-02T22:15:25.135729+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `0351ee2be18e` — SIM-09: queue timeouts and penalties as simulator mechanisms (owner)
-- Pending change set: 24 paths
+- Baseline commit: `32ad9af40eed` — SIM-09: two-minute warning, timeout caller policy with availability, penalties as a rules-consistent mechanism, stakes in generator (no effect), fatigue state
+- Pending change set: 27 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
+  - `M  docs/lanes/mod25e-generator-fidelity.md`
   - `M  docs/lanes/sim09-urgency-stakes.md`
   - ` M docs/model.html`
-  - `M  docs/sim09_personnel_catalogue.md`
-  - `A  scripts/sim09_f2.py`
-  - `A  scripts/sim09_f3.py`
-  - `A  scripts/sim09_int.py`
-  - `M  scripts/sim09_u4e.py`
-  - `A  scripts/sim09_u4g.py`
+  - `A  scripts/mod25e_channels.py`
+  - `A  scripts/mod25e_cov.py`
+  - `A  scripts/mod25e_era.py`
+  - `A  scripts/mod25e_gain.py`
+  - `A  scripts/mod25e_r2gap.py`
+  - `A  scripts/mod25e_resid.py`
+  - `A  scripts/mod25e_rz.py`
+  - `M  scripts/sim09_int.py`
+  - `A  scripts/sim09_ladder.py`
   - ` M tiebreaker.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-predict/2026-week-04-20261001T211240Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-04-20261002T161446Z.json`
-  - `?? registry/experiments/opener-evaluation/20261001T211624Z.json`
-  - `?? registry/experiments/opener-evaluation/20261002T161817Z.json`
-  - `?? registry/experiments/waterfall-feed/20261001T211747Z.json`
-  - ...and 4 more
+  - ...and 7 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
