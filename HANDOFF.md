@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-02T01:49:50.069293+00:00`
+Refreshed at: `2026-10-02T02:32:17.455902+00:00`
 
 ## Start here
 
@@ -21,16 +21,16 @@ Refreshed at: `2026-10-02T01:49:50.069293+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `0457a7539c3e` — MOD-25h: drive-level reads checked (two were label/clock artifacts); 4th-down go rate recalibrated by cell; gates unchanged
+- Baseline commit: `b7089b017885` — MOD-25 pipeline: provisional student result (synthetic pull hurts) and redesign toward noiseless-label distillation
 - Pending change set: 14 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/mod25-pipeline.md`
+  - `M  docs/lanes/mod25d-variance-source.md`
   - ` M docs/model.html`
   - ` M registry/weak_signals.json`
-  - ` M scripts/mod25d_variance.py`
+  - `M  scripts/mod25d_variance.py`
   - ` M tiebreaker.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-predict/2026-week-04-20261001T211240Z.json`

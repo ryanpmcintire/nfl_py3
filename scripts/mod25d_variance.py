@@ -637,6 +637,111 @@ def install_cal4():
     m25._CAL4 = True
 
 
+SDB = np.array([-99, -16, -8, -4, 0, 4, 8, 16, 99], dtype=float)
+DB2 = np.array([0, 2, 5, 100], dtype=float)
+
+
+def cal2_cell(sd, dist, gsr):
+    a = np.clip(np.searchsorted(SDB, sd, side="left") - 1, 0, len(SDB) - 2)
+    b = np.clip(np.searchsorted(DB2, dist, side="left") - 1, 0, len(DB2) - 2)
+    c = np.clip(np.searchsorted(CAL_TB, gsr, side="left") - 1, 0, len(CAL_TB) - 2)
+    return (a * (len(DB2) - 1) + b) * (len(CAL_TB) - 1) + c
+
+
+def calibrate_p4s(P4, trans, shrink=10.0):
+    M = m25
+    sd = np.clip(trans["sc_raw"].to_numpy(), -24, 24)
+    gsr = trans["gsr_actual"].to_numpy().astype(float)
+    qtr = trans["qtr_actual"].to_numpy()
+    yl = trans["fp_raw"].to_numpy().astype(float)
+    dist = trans["dist_raw"].to_numpy().astype(float)
+    down = trans["down_i"].to_numpy()
+    code = trans["play_type_code"].to_numpy()
+    otf = (trans["off_to_raw"].to_numpy() > 0).astype(int)
+    dtf = (trans["def_to_raw"].to_numpy() > 0).astype(int)
+    m4 = (down == 4) & np.isin(code, (0, 1, 2, 3))
+    ix = lambda ax, x: np.abs(ax[None, :] - x[:, None]).argmin(1)
+    sd, gsr, qtr, yl, dist, otf, dtf, code = (a[m4] for a in (sd, gsr, qtr, yl, dist, otf, dtf, code))
+    pr = P4[ix(M.SD_AX, sd), ix(M.T4_AX, gsr), (qtr >= 5).astype(int), ix(M.Y4_AX, yl), ix(M.D4_AX, dist), otf, dtf]
+    cls = M.cls4_of(code)
+    cell = cal2_cell(sd, dist, gsr)
+    ncell = (len(SDB) - 1) * (len(DB2) - 1) * (len(CAL_TB) - 1)
+    n = np.bincount(cell, minlength=ncell).astype(float)
+    fac = np.ones((ncell, 3))
+    for c in range(3):
+        mp = np.bincount(cell, weights=pr[:, c], minlength=ncell)
+        rc = np.bincount(cell, weights=(cls == c).astype(float), minlength=ncell)
+        mm = np.where(n > 0, mp / np.maximum(n, 1), 0.0)
+        fac[:, c] = np.where(mm > 1e-6, (rc + shrink * mm) / np.maximum(mp + shrink * mm, 1e-9), 1.0)
+    sh = (len(M.SD_AX), len(M.T4_AX), 2, len(M.Y4_AX), len(M.D4_AX), 2, 2)
+    S = M.SD_AX[:, None, None, None, None, None, None]
+    T = M.T4_AX[None, :, None, None, None, None, None]
+    D = M.D4_AX[None, None, None, None, :, None, None]
+    gy = cal2_cell(np.broadcast_to(S, sh), np.broadcast_to(D, sh), np.broadcast_to(T, sh))
+    out = P4 * fac[gy][..., :]
+    return (out / out.sum(-1, keepdims=True)).astype(np.float32)
+
+
+def install_cal4s():
+    if getattr(m25, "_CAL4S", False):
+        return
+    orig = m25.fit_decisions
+
+    def wrapped(trans):
+        P4, PL, a, b = orig(trans)
+        return calibrate_p4s(P4, trans), PL, a, b
+
+    m25.fit_decisions = wrapped
+    m25._CAL4S = True
+
+
+EP_DB = np.array([0, 1, 2, 3, 5, 8, 11, 16, 1000], dtype=float)
+EP_YB = np.arange(0, 104, 4, dtype=float)
+
+
+def ep_cell(down, dist, yl):
+    d = np.clip(np.nan_to_num(down, nan=1.0), 1, 4).astype(int) - 1
+    b = np.clip(np.searchsorted(EP_DB, dist, side="left") - 1, 0, len(EP_DB) - 2)
+    y = np.clip(np.searchsorted(EP_YB, yl, side="left") - 1, 0, len(EP_YB) - 2)
+    return (d * (len(EP_DB) - 1) + b) * (len(EP_YB) - 1) + y
+
+
+def fit_ep_table(P, shrink=20.0):
+    D, R = drive_table(P)
+    R = R.copy()
+    R["epa"] = R["epa"].fillna(0.0)
+    net = (R["po"] - R["pdf"]).groupby(R["poss"]).transform("sum").to_numpy()
+    rem = R["epa"][::-1].groupby(R["poss"][::-1]).cumsum()[::-1].to_numpy()
+    ep = net - rem
+    cell = ep_cell(R["down"].to_numpy(dtype=float), R["dist"].to_numpy(dtype=float), R["yl"].to_numpy(dtype=float))
+    nc = 4 * (len(EP_DB) - 1) * (len(EP_YB) - 1)
+    n = np.bincount(cell, minlength=nc).astype(float)
+    s = np.bincount(cell, weights=ep, minlength=nc)
+    cd = cell // (len(EP_DB) - 1) // (len(EP_YB) - 1) * (len(EP_YB) - 1) + cell % (len(EP_YB) - 1)
+    nco = 4 * (len(EP_YB) - 1)
+    n2 = np.bincount(cd, minlength=nco).astype(float)
+    s2 = np.bincount(cd, weights=ep, minlength=nco)
+    coarse = np.where(n2 > 0, s2 / np.maximum(n2, 1), 0.0)
+    ci = np.arange(nc) // (len(EP_DB) - 1) // (len(EP_YB) - 1) * (len(EP_YB) - 1) + np.arange(nc) % (len(EP_YB) - 1)
+    return (s + shrink * coarse[ci]) / (n + shrink)
+
+
+def install_chain(P):
+    _G["ep_tab"] = fit_ep_table(P)
+
+
+def chain_epa(log, offhome, tab):
+    down, dist, yl, po, pdf = log[:, 0], log[:, 1], log[:, 2], log[:, 7], log[:, 8]
+    ep = tab[ep_cell(down, dist, yl)]
+    n = len(ep)
+    new = np.r_[True, offhome[1:] != offhome[:-1]]
+    last = np.r_[new[1:], True]
+    drv = np.cumsum(new) - 1
+    net = np.bincount(drv, weights=po - pdf)[drv]
+    nxt = np.r_[ep[1:], 0.0]
+    return np.where(last, net - ep, nxt - ep)
+
+
 def install_pace(sigma, seed):
     import os
 
@@ -663,6 +768,8 @@ def d_init(train, cfg_json):
         install_tilt()
     if cfg.get("cal4"):
         install_cal4()
+    if cfg.get("cal4s"):
+        install_cal4s()
     c25.c_init(train, cfg_json)
     if cfg.get("pace"):
         install_pace(float(cfg["pace"]), int(cfg.get("seed", 3)))
@@ -705,6 +812,9 @@ def d_init(train, cfg_json):
             extra += " * np.exp(TILT_T[neighbors] @ (TILT_AO * (off_sim - TILT_LO) + TILT_AD * (def_sim - TILT_LD)))"
         ctx = "    RATING_CTX[0] = off_sim\n    RATING_CTX[1] = def_sim\n" if cfg.get("tilt") else ""
         exec(src.replace(old, old + extra).replace(hdr, ctx + hdr), ns)
+    if cfg.get("chain"):
+        P, M, meta, pbp2 = real_load(train)
+        install_chain(P)
     t["nn_weight_cache_cond"].clear()
 
 
@@ -727,6 +837,9 @@ for _nm, _drop in (("late", ("late",)), ("fourth", ("fourth",)), ("pat", ("pat",
 for _sg in (4, 8, 12, 16, 20):
     DV[f"crp{_sg:02d}"] = dict(DV["crt"], pace=_sg / 100.0)
 DV["crf"] = dict(DV["crp04"], cal4=1)
+DV["crg"] = dict(DV["crf"], cal4s=1)
+DV["crh"] = dict(DV["crf"], chain=1)
+DV["cri"] = dict(DV["crg"], chain=1)
 DEC_COND = dict(condition=1, yard_gain=2.0, def_sign=1.0, yard_bias=0.75, avg=1)
 
 
@@ -770,7 +883,13 @@ def d_play_season(task):
             np.add.at(dg["od"], offt, rates[0][idx].astype(float))
             np.add.at(dg["dn"], deft, rates[1][idx].astype(float))
             np.add.at(dg["dd"], deft, rates[0][idx].astype(float))
-        epa = arr["epa"][idx] + (shift - bias) / gain + arr["adv"][idx]
+        if "ep_tab" in _G:
+            lg = np.array(_G["log"], dtype=np.float64).reshape(-1, 12)
+            pl = np.array(ns["PLAYLOG"], dtype=np.float64).reshape(-1, 3)
+            assert len(lg) == len(pl) and np.array_equal(lg[:, 11], pl[:, 1])
+            epa = chain_epa(lg, pl[:, 0], _G["ep_tab"])[keep]
+        else:
+            epa = arr["epa"][idx] + (shift - bias) / gain + arr["adv"][idx]
         yards = arr["yards"][idx] + shift
         turn = np.where(arr["int"][idx] == 1, 1, np.where(arr["fl"][idx] == 1, 2, 0)).astype(np.int8)
         chunks.append(np.rec.fromarrays([np.full(len(idx), gi, dtype=np.int16), offhome, kind, epa.astype(np.float32), yards.astype(np.float32), turn], names="g,offhome,kind,epa,yards,turn"))
@@ -896,6 +1015,17 @@ def main():
     pd_.add_argument("--variants", default="crp04")
     pd_.add_argument("--tag", default="p1")
     pd_.add_argument("--cache", default="C:/Users/Ryan/AppData/Local/Temp/claude/F--Repos-nfl-py3/f6b7873f-565c-422a-9dee-b6963fcaad49/scratchpad")
+    sg = sub.add_parser("strdiag")
+    sg.add_argument("--variants", default="crf@0.75")
+    sg.add_argument("--worlds", type=int, default=6)
+    sg.add_argument("--seasons", type=int, default=8)
+    sg.add_argument("--workers", type=int, default=6)
+    sg.add_argument("--seed", type=int, default=9)
+    sg.add_argument("--tag", default="s1")
+    ed = sub.add_parser("epadiag")
+    ed.add_argument("--variants", default="crf")
+    ed.add_argument("--tag", default="e1")
+    ed.add_argument("--cache", default="C:/Users/Ryan/AppData/Local/Temp/claude/F--Repos-nfl-py3/f6b7873f-565c-422a-9dee-b6963fcaad49/scratchpad")
     pf = sub.add_parser("pacefit")
     pf.add_argument("--variants", default="crt,crp04,crp08,crp12,crp16")
     pf.add_argument("--games", type=int, default=6000)
@@ -928,7 +1058,7 @@ def main():
         g.add_argument("--yard-bias", dest="yard_bias", type=float, default=0.75)
         g.add_argument("--tag", default="g1")
     args = ap.parse_args()
-    {"decomp": cmd_decomp, "tilt": cmd_tilt, "ipwcheck": cmd_ipwcheck, "grid": cmd_grid, "gate": cmd_gate, "corrdiag": cmd_corrdiag, "pacediag": cmd_pacediag, "ratediag": cmd_ratediag, "tiltcoef": cmd_tiltcoef, "ablate": cmd_ablate, "pacefit": cmd_pacefit, "simcache": cmd_simcache, "possdiag": cmd_possdiag}[args.cmd](args)
+    {"decomp": cmd_decomp, "tilt": cmd_tilt, "ipwcheck": cmd_ipwcheck, "grid": cmd_grid, "gate": cmd_gate, "corrdiag": cmd_corrdiag, "pacediag": cmd_pacediag, "ratediag": cmd_ratediag, "tiltcoef": cmd_tiltcoef, "ablate": cmd_ablate, "pacefit": cmd_pacefit, "simcache": cmd_simcache, "possdiag": cmd_possdiag, "strdiag": cmd_strdiag, "epadiag": cmd_epadiag}[args.cmd](args)
 
 
 
@@ -1400,6 +1530,254 @@ def cmd_possdiag(args):
     for k in keys:
         lines.append(f"{k:44s} " + " ".join(f"{F[n].get(k, float('nan')):11.4f}" for n in F))
     (OUT / f"possdiag_{args.tag}.txt").write_text("\n".join(lines))
+    print("\n".join(lines))
+
+
+def gen_full(variant, scale, worlds, seasons, workers, seed, yard_gain=2.0, yard_bias=0.75):
+    c25.ensure_policies()
+    import mod25_generator as gen
+
+    cfgj = json.dumps(dict(DV[variant], seed=seed, name=f"{variant}_s{scale:g}"))
+    setting = dict(gen.SETTING_DEFAULTS)
+    setting.update({"scale": scale, "yard_gain": yard_gain, "def_sign": 1.0, "yard_bias": yard_bias, "drift": 1.0, "mech": cfgj})
+    gen.init_worker = d_gen_init
+    gen.play_season = d_play_season
+    games, plays, latents, elapsed = gen.run_generation(setting, worlds, seasons, workers, seed, progress=False)
+    return games, plays, latents
+
+
+def x_frame(games, ts):
+    import mod25_generator as gen
+    from nfl_ats.constants import DEFAULT_OFFSEASON_RETENTION
+    from nfl_ats.features import build_team_game_metrics, build_team_states
+
+    sched = gen.schedules_from_games(games)
+    tg = build_team_game_metrics(sched, ts)
+    wk = games.set_index("game_id")["week"]
+    tg = tg.assign(week=tg["game_id"].map(wk))
+    states = build_team_states(tg.drop(columns=["week"]))
+    states = states.sort_values(["team", "gameday", "game_id"]).reset_index(drop=True)
+    grp = states.groupby("team", sort=False)
+    gap = (states["season"] - grp["season"].shift(1)).to_numpy(dtype=float)
+    pre = {"game_id": states["game_id"], "team": states["team"]}
+    for metric in ("off_epa_per_play", "def_epa_per_play"):
+        value = grp[f"state_{metric}"].shift(1).to_numpy(dtype=float)
+        lm = grp[f"league_mean_{metric}"].shift(1).to_numpy(dtype=float)
+        ret = DEFAULT_OFFSEASON_RETENTION ** np.maximum(1.0, np.nan_to_num(gap, nan=1.0))
+        pre[metric] = np.where(gap > 0, lm + ret * (value - lm), value)
+    st = pd.DataFrame(pre).set_index(["game_id", "team"])
+    g = games.copy()
+    for side in ("home", "away"):
+        idx = pd.MultiIndex.from_arrays([g["game_id"], g[f"{side}_team"]])
+        for c in ("off_epa_per_play", "def_epa_per_play"):
+            g[f"{side}_state_{c}"] = st[c].reindex(idx).to_numpy()
+    g["x"] = (g["home_state_off_epa_per_play"] - g["home_state_def_epa_per_play"]) - (g["away_state_off_epa_per_play"] - g["away_state_def_epa_per_play"])
+    g["y"] = g["home_score"] - g["away_score"]
+    return g, tg
+
+
+def loo_season_net(g, tg):
+    t = tg[["game_id", "team", "season", "off_epa_per_play", "def_epa_per_play"]].copy()
+    t["net"] = t["off_epa_per_play"] - t["def_epa_per_play"]
+    s = t.groupby(["team", "season"])["net"].agg(["sum", "count"])
+    t = t.merge(s, left_on=["team", "season"], right_index=True)
+    t["loo"] = (t["sum"] - t["net"]) / (t["count"] - 1)
+    m = t.set_index(["game_id", "team"])["loo"]
+    h = m.reindex(pd.MultiIndex.from_arrays([g["game_id"], g["home_team"]])).to_numpy()
+    a = m.reindex(pd.MultiIndex.from_arrays([g["game_id"], g["away_team"]])).to_numpy()
+    return h - a
+
+
+def bucket_corr(g, col_a, col_b):
+    out = {}
+    for lo, hi in ((1, 4), (5, 9), (10, 18)):
+        b = g[(g["week"] >= lo) & (g["week"] <= hi)].dropna(subset=[col_a, col_b])
+        out[f"w{lo}_{hi}"] = float(np.corrcoef(b[col_a], b[col_b])[0, 1]) if len(b) > 30 else float("nan")
+    return out
+
+
+def within_stats(tg):
+    t = tg.copy()
+    t["net"] = t["off_epa_per_play"] - t["def_epa_per_play"]
+    out = {}
+    for c in ("off_epa_per_play", "def_epa_per_play", "net"):
+        dev = t[c] - t.groupby("season")[c].transform("mean")
+        tm = dev.groupby([t["team"], t["season"]]).transform("mean")
+        out[c + "_total_sd"] = float(dev.std())
+        out[c + "_within_sd"] = float((dev - tm).std())
+        out[c + "_between_sd"] = float(tm.std())
+    return out
+
+
+def latent_rows(g, latents):
+    shock = -0.05668721441704449
+    n = len(g)
+    zl = np.zeros(n)
+    gid = g["game_id"].to_numpy()
+    ht = g["home_team"].to_numpy()
+    at = g["away_team"].to_numpy()
+    wk = g["week"].to_numpy()
+    for i in range(n):
+        w = int(gid[i][1:5])
+        s = int(gid[i][6:8])
+        weekly, qb = latents[(w, s)]
+        h = int(ht[i].split("T")[1])
+        a = int(at[i].split("T")[1])
+        k = wk[i] - 1
+        oh = weekly[k, h, 0] + (shock if qb[k, h] else 0.0)
+        oa = weekly[k, a, 0] + (shock if qb[k, a] else 0.0)
+        zl[i] = (oh - weekly[k, h, 1]) - (oa - weekly[k, a, 1])
+    return zl
+
+
+def team_latent(tg, latents):
+    shock = -0.05668721441704449
+    lo, ld, qq = [], [], []
+    for gi, tm, wk_ in zip(tg["game_id"], tg["team"], tg["week"]):
+        w = int(gi[1:5])
+        s = int(gi[6:8])
+        weekly, qb = latents[(w, s)]
+        ti = int(tm.split("T")[1])
+        k = int(wk_) - 1
+        lo.append(float(weekly[k, ti, 0]) + (shock if qb[k, ti] else 0.0))
+        ld.append(float(weekly[k, ti, 1]))
+        qq.append(bool(qb[k, ti]))
+    return np.array(lo), np.array(ld), np.array(qq)
+
+
+def conv_stats(g, tg):
+    m = tg.set_index(["game_id", "team"])["off_epa_per_play"]
+    d = m.reindex(pd.MultiIndex.from_arrays([g["game_id"], g["home_team"]])).to_numpy() - m.reindex(pd.MultiIndex.from_arrays([g["game_id"], g["away_team"]])).to_numpy()
+    n = tg.set_index(["game_id", "team"])
+    ok = ~np.isnan(d)
+    y = g["y"].to_numpy(dtype=float)
+    c = float(np.corrcoef(d[ok], y[ok])[0, 1])
+    sl = float(np.cov(d[ok], y[ok])[0, 1] / np.var(d[ok], ddof=1))
+    pts = (g["home_score"] + g["away_score"]).to_numpy(dtype=float)
+    return {"y_on_epa_corr": c, "y_on_epa_slope": sl, "y_resid_var": float(np.var(y[ok], ddof=1) * (1 - c * c)), "epa_diff_sd": float(np.std(d[ok], ddof=1)), "y_sd": float(np.std(y[ok], ddof=1)), "total_sd": float(np.std(pts[ok], ddof=1)), "total_mean": float(np.mean(pts[ok]))}
+
+
+def strdiag_one(g, tg, latents=None):
+    g = g.copy()
+    g["z2"] = loo_season_net(g, tg)
+    res = {"x_vs_loo_season": bucket_corr(g, "x", "z2"), "x_vs_y": bucket_corr(g, "x", "y"), "loo_vs_y": bucket_corr(g, "z2", "y"), "within": within_stats(tg), "sd_x": {}, "sd_z2": float(g["z2"].std()), "conv": conv_stats(g, tg)}
+    for lo, hi in ((1, 4), (5, 9), (10, 18)):
+        b = g[(g["week"] >= lo) & (g["week"] <= hi)]
+        res["sd_x"][f"w{lo}_{hi}"] = float(b["x"].std())
+    if latents is not None:
+        g["zl"] = latent_rows(g, latents)
+        res["x_vs_latent"] = bucket_corr(g, "x", "zl")
+        res["latent_vs_y"] = bucket_corr(g, "zl", "y")
+        res["loo_vs_latent"] = bucket_corr(g, "z2", "zl")
+        res["sd_latent"] = float(g["zl"].std())
+        res["y_on_latent_slope"] = float(np.cov(g["zl"], g["y"])[0, 1] / g["zl"].var())
+        res["epa_on_latent_slope_net"] = float(np.cov(g["zl"], g["z2"])[0, 1] / g["zl"].var())
+        t = tg.copy()
+        lo, ld, qq = team_latent(t, latents)
+        t["lo"], t["ld"], t["q"] = lo, ld, qq
+        for c, lc in (("off_epa_per_play", "lo"), ("def_epa_per_play", "ld")):
+            dev = t[c] - t.groupby("season")[c].transform("mean")
+            lat = t[lc] - t.groupby("season")[lc].transform("mean")
+            res[f"slope_{c}"] = float(np.cov(dev, lat)[0, 1] / lat.var())
+            res[f"corr_{c}"] = float(np.corrcoef(dev, lat)[0, 1])
+            res[f"latent_sd_{c}"] = float(lat.std())
+        dev = t["off_epa_per_play"] - t.groupby(["team", "season"])["off_epa_per_play"].transform("mean")
+        res["qb_backup_share"] = float(t["q"].mean())
+        res["qb_dev_gap"] = float(dev[t["q"]].mean() - dev[~t["q"]].mean())
+    return res
+
+
+def cmd_strdiag(args):
+    import mod25_generator as gen
+
+    OUT.mkdir(parents=True, exist_ok=True)
+    out = {}
+    for nm, ss in (("real_2011_2017", range(2011, 2018)), ("real_2018_2025", range(2018, 2026))):
+        games = gen.real_games(tuple(ss))
+        plays = gen.load_real_plays(ss)
+        ts = gen.team_stats_from_plays(plays)
+        games = games[games["game_id"].isin(ts["game_id"])].reset_index(drop=True)
+        g, tg = x_frame(games, ts)
+        g = g.dropna(subset=["x", "y"])
+        out[nm] = strdiag_one(g, tg)
+        print(nm, flush=True)
+    for spec in args.variants.split(","):
+        v, sc = spec.split("@")
+        games, plays, latents = gen_full(v, float(sc), args.worlds, args.seasons, args.workers, args.seed)
+        ts = gen.team_stats_from_plays(plays)
+        g, tg = x_frame(games, ts)
+        keep = [w * 1000 + s + 1 for w in range(args.worlds) for s in range(2, args.seasons)]
+        g = g[g["season"].isin(keep)].dropna(subset=["x", "y"])
+        tg = tg[tg["season"].isin(keep)]
+        out[spec] = strdiag_one(g, tg, latents)
+        print(spec, flush=True)
+    (OUT / f"strdiag_{args.tag}.json").write_text(json.dumps(out, indent=1))
+    F = {k: flat(v) for k, v in out.items()}
+    keys = list(F[next(iter(F))])
+    for n in F:
+        keys += [k for k in F[n] if k not in keys]
+    lines = [f"{'metric':36s} " + " ".join(f"{n[:16]:>16s}" for n in F)]
+    for k in keys:
+        lines.append(f"{k:36s} " + " ".join(f"{F[n].get(k, float('nan')):16.4f}" for n in F))
+    (OUT / f"strdiag_{args.tag}.txt").write_text("\n".join(lines))
+    print("\n".join(lines))
+
+
+def epa_blocks(P):
+    D, R = drive_table(P)
+    R = R.copy()
+    R["pts_off"] = R["po"]
+    R["epa"] = R["epa"].fillna(0.0)
+    de = R.groupby("poss")["epa"].sum()
+    D["epa_sum"] = de.reindex(D["poss"]).to_numpy() if "poss" in D else de.to_numpy()
+    D["res"] = D["pts"] + R.groupby("poss")["pdf"].sum().reindex(D["poss"]).to_numpy() * 0 - D["epa_sum"] if False else D["pts"] - D["epa_sum"]
+    out = {"drive_res_mean": float(D["res"].mean()), "drive_res_var": float(D["res"].var()), "drive_epa_var": float(D["epa_sum"].var()), "drive_pts_var": float(D["pts"].var()), "drive_corr_pts_epa": float(np.corrcoef(D["pts"], D["epa_sum"])[0, 1])}
+    for k in OUTCOMES:
+        d = D[D["oc"] == k]
+        if len(d) > 50:
+            out["res_var_" + k] = float(d["res"].var())
+            out["res_mean_" + k] = float(d["res"].mean())
+            out["share_" + k] = float(len(d) / len(D))
+    g = D.groupby("g")
+    cnt = D.groupby(["g", "trk"]).agg(p=("pts", "sum"), e=("epa_sum", "sum")).reset_index()
+    a = cnt[cnt["trk"] == 0].set_index("g")
+    b = cnt[cnt["trk"] == 1].set_index("g")
+    idx = a.index.intersection(b.index)
+    dp = (a.loc[idx, "p"] - b.loc[idx, "p"]).to_numpy()
+    de2 = (a.loc[idx, "e"] - b.loc[idx, "e"]).to_numpy()
+    c = float(np.corrcoef(dp, de2)[0, 1])
+    out["game_margin_var"] = float(np.var(dp, ddof=1))
+    out["game_epa_diff_var"] = float(np.var(de2, ddof=1))
+    out["game_corr_margin_epa"] = c
+    out["game_res_var"] = float(np.var(dp, ddof=1) * (1 - c * c))
+    out["game_slope"] = float(np.cov(dp, de2)[0, 1] / np.var(de2, ddof=1))
+    tp = np.concatenate([a.loc[idx, "p"].to_numpy(), b.loc[idx, "p"].to_numpy()])
+    te = np.concatenate([a.loc[idx, "e"].to_numpy(), b.loc[idx, "e"].to_numpy()])
+    ct = float(np.corrcoef(tp, te)[0, 1])
+    out["team_pts_var"] = float(np.var(tp, ddof=1))
+    out["team_epa_var"] = float(np.var(te, ddof=1))
+    out["team_corr_pts_epa"] = ct
+    out["team_res_var"] = float(np.var(tp, ddof=1) * (1 - ct * ct))
+    return out
+
+
+def cmd_epadiag(args):
+    OUT.mkdir(parents=True, exist_ok=True)
+    res = {}
+    for nm, ss in (("real_train", TRAIN), ("real_eval", EVAL)):
+        P, M, meta, pbp = real_load(ss)
+        res[nm] = epa_blocks(P)
+        print(nm, flush=True)
+    for v in args.variants.split(","):
+        S = pd.read_parquet(Path(args.cache) / f"sim_{v}.parquet")
+        res[v] = epa_blocks(S)
+        print(v, flush=True)
+    (OUT / f"epadiag_{args.tag}.json").write_text(json.dumps(res, indent=1))
+    keys = list(res["real_train"])
+    lines = [f"{'metric':28s} " + " ".join(f"{n:>11s}" for n in res)]
+    for k in keys:
+        lines.append(f"{k:28s} " + " ".join(f"{res[n].get(k, float('nan')):11.4f}" for n in res))
+    (OUT / f"epadiag_{args.tag}.txt").write_text("\n".join(lines))
     print("\n".join(lines))
 
 
