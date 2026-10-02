@@ -34,3 +34,16 @@ Redesign for the rerun: use the synthetic world's noiseless labels (latent
 expected margin) to learn features to expected margin, then feed that estimate
 to the real residual model as one fitted term or prior. Don't learn a residual
 against a synthetic book.
+
+## v2 distillation on crj @ .9 (measured 2026-10-02; done, nothing committed)
+Code: scripts/mod25_pipeline.py now targets crj/.9 (data data/processed/synthetic/crj, out artifacts/mod25_pipeline_v2). Commands verify, truth, student2, diag, grade --arm ridge_nomkt|hgb_nomkt (grade = TwoStage: base ridge + ONE term w*(distilled - line - base), w from leave-one-season-out base preds in training; 2020-25 via clv opener eval, 2011-19 via mod24_u1.proxy_eval).
+Production: 8 chunks, 130,560 games, 40.6 min (features 48 worlds x 10 seasons, season 1 dropped). Mapping verified by 9,600 repeated games on 96 matchups: E[margin] = 1.70 hfa + 54.6*(off diff) - 54.7*(def diff), linear (quad coef 2.9), between-matchup R2 .96. True EM SD 7.97, oracle R2 vs realized .244.
+Student (holdout worlds): ridge R2 vs true .513, vs realized .128 (realized-label ridge .128: no gain from noiseless labels linearly); HGB .510/.128. Market cols excluded (stored real line is the close, leaks at opener).
+Grades vs base 802-701 (recorded, family mod25_distillation, unresolved_below_power): ridge 2020-25 805-698, acc +0.20 [-0.63,1.21] P+ .58, recal LL +.00016 P+ .68, seasons+ 3/6, flips 88-85; 2011-19 1156-1075 vs 1142-1089, +0.63 [-1.08,2.86] P+ .70, LL +.00101 P+ .96. HGB 2020-25 798-705 (-0.27, P+ .33, LL +.00021 P+ .71), 2011-19 1162-1069 (+0.90, P+ .89, LL +.00111 P+ .98). Weight w fell .69 (2010) to .19 (2025).
+Diagnostics: distilled corr close .84, open .85; q=(distilled-open) corr with margin-vs-open .018 (2020-25), .004 (2011-19); partial given base .026; corr(q, close-minus-open move) .09 / .26.
+
+## Next
+Gauge whether q's line-move anticipation (corr .26 in 2011-19) predicts the opener-to-close move out of season; more seasons are the only power source. Generator still fails margin SD, non-strength variance, late R2 gates.
+
+## Open
+Weak-signal cells: 8 looks (2 students x 2 eras x 2 metrics). Raw (unmatched) standardisation not graded.

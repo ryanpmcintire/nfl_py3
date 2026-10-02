@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-02T04:32:35.828165+00:00`
+Refreshed at: `2026-10-02T04:57:50.992493+00:00`
 
 ## Start here
 
@@ -21,17 +21,11 @@ Refreshed at: `2026-10-02T04:32:35.828165+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `77f2025d6f1e` — MOD-25k gate: generator plateau recorded; distillation v2 proceeds on crj
-- Pending change set: 14 paths
-  - `M  CURRENT_PREDICTIONS.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - ` M docs/lanes/mod25-pipeline.md`
-  - `M  docs/model.html`
-  - ` M registry/weak_signals.json`
-  - ` M scripts/mod25_pipeline.py`
-  - `M  tiebreaker.json`
+- Baseline commit: `d6a1f9bf08a9` — Republish the site with the latest settled results
+- Pending change set: 8 paths
+  - `M  docs/lanes/mod25-pipeline.md`
+  - `M  registry/weak_signals.json`
+  - `M  scripts/mod25_pipeline.py`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-predict/2026-week-04-20261001T211240Z.json`
   - `?? registry/experiments/opener-evaluation/20261001T211624Z.json`

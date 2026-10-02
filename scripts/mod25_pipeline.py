@@ -11,10 +11,10 @@ import pandas as pd
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "scripts"))
 
-SYN = REPO / "data" / "processed" / "synthetic" / "crp04"
-OUT = REPO / "artifacts" / "mod25_pipeline"
-VARIANT = "crp04"
-SCALE = 0.75
+SYN = REPO / "data" / "processed" / "synthetic" / "crj"
+OUT = REPO / "artifacts" / "mod25_pipeline_v2"
+VARIANT = "crj"
+SCALE = 0.9
 YARD_GAIN = 2.0
 YARD_BIAS = 0.75
 GEN_FILES = ("mod25d_variance.py", "mod25c_noise.py", "mod25_mechanisms.py", "mod25_generator.py", "sim04_engine.py")
@@ -503,6 +503,424 @@ def cmd_student(args):
     print(json.dumps(res, indent=1)[:4000])
 
 
+
+def v2_setting(cfg_extra=None):
+    import mod25d_variance as d
+    import mod25_generator as gen
+
+    cfgj = json.dumps(dict(d.DV[VARIANT], seed=1, name=f"{VARIANT}_s{SCALE:g}_verify"))
+    setting = dict(gen.SETTING_DEFAULTS)
+    setting.update({"scale": SCALE, "yard_gain": YARD_GAIN, "def_sign": 1.0, "yard_bias": YARD_BIAS, "drift": 1.0, "mech": cfgj})
+    return setting
+
+
+def latent_x(weekly, qb, shock):
+    return weekly[..., 0] + np.where(qb, shock, 0.0), weekly[..., 1]
+
+
+def cmd_verify(args):
+    import multiprocessing as mp
+
+    import mod25d_variance as d
+    import mod25_generator as gen
+
+    d.c25.ensure_policies()
+    setting = v2_setting()
+    fit = gen.load_fit()
+    shock = float(fit["qb"]["backup_off_epa_effect"])
+    league_off, league_def = gen.league_means()
+    rng = np.random.default_rng(args.seed)
+    weekly, qb = gen.gen_world_latents(rng, 1, fit, setting)[0]
+    ratings = gen.season_ratings(weekly, qb, fit, setting, league_off, league_def)
+    matchups = []
+    while len(matchups) < args.matchups:
+        w = int(rng.integers(1, 19))
+        h, a = (int(x) for x in rng.choice(32, 2, replace=False))
+        matchups.append((w, h, a))
+    reps = args.reps
+    per_task = 2
+    tasks = []
+    for t in range(reps // per_task):
+        sched = [m for m in matchups for _ in range(per_task)]
+        tasks.append((0, t, int(rng.integers(1, 2**31 - 1)), sched, ratings))
+    gen.init_worker = d.d_gen_init
+    t0 = time.time()
+    res = []
+    with mp.get_context("spawn").Pool(args.workers, initializer=d.d_gen_init, initargs=(setting,)) as pool:
+        for r in pool.imap_unordered(d.d_play_season, tasks, chunksize=1):
+            res.append(r)
+    mid = {m: i for i, m in enumerate(matchups)}
+    rows = []
+    for world, t, gm_rows, plays in res:
+        sched = tasks[t][3]
+        for gi, hs, as_, ot, cap in gm_rows:
+            w, h, a = sched[gi]
+            rows.append((mid[(w, h, a)], hs - as_, hs + as_))
+    df = pd.DataFrame(rows, columns=["m", "margin", "total"])
+    g = df.groupby("m").agg(em=("margin", "mean"), n=("margin", "size"), sd=("margin", "std"), tot=("total", "mean"))
+    xo, xd = latent_x(weekly, qb, shock)
+    feat = []
+    for mi, (w, h, a) in enumerate(matchups):
+        feat.append((xo[w - 1, h] - xo[w - 1, a], xd[w - 1, h] - xd[w - 1, a]))
+    F = np.array(feat)
+    g["dxo"], g["dxd"] = F[g.index.to_numpy(), 0], F[g.index.to_numpy(), 1]
+    X = np.column_stack([np.ones(len(g)), g["dxo"], g["dxd"]])
+    wts = g["n"].to_numpy(float)
+    W = np.sqrt(wts)[:, None]
+    beta, *_ = np.linalg.lstsq(X * W, g["em"].to_numpy() * W[:, 0], rcond=None)
+    pred = X @ beta
+    resid = g["em"].to_numpy() - pred
+    se_m = g["sd"].to_numpy() / np.sqrt(wts)
+    sig2 = float(np.sum(wts * resid**2) / (len(g) - 3))
+    cov = np.linalg.inv((X * wts[:, None]).T @ X) * sig2
+    zl = g["dxo"].to_numpy() - g["dxd"].to_numpy()
+    b1 = np.polyfit(zl, g["em"].to_numpy(), 1)
+    quad = np.polyfit(zl, g["em"].to_numpy(), 2)
+    ss = float(((g["em"] - g["em"].mean()) ** 2).sum())
+    out = {
+        "matchups": len(g), "games": int(g["n"].sum()), "minutes": (time.time() - t0) / 60.0,
+        "intercept_hfa": float(beta[0]), "coef_off_diff": float(beta[1]), "coef_def_diff": float(beta[2]),
+        "se": [float(x) for x in np.sqrt(np.diag(cov))],
+        "r2_between_matchups": float(1 - (resid**2).sum() / ss),
+        "mean_sampling_se_per_matchup": float(se_m.mean()),
+        "weighted_resid_sd_vs_sampling_se": float(np.sqrt(np.mean((resid / se_m) ** 2))),
+        "single_slope_on_off_minus_def": [float(x) for x in b1], "quad_coef": [float(x) for x in quad],
+        "latent_diff_sd": float(zl.std()), "em_sd": float(g["em"].std()), "game_margin_sd": float(df["margin"].std()),
+        "mean_total": float(df["total"].mean()),
+        "shock": shock, "scale": SCALE, "variant": VARIANT,
+    }
+    (OUT / "verify.json").write_text(json.dumps(out, indent=1))
+    g.assign(pred=pred).to_csv(OUT / "verify_matchups.csv")
+    print(json.dumps(out, indent=1))
+
+
+def cmd_truth(args):
+    import mod25_generator as gen
+
+    fit = gen.load_fit()
+    shock = float(fit["qb"]["backup_off_epa_effect"])
+    v = json.loads((OUT / "verify.json").read_text())
+    c0, a_o, a_d = v["intercept_hfa"], v["coef_off_diff"], v["coef_def_diff"]
+    parts = []
+    for k, g, ts in load_chunks():
+        lat = np.load(SYN / f"chunk_{k:02d}" / "latents.npz")
+        pre = f"c{k:02d}"
+        ids = g["game_id"].to_numpy()
+        w_ = g["game_id"].str.slice(4, 8).astype(int).to_numpy()
+        s_ = g["game_id"].str.slice(9, 11).astype(int).to_numpy()
+        h_ = g["home_team"].str.split("T").str[1].astype(int).to_numpy()
+        a_ = g["away_team"].str.split("T").str[1].astype(int).to_numpy()
+        wk = g["week"].to_numpy() - 1
+        dxo = np.zeros(len(g))
+        dxd = np.zeros(len(g))
+        for (wi, si) in sorted(set(zip(w_.tolist(), s_.tolist()))):
+            weekly = lat[f"{pre}_w{wi}_s{si}_weekly"]
+            qb = lat[f"{pre}_w{wi}_s{si}_qb_out"]
+            xo, xd = latent_x(weekly, qb, shock)
+            m = (w_ == wi) & (s_ == si)
+            dxo[m] = xo[wk[m], h_[m]] - xo[wk[m], a_[m]]
+            dxd[m] = xd[wk[m], h_[m]] - xd[wk[m], a_[m]]
+        parts.append(pd.DataFrame({"game_id": ids, "true_em": c0 + a_o * dxo + a_d * dxd, "dxo": dxo, "dxd": dxd}))
+    t = pd.concat(parts, ignore_index=True)
+    t.to_parquet(SYN / "truth.parquet")
+    f = pd.read_parquet(SYN / "features.parquet", columns=["game_id", "result", "sidx"])
+    j = f.merge(t, on="game_id")
+    j = j.loc[j["sidx"].ge(1)]
+    rep = {"games": len(t), "true_em_sd": float(t["true_em"].std()), "true_em_mean": float(t["true_em"].mean()), "result_sd": float(j["result"].std()), "r2_true_em_vs_result": float(1 - ((j["result"] - j["true_em"]) ** 2).sum() / ((j["result"] - j["result"].mean()) ** 2).sum()), "corr_true_em_result": float(np.corrcoef(j["true_em"], j["result"])[0, 1])}
+    (OUT / "truth_report.json").write_text(json.dumps(rep, indent=1))
+    print(json.dumps(rep, indent=1))
+
+
+def v2_cols():
+    from nfl_ats.margin import margin_feature_columns
+
+    full = list(margin_feature_columns("market_residual", "weak_stack"))
+    fam = family_of(full)
+    return full, [c for c in full if fam[c] != "market"]
+
+
+def z_stats(df, cols):
+    mu = df[cols].mean()
+    sd = df[cols].std(ddof=0)
+    sd = sd.where(sd > 1e-9, 1.0)
+    return mu, sd
+
+
+def z_apply(df, cols, mu, sd):
+    return ((df[cols] - mu) / sd).fillna(0.0).to_numpy(float)
+
+
+def r2(y, p, ref=None):
+    y = np.asarray(y, float)
+    ref = y.mean() if ref is None else ref
+    return float(1 - ((y - p) ** 2).sum() / ((y - ref) ** 2).sum())
+
+
+def real_walk_z(real, cols):
+    out = np.zeros((len(real), len(cols)))
+    seasons = real["season"].to_numpy()
+    for s_ in sorted(set(seasons.tolist())):
+        prior = real.loc[real["season"].lt(s_)]
+        if len(prior) < 200:
+            prior = real.loc[real["season"].eq(s_)]
+        mu, sd = z_stats(prior, cols)
+        m = seasons == s_
+        out[m] = z_apply(real.loc[m], cols, mu, sd)
+    return out
+
+
+def cmd_student2(args):
+    from sklearn.ensemble import HistGradientBoostingRegressor
+    from sklearn.linear_model import Ridge
+
+    full, nomkt = v2_cols()
+    f = pd.read_parquet(SYN / "features.parquet")
+    t = pd.read_parquet(SYN / "truth.parquet")
+    syn = f.merge(t[["game_id", "true_em"]], on="game_id", how="inner")
+    syn = syn.loc[syn["sidx"].ge(1)].reset_index(drop=True)
+    worlds = sorted(syn["world"].unique())
+    hold_w = set(worlds[::4])
+    ho = syn["world"].isin(hold_w).to_numpy()
+    rep = {"synthetic_rows": len(syn), "worlds": len(worlds), "holdout_worlds": len(hold_w), "holdout_rows": int(ho.sum())}
+    rep["oracle_true_em_r2_vs_result"] = r2(syn["result"][ho], syn["true_em"][ho].to_numpy())
+    real = real_frame()
+    real = real.sort_values(["season", "week", "game_id"]).reset_index(drop=True)
+    models = {}
+    out = real[["game_id", "season"]].copy()
+    for name, cols in (("nomkt", nomkt), ("all", full)):
+        mu, sd = z_stats(syn, cols)
+        Z = z_apply(syn, cols, mu, sd)
+        y_te = syn["true_em"].to_numpy()
+        y_re = syn["result"].to_numpy()
+        res = {}
+        for a in (1.0, 10.0, 100.0, 1000.0, 10000.0):
+            m = Ridge(alpha=a).fit(Z[~ho], y_te[~ho])
+            p = m.predict(Z[ho])
+            m2 = Ridge(alpha=a).fit(Z[~ho], y_re[~ho])
+            p2 = m2.predict(Z[ho])
+            res[str(a)] = {"r2_vs_true": r2(y_te[ho], p), "r2_vs_realized": r2(y_re[ho], p), "realized_label_model_r2_vs_realized": r2(y_re[ho], p2), "realized_label_model_r2_vs_true": r2(y_te[ho], p2)}
+        best = max(res, key=lambda k: res[k]["r2_vs_true"])
+        h = HistGradientBoostingRegressor(max_iter=400, learning_rate=0.05, max_leaf_nodes=15, min_samples_leaf=100, l2_regularization=1.0, random_state=0).fit(Z[~ho], y_te[~ho])
+        ph = h.predict(Z[ho])
+        res["hgb"] = {"r2_vs_true": r2(y_te[ho], ph), "r2_vs_realized": r2(y_re[ho], ph)}
+        rep[name] = {"grid": res, "ridge_alpha_chosen_on_holdout_worlds": float(best)}
+        rid = Ridge(alpha=float(best)).fit(Z, y_te)
+        hg = HistGradientBoostingRegressor(max_iter=400, learning_rate=0.05, max_leaf_nodes=15, min_samples_leaf=100, l2_regularization=1.0, random_state=0).fit(Z, y_te)
+        Zr = real_walk_z(real, cols)
+        out[f"ridge_{name}"] = rid.predict(Zr)
+        out[f"hgb_{name}"] = hg.predict(Zr)
+        models[name] = (rid, hg)
+        rep[name]["ridge_coef_top"] = {c: float(v) for c, v in sorted(zip(cols, rid.coef_, strict=True), key=lambda x: -abs(x[1]))[:12]}
+    out.to_parquet(OUT / "real_distilled.parquet")
+    rep["real_distilled_summary"] = {c: {"mean": float(out[c].mean()), "sd": float(out[c].std())} for c in out.columns if c not in ("game_id", "season")}
+    rep["real_result_mean_sd"] = [float(real["result"].mean()), float(real["result"].std())]
+    (OUT / "student_report.json").write_text(json.dumps(rep, indent=1))
+    print(json.dumps(rep, indent=1)[:6000])
+
+
+def cmd_diag(args):
+    d = pd.read_parquet(OUT / "real_distilled.parquet")
+    real = real_frame()[["game_id", "season", "week", "result", "spread_line"]]
+    pg = pd.read_parquet(OPENER / "per_game.parquet")[["game_id", "tue_open_home_spread", "residual_at_open", "result"]].rename(columns={"result": "result_pg"})
+    sbr = pd.read_parquet(REPO / "data" / "processed" / "sbr_odds.parquet").dropna(subset=["game_id", "open_home_spread"]).drop_duplicates("game_id")[["game_id", "open_home_spread"]]
+    j = real.merge(d.drop(columns=["season"]), on="game_id").merge(pg, on="game_id", how="left").merge(sbr, on="game_id", how="left")
+    j = j.loc[j["result"].notna()]
+    out = {}
+    for arm in ("ridge_nomkt", "hgb_nomkt", "ridge_all"):
+        for era, m, op in (("2020_2025", j["season"].between(2020, 2025) & j["tue_open_home_spread"].notna(), "tue_open_home_spread"), ("2011_2019", j["season"].between(2011, 2019) & j["open_home_spread"].notna(), "open_home_spread")):
+            e = j.loc[m]
+            op_ = e[op].to_numpy(float)
+            dm = e[arm].to_numpy()
+            q = dm - op_
+            r_ = e["result"].to_numpy() - op_
+            row = {"n": len(e), "corr_distilled_close": float(np.corrcoef(dm, e["spread_line"])[0, 1]), "corr_distilled_open": float(np.corrcoef(dm, op_)[0, 1]), "corr_distilled_result": float(np.corrcoef(dm, e["result"])[0, 1]), "corr_close_result": float(np.corrcoef(e["spread_line"], e["result"])[0, 1]), "corr_open_result": float(np.corrcoef(op_, e["result"])[0, 1]), "corr_q_vs_margin_vs_open": float(np.corrcoef(q, r_)[0, 1]), "sd_q": float(q.std()), "corr_q_vs_move_close_minus_open": float(np.corrcoef(q, e["spread_line"] - op_)[0, 1])}
+            if era == "2020_2025":
+                b = e["residual_at_open"].to_numpy(float)
+                ok = np.isfinite(b)
+                qq, rr, bb = q[ok], r_[ok], b[ok]
+                A = np.column_stack([np.ones(ok.sum()), bb])
+                rq = qq - A @ np.linalg.lstsq(A, qq, rcond=None)[0]
+                rr_ = rr - A @ np.linalg.lstsq(A, rr, rcond=None)[0]
+                row["partial_corr_q_resid_given_base"] = float(np.corrcoef(rq, rr_)[0, 1])
+                row["corr_base_pred_vs_margin_vs_open"] = float(np.corrcoef(bb, rr)[0, 1])
+                row["corr_q_vs_base_pred"] = float(np.corrcoef(qq, bb)[0, 1])
+                row["n_partial"] = int(ok.sum())
+                ss = sorted(e.loc[ok, "season"].unique())
+                se = []
+                for s_ in ss:
+                    mm = (e.loc[ok, "season"] == s_).to_numpy()
+                    A2 = A[mm]
+                    a_ = qq[mm] - A2 @ np.linalg.lstsq(A2, qq[mm], rcond=None)[0]
+                    b_ = rr[mm] - A2 @ np.linalg.lstsq(A2, rr[mm], rcond=None)[0]
+                    se.append(float(np.corrcoef(a_, b_)[0, 1]))
+                row["partial_corr_by_season"] = dict(zip([int(x) for x in ss], se, strict=True))
+            out[f"{arm}_{era}"] = row
+    (OUT / "diagnostics.json").write_text(json.dumps(out, indent=1))
+    print(json.dumps(out, indent=1)[:7000])
+
+
+WLOG = []
+
+
+class TwoStage:
+    def __init__(self, base_cols, orig, kw):
+        self.base_cols = list(base_cols)
+        self.orig = orig
+        self.kw = kw
+
+    def get_params(self, deep=True):
+        return {"base_cols": self.base_cols, "orig": self.orig, "kw": self.kw}
+
+    def _base(self):
+        return self.orig("ridge", 42, ridge_alpha=BASE_ALPHA, **self.kw)
+
+    def fit(self, X, y):
+        yv = np.asarray(y, dtype=float)
+        season = X["season"].to_numpy(float)
+        B = X[self.base_cols]
+        self.base = self._base().fit(B, yv)
+        b_oos = np.full(len(yv), np.nan)
+        for s_ in np.unique(season):
+            m = season == s_
+            if (~m).sum() < 100:
+                continue
+            b_oos[m] = np.asarray(self._base().fit(B.iloc[~m], yv[~m]).predict(B.iloc[m]), dtype=float)
+        ok = np.isfinite(b_oos)
+        q = (X["distilled_margin"] - X["spread_line"]).to_numpy(float)
+        self.qbar = float(q[ok].mean())
+        self.bbar = float(b_oos[ok].mean())
+        t = (q[ok] - self.qbar) - (b_oos[ok] - self.bbar)
+        r = yv[ok] - b_oos[ok]
+        r = r - r.mean()
+        self.w = float((t @ r) / (t @ t))
+        WLOG.append((int(season.max()), self.w))
+        return self
+
+    def predict(self, X):
+        b = np.asarray(self.base.predict(X[self.base_cols]), dtype=float)
+        q = (X["distilled_margin"] - X["spread_line"]).to_numpy(float)
+        t = (q - self.qbar) - (b - self.bbar)
+        return b + self.w * t
+
+
+def two_stage_patch():
+    import nfl_ats.margin as mg
+
+    orig = mg.make_margin_estimator
+    full, _ = v2_cols()
+
+    def patched(model_name, random_state=42, **kw):
+        if model_name == "ridge":
+            return TwoStage(full, orig, {k: v for k, v in kw.items() if k == "suppressed_indicator_columns"})
+        return orig(model_name, random_state, **kw)
+
+    return mg, orig, patched
+
+
+def frame_from_pergame(pg):
+    d = pg.loc[pg["margin_vs_open"].ne(0) & pg["correct_at_open_probability_rule"].notna()]
+    return pd.DataFrame({"season": d["season"].to_numpy(), "p": d["home_cover_probability_at_open"].to_numpy(), "pick_home": d["pick_home_at_open_probability_rule"].to_numpy(), "correct": d["correct_at_open_probability_rule"].astype(float).to_numpy()}, index=pd.Index(d["game_id"].to_numpy(), name="game_id"))
+
+
+def frame_from_proxy(df):
+    return pd.DataFrame({"season": df["season"].to_numpy(), "p": df["p"].to_numpy(), "pick_home": df["pick_home"].to_numpy(), "correct": df["correct"].astype(float).to_numpy()}, index=df.index)
+
+
+def recal_series(fr):
+    from scipy.special import expit, logit
+
+    y = np.where(fr["pick_home"], fr["correct"], 1.0 - fr["correct"])
+    z = logit(fr["p"].clip(1e-6, 1 - 1e-6).to_numpy(float))
+    out = np.zeros(len(fr))
+    se = fr["season"].to_numpy()
+    for s_ in np.unique(se):
+        m = se == s_
+        t = tfit(z[~m], y[~m])
+        out[m] = expit(t * z[m])
+    return pd.Series(out, index=fr.index), y
+
+
+def compare_frames(arm, base):
+    idx = arm.index.intersection(base.index)
+    a, b = arm.loc[idx], base.loc[idx]
+    pa, ya = recal_series(a)
+    pb, yb = recal_series(b)
+    assert (ya == yb).all()
+
+    def ll(p):
+        p = p.clip(1e-6, 1 - 1e-6).to_numpy()
+        return -(ya * np.log(p) + (1 - ya) * np.log(1 - p))
+
+    def br(p):
+        return (p.to_numpy() - ya) ** 2
+
+    fl = a["correct"] - b["correct"]
+    seasons = a["season"]
+    gain = pd.Series(ll(pb) - ll(pa), index=idx)
+    bg = pd.Series(br(pb) - br(pa), index=idx)
+    wins = int(a["correct"].sum())
+    bw = int(b["correct"].sum())
+    flipped = a["pick_home"].to_numpy() != b["pick_home"].to_numpy()
+    return {
+        "n": len(idx), "record": f"{wins}-{len(idx) - wins}", "base_record": f"{bw}-{len(idx) - bw}",
+        "flips": int(flipped.sum()), "flip_record_arm_W_L": f"{int((fl[flipped] > 0).sum())}-{int((fl[flipped] < 0).sum())}",
+        "acc_diff_points": season_boot(100.0 * fl, seasons), "recal_logloss_gain": season_boot(gain, seasons), "recal_brier_gain": season_boot(bg, seasons),
+        "arm_recal_logloss": float(ll(pa).mean()), "base_recal_logloss": float(ll(pb).mean()),
+        "by_season_acc_diff": {int(s_): float(100 * fl[seasons == s_].mean()) for s_ in sorted(seasons.unique())},
+        "by_season_logloss_gain": {int(s_): float(gain[seasons == s_].mean()) for s_ in sorted(seasons.unique())},
+    }
+
+
+def cmd_grade(args):
+    import mod24_u1 as u1
+    from nfl_ats import clv
+    from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES
+
+    full, _ = v2_cols()
+    d = pd.read_parquet(OUT / "real_distilled.parquet")[["game_id", args.arm]].rename(columns={args.arm: "distilled_margin"})
+    feats = pd.read_parquet(REPO / "data" / "processed" / "game_features_weak_stack.parquet")
+    feats = feats.merge(d, on="game_id", how="left")
+    reg = feats.loc[feats["game_type"].eq("REG")]
+    assert reg["distilled_margin"].notna().all()
+    cols = full + ["distilled_margin", "season"]
+    res = {"arm": args.arm}
+    base_cache = OUT / "proxy_base.parquet"
+    pop = u1.proxy_population(feats)
+    if base_cache.exists():
+        pbase = pd.read_parquet(base_cache)
+    else:
+        pbase = u1.proxy_eval(feats, pop, lambda s: (full, BASE_ALPHA))
+        pbase.to_parquet(base_cache)
+    mg, orig, patched = two_stage_patch()
+    mg.make_margin_estimator = patched
+    WLOG.clear()
+    try:
+        parm = u1.proxy_eval(feats, pop, lambda s: (cols, BASE_ALPHA))
+        w_proxy = list(WLOG)
+        WLOG.clear()
+        cfg = {"feature_profile": "weak_stack", "regressor": "ridge", "target": "market_residual", "probability_method": "gaussian_median", "calibration_method": "none", "ridge_alpha": BASE_ALPHA, "mod25_variant": f"twostage-{args.arm}"}
+        with u1.patched(cols):
+            sc = clv.opener_pick_evaluation(REPO / "data" / "market" / "raw", feats, active_model_config=cfg, min_train_games=DEFAULT_MIN_TRAIN_GAMES)
+        w_true = list(WLOG)
+    finally:
+        mg.make_margin_estimator = orig
+    sc = sc.loc[sc["season"].between(2020, 2025)].copy()
+    sc.to_parquet(OUT / f"scored_{args.arm}.parquet")
+    parm.to_parquet(OUT / f"proxy_{args.arm}.parquet")
+    base_pg = pd.read_parquet(OPENER / "per_game.parquet")
+    base_pg = base_pg.loc[base_pg["season"].between(2020, 2025)]
+    res["true_2020_2025"] = compare_frames(frame_from_pergame(sc), frame_from_pergame(base_pg))
+    res["base_reproduction_2020_2025"] = frame_from_pergame(base_pg)["correct"].sum()
+    res["proxy_2011_2019_sbr_open"] = compare_frames(frame_from_proxy(parm), frame_from_proxy(pbase))
+
+    def wsum(w):
+        df = pd.DataFrame(w, columns=["max_season", "w"])
+        return {int(k): float(v) for k, v in df.groupby("max_season")["w"].mean().items()}
+
+    res["weight_by_last_training_season_mean"] = {"proxy": wsum(w_proxy), "true": wsum(w_true)}
+    (OUT / f"grade_{args.arm}.json").write_text(json.dumps(res, indent=1, default=float))
+    print(json.dumps(res, indent=1, default=float)[:6000])
+
 def main():
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -515,11 +933,21 @@ def main():
     p.add_argument("--max-chunks", dest="max_chunks", type=int, default=99)
     q = sub.add_parser("features")
     q.add_argument("--workers", type=int, default=6)
+    vf = sub.add_parser("verify")
+    vf.add_argument("--matchups", type=int, default=96)
+    vf.add_argument("--reps", type=int, default=100)
+    vf.add_argument("--workers", type=int, default=6)
+    vf.add_argument("--seed", type=int, default=11)
+    sub.add_parser("truth")
+    sub.add_parser("student2")
+    sub.add_parser("diag")
+    gr = sub.add_parser("grade")
+    gr.add_argument("--arm", required=True)
     st = sub.add_parser("student")
     st.add_argument("--all-lambdas", dest="all_lambdas", action="store_true")
     st.add_argument("--workers", type=int, default=4)
     args = ap.parse_args()
-    {"produce": cmd_produce, "features": cmd_features, "student": cmd_student}[args.cmd](args)
+    {"produce": cmd_produce, "features": cmd_features, "student": cmd_student, "verify": cmd_verify, "truth": cmd_truth, "student2": cmd_student2, "diag": cmd_diag, "grade": cmd_grade}[args.cmd](args)
 
 
 if __name__ == "__main__":
