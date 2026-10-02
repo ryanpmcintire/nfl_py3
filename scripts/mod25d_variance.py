@@ -695,6 +695,99 @@ def install_cal4s():
     m25._CAL4S = True
 
 
+EP_MODEL_PATH = OUT / "ep_model.joblib"
+EP_COLS = ["down", "ydstogo", "yardline_100", "half_seconds_remaining", "score_differential", "posteam_to", "defteam_to", "half"]
+NV_DIR = "C:/Users/Ryan/AppData/Local/Temp/claude/F--Repos-nfl-py3/f6b7873f-565c-422a-9dee-b6963fcaad49/scratchpad/nv"
+
+
+def ep_features(down, dist, yl, hs, sd, to_o, to_d, half):
+    return np.column_stack([down, dist, yl, hs, sd, to_o, to_d, half]).astype(np.float64)
+
+
+def load_nv_ep(seasons):
+    frames = []
+    for s in seasons:
+        d = pd.read_parquet(f"{NV_DIR}/pbp_{s}.parquet", columns=["season_type", "ep", "down", "ydstogo", "yardline_100", "half_seconds_remaining", "score_differential", "posteam_timeouts_remaining", "defteam_timeouts_remaining", "game_half", "qtr", "season"])
+        d = d[(d["season_type"] == "REG") & d["down"].notna() & d["ep"].notna() & d["yardline_100"].notna() & d["score_differential"].notna() & d["half_seconds_remaining"].notna()]
+        frames.append(d)
+    d = pd.concat(frames, ignore_index=True)
+    half = np.where(d["qtr"].to_numpy() >= 5, 3, np.where(d["qtr"].to_numpy() <= 2, 1, 2))
+    X = ep_features(d["down"].to_numpy(), d["ydstogo"].to_numpy(), d["yardline_100"].to_numpy(), d["half_seconds_remaining"].to_numpy(), d["score_differential"].to_numpy(), d["posteam_timeouts_remaining"].fillna(3).to_numpy(), d["defteam_timeouts_remaining"].fillna(3).to_numpy(), half)
+    return X, d["ep"].to_numpy(dtype=float), d["season"].to_numpy()
+
+
+def fit_ep_model(X, y, cols=None):
+    from sklearn.ensemble import HistGradientBoostingRegressor
+
+    m = HistGradientBoostingRegressor(max_iter=400, learning_rate=0.08, max_leaf_nodes=48, min_samples_leaf=40, l2_regularization=1.0, random_state=0)
+    return m.fit(X if cols is None else X[:, cols], y)
+
+
+def cmd_epfit(args):
+    import joblib
+
+    OUT.mkdir(parents=True, exist_ok=True)
+    X, y, ssn = load_nv_ep(range(2009, 2018))
+    tr, te = ssn <= 2015, ssn >= 2016
+    res = {"n_train": int(tr.sum()), "n_test": int(te.sum()), "ep_var_test": float(y[te].var())}
+    for nm, cols in (("state_only_down_dist_yl", [0, 1, 2]), ("full", None)):
+        m = fit_ep_model(X[tr], y[tr], cols)
+        pr = m.predict(X[te] if cols is None else X[te][:, cols])
+        res[nm] = {"r2_heldout_2016_17": float(1 - ((y[te] - pr) ** 2).sum() / ((y[te] - y[te].mean()) ** 2).sum()), "mae_heldout": float(np.abs(y[te] - pr).mean())}
+        pi = m.predict(X[tr] if cols is None else X[tr][:, cols])
+        res[nm]["r2_insample"] = float(1 - ((y[tr] - pi) ** 2).sum() / ((y[tr] - y[tr].mean()) ** 2).sum())
+    joblib.dump(fit_ep_model(X, y), EP_MODEL_PATH)
+    (OUT / "epfit.json").write_text(json.dumps(res, indent=1))
+    print(json.dumps(res, indent=1))
+
+
+def install_chain2():
+    import joblib
+
+    _G["ep_model"] = joblib.load(EP_MODEL_PATH)
+    _G["tolog"] = []
+    ns = _G["ns"]
+    dec = ns["DECIDE"]
+    st = {"to": (3.0, 3.0)}
+
+    def decide(idx, rng, tbl, qtr, clock_val, in_ot, down, distance, yardline, score_diff, off_to, def_to, *rest):
+        st["to"] = (float(off_to), float(def_to))
+        return dec(idx, rng, tbl, qtr, clock_val, in_ot, down, distance, yardline, score_diff, off_to, def_to, *rest)
+
+    ns["DECIDE"] = decide
+    base = _G["pol"]
+
+    def pol(down, distance, yardline, score_diff, qtr, clock_val, drawn):
+        _G["tolog"].append(st["to"])
+        return base(down, distance, yardline, score_diff, qtr, clock_val, drawn)
+
+    _G["pol"] = pol
+
+
+def norm_pts(v):
+    return np.where(v >= 6, 7.0, v)
+
+
+def chain2_epa(log, tol, model, offhome):
+    down = np.nan_to_num(log[:, 0], nan=1.0)
+    qtr = log[:, 5]
+    clock = log[:, 4]
+    hs = np.where(qtr <= 2, clock - 1800.0, clock)
+    half = np.where(qtr >= 5, 3, np.where(qtr <= 2, 1, 2))
+    ep = model.predict(ep_features(down, log[:, 1], log[:, 2], np.maximum(hs, 0.0), log[:, 3], tol[:, 0], tol[:, 1], half))
+    pts = norm_pts(log[:, 7]) - norm_pts(log[:, 8])
+    scored = (log[:, 7] > 0) | (log[:, 8] > 0)
+    n = len(ep)
+    nxt_ep = np.r_[ep[1:], 0.0]
+    same = np.r_[offhome[1:] == offhome[:-1], False]
+    half_end = np.r_[(qtr[1:] >= 3) & (qtr[:-1] <= 2), False]
+    last = np.r_[np.zeros(n - 1, dtype=bool), True]
+    v = np.where(same, nxt_ep, -nxt_ep)
+    v = np.where(scored, pts, v)
+    v = np.where((half_end | last) & ~scored, 0.0, v)
+    return v - ep
+
+
 EP_DB = np.array([0, 1, 2, 3, 5, 8, 11, 16, 1000], dtype=float)
 EP_YB = np.arange(0, 104, 4, dtype=float)
 
@@ -815,6 +908,8 @@ def d_init(train, cfg_json):
     if cfg.get("chain"):
         P, M, meta, pbp2 = real_load(train)
         install_chain(P)
+    if cfg.get("chain2"):
+        install_chain2()
     t["nn_weight_cache_cond"].clear()
 
 
@@ -840,6 +935,7 @@ DV["crf"] = dict(DV["crp04"], cal4=1)
 DV["crg"] = dict(DV["crf"], cal4s=1)
 DV["crh"] = dict(DV["crf"], chain=1)
 DV["cri"] = dict(DV["crg"], chain=1)
+DV["crj"] = dict(DV["crg"], chain2=1)
 DEC_COND = dict(condition=1, yard_gain=2.0, def_sign=1.0, yard_bias=0.75, avg=1)
 
 
@@ -864,6 +960,7 @@ def d_play_season(task):
         state = sim.initial_kickoff_state(rng, tables["opening_pool"])
         ns["PLAYLOG"].clear()
         _G["log"].clear()
+        _G["tolog"].clear() if "tolog" in _G else None
         hr = {"off": gen.quant(ratings[week][h][0]), "def": gen.quant(ratings[week][h][1])}
         ar = {"off": gen.quant(ratings[week][a][0]), "def": gen.quant(ratings[week][a][1])}
         rec, cap_hit = ns["run_one_game"](state, tables, rng, 600.0, _G["pol"], sim.K_NEIGHBORS, sim.MAX_PLAYS_PER_GAME, hr, ar)
@@ -883,7 +980,13 @@ def d_play_season(task):
             np.add.at(dg["od"], offt, rates[0][idx].astype(float))
             np.add.at(dg["dn"], deft, rates[1][idx].astype(float))
             np.add.at(dg["dd"], deft, rates[0][idx].astype(float))
-        if "ep_tab" in _G:
+        if "ep_model" in _G:
+            lg = np.array(_G["log"], dtype=np.float64).reshape(-1, 12)
+            pl = np.array(ns["PLAYLOG"], dtype=np.float64).reshape(-1, 3)
+            tl = np.array(_G["tolog"], dtype=np.float64).reshape(-1, 2)
+            assert len(lg) == len(pl) == len(tl) and np.array_equal(lg[:, 11], pl[:, 1])
+            epa = chain2_epa(lg, tl, _G["ep_model"], pl[:, 0])[keep]
+        elif "ep_tab" in _G:
             lg = np.array(_G["log"], dtype=np.float64).reshape(-1, 12)
             pl = np.array(ns["PLAYLOG"], dtype=np.float64).reshape(-1, 3)
             assert len(lg) == len(pl) and np.array_equal(lg[:, 11], pl[:, 1])
@@ -936,6 +1039,40 @@ def cmd_grid(args):
         rows[str(sc)] = m
         print(sc, json.dumps({k: round(m[k], 4) for k in c25.GK + ["loss"]}), flush=True)
     (OUT / f"grid_{args.variant}.json").write_text(json.dumps({"real_2011_2017": real, "rows": rows}, indent=1))
+
+
+def cmd_grid2(args):
+    import mod25_generator as gen
+
+    OUT.mkdir(parents=True, exist_ok=True)
+    real = c25.real_gate_metrics()["2011_2017"]
+    tg = json.loads((REPO / "artifacts" / "mod25_generator" / "real_targets.json").read_text())["gates"]
+    rows = {}
+    for sc in [float(x) for x in args.scales.split(",")]:
+        games, plays, latents = gen_full(args.variant, sc, args.worlds, args.seasons, args.workers, args.seed)
+        ts = gen.team_stats_from_plays(plays)
+        keep = [w * 1000 + s + 1 for w in range(args.worlds) for s in range(2, args.seasons)]
+        m, ac, dd = gen.all_metrics(games, ts, keep)
+        m["r2_pooled"] = float(np.corrcoef(dd["x"], dd["y"])[0, 1] ** 2)
+        m["nonstrength_var"] = float(m["margin_sd"] ** 2 * (1 - m["r2_pooled"]))
+        g, tgm = x_frame(games, ts)
+        g = g[g["season"].isin(keep)].dropna(subset=["x", "y"])
+        tgm = tgm[tgm["season"].isin(keep)]
+        sd = strdiag_one(g, tgm)
+        w = sd["within"]
+        m["within_sd_off"] = w["off_epa_per_play_within_sd"]
+        m["between_sd_off"] = w["off_epa_per_play_between_sd"]
+        m["slope_pts_per_epa"] = sd["conv"]["y_on_epa_slope"]
+        m["resid_var_margin_on_epa"] = sd["conv"]["y_resid_var"]
+        loss = 0.0
+        for k in ("epa_autocorr_lag1", "r2_w1_4", "r2_w5_9", "r2_w10_18"):
+            hw = (tg[k]["hi"] - tg[k]["lo"]) / 2.0
+            loss += ((m[k] - real[k]) / hw) ** 2
+        loss += ((m["between_sd_off"] - 0.0928) / 0.005) ** 2
+        m["loss"] = float(loss)
+        rows[str(sc)] = m
+        print(sc, json.dumps({k: round(v_, 4) for k, v_ in m.items() if k in ("epa_autocorr_lag1", "r2_w1_4", "r2_w5_9", "r2_w10_18", "within_sd_off", "between_sd_off", "slope_pts_per_epa", "resid_var_margin_on_epa", "margin_sd", "loss")}), flush=True)
+    (OUT / f"grid2_{args.tag}.json").write_text(json.dumps({"real_2011_2017": real, "rows": rows}, indent=1))
 
 
 def cmd_gate(args):
@@ -1026,6 +1163,15 @@ def main():
     ed.add_argument("--variants", default="crf")
     ed.add_argument("--tag", default="e1")
     ed.add_argument("--cache", default="C:/Users/Ryan/AppData/Local/Temp/claude/F--Repos-nfl-py3/f6b7873f-565c-422a-9dee-b6963fcaad49/scratchpad")
+    sub.add_parser("epfit")
+    g2 = sub.add_parser("grid2")
+    g2.add_argument("--variant", default="crj")
+    g2.add_argument("--scales", default="0.6,0.75,0.9,1.0,1.15")
+    g2.add_argument("--worlds", type=int, default=6)
+    g2.add_argument("--seasons", type=int, default=8)
+    g2.add_argument("--workers", type=int, default=6)
+    g2.add_argument("--seed", type=int, default=21)
+    g2.add_argument("--tag", default="j1")
     pf = sub.add_parser("pacefit")
     pf.add_argument("--variants", default="crt,crp04,crp08,crp12,crp16")
     pf.add_argument("--games", type=int, default=6000)
@@ -1058,7 +1204,7 @@ def main():
         g.add_argument("--yard-bias", dest="yard_bias", type=float, default=0.75)
         g.add_argument("--tag", default="g1")
     args = ap.parse_args()
-    {"decomp": cmd_decomp, "tilt": cmd_tilt, "ipwcheck": cmd_ipwcheck, "grid": cmd_grid, "gate": cmd_gate, "corrdiag": cmd_corrdiag, "pacediag": cmd_pacediag, "ratediag": cmd_ratediag, "tiltcoef": cmd_tiltcoef, "ablate": cmd_ablate, "pacefit": cmd_pacefit, "simcache": cmd_simcache, "possdiag": cmd_possdiag, "strdiag": cmd_strdiag, "epadiag": cmd_epadiag}[args.cmd](args)
+    {"decomp": cmd_decomp, "tilt": cmd_tilt, "ipwcheck": cmd_ipwcheck, "grid": cmd_grid, "gate": cmd_gate, "corrdiag": cmd_corrdiag, "pacediag": cmd_pacediag, "ratediag": cmd_ratediag, "tiltcoef": cmd_tiltcoef, "ablate": cmd_ablate, "pacefit": cmd_pacefit, "simcache": cmd_simcache, "possdiag": cmd_possdiag, "strdiag": cmd_strdiag, "epadiag": cmd_epadiag, "epfit": cmd_epfit, "grid2": cmd_grid2}[args.cmd](args)
 
 
 

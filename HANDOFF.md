@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-02T02:32:17.455902+00:00`
+Refreshed at: `2026-10-02T03:13:12.689468+00:00`
 
 ## Start here
 
@@ -21,7 +21,7 @@ Refreshed at: `2026-10-02T02:32:17.455902+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `b7089b017885` — MOD-25 pipeline: provisional student result (synthetic pull hurts) and redesign toward noiseless-label distillation
+- Baseline commit: `61cfce924361` — MOD-25i: sim points decoupled from sampled play EPA (residual var 55 vs 25-31); EPA recomputed from the sim's own state path; predictability gates now pass
 - Pending change set: 14 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
