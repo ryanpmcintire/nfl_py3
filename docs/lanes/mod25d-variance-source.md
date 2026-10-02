@@ -30,3 +30,15 @@ circular. Use the random-effects decomposition (strength-difference variance
 52/58, noise 153/165, measured in MOD-25d). Sim strength variance of about 62 is
 then near real; the excess is in the neutral sim's noise (about 191 vs 153-165).
 Before shrinking strength, check this.
+
+## Gate k4 (measured, crj and cro at .9, held out 2018-2025)
+Plateau across the last four units. Margin SD is 15.5-15.6 (band 13.97-14.87),
+non-strength variance 216-220 (real 178), and late-season R-squared .104-.107
+(band .132-.166). Mass at 3 is .113-.115 and share decided by 3 or fewer
+.200-.203. Passing: autocorrelation, early and mid R-squared, home edge, mass
+at 17. Orchestrator decision: the distillation redesign (MOD-25 pipeline v2)
+learns from noiseless latent labels, so margin noise and shape don't enter its
+labels. What it needs is a realistic link between features and strength, which
+matches (rolling-state vs season-EPA correlation .853 sim vs .857 real; EPA
+consistency targets match). Run v2 on crj now. Keep the noise hunt open at
+lower priority (3rd-down arrival, short-yardage conversion, residual noise).
