@@ -66,3 +66,10 @@ view more than toward the base model's, which is information the opener
 lacks, stronger in the older era. Cover accuracy stays below power. Next: log q
 forward with the 2026 weekly picks, and a calibrated fitted term combining q
 with the base model (out-of-season weight).
+
+## Forward log of q (built 2026-10-02; scripts/mod25_forward_q.py, artifacts/mod25_forward/)
+Frozen (measured) in frozen/frozen.json + student_ridge_nomkt.npz (sha256 53465c34...19ba): Ridge alpha 1 on crj/.9 true expected margin, 88 nomkt cols, real inputs z-scored with the 2025-final prior-seasons mean/sd; reproduces real_distilled to 1e-14. Combination w .1848, qbar -.2824, bbar .0614, fitted through 2025 (4431 games, LOSO base preds) by capturing the TwoStage fit of a 2026 Week 1 score; base ridge refits weekly, w/qbar/bbar fixed. Freeze refuses to rerun.
+Run: `.tools\uv.exe run --no-sync python scripts\mod25_forward_q.py [--week N]` writes runs/2026-week-WW-<stamp>.json (mode x); refuses outcome-present and past-deadline games. Pool line = feature-table spread_line; market_line = median HOME quote (sign flipped to spread_line convention) from latest data/market/raw capture. `--status` = coverage + pool-to-close line move toward q/base/combined side (needs kicked-off games with a capture before kickoff; no outcomes).
+Week 4 logged 2026-10-02 05:11 UTC: 15 games; PIT_CLE refused past_deadline. Combined side = base side = served side on all 15.
+Schedule Thu ~19:00 ET and Sun ~11:00 ET Weeks 4-18 (not Tuesday before noon freeze). Canonical row = latest before deadline. Score only after Week 18 final.
+Open: combined probability uses the combined model's own discrete read (both reads True); the frozen-w capture had 2 TwoStage fits (served-helper fit plus scoring fit); took the scoring fit (max train season 2025). No Week 4 tests added.

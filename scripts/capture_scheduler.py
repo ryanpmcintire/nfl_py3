@@ -422,6 +422,26 @@ SCHEDULE: tuple[Job, ...] = (
     ),
     *(
         Job(
+            f"mod25_forward_q_{day}_{at.replace(':', '')}",
+            day,
+            at,
+            60,
+            [
+                str(UV),
+                "run",
+                "--no-sync",
+                "python",
+                str(REPO / "scripts" / "mod25_forward_q.py"),
+            ],
+            True,
+            "Log the frozen synthetic-distilled challenger's pregame picks beside the served "
+            "model for the MOD-25 forward study.",
+            added_on="2026-10-02",
+        )
+        for day, at in (("thu", "19:05"), ("sun", "11:05"))
+    ),
+    *(
+        Job(
             f"beat_reporters_{day}",
             day,
             "07:30",
