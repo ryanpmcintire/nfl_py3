@@ -32,7 +32,7 @@ def real_load(seasons):
             "sd": tr["sc_raw"].to_numpy(), "gsr": tr["gsr_actual"].to_numpy(), "qtr": tr["qtr_actual"].to_numpy(),
             "code": tr["play_type_code"].to_numpy(), "po": tr["points_off"].to_numpy(), "pdf": tr["points_def"].to_numpy(),
             "flip": tr["possession_flip"].to_numpy().astype(bool), "el": tr["clock_elapsed"].to_numpy(),
-            "epa": tr["epa"].to_numpy(), "yards": tr["yards"].to_numpy(),
+            "epa": tr["epa"].to_numpy(), "yards": tr["yards"].to_numpy(), "tov": tr["tov"].to_numpy(),
         }
     )
     last = tr.groupby(gid).tail(1)
@@ -820,6 +820,16 @@ def main():
     ab.add_argument("--seed", type=int, default=5)
     ab.add_argument("--tag", default="h1")
     ab.add_argument("--cache", default="C:/Users/Ryan/AppData/Local/Temp/claude/F--Repos-nfl-py3/f6b7873f-565c-422a-9dee-b6963fcaad49/scratchpad")
+    sc_ = sub.add_parser("simcache")
+    sc_.add_argument("--variants", default="crp04")
+    sc_.add_argument("--games", type=int, default=12000)
+    sc_.add_argument("--workers", type=int, default=6)
+    sc_.add_argument("--seed", type=int, default=5)
+    sc_.add_argument("--cache", default="C:/Users/Ryan/AppData/Local/Temp/claude/F--Repos-nfl-py3/f6b7873f-565c-422a-9dee-b6963fcaad49/scratchpad")
+    pd_ = sub.add_parser("possdiag")
+    pd_.add_argument("--variants", default="crp04")
+    pd_.add_argument("--tag", default="p1")
+    pd_.add_argument("--cache", default="C:/Users/Ryan/AppData/Local/Temp/claude/F--Repos-nfl-py3/f6b7873f-565c-422a-9dee-b6963fcaad49/scratchpad")
     pf = sub.add_parser("pacefit")
     pf.add_argument("--variants", default="crt,crp04,crp08,crp12,crp16")
     pf.add_argument("--games", type=int, default=6000)
@@ -852,7 +862,7 @@ def main():
         g.add_argument("--yard-bias", dest="yard_bias", type=float, default=0.75)
         g.add_argument("--tag", default="g1")
     args = ap.parse_args()
-    {"decomp": cmd_decomp, "tilt": cmd_tilt, "ipwcheck": cmd_ipwcheck, "grid": cmd_grid, "gate": cmd_gate, "corrdiag": cmd_corrdiag, "pacediag": cmd_pacediag, "ratediag": cmd_ratediag, "tiltcoef": cmd_tiltcoef, "ablate": cmd_ablate, "pacefit": cmd_pacefit}[args.cmd](args)
+    {"decomp": cmd_decomp, "tilt": cmd_tilt, "ipwcheck": cmd_ipwcheck, "grid": cmd_grid, "gate": cmd_gate, "corrdiag": cmd_corrdiag, "pacediag": cmd_pacediag, "ratediag": cmd_ratediag, "tiltcoef": cmd_tiltcoef, "ablate": cmd_ablate, "pacefit": cmd_pacefit, "simcache": cmd_simcache, "possdiag": cmd_possdiag}[args.cmd](args)
 
 
 
@@ -1191,6 +1201,131 @@ def cmd_pacefit(args):
     for k in keys:
         print(f"{k:26s} " + " ".join(f"{res[n][k]:11.3f}" for n in res))
     (OUT / "pacefit.json").write_text(json.dumps(res, indent=1))
+
+
+def cmd_simcache(args):
+    for v in args.variants.split(","):
+        S, MS = run_neutral(v, args.games, args.workers, args.seed)
+        S.to_parquet(Path(args.cache) / f"sim_{v}.parquet")
+        pd.DataFrame({"m": MS.to_numpy()}).to_parquet(Path(args.cache) / f"simM_{v}.parquet")
+        print(v, len(S), flush=True)
+
+
+YL_BINS = [0, 10, 20, 35, 50, 65, 80, 101]
+LEN_BINS = [0, 3, 5, 7, 9, 12, 100]
+OUTCOMES = ["td", "fg", "fg_miss", "punt", "turnover", "downs", "def_score", "end_half", "other"]
+
+
+def drive_table(P):
+    P = P.sort_values("g", kind="stable").reset_index(drop=True)
+    side = track_sides(P)
+    _, poss = assign_sides(P)
+    P = P.assign(trk=side, poss=poss)
+    R = P[P["qtr"] <= 4]
+    gp = R.groupby("poss", sort=True)
+    D = pd.DataFrame(
+        {
+            "g": gp["g"].first(), "trk": gp["trk"].first(), "yl0": gp["yl"].first(), "ylmin": gp["yl"].min(), "q0": gp["qtr"].first(),
+            "gsr0": gp["gsr"].first(), "n": gp.size(), "secs": gp["el"].sum(), "po": gp["po"].sum(), "pdf": gp["pdf"].sum(),
+            "code": gp["code"].last(), "tov": gp["tov"].last(), "flip": gp["flip"].last(), "sd0": gp["sd"].first(),
+        }
+    ).reset_index()
+    po, pdf, code, tov, flip = (D[c].to_numpy() for c in ("po", "pdf", "code", "tov", "flip"))
+    oc = np.select(
+        [po >= 6, (po == 3) & (code == 3), pdf > 0, (code == 3) & (po == 0), code == 2, (tov == 1) & flip, flip & (po == 0), ~flip],
+        ["td", "fg", "def_score", "fg_miss", "punt", "turnover", "downs", "end_half"],
+        default="other",
+    )
+    D["oc"] = oc
+    D["pts"] = po
+    D["rz"] = D["ylmin"] <= 20
+    return D, R
+
+
+def drive_tables(P):
+    D, R = drive_table(P)
+    out = {}
+    ng = D["g"].nunique()
+    out["n_drives"] = int(len(D))
+    out["drives_per_game"] = float(len(D) / ng)
+    out["pts_per_drive"] = float(D["pts"].mean())
+    out["pts_per_drive_var"] = float(D["pts"].var())
+    cnt = D.groupby("g").size()
+    out["drives_per_game_var"] = float(cnt.var())
+    cA = D[D["trk"] == 0].groupby("g").size().reindex(cnt.index).fillna(0)
+    cB = D[D["trk"] == 1].groupby("g").size().reindex(cnt.index).fillna(0)
+    out["drives_per_team_var"] = float((cA.var() + cB.var()) / 2)
+    out["plays_per_drive"] = float(D["n"].mean())
+    out["secs_per_drive"] = float(D["secs"].mean())
+    out["mix"] = {k: float((D["oc"] == k).mean()) for k in OUTCOMES}
+    for lab, m in (("q1_3", D["q0"] <= 3), ("q4", D["q0"] == 4)):
+        d = D[m]
+        out["mix_" + lab] = {k: float((d["oc"] == k).mean()) for k in OUTCOMES}
+        out["pts_" + lab] = float(d["pts"].mean())
+    D["ylb"] = pd.cut(D["yl0"], YL_BINS, right=False)
+    D["lnb"] = pd.cut(D["n"], LEN_BINS, right=False)
+    out["by_start"] = {str(k): dict(n=int(len(g)), pts=float(g["pts"].mean()), td=float((g["oc"] == "td").mean()), fg=float((g["oc"] == "fg").mean()), len=float(g["n"].mean())) for k, g in D.groupby("ylb", observed=True)}
+    out["by_len"] = {str(k): dict(n=int(len(g)), share=float(len(g) / len(D)), pts=float(g["pts"].mean()), td=float((g["oc"] == "td").mean()), fg=float((g["oc"] == "fg").mean())) for k, g in D.groupby("lnb", observed=True)}
+    rz = D[D["rz"]]
+    out["rz"] = dict(share=float(D["rz"].mean()), td=float((rz["oc"] == "td").mean()), fg=float((rz["oc"] == "fg").mean()), fg_miss=float((rz["oc"] == "fg_miss").mean()), tov=float((rz["oc"] == "turnover").mean()), downs=float((rz["oc"] == "downs").mean()), pts=float(rz["pts"].mean()))
+    f = R[(R["code"] == 3)].copy()
+    f["b"] = pd.cut(f["yl"], [0, 10, 20, 25, 30, 35, 40, 50])
+    f["mk"] = (f["po"] == 3)
+    out["fg_make"] = {str(k): dict(n=int(len(g)), make=float(g["mk"].mean())) for k, g in f.groupby("b", observed=True)}
+    fd = R[(R["down"] == 4) & R["code"].isin([0, 1, 2, 3])].copy()
+    fd["b"] = pd.cut(fd["yl"], [0, 10, 20, 25, 30, 35, 40, 50, 60, 75, 101])
+    fd["fgp"] = fd["code"] == 3
+    fd["pn"] = fd["code"] == 2
+    fd["go"] = fd["code"].isin([0, 1])
+    out["fourth"] = {str(k): dict(n=int(len(g)), fg=float(g["fgp"].mean()), punt=float(g["pn"].mean()), go=float(g["go"].mean())) for k, g in fd.groupby("b", observed=True)}
+    G = D.groupby("g").agg(n=("n", "sum"), nd=("n", "size"), pts=("pts", "sum"), secs=("secs", "sum"))
+    G["pdf"] = D.groupby("g")["pdf"].sum()
+    G["tp"] = G["pts"] + G["pdf"]
+    G["ppd"] = G["n"] / G["nd"]
+    G["spp"] = G["secs"] / G["n"]
+    cc = lambda a, b: float(np.corrcoef(G[a], G[b])[0, 1])
+    out["corr_plays_pts"] = cc("n", "tp")
+    out["corr_ndrives_pts"] = cc("nd", "tp")
+    out["corr_plays_ndrives"] = cc("n", "nd")
+    out["corr_ppd_pts"] = cc("ppd", "tp")
+    out["corr_spp_pts"] = cc("spp", "tp")
+    out["corr_spp_plays"] = cc("spp", "n")
+    out["corr_ndrives_ppd"] = cc("nd", "ppd")
+    out["plays_var"] = float(G["n"].var())
+    out["tp_var"] = float(G["tp"].var())
+    out["corr_drive_len_pts"] = float(np.corrcoef(D["n"], D["pts"])[0, 1])
+    return out
+
+
+def flat(d, pre=""):
+    r = {}
+    for k, v in d.items():
+        if isinstance(v, dict):
+            r.update(flat(v, pre + k + "."))
+        else:
+            r[pre + k] = v
+    return r
+
+
+def cmd_possdiag(args):
+    OUT.mkdir(parents=True, exist_ok=True)
+    res = {}
+    for nm, ss in (("real_train", TRAIN), ("real_eval", EVAL)):
+        P, M, meta, pbp = real_load(ss)
+        res[nm] = drive_tables(P)
+        print(nm, flush=True)
+    for v in args.variants.split(","):
+        S = pd.read_parquet(Path(args.cache) / f"sim_{v}.parquet")
+        res[v] = drive_tables(S)
+        print(v, flush=True)
+    (OUT / f"possdiag_{args.tag}.json").write_text(json.dumps(res, indent=1))
+    F = {k: flat(v) for k, v in res.items()}
+    keys = list(F["real_train"])
+    lines = [f"{'metric':44s} " + " ".join(f"{n:>11s}" for n in F)]
+    for k in keys:
+        lines.append(f"{k:44s} " + " ".join(f"{F[n].get(k, float('nan')):11.4f}" for n in F))
+    (OUT / f"possdiag_{args.tag}.txt").write_text("\n".join(lines))
+    print("\n".join(lines))
 
 
 if __name__ == "__main__":

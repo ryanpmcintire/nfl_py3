@@ -17,3 +17,11 @@ Verdict: not ready. Fails: margin SD 15.1 (13.97-14.87), nonstrength variance 20
 
 ## Open
 Red-zone TD defense tilt spread unstable. Poss_analysis side-assign artifact also affects any old possession-level sim numbers (cov_total, lag covariances): re-read old decomps with SIDE_TRK. Pace latent is game-level only; team-season pace not tested.
+
+## MOD-25h in flight (orchestrator note 2026-10-01)
+New commands `simcache` and `possdiag` were added to scripts/mod25d_variance.py
+(drive tables by field-position band, drive length and outcome mix; red-zone and
+FG-by-distance rates; 4th-down choices; plays-points decomposition; tracked
+sides). Not yet validated. Run: simcache crp04 (12k games), then `possdiag
+--variants crp04,crt --tag p1` to artifacts/mod25d/possdiag_p1.*. Next: read it,
+fix bugs, name divergences, fit variants to their own behaviour, re-grid, re-gate.
