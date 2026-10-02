@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-02T00:47:20.408449+00:00`
+Refreshed at: `2026-10-02T01:38:19.770805+00:00`
 
 ## Start here
 
@@ -21,23 +21,24 @@ Refreshed at: `2026-10-02T00:47:20.408449+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `3ce94c77219d` — MOD-25: pipeline lane
-- Pending change set: 15 paths
+- Baseline commit: `0177c8f6616f` — MOD-25h: drive-level diagnostics tooling (in flight)
+- Pending change set: 16 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/mod25d-variance-source.md`
+  - `M  docs/lanes/mod25-pipeline.md`
+  - ` M docs/lanes/mod25d-variance-source.md`
   - ` M docs/model.html`
   - ` M registry/weak_signals.json`
-  - `M  scripts/mod25d_variance.py`
+  - `A  scripts/mod25_pipeline.py`
+  - ` M scripts/mod25d_variance.py`
   - ` M tiebreaker.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-predict/2026-week-04-20261001T211240Z.json`
   - `?? registry/experiments/opener-evaluation/20261001T211624Z.json`
   - `?? registry/experiments/waterfall-feed/20261001T211747Z.json`
   - `?? scripts/mod24_u7a.py`
-  - `?? scripts/mod25_pipeline.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
