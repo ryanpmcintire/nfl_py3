@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-02T01:38:19.770805+00:00`
+Refreshed at: `2026-10-02T01:39:38.979521+00:00`
 
 ## Start here
 
@@ -21,18 +21,16 @@ Refreshed at: `2026-10-02T01:38:19.770805+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `0177c8f6616f` — MOD-25h: drive-level diagnostics tooling (in flight)
-- Pending change set: 16 paths
+- Baseline commit: `a74dcd7251ec` — MOD-25 pipeline: 104k synthetic games, production features, book priced from real openers, shrink-to-synthetic ridge student (provisional)
+- Pending change set: 14 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/mod25-pipeline.md`
-  - ` M docs/lanes/mod25d-variance-source.md`
+  - `M  docs/lanes/mod25d-variance-source.md`
   - ` M docs/model.html`
   - ` M registry/weak_signals.json`
-  - `A  scripts/mod25_pipeline.py`
-  - ` M scripts/mod25d_variance.py`
+  - `M  scripts/mod25d_variance.py`
   - ` M tiebreaker.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-predict/2026-week-04-20261001T211240Z.json`

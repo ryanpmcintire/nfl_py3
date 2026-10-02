@@ -574,6 +574,69 @@ def install_clean_clock():
     sim._CLEAN_CLOCK = True
 
 
+CAL_YB = np.array([0, 20, 35, 45, 55, 65, 80, 101], dtype=float)
+CAL_DB = np.array([0, 2, 5, 10, 100], dtype=float)
+CAL_TB = np.array([-1, 120, 420, 900, 1680, 1800, 2700, 3601], dtype=float)
+
+
+def cal_cell(yl, dist, gsr):
+    a = np.clip(np.searchsorted(CAL_YB, yl, side="left") - 1, 0, len(CAL_YB) - 2)
+    b = np.clip(np.searchsorted(CAL_DB, dist, side="left") - 1, 0, len(CAL_DB) - 2)
+    c = np.clip(np.searchsorted(CAL_TB, gsr, side="left") - 1, 0, len(CAL_TB) - 2)
+    return (a * (len(CAL_DB) - 1) + b) * (len(CAL_TB) - 1) + c
+
+
+def calibrate_p4(P4, trans, shrink=10.0):
+    M = m25
+    sd = np.clip(trans["sc_raw"].to_numpy(), -24, 24)
+    gsr = trans["gsr_actual"].to_numpy().astype(float)
+    qtr = trans["qtr_actual"].to_numpy()
+    yl = trans["fp_raw"].to_numpy().astype(float)
+    dist = trans["dist_raw"].to_numpy().astype(float)
+    down = trans["down_i"].to_numpy()
+    code = trans["play_type_code"].to_numpy()
+    otf = (trans["off_to_raw"].to_numpy() > 0).astype(int)
+    dtf = (trans["def_to_raw"].to_numpy() > 0).astype(int)
+    m4 = (down == 4) & np.isin(code, (0, 1, 2, 3))
+    ix = lambda ax, x: np.abs(ax[None, :] - x[:, None]).argmin(1)
+    sd, gsr, qtr, yl, dist, otf, dtf, code = (a[m4] for a in (sd, gsr, qtr, yl, dist, otf, dtf, code))
+    pr = P4[ix(M.SD_AX, sd), ix(M.T4_AX, gsr), (qtr >= 5).astype(int), ix(M.Y4_AX, yl), ix(M.D4_AX, dist), otf, dtf]
+    cls = M.cls4_of(code)
+    cell = cal_cell(yl, dist, gsr)
+    ncell = (len(CAL_YB) - 1) * (len(CAL_DB) - 1) * (len(CAL_TB) - 1)
+    n = np.bincount(cell, minlength=ncell).astype(float)
+    fac = np.ones((ncell, 3))
+    for c in range(3):
+        mp = np.bincount(cell, weights=pr[:, c], minlength=ncell)
+        rc = np.bincount(cell, weights=(cls == c).astype(float), minlength=ncell)
+        mm = np.where(n > 0, mp / np.maximum(n, 1), 0.0)
+        fac[:, c] = np.where(mm > 1e-6, (rc + shrink * mm) / np.maximum(mp + shrink * mm, 1e-9), 1.0)
+    gy = cal_cell_grid(M)
+    out = P4 * fac[gy][..., :]
+    return (out / out.sum(-1, keepdims=True)).astype(np.float32)
+
+
+def cal_cell_grid(M):
+    sh = (len(M.SD_AX), len(M.T4_AX), 2, len(M.Y4_AX), len(M.D4_AX), 2, 2)
+    T = M.T4_AX[None, :, None, None, None, None, None]
+    Y = M.Y4_AX[None, None, None, :, None, None, None]
+    D = M.D4_AX[None, None, None, None, :, None, None]
+    return cal_cell(np.broadcast_to(Y, sh), np.broadcast_to(D, sh), np.broadcast_to(T, sh))
+
+
+def install_cal4():
+    if getattr(m25, "_CAL4", False):
+        return
+    orig = m25.fit_decisions
+
+    def wrapped(trans):
+        P4, PL, a, b = orig(trans)
+        return calibrate_p4(P4, trans), PL, a, b
+
+    m25.fit_decisions = wrapped
+    m25._CAL4 = True
+
+
 def install_pace(sigma, seed):
     import os
 
@@ -598,6 +661,8 @@ def d_init(train, cfg_json):
         install_clean_clock()
     if cfg.get("tilt"):
         install_tilt()
+    if cfg.get("cal4"):
+        install_cal4()
     c25.c_init(train, cfg_json)
     if cfg.get("pace"):
         install_pace(float(cfg["pace"]), int(cfg.get("seed", 3)))
@@ -661,6 +726,7 @@ for _nm, _drop in (("late", ("late",)), ("fourth", ("fourth",)), ("pat", ("pat",
     DV["crt_no" + _nm] = {k: v for k, v in DV["crt"].items() if k not in _drop}
 for _sg in (4, 8, 12, 16, 20):
     DV[f"crp{_sg:02d}"] = dict(DV["crt"], pace=_sg / 100.0)
+DV["crf"] = dict(DV["crp04"], cal4=1)
 DEC_COND = dict(condition=1, yard_gain=2.0, def_sign=1.0, yard_bias=0.75, avg=1)
 
 
@@ -1228,12 +1294,18 @@ def drive_table(P):
             "g": gp["g"].first(), "trk": gp["trk"].first(), "yl0": gp["yl"].first(), "ylmin": gp["yl"].min(), "q0": gp["qtr"].first(),
             "gsr0": gp["gsr"].first(), "n": gp.size(), "secs": gp["el"].sum(), "po": gp["po"].sum(), "pdf": gp["pdf"].sum(),
             "code": gp["code"].last(), "tov": gp["tov"].last(), "flip": gp["flip"].last(), "sd0": gp["sd"].first(),
+            "ql": gp["qtr"].last(), "elmax": gp["el"].max(),
         }
     ).reset_index()
+    ng_ = D["g"].to_numpy()
+    nq_ = D["q0"].to_numpy()
+    last_g = np.r_[ng_[1:] != ng_[:-1], True]
+    last_h = np.r_[(ng_[1:] == ng_[:-1]) & (nq_[1:] >= 3), False] & (D["ql"].to_numpy() <= 2)
+    term = last_g | last_h
     po, pdf, code, tov, flip = (D[c].to_numpy() for c in ("po", "pdf", "code", "tov", "flip"))
     oc = np.select(
-        [po >= 6, (po == 3) & (code == 3), pdf > 0, (code == 3) & (po == 0), code == 2, (tov == 1) & flip, flip & (po == 0), ~flip],
-        ["td", "fg", "def_score", "fg_miss", "punt", "turnover", "downs", "end_half"],
+        [po >= 6, (po == 3) & (code == 3), pdf > 0, (code == 3) & (po == 0), code == 2, term, (tov == 1) & flip, flip & (po == 0), ~flip],
+        ["td", "fg", "def_score", "fg_miss", "punt", "end_half", "turnover", "downs", "end_half"],
         default="other",
     )
     D["oc"] = oc
@@ -1278,6 +1350,9 @@ def drive_tables(P):
     fd["pn"] = fd["code"] == 2
     fd["go"] = fd["code"].isin([0, 1])
     out["fourth"] = {str(k): dict(n=int(len(g)), fg=float(g["fgp"].mean()), punt=float(g["pn"].mean()), go=float(g["go"].mean())) for k, g in fd.groupby("b", observed=True)}
+    okg = (D.groupby("g")["elmax"].max() <= EL_MAX)
+    out["clean_game_share"] = float(okg.mean())
+    D = D[D["g"].isin(okg.index[okg.to_numpy()])].copy()
     G = D.groupby("g").agg(n=("n", "sum"), nd=("n", "size"), pts=("pts", "sum"), secs=("secs", "sum"))
     G["pdf"] = D.groupby("g")["pdf"].sum()
     G["tp"] = G["pts"] + G["pdf"]

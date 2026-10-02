@@ -18,10 +18,8 @@ Verdict: not ready. Fails: margin SD 15.1 (13.97-14.87), nonstrength variance 20
 ## Open
 Red-zone TD defense tilt spread unstable. Poss_analysis side-assign artifact also affects any old possession-level sim numbers (cov_total, lag covariances): re-read old decomps with SIDE_TRK. Pace latent is game-level only; team-season pace not tested.
 
-## MOD-25h in flight (orchestrator note 2026-10-01)
-New commands `simcache` and `possdiag` were added to scripts/mod25d_variance.py
-(drive tables by field-position band, drive length and outcome mix; red-zone and
-FG-by-distance rates; 4th-down choices; plays-points decomposition; tracked
-sides). Not yet validated. Run: simcache crp04 (12k games), then `possdiag
---variants crp04,crt --tag p1` to artifacts/mod25d/possdiag_p1.*. Next: read it,
-fix bugs, name divergences, fit variants to their own behaviour, re-grid, re-gate.
+## MOD-25h result (2026-10-01, measured)
+possdiag fixed: terminal drives (last of game, last before half) labelled end_half in both real and sim (real flip is artificial at game end); game-level plays/secs stats only on games with no clock artifact. p2/p3 in artifacts/mod25d/possdiag_p2/p3.*.
+Verdicts: end-of-game classification mismatch CONFIRMED artifact (Q4 end_half .154/.163 real vs .160 sim; Q1-3 .041 vs .050). secs-per-play vs plays corr REFUTED (real -.995 on clean games, sim -.994; -.15 was clock artifacts, 30 percent of train games). plays_var crt 61.7 vs 101/91 real, crp04 96.9 fixed by pace. CONFIRMED: sim goes for it on 4th down more than 2009-2017 (go .181 vs .124; punt share .334 vs .404; Q4 downs-end .159 vs .087/.100; ablation crt_nofourth go .116): fitted GBM grid over-goes midfield. Also more short-distance 4ths (dist<=2 share .265 vs .188).
+Variant crf = crp04 + cal4 (4th-down grid recalibrated per yl x dist x gsr cell to real 2009-2017 class rates, shrink 10): punt .343, Q4 downs .158 (little change), corr_plays_pts .170 vs .114. Grid crf loss .6 21.1, .75 10.6, .9 18.3 (scale .75). Gate g6 crf vs g5 crp04: SD 15.28 vs 15.14, nonstrength 210.9 vs 208.8, R2 w10-18 .107 vs .096, mass3 .119/.119, le3 .205/.208, autocorr .183 (now out of band) vs .177. Not ready: no gate moved into band.
+Next: Q4 trailing-state go-for-it (score x time cells), short-distance 4th arrival (3rd-down yardage), count-points coupling .17-.23 vs .05-.11, nonstrength var 209 vs 178.
