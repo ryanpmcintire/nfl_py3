@@ -853,8 +853,24 @@ def install_pace(sigma, seed):
     _G["pol"] = pol
 
 
+def install_fined(rd):
+    import inspect
+
+    ns = _G["ns"]
+    src = inspect.getsource(sim.round_state_key)
+    assert "ROUND_DIST" in src
+    exec(src.replace("ROUND_DIST", repr(rd)), ns)
+    psrc = inspect.getsource(sim.pick_index_nn_conditioned)
+    if "TILT_T" not in ns.get("pick_index_nn_conditioned").__code__.co_names:
+        exec(psrc, ns)
+    t = _G["tables"]
+    t["nn_cache_cond"].clear()
+
+
 def d_init(train, cfg_json):
     cfg = json.loads(cfg_json)
+    if cfg.get("ydsc"):
+        sim.SCALE_YDSTOGO = float(cfg["ydsc"])
     if cfg.get("clean"):
         install_clean_clock()
     if cfg.get("tilt"):
@@ -910,6 +926,8 @@ def d_init(train, cfg_json):
         install_chain(P)
     if cfg.get("chain2"):
         install_chain2()
+    if cfg.get("fined"):
+        install_fined(float(cfg["fined"]))
     t["nn_weight_cache_cond"].clear()
 
 
@@ -936,6 +954,9 @@ DV["crg"] = dict(DV["crf"], cal4s=1)
 DV["crh"] = dict(DV["crf"], chain=1)
 DV["cri"] = dict(DV["crg"], chain=1)
 DV["crj"] = dict(DV["crg"], chain2=1)
+DV["crm"] = dict(DV["crj"], fined=1.0)
+DV["crn"] = dict(DV["crj"], ydsc=2.5)
+DV["cro"] = dict(DV["crj"], ydsc=1.25)
 DEC_COND = dict(condition=1, yard_gain=2.0, def_sign=1.0, yard_bias=0.75, avg=1)
 
 
@@ -1190,6 +1211,21 @@ def main():
     cd.add_argument("--variants", default="crw")
     cd.add_argument("--tag", default="e1")
     cd.add_argument("--cache", default="C:/Users/Ryan/AppData/Local/Temp/claude/F--Repos-nfl-py3/f6b7873f-565c-422a-9dee-b6963fcaad49/scratchpad")
+    cv_ = sub.add_parser("covdecomp")
+    cv_.add_argument("--variants", default="crj")
+    cv_.add_argument("--tag", default="k1")
+    cv_.add_argument("--cache", default="C:/Users/Ryan/AppData/Local/Temp/claude/F--Repos-nfl-py3/f6b7873f-565c-422a-9dee-b6963fcaad49/scratchpad")
+    dd_ = sub.add_parser("downdiag")
+    dd_.add_argument("--variants", default="crj")
+    dd_.add_argument("--tag", default="k1")
+    dd_.add_argument("--cache", default="C:/Users/Ryan/AppData/Local/Temp/claude/F--Repos-nfl-py3/f6b7873f-565c-422a-9dee-b6963fcaad49/scratchpad")
+    cs_ = sub.add_parser("covsim")
+    cs_.add_argument("--variants", default="crj@0.9")
+    cs_.add_argument("--worlds", type=int, default=6)
+    cs_.add_argument("--seasons", type=int, default=8)
+    cs_.add_argument("--workers", type=int, default=6)
+    cs_.add_argument("--seed", type=int, default=21)
+    cs_.add_argument("--tag", default="k1")
     for nm in ("grid", "gate"):
         g = sub.add_parser(nm)
         g.add_argument("--variant", default="cr")
@@ -1204,7 +1240,7 @@ def main():
         g.add_argument("--yard-bias", dest="yard_bias", type=float, default=0.75)
         g.add_argument("--tag", default="g1")
     args = ap.parse_args()
-    {"decomp": cmd_decomp, "tilt": cmd_tilt, "ipwcheck": cmd_ipwcheck, "grid": cmd_grid, "gate": cmd_gate, "corrdiag": cmd_corrdiag, "pacediag": cmd_pacediag, "ratediag": cmd_ratediag, "tiltcoef": cmd_tiltcoef, "ablate": cmd_ablate, "pacefit": cmd_pacefit, "simcache": cmd_simcache, "possdiag": cmd_possdiag, "strdiag": cmd_strdiag, "epadiag": cmd_epadiag, "epfit": cmd_epfit, "grid2": cmd_grid2}[args.cmd](args)
+    {"decomp": cmd_decomp, "tilt": cmd_tilt, "ipwcheck": cmd_ipwcheck, "grid": cmd_grid, "gate": cmd_gate, "corrdiag": cmd_corrdiag, "pacediag": cmd_pacediag, "ratediag": cmd_ratediag, "tiltcoef": cmd_tiltcoef, "ablate": cmd_ablate, "pacefit": cmd_pacefit, "simcache": cmd_simcache, "possdiag": cmd_possdiag, "strdiag": cmd_strdiag, "epadiag": cmd_epadiag, "epfit": cmd_epfit, "grid2": cmd_grid2, "covdecomp": cmd_covdecomp, "downdiag": cmd_downdiag, "covsim": cmd_covsim}[args.cmd](args)
 
 
 
@@ -1925,6 +1961,252 @@ def cmd_epadiag(args):
         lines.append(f"{k:28s} " + " ".join(f"{res[n].get(k, float('nan')):11.4f}" for n in res))
     (OUT / f"epadiag_{args.tag}.txt").write_text("\n".join(lines))
     print("\n".join(lines))
+
+
+SCHED_PATH = REPO / "data" / "raw" / "20260915T170343Z" / "schedules.parquet"
+PRECIP_RE = "rain|snow|shower|drizzle|storm|flurr|sleet|wintry|thunder"
+
+
+def side_game_table(P):
+    D, R = drive_table(P)
+    D = D[D["q0"] <= 4]
+    D = D.assign(opp=1 - D["trk"], pts_for=D["pts"], pts_against=D["pdf"])
+    res = {}
+    for t in (0, 1):
+        m = D["trk"] == t
+        a = D[m].groupby("g")
+        b = D[~m].groupby("g")
+        res[t] = pd.DataFrame({"n": a.size(), "secs": a["secs"].sum(), "plays": a["n"].sum(), "pts": a["pts"].sum() + b["pdf"].sum()})
+    G = res[0].join(res[1], lsuffix="A", rsuffix="B", how="inner").fillna(0)
+    return G
+
+
+def trade_stats(G):
+    out = {}
+    out["games"] = int(len(G))
+    for c in ("n", "secs", "plays", "pts"):
+        a, b = G[c + "A"], G[c + "B"]
+        out[f"{c}_mean"] = float((a.mean() + b.mean()) / 2)
+        out[f"{c}_var_team"] = float((a.var() + b.var()) / 2)
+        out[f"{c}_cov_AB"] = float(np.cov(a, b)[0, 1])
+        out[f"{c}_corr_AB"] = float(np.corrcoef(a, b)[0, 1])
+    out["secs_tot_sd"] = float((G["secsA"] + G["secsB"]).std())
+    out["secs_diff_sd"] = float((G["secsA"] - G["secsB"]).std())
+    out["pts_total_sd"] = float((G["ptsA"] + G["ptsB"]).std())
+    out["pts_margin_sd"] = float((G["ptsA"] - G["ptsB"]).std())
+    ppdA = G["ptsA"] / G["nA"].clip(lower=1)
+    ppdB = G["ptsB"] / G["nB"].clip(lower=1)
+    out["ppd_corr_AB"] = float(np.corrcoef(ppdA, ppdB)[0, 1])
+    out["ppd_cov_AB"] = float(np.cov(ppdA, ppdB)[0, 1])
+    out["spp_corr_AB"] = float(np.corrcoef(G["secsA"] / G["playsA"].clip(lower=1), G["secsB"] / G["playsB"].clip(lower=1))[0, 1])
+    return out
+
+
+def real_cond_frame(seasons):
+    sch = pd.read_parquet(SCHED_PATH)
+    sch = sch[(sch["season"].isin(list(seasons))) & (sch["game_type"] == "REG")].copy()
+    fr = []
+    for s in seasons:
+        d = pd.read_parquet(f"{NV_DIR}/pbp_{s}.parquet", columns=["game_id", "season_type", "qtr", "play_type", "penalty", "weather", "posteam", "fixed_drive", "game_seconds_remaining", "drive_time_of_possession"])
+        d = d[d["season_type"] == "REG"]
+        fr.append(d)
+    d = pd.concat(fr, ignore_index=True)
+    pl = d[d["play_type"].isin(["pass", "run", "no_play"])]
+    g = pl.groupby("game_id")
+    rp = d[d["play_type"].isin(["pass", "run"])].groupby("game_id").size()
+    C = pd.DataFrame({"plays": rp, "pen_rate": g["penalty"].mean(), "weather": g["weather"].first()})
+    C = C.join(sch.set_index("game_id")[["season", "week", "home_score", "away_score", "roof", "surface", "temp", "wind", "referee", "home_team", "away_team", "total_line", "spread_line"]], how="inner")
+    C["dome"] = C["roof"].isin(["dome", "closed"]).astype(float)
+    C["turf"] = (~C["surface"].isin(["grass", "dessograss"])).astype(float)
+    C["precip"] = C["weather"].fillna("").str.lower().str.contains(PRECIP_RE).astype(float)
+    outdoor = (C["dome"] == 0)
+    C["wind_o"] = np.where(outdoor, C["wind"].fillna(0), 0.0)
+    C["windy"] = (C["wind_o"] >= 15).astype(float)
+    C["temp_o"] = np.where(outdoor, C["temp"].fillna(C["temp"].median()), 70.0)
+    C["cold"] = (C["temp_o"] <= 32).astype(float)
+    C["hot"] = (C["temp_o"] >= 85).astype(float)
+    C["precip_o"] = C["precip"] * outdoor
+    ref = C.groupby("referee")["pen_rate"].agg(["sum", "count"])
+    r = C["referee"].map(ref["sum"]) - C["pen_rate"]
+    n = C["referee"].map(ref["count"]) - 1
+    mu = C["pen_rate"].mean()
+    C["crew_pen"] = ((r + 8 * mu) / (n + 8)) - mu
+    C["pace_plays"] = C["plays"] - C["plays"].mean()
+    return C.reset_index()
+
+
+COND_GROUPS = {
+    "roof_dome": ["dome"],
+    "surface_turf": ["turf"],
+    "wind": ["wind_o", "windy"],
+    "precip": ["precip_o"],
+    "temp": ["temp_o", "cold", "hot"],
+    "crew_penalty_rate": ["crew_pen"],
+    "game_pace_plays": ["pace_plays"],
+    "env_all": ["dome", "turf", "wind_o", "windy", "precip_o", "temp_o", "cold", "hot", "crew_pen"],
+    "env_all_plus_pace": ["dome", "turf", "wind_o", "windy", "precip_o", "temp_o", "cold", "hot", "crew_pen", "pace_plays"],
+}
+
+
+def crossfit_pred(C, cols, ycol):
+    X = np.column_stack([np.ones(len(C))] + [C[c].to_numpy(float) for c in cols])
+    y = C[ycol].to_numpy(float)
+    pred = np.zeros(len(C))
+    for s in sorted(C["season"].unique()):
+        te = (C["season"] == s).to_numpy()
+        beta = np.linalg.lstsq(X[~te], y[~te], rcond=None)[0]
+        pred[te] = X[te] @ beta
+    return pred
+
+
+def cond_decomp(C):
+    h = C["home_score"].to_numpy(float)
+    a = C["away_score"].to_numpy(float)
+    out = {"games": int(len(C)), "cov_home_away": float(np.cov(h, a)[0, 1]), "var_home": float(h.var(ddof=1)), "var_away": float(a.var(ddof=1)), "sd_total": float((h + a).std()), "sd_margin": float((h - a).std())}
+    rows = {}
+    for nm, cols in COND_GROUPS.items():
+        ph = crossfit_pred(C.assign(y=h), cols, "y")
+        pa = crossfit_pred(C.assign(y=a), cols, "y")
+        pt = crossfit_pred(C.assign(y=h + a), cols, "y")
+        cv = float(np.cov(ph, pa)[0, 1])
+        r2t = float(1 - ((h + a - pt) ** 2).sum() / ((h + a - (h + a).mean()) ** 2).sum())
+        rows[nm] = {"explained_cov": cv, "total_r2_cv": r2t}
+    out["groups"] = rows
+    return out
+
+
+def cond_effects(C):
+    res = {}
+    tot = (C["home_score"] + C["away_score"]).to_numpy(float)
+    for nm, cols in COND_GROUPS.items():
+        if nm in ("env_all", "env_all_plus_pace"):
+            continue
+        X = np.column_stack([np.ones(len(C))] + [C[c].to_numpy(float) for c in cols])
+        b_tot = np.linalg.lstsq(X, tot, rcond=None)[0][1:]
+        b_pl = np.linalg.lstsq(X, C["plays"].to_numpy(float), rcond=None)[0][1:]
+        res[nm] = {"cols": cols, "total_pts": [float(x) for x in b_tot], "plays": [float(x) for x in b_pl]}
+    return res
+
+
+def cmd_covdecomp(args):
+    OUT.mkdir(parents=True, exist_ok=True)
+    res = {}
+    C = real_cond_frame(range(2009, 2018))
+    res["real_cond"] = cond_decomp(C)
+    res["real_effects"] = cond_effects(C)
+    res["real_cond_means"] = {c: float(C[c].mean()) for c in ("dome", "turf", "windy", "precip_o", "cold", "hot", "plays", "pen_rate")}
+    P, M, meta, pbp = real_load(range(2009, 2018))
+    res["real_trade_2009_17"] = trade_stats(side_game_table(P))
+    for nm, ss in (("real_train", TRAIN), ("real_eval", EVAL)):
+        P, M, meta, pbp = real_load(ss)
+        res[f"trade_{nm}"] = trade_stats(side_game_table(P))
+    for v in [x for x in args.variants.split(",") if x]:
+        S = pd.read_parquet(Path(args.cache) / f"sim_{v}.parquet")
+        res[f"trade_{v}"] = trade_stats(side_game_table(S))
+    (OUT / f"covdecomp_{args.tag}.json").write_text(json.dumps(res, indent=1))
+    print(json.dumps(res, indent=1))
+
+
+DB = [0, 1, 2, 4, 7, 10, 100]
+
+
+def down_tables(P):
+    P = P.sort_values("g", kind="stable").reset_index(drop=True)
+    g = P["g"].to_numpy()
+    down = P["down"].to_numpy(float)
+    dist = P["dist"].to_numpy(float)
+    code = P["code"].to_numpy()
+    flip = P["flip"].to_numpy().astype(bool)
+    po = P["po"].to_numpy(float)
+    qtr = P["qtr"].to_numpy()
+    nd = np.r_[down[1:], np.nan]
+    ng = np.r_[g[1:] == g[:-1], False]
+    nd = np.where(ng, nd, np.nan)
+    rush_pass = (code == 0) | (code == 1)
+    out = {}
+    reg = qtr <= 4
+    for dn in (1, 2, 3, 4):
+        m = reg & (down == dn)
+        out[f"share_down{dn}"] = float(m.sum() / (reg & ~np.isnan(down)).sum())
+    for dn in (2, 3, 4):
+        m = reg & (down == dn)
+        b = pd.cut(dist[m], DB, right=True)
+        vc = pd.Series(b).value_counts(normalize=True, sort=False)
+        for k, v in vc.items():
+            out[f"dist_share_d{dn}.{k}"] = float(v)
+        out[f"dist_mean_d{dn}"] = float(dist[m].mean())
+    for dn in (3, 4):
+        m = reg & (down == dn) & rush_pass
+        conv = (po >= 6) | ((nd == 1) & ~flip)
+        b = pd.cut(dist[m], DB, right=True)
+        d = pd.DataFrame({"b": b, "c": conv[m].astype(float)})
+        for k, v in d.groupby("b", observed=True)["c"].agg(["mean", "size"]).iterrows():
+            out[f"conv_d{dn}.{k}"] = float(v["mean"])
+            out[f"n_d{dn}.{k}"] = float(v["size"])
+        out[f"conv_d{dn}_all"] = float(conv[m].mean())
+    m4 = reg & (down == 4) & np.isin(code, [0, 1, 2, 3])
+    for lo, hi, nm in ((0, 2, "le2"), (2, 100, "gt2")):
+        mm = m4 & (dist > lo) & (dist <= hi)
+        out[f"go_rate_d4_{nm}"] = float(np.isin(code[mm], [0, 1]).mean())
+    out["d4_le2_share"] = float((m4 & (dist <= 2)).sum() / m4.sum())
+    m3 = reg & (down == 3) & rush_pass
+    out["d3_next_down4_share"] = float(((nd == 4) & m3).sum() / m3.sum())
+    return out
+
+
+def cmd_downdiag(args):
+    OUT.mkdir(parents=True, exist_ok=True)
+    res = {}
+    P, M, meta, pbp = real_load(TRAIN)
+    res["real_train"] = down_tables(P)
+    P, M, meta, pbp = real_load(EVAL)
+    res["real_eval"] = down_tables(P)
+    for v in [x for x in args.variants.split(",") if x]:
+        S = pd.read_parquet(Path(args.cache) / f"sim_{v}.parquet")
+        res[v] = down_tables(S)
+    (OUT / f"downdiag_{args.tag}.json").write_text(json.dumps(res, indent=1))
+    keys = list(res["real_train"])
+    lines = [f"{'metric':36s} " + " ".join(f"{n:>11s}" for n in res)]
+    for k in keys:
+        lines.append(f"{k:36s} " + " ".join(f"{res[n].get(k, float('nan')):11.4f}" for n in res))
+    (OUT / f"downdiag_{args.tag}.txt").write_text(chr(10).join(lines))
+    print(chr(10).join(lines))
+
+
+def sim_cov_row(games, plays, latents, worlds, seasons):
+    import mod25_generator as gen
+
+    keep = [w * 1000 + s + 1 for w in range(worlds) for s in range(2, seasons)]
+    g = games[games["season"].isin(keep)].copy()
+    h = g["home_score"].to_numpy(float)
+    a = g["away_score"].to_numpy(float)
+    out = {"games": int(len(g)), "cov_home_away": float(np.cov(h, a)[0, 1]), "var_total": float((h + a).var(ddof=1)), "var_margin": float((h - a).var(ddof=1)), "sd_total": float((h + a).std()), "sd_margin": float((h - a).std())}
+    pl = plays[plays["play_type"].isin(["run", "pass"])]
+    n = pl.groupby("game_id").size()
+    g = g.assign(plays=g["game_id"].map(n).to_numpy(float))
+    g["pace_plays"] = g["plays"] - g["plays"].mean()
+    g["hs"], g["as_"] = h, a
+    out["pace_explained_cov"] = float(np.cov(crossfit_pred(g.assign(y=g["hs"]), ["pace_plays"], "y"), crossfit_pred(g.assign(y=g["as_"]), ["pace_plays"], "y"))[0, 1])
+    po = pl.groupby(["game_id", "posteam"]).size().reset_index(name="n")
+    po["r"] = po.groupby("game_id").cumcount()
+    ph = po[po["r"] == 0].set_index("game_id")["n"].reindex(gm.index).to_numpy(float)
+    pa = po[po["r"] == 1].set_index("game_id")["n"].reindex(gm.index).to_numpy(float)
+    out["plays_var_team"] = float((np.nanvar(ph, ddof=1) + np.nanvar(pa, ddof=1)) / 2)
+    ok = ~np.isnan(ph) & ~np.isnan(pa)
+    out["plays_cov_AB"] = float(np.cov(ph[ok], pa[ok])[0, 1])
+    out["plays_diff_sd"] = float((ph[ok] - pa[ok]).std())
+    return out
+
+
+def cmd_covsim(args):
+    res = {}
+    for spec in args.variants.split(","):
+        v, sc = spec.split("@")
+        games, plays, latents = gen_full(v, float(sc), args.worlds, args.seasons, args.workers, args.seed)
+        games.to_parquet(OUT / f"covsim_games_{v}.parquet")
+        res[spec] = sim_cov_row(games, plays, latents, args.worlds, args.seasons)
+        print(spec, json.dumps(res[spec]), flush=True)
+    (OUT / f"covsim_{args.tag}.json").write_text(json.dumps(res, indent=1))
 
 
 if __name__ == "__main__":

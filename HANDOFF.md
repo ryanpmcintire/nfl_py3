@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-02T03:13:12.689468+00:00`
+Refreshed at: `2026-10-02T03:44:39.968820+00:00`
 
 ## Start here
 
@@ -21,7 +21,7 @@ Refreshed at: `2026-10-02T03:13:12.689468+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `61cfce924361` — MOD-25i: sim points decoupled from sampled play EPA (residual var 55 vs 25-31); EPA recomputed from the sim's own state path; predictability gates now pass
+- Baseline commit: `a2cfdf5961fe` — MOD-25j: state-consistent EP model (held-out R2 .98 vs nflverse ep); all four EPA consistency targets match real; excess now anticorrelated team scoring
 - Pending change set: 14 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
