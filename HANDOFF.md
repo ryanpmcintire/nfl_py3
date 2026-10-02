@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-02T05:12:32.082152+00:00`
+Refreshed at: `2026-10-02T15:32:57.966703+00:00`
 
 ## Start here
 
@@ -21,15 +21,29 @@ Refreshed at: `2026-10-02T05:12:32.082152+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `499ad6b67537` — MOD-25: frozen synthetic-distilled challenger logged forward (Week 4: 15 games); Thursday and Sunday jobs exercised
-- Pending change set: 7 paths
+- Baseline commit: `211b0a081373` — MOD-25: roadmap and parent lane state
+- Pending change set: 26 paths
+  - `M  AGENTS.md`
   - `M  ROADMAP.md`
-  - `M  docs/lanes/mod25-synthetic-data.md`
-  - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-04-20261001T211240Z.json`
-  - `?? registry/experiments/opener-evaluation/20261001T211624Z.json`
-  - `?? registry/experiments/waterfall-feed/20261001T211747Z.json`
-  - `?? scripts/mod24_u7a.py`
+  - `A  docs/lanes/mod25e-generator-fidelity.md`
+  - `A  docs/lanes/sim09-urgency-stakes.md`
+  - `A  docs/sim09_personnel_catalogue.md`
+  - `M  scripts/mod25_generator.py`
+  - `M  scripts/mod25d_variance.py`
+  - `A  scripts/mod25e_analysis.py`
+  - `A  scripts/mod25e_budget.py`
+  - `A  scripts/mod25e_clock.py`
+  - `A  scripts/mod25e_deficit.py`
+  - `A  scripts/mod25e_knobs.py`
+  - `A  scripts/mod25e_scorestate.py`
+  - `A  scripts/mod25e_script.py`
+  - `A  scripts/mod25e_ygain.py`
+  - `A  scripts/sim09_dynamics.py`
+  - `A  scripts/sim09_personnel.py`
+  - `A  scripts/sim09_shell.py`
+  - `A  scripts/sim09_stakes.py`
+  - `A  scripts/sim09_units.py`
+  - ...and 6 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

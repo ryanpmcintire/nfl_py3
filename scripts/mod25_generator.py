@@ -327,7 +327,7 @@ def cmd_fit(args):
 ENGINE_SEASONS = tuple(range(2009, 2020))
 SETTING_DEFAULTS = {
     "scale": 1.0, "drift": 1.0, "yard_gain": 0.6425, "def_sign": -1.0, "epa_per_yard": 0.07,
-    "fg_boost": 0.0, "yard_bias": 0.0,
+    "yard_bias": 0.0,
 }
 N_TEAMS = 32
 BYE_WEEKS = (6, 7, 8, 9, 10, 11, 12, 13)
@@ -610,7 +610,7 @@ def judge(metrics, targets):
 
 def parse_setting(args):
     st = dict(SETTING_DEFAULTS)
-    for k in ("scale", "drift", "yard_gain", "def_sign", "epa_per_yard", "fg_boost", "yard_bias"):
+    for k in ("scale", "drift", "yard_gain", "def_sign", "epa_per_yard", "yard_bias"):
         v = getattr(args, k, None)
         if v is not None:
             st[k] = v
@@ -650,7 +650,7 @@ def main():
     g.add_argument("--seasons", type=int, default=4)
     g.add_argument("--workers", type=int, default=3)
     g.add_argument("--seed", type=int, default=11)
-    for k in ("scale", "drift", "yard_gain", "def_sign", "epa_per_yard", "fg_boost", "yard_bias"):
+    for k in ("scale", "drift", "yard_gain", "def_sign", "epa_per_yard", "yard_bias"):
         g.add_argument("--" + k.replace("_", "-"), dest=k, type=float, default=None)
     args = ap.parse_args()
     {"real": cmd_real, "fit": cmd_fit, "gen": cmd_gen}[args.cmd](args)

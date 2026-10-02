@@ -95,6 +95,12 @@ to bolt on.
   leave-one-season-out and score the held-out season. Report in-sample and
   out-of-sample results together with their gap. A constant derived from games
   it is scored on never reaches `src/`.
+- No magic numbers anywhere, scripts included. Every constant in a model or
+  simulator is a named mechanism measured from its own real behaviour, with
+  the measurement cited. Never add a bias, boost, scale or offset to make an
+  output match reality; outputs are checks. An unexplained gap is reported as
+  measured, never filled. A constant found without a derivation is a defect:
+  remove or measure it, and re-run the work that used it.
 - Report calibration with a reliability table and log loss or Brier score
   against market and model-only baselines, not hit rate alone. State combined
   model coefficients per fold and their stability.

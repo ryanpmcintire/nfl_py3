@@ -294,12 +294,13 @@ def d_batch(task):
         rec, _ = ns["run_one_game"](state, t, rng, 600.0, _G["pol"], sim.K_NEIGHBORS, sim.MAX_PLAYS_PER_GAME, hr, ar)
         a = np.array(_G["log"], dtype=np.float64).reshape(-1, 12)
         ix = a[:, 11].astype(np.int64)
-        rows.append(np.column_stack([np.full(len(a), gi), a[:, :11], tov[ix], to_arr[ix], ep[ix], yd[ix]]))
+        pl = np.array(ns["PLAYLOG"], dtype=np.float64).reshape(-1, 3)
+        rows.append(np.column_stack([np.full(len(a), gi), a[:, :11], tov[ix], to_arr[ix], ep[ix], yd[ix], pl[:, 0], pl[:, 2]]))
         margins.append(rec["margin"])
     return seed, np.concatenate(rows), np.array(margins)
 
 
-DCOLN = c25.COLN + ["epa", "yards"]
+DCOLN = c25.COLN + ["epa", "yards", "offhome", "shift"]
 
 
 def run_neutral(variant, games, workers, seed):
@@ -309,6 +310,8 @@ def run_neutral(variant, games, workers, seed):
     cfg = dict(DV[variant], seed=seed)
     if cfg.get("resid"):
         cfg.update(DEC_COND)
+    if "ybias" in cfg:
+        cfg["yard_bias"] = cfg["ybias"]
     per = max(50, games // (workers * 4))
     tasks = [(seed * 100000 + i, per) for i in range((games + per - 1) // per)]
     with mp.get_context("spawn").Pool(workers, initializer=d_init, initargs=(TRAIN, json.dumps(cfg))) as pool:
@@ -879,7 +882,26 @@ def d_init(train, cfg_json):
         install_cal4()
     if cfg.get("cal4s"):
         install_cal4s()
-    c25.c_init(train, cfg_json)
+    if cfg.get("fdnb"):
+        import inspect
+
+        orig_gs = inspect.getsource
+
+        def patched_gs(o):
+            src_ = orig_gs(o)
+            if o is sim.run_one_game:
+                old_ = 'if drawn["auto_first"] or (not drawn["repeat_down"] and gained >= distance):'
+                assert old_ in src_
+                src_ = src_.replace(old_, 'if drawn["auto_first"] or (not drawn["repeat_down"] and (gained >= distance or (down >= 4 and arrays["next_down"][idx] == 1))):')
+            return src_
+
+        inspect.getsource = patched_gs
+        try:
+            c25.c_init(train, cfg_json)
+        finally:
+            inspect.getsource = orig_gs
+    else:
+        c25.c_init(train, cfg_json)
     if cfg.get("pace"):
         install_pace(float(cfg["pace"]), int(cfg.get("seed", 3)))
     if not cfg.get("resid"):
@@ -903,7 +925,7 @@ def d_init(train, cfg_json):
         t["attrs"] = dict(t["attrs"], epa=ep0 - eo - ef, adv=eo + ef)
     if cfg.get("resid") and not cfg.get("tilt"):
         _G["rates"] = rate_defs(trans, c25.attrs_from(pbp, trans))
-    if cfg.get("ipw") or cfg.get("tilt"):
+    if cfg.get("ipw") or cfg.get("tilt") or cfg.get("dkern"):
         import inspect
 
         src = inspect.getsource(sim.pick_index_nn_conditioned)
@@ -919,6 +941,11 @@ def d_init(train, cfg_json):
         if cfg.get("tilt"):
             fit_tilt(cfg, pbp, trans, ns)
             extra += " * np.exp(TILT_T[neighbors] @ (TILT_AO * (off_sim - TILT_LO) + TILT_AD * (def_sim - TILT_LD)))"
+        if cfg.get("dkern"):
+            ns["DISTR"] = trans["dist_raw"].to_numpy(dtype=np.float64)
+            ns["DKH"] = float(cfg["dkern"])
+            ns["DKR"] = float(cfg.get("fined") or sim.ROUND_DIST)
+            extra += " * np.exp(-0.5 * ((DISTR[neighbors] - key[2] * DKR) / (DKH * max(1.0, key[2] * DKR) ** 0.5)) ** 2)"
         ctx = "    RATING_CTX[0] = off_sim\n    RATING_CTX[1] = def_sim\n" if cfg.get("tilt") else ""
         exec(src.replace(old, old + extra).replace(hdr, ctx + hdr), ns)
     if cfg.get("chain"):
@@ -933,7 +960,7 @@ def d_init(train, cfg_json):
 
 def d_gen_init(setting):
     cfg = json.loads(setting["mech"])
-    cfg.update(condition=1, yard_gain=setting["yard_gain"], def_sign=1.0, yard_bias=setting.get("yard_bias", 0.75))
+    cfg.update(condition=1, yard_gain=setting["yard_gain"], def_sign=1.0, yard_bias=cfg.get("ybias", setting.get("yard_bias", 0.75)))
     d_init(TRAIN, json.dumps(cfg))
 
 
@@ -957,6 +984,11 @@ DV["crj"] = dict(DV["crg"], chain2=1)
 DV["crm"] = dict(DV["crj"], fined=1.0)
 DV["crn"] = dict(DV["crj"], ydsc=2.5)
 DV["cro"] = dict(DV["crj"], ydsc=1.25)
+DV["crq0"] = dict(DV["crj"], ybias=0.0)
+for _h in (4, 6, 10, 20):
+    DV[f"crk{_h:02d}"] = dict(DV["crq0"], dkern=_h / 10.0, fined=1.0)
+DV["crf4"] = dict(DV["crk06"], fdnb=1)
+DV["crf4m"] = dict(DV["crf4"])
 DEC_COND = dict(condition=1, yard_gain=2.0, def_sign=1.0, yard_bias=0.75, avg=1)
 
 
