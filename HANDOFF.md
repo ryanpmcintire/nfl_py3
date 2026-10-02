@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-02T05:12:01.933419+00:00`
+Refreshed at: `2026-10-02T05:12:32.082152+00:00`
 
 ## Start here
 
@@ -21,11 +21,10 @@ Refreshed at: `2026-10-02T05:12:01.933419+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `067dd69dba48` — MOD-25 v2 line-move: out-of-season slope positive in 15/15 seasons; distilled side gains +0.38/+0.17 pts of line value vs base +0.05/+0.09
-- Pending change set: 8 paths
-  - `M  docs/lanes/mod25-pipeline.md`
-  - `M  scripts/capture_scheduler.py`
-  - `A  scripts/mod25_forward_q.py`
+- Baseline commit: `499ad6b67537` — MOD-25: frozen synthetic-distilled challenger logged forward (Week 4: 15 games); Thursday and Sunday jobs exercised
+- Pending change set: 7 paths
+  - `M  ROADMAP.md`
+  - `M  docs/lanes/mod25-synthetic-data.md`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-predict/2026-week-04-20261001T211240Z.json`
   - `?? registry/experiments/opener-evaluation/20261001T211624Z.json`

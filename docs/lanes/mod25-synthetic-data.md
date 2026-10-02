@@ -33,7 +33,10 @@ Scoring-level and strength parameters are fitted only to their own real
 targets (points per game, EPA spread), never to the margin shape.
 
 ## Next
-Unit a: generator plus verifier (docs/lanes/mod25a-generator.md).
+State 2026-10-02: generator in docs/lanes/mod25d-variance-source.md (plateau,
+lower-priority noise hunt). Distillation, line-move test and forward log in
+docs/lanes/mod25-pipeline.md. The frozen challenger logs Thu 19:05 / Sun 11:05 through
+Week 18. Score its line value weekly, and its covers after Week 18.
 
 ## Open
 Synthetic residuals can only teach book errors the generator gets right. The
