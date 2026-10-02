@@ -83,6 +83,18 @@ E3 Edge rusher vs tackle (side-specific pressure).
 E4 Play-action vs aggressive run defences (box count, linebacker depth).
 E5 Screens and quick game against the blitz (number of rushers).
 
+## F. Timeouts and penalties (owner 2026-10-02)
+F2 Timeouts: who calls them (offence to save clock, defence to stop it when
+   trailing, icing kickers, avoiding delay), by half x time x score x
+   timeouts left x coach; clock effect; lost challenges.
+F3 Penalties as a mechanism, not inherited from drawn rows: rate by type
+   (false start, holding, DPI, defensive holding, roughing, delay) and state
+   (down, distance, field, score, road crowd, no-huddle, deep throws for
+   DPI); team discipline latent; officiating crew effect (referee
+   assignments on disk); accept or decline decided at the sim's own state;
+   half-the-distance and spot-foul rules at the sim's field position;
+   automatic first downs.
+
 ## Order
 F1 first (everything else conditions on unit latents). Then A3, A4, A5
 (largest drive-outcome levers for the E3 gap), B1, C1, D3, then the rest.
