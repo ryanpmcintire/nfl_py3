@@ -1,8 +1,8 @@
 # NFL ATS predictions: 2026 Week 4
 
-Published from the synchronized weak stack model, 2026-10-01 16:18 UTC.
+Published from the synchronized weak stack model, 2026-10-01 21:21 UTC.
 
-<!-- publication: model_id=a8621cb3f3b86035 published_at_utc=2026-10-01T16:18:06.703360+00:00 -->
+<!-- publication: model_id=c029e2382c11dffe published_at_utc=2026-10-01T21:21:01.756071+00:00 -->
 
 > **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 
@@ -23,11 +23,11 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 | Sun, Oct 04 | IND at WAS | IND -3.5         | 50.8%          |
 | Sun, Oct 04 | JAX at CIN | JAX +2.5         | 53.7%          |
 | Sun, Oct 04 | KC at LV   | KC -4.5          | 50.4%          |
-| Sun, Oct 04 | LAC at SEA | SEA -7.5         | 57.4%          |
-| Sun, Oct 04 | LA at PHI  | LA -2.5          | 52.4%          |
+| Sun, Oct 04 | LAC at SEA | SEA -7.5         | 57.5%          |
+| Sun, Oct 04 | LA at PHI  | LA -2.5          | 52.9%          |
 | Sun, Oct 04 | MIA at MIN | MIN -11.5        | 57.8%          |
 | Sun, Oct 04 | NE at BUF  | NE +6.5          | 50.3%          |
-| Sun, Oct 04 | NYJ at CHI | CHI -3.5         | 55.5%          |
+| Sun, Oct 04 | NYJ at CHI | CHI -3.5         | 55.3%          |
 | Sun, Oct 04 | TEN at BAL | BAL -11.5        | 50.8%          |
 | Mon, Oct 05 | ATL at NO  | ATL +2.5         | 50.2%          |
 
