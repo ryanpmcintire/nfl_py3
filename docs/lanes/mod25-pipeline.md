@@ -20,3 +20,17 @@ Read artifacts/mod25_pipeline/results.json, sign_agreement.json, selection.json 
 
 ## Open
 Weaknesses: (1) generator fails gates (SD, nonstrength variance, R2 late weeks, key-number mass), so prior is of a wrong world; (2) book prices from features only, not latent strength, so synthetic line carries no hidden information a real book has; line SD 4.9 vs 6.0; (3) 23 player columns plus weather/rest/div/cpoe are zero in synthetic, so the prior says nothing there and indicator columns differ; (4) synthetic ypp level about 6.4 vs real about 5.6 (scale shift absorbed by scaler); (5) book offsets use synthetic outcomes; (6) holdout-chunk synthetic R2 not computed in the test run (needs more than one chunk; the full run computes it); (7) lambda grid fixed 8 values, looks counted 8 fixed-lambda cells plus 6 selections; fixed-lambda curve is diagnostic only, not selection; (8) first season of each world is a warmup and dropped from training; (9) rounding of lines to half points but no key-number structure in prices.
+
+## Provisional result 2026-10-01 (measured, orchestrator read; generator not passing gates, nothing recorded)
+Full student run on 104k crp04 games. Shrink strength chosen out of season
+picked the grid's weakest pull (10) in 5 of 6 seasons: 798-705 vs 802-701,
+-0.27 pts, recalibrated log loss -0.00009 (P+ .10). Every stronger pull is
+worse: lambda 100 gives 782-721, lambda 300 gives 780-723. Sign agreement with
+the real ridge: offense 7 of 18 active inputs, experience 0 of 2.
+Inferred design flaw beyond generator fidelity: the synthetic book prices from
+features only, so the synthetic residual (margin minus line) mostly teaches
+that fake book's misspecification, not the real book's errors.
+Redesign for the rerun: use the synthetic world's noiseless labels (latent
+expected margin) to learn features to expected margin, then feed that estimate
+to the real residual model as one fitted term or prior. Don't learn a residual
+against a synthetic book.
