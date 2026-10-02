@@ -190,8 +190,7 @@ def install_u4e():
     del tr
     models = joblib.load(MODELS)
     code_arr = S.code
-    rng2 = np.random.default_rng(int(cfg.get("seed", 3)) * 104729 + os.getpid())
-    st = {"prev": 2, "poss": None, "scr": False}
+    st = {"prev": 2, "poss": None, "scr": False, "key": None, "rng": None}
     q2c = {}
     nh_grid, q2_model = models["nh"], models["q2"]
     q2_classes = q2_model.classes_
@@ -218,6 +217,10 @@ def install_u4e():
 
     def decide(idx, rng, tbl, qtr, clock_val, in_ot, down, distance, yardline, score_diff, off_to, def_to, phase, time_feat):
         idx = dec(idx, rng, tbl, qtr, clock_val, in_ot, down, distance, yardline, score_diff, off_to, def_to, phase, time_feat)
+        if st["key"] != dv._G.get("task_key"):
+            st["key"] = dv._G.get("task_key")
+            st["rng"] = dv.task_rng(4097, cfg.get("seed", 3))
+        rng2 = st["rng"]
         poss = sys._getframe(1).f_locals["possessions"]
         state = st["prev"] if (poss == st["poss"] and st["scr"]) else 2
         dk = down if down in (1, 2, 3, 4) else 4

@@ -87,6 +87,8 @@ E5 Screens and quick game against the blitz (number of rushers).
 F2 Timeouts: who calls them (offence to save clock, defence to stop it when
    trailing, icing kickers, avoiding delay), by half x time x score x
    timeouts left x coach; clock effect; lost challenges.
+   STATUS 2026-10-02: caller-class policy built and validated (sim09_f2.py);
+   coach latent and icing remain open; see lane sim09-urgency-stakes.
 F3 Penalties as a mechanism, not inherited from drawn rows: rate by type
    (false start, holding, DPI, defensive holding, roughing, delay) and state
    (down, distance, field, score, road crowd, no-huddle, deep throws for

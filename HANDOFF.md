@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-02T21:21:22.505334+00:00`
+Refreshed at: `2026-10-02T22:15:25.135729+00:00`
 
 ## Start here
 
@@ -21,17 +21,20 @@ Refreshed at: `2026-10-02T21:21:22.505334+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `798aec4d35dc` — SIM-09/sim-speed: deterministic task seeding, opt-in fast path (init cache, exact EP/4th-down tree evaluators; 4.3x per game, byte-equal on crz), kernel constants from held-out play likelihood, U4 units in progress
-- Pending change set: 22 paths
+- Baseline commit: `0351ee2be18e` — SIM-09: queue timeouts and penalties as simulator mechanisms (owner)
+- Pending change set: 24 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - `M  ROADMAP.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - ` M docs/lanes/sim09-urgency-stakes.md`
+  - `M  docs/lanes/sim09-urgency-stakes.md`
   - ` M docs/model.html`
   - `M  docs/sim09_personnel_catalogue.md`
-  - ` M scripts/sim09_u4e.py`
+  - `A  scripts/sim09_f2.py`
+  - `A  scripts/sim09_f3.py`
+  - `A  scripts/sim09_int.py`
+  - `M  scripts/sim09_u4e.py`
+  - `A  scripts/sim09_u4g.py`
   - ` M tiebreaker.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -40,10 +43,7 @@ Refreshed at: `2026-10-02T21:21:22.505334+00:00`
   - `?? registry/experiments/opener-evaluation/20261001T211624Z.json`
   - `?? registry/experiments/opener-evaluation/20261002T161817Z.json`
   - `?? registry/experiments/waterfall-feed/20261001T211747Z.json`
-  - `?? registry/experiments/waterfall-feed/20261002T162022Z.json`
-  - `?? scripts/_u3d_tmp.py`
-  - `?? scripts/mod24_u7a.py`
-  - ...and 2 more
+  - ...and 4 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
