@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-01T23:44:37.018912+00:00`
+Refreshed at: `2026-10-02T00:44:07.359702+00:00`
 
 ## Start here
 
@@ -21,7 +21,7 @@ Refreshed at: `2026-10-01T23:44:37.018912+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `22d695ec60fe` — MOD-25e: residualized, propensity-balanced play pool; margin SD and autocorrelation now real, R-squared about a third of real
+- Baseline commit: `bb0a54eecdbc` — MOD-25f: clock-artifact rows removed from the play pool, outcome-rate tilts by team; early-season predictability now real, late-game reversion too strong
 - Pending change set: 14 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`

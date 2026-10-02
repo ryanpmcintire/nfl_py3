@@ -64,10 +64,38 @@ def assign_sides(P):
     return side.astype(np.int8), poss
 
 
+SIDE_TRK = False
+
+
+def track_sides(P):
+    g = P["g"].to_numpy()
+    sd = P["sd"].to_numpy(float)
+    d = P["po"].to_numpy(float) - P["pdf"].to_numpy(float)
+    fl = P["flip"].to_numpy().astype(bool)
+    n = len(P)
+    nxt_ok = np.r_[g[1:] == g[:-1], False]
+    s = sd + d
+    nx = np.r_[sd[1:], 0.0]
+    same = nxt_ok & (nx == s) & (nx != -s)
+    opp = nxt_ok & (nx == -s) & (nx != s)
+    rel = np.where(same, 1, np.where(opp, -1, np.where(fl, -1, 1)))
+    sg = np.ones(n, dtype=np.int64)
+    cur = 1
+    for i in range(n - 1):
+        if nxt_ok[i]:
+            cur = cur * rel[i]
+        else:
+            cur = 1
+        sg[i + 1] = cur
+    return np.where(sg == 1, 0, 1).astype(np.int8)
+
+
 def poss_analysis(P, M):
     P = P.sort_values("g", kind="stable").reset_index(drop=True)
     reg = P["qtr"].to_numpy() <= 4
     side, poss = assign_sides(P)
+    if SIDE_TRK:
+        side = track_sides(P)
     P = P.assign(side=side, poss=poss)
     R = P[reg]
     gp = R.groupby("poss", sort=True)
@@ -546,6 +574,24 @@ def install_clean_clock():
     sim._CLEAN_CLOCK = True
 
 
+def install_pace(sigma, seed):
+    import os
+
+    base = _G["pol"]
+    rng = np.random.default_rng(seed * 7919 + os.getpid())
+    st = {"m": 1.0}
+
+    def pol(down, distance, yardline, score_diff, qtr, clock_val, drawn):
+        if qtr == 1 and clock_val >= 3599.5:
+            st["m"] = float(np.exp(sigma * rng.standard_normal() - 0.5 * sigma * sigma))
+        if qtr <= 4 and st["m"] != 1.0:
+            drawn = dict(drawn)
+            drawn["clock_elapsed"] = float(drawn["clock_elapsed"]) * st["m"]
+        return base(down, distance, yardline, score_diff, qtr, clock_val, drawn)
+
+    _G["pol"] = pol
+
+
 def d_init(train, cfg_json):
     cfg = json.loads(cfg_json)
     if cfg.get("clean"):
@@ -553,6 +599,8 @@ def d_init(train, cfg_json):
     if cfg.get("tilt"):
         install_tilt()
     c25.c_init(train, cfg_json)
+    if cfg.get("pace"):
+        install_pace(float(cfg["pace"]), int(cfg.get("seed", 3)))
     if not cfg.get("resid"):
         return
     import mod25_generator as gen
@@ -609,6 +657,10 @@ DV["crw"] = dict(DV["cre"], ipw=1)
 DV["crk"] = dict(DV["crw"], clean=1)
 DV["crt"] = dict(DV["crk"], tilt=1, tilt_file=str(OUT / "tilt_coef.json"))
 DV["crwt"] = dict(DV["crw"], tilt=1)
+for _nm, _drop in (("late", ("late",)), ("fourth", ("fourth",)), ("pat", ("pat",)), ("fine", ("inner", "outer", "stime")), ("ipw", ("ipw",)), ("clean", ("clean",))):
+    DV["crt_no" + _nm] = {k: v for k, v in DV["crt"].items() if k not in _drop}
+for _sg in (4, 8, 12, 16, 20):
+    DV[f"crp{_sg:02d}"] = dict(DV["crt"], pace=_sg / 100.0)
 DEC_COND = dict(condition=1, yard_gain=2.0, def_sign=1.0, yard_bias=0.75, avg=1)
 
 
@@ -761,6 +813,18 @@ def main():
     d.add_argument("--cache", default="C:/Users/Ryan/AppData/Local/Temp/claude/F--Repos-nfl-py3/f6b7873f-565c-422a-9dee-b6963fcaad49/scratchpad")
     sub.add_parser("tilt")
     sub.add_parser("ipwcheck")
+    ab = sub.add_parser("ablate")
+    ab.add_argument("--variants", default="crt")
+    ab.add_argument("--games", type=int, default=12000)
+    ab.add_argument("--workers", type=int, default=6)
+    ab.add_argument("--seed", type=int, default=5)
+    ab.add_argument("--tag", default="h1")
+    ab.add_argument("--cache", default="C:/Users/Ryan/AppData/Local/Temp/claude/F--Repos-nfl-py3/f6b7873f-565c-422a-9dee-b6963fcaad49/scratchpad")
+    pf = sub.add_parser("pacefit")
+    pf.add_argument("--variants", default="crt,crp04,crp08,crp12,crp16")
+    pf.add_argument("--games", type=int, default=6000)
+    pf.add_argument("--workers", type=int, default=6)
+    pf.add_argument("--seed", type=int, default=5)
     tc = sub.add_parser("tiltcoef")
     tc.add_argument("--base", default="crk_s1")
     rd = sub.add_parser("ratediag")
@@ -788,7 +852,7 @@ def main():
         g.add_argument("--yard-bias", dest="yard_bias", type=float, default=0.75)
         g.add_argument("--tag", default="g1")
     args = ap.parse_args()
-    {"decomp": cmd_decomp, "tilt": cmd_tilt, "ipwcheck": cmd_ipwcheck, "grid": cmd_grid, "gate": cmd_gate, "corrdiag": cmd_corrdiag, "pacediag": cmd_pacediag, "ratediag": cmd_ratediag, "tiltcoef": cmd_tiltcoef}[args.cmd](args)
+    {"decomp": cmd_decomp, "tilt": cmd_tilt, "ipwcheck": cmd_ipwcheck, "grid": cmd_grid, "gate": cmd_gate, "corrdiag": cmd_corrdiag, "pacediag": cmd_pacediag, "ratediag": cmd_ratediag, "tiltcoef": cmd_tiltcoef, "ablate": cmd_ablate, "pacefit": cmd_pacefit}[args.cmd](args)
 
 
 
@@ -997,6 +1061,136 @@ def cmd_tiltcoef(args):
     (OUT / "tilt_coef.json").write_text(json.dumps(out, indent=1))
     for nm, v in out.items():
         print(nm, json.dumps({a: round(b, 5) for a, b in v.items()}))
+
+
+REV_T = (2700, 1800, 900, 300)
+
+
+def blup_mu(meta, M, iters=300):
+    d = meta.copy()
+    d["m"] = M.reindex(np.arange(len(meta))).to_numpy()
+    d["h"] = d["season"].astype(str) + "_" + d["home_team"]
+    d["a"] = d["season"].astype(str) + "_" + d["away_team"]
+    teams = pd.Index(sorted(set(d["h"]) | set(d["a"])))
+    n, p = len(d), len(teams)
+    X = np.zeros((n, p))
+    X[np.arange(n), teams.get_indexer(d["h"])] = 1.0
+    X[np.arange(n), teams.get_indexer(d["a"])] -= 1.0
+    X = np.c_[np.ones(n), X]
+    y = d["m"].to_numpy()
+    se2, sa2 = float(y.var()) / 2, 10.0
+    for _ in range(iters):
+        lam = se2 / sa2
+        A = X.T @ X
+        A[1:, 1:] += lam * np.eye(p)
+        Ainv = np.linalg.inv(A)
+        beta = Ainv @ X.T @ y
+        r = y - X @ beta
+        edf = np.trace(X @ Ainv @ X.T)
+        se2_n = float(r @ r) / max(n - edf, 1.0)
+        sa2_n = float((beta[1:] @ beta[1:]) + se2 * np.trace(Ainv[1:, 1:])) / p
+        done = abs(se2_n - se2) < 1e-6 and abs(sa2_n - sa2) < 1e-6
+        se2, sa2 = se2_n, sa2_n
+        if done:
+            break
+    lam = se2 / sa2
+    A = X.T @ X
+    A[1:, 1:] += lam * np.eye(p)
+    Ainv = np.linalg.inv(A)
+    beta = Ainv @ X.T @ y
+    h = np.einsum("ij,jk,ik->i", X, Ainv, X)
+    return (X @ beta - h * y) / (1 - h)
+
+
+def slope_se(x, y):
+    b = np.polyfit(x, y, 1)
+    r = y - np.polyval(b, x)
+    return float(b[0]), float(np.sqrt(r.var(ddof=2) / ((x - x.mean()) ** 2).sum()))
+
+
+def real_reversion(seasons):
+    sim.PBP_SNAPSHOT_DIR = m25.SNAP
+    pbp = sim.load_reg_seasons(tuple(seasons))
+    tr = sim.build_transition_frame(pbp).sort_values(["game_id", "play_id"]).reset_index(drop=True)
+    gid, gids = pd.factorize(tr["game_id"])
+    last = tr.groupby(gid).tail(1)
+    Mall = pd.Series(last["home_margin_post"].to_numpy(), index=gid[last.index.to_numpy()])
+    meta = pbp.drop_duplicates("game_id").set_index("game_id").loc[gids, ["season", "home_team", "away_team"]].reset_index(drop=True)
+    mu = blup_mu(meta, Mall)
+    reg = tr["qtr_actual"].to_numpy() <= 4
+    R = pd.DataFrame({"g": gid[reg], "gsr": tr["gsr_actual"].to_numpy()[reg], "pre": tr["home_margin_pre"].to_numpy()[reg], "post": tr["home_margin_post"].to_numpy()[reg]})
+    fin = R.groupby("g")["post"].last()
+    out = {}
+    for t in REV_T:
+        f = R[R["gsr"] <= t].groupby("g").head(1)
+        gi = f["g"].to_numpy()
+        fut = fin.reindex(gi).to_numpy() - f["pre"].to_numpy()
+        r = f["gsr"].to_numpy() / 3600.0
+        m = mu[gi]
+        b, se = slope_se(f["pre"].to_numpy(), fut)
+        ba, sea = slope_se(f["pre"].to_numpy() - (1 - r) * m, fut - r * m)
+        out[f"t{t}"] = {"raw": b, "raw_se": se, "adj": ba, "adj_se": sea, "n": int(len(f))}
+    return out
+
+
+def sim_reversion(S, MS):
+    r, pk = poss_analysis(S, MS)
+    out = {f"t{t}": r[f"fb_slope_diff_future_t{t}"] for t in REV_T}
+    out["cov_total"] = lag_analysis(pk, S)["cov_total"]
+    return out, r
+
+
+def cmd_ablate(args):
+    global SIDE_TRK
+    SIDE_TRK = True
+    OUT.mkdir(parents=True, exist_ok=True)
+    f = OUT / "ablate_real.json"
+    if f.exists():
+        real = json.loads(f.read_text())
+    else:
+        real = {"train": real_reversion(TRAIN), "eval": real_reversion(EVAL)}
+        f.write_text(json.dumps(real, indent=1))
+    res = {}
+    t0 = time.time()
+    for v in args.variants.split(","):
+        cf = Path(args.cache) / f"sim_{v}.parquet"
+        if cf.exists():
+            S = pd.read_parquet(cf)
+            MS = pd.Series(pd.read_parquet(Path(args.cache) / f"simM_{v}.parquet")["m"].to_numpy())
+        else:
+            S, MS = run_neutral(v, args.games, args.workers, args.seed)
+            S.to_parquet(cf)
+            pd.DataFrame({"m": MS.to_numpy()}).to_parquet(Path(args.cache) / f"simM_{v}.parquet")
+        rv, r = sim_reversion(S, MS)
+        am = np.abs(MS.to_numpy())
+        rv["sd"] = float(MS.std())
+        for k in (3, 7, 10, 14, 17):
+            rv[f"m{k}"] = float(np.mean(am == k))
+        rv["n_games"] = int(len(MS))
+        rv["plays_per_game"] = float(len(S) / len(MS))
+        res[v] = rv
+        print(v, f"{time.time() - t0:.0f}s", json.dumps({k: round(x, 3) for k, x in rv.items()}), flush=True)
+        (OUT / f"ablate_{args.tag}.json").write_text(json.dumps({"real": real, "sim": res}, indent=1))
+    print("real", json.dumps({p: {t: (round(d["raw"], 3), round(d["adj"], 3), round(d["adj_se"], 3)) for t, d in real[p].items()} for p in real}))
+
+
+def cmd_pacefit(args):
+    OUT.mkdir(parents=True, exist_ok=True)
+    res = {}
+    for nm, ss in (("real_train", TRAIN), ("real_eval", EVAL)):
+        P, M, meta, pbp = real_load(ss)
+        r, pk = poss_analysis(P, M)
+        res[nm] = {**pace_blocks(P), **corr_blocks(pk)}
+    for v in args.variants.split(","):
+        S, MS = run_neutral(v, args.games, args.workers, args.seed)
+        r, pk = poss_analysis(S, MS)
+        res["sim_" + v] = {**pace_blocks(S), **corr_blocks(pk)}
+        print(v, flush=True)
+    keys = ["plays_cov_between_qtrs", "plays_sd", "plays_mean", "plays_var_sum_qtrs", "corr_n_pts", "corr_n_secs", "g_el_sum_sd"]
+    print(f"{'key':26s} " + " ".join(f"{n[:11]:>11s}" for n in res))
+    for k in keys:
+        print(f"{k:26s} " + " ".join(f"{res[n][k]:11.3f}" for n in res))
+    (OUT / "pacefit.json").write_text(json.dumps(res, indent=1))
 
 
 if __name__ == "__main__":
