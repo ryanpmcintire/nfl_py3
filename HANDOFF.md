@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-02T23:34:19.895883+00:00`
+Refreshed at: `2026-10-03T00:03:35.831543+00:00`
 
 ## Start here
 
@@ -21,8 +21,8 @@ Refreshed at: `2026-10-02T23:34:19.895883+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `32ad9af40eed` — SIM-09: two-minute warning, timeout caller policy with availability, penalties as a rules-consistent mechanism, stakes in generator (no effect), fatigue state
-- Pending change set: 27 paths
+- Baseline commit: `2844998e4d80` — MOD-25e E9-E15: dual-era gate; points/EPA gains match; offence-defence latent correlation was fitted noise-diluted with the wrong sign, now from cross-lag covariance (strength RE 47.6 -> 55.0 vs 58.0 pool era, late R2 .104 -> .127)
+- Pending change set: 24 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
@@ -30,20 +30,20 @@ Refreshed at: `2026-10-02T23:34:19.895883+00:00`
   - `M  docs/lanes/mod25e-generator-fidelity.md`
   - `M  docs/lanes/sim09-urgency-stakes.md`
   - ` M docs/model.html`
-  - `A  scripts/mod25e_channels.py`
-  - `A  scripts/mod25e_cov.py`
-  - `A  scripts/mod25e_era.py`
-  - `A  scripts/mod25e_gain.py`
-  - `A  scripts/mod25e_r2gap.py`
-  - `A  scripts/mod25e_resid.py`
-  - `A  scripts/mod25e_rz.py`
-  - `M  scripts/sim09_int.py`
-  - `A  scripts/sim09_ladder.py`
+  - `A  scripts/mod25e_env.py`
+  - `A  scripts/mod25e_kstate.py`
+  - `A  scripts/mod25e_revert.py`
+  - `A  scripts/mod25e_revert_sim.py`
+  - `A  scripts/mod25e_xq.py`
+  - `M  scripts/sim09_ladder.py`
   - ` M tiebreaker.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-predict/2026-week-04-20261001T211240Z.json`
-  - ...and 7 more
+  - `?? registry/experiments/margin-predict/2026-week-04-20261002T161446Z.json`
+  - `?? registry/experiments/opener-evaluation/20261001T211624Z.json`
+  - `?? registry/experiments/opener-evaluation/20261002T161817Z.json`
+  - ...and 4 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

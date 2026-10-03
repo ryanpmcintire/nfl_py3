@@ -119,11 +119,20 @@ def main():
     e.add_argument("--seasons", type=int, default=8)
     e.add_argument("--workers", type=int, default=3)
     e.add_argument("--seed", type=int, default=11)
+    s = sub.add_parser("sim")
+    s.add_argument("--variant", required=True)
+    s.add_argument("--out-dir", dest="out_dir", required=True)
+    s.add_argument("--worlds", type=int, default=1)
+    s.add_argument("--seasons", type=int, default=1)
+    s.add_argument("--workers", type=int, default=3)
+    s.add_argument("--seed", type=int, default=21)
     t = sub.add_parser("table")
     t.add_argument("--seeds", default="11,12")
     t.add_argument("--pairs", required=True)
     a = ap.parse_args()
-    if a.cmd == "e5":
+    if a.cmd == "sim":
+        register_int().cmd_sim(a)
+    elif a.cmd == "e5":
         run_e5(a)
     else:
         cmd_table(a)
