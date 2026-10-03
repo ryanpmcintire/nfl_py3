@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-03T18:54:06.825339+00:00`
+Refreshed at: `2026-10-03T19:22:08.944332+00:00`
 
 ## Start here
 
@@ -21,14 +21,18 @@ Refreshed at: `2026-10-03T18:54:06.825339+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `e64e913026a4` — MOD-25e E34-E38: scoring deficit traced to a low league-average offence (backup-QB shock never re-centred); QBC centring flag; draw, state-mix and pick replays
-- Pending change set: 24 paths
+- Baseline commit: `c6891e4c5855` — MOD-25e: backup-QB centring adds +0.66 pts/g (3 seeds); crHpq is the new base
+- Pending change set: 28 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
   - `M  docs/lanes/mod25e-generator-fidelity.md`
   - ` M docs/model.html`
+  - `M  scripts/mod25e_crH.py`
+  - `A  scripts/mod25e_gz.py`
+  - `A  scripts/mod25e_ot.py`
+  - `A  scripts/mod25e_q24.py`
   - ` M tiebreaker.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -39,11 +43,7 @@ Refreshed at: `2026-10-03T18:54:06.825339+00:00`
   - `?? registry/experiments/margin-predict/2026-week-04-20261003T161013Z.json`
   - `?? registry/experiments/margin-predict/2026-week-04-20261003T173930Z.json`
   - `?? registry/experiments/opener-evaluation/20261001T211624Z.json`
-  - `?? registry/experiments/opener-evaluation/20261002T161817Z.json`
-  - `?? registry/experiments/opener-evaluation/20261003T161344Z.json`
-  - `?? registry/experiments/waterfall-feed/20261001T211747Z.json`
-  - `?? registry/experiments/waterfall-feed/20261002T162022Z.json`
-  - ...and 4 more
+  - ...and 8 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
