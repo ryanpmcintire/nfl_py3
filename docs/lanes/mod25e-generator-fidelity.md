@@ -47,7 +47,7 @@ crH (scripts/mod25e_crH.py, I4) is the base: SD 15.31 [14.63], strength RE 55.9 
 - egd HGB is calibrated on real states (E28c); FG only in last 15 s (real .56 vs sim .31-.40); sim trailers reach it with more timeouts/seconds; egto (f2 pick on egd row) did not move FG; reverted. Scripts mod25e_q4.py, mod25e_q4b.py.
 
 ## Results-folder note (orchestrator 2026-10-03)
-mod25e_crH.py e5 wrote e5.json/sim_games/play files under e5_crH_s<seed> for every variant (only events went to the label dir); fixed (label used for variant and dir). e5_crHt_s11-12 now hold the copied EGT results (08:34/08:37 runs). crHh runs were stopped by the orchestrator (owner: machine overloaded); e5_crH_s11-12 still hold the EGT results (duplicated into e5_crHt). To do, ONE run at a time with 3 workers: re-run crH baseline s11-12, then crHh s11-12 (script now names dirs by label).
+mod25e_crH.py e5 wrote e5.json/sim_games/play files under e5_crH_s<seed> for every variant (only events went to the label dir); fixed (label used for variant and dir). e5_crHt_s11-12 now hold the copied EGT results (08:34/08:37 runs). crHh runs were stopped by the orchestrator (owner: machine overloaded); e5_crH_s11-12 still hold the EGT results (duplicated into e5_crHt). To do, ONE run at a time with 3 workers: re-run crH baseline s11-12, then crHh s11-12 (script now names dirs by label), then crHp s11-12 (EGT=1 EGH=1 F2PR=1; compare E32 timeouts left 60/30/15 s, E31 last-30-s FG share, era table ERA_VARIANTS=crH,crHh,crHp).
 
 ## E28d
 Orchestrator 2026-10-03: crH baseline s11/s12 re-run (EGT unset) into artifacts/mod25e3/e5_crH_s11-12; the overwritten EGT runs are copied to e5_crHt_s11-12. (window timeout fix; EGT=1 -> eg mode 3; scripts/mod25e_to.py, artifacts/mod25e3/to; measured)
@@ -69,3 +69,21 @@ Orchestrator 2026-10-03: crH baseline s11/s12 re-run (EGT unset) into artifacts/
 ## Next / Open
 Next: E27 inferred mechanism build (urgency-state Q4 drive model), strength-comp check; rerun e5 era gate. Open: owner decision which clock; pool-era 20-look reads need leave-season-out confirmation.
 - E29 note: crHt e5 s11/s12 had no e5.json/sim_games (event dirs only); rerun with --workers 2 was killed unfinished at ~45 min (cap); era scoring of crHt still pending, crH 3-seed era in crH/era.log and era_crHt/era.txt (crHt n=0).
+
+## E31 (last-30 s FG state composition; scripts/mod25e_fg30.py, cmd_end; measured on q4 log2/log3 down 1-3, Q4 trail 0-3, yl<=40, hs<=30)
+- FG share real .315 vs sim .17-.19; egd clf on real states .321, on sim states .183-.184, sim empirical .173-.187: composition -.137/-.139, decision -.009..+.002 (decision is faithful).
+- Composition: snaps in last 6 s share .29 vs .13-.14; offence timeouts held 1.09-1.28 vs .59 (.55-.73 sd), hs mean 16.6 vs 13.9; with offence timeouts FG .19 real, no timeouts .42 real (sim .23-.27). Sim last window snap gsr 12.9 vs 9.1 real.
+- FG execution near 0:00 is fine: sim gsr<=2 FG .74 vs .82 real, (2,6] .71 vs .85; no clock-out or half-end blocking (el never exceeds gsr).
+- Fix for later unit: sim trailers carry unspent offence timeouts into the last 30 s (E28d .70 vs .41): trace timeout use in the 30-120 s hurry-up (post-completion/OOB stops), not the FG decision.
+
+## E32 (timeout spending 30-120 s, Q4 trail/tied offence; scripts/mod25e_tospend.py, snaps code 0/1 down<=4 with a prior play in Q4; real 2009-17 vs crH play6, crHh play_h; measured)
+- crH play6 predates gating (phantom calls at 0 left .04-.05); crHt e5 play files lack idx/yards/otu so cannot be scored (logger needs idx, s_otu, s_dtu, yards, oto, dto, prev-stop).
+- Per-snap call rate real .084 vs crHh .079 overall; by clock: (30,45] .252 vs .266, (45,60] .181 vs .191, (60,90] .142 vs .118, (90,120] .070 vs .055; prev play clock running (el<=13 incl.), oto>0: .150 vs .120.
+- Timeouts left at 60/30/15 s (first trailing Q4 snap): real .84/.57/.41, crH 1.07/.99/.93, crHh .93/.75/.64.
+- f2 reads stop of the drawn row's OWN outcome (feats col stop, sim09_f2.py:196; stop array excludes el<=cut in crHh), not the previous play's running clock; sim hurry-up stop logic never reaches f2. Cause: calls after running clock in 60-120 s under-spent ~20%, compounding. Fix: refit f2 with previous-play clock-running (derived cut) fed from sim state, leave-season-out.
+
+## E33 (f2 timeout model with previous-play clock state; scripts/mod25e_f2pr.py fit; F2PR=1 flag, variant label crHp; measured)
+- Input prun = previous play in same half left the clock running (not stop_after incl. el<=cut; cut 14.0 derived on window rows); same function real and sim (sim reads log[-1] and PLAYLOG[-1]). Model artifacts/sim09/f2/policy_pr.joblib (+json cut); old policy.joblib untouched.
+- LOSO 2009-17 4-class log loss .17438 -> .17406 (9 of 9 seasons lower). Q4 30-120 s, oto>0, trail/tied, prev running: real .1416, old .1214, new .1286 (n 1963); prev stopped .1205/.1203/.1158. Closes about a third of the gap.
+- Logger (mod25e_scorestate e5): adds idx, yards, lo_otu, lo_dtu, oto, dto, pstop. 1x1 smoke: flag off equals crHh baseline (events, sim_games True); flag on runs and differs; e5 1x1 wrote play file with new columns.
+- Full check: EGT=1 EGH=1 F2PR=1 SIM_FAST=1 mod25e_crH.py e5 --seed 11 / 12 (dirs e5_crHp_s11-12); compare E32 left at 60/30/15 (real .84/.57/.41), E31 FG share last 30 s (.315), era table.

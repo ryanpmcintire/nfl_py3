@@ -332,10 +332,14 @@ def s_play_season(task):
     frames = []
     for gi, (lg, pl, tot, mar) in enumerate(CAP["rows"]):
         n = min(len(lg), len(pl))
-        frames.append(np.column_stack([np.full(n, gi), lg[:n, :11], pl[:n, 0], np.full(n, tot), np.full(n, mar)]))
-    cols = ["g", "down", "dist", "yl", "sd", "gsr", "qtr", "code", "po", "pdf", "flip", "el", "offhome", "total", "margin"]
+        frames.append(np.column_stack([np.full(n, gi), lg[:n, :11], pl[:n, 0], np.full(n, tot), np.full(n, mar), pl[:n, 1], pl[:n, 2]]))
+    cols = ["g", "down", "dist", "yl", "sd", "gsr", "qtr", "code", "po", "pdf", "flip", "el", "offhome", "total", "margin", "idx", "ysh"]
     outd = Path(dv._G["cfg"]["outdir"])
-    pd.DataFrame(np.concatenate(frames), columns=cols).to_parquet(outd / f"play_{world}_{sidx}.parquet")
+    import mod25e_f2pr as prm
+
+    pdf_ = pd.DataFrame(np.concatenate(frames), columns=cols)
+    pdf_ = prm.extra_fields(pdf_.drop(columns=["ysh"]), pdf_["ysh"].to_numpy(), dv._G["tables"]["arrays"]["yards_gained"])
+    pdf_.to_parquet(outd / f"play_{world}_{sidx}.parquet")
     return res
 
 

@@ -66,7 +66,7 @@ def cmd_e5(a):
 
     install()
     crG.register(a.off)
-    label = "crHh" if os.environ.get("EGH") == "1" and os.environ.get("EGT") == "1" else ("crHt" if os.environ.get("EGT") == "1" else "crH")
+    label = "crHp" if os.environ.get("F2PR") == "1" and os.environ.get("EGH") == "1" and os.environ.get("EGT") == "1" else "crHh" if os.environ.get("EGH") == "1" and os.environ.get("EGT") == "1" else ("crHt" if os.environ.get("EGT") == "1" else "crH")
     dv.DV[label] = dict(dv.DV["crG"])
     outd = ss.OUT / f"e5_{label}_s{a.seed}"
     outd.mkdir(parents=True, exist_ok=True)

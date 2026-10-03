@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-03T13:06:45.579366+00:00`
+Refreshed at: `2026-10-03T13:30:02.034887+00:00`
 
 ## Start here
 
@@ -21,8 +21,8 @@ Refreshed at: `2026-10-03T13:06:45.579366+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `aca48c4d2b15` — MOD-25e E29/E30: late trailer gap is within-state hurry-up play; clock-stop inference for spikes from the elapsed-time valley (crHh); real late drive points made regulation-only
-- Pending change set: 18 paths
+- Baseline commit: `b3fa2b3b37cc` — MOD-25e: e5 results now saved under each variant's own label (were overwriting crH)
+- Pending change set: 23 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
@@ -30,6 +30,11 @@ Refreshed at: `2026-10-03T13:06:45.579366+00:00`
   - `M  docs/lanes/mod25e-generator-fidelity.md`
   - ` M docs/model.html`
   - `M  scripts/mod25e_crH.py`
+  - `A  scripts/mod25e_f2pr.py`
+  - `A  scripts/mod25e_fg30.py`
+  - `M  scripts/mod25e_scorestate.py`
+  - `A  scripts/mod25e_tospend.py`
+  - `M  scripts/sim09_f2.py`
   - ` M tiebreaker.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -38,9 +43,7 @@ Refreshed at: `2026-10-03T13:06:45.579366+00:00`
   - `?? registry/experiments/opener-evaluation/20261001T211624Z.json`
   - `?? registry/experiments/opener-evaluation/20261002T161817Z.json`
   - `?? registry/experiments/waterfall-feed/20261001T211747Z.json`
-  - `?? registry/experiments/waterfall-feed/20261002T162022Z.json`
-  - `?? scripts/_u3d_tmp.py`
-  - `?? scripts/mod24_u7a.py`
+  - ...and 3 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

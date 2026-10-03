@@ -1,5 +1,6 @@
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -311,7 +312,14 @@ def install_f2():
     sim = dv.sim
     ns = dv._G["ns"]
     orig = ns["DECIDE"]
-    fg = sim_fast.FastGBM(joblib.load(OUT / "policy.joblib"))
+    prm = None
+    if os.environ.get("F2PR") == "1":
+        import mod25e_f2pr as prm
+
+        fg = sim_fast.FastGBM(joblib.load(prm.MODEL))
+        pcut = float(json.loads(prm.META.read_text())["cut"])
+    else:
+        fg = sim_fast.FastGBM(joblib.load(OUT / "policy.joblib"))
     sim.PBP_SNAPSHOT_DIR = dv.m25.SNAP
     pbp = sim.load_reg_seasons(tuple(dv.TRAIN))
     tr = sim.build_transition_frame(pbp)
@@ -323,6 +331,7 @@ def install_f2():
     stop = ((pen == 1) | ((code == 1) & (tr["yards_gained"].to_numpy() == 0)) | ((tr["points_off"].to_numpy() + tr["points_def"].to_numpy()) > 0) | tr["possession_flip"].to_numpy().astype(bool)).astype(int)
     cls = (tr["off_to_used"].to_numpy() > 0).astype(int) + 2 * (tr["def_to_used"].to_numpy() > 0).astype(int)
     tov = np.asarray(dv._G["tables"]["attrs"]["tov"]).astype(int)
+    yards_all = tr["yards_gained"].to_numpy()
     down_arr = tr["down_i"].to_numpy()
     phase_arr = tr["phase"].to_numpy()
     fm = sim.feature_matrix(tr["dist_raw"].to_numpy(), tr["fp_raw"].to_numpy(), tr["sc_raw"].to_numpy(), tr["time_raw"].to_numpy(), tr["off_to_raw"].to_numpy(), tr["def_to_raw"].to_numpy(), phase_arr)
@@ -361,6 +370,8 @@ def install_f2():
         r = st["rng"]
         dk = down if down in (1, 2, 3, 4) else 4
         x = feats(np.array([dk]), np.array([distance]), np.array([yardline]), np.array([score_diff]), np.array([clock_val]), np.array([5 if in_ot else qtr]), np.array([int(code[idx])]), np.array([off_to]), np.array([def_to]), np.array([stop[idx]]))[0]
+        if prm is not None:
+            x = np.append(x, prm.sim_prevrun(dv._G["log"], ns["PLAYLOG"], 5 if in_ot else qtr, pcut, yards_all, cls))
         raw = fg.raw(x)
         pr = np.exp(raw - raw.max())
         pr = pr / pr.sum()
