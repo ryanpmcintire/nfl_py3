@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-03T04:21:08.967082+00:00`
+Refreshed at: `2026-10-03T06:41:48.799330+00:00`
 
 ## Start here
 
@@ -21,17 +21,15 @@ Refreshed at: `2026-10-03T04:21:08.967082+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `48d8e4ddc9a1` — MOD-25e E21b/E24: EPA-level strength tilt matches passthrough by down; two-minute clock redraw (cross-quarter cov +8.2 -> -1.1, Q4 slope -.056 vs real -.060)
-- Pending change set: 20 paths
+- Baseline commit: `6e1da72415ec` — MOD-25e E25/E26: faithful two-minute clock and late decision model (drl lead-carry gain was a logging artifact); timeout pick strength fix; composite crG
+- Pending change set: 18 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
   - `M  docs/lanes/mod25e-generator-fidelity.md`
   - ` M docs/model.html`
-  - `A  scripts/mod25e_crG.py`
-  - `A  scripts/mod25e_endgame.py`
-  - `A  scripts/mod25e_rulestr.py`
+  - `A  scripts/mod25e_crH.py`
   - ` M tiebreaker.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`

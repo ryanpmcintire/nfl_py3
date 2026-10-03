@@ -84,6 +84,7 @@ artifacts/mod25e/budget.txt, deficit_e4*; artifacts/mod25e3/.
 ## E24 (two-minute drill anatomy + clock redraw; scripts/mod25e_drill.py an|sim|e5|val, artifacts/mod25e3/drill/{an.txt,val_*/,drill_era/}; variant drl = f2 + dr)
 - Measured (an.txt, Q4 gsr<=300 offence tied/trail<=8): snaps/game match (5.47 real vs 5.23 sim), but clock use in the last 45 s does not: mean el [0,8) 3.3 real vs 9.3 sim, [8,15) 6.2 vs 9.4, [15,45) 8.5 vs 10.0; share of snaps whose el exceeds time left 0 real vs .69/.28/.07 (kNN time axis is 15 s coarse vs the state; neighbours carry el from earlier clock). Kneel [0,8) .046 vs .109, spike [0,8) .098 vs .068. OOB, pass depth, sideline are NOT in the pbp snapshot (56 columns): unmeasurable.
 - Built drl: in the 2-min window (Q4 <=120, Q2 (1800,1920]) redraw el from real 2009-17 rows of same half/code/stop/timeout-used class, kernel on gsr, score, off/def timeouts>0 (sd-standardised, sqrt(n) nearest), el=min(el, time left). dr=0 byte-equal to f2 1x1 SIM_FAST (41282 rows both); dr=1 differs.
+- NOTE E25: drl's lead-carry gain (xq -1.1, slope -.056) was an artifact of the pre-base el cap.
 - Chain done (val_drl, val_f2, e5 s11/s12, artifacts/mod25e3/drill_era/era.txt). drl el [0,8) 0.8 s (real 3.3; f2 8.8), over-time share .172/.114/.028 for [0,8)/[8,15)/[15,45) vs real 0 (f2 .672/.291/.077); kneel [0,8) .107 vs .046, spike .103 vs .098; drives <60s end-share .391 vs .418 (f2 .641), td .044 vs .142; FG gsr<15 downs 2-3 .572/.468 vs .705/.703 real: decision gap remains. Era (2 seeds): drl pts_game 43.5 vs crzhc 42.5, f2 43.0 (pool 45.2); strength_re 46.6 vs 55.0/47.5 (pool 58.0); xq_cov -1.1 vs 8.2/5.0 (pool -6.4); q4_slope -.056 (pool -.060).
 
 ## E21 (state-dependent passthrough; scripts/mod25e_pass.py real|an|fit|sim|e5, artifacts/mod25e3/pass/{real.txt,pass.json,pv/pass_an.txt}; crzhc + pick-weight tilt multiplier m, null byte-equal 1x1)
@@ -110,5 +111,11 @@ artifacts/mod25e/budget.txt, deficit_e4*; artifacts/mod25e3/.
 ## I3 (crG composition; scripts/mod25e_crG.py sim|e5|ref|cmp --off f2,dr,f3,epa; artifacts/mod25e3/crG/, crG_era/era.txt)
 - crG = crzhc generator + u4g + f2 + dr + f3 (EP accept) + EPA tilt m=.03; order drl chain -> pass.run_init -> f3_install. Null byte-equal 1x1 SIM_FAST seed 31: f2-only vs f2 ref, f3-only vs crzf3 ref, epa-only vs pass crzhp: all equal.
 - f3 cannot use u3 play frames (assert kept==plays), so sim for val/an runs crG minus f3 (play_nof3, 2x8); e5 includes f3.
+- (E25: drl's xq/slope gain below was an artifact of the pre-base el cap, not fidelity.)
 - e5 3 seeds vs crzhc/drl/pool: SD 15.14/15.26/15.08 (14.63); strength RE 50.4/55.0/46.6 (58.0); noise 178.6/178.1/181.1 (165.0); late r2 .119/.127/.103 (.146); xq +0.19 (vs +8.2/-1.1, pool -6.4); q4 slope -.056/-.037/-.056 (-.060); drives 23.6/22.8/23.6 (22.7); pts 43.4/42.5/43.5 (45.2); mass3 .117/.117/.115 (.141).
 - Drill (nof3): el [0,8) 0.8 s (real 3.3), el>gsr .173/.129/.026; passthrough b0 .774 b1 -.207 (pool .776/-.206), downs .43/.64/1.13/1.29 vs .45/.67/1.03/1.76.
+
+## I4 (crH = crzhc + u4g + f2 weighted pick (crW) + f3 + egd + EPA m=.03; scripts/mod25e_crH.py sim|e5|ref --off f2,eg,w,f3,epa; artifacts/mod25e3/crH/{null.txt,el_crH.txt,chain.sh}, crH_era/era.txt)
+- Null modes byte-equal 1x1 SIM_FAST seed 31 (5/5): f2-only, egd-only, W-only, f3-only, epa-only vs their refs. Clock (nof3, 2x8): el by gsr band 3.30/6.77/9.48/12.28 vs real 3.42/6.21/8.47/12.20, over-time share 0.
+- e5 (crH 3 seeds; crzhc, egd 2): SD 15.31/15.26/15.14 (pool 14.63); strength RE 55.9/55.0/47.6 (58.0); noise 178.6/178.1/181.9 (165.0); late r2 .131/.127/.106 (.146); xq +10.2/+8.2/+3.7 (-6.4); Q4 slope -.032/-.037/-.039 (-.060); drives 22.95/22.82/22.95 (22.67); pts 42.6/42.5/42.7 (45.2); mass3 .116/.117/.112 (.141).
+- Read: strength RE kept (W fix works with egd+f3), clock fidelity holds, but xq cov and Q4 slope get no better than crzhc: late carry still needs a mechanism other than el.
