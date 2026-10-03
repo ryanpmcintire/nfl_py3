@@ -56,6 +56,10 @@ crH / crHh / crHp vs pool: noise 178.2/176.0/175.2 (165); xq +8.6/+5.2/+5.4 (-6.
 
 QBC 3-seed (artifacts/mod25e3/qbc_era/era.txt): crHpq vs crHp: pts/g 43.31 vs 42.65 (pool 45.21; ~0.8 of the remaining gap is OT and return points per E34), strength 55.5 vs 55.1, noise 179.0 vs 177.6, xq +7.2 vs +8.3, drives 22.84 vs 22.94. Keep QBC (centring by construction). New base: crHpq (env EGT=1 EGH=1 F2PR=1 QBC=1).
 
+GZ 3-seed (artifacts/mod25e3/gz_era/era.txt): crHpqg vs crHpq: pts/g 44.04 vs 43.31 (pool 45.21), strength 56.3 vs 55.5, noise 182.3 vs 179.0 (165), margin SD 15.46 vs 15.32, xq +7.0 vs +7.2, late R2 .122 vs .130. Clip-to-the-1 removal is rule-correct and adds points but raises noise: the clip was hiding variance. Keep GZ. All-fixes chain crHpqokg (OTY=2009-2017 KICK=1 GZ=1) running.
+
+ALL-FIXES 3-seed (artifacts/mod25e3/all_era/era.txt): crHpqokg (env EGT=1 EGH=1 F2PR=1 QBC=1 GZ=1 OTY=2009-2017 KICK=1) is the NEW BASE: pts/g 44.38 (pool 45.21), strength 56.4 (58.0), noise 179.0 (165), margin SD 15.34 (14.63), xq +5.2 (-6.4), Q4 slope -.047 (-.060), late R2 .128 (.146), drives 22.90 (22.67), mass3 .123 (.141, check only). Remaining core gap: noise +14 and lead carry.
+
 ## E28d
 Orchestrator 2026-10-03: crH baseline s11/s12 re-run (EGT unset) into artifacts/mod25e3/e5_crH_s11-12; the overwritten EGT runs are copied to e5_crHt_s11-12. (window timeout fix; EGT=1 -> eg mode 3; scripts/mod25e_to.py, artifacts/mod25e3/to; measured)
 - Cause: egd window rows (downs 1-3) carry the drawn real row's timeout flag with no availability gate and no sim-state conditioning (phantom off calls with 0 left: .05-.13/snap; trailer timeouts left at 15 s .94 vs .41 real; Q2 final-60 off calls .15 vs .22).
