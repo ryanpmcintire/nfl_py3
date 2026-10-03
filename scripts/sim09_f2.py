@@ -354,17 +354,13 @@ def install_f2():
             return int(nb[rng.integers(len(nb))])
         return None
 
-    def wrap(idx, rng, tbl, qtr, clock_val, in_ot, down, distance, yardline, score_diff, off_to, def_to, phase, time_feat):
-        idx = orig(idx, rng, tbl, qtr, clock_val, in_ot, down, distance, yardline, score_diff, off_to, def_to, phase, time_feat)
-        c0 = int(code[idx])
-        if c0 not in (0, 1):
-            return idx
+    def ctdraw(idx, qtr, clock_val, in_ot, down, distance, yardline, score_diff, off_to, def_to):
         if st["k"] != dv._G.get("task_key"):
             st["k"] = dv._G.get("task_key")
             st["rng"] = dv.task_rng(SALT, cseed)
         r = st["rng"]
         dk = down if down in (1, 2, 3, 4) else 4
-        x = feats(np.array([dk]), np.array([distance]), np.array([yardline]), np.array([score_diff]), np.array([clock_val]), np.array([5 if in_ot else qtr]), np.array([c0]), np.array([off_to]), np.array([def_to]), np.array([stop[idx]]))[0]
+        x = feats(np.array([dk]), np.array([distance]), np.array([yardline]), np.array([score_diff]), np.array([clock_val]), np.array([5 if in_ot else qtr]), np.array([int(code[idx])]), np.array([off_to]), np.array([def_to]), np.array([stop[idx]]))[0]
         raw = fg.raw(x)
         pr = np.exp(raw - raw.max())
         pr = pr / pr.sum()
@@ -376,8 +372,15 @@ def install_f2():
             pr[0] += pr[2]
             pr[1] += pr[3]
             pr[2] = pr[3] = 0.0
-        ct = int(np.searchsorted(np.cumsum(pr), r.random(), side="right"))
-        ct = min(ct, 3)
+        return min(int(np.searchsorted(np.cumsum(pr), r.random(), side="right")), 3)
+
+    def tostep(idx, qtr, clock_val, in_ot, down, distance, yardline, score_diff, off_to, def_to, phase, time_feat):
+        c0 = int(code[idx])
+        if c0 not in (0, 1):
+            return idx
+        ct = ctdraw(idx, qtr, clock_val, in_ot, down, distance, yardline, score_diff, off_to, def_to)
+        r = st["rng"]
+        dk = down if down in (1, 2, 3, 4) else 4
         if ct == cls[idx]:
             return idx
         args = (dk, phase, c0, int(stop[idx]), int(tov[idx]))
@@ -386,6 +389,11 @@ def install_f2():
             j = pick(r, *args, 0, distance, yardline, score_diff, time_feat, off_to, def_to)
         return idx if j is None else j
 
+    def wrap(idx, rng, tbl, qtr, clock_val, in_ot, down, distance, yardline, score_diff, off_to, def_to, phase, time_feat):
+        idx = orig(idx, rng, tbl, qtr, clock_val, in_ot, down, distance, yardline, score_diff, off_to, def_to, phase, time_feat)
+        return tostep(idx, qtr, clock_val, in_ot, down, distance, yardline, score_diff, off_to, def_to, phase, time_feat)
+
+    dv._G["f2h"] = {"ctdraw": ctdraw, "tostep": tostep, "cls": cls, "stop": stop, "code": code}
     ns["DECIDE"] = wrap
 
 

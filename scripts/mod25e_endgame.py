@@ -206,6 +206,40 @@ def install_eg():
             near = sel[np.argpartition(d, k - 1)[:k]]
             return int(Lpos[int(near[int(rng.integers(0, len(near)))])])
 
+    def rerow_ct(rng, dk, c, q, ct, sp, dist, yl, sd, hs):
+        h = dv._G["f2h"]
+        lc = h["cls"][Lpos]
+        ls = h["stop"][Lpos]
+        base_m = (Ld == dk) & (Lc == c) & (lc == ct) & (ls == sp)
+        sel = np.flatnonzero(base_m & (Lq == q))
+        if len(sel) < dr.MIN_POOL:
+            sel = np.flatnonzero(base_m)
+        if len(sel) < dr.MIN_POOL:
+            sel = np.flatnonzero((Ld == dk) & (Lc == c) & (lc == ct))
+        if not len(sel):
+            return None
+        qv = np.array([dist, yl, min(max(sd, -24.0), 24.0), hs]) / psd
+        d = ((Pz[sel] - qv) ** 2).sum(axis=1)
+        k = max(int(np.sqrt(len(sel))), 1)
+        near = sel[np.argpartition(d, k - 1)[:k]]
+        return int(Lpos[int(near[int(rng.integers(0, len(near)))])])
+
+    def tofix(r, qtr, clock_val, in_ot, down, distance, yardline, score_diff, off_to, def_to, hs):
+        h = dv._G["f2h"]
+        c = int(h["code"][r])
+        cl = int(h["cls"][r])
+        if c in (0, 1):
+            ct = h["ctdraw"](r, qtr, clock_val, in_ot, down, distance, yardline, score_diff, off_to, def_to)
+        else:
+            ct = (cl & 1 if off_to > 0 else 0) + (cl & 2 if def_to > 0 else 0)
+        if ct == cl:
+            return r
+        for t in ((ct, 0) if ct else (0,)):
+            j = rerow_ct(st["rng2"], down, c, qtr, t, int(h["stop"][r]), distance, yardline, score_diff, hs)
+            if j is not None:
+                return j
+        return r
+
     def reset(k):
         if st["k"] != k:
             st["k"] = k
@@ -222,6 +256,7 @@ def install_eg():
                 return idx
             hs = clock_val - 1800.0 if qtr == 2 else clock_val
             ps = st["ps"][1] if (st["ps"][0] is not None and abs(st["ps"][0] - clock_val) < 1e-6) else 1.0
+            dv._G["egps"] = (ps, None if st["ps"][0] is None else float(st["ps"][0] - clock_val))
             f = dec_feats(np.array([down]), np.array([distance]), np.array([yardline]), np.array([score_diff]), np.array([clock_val]), np.array([hs]), np.array([float(qtr == 4)]), np.array([off_to]), np.array([def_to]), np.array([ps]))
             key = tuple(np.round(f[0], 1))
             pr = cache.get(key)
@@ -230,9 +265,13 @@ def install_eg():
                 cache[key] = pr
             c = min(int(np.searchsorted(np.cumsum(pr), st["rng2"].random() * pr.sum())), len(pr) - 1)
             if c == CLS.get(code0, -1):
-                return idx
-            j = rerow(st["rng2"], down, CODE_OF[c], qtr, distance, yardline, score_diff, hs)
-            return idx if j is None else j
+                r = idx
+            else:
+                j = rerow(st["rng2"], down, CODE_OF[c], qtr, distance, yardline, score_diff, hs)
+                r = idx if j is None else j
+            if mode >= 3:
+                r = tofix(r, qtr, clock_val, in_ot, down, distance, yardline, score_diff, off_to, def_to, hs)
+            return r
         return dec(idx, rng, tbl, qtr, clock_val, in_ot, down, distance, yardline, score_diff, off_to, def_to, *rest)
 
     ns["DECIDE"] = decide
