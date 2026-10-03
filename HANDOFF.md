@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-03T01:18:07.992948+00:00`
+Refreshed at: `2026-10-03T01:46:09.831005+00:00`
 
 ## Start here
 
@@ -21,15 +21,18 @@ Refreshed at: `2026-10-03T01:18:07.992948+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `caa9e1fa5db0` — SIM-09/MOD-25e: one-at-a-time ladder, leader reversion and drive-sequence decompositions (shared game environment missing)
-- Pending change set: 22 paths
-  - `M  AGENTS.md`
+- Baseline commit: `3740599c2e1f` — AGENTS.md: kill only own processes by PID or command line, never by image name
+- Pending change set: 21 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - ` M docs/lanes/mod25e-generator-fidelity.md`
+  - `M  docs/lanes/mod25e-generator-fidelity.md`
   - ` M docs/model.html`
+  - `A  scripts/mod25e_drill.py`
+  - `A  scripts/mod25e_kick.py`
+  - `A  scripts/mod25e_late.py`
+  - `A  scripts/mod25e_pass.py`
   - ` M tiebreaker.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -40,10 +43,7 @@ Refreshed at: `2026-10-03T01:18:07.992948+00:00`
   - `?? registry/experiments/waterfall-feed/20261001T211747Z.json`
   - `?? registry/experiments/waterfall-feed/20261002T162022Z.json`
   - `?? scripts/_u3d_tmp.py`
-  - `?? scripts/mod24_u7a.py`
-  - `?? scripts/mod25e_drill.py`
-  - `?? scripts/mod25e_kick.py`
-  - ...and 2 more
+  - ...and 1 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
