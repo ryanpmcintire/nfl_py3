@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-03T21:04:02.525719+00:00`
+Refreshed at: `2026-10-03T21:57:47.285358+00:00`
 
 ## Start here
 
@@ -21,18 +21,19 @@ Refreshed at: `2026-10-03T21:04:02.525719+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `ac941699cce6` — MOD-25e: all-fixes base crHpqokg (pts/g 44.38 vs 45.21; noise and lead carry remain)
-- Pending change set: 28 paths
+- Baseline commit: `22cc620e89da` — MOD-25e E43-E47: noise excess is cross-drive; pace refuted; scoring response to the margin weaker in sim (yards per play by deficit, leader clock-out); turnover and TD-yards definitions fixed in the analysis
+- Pending change set: 29 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
   - `M  docs/lanes/mod25e-generator-fidelity.md`
   - ` M docs/model.html`
-  - `A  scripts/mod25e_couple.py`
-  - `A  scripts/mod25e_noise2.py`
-  - `A  scripts/mod25e_pace.py`
-  - `A  scripts/mod25e_resp.py`
+  - `M  scripts/mod25e_crH.py`
+  - `A  scripts/mod25e_e49.py`
+  - `A  scripts/mod25e_e49pass.py`
+  - `A  scripts/mod25e_neg.py`
+  - `A  scripts/mod25e_q4run.py`
   - ` M tiebreaker.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -42,8 +43,7 @@ Refreshed at: `2026-10-03T21:04:02.525719+00:00`
   - `?? registry/experiments/margin-predict/2026-week-04-20261002T161446Z.json`
   - `?? registry/experiments/margin-predict/2026-week-04-20261003T161013Z.json`
   - `?? registry/experiments/margin-predict/2026-week-04-20261003T173930Z.json`
-  - `?? registry/experiments/opener-evaluation/20261001T211624Z.json`
-  - ...and 8 more
+  - ...and 9 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

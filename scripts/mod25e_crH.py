@@ -53,6 +53,10 @@ def run_with_flags(init, setting):
     if ot.enabled():
         assert seen["n"] >= 1
         ot.install(dv)
+    import mod25e_neg as mn
+
+    if mn.enabled():
+        mn.install_neg()
     import mod25e_gz as gz
 
     if gz.enabled() or gz.auditing():
@@ -98,6 +102,8 @@ def cmd_e5(a):
         label = label + "k"
     if os.environ.get("GZ") == "1":
         label = label + "g"
+    if os.environ.get("NEG") == "1":
+        label = label + "n"
     dv.DV[label] = dict(dv.DV["crG"])
     outd = ss.OUT / f"e5_{label}_s{a.seed}"
     outd.mkdir(parents=True, exist_ok=True)
