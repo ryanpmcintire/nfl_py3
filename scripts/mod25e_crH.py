@@ -67,6 +67,10 @@ def run_with_flags(init, setting):
         mk.install_kick()
     if dv._G["cfg"].get("f3"):
         f3.f3_install()
+    import mod25e_dkern as dk
+
+    if dk.enabled():
+        dk.install_dk()
 
 
 def H_budget(setting):
@@ -104,6 +108,8 @@ def cmd_e5(a):
         label = label + "g"
     if os.environ.get("NEG") == "1":
         label = label + "n"
+    if os.environ.get("DKF") == "1":
+        label = label + "d"
     dv.DV[label] = dict(dv.DV["crG"])
     outd = ss.OUT / f"e5_{label}_s{a.seed}"
     outd.mkdir(parents=True, exist_ok=True)

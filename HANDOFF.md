@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-03T21:57:47.285358+00:00`
+Refreshed at: `2026-10-03T22:47:09.294166+00:00`
 
 ## Start here
 
@@ -21,8 +21,8 @@ Refreshed at: `2026-10-03T21:57:47.285358+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `22cc620e89da` — MOD-25e E43-E47: noise excess is cross-drive; pace refuted; scoring response to the margin weaker in sim (yards per play by deficit, leader clock-out); turnover and TD-yards definitions fixed in the analysis
-- Pending change set: 29 paths
+- Baseline commit: `64c2ebfacb98` — MOD-25e E48-E50: E47 yards gaps were a logging artifact (terminal pool rows); end-of-game/half tfix rows carried fabricated -34 yd gains, fixed behind NEG
+- Pending change set: 28 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
@@ -30,10 +30,9 @@ Refreshed at: `2026-10-03T21:57:47.285358+00:00`
   - `M  docs/lanes/mod25e-generator-fidelity.md`
   - ` M docs/model.html`
   - `M  scripts/mod25e_crH.py`
-  - `A  scripts/mod25e_e49.py`
-  - `A  scripts/mod25e_e49pass.py`
-  - `A  scripts/mod25e_neg.py`
-  - `A  scripts/mod25e_q4run.py`
+  - `A  scripts/mod25e_dist.py`
+  - `A  scripts/mod25e_dkern.py`
+  - `A  scripts/mod25e_punt.py`
   - ` M tiebreaker.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -43,7 +42,8 @@ Refreshed at: `2026-10-03T21:57:47.285358+00:00`
   - `?? registry/experiments/margin-predict/2026-week-04-20261002T161446Z.json`
   - `?? registry/experiments/margin-predict/2026-week-04-20261003T161013Z.json`
   - `?? registry/experiments/margin-predict/2026-week-04-20261003T173930Z.json`
-  - ...and 9 more
+  - `?? registry/experiments/opener-evaluation/20261001T211624Z.json`
+  - ...and 8 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
