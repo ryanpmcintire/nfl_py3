@@ -512,10 +512,17 @@ def season_ratings(weekly, qb_out, fit, setting, league_off, league_def):
     shock = fit["qb"]["backup_off_epa_effect"]
     scale = setting["scale"]
     ratings = {}
+    centre = np.zeros(18)
+    if os.environ.get("QBC") == "1":
+        qb = fit["qb"]
+        p = 0.0
+        for w in range(18):
+            p = p * qb["p_stay_out"] + (1.0 - p) * qb["p_start_out"]
+            centre[w] = p * shock
     for w in range(18):
         per = []
         for t in range(N_TEAMS):
-            off = weekly[w, t, 0] + (shock if qb_out[w, t] else 0.0)
+            off = weekly[w, t, 0] + (shock if qb_out[w, t] else 0.0) - centre[w]
             per.append((league_off + scale * off, league_def + scale * weekly[w, t, 1]))
         ratings[w + 1] = per
     return ratings
