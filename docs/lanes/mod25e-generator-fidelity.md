@@ -46,6 +46,9 @@ crH (scripts/mod25e_crH.py, I4) is the base: SD 15.31 [14.63], strength RE 55.9 
 - Downs is not an engine defect (share .040 vs .039). Q4 trail/tied last-5 offences score less (td .144 vs .169, fg .051 vs .081); play level matches (pass share, ypp, c3, el/play, 4th go rate).
 - egd HGB is calibrated on real states (E28c); FG only in last 15 s (real .56 vs sim .31-.40); sim trailers reach it with more timeouts/seconds; egto (f2 pick on egd row) did not move FG; reverted. Scripts mod25e_q4.py, mod25e_q4b.py.
 
+## Results-folder note (orchestrator 2026-10-03)
+mod25e_crH.py e5 wrote e5.json/sim_games/play files under e5_crH_s<seed> for every variant (only events went to the label dir); fixed (label used for variant and dir). e5_crHt_s11-12 now hold the copied EGT results (08:34/08:37 runs). crHh runs were stopped by the orchestrator (owner: machine overloaded); e5_crH_s11-12 still hold the EGT results (duplicated into e5_crHt). To do, ONE run at a time with 3 workers: re-run crH baseline s11-12, then crHh s11-12 (script now names dirs by label).
+
 ## E28d
 Orchestrator 2026-10-03: crH baseline s11/s12 re-run (EGT unset) into artifacts/mod25e3/e5_crH_s11-12; the overwritten EGT runs are copied to e5_crHt_s11-12. (window timeout fix; EGT=1 -> eg mode 3; scripts/mod25e_to.py, artifacts/mod25e3/to; measured)
 - Cause: egd window rows (downs 1-3) carry the drawn real row's timeout flag with no availability gate and no sim-state conditioning (phantom off calls with 0 left: .05-.13/snap; trailer timeouts left at 15 s .94 vs .41 real; Q2 final-60 off calls .15 vs .22).

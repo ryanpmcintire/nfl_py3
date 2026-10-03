@@ -66,13 +66,14 @@ def cmd_e5(a):
 
     install()
     crG.register(a.off)
-    dv.DV["crH"] = dict(dv.DV["crG"])
-    outd = ss.OUT / f"e5_{'crHh' if os.environ.get('EGH') == '1' and os.environ.get('EGT') == '1' else ('crHt' if os.environ.get('EGT') == '1' else 'crH')}_s{a.seed}"
+    label = "crHh" if os.environ.get("EGH") == "1" and os.environ.get("EGT") == "1" else ("crHt" if os.environ.get("EGT") == "1" else "crH")
+    dv.DV[label] = dict(dv.DV["crG"])
+    outd = ss.OUT / f"e5_{label}_s{a.seed}"
     outd.mkdir(parents=True, exist_ok=True)
     os.environ["BUD_OUT"] = str(outd)
-    ss.DV["crH"] = dv.DV["crH"]
+    ss.DV[label] = dv.DV[label]
     ss.s_init = H_ss
-    a.variant = "crH"
+    a.variant = label
     a.scale = 1.0
     ss.cmd_e5(a)
 
