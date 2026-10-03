@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-03T08:59:40.193621+00:00`
+Refreshed at: `2026-10-03T12:19:40.838374+00:00`
 
 ## Start here
 
@@ -21,8 +21,8 @@ Refreshed at: `2026-10-03T08:59:40.193621+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `7895004761b7` — MOD-25e I4: composite crH (latent covariance, rule fixes, faithful clock, strength tilt): strength RE 55.9 vs 58.0, late R2 .131 vs .146; noise and lead carry still off
-- Pending change set: 24 paths
+- Baseline commit: `1d491fe991a9` — MOD-25e E28: turnover on downs verified correct; late FG gap traced to clock/timeout state at the last 15 s; timeout decisions now drawn from the fitted model inside the two-minute window (EGT)
+- Pending change set: 22 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
@@ -31,11 +31,9 @@ Refreshed at: `2026-10-03T08:59:40.193621+00:00`
   - ` M docs/model.html`
   - `M  scripts/mod25e_crH.py`
   - `M  scripts/mod25e_endgame.py`
-  - `A  scripts/mod25e_q4.py`
-  - `A  scripts/mod25e_q4b.py`
-  - `A  scripts/mod25e_to.py`
-  - `A  scripts/mod25e_xq2.py`
-  - `M  scripts/sim09_f2.py`
+  - `A  scripts/mod25e_hurry.py`
+  - `M  scripts/mod25e_late.py`
+  - `A  scripts/mod25e_trail.py`
   - ` M tiebreaker.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -43,7 +41,9 @@ Refreshed at: `2026-10-03T08:59:40.193621+00:00`
   - `?? registry/experiments/margin-predict/2026-week-04-20261002T161446Z.json`
   - `?? registry/experiments/opener-evaluation/20261001T211624Z.json`
   - `?? registry/experiments/opener-evaluation/20261002T161817Z.json`
-  - ...and 4 more
+  - `?? registry/experiments/waterfall-feed/20261001T211747Z.json`
+  - `?? registry/experiments/waterfall-feed/20261002T162022Z.json`
+  - ...and 2 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

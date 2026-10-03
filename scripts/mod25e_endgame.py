@@ -134,8 +134,27 @@ SALT_DC = 4202
 CODE_OF = {v: k for k, v in CLS.items()}
 
 
-def stop_after(code, yards, flip, scored, otu, dtu):
-    return (np.asarray(flip).astype(bool) | np.asarray(scored).astype(bool) | ((np.asarray(code) == 1) & (np.asarray(yards) == 0)) | (np.asarray(code) == 5) | (np.asarray(otu) > 0) | (np.asarray(dtu) > 0)).astype(float)
+HC = {"cut": None}
+
+
+def hurry_cut(code, yards, el):
+    code = np.asarray(code)
+    yards = np.asarray(yards)
+    el = np.asarray(el, float)
+    inc = el[(code == 1) & (yards == 0)]
+    comp = el[(code == 1) & (yards > 0)]
+    lo = int(np.ceil(np.median(inc)))
+    hi = int(np.median(comp[comp > np.median(inc)]))
+    edges = np.arange(lo, hi + 2)
+    cnt = np.histogram(comp, bins=edges)[0]
+    return float(edges[int(np.argmin(cnt))])
+
+
+def stop_after(code, yards, flip, scored, otu, dtu, el=None):
+    s = np.asarray(flip).astype(bool) | np.asarray(scored).astype(bool) | ((np.asarray(code) == 1) & (np.asarray(yards) == 0)) | (np.asarray(code) == 5) | (np.asarray(otu) > 0) | (np.asarray(dtu) > 0)
+    if HC["cut"] is not None and el is not None:
+        s = s | ((np.asarray(code) <= 1) & (np.asarray(el, float) <= HC["cut"]))
+    return s.astype(float)
 
 
 def train_frame():
@@ -143,7 +162,7 @@ def train_frame():
     m = dr.meta_frame()[["game_id", "play_id"]].reset_index().rename(columns={"index": "pos"})
     d = d.merge(m, on=["game_id", "play_id"], how="left")
     d["sc"] = (d.po + d.pdf) > 0
-    d["stp"] = stop_after(d.code, d.yards, d.flip, d.sc, d.otu, d.dtu)
+    d["stp"] = stop_after(d.code, d.yards, d.flip, d.sc, d.otu, d.dtu, d.el)
     d["half"] = np.where(d.qtr.to_numpy() >= 3, 2, 1)
     d = d.sort_values(["g", "play_id"]).reset_index(drop=True)
     d["pstop"] = d.groupby(["g", "half"])["stp"].shift(1).fillna(1.0)
@@ -164,6 +183,7 @@ def install_eg():
     gs = R["gsr"].to_numpy(float)
     win = ((qt == 4) & (gs > 0) & (gs <= f2.u4g.WARN_AT[4])) | ((qt == 2) & (gs > f2.u4g.FLOOR[2]) & (gs <= f2.u4g.WARN_AT[2]))
     R = R[win].reset_index(drop=True)
+    HC["cut"] = hurry_cut(R["code"], R["yards"], R["el"]) if mode >= 4 else None
     half = R["qtr"].to_numpy()
     code = R["code"].to_numpy()
     sc = (R["po"].to_numpy() + R["pdf"].to_numpy()) > 0
@@ -308,7 +328,7 @@ def install_eg():
                 t = list(lg[-1])
                 t[10] = drawn["clock_elapsed"]
                 lg[-1] = tuple(t)
-        stn = float(stop_after(c, float(drawn["yards_gained"]), bool(drawn["flip"]), sc_, float(drawn["off_to_used"]), float(drawn["def_to_used"])))
+        stn = float(stop_after(c, float(drawn["yards_gained"]), bool(drawn["flip"]), sc_, float(drawn["off_to_used"]), float(drawn["def_to_used"]), float(drawn["clock_elapsed"])))
         st["ps"] = (clock_val - float(drawn["clock_elapsed"]), stn)
         return drawn
 

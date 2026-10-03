@@ -49,17 +49,24 @@ def finish(D):
     return D
 
 
-def real_play_drives(seasons):
+def real_play_drives(seasons, regulation=False):
     gf = pd.read_parquet(REPO / "data" / "processed" / "game_features_pbp.parquet", columns=["game_id", "home_score", "away_score"]).set_index("game_id")
     cols = ["game_id", "play_id", "season_type", "posteam", "defteam", "home_team", "qtr", "game_seconds_remaining", "yardline_100", "play_type", "score_differential", "down", "first_down", "qb_kneel", "qb_spike", "interception", "fumble_lost", "posteam_timeouts_remaining", "defteam_timeouts_remaining", "yards_gained"]
     out = []
     for s in seasons:
         p = pd.read_parquet(PBP / f"season={s}" / "plays.parquet", columns=cols)
         p["season"] = s
-        p = p[(p.season_type == "REG") & p.posteam.notna() & p.score_differential.notna() & (p.qtr <= 4)]
+        p = p[(p.season_type == "REG") & p.posteam.notna() & p.score_differential.notna()]
+        ot = p[p.qtr > 4].sort_values(["game_id", "play_id"], kind="stable").groupby("game_id").first()
+        regfin = np.where(ot.posteam == ot.home_team, 1.0, -1.0) * ot.score_differential
+        regfin = pd.Series(regfin.to_numpy(), index=ot.index)
+        p = p[p.qtr <= 4]
         p = p.sort_values(["game_id", "play_id"], kind="stable").reset_index(drop=True)
         p["m"] = np.where(p.posteam == p.home_team, 1.0, -1.0) * p.score_differential
-        fin = (gf.home_score - gf.away_score).reindex(p.game_id).to_numpy()
+        fin = (gf.home_score - gf.away_score).reindex(p.game_id)
+        if regulation:
+            fin = regfin.reindex(p.game_id).fillna(fin)
+        fin = fin.to_numpy()
         g = p.game_id.to_numpy()
         last = np.r_[g[1:] != g[:-1], True]
         nxt = np.r_[p.m.to_numpy()[1:], 0.0]

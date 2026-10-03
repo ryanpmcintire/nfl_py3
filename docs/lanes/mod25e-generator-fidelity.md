@@ -30,11 +30,10 @@ crH (scripts/mod25e_crH.py, I4) is the base: SD 15.31 [14.63], strength RE 55.9 
 - E21/E21b (mod25e_pass.py): state passthrough is era-unstable (pool b1 -.206, 2016-25 +.071); EPA tilt m=.03 matches downs, xq worse (+13.6): kept inside crH.
 - E22 (mod25e_kick.py): kickoffs already match; only return TDs missing; kick draws no gain.
 
-## E23-E26 (late scoring, clock, rule pieces)
-- E23: late-leader gap only where old leader is now behind/tied (.143 sim vs .278/.345 real); tied/trailing last-5-min offences score too little (.22 vs .43); not 4th-down policy, handoff, start fp, prevent. Handoff after non-scores +.012 real vs -.005 (E22).
-- E24/E25: clock el redraw; drl's xq/slope gain was a log artifact of the pre-base cap; egd el by gsr band matches real, kneel/spike OK, last-30 s flips .099 vs .275 real; egd loses xq gain.
-- E26: strength not tied to rule-piece rates (timeouts, penalties); f2 replaced draws bypass strength, fixed by crW weights (kept in crH).
-- I3/I4: crG then crH = crzhc + u4g + crW f2 + f3 + egd + EPA m=.03; null modes byte-equal 1x1 SIM_FAST; f3 cannot use u3 play frames, so play analyses use `--off f3` (nof3).
+## E23-E26 (late scoring, clock, rule pieces; compact)
+- E23: late-leader gap only where old leader now behind/tied; tied/trailing last-5-min offences score too little; not 4th-down policy, handoff, start fp, prevent.
+- E24/E25: clock el redraw; drl xq gain was a log artifact; egd el by gsr band matches real; kneel/spike OK.
+- E26: f2 replaced draws bypass strength, fixed by crW weights (kept in crH). I3/I4: crH = crzhc + u4g + crW f2 + f3 + egd + EPA m=.03; play analyses use `--off f3`.
 
 ## E27 (crH vs real: xq decomposition, quarter matrix, Q2-Q4 anatomy; scripts/mod25e_xq2.py decomp|late|late2|matrix|anatomy, artifacts/mod25e3/crH/{play6,xq2})
 - Measured: crH 6x8 nof3 plays (9792 games). E19 comps sim minus pool: strength +9.2 pp 1.00 (new, E19 was +.6), start-fp +2.6, lead-state +3.1, rest +9.4 [-.6,19.6] pp .93, total +23.6 [13.1,35.8]; opposite-team rest cov +4.3 vs +13.1 (corr -.015 vs +.064: UNCLOSED). Late era total +25.7.
@@ -43,27 +42,27 @@ crH (scripts/mod25e_crH.py, I4) is the base: SD 15.31 [14.63], strength RE 55.9 
 - E23 on crH not closed: leader drive after late trailer score .091 vs .157/.183 (behind/tied cell .136 vs .278/.345); last-5-min tied .187 vs .429, trail1-8 .224 vs .273, trail>8 .173 vs .226; trailing 0-3 under 2:00 td .045 vs .133, fga .137 vs .298, no-outcome end .461 vs .155; FG on downs 1-3 in last 15 s .34-.39 vs .60-.70. Sim never logs turnover on downs (.002 vs .06-.09; coded as turnover).
 - Inferred mechanism: Q4 trailing/tied offence under-scores (urgency state: late drive decisions and conversion), a Q4 state-conditional score level shared by both teams; not strength, start fp, handoff, clock el. Next: fit trailing/tied Q4 drive completion (4th-down go, FG timing, TD yardage by gsr) from real plays, then rerun mod25e_xq2.py matrix; separately explain strength comp +9.2 (LGO team mean may carry sim sampling difference).
 
-## E28 (downs check, Q4 urgency anatomy; crH play6 vs real 2009-17, measured)
-- Downs is NOT an engine defect: all-drive downs share .040 vs .039 real, Q4 trail/tied last-5 .186 vs .177; failed-go drive ends labelled downs 7686 of 9147 (84%) vs 1833 of 2148 (85%). E27 .002 was an analysis-cell artifact (the E27 sim frames never labelled it that way); no engine change.
-- Q4 trail/tied last-5-min offences: pts/drive 1.163 vs 1.446; td .144 vs .169, fg .051 vs .081, end_half .29 vs .233. Play level matches (pass .81/.83, ypp 5.64/5.61, c3 .370/.379, el/play 14.5/14.3, 4th go rate .632/.625); 4th-down conversion given dist lower in sim (6.5-10.5 yd .305 vs .352, 10.5+ .225 vs .292).
-- Located gap: FG attempts on downs 1-3 in last 2:00, trailing 0-3, yl<=40: real .075/.125/.139 vs sim .042/.036/.043 (spike down 1 .106 vs .065, 4th-down FG .905 vs .832). The late-decision model in mod25_mechanisms.make_decide (poll) is calibrated (model fg .084/.135/.132 on the same real plays), so the loss is downstream of it in the crH chain (f2/eg/f3/tfix or redraw cpick fallback). `crH sim --off eg|f3` writes events not play frames (no idx): the q4dbg runs under artifacts/mod25e3/crH/q4dbg/ are unusable for this.
-- Next: trace why decide's FG class is lost (log idx pre/post DECIDE for down<=3, Q4 gsr<=120 in the u3 logger); fix at the named point, then scripts/mod25e_q4.py variant, 2 e5 seeds both eras, xq2 matrix.
+## E28-E28c (compact; crH play6 vs real 2009-17, measured)
+- Downs is not an engine defect (share .040 vs .039). Q4 trail/tied last-5 offences score less (td .144 vs .169, fg .051 vs .081); play level matches (pass share, ypp, c3, el/play, 4th go rate).
+- egd HGB is calibrated on real states (E28c); FG only in last 15 s (real .56 vs sim .31-.40); sim trailers reach it with more timeouts/seconds; egto (f2 pick on egd row) did not move FG; reverted. Scripts mod25e_q4.py, mod25e_q4b.py.
 
-## E28b (FG/spike layer trace; scripts/mod25e_q4.py, no result yet)
-- Read: egd decide (mod25e_endgame.install_eg mode 2) wraps the f2 chain and, for down 1-3 inside the last 2:00 (Q4) or Q2 two-minute window, never calls f2/base DECIDE: it samples a class from its own HGB and rerow() draws a real late row by (down, class, qtr) nearest neighbour; so f2 timeout pick is bypassed there and the base late model is not the FG source in that window. f3 Overlay.apply only touches codes 0/1; u4g tw changes clock only.
-- mod25e_q4.py (written, untested to completion) logs per DECIDE snap with down<=3, qtr 2/4, hs<=120: c0, c_base, c_f2, c_eg, c_f3o; `sim --out-dir D` then `read --out-dir D` prints FG/spike share per stage vs real. f3 pol uses sys._getframe(1), so never wrap dv._G["pol"]. Launch with run_in_background and no trailing `&`; run takes minutes (1x2, 2 workers).
-- Next: run it, find the stage where FG share drops (suspect egd class draw or rerow fallback), fix there, then 2 e5 seeds both eras + xq2.
-
-## E28c (FG share by full state, egd model audit; scripts/mod25e_q4b.py, q4/log2, log3; measured)
-- egd HGB (classes run/pass/FG/kneel/spike, late rows 2009-17 incl. FG, spike, pstop) is calibrated on real states (down 1/2/3 pred .075/.132/.139 vs real .078/.132/.149); rerow returns class c always (None falls back to idx). Not the defect. egps logging added in install_eg (no behaviour change).
-- FG occurs only in the last 15 s (real .56, sim .31 -> .40 on log2). There, sim states differ: stopped-clock states 74 vs real 158 (n 126 vs 238), timeouts left oto .91 vs .37, hs 8.8 vs 6.6; FG given state is lower because the model sees more timeouts and more clock. Composition explains ~.03 of .13, policy-given-state .10 via those features.
-- Cause is upstream: in the window egd bypasses f2 timeout class pick. Tested egto (apply f2 pick to egd row): oto at hs<=15 .96 -> 1.16, FG unchanged (.041/.048/.063); reverted. Next: why trailing sim teams keep timeouts into the last 15 s (timeout-use calibration at hs<=60); no e5 run (no fix kept).
-
-## E28d (window timeout fix; EGT=1 -> eg mode 3; scripts/mod25e_to.py, artifacts/mod25e3/to; measured)
+## E28d
+Orchestrator 2026-10-03: crH baseline s11/s12 re-run (EGT unset) into artifacts/mod25e3/e5_crH_s11-12; the overwritten EGT runs are copied to e5_crHt_s11-12. (window timeout fix; EGT=1 -> eg mode 3; scripts/mod25e_to.py, artifacts/mod25e3/to; measured)
 - Cause: egd window rows (downs 1-3) carry the drawn real row's timeout flag with no availability gate and no sim-state conditioning (phantom off calls with 0 left: .05-.13/snap; trailer timeouts left at 15 s .94 vs .41 real; Q2 final-60 off calls .15 vs .22).
 - Fix (mode 3, tofix in mod25e_endgame.py): f2 now exposes dv._G["f2h"] (ctdraw = gated 4-class draw); run/pass window rows get ct from it, other codes only availability gating; replacement is a window row of same down/code/stop and class via rerow_ct. Null (EGT unset, f2 refactor) equal True vs crH c_eg.
 - After: phantom .001; Q2 trailer left at 15 s 1.37 vs 1.32 real; Q4 trailer .70 vs .41 (still high), Q4 leader calls over (.03-.07 vs .01-.02). FG downs 1/2/3 .048/.034/.059 vs real .073/.125/.139: UNCHANGED, timeouts were not the FG cause. e5 s11,s12 (crHt; dirs e5_crH_s11/12 were overwritten, crH s13 intact): margin_sd 15.21 (crH3 15.31), r2 w1-4 .056 (.073), w10-18 .132 (.131), xq 8.3 (10.2), q4 slope -.037 (-.032), mass_3 .117 (.116), pts 42.57 (42.63): neutral to slightly better.
 - Next: Q4 leader over-calling and FG composition remain; both likely upstream of timeouts (leader drive/kneel state).
 
+## E29 (trailer last-5-min decomposition; scripts/mod25e_trail.py, artifacts/mod25e3/crH/trail/trail.txt; measured)
+- Real drive points in mod25e_late.real_play_drives included OT scoring on the last regulation play (final margin incl. OT); fixed via regulation=True (OT kickoff row margin). E23/E27/E28 late real levels carried this; corrected gap 0.267 vs 0.290 pts/drive (real 1.280, sim 1.013, trail/tied start in last 5 min).
+- Decomposition (time, score, field bins; game bootstrap): composition +.012..+.025 [-.008,+.057], within-state +.243..+.256 [+.14,+.36]; P(score) within +.056 [.039,.070]. Start mix, prior-drive burn (154 vs 152 s), plays/burn per drive all match: not composition.
+- Within state: under 2:00 sim scores far less (sc [30,60) .069 vs .140, fg .039 vs .100; [60,120) fg .050 vs .100; [120,180) td .172 vs .235, clock-expiry .158 vs .069). Per-play ypp, explosives, TD per play by yardline, el per play (60-300 s) match; sim snaps in last 60 s sit at 60-80 yd (.299 vs .219) rather than inside 30 (.229 vs .298): sim late drives advance less far per second.
+- Not fixed: no single named mechanism; next probe sideline/stop-clock sequencing (incomplete/OOB stops, timeout use) and drive progress per clock second in last 2 min.
+## E30 (hurry-up progress per clock second; scripts/mod25e_hurry.py el|cov|band|fine|val, artifacts/mod25e3/hurry; measured)
+- Per-play components match (comp share .441/.432, yards/comp 11.37 both, el by outcome, run/pass mix); real_fit.parquet drops last plays without successor (use raw pbp near 0:00). Cause: sim stop-after ignores out-of-bounds (pstop = incomplete/score/flip/timeout only), so spikes fire after OOB (sim .073 vs real .010 at 15-30 s) and too rarely after running clock w/o timeouts (.153 vs .204; .066 vs .106 at 30-60).
+- Fix EGH=1 with EGT=1 (eg mode 4, variant crHh): derived stop cut = el valley between incomplete and completion modes (12 s, hurry_cut in mod25e_endgame.py); stop_after adds el<=cut for run/pass in HGB training pstop and sim pstop. Validate play_h (3x8): spike run1/to0 .119/.097 vs real .204/.106, p/drive last 30 s .077 vs .094 (crH .034), 30-60 .260 vs .444 (.229), 60-120 .739 vs .882 (.650); all trail 1.040 vs 1.280 (crH 1.013). FG ending 0-30 .019 vs .044 unchanged (FG decision, not spikes).
+- e5 crHh s11,s12 into artifacts/mod25e3/e5_crHh_s11-12; score with scripts/mod25e_era.py (ERA_VARIANTS=crHh).
+
 ## Next / Open
 Next: E27 inferred mechanism build (urgency-state Q4 drive model), strength-comp check; rerun e5 era gate. Open: owner decision which clock; pool-era 20-look reads need leave-season-out confirmation.
+- E29 note: crHt e5 s11/s12 had no e5.json/sim_games (event dirs only); rerun with --workers 2 was killed unfinished at ~45 min (cap); era scoring of crHt still pending, crH 3-seed era in crH/era.log and era_crHt/era.txt (crHt n=0).
