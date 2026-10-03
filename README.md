@@ -20,21 +20,21 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 | Date        | Matchup    | ATS prediction   | Cover chance   |
 |:------------|:-----------|:-----------------|:---------------|
 | Thu, Oct 01 | PIT at CLE | ★ PIT -2.5       | 62.5%          |
-| Sun, Oct 04 | ARI at NYG | ARI +1.5         | 59.7%          |
-| Sun, Oct 04 | DAL at HOU | HOU -2.5         | 53.7%          |
-| Sun, Oct 04 | DEN at SF  | DEN +2.5         | 51.1%          |
-| Sun, Oct 04 | DET at CAR | CAR +3.5         | 51.4%          |
-| Sun, Oct 04 | GB at TB   | TB +3.5          | 52.3%          |
-| Sun, Oct 04 | IND at WAS | IND -3.5         | 50.8%          |
+| Sun, Oct 04 | ARI at NYG | ARI +1.5         | 54.3%          |
+| Sun, Oct 04 | DAL at HOU | HOU -2.5         | 50.2%          |
+| Sun, Oct 04 | DEN at SF  | SF -2.5          | 51.3%          |
+| Sun, Oct 04 | DET at CAR | CAR +3.5         | 51.2%          |
+| Sun, Oct 04 | GB at TB   | TB +3.5          | 51.8%          |
+| Sun, Oct 04 | IND at WAS | IND -3.5         | 54.5%          |
 | Sun, Oct 04 | JAX at CIN | JAX +2.5         | 53.7%          |
-| Sun, Oct 04 | KC at LV   | KC -4.5          | 50.4%          |
-| Sun, Oct 04 | LAC at SEA | SEA -7.5         | 57.5%          |
-| Sun, Oct 04 | LA at PHI  | LA -2.5          | 52.9%          |
-| Sun, Oct 04 | MIA at MIN | MIN -11.5        | 57.8%          |
-| Sun, Oct 04 | NE at BUF  | NE +6.5          | 50.1%          |
-| Sun, Oct 04 | NYJ at CHI | CHI -3.5         | 55.1%          |
-| Sun, Oct 04 | TEN at BAL | BAL -11.5        | 50.8%          |
-| Mon, Oct 05 | ATL at NO  | ATL +2.5         | 50.2%          |
+| Sun, Oct 04 | KC at LV   | KC -4.5          | 50.6%          |
+| Sun, Oct 04 | LAC at SEA | SEA -7.5         | 57.4%          |
+| Sun, Oct 04 | LA at PHI  | LA -2.5          | 56.0%          |
+| Sun, Oct 04 | MIA at MIN | MIN -11.5        | 54.7%          |
+| Sun, Oct 04 | NE at BUF  | NE +6.5          | 50.5%          |
+| Sun, Oct 04 | NYJ at CHI | CHI -3.5         | 55.0%          |
+| Sun, Oct 04 | TEN at BAL | BAL -11.5        | 50.6%          |
+| Mon, Oct 05 | ATL at NO  | ATL +2.5         | 53.0%          |
 
 [Open the standalone card](CURRENT_PREDICTIONS.md) for provenance and interpretation.
 <!-- CURRENT_PREDICTIONS:END -->
@@ -47,7 +47,7 @@ close. A close-graded number alone is never grounds to reject a candidate
 (see `AGENTS.md`); it is reported below only as the secondary figure it is.
 
 <!-- ACTIVE_MODEL_STATE:START -->
-Active model: `market_residual` with `weak_stack` features (`2803d39dd3a1fff1`), regressor `ridge`, ridge alpha `10.0`, calibration `none`.
+Active model: `market_residual` with `weak_stack` features (`b70fc2f46acc966f`), regressor `ridge`, ridge alpha `10.0`, calibration `none`.
 
 - **Opener-graded, probability-rule accuracy (the pool-relevant grade -- picks lock Tuesday against a frozen line):** **53.36%** on **1,537 paired games**, week-blocked 95% interval [50.76%, 55.90%].
 - Close-graded accuracy (secondary -- the market's sharpest, and least representative, decision point): **52.47%** (1,114 of 2,123 non-push games), week-blocked 95% interval [50.47%, 54.86%].

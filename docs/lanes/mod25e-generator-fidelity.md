@@ -49,6 +49,11 @@ crH (scripts/mod25e_crH.py, I4) is the base: SD 15.31 [14.63], strength RE 55.9 
 ## Results-folder note (orchestrator 2026-10-03)
 mod25e_crH.py e5 wrote e5.json/sim_games/play files under e5_crH_s<seed> for every variant (only events went to the label dir); fixed (label used for variant and dir). e5_crHt_s11-12 now hold the copied EGT results (08:34/08:37 runs). crHh runs were stopped by the orchestrator (owner: machine overloaded); e5_crH_s11-12 still hold the EGT results (duplicated into e5_crHt). To do, ONE run at a time with 3 workers: re-run crH baseline s11-12, then crHh s11-12 (script now names dirs by label), then crHp s11-12 (EGT=1 EGH=1 F2PR=1; compare E32 timeouts left 60/30/15 s, E31 last-30-s FG share, era table ERA_VARIANTS=crH,crHh,crHp).
 
+## Era scoring 2026-10-03 (artifacts/mod25e3/late_era/era.txt; crH 3 seeds, crHh/crHp 2, seed 13 running)
+crH / crHh / crHp vs pool: noise 178.2/176.0/175.2 (165); xq +8.6/+5.2/+5.4 (-6.4); margin var 235/229/229 (222); strength 56.3/53.8/54.2 (58.0); late R2 .132/.126/.129 (.146); pts 42.6/42.6/42.6 (45.2). crHt column INVALID (its dirs mix files copied from different runs: xq -43, q4 slope -.17); ignore it.
+
+3-seed update (artifacts/mod25e3/late_era3/era.txt, mean +- seed SD): strength crH 56.3+-1.7 / crHh 54.3+-0.8 / crHp 55.1+-2.3; noise 178.2+-1.3 / 177.4+-2.9 / 177.6+-4.6; xq 8.6+-0.5 / 6.4+-2.7 / 8.3+-5.3; q4 slope -.040 all. The late-game fixes are mechanism-correct but indistinguishable on whole-game checks: the end game is not where the noise, lead-carry or -2.6 pts/g gaps live. Next: the scoring deficit (pts/g 42.6 vs 45.2) outside the end game.
+
 ## E28d
 Orchestrator 2026-10-03: crH baseline s11/s12 re-run (EGT unset) into artifacts/mod25e3/e5_crH_s11-12; the overwritten EGT runs are copied to e5_crHt_s11-12. (window timeout fix; EGT=1 -> eg mode 3; scripts/mod25e_to.py, artifacts/mod25e3/to; measured)
 - Cause: egd window rows (downs 1-3) carry the drawn real row's timeout flag with no availability gate and no sim-state conditioning (phantom off calls with 0 left: .05-.13/snap; trailer timeouts left at 15 s .94 vs .41 real; Q2 final-60 off calls .15 vs .22).
