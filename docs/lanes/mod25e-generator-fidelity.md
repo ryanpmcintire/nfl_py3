@@ -54,6 +54,8 @@ crH / crHh / crHp vs pool: noise 178.2/176.0/175.2 (165); xq +8.6/+5.2/+5.4 (-6.
 
 3-seed update (artifacts/mod25e3/late_era3/era.txt, mean +- seed SD): strength crH 56.3+-1.7 / crHh 54.3+-0.8 / crHp 55.1+-2.3; noise 178.2+-1.3 / 177.4+-2.9 / 177.6+-4.6; xq 8.6+-0.5 / 6.4+-2.7 / 8.3+-5.3; q4 slope -.040 all. The late-game fixes are mechanism-correct but indistinguishable on whole-game checks: the end game is not where the noise, lead-carry or -2.6 pts/g gaps live. Next: the scoring deficit (pts/g 42.6 vs 45.2) outside the end game.
 
+QBC 3-seed (artifacts/mod25e3/qbc_era/era.txt): crHpq vs crHp: pts/g 43.31 vs 42.65 (pool 45.21; ~0.8 of the remaining gap is OT and return points per E34), strength 55.5 vs 55.1, noise 179.0 vs 177.6, xq +7.2 vs +8.3, drives 22.84 vs 22.94. Keep QBC (centring by construction). New base: crHpq (env EGT=1 EGH=1 F2PR=1 QBC=1).
+
 ## E28d
 Orchestrator 2026-10-03: crH baseline s11/s12 re-run (EGT unset) into artifacts/mod25e3/e5_crH_s11-12; the overwritten EGT runs are copied to e5_crHt_s11-12. (window timeout fix; EGT=1 -> eg mode 3; scripts/mod25e_to.py, artifacts/mod25e3/to; measured)
 - Cause: egd window rows (downs 1-3) carry the drawn real row's timeout flag with no availability gate and no sim-state conditioning (phantom off calls with 0 left: .05-.13/snap; trailer timeouts left at 15 s .94 vs .41 real; Q2 final-60 off calls .15 vs .22).
