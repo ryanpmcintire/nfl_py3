@@ -15,7 +15,9 @@ Never poll with sleep, until or for-sleep loops in a shell. A shell call that
 hits its tool timeout keeps running, so every poll leaves a hung process.
 Launch long jobs as background tool calls and wait for the completion
 notification. Before an agent returns, it lists and kills every process it
-started.
+started, by PID or by its own command line, never by image name
+(`taskkill /IM python.exe` or a blanket kill also stops the capture
+scheduler and other agents' runs).
 
 This file is the repository's normative agent policy. `docs/agents_history.md`
 is historical rationale, not an additional source of requirements. Conditional

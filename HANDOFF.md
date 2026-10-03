@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-03T00:03:35.831543+00:00`
+Refreshed at: `2026-10-03T01:18:07.992948+00:00`
 
 ## Start here
 
@@ -21,21 +21,15 @@ Refreshed at: `2026-10-03T00:03:35.831543+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `2844998e4d80` — MOD-25e E9-E15: dual-era gate; points/EPA gains match; offence-defence latent correlation was fitted noise-diluted with the wrong sign, now from cross-lag covariance (strength RE 47.6 -> 55.0 vs 58.0 pool era, late R2 .104 -> .127)
-- Pending change set: 24 paths
+- Baseline commit: `caa9e1fa5db0` — SIM-09/MOD-25e: one-at-a-time ladder, leader reversion and drive-sequence decompositions (shared game environment missing)
+- Pending change set: 22 paths
+  - `M  AGENTS.md`
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/mod25e-generator-fidelity.md`
-  - `M  docs/lanes/sim09-urgency-stakes.md`
+  - ` M docs/lanes/mod25e-generator-fidelity.md`
   - ` M docs/model.html`
-  - `A  scripts/mod25e_env.py`
-  - `A  scripts/mod25e_kstate.py`
-  - `A  scripts/mod25e_revert.py`
-  - `A  scripts/mod25e_revert_sim.py`
-  - `A  scripts/mod25e_xq.py`
-  - `M  scripts/sim09_ladder.py`
   - ` M tiebreaker.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -43,7 +37,13 @@ Refreshed at: `2026-10-03T00:03:35.831543+00:00`
   - `?? registry/experiments/margin-predict/2026-week-04-20261002T161446Z.json`
   - `?? registry/experiments/opener-evaluation/20261001T211624Z.json`
   - `?? registry/experiments/opener-evaluation/20261002T161817Z.json`
-  - ...and 4 more
+  - `?? registry/experiments/waterfall-feed/20261001T211747Z.json`
+  - `?? registry/experiments/waterfall-feed/20261002T162022Z.json`
+  - `?? scripts/_u3d_tmp.py`
+  - `?? scripts/mod24_u7a.py`
+  - `?? scripts/mod25e_drill.py`
+  - `?? scripts/mod25e_kick.py`
+  - ...and 2 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
