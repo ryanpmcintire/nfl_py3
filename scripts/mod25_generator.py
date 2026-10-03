@@ -2,6 +2,7 @@ import argparse
 import inspect
 import json
 import math
+import os
 import sys
 import time
 from pathlib import Path
@@ -550,6 +551,8 @@ def run_generation(setting, n_worlds, n_seasons, workers, seed, keep_plays=False
             tasks.append((w, sidx, int(game_seeds[sidx].generate_state(1)[0]), sched, ratings))
     t0 = time.time()
     results = []
+    for k in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS", "NUMEXPR_NUM_THREADS"):
+        os.environ[k] = "1"
     ctx = mp.get_context("spawn")
     with ctx.Pool(workers, initializer=init_worker, initargs=(setting,)) as pool:
         for i, r in enumerate(pool.imap_unordered(play_season, tasks, chunksize=1)):

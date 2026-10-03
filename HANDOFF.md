@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-03T13:30:02.034887+00:00`
+Refreshed at: `2026-10-03T14:27:00.431244+00:00`
 
 ## Start here
 
@@ -21,20 +21,14 @@ Refreshed at: `2026-10-03T13:30:02.034887+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `b3fa2b3b37cc` — MOD-25e: e5 results now saved under each variant's own label (were overwriting crH)
-- Pending change set: 23 paths
+- Baseline commit: `86ba06645406` — MOD-25e E31-E33: late FG gap is unspent trailer timeouts; f2 refit with previous-play clock state (F2PR); e5 logger fields for late-game scoring
+- Pending change set: 17 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/mod25e-generator-fidelity.md`
   - ` M docs/model.html`
-  - `M  scripts/mod25e_crH.py`
-  - `A  scripts/mod25e_f2pr.py`
-  - `A  scripts/mod25e_fg30.py`
-  - `M  scripts/mod25e_scorestate.py`
-  - `A  scripts/mod25e_tospend.py`
-  - `M  scripts/sim09_f2.py`
+  - `M  scripts/mod25_generator.py`
   - ` M tiebreaker.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -43,7 +37,9 @@ Refreshed at: `2026-10-03T13:30:02.034887+00:00`
   - `?? registry/experiments/opener-evaluation/20261001T211624Z.json`
   - `?? registry/experiments/opener-evaluation/20261002T161817Z.json`
   - `?? registry/experiments/waterfall-feed/20261001T211747Z.json`
-  - ...and 3 more
+  - `?? registry/experiments/waterfall-feed/20261002T162022Z.json`
+  - `?? scripts/_u3d_tmp.py`
+  - `?? scripts/mod24_u7a.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
