@@ -34,7 +34,7 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 | Sun, Oct 04 | NE at BUF  | NE +6.5          | 53.2%          |
 | Sun, Oct 04 | NYJ at CHI | CHI -3.5         | 55.0%          |
 | Sun, Oct 04 | TEN at BAL | BAL -11.5        | 50.6%          |
-| Mon, Oct 05 | ATL at NO  | ATL +2.5         | 53.0%          |
+| Mon, Oct 05 | ATL at NO  | ATL +2.5         | 53.4%          |
 
 [Open the standalone card](CURRENT_PREDICTIONS.md) for provenance and interpretation.
 <!-- CURRENT_PREDICTIONS:END -->
@@ -47,7 +47,7 @@ close. A close-graded number alone is never grounds to reject a candidate
 (see `AGENTS.md`); it is reported below only as the secondary figure it is.
 
 <!-- ACTIVE_MODEL_STATE:START -->
-Active model: `market_residual` with `weak_stack` features (`6fa3d1105fc3820e`), regressor `ridge`, ridge alpha `10.0`, calibration `none`.
+Active model: `market_residual` with `weak_stack` features (`52c2618b1b298e7d`), regressor `ridge`, ridge alpha `10.0`, calibration `none`.
 
 - **Opener-graded, probability-rule accuracy (the pool-relevant grade -- picks lock Tuesday against a frozen line):** **53.36%** on **1,537 paired games**, week-blocked 95% interval [50.76%, 55.90%].
 - Close-graded accuracy (secondary -- the market's sharpest, and least representative, decision point): **52.47%** (1,114 of 2,123 non-push games), week-blocked 95% interval [50.47%, 54.86%].

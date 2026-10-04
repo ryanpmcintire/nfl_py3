@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-04T00:37:56.017637+00:00`
+Refreshed at: `2026-10-04T20:59:19.541265+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-10-04T00:37:56.017637+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `d9cc8f2aeb1a` — Week 4 Saturday evening refresh: latest lines (Bovada 23:53 UTC), injuries and lineups; card and board republished
-- Pending change set: 25 paths
-  - `M  HANDOFF.md`
-  - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
-  - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-04-20261001T211240Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-04-20261002T161446Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-04-20261003T161013Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-04-20261003T173930Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-04-20261004T000229Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-04-20261004T001736Z.json`
-  - `?? registry/experiments/opener-evaluation/20261001T211624Z.json`
-  - `?? registry/experiments/opener-evaluation/20261002T161817Z.json`
-  - `?? registry/experiments/opener-evaluation/20261003T161344Z.json`
-  - `?? registry/experiments/opener-evaluation/20261004T000602Z.json`
-  - `?? registry/experiments/waterfall-feed/20261001T211747Z.json`
-  - `?? registry/experiments/waterfall-feed/20261002T162022Z.json`
-  - `?? registry/experiments/waterfall-feed/20261003T161443Z.json`
-  - ...and 5 more
+- Baseline commit: `04e4b87dfa57` — Refresh handoff
+- Pending change set: 61 paths
+  - ` M CURRENT_PREDICTIONS.md`
+  - ` M README.md`
+  - ` M docs/findings.html`
+  - ` M docs/history.html`
+  - ` M docs/index.html`
+  - `A  docs/lanes/done/mod25e-generator-fidelity-log-2026-10-04.md`
+  - `M  docs/lanes/mod25e-generator-fidelity.md`
+  - ` M docs/model.html`
+  - `A  scripts/mod25e_catchup.py`
+  - `A  scripts/mod25e_clk.py`
+  - `A  scripts/mod25e_clock2.py`
+  - `M  scripts/mod25e_crH.py`
+  - `M  scripts/mod25e_dist.py`
+  - `A  scripts/mod25e_dkern2.py`
+  - `A  scripts/mod25e_e68a.py`
+  - `M  scripts/mod25e_endgame.py`
+  - `A  scripts/mod25e_fourth.py`
+  - `A  scripts/mod25e_gze.py`
+  - `A  scripts/mod25e_half2.py`
+  - `A  scripts/mod25e_halfend.py`
+  - ...and 41 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -52,18 +52,18 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `6fa3d1105fc3820e`
+- Model ID: `52c2618b1b298e7d`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261004T000602Z`)
+- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261004T134556Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card combines this with the coach component in one fitted calibrated probability, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,114 / 2,123 (52.47%)**
-- Linked forecast: **2026 Week 4**, created `2026-10-04T00:17:36.730367+00:00`
+- Linked forecast: **2026 Week 4**, created `2026-10-04T16:09:41.475047+00:00`
 
 The 52.47% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 4** from model `6fa3d1105fc3820e`, published `2026-10-04T00:24:53.985898+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 4** from model `52c2618b1b298e7d`, published `2026-10-04T16:16:48.677715+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

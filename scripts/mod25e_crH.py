@@ -71,6 +71,32 @@ def run_with_flags(init, setting):
 
     if dk.enabled():
         dk.install_dk()
+    import mod25e_dkern2 as dk2
+
+    if dk2.enabled():
+        dk2.install_dk2()
+    import mod25e_clk as ck
+
+    if ck.enabled():
+        ck.install_ck()
+    if ck.kn_enabled():
+        ck.install_kn()
+    import mod25e_sel as sl
+
+    if sl.enabled():
+        sl.install_sel()
+    import mod25e_kfit as kf
+
+    if kf.enabled():
+        kf.install_kf()
+    import mod25e_fourth as fd
+
+    if fd.enabled():
+        fd.install_fd4()
+    import mod25e_tdc as td
+
+    if td.enabled():
+        td.install_tdc()
 
 
 def H_budget(setting):
@@ -110,6 +136,22 @@ def cmd_e5(a):
         label = label + "n"
     if os.environ.get("DKF") == "1":
         label = label + "d"
+    if os.environ.get("DK2") == "1":
+        label = label + "e"
+    if os.environ.get("CLK") == "1":
+        label = label + "c"
+    if os.environ.get("SEL") == "1":
+        label = label + "s"
+    if os.environ.get("KFIT") == "1":
+        label = label + "k2"
+    if os.environ.get("KN") == "1":
+        label = label + "m"
+    if os.environ.get("FD4") == "1":
+        label = label + "f"
+    if os.environ.get("CLK2") == "1":
+        label = label + "w"
+    if os.environ.get("TDC") == "1":
+        label = label + "t"
     dv.DV[label] = dict(dv.DV["crG"])
     outd = ss.OUT / f"e5_{label}_s{a.seed}"
     outd.mkdir(parents=True, exist_ok=True)

@@ -1,3 +1,4 @@
+import os
 import sys
 from pathlib import Path
 
@@ -10,8 +11,8 @@ import mod25e_draw as dr
 import mod25e_late as ml
 
 ART = REPO / "artifacts" / "mod25e3"
-LABEL = "crHpqokg"
-SEEDS = (11, 12, 13)
+LABEL = os.environ.get("DIST_LABEL", "crHpqokg")
+SEEDS = tuple(int(x) for x in os.environ.get("DIST_SEEDS", "11,12,13").split(","))
 NB = int(sys.argv[1]) if len(sys.argv) > 1 else 200
 OUT = []
 LOOKS = [0]
@@ -213,7 +214,7 @@ def main():
     part4(R)
     part1(S, R)
     say(f"looks {LOOKS[0]}")
-    d = ART / "dist"
+    d = ART / os.environ.get("DIST_OUT", "dist")
     d.mkdir(exist_ok=True)
     (d / "dist.txt").write_text("\n".join(OUT), encoding="utf-8")
 

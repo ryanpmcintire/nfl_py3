@@ -1,4 +1,5 @@
 import argparse
+import os
 import sys
 from pathlib import Path
 
@@ -198,6 +199,11 @@ def install_eg():
     ns = dv._G["ns"]
     st = {"k": None, "rng": None, "rng2": None, "to": (3.0, 3.0), "ps": (None, 1.0)}
     dec = ns["DECIDE"]
+    dv._G["egst"] = st
+    wide = os.environ.get("KNW") == "1"
+
+    def inwin(qtr, clock_val):
+        return dr.in_window(qtr, clock_val) or (wide and ((qtr == 4 and 0 < clock_val <= 600.0) or (qtr == 2 and 1800.0 < clock_val <= 1980.0)))
     if mode >= 2:
         T = train_frame()
         L = T[((T.qtr == 4) & (T.gsr <= 600)) | ((T.qtr == 2) & (T.gsr <= 1980))]
@@ -270,7 +276,7 @@ def install_eg():
     def decide(idx, rng, tbl, qtr, clock_val, in_ot, down, distance, yardline, score_diff, off_to, def_to, *rest):
         st["to"] = (float(off_to), float(def_to))
         reset(dv._G.get("task_key"))
-        if mode >= 2 and (not in_ot) and down in (1, 2, 3) and dr.in_window(qtr, clock_val):
+        if mode >= 2 and (not in_ot) and down in (1, 2, 3) and inwin(qtr, clock_val):
             code0 = int(dv._G["tables"]["arrays"]["play_type_code"][idx])
             if code0 == 6:
                 return idx
