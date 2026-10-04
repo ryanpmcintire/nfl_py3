@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-04T00:37:48.395479+00:00`
+Refreshed at: `2026-10-04T00:37:56.017637+00:00`
 
 ## Start here
 
@@ -21,15 +21,9 @@ Refreshed at: `2026-10-04T00:37:48.395479+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `6e7dd2c1b013` — MOD-25e E51-E53: punt excess is 4th-down state mix from inexact distance matching; distance kernel width from held-out first-down likelihood (DKF); NEG 3-seed scored
-- Pending change set: 31 paths
-  - `M  CURRENT_PREDICTIONS.md`
-  - ` M README.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - `M  docs/model.html`
-  - `M  tiebreaker.json`
+- Baseline commit: `d9cc8f2aeb1a` — Week 4 Saturday evening refresh: latest lines (Bovada 23:53 UTC), injuries and lineups; card and board republished
+- Pending change set: 25 paths
+  - `M  HANDOFF.md`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
@@ -43,7 +37,13 @@ Refreshed at: `2026-10-04T00:37:48.395479+00:00`
   - `?? registry/experiments/margin-predict/2026-week-04-20261004T000229Z.json`
   - `?? registry/experiments/margin-predict/2026-week-04-20261004T001736Z.json`
   - `?? registry/experiments/opener-evaluation/20261001T211624Z.json`
-  - ...and 11 more
+  - `?? registry/experiments/opener-evaluation/20261002T161817Z.json`
+  - `?? registry/experiments/opener-evaluation/20261003T161344Z.json`
+  - `?? registry/experiments/opener-evaluation/20261004T000602Z.json`
+  - `?? registry/experiments/waterfall-feed/20261001T211747Z.json`
+  - `?? registry/experiments/waterfall-feed/20261002T162022Z.json`
+  - `?? registry/experiments/waterfall-feed/20261003T161443Z.json`
+  - ...and 5 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
