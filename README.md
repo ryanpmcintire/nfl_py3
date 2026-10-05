@@ -30,11 +30,11 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 | Sun, Oct 04 | KC at LV   | KC -4.5          | 50.6%          |
 | Sun, Oct 04 | LAC at SEA | SEA -7.5         | 57.4%          |
 | Sun, Oct 04 | LA at PHI  | LA -2.5          | 56.0%          |
-| Sun, Oct 04 | MIA at MIN | MIN -11.5        | 54.7%          |
+| Sun, Oct 04 | MIA at MIN | MIN -11.5        | 52.0%          |
 | Sun, Oct 04 | NE at BUF  | NE +6.5          | 53.2%          |
 | Sun, Oct 04 | NYJ at CHI | CHI -3.5         | 55.0%          |
 | Sun, Oct 04 | TEN at BAL | BAL -11.5        | 50.6%          |
-| Mon, Oct 05 | ATL at NO  | ATL +2.5         | 53.4%          |
+| Mon, Oct 05 | ATL at NO  | ATL +2.5         | 56.1%          |
 
 [Open the standalone card](CURRENT_PREDICTIONS.md) for provenance and interpretation.
 <!-- CURRENT_PREDICTIONS:END -->

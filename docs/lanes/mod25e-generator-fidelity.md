@@ -8,7 +8,7 @@ mechanism fitted to its own real behaviour (LOSO held-out likelihood); aggregate
 are checks only; no compensating constants. The simulator is not served.
 
 ## State (2026-10-05, measured, 3 seeds)
-Base label `crHpqokgndecsmfwtjo2as2` = env `NEG=1 EGT=1 EGH=1 F2PR=1 QBC=1
+Base label `crHpqokgndecsmfwtjo2as2` (now +YLM punt = `...as2yp`, see Next 4) = env `NEG=1 EGT=1 EGH=1 F2PR=1 QBC=1
 OTY=2009-2017 KICK=1 GZ=1 DKF=1 DK2=1 CLK=1 SEL=1 KN=1 KNW=1 FD4=1 CLK2=1 TDC=1
 KGZ=1 OKK=1 ADJ=1 STF=1`, run `scripts/mod25e_crH.py e5 --workers 3 --seed {11,12,13}`.
 Scored by `scripts/mod25e_era.py` -> artifacts/mod25e3/stf_era/era.txt.
@@ -49,6 +49,28 @@ leader complacency, halftime adjustment) alongside concrete mechanics.
 2. Fixed today: KGZ (kick overwritten by GZ repick), OKK (halftime-crossing kicks as
    kicker-kept), ADJ (in-game matchup adjustment, small), STF (special-teams form).
 3. Open: STF return-coverage kappa clipped at +1.0; mass at 3 short (.115 vs .141).
+4. Persistence hunt 2026-10-05 (lanes mod25e-e91-startspot, -e92-penalties, -e95-endspot):
+   penalties not the carrier (E92); flip-start coupling damped (E91/E93); A's own H2
+   start carries the end-spot gap (E95). YLM (E94 yardline-window punt redraw, YLM=1
+   YLM_CLASSES=punt, label suffix yp) full 3-seed run KEPT as play-level fix (measured,
+   artifacts/mod25e3/yp_check, base_check): punt start slope .699 v real .692 (base
+   .238), punt start 74.16 v 74.19 (base 74.82). E95 own-start gap +.036 -> +.021 yd/pt,
+   end-spot +.037 -> +.022 (artifacts/mod25e3/e95_yp). E88 x -.0556 -> -.0599 (real
+   -.1326). Checks worse (yp_era/era.txt): SD 15.34 -> 15.58, noise 178 -> 186, pts
+   +.43, xq +1.5 -> +4.1: field-position chain now carries more variance; the missing
+   counter-force is still unnamed. New base crHpqokgndecsmfwtjo2as2yp.
+   Defect logged: STF shifts touchback starts off the rule spot (punt touchbacks .001
+   v real .097 in base and yp); STF fit (stf/an.txt) matched real only without the
+   touchback exemption, so the fix is a team-form touchback probability, not exemption.
+5. E96 (docs/lanes/mod25e-e96-mass3.md): mass-3 gap -.026 is 65% overtime (reg-tie
+   rate equal; P(final 3 | reg tie) real .682 v sim .432). E97 (docs/lanes/
+   mod25e-e97-ot.md): sudden-death drives lack the walk-off FG (downs 2-3 FG share
+   .15-.19 real v .02-.04 sim; pool phase 4 mixes Q4-last-5 rows, sim04_engine.py:255).
+   WFG hook (scripts/mod25e_wfg.py, fit artifacts/mod25e3/wfg/fit.json, LOSO) smoke
+   OT |m|=3 .355 -> .600. RUNNING: base env + YLM=1 YLM_CLASSES=punt WFG=1 e5 s11-13 ->
+   e5_crHpqokgndecsmfwtjo2as2ypw2_s1{1,2,3}; then era scorer vs ...as2yp and
+   scripts/mod25e_e96.py on the new label. Regulation residual (FG share -.025, missed
+   PAT .091 v .061, late TDs for mass 7/14) next.
 Lessons: exclude half-last rows from every possession-change definition; every
 engine wrapper walks frames to the 'offense' frame and binds locals before base.
 CPU budget: about 6 of 24 cores; e5 --workers 3, one at a time; agents

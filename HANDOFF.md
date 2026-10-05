@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-05T13:30:57.275253+00:00`
+Refreshed at: `2026-10-05T20:11:19.217474+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-10-05T13:30:57.275253+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `12b21ade5d06` — MOD-25e E90 + STF: per-side special-teams game form fitted from split-half reliability; neutral on checks, kept; new base ...o2as2
-- Pending change set: 33 paths
-  - `M  docs/lanes/done/mod25e-generator-fidelity-log-2026-10-04.md`
+- Baseline commit: `c4a164a35aee` — Lane: archive E79-E90 detail; one-page summary of ruled-out and fixed mechanisms
+- Pending change set: 58 paths
+  - ` M CURRENT_PREDICTIONS.md`
+  - ` M README.md`
+  - ` M docs/findings.html`
+  - ` M docs/history.html`
+  - ` M docs/index.html`
+  - `A  docs/lanes/mod25e-e91-startspot.md`
+  - `A  docs/lanes/mod25e-e92-penalties.md`
+  - `A  docs/lanes/mod25e-e95-endspot.md`
+  - `A  docs/lanes/mod25e-e96-mass3.md`
+  - `A  docs/lanes/mod25e-e97-ot.md`
   - `M  docs/lanes/mod25e-generator-fidelity.md`
-  - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
-  - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-04-20261001T211240Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-04-20261002T161446Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-04-20261003T161013Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-04-20261003T173930Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-04-20261004T000229Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-04-20261004T001736Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-04-20261004T134232Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-04-20261004T160941Z.json`
-  - `?? registry/experiments/opener-evaluation/20261001T211624Z.json`
-  - `?? registry/experiments/opener-evaluation/20261002T161817Z.json`
-  - ...and 13 more
+  - ` M docs/model.html`
+  - `M  scripts/mod25e_crH.py`
+  - `A  scripts/mod25e_e91.py`
+  - `A  scripts/mod25e_e92.py`
+  - `A  scripts/mod25e_e92b.py`
+  - `A  scripts/mod25e_e93.py`
+  - `A  scripts/mod25e_e94.py`
+  - `A  scripts/mod25e_e95.py`
+  - `A  scripts/mod25e_e96.py`
+  - ...and 38 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -57,13 +57,13 @@ trust live Git output after checkout.
 - Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261004T134556Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card combines this with the coach component in one fitted calibrated probability, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,114 / 2,123 (52.47%)**
-- Linked forecast: **2026 Week 4**, created `2026-10-04T16:09:41.475047+00:00`
+- Linked forecast: **2026 Week 4**, created `2026-10-05T16:10:15.066584+00:00`
 
 The 52.47% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 4** from model `52c2618b1b298e7d`, published `2026-10-04T16:16:48.677715+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 4** from model `52c2618b1b298e7d`, published `2026-10-05T16:17:53.745246+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

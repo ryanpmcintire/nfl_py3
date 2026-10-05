@@ -109,10 +109,18 @@ def run_with_flags(init, setting):
 
     if ad.enabled():
         ad.install_adj()
+    import mod25e_ylm as ym
+
+    if ym.enabled():
+        ym.install_ylm()
     import mod25e_stf as sf
 
     if sf.enabled():
         sf.install_stf()
+    import mod25e_wfg as wf
+
+    if wf.enabled():
+        wf.install_wfg()
 
 
 def H_budget(setting):
@@ -176,8 +184,12 @@ def cmd_e5(a):
         label = label + "a"
     if os.environ.get("STF") == "1":
         label = label + "s2"
+    if os.environ.get("YLM") == "1":
+        label = label + ("yp" if os.environ.get("YLM_CLASSES") == "punt" else "y")
     if os.environ.get("RISK") == "1":
         label = label + "r"
+    if os.environ.get("WFG") == "1":
+        label = label + "w2"
     dv.DV[label] = dict(dv.DV["crG"])
     outd = ss.OUT / f"e5_{label}_s{a.seed}"
     outd.mkdir(parents=True, exist_ok=True)
