@@ -66,11 +66,15 @@ leader complacency, halftime adjustment) alongside concrete mechanics.
    rate equal; P(final 3 | reg tie) real .682 v sim .432). E97 (docs/lanes/
    mod25e-e97-ot.md): sudden-death drives lack the walk-off FG (downs 2-3 FG share
    .15-.19 real v .02-.04 sim; pool phase 4 mixes Q4-last-5 rows, sim04_engine.py:255).
-   WFG hook (scripts/mod25e_wfg.py, fit artifacts/mod25e3/wfg/fit.json, LOSO) smoke
-   OT |m|=3 .355 -> .600. RUNNING: base env + YLM=1 YLM_CLASSES=punt WFG=1 e5 s11-13 ->
-   e5_crHpqokgndecsmfwtjo2as2ypw2_s1{1,2,3}; then era scorer vs ...as2yp and
-   scripts/mod25e_e96.py on the new label. Regulation residual (FG share -.025, missed
-   PAT .091 v .061, late TDs for mass 7/14) next.
+   WFG hook (scripts/mod25e_wfg.py, fit artifacts/mod25e3/wfg/fit.json, LOSO) KEPT,
+   new base crHpqokgndecsmfwtjo2as2ypw2 (env base + YLM=1 YLM_CLASSES=punt WFG=1).
+   Measured 3 seeds (w2_era/era.txt, e96/e96_ypw2.txt): mass3 .114 -> .122 (.141); OT
+   mass3 gap -.0168 -> -.0081 [-.017,+.001]; other checks flat (SD 15.59, noise 184.7,
+   pts 45.99). Still short: tied entering last 5 min P(final 3) .474 v .625 (regulation
+   walk-off FG, same missing "a score ends it" term) -> next unit.
+   E98 (docs/lanes/mod25e-e98-regkick.md): PAT rate fitted on 2015+ only and applied to
+   all years (mod25_mechanisms.py:323); FG make flat in distance. Hooks PATY/FGD being
+   written (smoke). Smoke dirs go in artifacts/mod25e3/smoke/ (era globs pick up _s31).
 Lessons: exclude half-last rows from every possession-change definition; every
 engine wrapper walks frames to the 'offense' frame and binds locals before base.
 CPU budget: about 6 of 24 cores; e5 --workers 3, one at a time; agents

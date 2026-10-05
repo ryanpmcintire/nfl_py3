@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-05T20:11:19.217474+00:00`
+Refreshed at: `2026-10-05T22:35:59.276235+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-10-05T20:11:19.217474+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `c4a164a35aee` — Lane: archive E79-E90 detail; one-page summary of ruled-out and fixed mechanisms
-- Pending change set: 58 paths
+- Baseline commit: `b55707eb93b7` — MOD-25e E94-E97: keep yardline-window punt redraw (punt checks pass, own-start persistence gap -43%); overtime carries 65% of mass-3 gap, walk-off FG hazard hook WFG
+- Pending change set: 46 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - ` M README.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `A  docs/lanes/mod25e-e91-startspot.md`
-  - `A  docs/lanes/mod25e-e92-penalties.md`
-  - `A  docs/lanes/mod25e-e95-endspot.md`
-  - `A  docs/lanes/mod25e-e96-mass3.md`
-  - `A  docs/lanes/mod25e-e97-ot.md`
   - `M  docs/lanes/mod25e-generator-fidelity.md`
   - ` M docs/model.html`
-  - `M  scripts/mod25e_crH.py`
-  - `A  scripts/mod25e_e91.py`
-  - `A  scripts/mod25e_e92.py`
-  - `A  scripts/mod25e_e92b.py`
-  - `A  scripts/mod25e_e93.py`
-  - `A  scripts/mod25e_e94.py`
-  - `A  scripts/mod25e_e95.py`
-  - `A  scripts/mod25e_e96.py`
-  - ...and 38 more
+  - ` M scripts/mod25e_crH.py`
+  - ` M tiebreaker.json`
+  - `?? docs/lanes/mod25e-e98-regkick.md`
+  - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
+  - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
+  - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
+  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
+  - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
+  - `?? registry/experiments/margin-predict/2026-week-04-20261001T211240Z.json`
+  - `?? registry/experiments/margin-predict/2026-week-04-20261002T161446Z.json`
+  - ...and 26 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
