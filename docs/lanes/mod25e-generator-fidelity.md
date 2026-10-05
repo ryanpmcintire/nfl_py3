@@ -40,134 +40,19 @@ Detailed log: docs/lanes/done/mod25e-generator-fidelity-log-2026-10-04.md.
 ## Next
 Owner 2026-10-04: prioritise abstract human mechanisms (catch-up, effort, risk,
 leader complacency, halftime adjustment) alongside concrete mechanics.
-1. Persistence E +9.7 is the largest gap; play-level effort and halftime
-   response already match (E75); carrier is later start field position (E76/E77,
-   80% within-start-type yardline). The late-turnover shortfall (E77-E79) is
-   mostly a DEFINITION ARTIFACT: real half-ending plays carry flip=1, po=0 and
-   count as 'lost' (Q2 real run lost .0178 -> .0100 excluding half-last plays,
-   sim .0106; Q4 .0165 -> .0088, sim .0096; measured). Any lost/turnover metric
-   must exclude half-last rows. RISK and DESP stay out. Next: recheck E77's start
-   yardline gap with half-last rows excluded, then the within-type yardline
-   mechanism (punt/kick return distance by score state).
-2. Strength 57.0 vs 58 now fine; mass at 3 short (.117 vs .141).
-CPU budget: about 6 of 24 cores total. e5 at --workers 3, one at a time; agents
-analysis-only, single-threaded, no sims while e5 runs. Every wrapper of
-pick/pol/DECIDE must bind qtr/offense/off_to/def_to locals before calling base.
-
-KGZ (orchestrator, from E82b trace): kick pol (mod25e_kick.py) drew the
-after-score kickoff, then passed the row to GZ which repicked goal-to-go rows and
-overwrote points/flip/next_yardline (mod25e_gz.py:117-121): 42% of TD plays lost
-the kick draw, 29% of final TDs had none (late lead>8: kick draw only 29%).
-Fix KGZ=1 (label j): kick pol calls base first, then applies the kick to the
-final row. First 3-seed run crashed (KeyError offense: the layer outside kick
-lacks it); fixed by walking frames to the engine frame (gz pattern); 1x1 smoke
-OK. 3-seed result (kgz_era, fpos2/fpos2_j.txt; measured): after-TD receiver start
-slope Q4 -1.51 -> -2.48 (real -2.86), all Q -0.81 -> -1.18 (-1.69); Q1 still
--0.30 vs -2.57 (separate mechanism). Checks: SD 15.25 -> 15.35, noise 176.0 ->
-178.2, xq -1.4 -> +2.6, catch-up +11.3 -> +13.8 (within ~2 seed-noise widths).
-KEPT as a verified pipeline-defect fix: NEW BASE crHpqokgndecsmfwtj (+KGZ=1).
-Next: Q1 after-TD kickoff start slope gap; within-type yardline still +4.9.
-
-OKK (orchestrator, from E84): real kick pool flagged 274 halftime-crossing kicks
-as kicker-kept (next live play = 2nd-half kickoff; mod25e_kick.py:54), doubling
-the sim's kept share (3.1% vs real 1.5%) and handing scorers extra possessions.
-OKK=1 drops crossing rows (flag-off identical); label o2. Running smoke + 3 seeds
-crHpqokgndecsmfwtjo2 -> okk_era, catchup3_<L>. Result (3 seeds): neutral within
-noise (E 11.5 -> 9.8, total 13.8 -> 14.7, SD 15.35 -> 15.42, strength 57.5 -> 58.3);
-KEPT as a data-defect fix. NEW BASE crHpqokgndecsmfwtjo2 (+KGZ +OKK). Same artifact class as E79:
-half-end rows must be excluded from every possession-change definition.
-
-ADJ (orchestrator, from E87): hook wired (label a). Fitted delta real-sim .00034
-per EPA-sum (~.0024 EPA/play at 1 sd): small. Running smoke + 3 seeds
-crHpqokgndecsmfwtjo2a -> adj_era, catchup3_<L>, counter/counter_<L>.txt (base copy
-counter/counter_base_jo2.txt). Decide on opp H1->H2 slope (real +.039) and E.
-Result (3 seeds, adj_era, counter/counter_<L>.txt): opp slope gap sim-real -.0216 ->
--.0176; SD 15.42 -> 15.28, noise 179.8 -> 177.8, xq +1.9 -> +0.8, catch-up 14.7 ->
-13.7, E 9.8 -> 10.1, strength 58.3 -> 55.9. Small, mostly right direction; KEPT.
-NEW BASE crHpqokgndecsmfwtjo2a. Scale mismatch: E86 gap is in drive points (field
-position channel), E87 fit is per-play EPA -> E88 refits the adjustment in the
-drive-outcome channel.
-
-STF (orchestrator, from E90): per-side special-teams game form wired (label s2).
-Offline replay kick/punt/cross covariances match real; all-drive 3.67 vs 5.46
-reported not filled; return-coverage kappa clipped at +1.0 (boundary, open).
-Result (3 seeds, stf_era): SD 15.28 -> 15.34, noise 177.8 -> 178.3, strength 55.9 ->
-57.4, late r2 .129 -> .135, xq +0.8 -> +1.5, catch-up 13.7 -> 13.8, E 10.1 -> 10.3:
-neutral within noise; KEPT (measured mechanism). NEW BASE crHpqokgndecsmfwtjo2as2.
+1. Persistence E +10.3 is the largest gap. Ruled out (measured): play-level effort,
+   halftime regression (E75), team form variance (E85), desperation plays (E79),
+   late turnovers (half-end flip artifact, E79), leader conservatism and weather (E88),
+   special-teams form as carrier (E89). Real counter-force +6.7 vs sim +1.4 (E86);
+   its resolved channel is a uniform within-type start-yardline shift for the
+   opponent of an early over-performer (E88), mechanism unnamed.
+2. Fixed today: KGZ (kick overwritten by GZ repick), OKK (halftime-crossing kicks as
+   kicker-kept), ADJ (in-game matchup adjustment, small), STF (special-teams form).
+3. Open: STF return-coverage kappa clipped at +1.0; mass at 3 short (.115 vs .141).
+Lessons: exclude half-last rows from every possession-change definition; every
+engine wrapper walks frames to the 'offense' frame and binds locals before base.
+CPU budget: about 6 of 24 cores; e5 --workers 3, one at a time; agents
+single-threaded analysis, foreground only.
 
 ## Open
 None.
-
-## E79 desperation class (measured, scripts/mod25e_desp.py, artifacts/mod25e3/desp/{chars,fit}.txt)
-Class D = lateral row (807) or pass air_yards>=44 (p99 of hsr>120 passes) with hsr<=20 (143, window = widest where deep rate lower bound exceeds ordinary .0111): 950 rows, .41/game, lost .419, TD .007. Real D share at trail>8 Q4 last 450 s .0035 vs sim .0041; kNN k=200 pool already holds .0031 D (45% of states >=1). Only miss: Q4 trail1-8 hsr<=20 D rate real .163 vs sim .024.
-DESP=1 fit: LOSO form 5 (half x time bin, deficit, timeouts, field) lam .1 gain 597 LL vs constant, 9/9 seasons; pool m=160 prior 4 (24 looks); 18 form looks. Replay: trail>8 Q4 last 450 lost real .1029 | sim .0752 | sim+DESP .0756; TD .0463|.0466|.0465 -> D explains ~0.0015 of the .028 gap; not a carrier, not for base.
-Gap is downs 1-3 ordinary: lost|play real .0638 vs sim .0377 (pass share .854 vs .84; 4th-down share .071|.067, lost|4th .616|.601 match). Next: model 1-3 down turnovers by trailing late as forced throws by pressure state (sacks, deep depth), not extreme plays.
-Hook (not applied): scripts/mod25e_crH.py after line 107 add `import mod25e_desp as dp` / `if dp.enabled(): dp.install_desp()` (outermost wrap, after install_tov); after line 164 `if os.environ.get("DESP") == "1": label = label + "z"`.
-
-## E80 start-position decomposition, half-end exclusion, strategy slopes (measured, scripts/mod25e_fpos2.py, artifacts/mod25e3/fpos2/fpos2.txt, base crHpqokgndecsmfwt s11-13, 100 boots, 102 looks)
-- Half-last/game-last exclusion barely matters at drive level: 1522 real later drives follow End of half/game and are start type (28 fewer other starts than E77); the E77 turnover contamination was play-level. Gap F real -14.49 vs sim -8.87 (+5.62 [+3.59,+7.86] pp 1.00): mix +1.22 (22%) vs within-type +4.40 (78%); within by type: other +2.02, punt +0.90, koTD +0.82, koFG +0.66 (all pp >=.98).
-- Level gap, not strategy: sim starts are worse for the receiver after every type (punt yl0 +0.81, net punt +1.0 yd longer in every lead band, other +2.0). Punt slope on punter lead matches (net -0.437 real, -0.505 sim, s-r pp .14); touchback share matches; punting is NOT the strategic carrier. Fair catch/return split unavailable (raw pbp has no kick/return columns).
-- Strategic gap is kickoffs and turnover returns: after a TD receiver start yl0 slope per lead band real -1.69 vs sim -0.81 (s-r +0.88, pp 1.00; Q1 +2.27, Q4 +1.35); after FG -0.78 vs -0.47; other-drive return gain slope +1.26 vs +0.62 (pp 0.00). LOSO adding lead band to quarter mean: ko TD +3.1% SSE 9/9 seasons, FG +0.8% 7/9, turnover gain +0.8% 8/9, punt net +0.24% 9/9.
-- Engine read: punts and turnovers draw a real row by kNN over dist/fp/scaled score/time/timeouts (sim04_engine.py:284-322, 398-433; features 225-236, score scale 216-222, k via tree.query line 316/429) and apply its absolute next_yardline (1003, 1112-1117), so they condition on score only through that kNN metric. Scored-drive kickoffs use mod25e_kick.py:259-301, nearest sqrt(N) kicks on (score diff after score, time) with kd/gs scaled by std. Mechanism for TD kickoffs: leading receiver gets worse-for-kicker starts (onside-type short fields and kneel/return choice) that the nearest-kick draw smooths.
-- Fix form (not built): LOSO-fit the TD/FG kickoff draw kernel bandwidth on (kd, time) per quarter (replace the std scale by a held-out-likelihood bandwidth), and for turnovers a lead-band term in the draw metric chosen LOSO; a constant shift is excluded.
-
-## E81 kickoff draw and turnover-return fits (measured, scripts/mod25e_kos.py, artifacts/mod25e3/kos/{kick_fit,tov_fit}.txt; LOSO 2009-17, no sim)
-- Kick draw (18338 after-score kicks; 121 models x 5 lam = 605 looks): current sqrt(N)-nearest/std draw already reproduces the real kick-level start slope after TD (real -1.27 vs LOSO cur -1.04 per receiver lead band; all kicks -0.87 vs -0.81; band +2 start 69.3 vs 70.1). Best kernel (eng-score bw 2, raw time bw 150 s, lam 512, lam at grid edge) wins LL +0.0111/kick 9/9 (nested-lite 9/9) but flattens slopes (-0.81 TD, band +2 72.2): KOS kick draw is installed, not shown to move the sim gap; the E80 drive-level -1.69 vs -0.81 is not the kick draw.
-- Turnover return (9060 flip/no-score run-pass plays, 21 models x 5 lam): turnover-only kNN k200 down-grouped wins LL +0.0888/play 9/9 (nested 9/9) over the engine's all-row k200 turnover share; score weight in the metric loses (ws0 best, ws.5 -.0007, ws>=1 worse); LOSO r slope on committing-team lead real +0.374 cur +0.411 best +0.213. Score term refuted for the draw metric; gain is pooling (more turnover rows).
-- Hooks, not applied (KOS flag off = old path textually untouched; label suffix x): mod25e_crH.py replace lines 62-67 block by `import mod25e_kos as ks` / `if ks.enabled(): ks.install_kos()` / `elif rk.kick_enabled(): rk.install_kick()` / `else: mk.install_kick()`; after install_tov (line ~107) `import mod25e_kos as ks` / `if ks.enabled(): ks.install_tovret()`; after line 164 `if os.environ.get("KOS") == "1": label = label + "x"`.
-
-## E82 after-TD kick path (measured, scripts/mod25e_kpath.py -> artifacts/mod25e3/e82/kpath.txt; replay of mod25e_kick.py:259-301 draw on s11-13 TD states, 1 in 4 = 50623)
-- Definitions: E80 x = next drive offense lead band (kicker-kept onside flips sign), E81 x = receiver always; same edges. Sim 97.3% receiver-next, 2.7% kicker-kept (draw expects ~3.4%; band +2 4.7% vs draw 6.5%).
-- Sim actual slope -0.80 (E81 x) / -1.06 (E80 x) vs draw expectation -1.24: draw is not reproduced. Band +2 yl 71.6 actual vs 68.9 expected; t<300 s: 67 vs 57-58; 14% of that cell's next yl lies outside the draw's near set (yl up to 93). Real late band +2: 69% start <=60, sim 33%.
-- Real E80x -0.93 vs E81x -0.86 on all kicks: definitions explain little; defect is in the sim path late with receiver lead. Trace (scripts/mod25e_ktrace.py, 1x1 base sim, out artifacts/mod25e3/e82/trace_rows.csv) was running to log outermost pol in/out; unfinished. Next: read trace, compare pol output next_yardline to next play yl.
-
-## E82b trace (measured, scripts/mod25e_ktrace.py -> artifacts/mod25e3/e82/trace_rows.csv; 1x1 base sim, 1412 TD kickoffs, 846 FG)
-- DEFECT: kick pol (mod25e_kick.py:268-298) is outer to GZ and passes its drawn kick row via base() into gz pol (mod25e_gz.py:64-67, pol_inner 72-123), which repicks goal-to-go run/pass rows and overwrites points, flip, next_yardline (117-121). Kick draw honoured on 58% of engine-TD plays (49% of final TDs); 32% of kick-drawn TDs have points changed (25% become non-scoring, nyl 2); 29% of final TDs are gz-created TDs with no kick draw (raw row nyl, mean 75.8). FG unaffected (0%).
-- Late (end of quarter <300 s) receiver lead >8, n=62 TDs: kick draw 29% (mean nyl 60.1), gz-replaced 34% (70.5), gz-new 37% (76.3); all rl>8 n=134: 33/34/34%. Honoured draws alone carry the draw slope; the rest wipe it. Later layers (dk/dk2/clk/kn/sel/fd4/tdc) alter 0% of nyl (final == gz out); next play yl == final nyl 92% (6% differ >0.5 yd, ordinary start rules).
-- Fix form (not built): resolve the GZ repick before the kick decision (kick evaluates on the post-GZ row), or install kick inside gz; no constant.
-
-## E83 Q1 after-TD kickoff slope (measured, scripts/mod25e_q1ko.py -> artifacts/mod25e3/q1ko/q1ko.txt; real only, 400 boots, 500 perms, 34 looks)
-- Q1 -2.574 is a definition artefact: 166 kicker-kept TD kicks (onside-type, next start 39.4 vs 75.2) enter the E80 x with the kicker's lead band; Q1 has 24. Excluding them, real Q1 -0.684 [-1.18,-0.17] vs sim -0.299 (pp below sim .89), Q2 -0.465, Q3 -0.173, Q4 -2.951 (sim -2.48, pp .99). Including them reproduces -2.574/-1.080/-0.329/-2.860 exactly.
-- (a) refuted for Q1: unit strength (LOSO team-season mean start yl0; split-half r .44/.42, attenuated) coefs +.40/+.31 pp 1.00 but Q1 slope moves only +0.055; +margin difference +0.039; lead band vs controls corr -.03/-.01/+.10. (b) touchback share Q1 -0.041/step, non-touchback start Q1 -0.656: no strategy carrier. (c) permutation P(null<=obs) Q1 .020, n per Q1 band 391/1446/231/51/2.
-- Remaining gap is the sim's kicker-kept share (2.7% vs real 0.95% of TD kicks; E82) and Q4 -0.47 (the TD slope), not a special-teams-unit mechanism; unit strength is a real start-position term (not built; carries no lead slope).
-
-## E84 kicker-kept share: draw pool label defect (measured, scripts/mod25e_okk_an.py -> artifacts/mod25e3/okk/okk_an.txt; no sim)
-- Not onside over-sampling: 557 of 18338 pool kicks (gsr>1800, next live play gsr<=1800) cross halftime, 274 flagged retained (49%) are the next-half kickoff, not a kicker recovery (mod25e_kick.py:54, retained = next live posteam). Real kept 3.04% raw -> 1.60% non-crossing (TD 2.53 -> 1.49, FG 3.54 -> 1.34); non-crossing kept split nfp<40 (muff-type, inferred) 109 vs nfp>=40 (onside-type) 110. Sim kept TD 3.12% / FG 3.21% non-crossing = old draw expectation 3.06/3.04.
-- Fix OKK=1 (mod25e_kick.py install_kick, ok_all and ok_nt exclude crossing rows; flag off identical). Replay on sim states, kept by kicker band real|old|fixed: trail>8 .040|.063|.043, trail1-8 .022|.045|.024, tied .029|.040|.023, lead1-8 .011|.022|.011, lead>8 .010|.023|.010; start-yardline means unchanged (within .1). P(onside|state) fit not built: draw, not attempt rate, was the defect.
-- Hook (crH.py not edited): after line 164 add `if os.environ.get("OKK") == "1": label = label + "o2"`. Next: 3-seed e5 with OKK=1 on base j.
-
-## E85 team-form variance real vs sim (measured, scripts/mod25e_form.py -> artifacts/mod25e3/form/form.txt; base jo2 s11-13; no sim; 200 season boots; 6 looks)
-- Same definition both sides: side-game EPA/play minus leave-game-out own-offence and opponent-defence season means; odd/even-play split-half cov = true game-level form. Real 4608 side-games: var .0359, true form .0049 [.0025,.0063] (.14 of var). Sim 104448: var .0362, true form .0059 [.0055,.0063] (.16). Excess +.0010 (ratio 1.20, intervals overlap). Lag-1 autocov -.0012 both (adjustment bias; bootstrap lag1 CI invalid, duplicate-season shift bug).
-- Sim latents (regenerated, EPA units): off dev var .00037 (AR .00004, backup-QB .00032), def .00046, sum .00083 = about all of the excess. Latents are 14% of sim realised form; the rest is engine path.
-- Fit (read, mod25_generator.py:232-247, cov_fit.json): AR(1) var_mu from lag 1-6 autocov log-linear intercept, so white sampling noise is already removed; off phi .9987 (lag autocovs flat .0064-.0063 = pure season level), def .974, backup rate .16, effect -.057 (se .006, n 1258). No noise-correction defect found.
-- E attribution (E59): weekly+backup latents explain +2.7 of +14.8; removing the whole latent excess cannot cut persistence E by more than that (<=~18%). Team form is not the carrier; E stays path dependence. Next: within-game state conditioning.
-
-## E86 counter-force vs form (measured, scripts/mod25e_counter.py -> artifacts/mod25e3/counter/counter.txt; base jo2 s11-13; no sim; 200 game boots; 319 looks)
-- Form-implied E (4 k_q k_r V; k = side-quarter adjusted pts on other-quarters EPA/play form, odd/even IV; V real .0049, sim .0057): real +4.9 [+0.3,+13.2] vs observed -1.8 [-7.9,+4.5] -> counter-force +6.7 [+0.6,+14.7]; sim implied +9.4 vs observed +8.0 -> counter +1.4 [-0.4,+3.3]; sim-real counter -5.3 [-12.8,+1.1], P(sim>real) .09 (unresolved_below_power; weak-signals record not run). Observed E reproduces catchup (-1.80 / +8.01). Caveat (inferred): k is fitted on in-game EPA so it already nets part of the counter-force; real k is lower in Q2 (6.4 vs 13.1).
-- Where: pairs 12 (+3.3 [+0.5,+5.8]) and 23 (+3.0 [+0.3,+6.1]) real counter, sim +2.0/+1.5; own vs opposite side equal (+3.2 / +3.6 real, +0.9 / +0.5 sim; all intervals span 0). Channels (2x cov with early margin): startfp real +12.7 vs sim +17.3 (sim-real +4.6 [+2.2,+6.9] pp 1.00, form implied only +0.8/+2.4) is the one resolved carrier, matching E76; count -1.5 vs -0.6 (+0.9 pp .83); rest +3.6 vs +8.5 (unresolved).
-- Matchup (early residual of X, state band removed, vs opponent offence later): real opp slope H1H2 +.039 [+.016,+.059] vs sim +.017; sim-real -.022 [-.044,+.002] pp .06; Q4 pairs 24/34 real +.023/+.033 vs sim +.003/-.000. Own side later slope matches (H1H2 sim-real +.006, own-minus-form -.005, pp .43): no defence-tightening gap, the gap is the opponent offence rising later.
-- Mechanism and fix form (not built): opponent-offence late adjustment to the matchup. A fitted term in the later-half draw state for the side that was outscored: the other side's cumulative H1 residual (EPA minus season expectation), coefficient chosen LOSO on real drive points, tested on the H1H2 opp slope; no constant; the startfp carrier is the channel it would move through.
-
-## E87 matchup adjustment ADJ=1 (measured, scripts/mod25e_adj.py -> artifacts/mod25e3/adj/{fit,val}.txt, fit.json; 25 form looks, LOSO 9 seasons)
-- Residual = EPA minus quarter x lead-band mean minus leave-game-out team-season off/def means; x = opponent's cumulative residual sum before the play, y = offence residual in Q2-Q4 (222k real plays, 1.25M sim plays s11). Best by held-out SSE: pooled sum, opponent only (+1.1 bp vs constant; shrink and by-quarter forms and own-side term all lost). Real coef .00177/EPA-sum (fold sd .00017), sim .00144 (leave-world sd .00007): delta +.00034 EPA/play per unit (se about .00007), about .0024 EPA/play at 1 sd of x (7.3).
-- ADJ: install_adj wraps ns pick_index_nn_conditioned (tracks each side's residual = row EPA minus the pool weighted mean; tilts run/pass candidate weights exp(lam*EPA), lam solved per draw by bisection so the pool mean shifts by delta*x, run/pass mass held fixed; downs 1-3, Q2-4). Replay on 300 real states: achieved shift = target to 1e-15, 0 capped, pass/run share change 0 (val.txt; z grid was scaled too small, identity exact).
-- 1x1 smoke ran (272 games, 26000 draws, 18059 tilted, 0 capped; realised slope .0007, se about .0012, underpowered). Residual definitions differ (fine pool mean online vs team-season offline); sim base slope not measured on the fine definition. Needs 3-seed e5 to score.
-- Hooks (crH.py not edited): after line 107 `import mod25e_adj as ad` / `if ad.enabled(): ad.install_adj()`; after line 166 `if os.environ.get("ADJ") == "1": label = label + "a"`. Smoke driver: `cd scripts; python -c "import mod25e_adj as m; m.cmd_smoke()"` (needs adj_budget as init_worker).
-
-## E88 start-position channel of the catch-up counter-force (measured, scripts/mod25e_adj2.py an/a4/wx/fit -> artifacts/mod25e3/adj2/{an1,an1fine,a4,wx,fit}.txt; base jo2a s11-13; no sim; 300 boots; about 80 looks)
-- Opp H1H2 slope of drive net points (q x lead band fixed) real +.0310 vs sim +.0157 (s-r -.0152 [-.0466,+.0178] pp .18). Channel y_fpc (state-adjusted start yardline value) real +.0212 vs sim +.0125 (s-r -.0088 [-.0144,-.0035] pp .00, ~58% of gap); efficiency given start -.0065 (unresolved); drive count +.0036 (pp .89). Fine 3-pt lead cells do not change it (-.0083).
-- Not a type-mix effect: B drive counts by prior-drive end (punt/turnover+downs/FG/TD) match (turnover+downs combined -.0236 vs -.0245; sim 'downs' is folded into turnover by tolast). Every type's within-type start shifts the same way (punt -.0021, to -.0036, fg -.0012, td -.0019 s-r in fp units). Own side mirrors: own y_fpc real -.0179 vs sim -.0131.
-- Human mechanism refuted at the decision level: A's later Q3-Q4 4th-down choice vs A's H1 residual (cell FE) go real -.0001 sim -.0001; punt -.0006 vs -.0002; fg +.0006 vs +.0003 per point (about .004 per sd): no leader conservatism. Wind/roof refuted: dome slope +.0265 [+.0162,+.0359] >= open +.0197.
-- Fit: B H2 per-drive start yl on A H1 residual, LOSO 9 seasons: real b -.1326 yd/pt (fold sd .0044, held-out LL +33.8 over 27393 drives), sim -.0564; delta -.0762 yd/pt (-.55 yd per sd). Replay shifting sim yl by delta*x overshoots fp channel (+.0319 vs real +.0212; y_yl -.675 vs -.782): bin-step fp map, not calibrated. ADJ2 NOT wired: no named mechanism, engine start-yl draw would need online A residual; hook if wanted: crH.py after line 107 `import mod25e_adj2 as a2` / `if os.environ.get("ADJ2")=="1": a2.install_adj2()` (not written), after line 166 label+"a2".
-
-## E89 special-teams game form vs the catch-up start slope (measured, scripts/mod25e_stform.py -> artifacts/mod25e3/stform/stform.txt; base jo2a s11-13; no sim; 300 game boots; 23 looks)
-- (c) Not a points artefact: B H2 start-yardline slope on A H1 x, x = run/pass EPA-sum resid: real -.610 [-.805,-.445] vs sim -.119 (s-r +.491 [+.325,+.709] pp 1.00); points x -.782 vs -.331 (s-r +.451). Slope sits in the non-start-position part of x (xr -.748 vs -.320); start-position part s-r +.75 [-.33,+2.00] pp .93.
-- (b) Special-teams form is a real game latent the sim lacks: odd-even drive cov of side-game within-type start resid real +5.46 [+4.26,+6.87] yd^2 (sd 2.34) vs sim +.54 [+.29,+.81] (sd .74); own-side H1-H2 cov real +1.59 [+.44,+2.87] vs sim -.76. But it is NOT the carrier: adding sA, sB absorbs 1.7% of the real xe slope; held-out gain of sA,sB +.03%; cross cov(A H1, B H2) real +.45 [-.82,+1.79] pp .76.
-- (a) Source-game environment (pool idx -> game mean H2 start resid): sim slope on x +.009, real own-game leave-drive-out +.006 (s-r +.003 pp .56): no shared game environment carries the link; the real link is on the drives themselves (same-drive start resid -.43 vs sim -.09, s-r +.35 pp 1.00).
-- Verdict: link mechanism unresolved_below_power (not recorded via weak-signals). Separate measured gap: start-position game latent var 5.46 vs .54 yd^2; fix form (not built): per-side game latent on within-type start yardline with variance from odd-even cov, LOSO on drive starts; moves persistence of own start, not the opponent slope.
-
-## E90 STF=1 special-teams game form (measured, scripts/mod25e_stf.py -> artifacts/mod25e3/stf/{an.txt,fit.json}; base jo2a s11-13; about 20 looks)
-- Real start-yardline latent (within-type residual, odd-even drives): all +5.46 vs sim +.54; season level (LOSO own-return + opp-coverage means) is only 14% (5.46 -> 4.72; return var .33 vs coverage .30, w .52). Groups: after-score K +7.58 (sim .34), punt P +8.59 (.69), K-P cross +2.65 (.33); real latent is mostly non-touchback (6.95 vs sim .52). Turnover starts T -8.6 (sim +3.0) and K-T -3.13 / P-T +.89: not one factor, unresolved, no T term.
-- Fit: shared V 2.32 + K-specific 4.92 + P-specific 5.57 yd^2 (real minus sim, same estimator); return/coverage split w .52; same-team return-coverage corr kappa +1.0 (clipped) from cross-side cov real -6.27 vs sim -3.03.
-- Replay on sim drives (shift ylw by receiver return minus kicker coverage latent): K +7.49 (real 7.58), P +8.51 (8.59), K-P +2.77 (2.65), cross-side -6.12 (-6.27), all +3.67 (5.46; T/other drives dilute, gap reported not filled). Touchback-exempt variant fails (all +.95): not used.
-- STF=1: outermost pol shifts next_yardline of flip starts (score -> K, punt -> P) by the per-game latent; smoke 1x1 ran (272 games), 73% fractional yl. Hook (crH.py not edited): after line 111 `import mod25e_stf as sf` / `if sf.enabled(): sf.install_stf()`; after the ADJ label `if os.environ.get("STF") == "1": label = label + "s2"`. Spawn pool: smoke driver `python scripts/mod25e_stf.py smoke` uses mod25e_stf.H_budget/H_ss; e5 via crH needs the hook above. Next: 3-seed e5, check own-start persistence and E.
