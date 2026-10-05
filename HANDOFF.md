@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-05T10:40:25.689411+00:00`
+Refreshed at: `2026-10-05T10:44:45.591902+00:00`
 
 ## Start here
 
@@ -21,10 +21,10 @@ Refreshed at: `2026-10-05T10:40:25.689411+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `2d5773ecc045` — MOD-25e E87 + ADJ: in-game matchup adjustment by the outplayed team (fitted LOSO); small, kept; new base ...o2a
+- Baseline commit: `1c024a27164f` — MOD-25e E88: catch-up gap carrier is a uniform within-type start-yardline shift; leader conservatism and weather refuted; no mechanism named, nothing installed
 - Pending change set: 33 paths
   - `M  docs/lanes/mod25e-generator-fidelity.md`
-  - `A  scripts/mod25e_adj2.py`
+  - `A  scripts/mod25e_stform.py`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
