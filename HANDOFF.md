@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-05T07:26:52.046035+00:00`
+Refreshed at: `2026-10-05T07:32:23.920983+00:00`
 
 ## Start here
 
@@ -21,10 +21,10 @@ Refreshed at: `2026-10-05T07:26:52.046035+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `c8d4cebe07dc` — MOD-25e E83-E84 + OKK: Q1 kickoff slope was an onside-counting artifact; drop halftime-crossing kicks falsely flagged kicker-kept
+- Baseline commit: `4df84c90417d` — MOD-25e E85: team game-level form variance matches real (sim .0059 vs real .0049 true); not the persistence carrier
 - Pending change set: 33 paths
   - `M  docs/lanes/mod25e-generator-fidelity.md`
-  - `A  scripts/mod25e_form.py`
+  - `A  scripts/mod25e_counter.py`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
