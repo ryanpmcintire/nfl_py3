@@ -74,7 +74,13 @@ leader complacency, halftime adjustment) alongside concrete mechanics.
    walk-off FG, same missing "a score ends it" term) -> next unit.
    E98 (docs/lanes/mod25e-e98-regkick.md): PAT rate fitted on 2015+ only and applied to
    all years (mod25_mechanisms.py:323); FG make flat in distance. Hooks PATY/FGD being
-   written (smoke). Smoke dirs go in artifacts/mod25e3/smoke/ (era globs pick up _s31).
+   written (smoke). E99/E99h (docs/lanes/mod25e-e99-regwalkoff.md): late-regulation
+   FG deficit is state composition, not kick choice (HGB matches real given state);
+   real offenses drain the clock and call the last timeout with seconds left (snap
+   gsr<=5 in range .39 v .15). CDR hook (scripts/mod25e_cdr.py, CDR=1, suffix cd,
+   LOSO fit +.65 loglik/row) smoke partial. NEXT: one 3-seed e5 with base + PATY=1
+   FGD=1 CDR=1 once the PATY/FGD smoke reports; spike share (.50 v .28) open.
+   Smoke dirs go in artifacts/mod25e3/smoke/ (era globs pick up _s31).
 Lessons: exclude half-last rows from every possession-change definition; every
 engine wrapper walks frames to the 'offense' frame and binds locals before base.
 CPU budget: about 6 of 24 cores; e5 --workers 3, one at a time; agents

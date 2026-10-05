@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-05T22:35:59.276235+00:00`
+Refreshed at: `2026-10-05T23:06:54.111281+00:00`
 
 ## Start here
 
@@ -21,15 +21,19 @@ Refreshed at: `2026-10-05T22:35:59.276235+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `b55707eb93b7` — MOD-25e E94-E97: keep yardline-window punt redraw (punt checks pass, own-start persistence gap -43%); overtime carries 65% of mass-3 gap, walk-off FG hazard hook WFG
-- Pending change set: 46 paths
+- Baseline commit: `1c291b9f0dd9` — MOD-25e WFG kept: overtime walk-off FG halves the OT mass-3 gap; new base ...as2ypw2
+- Pending change set: 52 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
+  - `A  docs/lanes/mod25e-e99-regwalkoff.md`
   - `M  docs/lanes/mod25e-generator-fidelity.md`
   - ` M docs/model.html`
+  - `A  scripts/mod25e_cdr.py`
   - ` M scripts/mod25e_crH.py`
+  - `A  scripts/mod25e_e99.py`
+  - `A  scripts/mod25e_e99h.py`
   - ` M tiebreaker.json`
   - `?? docs/lanes/mod25e-e98-regkick.md`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
@@ -39,11 +43,7 @@ Refreshed at: `2026-10-05T22:35:59.276235+00:00`
   - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
   - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
   - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
-  - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-04-20261001T211240Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-04-20261002T161446Z.json`
-  - ...and 26 more
+  - ...and 32 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
