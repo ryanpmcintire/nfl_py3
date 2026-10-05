@@ -7,15 +7,15 @@ late-season R2 band .132-.166, mass at 3 near .141. Every parameter is a named
 mechanism fitted to its own real behaviour (LOSO held-out likelihood); aggregates
 are checks only; no compensating constants. The simulator is not served.
 
-## State (2026-10-04 evening, measured, 3 seeds)
-Base label `crHpqokgndecsmfwt` = env `NEG=1 EGT=1 EGH=1 F2PR=1 QBC=1
-OTY=2009-2017 KICK=1 GZ=1 DKF=1 DK2=1 CLK=1 SEL=1 KN=1 KNW=1 FD4=1 CLK2=1 TDC=1`
-(no KFIT, no RISK), run `scripts/mod25e_crH.py e5 --workers 3 --seed {11,12,13}`.
-Scored by `scripts/mod25e_era.py` -> artifacts/mod25e3/risk3_era/era.txt.
-Sim vs real: margin SD 15.25 (14.63); noise 176.0 (165); strength 57.0 (58.0);
-late r2 .130 (.146); xq cov -1.4 (-6.4); Q4 slope -.058 (-.060); mass3 .117 (.141);
-pts/g 45.62 (45.21). Catch-up gap +11.3 (start of day +21.2); persistence E +9.7.
-Detailed experiment log E1-E74: docs/lanes/done/mod25e-generator-fidelity-log-2026-10-04.md.
+## State (2026-10-05, measured, 3 seeds)
+Base label `crHpqokgndecsmfwtjo2as2` = env `NEG=1 EGT=1 EGH=1 F2PR=1 QBC=1
+OTY=2009-2017 KICK=1 GZ=1 DKF=1 DK2=1 CLK=1 SEL=1 KN=1 KNW=1 FD4=1 CLK2=1 TDC=1
+KGZ=1 OKK=1 ADJ=1 STF=1`, run `scripts/mod25e_crH.py e5 --workers 3 --seed {11,12,13}`.
+Scored by `scripts/mod25e_era.py` -> artifacts/mod25e3/stf_era/era.txt.
+Sim vs real: margin SD 15.34 (14.63); noise 178.3 (165); strength 57.4 (58.0);
+late r2 .135 (.146); xq cov +1.5 (-6.4); Q4 slope -.055 (-.060); mass3 .115 (.141);
+pts/g 45.63 (45.21). Catch-up gap +13.8, persistence E +10.3 (start of 10-04: +21.2/+14.8).
+Detailed log: docs/lanes/done/mod25e-generator-fidelity-log-2026-10-04.md.
 
 ## Tried (2026-10-04 units; all measured, details in the log)
 - Kept: DKF exact-distance draws; DK2 nearest-distance + 4th-down go path; CLK
@@ -88,6 +88,13 @@ NEW BASE crHpqokgndecsmfwtjo2a. Scale mismatch: E86 gap is in drive points (fiel
 position channel), E87 fit is per-play EPA -> E88 refits the adjustment in the
 drive-outcome channel.
 
+STF (orchestrator, from E90): per-side special-teams game form wired (label s2).
+Offline replay kick/punt/cross covariances match real; all-drive 3.67 vs 5.46
+reported not filled; return-coverage kappa clipped at +1.0 (boundary, open).
+Result (3 seeds, stf_era): SD 15.28 -> 15.34, noise 177.8 -> 178.3, strength 55.9 ->
+57.4, late r2 .129 -> .135, xq +0.8 -> +1.5, catch-up 13.7 -> 13.8, E 10.1 -> 10.3:
+neutral within noise; KEPT (measured mechanism). NEW BASE crHpqokgndecsmfwtjo2as2.
+
 ## Open
 None.
 
@@ -158,3 +165,9 @@ Hook (not applied): scripts/mod25e_crH.py after line 107 add `import mod25e_desp
 - (b) Special-teams form is a real game latent the sim lacks: odd-even drive cov of side-game within-type start resid real +5.46 [+4.26,+6.87] yd^2 (sd 2.34) vs sim +.54 [+.29,+.81] (sd .74); own-side H1-H2 cov real +1.59 [+.44,+2.87] vs sim -.76. But it is NOT the carrier: adding sA, sB absorbs 1.7% of the real xe slope; held-out gain of sA,sB +.03%; cross cov(A H1, B H2) real +.45 [-.82,+1.79] pp .76.
 - (a) Source-game environment (pool idx -> game mean H2 start resid): sim slope on x +.009, real own-game leave-drive-out +.006 (s-r +.003 pp .56): no shared game environment carries the link; the real link is on the drives themselves (same-drive start resid -.43 vs sim -.09, s-r +.35 pp 1.00).
 - Verdict: link mechanism unresolved_below_power (not recorded via weak-signals). Separate measured gap: start-position game latent var 5.46 vs .54 yd^2; fix form (not built): per-side game latent on within-type start yardline with variance from odd-even cov, LOSO on drive starts; moves persistence of own start, not the opponent slope.
+
+## E90 STF=1 special-teams game form (measured, scripts/mod25e_stf.py -> artifacts/mod25e3/stf/{an.txt,fit.json}; base jo2a s11-13; about 20 looks)
+- Real start-yardline latent (within-type residual, odd-even drives): all +5.46 vs sim +.54; season level (LOSO own-return + opp-coverage means) is only 14% (5.46 -> 4.72; return var .33 vs coverage .30, w .52). Groups: after-score K +7.58 (sim .34), punt P +8.59 (.69), K-P cross +2.65 (.33); real latent is mostly non-touchback (6.95 vs sim .52). Turnover starts T -8.6 (sim +3.0) and K-T -3.13 / P-T +.89: not one factor, unresolved, no T term.
+- Fit: shared V 2.32 + K-specific 4.92 + P-specific 5.57 yd^2 (real minus sim, same estimator); return/coverage split w .52; same-team return-coverage corr kappa +1.0 (clipped) from cross-side cov real -6.27 vs sim -3.03.
+- Replay on sim drives (shift ylw by receiver return minus kicker coverage latent): K +7.49 (real 7.58), P +8.51 (8.59), K-P +2.77 (2.65), cross-side -6.12 (-6.27), all +3.67 (5.46; T/other drives dilute, gap reported not filled). Touchback-exempt variant fails (all +.95): not used.
+- STF=1: outermost pol shifts next_yardline of flip starts (score -> K, punt -> P) by the per-game latent; smoke 1x1 ran (272 games), 73% fractional yl. Hook (crH.py not edited): after line 111 `import mod25e_stf as sf` / `if sf.enabled(): sf.install_stf()`; after the ADJ label `if os.environ.get("STF") == "1": label = label + "s2"`. Spawn pool: smoke driver `python scripts/mod25e_stf.py smoke` uses mod25e_stf.H_budget/H_ss; e5 via crH needs the hook above. Next: 3-seed e5, check own-start persistence and E.

@@ -109,6 +109,10 @@ def run_with_flags(init, setting):
 
     if ad.enabled():
         ad.install_adj()
+    import mod25e_stf as sf
+
+    if sf.enabled():
+        sf.install_stf()
 
 
 def H_budget(setting):
@@ -170,6 +174,8 @@ def cmd_e5(a):
         label = label + "o2"
     if os.environ.get("ADJ") == "1":
         label = label + "a"
+    if os.environ.get("STF") == "1":
+        label = label + "s2"
     if os.environ.get("RISK") == "1":
         label = label + "r"
     dv.DV[label] = dict(dv.DV["crG"])

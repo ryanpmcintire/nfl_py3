@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-05T10:44:45.591902+00:00`
+Refreshed at: `2026-10-05T13:30:39.370990+00:00`
 
 ## Start here
 
@@ -21,10 +21,11 @@ Refreshed at: `2026-10-05T10:44:45.591902+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `1c024a27164f` — MOD-25e E88: catch-up gap carrier is a uniform within-type start-yardline shift; leader conservatism and weather refuted; no mechanism named, nothing installed
-- Pending change set: 33 paths
+- Baseline commit: `f2fbf78a00cf` — MOD-25e E89: special-teams game form is a real per-side latent the sim lacks (odd/even start covariance 5.46 vs 0.54 yd^2); opponent field-position link stays unresolved
+- Pending change set: 34 paths
   - `M  docs/lanes/mod25e-generator-fidelity.md`
-  - `A  scripts/mod25e_stform.py`
+  - `M  scripts/mod25e_crH.py`
+  - `A  scripts/mod25e_stf.py`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
@@ -42,8 +43,7 @@ Refreshed at: `2026-10-05T10:44:45.591902+00:00`
   - `?? registry/experiments/margin-predict/2026-week-04-20261004T134232Z.json`
   - `?? registry/experiments/margin-predict/2026-week-04-20261004T160941Z.json`
   - `?? registry/experiments/opener-evaluation/20261001T211624Z.json`
-  - `?? registry/experiments/opener-evaluation/20261002T161817Z.json`
-  - ...and 13 more
+  - ...and 14 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
