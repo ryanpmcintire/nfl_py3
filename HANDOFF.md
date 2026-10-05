@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-05T01:45:27.843667+00:00`
+Refreshed at: `2026-10-05T01:56:40.910522+00:00`
 
 ## Start here
 
@@ -21,20 +21,15 @@ Refreshed at: `2026-10-05T01:45:27.843667+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `759387aad780` — MOD-25e E53-E74: simulator fidelity units; new 3-seed base crHpqokgndecsk2mfwt
-- Pending change set: 44 paths
+- Baseline commit: `20cd6f68ebbf` — MOD-25e E75-E78: behavioural mechanisms; new 3-seed base without kernel or risk tilt
+- Pending change set: 39 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/done/mod25e-generator-fidelity-log-2026-10-04.md`
   - `M  docs/lanes/mod25e-generator-fidelity.md`
   - ` M docs/model.html`
-  - `A  scripts/mod25e_behave.py`
-  - `M  scripts/mod25e_crH.py`
-  - `A  scripts/mod25e_drivecomp.py`
-  - `A  scripts/mod25e_fpos.py`
-  - `A  scripts/mod25e_risk.py`
+  - `A  scripts/mod25e_desp.py`
   - ` M tiebreaker.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -43,7 +38,12 @@ Refreshed at: `2026-10-05T01:45:27.843667+00:00`
   - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
   - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
   - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
-  - ...and 24 more
+  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
+  - `?? registry/experiments/margin-predict/2026-week-04-20261001T211240Z.json`
+  - `?? registry/experiments/margin-predict/2026-week-04-20261002T161446Z.json`
+  - `?? registry/experiments/margin-predict/2026-week-04-20261003T161013Z.json`
+  - `?? registry/experiments/margin-predict/2026-week-04-20261003T173930Z.json`
+  - ...and 19 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

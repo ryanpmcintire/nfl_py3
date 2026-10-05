@@ -41,12 +41,14 @@ Detailed experiment log E1-E74: docs/lanes/done/mod25e-generator-fidelity-log-20
 Owner 2026-10-04: prioritise abstract human mechanisms (catch-up, effort, risk,
 leader complacency, halftime adjustment) alongside concrete mechanics.
 1. Persistence E +9.7 is the largest gap; play-level effort and halftime
-   response already match (E75). Carrier is later start field position (E76/E77):
-   real trailing teams generate more turnover/downs starts, concentrated in the
-   last 7.5 min of Q4 (trailing run lost .023 real vs .013 sim: laterals and
-   desperation plays, inferred). Reweighting candidate rows cannot create rows
-   the pool lacks: next model end-of-game desperation as its own play class
-   fitted from real (laterals, hail marys, forced throws) by score x time.
+   response already match (E75); carrier is later start field position (E76/E77,
+   80% within-start-type yardline). The late-turnover shortfall (E77-E79) is
+   mostly a DEFINITION ARTIFACT: real half-ending plays carry flip=1, po=0 and
+   count as 'lost' (Q2 real run lost .0178 -> .0100 excluding half-last plays,
+   sim .0106; Q4 .0165 -> .0088, sim .0096; measured). Any lost/turnover metric
+   must exclude half-last rows. RISK and DESP stay out. Next: recheck E77's start
+   yardline gap with half-last rows excluded, then the within-type yardline
+   mechanism (punt/kick return distance by score state).
 2. Strength 57.0 vs 58 now fine; mass at 3 short (.117 vs .141).
 CPU budget: about 6 of 24 cores total. e5 at --workers 3, one at a time; agents
 analysis-only, single-threaded, no sims while e5 runs. Every wrapper of
@@ -54,3 +56,9 @@ pick/pol/DECIDE must bind qtr/offense/off_to/def_to locals before calling base.
 
 ## Open
 None.
+
+## E79 desperation class (measured, scripts/mod25e_desp.py, artifacts/mod25e3/desp/{chars,fit}.txt)
+Class D = lateral row (807) or pass air_yards>=44 (p99 of hsr>120 passes) with hsr<=20 (143, window = widest where deep rate lower bound exceeds ordinary .0111): 950 rows, .41/game, lost .419, TD .007. Real D share at trail>8 Q4 last 450 s .0035 vs sim .0041; kNN k=200 pool already holds .0031 D (45% of states >=1). Only miss: Q4 trail1-8 hsr<=20 D rate real .163 vs sim .024.
+DESP=1 fit: LOSO form 5 (half x time bin, deficit, timeouts, field) lam .1 gain 597 LL vs constant, 9/9 seasons; pool m=160 prior 4 (24 looks); 18 form looks. Replay: trail>8 Q4 last 450 lost real .1029 | sim .0752 | sim+DESP .0756; TD .0463|.0466|.0465 -> D explains ~0.0015 of the .028 gap; not a carrier, not for base.
+Gap is downs 1-3 ordinary: lost|play real .0638 vs sim .0377 (pass share .854 vs .84; 4th-down share .071|.067, lost|4th .616|.601 match). Next: model 1-3 down turnovers by trailing late as forced throws by pressure state (sacks, deep depth), not extreme plays.
+Hook (not applied): scripts/mod25e_crH.py after line 107 add `import mod25e_desp as dp` / `if dp.enabled(): dp.install_desp()` (outermost wrap, after install_tov); after line 164 `if os.environ.get("DESP") == "1": label = label + "z"`.
