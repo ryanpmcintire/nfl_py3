@@ -77,6 +77,17 @@ noise (E 11.5 -> 9.8, total 13.8 -> 14.7, SD 15.35 -> 15.42, strength 57.5 -> 58
 KEPT as a data-defect fix. NEW BASE crHpqokgndecsmfwtjo2 (+KGZ +OKK). Same artifact class as E79:
 half-end rows must be excluded from every possession-change definition.
 
+ADJ (orchestrator, from E87): hook wired (label a). Fitted delta real-sim .00034
+per EPA-sum (~.0024 EPA/play at 1 sd): small. Running smoke + 3 seeds
+crHpqokgndecsmfwtjo2a -> adj_era, catchup3_<L>, counter/counter_<L>.txt (base copy
+counter/counter_base_jo2.txt). Decide on opp H1->H2 slope (real +.039) and E.
+Result (3 seeds, adj_era, counter/counter_<L>.txt): opp slope gap sim-real -.0216 ->
+-.0176; SD 15.42 -> 15.28, noise 179.8 -> 177.8, xq +1.9 -> +0.8, catch-up 14.7 ->
+13.7, E 9.8 -> 10.1, strength 58.3 -> 55.9. Small, mostly right direction; KEPT.
+NEW BASE crHpqokgndecsmfwtjo2a. Scale mismatch: E86 gap is in drive points (field
+position channel), E87 fit is per-play EPA -> E88 refits the adjustment in the
+drive-outcome channel.
+
 ## Open
 None.
 
@@ -129,3 +140,9 @@ Hook (not applied): scripts/mod25e_crH.py after line 107 add `import mod25e_desp
 - Where: pairs 12 (+3.3 [+0.5,+5.8]) and 23 (+3.0 [+0.3,+6.1]) real counter, sim +2.0/+1.5; own vs opposite side equal (+3.2 / +3.6 real, +0.9 / +0.5 sim; all intervals span 0). Channels (2x cov with early margin): startfp real +12.7 vs sim +17.3 (sim-real +4.6 [+2.2,+6.9] pp 1.00, form implied only +0.8/+2.4) is the one resolved carrier, matching E76; count -1.5 vs -0.6 (+0.9 pp .83); rest +3.6 vs +8.5 (unresolved).
 - Matchup (early residual of X, state band removed, vs opponent offence later): real opp slope H1H2 +.039 [+.016,+.059] vs sim +.017; sim-real -.022 [-.044,+.002] pp .06; Q4 pairs 24/34 real +.023/+.033 vs sim +.003/-.000. Own side later slope matches (H1H2 sim-real +.006, own-minus-form -.005, pp .43): no defence-tightening gap, the gap is the opponent offence rising later.
 - Mechanism and fix form (not built): opponent-offence late adjustment to the matchup. A fitted term in the later-half draw state for the side that was outscored: the other side's cumulative H1 residual (EPA minus season expectation), coefficient chosen LOSO on real drive points, tested on the H1H2 opp slope; no constant; the startfp carrier is the channel it would move through.
+
+## E87 matchup adjustment ADJ=1 (measured, scripts/mod25e_adj.py -> artifacts/mod25e3/adj/{fit,val}.txt, fit.json; 25 form looks, LOSO 9 seasons)
+- Residual = EPA minus quarter x lead-band mean minus leave-game-out team-season off/def means; x = opponent's cumulative residual sum before the play, y = offence residual in Q2-Q4 (222k real plays, 1.25M sim plays s11). Best by held-out SSE: pooled sum, opponent only (+1.1 bp vs constant; shrink and by-quarter forms and own-side term all lost). Real coef .00177/EPA-sum (fold sd .00017), sim .00144 (leave-world sd .00007): delta +.00034 EPA/play per unit (se about .00007), about .0024 EPA/play at 1 sd of x (7.3).
+- ADJ: install_adj wraps ns pick_index_nn_conditioned (tracks each side's residual = row EPA minus the pool weighted mean; tilts run/pass candidate weights exp(lam*EPA), lam solved per draw by bisection so the pool mean shifts by delta*x, run/pass mass held fixed; downs 1-3, Q2-4). Replay on 300 real states: achieved shift = target to 1e-15, 0 capped, pass/run share change 0 (val.txt; z grid was scaled too small, identity exact).
+- 1x1 smoke ran (272 games, 26000 draws, 18059 tilted, 0 capped; realised slope .0007, se about .0012, underpowered). Residual definitions differ (fine pool mean online vs team-season offline); sim base slope not measured on the fine definition. Needs 3-seed e5 to score.
+- Hooks (crH.py not edited): after line 107 `import mod25e_adj as ad` / `if ad.enabled(): ad.install_adj()`; after line 166 `if os.environ.get("ADJ") == "1": label = label + "a"`. Smoke driver: `cd scripts; python -c "import mod25e_adj as m; m.cmd_smoke()"` (needs adj_budget as init_worker).

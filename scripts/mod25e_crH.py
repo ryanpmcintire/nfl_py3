@@ -105,6 +105,10 @@ def run_with_flags(init, setting):
 
     if rk2.tov_enabled():
         rk2.install_tov()
+    import mod25e_adj as ad
+
+    if ad.enabled():
+        ad.install_adj()
 
 
 def H_budget(setting):
@@ -164,6 +168,8 @@ def cmd_e5(a):
         label = label + "j"
     if os.environ.get("OKK") == "1":
         label = label + "o2"
+    if os.environ.get("ADJ") == "1":
+        label = label + "a"
     if os.environ.get("RISK") == "1":
         label = label + "r"
     dv.DV[label] = dict(dv.DV["crG"])
