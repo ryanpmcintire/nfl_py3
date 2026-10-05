@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-05T01:56:40.910522+00:00`
+Refreshed at: `2026-10-05T04:32:03.817937+00:00`
 
 ## Start here
 
@@ -21,16 +21,17 @@ Refreshed at: `2026-10-05T01:56:40.910522+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `20cd6f68ebbf` — MOD-25e E75-E78: behavioural mechanisms; new 3-seed base without kernel or risk tilt
-- Pending change set: 39 paths
-  - ` M CURRENT_PREDICTIONS.md`
-  - ` M docs/findings.html`
-  - ` M docs/history.html`
-  - ` M docs/index.html`
-  - `M  docs/lanes/mod25e-generator-fidelity.md`
-  - ` M docs/model.html`
-  - `A  scripts/mod25e_desp.py`
-  - ` M tiebreaker.json`
+- Baseline commit: `087ce5a6c055` — MOD-25e E79: desperation plays not the carrier; late-turnover shortfall is a half-end flip definition artifact
+- Pending change set: 44 paths
+  - `M  CURRENT_PREDICTIONS.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - ` M docs/lanes/mod25e-generator-fidelity.md`
+  - `M  docs/model.html`
+  - ` M scripts/mod25e_crH.py`
+  - ` M scripts/mod25e_kick.py`
+  - `M  tiebreaker.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
@@ -42,8 +43,7 @@ Refreshed at: `2026-10-05T01:56:40.910522+00:00`
   - `?? registry/experiments/margin-predict/2026-week-04-20261001T211240Z.json`
   - `?? registry/experiments/margin-predict/2026-week-04-20261002T161446Z.json`
   - `?? registry/experiments/margin-predict/2026-week-04-20261003T161013Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-04-20261003T173930Z.json`
-  - ...and 19 more
+  - ...and 24 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
