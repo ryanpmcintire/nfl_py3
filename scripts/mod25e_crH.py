@@ -160,6 +160,8 @@ def cmd_e5(a):
         label = label + "w"
     if os.environ.get("TDC") == "1":
         label = label + "t"
+    if os.environ.get("KGZ") == "1":
+        label = label + "j"
     if os.environ.get("RISK") == "1":
         label = label + "r"
     dv.DV[label] = dict(dv.DV["crG"])

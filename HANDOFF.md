@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-05T04:32:03.817937+00:00`
+Refreshed at: `2026-10-05T05:08:18.257377+00:00`
 
 ## Start here
 
@@ -21,17 +21,15 @@ Refreshed at: `2026-10-05T04:32:03.817937+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `087ce5a6c055` — MOD-25e E79: desperation plays not the carrier; late-turnover shortfall is a half-end flip definition artifact
-- Pending change set: 44 paths
-  - `M  CURRENT_PREDICTIONS.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - ` M docs/lanes/mod25e-generator-fidelity.md`
-  - `M  docs/model.html`
-  - ` M scripts/mod25e_crH.py`
-  - ` M scripts/mod25e_kick.py`
-  - `M  tiebreaker.json`
+- Baseline commit: `4fff79b3fa58` — Republish the site with the latest settled results
+- Pending change set: 38 paths
+  - `M  docs/lanes/mod25e-generator-fidelity.md`
+  - `M  scripts/mod25e_crH.py`
+  - `A  scripts/mod25e_fpos2.py`
+  - `M  scripts/mod25e_kick.py`
+  - `A  scripts/mod25e_kos.py`
+  - `A  scripts/mod25e_kpath.py`
+  - `A  scripts/mod25e_ktrace.py`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
@@ -43,7 +41,9 @@ Refreshed at: `2026-10-05T04:32:03.817937+00:00`
   - `?? registry/experiments/margin-predict/2026-week-04-20261001T211240Z.json`
   - `?? registry/experiments/margin-predict/2026-week-04-20261002T161446Z.json`
   - `?? registry/experiments/margin-predict/2026-week-04-20261003T161013Z.json`
-  - ...and 24 more
+  - `?? registry/experiments/margin-predict/2026-week-04-20261003T173930Z.json`
+  - `?? registry/experiments/margin-predict/2026-week-04-20261004T000229Z.json`
+  - ...and 18 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

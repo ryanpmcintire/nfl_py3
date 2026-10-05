@@ -1,5 +1,7 @@
 import argparse
 import json
+import os
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -265,11 +267,20 @@ def install_kick():
 
     base = dv._G["pol"]
 
+    after = os.environ.get("KGZ") == "1"
+
     def pol(down, distance, yardline, score_diff, qtr, clock_val, drawn):
+        if after:
+            fr = sys._getframe(1)
+            while fr is not None and "offense" not in fr.f_locals:
+                fr = fr.f_back
+            offense, off_to, def_to = fr.f_locals["offense"], fr.f_locals["off_to"], fr.f_locals["def_to"]  # noqa: F841
+            qtr_l, gsr, possessions = fr.f_locals.get("qtr"), fr.f_locals.get("gsr"), fr.f_locals.get("possessions")  # noqa: F841
+            drawn = base(down, distance, yardline, score_diff, qtr, clock_val, drawn)
         po = float(drawn["points_off"])
         pdf = float(drawn["points_def"])
         if mode == 0 or qtr > 4 or not ((po >= 3 and pdf == 0) or (pdf >= 6 and po == 0)):
-            return base(down, distance, yardline, score_diff, qtr, clock_val, drawn)
+            return drawn if after else base(down, distance, yardline, score_diff, qtr, clock_val, drawn)
         if state["k"] != dv._G.get("task_key"):
             state["k"] = dv._G.get("task_key")
             state["rng"] = dv.task_rng(15485863, seed)
@@ -295,7 +306,7 @@ def install_kick():
         new["next_down"] = 1.0
         new["next_distance"] = min(10.0, float(fp))
         new["next_yardline"] = float(fp)
-        return base(down, distance, yardline, score_diff, qtr, clock_val, new)
+        return new if after else base(down, distance, yardline, score_diff, qtr, clock_val, new)
 
     dv._G["pol"] = pol
 
