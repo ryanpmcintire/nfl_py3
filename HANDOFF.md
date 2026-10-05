@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-04T20:59:19.541265+00:00`
+Refreshed at: `2026-10-05T01:45:27.843667+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-10-04T20:59:19.541265+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `04e4b87dfa57` — Refresh handoff
-- Pending change set: 61 paths
+- Baseline commit: `759387aad780` — MOD-25e E53-E74: simulator fidelity units; new 3-seed base crHpqokgndecsk2mfwt
+- Pending change set: 44 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - ` M README.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `A  docs/lanes/done/mod25e-generator-fidelity-log-2026-10-04.md`
+  - `M  docs/lanes/done/mod25e-generator-fidelity-log-2026-10-04.md`
   - `M  docs/lanes/mod25e-generator-fidelity.md`
   - ` M docs/model.html`
-  - `A  scripts/mod25e_catchup.py`
-  - `A  scripts/mod25e_clk.py`
-  - `A  scripts/mod25e_clock2.py`
+  - `A  scripts/mod25e_behave.py`
   - `M  scripts/mod25e_crH.py`
-  - `M  scripts/mod25e_dist.py`
-  - `A  scripts/mod25e_dkern2.py`
-  - `A  scripts/mod25e_e68a.py`
-  - `M  scripts/mod25e_endgame.py`
-  - `A  scripts/mod25e_fourth.py`
-  - `A  scripts/mod25e_gze.py`
-  - `A  scripts/mod25e_half2.py`
-  - `A  scripts/mod25e_halfend.py`
-  - ...and 41 more
+  - `A  scripts/mod25e_drivecomp.py`
+  - `A  scripts/mod25e_fpos.py`
+  - `A  scripts/mod25e_risk.py`
+  - ` M tiebreaker.json`
+  - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
+  - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
+  - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
+  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
+  - ...and 24 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

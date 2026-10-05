@@ -63,8 +63,12 @@ def run_with_flags(init, setting):
         gz.install_gz()
     if os.environ.get("KICK") in ("0", "1"):
         import mod25e_kick as mk
+        import mod25e_risk as rk
 
-        mk.install_kick()
+        if rk.kick_enabled():
+            rk.install_kick()
+        else:
+            mk.install_kick()
     if dv._G["cfg"].get("f3"):
         f3.f3_install()
     import mod25e_dkern as dk
@@ -97,6 +101,10 @@ def run_with_flags(init, setting):
 
     if td.enabled():
         td.install_tdc()
+    import mod25e_risk as rk2
+
+    if rk2.tov_enabled():
+        rk2.install_tov()
 
 
 def H_budget(setting):
@@ -152,6 +160,8 @@ def cmd_e5(a):
         label = label + "w"
     if os.environ.get("TDC") == "1":
         label = label + "t"
+    if os.environ.get("RISK") == "1":
+        label = label + "r"
     dv.DV[label] = dict(dv.DV["crG"])
     outd = ss.OUT / f"e5_{label}_s{a.seed}"
     outd.mkdir(parents=True, exist_ok=True)
