@@ -255,7 +255,9 @@ def install_kick():
     rtd = K.rtd.to_numpy(int)
     pe = K.pat_extra.dropna().to_numpy(int)
     ok_all = np.ones(len(K), dtype=bool)
-    ok_nt = rtd == 0
+    if os.environ.get("OKK") == "1":
+        ok_all = ~((gs > 1800.0) & (K.ngsr.to_numpy(float) <= 1800.0))
+    ok_nt = ok_all & (rtd == 0)
     state = {"k": None, "rng": None}
 
     def draw(rng, kdv, tv, mask):

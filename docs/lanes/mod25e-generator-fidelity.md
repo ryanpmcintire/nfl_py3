@@ -68,6 +68,15 @@ slope Q4 -1.51 -> -2.48 (real -2.86), all Q -0.81 -> -1.18 (-1.69); Q1 still
 KEPT as a verified pipeline-defect fix: NEW BASE crHpqokgndecsmfwtj (+KGZ=1).
 Next: Q1 after-TD kickoff start slope gap; within-type yardline still +4.9.
 
+OKK (orchestrator, from E84): real kick pool flagged 274 halftime-crossing kicks
+as kicker-kept (next live play = 2nd-half kickoff; mod25e_kick.py:54), doubling
+the sim's kept share (3.1% vs real 1.5%) and handing scorers extra possessions.
+OKK=1 drops crossing rows (flag-off identical); label o2. Running smoke + 3 seeds
+crHpqokgndecsmfwtjo2 -> okk_era, catchup3_<L>. Result (3 seeds): neutral within
+noise (E 11.5 -> 9.8, total 13.8 -> 14.7, SD 15.35 -> 15.42, strength 57.5 -> 58.3);
+KEPT as a data-defect fix. NEW BASE crHpqokgndecsmfwtjo2 (+KGZ +OKK). Same artifact class as E79:
+half-end rows must be excluded from every possession-change definition.
+
 ## Open
 None.
 
@@ -98,3 +107,13 @@ Hook (not applied): scripts/mod25e_crH.py after line 107 add `import mod25e_desp
 - DEFECT: kick pol (mod25e_kick.py:268-298) is outer to GZ and passes its drawn kick row via base() into gz pol (mod25e_gz.py:64-67, pol_inner 72-123), which repicks goal-to-go run/pass rows and overwrites points, flip, next_yardline (117-121). Kick draw honoured on 58% of engine-TD plays (49% of final TDs); 32% of kick-drawn TDs have points changed (25% become non-scoring, nyl 2); 29% of final TDs are gz-created TDs with no kick draw (raw row nyl, mean 75.8). FG unaffected (0%).
 - Late (end of quarter <300 s) receiver lead >8, n=62 TDs: kick draw 29% (mean nyl 60.1), gz-replaced 34% (70.5), gz-new 37% (76.3); all rl>8 n=134: 33/34/34%. Honoured draws alone carry the draw slope; the rest wipe it. Later layers (dk/dk2/clk/kn/sel/fd4/tdc) alter 0% of nyl (final == gz out); next play yl == final nyl 92% (6% differ >0.5 yd, ordinary start rules).
 - Fix form (not built): resolve the GZ repick before the kick decision (kick evaluates on the post-GZ row), or install kick inside gz; no constant.
+
+## E83 Q1 after-TD kickoff slope (measured, scripts/mod25e_q1ko.py -> artifacts/mod25e3/q1ko/q1ko.txt; real only, 400 boots, 500 perms, 34 looks)
+- Q1 -2.574 is a definition artefact: 166 kicker-kept TD kicks (onside-type, next start 39.4 vs 75.2) enter the E80 x with the kicker's lead band; Q1 has 24. Excluding them, real Q1 -0.684 [-1.18,-0.17] vs sim -0.299 (pp below sim .89), Q2 -0.465, Q3 -0.173, Q4 -2.951 (sim -2.48, pp .99). Including them reproduces -2.574/-1.080/-0.329/-2.860 exactly.
+- (a) refuted for Q1: unit strength (LOSO team-season mean start yl0; split-half r .44/.42, attenuated) coefs +.40/+.31 pp 1.00 but Q1 slope moves only +0.055; +margin difference +0.039; lead band vs controls corr -.03/-.01/+.10. (b) touchback share Q1 -0.041/step, non-touchback start Q1 -0.656: no strategy carrier. (c) permutation P(null<=obs) Q1 .020, n per Q1 band 391/1446/231/51/2.
+- Remaining gap is the sim's kicker-kept share (2.7% vs real 0.95% of TD kicks; E82) and Q4 -0.47 (the TD slope), not a special-teams-unit mechanism; unit strength is a real start-position term (not built; carries no lead slope).
+
+## E84 kicker-kept share: draw pool label defect (measured, scripts/mod25e_okk_an.py -> artifacts/mod25e3/okk/okk_an.txt; no sim)
+- Not onside over-sampling: 557 of 18338 pool kicks (gsr>1800, next live play gsr<=1800) cross halftime, 274 flagged retained (49%) are the next-half kickoff, not a kicker recovery (mod25e_kick.py:54, retained = next live posteam). Real kept 3.04% raw -> 1.60% non-crossing (TD 2.53 -> 1.49, FG 3.54 -> 1.34); non-crossing kept split nfp<40 (muff-type, inferred) 109 vs nfp>=40 (onside-type) 110. Sim kept TD 3.12% / FG 3.21% non-crossing = old draw expectation 3.06/3.04.
+- Fix OKK=1 (mod25e_kick.py install_kick, ok_all and ok_nt exclude crossing rows; flag off identical). Replay on sim states, kept by kicker band real|old|fixed: trail>8 .040|.063|.043, trail1-8 .022|.045|.024, tied .029|.040|.023, lead1-8 .011|.022|.011, lead>8 .010|.023|.010; start-yardline means unchanged (within .1). P(onside|state) fit not built: draw, not attempt rate, was the defect.
+- Hook (crH.py not edited): after line 164 add `if os.environ.get("OKK") == "1": label = label + "o2"`. Next: 3-seed e5 with OKK=1 on base j.
