@@ -1,8 +1,8 @@
 # NFL ATS predictions: 2026 Week 4
 
-Published from the synchronized weak stack model, 2026-10-05 16:17 UTC.
+Published from the synchronized weak stack model, 2026-10-06 18:46 UTC.
 
-<!-- publication: model_id=52c2618b1b298e7d published_at_utc=2026-10-05T16:17:53.745246+00:00 -->
+<!-- publication: model_id=52c2618b1b298e7d published_at_utc=2026-10-06T18:46:24.487713+00:00 -->
 
 > **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 
