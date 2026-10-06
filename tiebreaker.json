@@ -4,9 +4,9 @@
   "comparison_total_blend_k01": 47.86320687517084,
   "consistency_note": "consistent with the ATL +2.5 pick",
   "current_median_total": 48.0,
-  "forecast_artifact": "margin_predictions/2026-week-04-20261004T160941Z",
+  "forecast_artifact": "margin_predictions/2026-week-04-20261005T161015Z",
   "game_id": "2026_04_ATL_NO",
-  "generated_at_utc": "2026-10-04T16:16:48.677715+00:00",
+  "generated_at_utc": "2026-10-05T16:17:53.745246+00:00",
   "guess_away": 23,
   "guess_home": 24,
   "home": "NO",
@@ -31,7 +31,7 @@
   "total_move_baseline": {
     "blended_total": 46.77682031495817,
     "consistency_note": "consistent with the ATL +2.5 pick",
-    "generated_at_utc": "2026-10-04T16:16:48.677715+00:00",
+    "generated_at_utc": "2026-10-05T16:17:53.745246+00:00",
     "guess_away": 23,
     "guess_home": 24,
     "lattice_centre_margin": 1.0569745642272306,
@@ -42,20 +42,9 @@
     "pick_spread_line": 2.5,
     "served_total": 46.77682031495817
   },
-  "total_move_deadline_utc": "2026-10-04T20:00:00+00:00",
-  "total_move_fit": {
-    "path": "artifacts\\tiebreaker_total_move\\fit.json",
-    "sha256": "05f969696ef8a6486c963f828bde358ed1513c639ca377d4c59d3098273f7ea4"
-  },
-  "total_move_quote": {
-    "books": 1,
-    "observed_at_utc": "2026-10-04T16:24:40.198804+00:00",
-    "path": "data\\market\\raw\\20261004T162440Z\\quotes.parquet",
-    "sha256": "241e474d1147aad7963ebeeff2b162dad11fbbed85d71b039490a64fb840f364"
-  },
-  "total_move_refreshed_at_utc": "2026-10-04T19:00:11.446833+00:00",
-  "total_move_slope": 0.8,
-  "total_move_status": "zero_adjustment",
+  "total_move_fit": null,
+  "total_move_slope": null,
+  "total_move_status": "tuesday_baseline",
   "tuesday_total": 48.0,
   "week": 4
 }

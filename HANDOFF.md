@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-05T23:06:54.111281+00:00`
+Refreshed at: `2026-10-06T04:31:39.210441+00:00`
 
 ## Start here
 
@@ -21,20 +21,15 @@ Refreshed at: `2026-10-05T23:06:54.111281+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `1c291b9f0dd9` — MOD-25e WFG kept: overtime walk-off FG halves the OT mass-3 gap; new base ...as2ypw2
-- Pending change set: 52 paths
-  - ` M CURRENT_PREDICTIONS.md`
-  - ` M docs/findings.html`
-  - ` M docs/history.html`
-  - ` M docs/index.html`
-  - `A  docs/lanes/mod25e-e99-regwalkoff.md`
-  - `M  docs/lanes/mod25e-generator-fidelity.md`
-  - ` M docs/model.html`
-  - `A  scripts/mod25e_cdr.py`
+- Baseline commit: `011244cae03d` — MOD-25e E99: late-regulation FG gap is clock-drain state composition; CDR timeout-with-seconds-left hook (LOSO fit)
+- Pending change set: 47 paths
+  - `M  CURRENT_PREDICTIONS.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - `M  docs/model.html`
   - ` M scripts/mod25e_crH.py`
-  - `A  scripts/mod25e_e99.py`
-  - `A  scripts/mod25e_e99h.py`
-  - ` M tiebreaker.json`
+  - `M  tiebreaker.json`
   - `?? docs/lanes/mod25e-e98-regkick.md`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -43,7 +38,12 @@ Refreshed at: `2026-10-05T23:06:54.111281+00:00`
   - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
   - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
   - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
-  - ...and 32 more
+  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
+  - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
+  - `?? registry/experiments/margin-predict/2026-week-04-20261001T211240Z.json`
+  - `?? registry/experiments/margin-predict/2026-week-04-20261002T161446Z.json`
+  - `?? registry/experiments/margin-predict/2026-week-04-20261003T161013Z.json`
+  - ...and 27 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
