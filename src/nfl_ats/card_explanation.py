@@ -12,10 +12,16 @@ from nfl_ats.coach_fade_overlay import OverlayFlip
 from nfl_ats.displayed_confidence import displayed_pick_probability, displayed_strength_word
 from nfl_ats.division_revenge_tilt_overlay import TiltFlip as DivisionRevengeFlip
 from nfl_ats.four_overlay_composition import (
+    BYE_EDGE_FADE,
     COACH_FADE,
     DIVISION_REVENGE_TILT,
+    FORECAST_COLD_VISITOR_TILT,
+    INTERIM_HC_FIRST_GAME_TILT,
+    PBP08_PROTECTION_MISMATCH_TILT,
     PLAYER_ARRESTS_BACK_SIDE_POLICY,
+    PRECIP_HIGH_TOTAL_TILT,
     SPREAD_GAP_ZONE_FADE,
+    TANK_ZONE_FADE_TILT,
     FourOverlayCompositionResult,
 )
 from nfl_ats.key_line_pick_read import is_half_point_line
@@ -385,11 +391,17 @@ def refresh_change_from_pick_revision(
     )
 
 
-_MEMBER_LABELS: dict[str, str] = {
+MEMBER_LABELS: dict[str, str] = {
     COACH_FADE: "coach fade",
     DIVISION_REVENGE_TILT: "division revenge",
     PLAYER_ARRESTS_BACK_SIDE_POLICY: "player arrests",
     SPREAD_GAP_ZONE_FADE: "spread-gap zone",
+    BYE_EDGE_FADE: "bye-week rest edge",
+    FORECAST_COLD_VISITOR_TILT: "cold-weather visitor",
+    PBP08_PROTECTION_MISMATCH_TILT: "pass-protection mismatch",
+    INTERIM_HC_FIRST_GAME_TILT: "interim coach's first game",
+    TANK_ZONE_FADE_TILT: "tank-zone fade",
+    PRECIP_HIGH_TOTAL_TILT: "rain on a high total",
 }
 
 
@@ -435,7 +447,7 @@ def overlay_firings_from_composition(
         return ()
     firings = []
     for member_id in game_row.member_ids:
-        label = _MEMBER_LABELS.get(member_id, member_id)
+        label = MEMBER_LABELS.get(member_id, member_id)
         toward_home = game_row.final_home_cover_probability > game_row.raw_home_cover_probability
         direction = "complemented toward home" if toward_home else "complemented toward away"
         input_value = (
@@ -580,7 +592,7 @@ def _situational_adjustment_sentence(overlays: OverlaysComponent) -> str:
     if overlays.firings:
         names = _join_two_or_three(
             [
-                _MEMBER_LABELS.get(firing.name, firing.name.replace("_", " "))
+                MEMBER_LABELS.get(firing.name, firing.name.replace("_", " "))
                 for firing in overlays.firings
             ]
         )

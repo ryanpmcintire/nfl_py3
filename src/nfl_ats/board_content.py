@@ -13,7 +13,7 @@ from zoneinfo import ZoneInfo
 import pandas as pd
 
 from nfl_ats.active_model import active_artifact_path, load_active_ats_model
-from nfl_ats.card_explanation import BANNED_BOILERPLATE, PickExplanation
+from nfl_ats.card_explanation import BANNED_BOILERPLATE, MEMBER_LABELS, PickExplanation
 from nfl_ats.card_view import resolve_card_view
 from nfl_ats.clv import load_paper_decisions, pick_correct, served_paper_decisions
 from nfl_ats.dashboard.findings_content import (
@@ -27,16 +27,9 @@ from nfl_ats.displayed_confidence import (
     attach_displayed_confidence,
 )
 from nfl_ats.four_overlay_composition import (
-    BYE_EDGE_FADE,
     COACH_FADE,
-    DIVISION_REVENGE_TILT,
-    FORECAST_COLD_VISITOR_TILT,
-    INTERIM_HC_FIRST_GAME_TILT,
-    PBP08_PROTECTION_MISMATCH_TILT,
     PLAYER_ARRESTS_BACK_SIDE_POLICY,
-    PRECIP_HIGH_TOTAL_TILT,
     SPREAD_GAP_ZONE_FADE,
-    TANK_ZONE_FADE_TILT,
 )
 from nfl_ats.home_side_location import center_offsets_from_metadata
 from nfl_ats.key_line_pick_read import pick_overrides_from_metadata
@@ -115,19 +108,6 @@ from nfl_ats.tiebreaker_history import settled_tiebreakers
 _CONFIDENCE_FILL: dict[str, int] = {"slight": 1, "lean": 2, "strong": 3}
 
 EXPLANATION_NOT_RECORDED_TEXT = "Explanation not recorded for this forecast."
-
-_MEMBER_LABELS: dict[str, str] = {
-    COACH_FADE: "coach fade",
-    DIVISION_REVENGE_TILT: "division revenge",
-    PLAYER_ARRESTS_BACK_SIDE_POLICY: "player arrests",
-    SPREAD_GAP_ZONE_FADE: "spread-gap zone",
-    BYE_EDGE_FADE: "bye-week rest edge",
-    FORECAST_COLD_VISITOR_TILT: "cold-weather visitor",
-    PBP08_PROTECTION_MISMATCH_TILT: "pass-protection mismatch",
-    INTERIM_HC_FIRST_GAME_TILT: "interim coach's first game",
-    TANK_ZONE_FADE_TILT: "tank-zone fade",
-    PRECIP_HIGH_TOTAL_TILT: "rain on a high total",
-}
 
 _WEEK_LABELS = {
     "WC": "Wild Card round",
@@ -2808,15 +2788,15 @@ def _flip_member_labels(view: Any, game_id: str) -> tuple[str, ...]:
         if provenance is None:
             return ()
         return tuple(
-            _MEMBER_LABELS.get(member, member.replace("_", " ")) for member in provenance.member_ids
+            MEMBER_LABELS.get(member, member.replace("_", " ")) for member in provenance.member_ids
         )
     labels: list[str] = []
     if any(flip.game_id == game_id for flip in view.overlay.flips):
-        labels.append(_MEMBER_LABELS[COACH_FADE])
+        labels.append(MEMBER_LABELS[COACH_FADE])
     if view.arrest_overlay.enabled and any(
         flip.game_id == game_id for flip in view.arrest_overlay.flips
     ):
-        labels.append(_MEMBER_LABELS[PLAYER_ARRESTS_BACK_SIDE_POLICY])
+        labels.append(MEMBER_LABELS[PLAYER_ARRESTS_BACK_SIDE_POLICY])
     return tuple(labels)
 
 
@@ -3027,7 +3007,7 @@ def _build_policy_note(view: Any, strong_count: int, n_games: int) -> tuple[Poli
             f"{flip_count} pick{'s' if flip_count != 1 else ''} flipped by the fix-up rules"
         )
         members_text = ", ".join(
-            _MEMBER_LABELS.get(member, member.replace("_", " "))
+            MEMBER_LABELS.get(member, member.replace("_", " "))
             for member in production_overlay.composition_order
         )
         member_count = len(production_overlay.composition_order)

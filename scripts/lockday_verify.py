@@ -88,6 +88,10 @@ DEDICATED_LEDGERS: dict[str, dict[str, Any]] = {
         "written_by": "publish-predictions --record-decisions",
         "recording_path": "publish/dedicated",
         "wired": True,
+        "legitimately_empty": (
+            "the served tiebreaker centre has been the lattice centre since 2026-09-24, so "
+            "record_lattice_centre_decisions skips new weeks and only settles historical rows"
+        ),
     },
     "totals_served_method": {
         "ledger": "prospective/totals_served_method_decisions.parquet",
