@@ -2271,10 +2271,18 @@ def send_notification(title: str, message: str, *, priority: str = "high") -> bo
     )
     try:
         with urllib.request.urlopen(request, timeout=20) as response:
-            return 200 <= response.status < 300
+            body = response.read().decode("utf-8", "replace")
+            delivered = 200 <= response.status < 300
     except (urllib.error.URLError, OSError) as exc:
         log(f"NOTIFY-FAIL {title}: {str(exc)[:200]}")
         return False
+    try:
+        message_id = str(json.loads(body).get("id", ""))
+    except (json.JSONDecodeError, AttributeError):
+        message_id = ""
+    status = "NOTIFY-OK" if delivered and message_id else "NOTIFY-FAIL"
+    log(f"{status} {title}: http {response.status} id {message_id or 'none'}")
+    return delivered and bool(message_id)
 
 
 def parse_job_json(stdout: str) -> dict[str, Any] | None:
