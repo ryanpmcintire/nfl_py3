@@ -53,6 +53,10 @@ def run_with_flags(init, setting):
     if ot.enabled():
         assert seen["n"] >= 1
         ot.install(dv)
+    import mod25e_paty as py
+
+    if py.enabled():
+        py.install_paty()
     import mod25e_neg as mn
 
     if mn.enabled():
@@ -121,6 +125,31 @@ def run_with_flags(init, setting):
 
     if wf.enabled():
         wf.install_wfg()
+    import mod25e_fgd as fg
+
+    if fg.enabled():
+        fg.install_fgd()
+    import mod25e_cdr as cdr
+
+    if cdr.enabled():
+        cdr.install_cdr()
+    install_log_sync(dv)
+
+
+def install_log_sync(dv):
+    base = dv._G["pol"]
+
+    def pol(down, distance, yardline, score_diff, qtr, clock_val, drawn):
+        lg = dv._G.get("log")
+        n = len(lg) if lg is not None else 0
+        drawn = base(down, distance, yardline, score_diff, qtr, clock_val, drawn)
+        if lg and len(lg) == n + 1:
+            row = list(lg[-1])
+            row[6:11] = [int(drawn["play_type_code"]), float(drawn["points_off"]), float(drawn["points_def"]), bool(drawn["flip"]), float(drawn["clock_elapsed"])]
+            lg[-1] = tuple(row)
+        return drawn
+
+    dv._G["pol"] = pol
 
 
 def H_budget(setting):
@@ -190,6 +219,12 @@ def cmd_e5(a):
         label = label + "r"
     if os.environ.get("WFG") == "1":
         label = label + "w2"
+    if os.environ.get("PATY") == "1":
+        label = label + "x"
+    if os.environ.get("FGD") == "1":
+        label = label + "fd"
+    if os.environ.get("CDR") == "1":
+        label = label + "cd"
     dv.DV[label] = dict(dv.DV["crG"])
     outd = ss.OUT / f"e5_{label}_s{a.seed}"
     outd.mkdir(parents=True, exist_ok=True)

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-07T00:40:41.123683+00:00`
+Refreshed at: `2026-10-07T03:29:01.998580+00:00`
 
 ## Start here
 
@@ -21,11 +21,16 @@ Refreshed at: `2026-10-07T00:40:41.123683+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `cbf9af8047b7` — Republish the site the moment a refresh flips a pick
+- Baseline commit: `124edb23fbbb` — Send every scheduler alert by email as well as ntfy
 - Pending change set: 51 paths
-  - `M  scripts/capture_scheduler.py`
-  - ` M scripts/mod25e_crH.py`
-  - `?? docs/lanes/mod25e-e98-regkick.md`
+  - `A  docs/lanes/mod25e-e98-regkick.md`
+  - `M  docs/lanes/mod25e-generator-fidelity.md`
+  - `A  scripts/mod25e_cdr_m.py`
+  - `A  scripts/mod25e_cdr_s.py`
+  - `M  scripts/mod25e_crH.py`
+  - `A  scripts/mod25e_e98.py`
+  - `A  scripts/mod25e_fgd.py`
+  - `A  scripts/mod25e_paty.py`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
@@ -38,11 +43,6 @@ Refreshed at: `2026-10-07T00:40:41.123683+00:00`
   - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
   - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
   - `?? registry/experiments/margin-predict/2026-week-04-20261001T211240Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-04-20261002T161446Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-04-20261003T161013Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-04-20261003T173930Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-04-20261004T000229Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-04-20261004T001736Z.json`
   - ...and 31 more
 
 The baseline commit and pending paths were observed before the automatic refresh.

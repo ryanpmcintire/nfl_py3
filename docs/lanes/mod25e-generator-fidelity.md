@@ -81,6 +81,13 @@ leader complacency, halftime adjustment) alongside concrete mechanics.
    LOSO fit +.65 loglik/row) smoke partial. NEXT: one 3-seed e5 with base + PATY=1
    FGD=1 CDR=1 once the PATY/FGD smoke reports; spike share (.50 v .28) open.
    Smoke dirs go in artifacts/mod25e3/smoke/ (era globs pick up _s31).
+Stale-log audit 2026-10-06 (read-only): play logs (mod25c_noise.py:396-403) keep the pre-wrapper
+row for wrappers that edit after base: KICK with KGZ=1 (mod25e_kick.py:281-307 flip, RTD points),
+WFG (mod25e_wfg.py:63-85 whole row), CLK (mod25e_clk.py:203-233), KN/KNW (:424-437), TDC
+(mod25e_tdc.py:132-150), CDR (mod25e_cdr.py:115-133) clock_elapsed. Patched: FGD (:90-93), endgame
+(mod25e_endgame.py:330-336, clock only). Fine: GZ (before base), PATY, STF/YLM/ADJ (next_* only,
+not logged). Play-log-scored results to recheck: YLM punt slope/start, E95 end-spot, E97/WFG OT FG
+share, CDR snap timing, E32/E44 clock/drive-seconds.
 Lessons: exclude half-last rows from every possession-change definition; every
 engine wrapper walks frames to the 'offense' frame and binds locals before base.
 CPU budget: about 6 of 24 cores; e5 --workers 3, one at a time; agents
