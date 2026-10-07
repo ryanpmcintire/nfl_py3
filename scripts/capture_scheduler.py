@@ -2371,6 +2371,16 @@ def notify_after_job(job: Job, status: str, detail: str, stdout: str) -> None:
         "\n".join(lines),
         priority="urgent",
     )
+    publish = [str(UV), "run", "--no-sync", "python", str(REPO / "scripts" / "publish_site.py")]
+    site_status, site_detail, _ = execute_job_with_output(publish)
+    log(f"PICK-CHANGE-PUBLISH {site_status} {job.name}: {site_detail}")
+    if site_status != "OK":
+        send_notification(
+            "NFL site not updated",
+            "A pick changed but the public site did not republish: "
+            f"{site_status} {site_detail[:160]}",
+            priority="urgent",
+        )
 
 
 RECORDING_FLAGS: frozenset[str] = frozenset(
