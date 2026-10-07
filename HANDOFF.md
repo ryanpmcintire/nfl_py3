@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-07T00:28:56.072406+00:00`
+Refreshed at: `2026-10-07T00:40:41.123683+00:00`
 
 ## Start here
 
@@ -21,7 +21,7 @@ Refreshed at: `2026-10-07T00:28:56.072406+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `d91cd5f0f5d3` — Log every pick-alert send with ntfy's message id
+- Baseline commit: `cbf9af8047b7` — Republish the site the moment a refresh flips a pick
 - Pending change set: 51 paths
   - `M  scripts/capture_scheduler.py`
   - ` M scripts/mod25e_crH.py`

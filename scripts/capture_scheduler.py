@@ -6,6 +6,8 @@ import hashlib
 import json
 import os
 import re
+import smtplib
+import ssl
 import subprocess
 import sys
 import threading
@@ -14,6 +16,7 @@ import urllib.error
 import urllib.request
 from dataclasses import dataclass, replace
 from datetime import UTC, date, datetime, timedelta
+from email.message import EmailMessage
 from pathlib import Path
 from typing import Any, cast
 from zoneinfo import ZoneInfo
@@ -2258,7 +2261,44 @@ def ntfy_url() -> str:
     return _user_environment_value("NFL_ATS_NTFY_URL") or "https://ntfy.sh"
 
 
+SMTP_HOST = "smtp.gmail.com"
+SMTP_SSL_PORT = 465
+
+
+def send_email_alert(title: str, message: str) -> bool:
+    user = _user_environment_value("NFL_ATS_SMTP_USER")
+    password = _user_environment_value("NFL_ATS_SMTP_PASSWORD")
+    recipient = _user_environment_value("NFL_ATS_ALERT_EMAIL") or user
+    if not user or not password:
+        log(f"EMAIL-SKIP {title}: NFL_ATS_SMTP_USER or NFL_ATS_SMTP_PASSWORD not set")
+        return False
+    email = EmailMessage()
+    email["Subject"] = title
+    email["From"] = user
+    email["To"] = recipient
+    email.set_content(message)
+    try:
+        with smtplib.SMTP_SSL(
+            SMTP_HOST, SMTP_SSL_PORT, context=ssl.create_default_context(), timeout=30
+        ) as server:
+            server.login(user, password)
+            refused = server.send_message(email)
+    except (smtplib.SMTPException, OSError) as exc:
+        log(f"EMAIL-FAIL {title}: {str(exc)[:200]}")
+        return False
+    if refused:
+        log(f"EMAIL-FAIL {title}: refused {sorted(refused)}")
+        return False
+    log(f"EMAIL-OK {title}")
+    return True
+
+
 def send_notification(title: str, message: str, *, priority: str = "high") -> bool:
+    emailed = send_email_alert(title, message)
+    return send_ntfy(title, message, priority=priority) or emailed
+
+
+def send_ntfy(title: str, message: str, *, priority: str = "high") -> bool:
     topic = ntfy_topic()
     if not topic:
         log(f"NOTIFY-SKIP {title}: no NFL_ATS_NTFY_TOPIC in the environment or user registry")
