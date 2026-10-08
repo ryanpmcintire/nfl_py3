@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-08T21:39:56.358446+00:00`
+Refreshed at: `2026-10-08T21:41:48.392972+00:00`
 
 ## Start here
 
@@ -21,17 +21,16 @@ Refreshed at: `2026-10-08T21:39:56.358446+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `0fef967e728a` — MOD-25e E102: touchback hook kept on 3 seeds; SD, strength and xq move toward real
+- Baseline commit: `4fbde2ee7287` — ACC-U8: market freeze vs opener graded on 2025 and recorded unresolved; report sign fixed
 - Pending change set: 70 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - ` M README.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/acc-u8-prediction-markets.md`
+  - ` M docs/lanes/acc-u8-prediction-markets.md`
+  - `M  docs/lanes/lead53-sunday-renomination.md`
+  - `M  docs/lanes/pol10-prospective-2026.md`
   - ` M docs/model.html`
-  - `M  registry/weak_signals.json`
-  - `M  scripts/mod24_u8_markets.py`
   - ` M tiebreaker.json`
   - `?? docs/lanes/mod25e-e103-lateclock.md`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
@@ -43,6 +42,7 @@ Refreshed at: `2026-10-08T21:39:56.358446+00:00`
   - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
   - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
   - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
+  - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
   - ...and 50 more
 
 The baseline commit and pending paths were observed before the automatic refresh.

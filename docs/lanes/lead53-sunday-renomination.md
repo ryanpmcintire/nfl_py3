@@ -34,6 +34,8 @@ normalizing `paired_at_utc` to nanosecond precision. The prior millisecond Parqu
 rejected a microsecond recording time. All eleven existing recorder tests passed; the
 live result is saved in `.tmp/resume-refresh-result.json`. No earlier week was backfilled.
 
+**Measured 2026-10-08:** `.tmp/confidence_nominee_readiness.json` paired ledger has Week 4 Tuesday (2026_04_PIT_CLE, 2026-09-29T19:29:10Z) and Sunday (paired 2026-10-04T12:30:37Z, same nominee PIT_CLE, 16 eligible each); Week 3 pair also present; Week 5 Tuesday LV_NE captured 2026-10-06T22:37Z. Week 2 missing from the paired ledger, Week 1 Tuesday only. Scheduler log BEST-PICK-LEDGER shows the Week 4 Sunday refreshes (10-04 10:03, 11:57, 15:01 ET) all `already_recorded`; no BEST-PICK-LEDGER line exists for the Tuesday recording or the 12:30Z Sunday write.
+
 ## Tried
 
 Read the scheduler log, Week 2 failure metadata and stderr, the prospective ledger, the original-card loader,
