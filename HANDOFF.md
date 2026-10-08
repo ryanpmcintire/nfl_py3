@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-08T21:47:20.967609+00:00`
+Refreshed at: `2026-10-08T21:48:17.493846+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-10-08T21:47:20.967609+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `573a8e48e4cd` — ACC-U8: 2026 market freeze vs Splash line recorded unresolved; pooled cells withheld (openers differ)
-- Pending change set: 79 paths
-  - `M  CURRENT_PREDICTIONS.md`
-  - `M  HANDOFF.md`
-  - `M  README.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - `M  docs/lanes/acc-u8-prediction-markets.md`
-  - `A  docs/lanes/done/ui20-2026-10-08b.md`
-  - `M  docs/lanes/lead53-sunday-renomination.md`
-  - `A  docs/lanes/mod25e-e103-lateclock.md`
-  - `M  docs/model.html`
-  - `M  registry/weak_signals.json`
-  - `M  scripts/capture_scheduler.py`
-  - ` M scripts/mod25e_crH.py`
-  - `M  src/nfl_ats/best_pick_refresh_prospective.py`
-  - `M  src/nfl_ats/board_site_content.py`
-  - `M  src/nfl_ats/board_terminal.py`
-  - `M  tiebreaker.json`
+- Baseline commit: `1b3d268781d7` — History: week-by-week record; Best Pick ledger writes logged at the source; ACC-U8 Tuesday-line market cells recorded
+- Pending change set: 64 paths
+  - `M  docs/lanes/mod25e-e103-lateclock.md`
+  - `M  docs/lanes/mod25e-generator-fidelity.md`
+  - `A  scripts/mod25e_ckc.py`
+  - `M  scripts/mod25e_crH.py`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
-  - ...and 59 more
+  - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
+  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
+  - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
+  - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
+  - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
+  - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
+  - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
+  - `?? registry/experiments/margin-backtest/20261008T161241Z.json`
+  - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
+  - `?? registry/experiments/margin-predict/2026-week-04-20261001T211240Z.json`
+  - ...and 44 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

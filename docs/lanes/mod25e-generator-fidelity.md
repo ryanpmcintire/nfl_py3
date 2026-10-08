@@ -50,6 +50,7 @@ Detailed log: docs/lanes/done/mod25e-generator-fidelity-log-2026-10-04.md.
   touchbacks. Smoke s31 launched 12:04 (artifacts/mod25e3/e5_..xfdcdtb_s31), unscored at write time.
 
 ## Next
+00. 2026-10-08 E103 (lane mod25e-e103-lateclock.md): late-half gap is non-kneel plays rarely ending the half (Q4 run trailing/tied hs 10-20 real .41 v sim .09); candidate cause CLK pools half-ending plays as short exact elapsed (mod25e_clk.py:70-72). Per-second hazard (CKC, off) lost LOSO on run/pass; next: Kaplan-Meier censored-pool draw.
 0. 2026-10-08 DONE: STB KEPT on 3 seeds (lane e102): SD 15.50, strength 56.67 (real 57.96; the E100
    strength rise is gone, so no ablation needed), xq cov +1.6, Q4 slope -.057; late r2 .132 (.146) and
    P(final 3 | tied after reg) .546 (.682) moved away. New base ...ypw2xfdcdtb (env + STB=1).
