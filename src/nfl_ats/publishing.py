@@ -25,6 +25,7 @@ from nfl_ats.card_explanation import (
     render_markdown as render_explanations_markdown,
 )
 from nfl_ats.card_view import BestPickNomination, resolve_card_view
+from nfl_ats.clv import load_paper_decisions
 from nfl_ats.coach_fade_overlay import OverlayResult, overlay_disclosure_note
 from nfl_ats.dashboard.findings_content import PLAYED_CARD_EXPECTATION_HERO
 from nfl_ats.displayed_confidence import (
@@ -430,6 +431,21 @@ def published_tiebreaker_guess(
     )
 
 
+def _forecast_reread_after_locked_card(artifacts_root: Path, metadata: Mapping[str, Any]) -> bool:
+    created = pd.to_datetime(str(metadata.get("created_at_utc") or ""), utc=True, errors="coerce")
+    if pd.isna(created):
+        return False
+    ledger = load_paper_decisions(artifacts_root)
+    if ledger.empty:
+        return False
+    week_rows = ledger.loc[
+        pd.to_numeric(ledger["season"], errors="coerce").eq(int(metadata["season"]))
+        & pd.to_numeric(ledger["week"], errors="coerce").eq(int(metadata["week"]))
+    ]
+    locked_at = pd.to_datetime(week_rows["recorded_at_utc"], utc=True, errors="coerce").min()
+    return bool(pd.notna(locked_at) and created > locked_at)
+
+
 def publish_active_predictions(
     artifacts_root: Path,
     *,
@@ -648,6 +664,11 @@ def publish_active_predictions(
                 adapted = refresh_change_from_pick_revision(revision)
                 if adapted is not None:
                     refresh_changes_by_game[str(revision_row["game_id"])] = adapted
+        if _forecast_reread_after_locked_card(artifacts_root, metadata):
+            for game_id in all_game_ids:
+                refresh_changes_by_game.setdefault(
+                    game_id, RefreshChangeInput(note="re-read after the locked card")
+                )
 
         explanations = explain_card(
             cast(list[dict[str, Any]], raw_predictions.to_dict("records")),

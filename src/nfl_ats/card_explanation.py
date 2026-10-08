@@ -642,7 +642,7 @@ def _freshness_clause(freshness: FreshnessComponent) -> str:
 
 _REFRESH_SHORT_CLAUSES: dict[str, str] = {
     REFRESH_NOT_YET: "Not refreshed since Tuesday.",
-    REFRESH_NONE: "Confirmed unchanged on refresh.",
+    REFRESH_NONE: "Re-checked since Tuesday with the latest news; the pick held.",
     REFRESH_FLIPPED: "Pick changed on refresh.",
     REFRESH_LINE_MOVED: "Line moved on refresh.",
     REFRESH_OVERLAY_CHANGED: "Situational adjustments changed on refresh.",
