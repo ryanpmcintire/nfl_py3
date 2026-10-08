@@ -538,6 +538,17 @@ class SelectiveMissingnessImputer(TransformerMixin, BaseEstimator):
         return np.asarray([*self.feature_names_in_, *indicator_names], dtype=object)
 
 
+class FloatNoiseGuardedScaler(StandardScaler):
+    def fit(self, X: Any, y: Any = None, sample_weight: Any = None) -> FloatNoiseGuardedScaler:
+        super().fit(X, y, sample_weight=sample_weight)
+        values = np.asarray(X, dtype=float)
+        finite = values[np.isfinite(values)]
+        if finite.size:
+            tolerance = np.finfo(float).eps * float(np.abs(finite).max())
+            self.scale_ = np.where(np.sqrt(self.var_) <= tolerance, 1.0, np.sqrt(self.var_))
+        return self
+
+
 class GroupPenaltyScaler(TransformerMixin, BaseEstimator):
     def __init__(self, column_multipliers: Mapping[str, float] | None = None) -> None:
         self.column_multipliers = column_multipliers
@@ -606,14 +617,14 @@ def make_margin_estimator(
             return Pipeline(
                 steps=[
                     ("imputer", imputer),
-                    ("scaler", StandardScaler()),
+                    ("scaler", FloatNoiseGuardedScaler()),
                     ("regressor", Ridge(alpha=ridge_alpha)),
                 ]
             )
         pipeline = Pipeline(
             steps=[
                 ("imputer", imputer),
-                ("scaler", StandardScaler()),
+                ("scaler", FloatNoiseGuardedScaler()),
                 ("group_penalty", GroupPenaltyScaler(dict(column_penalties))),
                 ("regressor", Ridge(alpha=ridge_alpha)),
             ]
