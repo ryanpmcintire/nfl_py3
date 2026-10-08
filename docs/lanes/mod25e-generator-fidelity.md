@@ -37,7 +37,22 @@ Detailed log: docs/lanes/done/mod25e-generator-fidelity-log-2026-10-04.md.
   halfend, trips, clock2 (label via CLK_LABEL/CU_LABEL/DIST_LABEL env; never
   import clock2 at module level, its main() overwrites artifacts).
 
+## 2026-10-08 units (measured; details in each lane)
+- E100 (mod25e-e100-seedboot.md): base ypw2 -> ypw2xfdcd (PATY+FGD+CDR) KEPT as base. Season bootstrap
+  within seed: late r2 +.0136 [+.002,+.024] P.96, mass3 +.0030 P.90, Q4 slope toward real P.94; strength
+  +4.09 [+.01,+8.39] P.95 moves AWAY from real 58.0 (seeds +5.2/+6.4/+0.6), SD +.166 P.93: open check.
+  Last-5-min tie -> final 3 still .482 v real .625.
+- E101 (mod25e-e101-logrecheck.md): on synced logs the E97 OT FG gap is gone (downs 2-3 .16-.21 v real
+  .15-.19; old .02-.03 was the stale log). Held: punt slope/start, E95 gaps (same sign, intervals span 0).
+  Still open: FG kick with <=5s left .224 v .355; Q4 last play <=5s .311 v .128; Q2 .405 v .263.
+- E102 (mod25e-e102-touchback.md): STB=1 hook (scripts/mod25e_stb.py, suffix tb) draws touchbacks as their
+  own event; punt logistic in fp,fp^2 (LOSO +854 ll, 9/9 seasons), kickoff constant .504; STF skips
+  touchbacks. Smoke s31 launched 12:04 (artifacts/mod25e3/e5_..xfdcdtb_s31), unscored at write time.
+
 ## Next
+0. 2026-10-08: score the STB smoke (lane e102 Next), then ONE 3-seed e5 with base + STB=1 and the E100
+   bootstrap (scripts/mod25e_e100.py) against ypw2xfdcd; then a per-hook ablation (CDR v PATY v FGD) to
+   find the strength rise; then the late-clock gaps above (E101).
 Owner 2026-10-04: prioritise abstract human mechanisms (catch-up, effort, risk,
 leader complacency, halftime adjustment) alongside concrete mechanics.
 1. Persistence E +10.3 is the largest gap. Ruled out (measured): play-level effort,

@@ -227,7 +227,7 @@ def install_stf():
             rng = state["rng"]
             state["z"] = tuple(a[0] for a in latents(rng, fit, 1))
         state["gsr"] = g
-        if not bool(drawn["flip"]) or qtr > 4:
+        if not bool(drawn["flip"]) or qtr > 4 or drawn.get("stb_tb"):
             return drawn
         recv = team["away" if offense == "home" else "home"]
         kick = team[offense]

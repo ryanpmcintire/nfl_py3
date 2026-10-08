@@ -117,6 +117,10 @@ def run_with_flags(init, setting):
 
     if ym.enabled():
         ym.install_ylm()
+    import mod25e_stb as sb
+
+    if sb.enabled():
+        sb.install_stb()
     import mod25e_stf as sf
 
     if sf.enabled():
@@ -225,6 +229,8 @@ def cmd_e5(a):
         label = label + "fd"
     if os.environ.get("CDR") == "1":
         label = label + "cd"
+    if os.environ.get("STB") == "1":
+        label = label + "tb"
     dv.DV[label] = dict(dv.DV["crG"])
     outd = ss.OUT / f"e5_{label}_s{a.seed}"
     outd.mkdir(parents=True, exist_ok=True)
