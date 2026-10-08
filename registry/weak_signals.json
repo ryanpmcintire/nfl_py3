@@ -213654,6 +213654,34 @@
       "source": "docs/lanes/acc-u8-prediction-markets.md",
       "standard_error": 6.27
     },
+    "u8_kalshi_freeze_vs_tuesday_line_pooled": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Kalshi market spread at the Tuesday-noon pool freeze vs the Tuesday-noon book line (median of 12 books; 2026 uses the Splash locked line), picking the side of the gap, decisive games 2025+2026 Weeks 1-4. Same definition both seasons (gap SD .32-.52). 2025 92-96 -1.06 [-7.98,+5.85]; LOSO log loss beats constant only fit-2025-score-2026 (.6917 v .6932). 26 looks in the family.",
+      "effect": -1.41,
+      "effect_units": "accuracy_points",
+      "family": "prediction_market_freeze_vs_opener",
+      "interval": [
+        -7.83,
+        4.62
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.34,
+      "recorded_at": "2026-10-08",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 249,
+      "seasons": [
+        2025,
+        2026
+      ],
+      "source": "docs/lanes/acc-u8-prediction-markets.md",
+      "standard_error": 3.19
+    },
     "u8_polymarket_freeze_vs_opener": {
       "category": "market",
       "classification": "unresolved_below_power",
@@ -213709,6 +213737,34 @@
       ],
       "source": "docs/lanes/acc-u8-prediction-markets.md",
       "standard_error": 6.6
+    },
+    "u8_polymarket_freeze_vs_tuesday_line_pooled": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Polymarket market spread at the Tuesday-noon pool freeze vs the Tuesday-noon book line (median of 12 books; 2026 uses the Splash locked line), picking the side of the gap, decisive games 2025+2026 Weeks 1-4. Same definition both seasons (gap SD .32-.52). 2025 43-24 +14.18 [+3.73,+26.12] P+ .991 but slope -4.41 disagrees with the side record and 2026 is 26-32; LOSO log loss no better than constant. 26 looks in the family.",
+      "effect": 5.2,
+      "effect_units": "accuracy_points",
+      "family": "prediction_market_freeze_vs_opener",
+      "interval": [
+        -3.6,
+        13.22
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.887,
+      "recorded_at": "2026-10-08",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 125,
+      "seasons": [
+        2025,
+        2026
+      ],
+      "source": "docs/lanes/acc-u8-prediction-markets.md",
+      "standard_error": 4.29
     },
     "unit_apm_def_front_reliability": {
       "category": "onfield",

@@ -2357,6 +2357,11 @@ def _season_so_far_section_html(block: SeasonSoFar | None) -> str:
         f'<span class="value">{escape(block.best_pick_record_text)}</span>'
         f'<span class="foot">{escape(block.best_pick_text)}</span></div>'
         "</div>",
+        *(
+            [f'<p class="policy-note">{escape(block.week_by_week_text)}</p>']
+            if block.week_by_week_text
+            else []
+        ),
         f'<p class="policy-note">{escape(block.caveat_text)}</p>',
         f'<p class="policy-note">{escape(block.tiebreaker_text)}</p>',
     ]

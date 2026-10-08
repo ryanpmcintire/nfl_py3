@@ -36,6 +36,10 @@ live result is saved in `.tmp/resume-refresh-result.json`. No earlier week was b
 
 **Measured 2026-10-08:** `.tmp/confidence_nominee_readiness.json` paired ledger has Week 4 Tuesday (2026_04_PIT_CLE, 2026-09-29T19:29:10Z) and Sunday (paired 2026-10-04T12:30:37Z, same nominee PIT_CLE, 16 eligible each); Week 3 pair also present; Week 5 Tuesday LV_NE captured 2026-10-06T22:37Z. Week 2 missing from the paired ledger, Week 1 Tuesday only. Scheduler log BEST-PICK-LEDGER shows the Week 4 Sunday refreshes (10-04 10:03, 11:57, 15:01 ET) all `already_recorded`; no BEST-PICK-LEDGER line exists for the Tuesday recording or the 12:30Z Sunday write.
 
+**Read 2026-10-08 (cause):** the only BEST-PICK-LEDGER log site was `capture_scheduler.py` `notify_after_job`, which runs only for `refresh_`/`lineups_` jobs and logs only `refresh_sun*`. The Tuesday write (`publishing.py:416`, publish with record_decisions) and any non-scheduler or non-refresh_sun Sunday write never logged.
+
+**Fix 2026-10-08:** `best_pick_refresh_prospective.py` `log_ledger_write` (line 458) is called by `record_best_pick_tuesday` (482) and `record_best_pick_refresh` (706); it appends one `BEST-PICK-LEDGER tuesday|sunday` line to `<data_root>/scheduler_log.txt` when `recorded` is truthy. The scheduler line now skips recorded results to avoid duplicates (`capture_scheduler.py:2390`). Verified on a temp data_root with patched inner recorders: recorded=1 wrote 2 lines, already_recorded wrote none; ruff clean. Running scheduler (PIDs 28736/31824) imports scheduler code at start: restart needed for the `capture_scheduler.py` change; recorders run in job subprocesses and pick up the library change immediately. Week 1/2 not backfilled.
+
 ## Tried
 
 Read the scheduler log, Week 2 failure metadata and stderr, the prospective ledger, the original-card loader,
@@ -50,3 +54,5 @@ Keep collecting future Tuesday/Sunday pairs; the current Week 3 pair is recorded
 
 The exact Week 1 guard result and the historical Week 2 input difference cannot be recovered from retained
 evidence. Current artifacts no longer reproduce the Week 2 loader failure.
+
+Orchestrator 2026-10-08: logging fix reviewed and committed; gates passed. Scheduler not restarted: until it is, a refresh_sun write may log twice (harmless). Check the next Tuesday 2026-10-13 write logs one BEST-PICK-LEDGER tuesday line.

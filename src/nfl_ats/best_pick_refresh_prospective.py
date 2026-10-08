@@ -6,6 +6,7 @@ import math
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, cast
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 
@@ -271,7 +272,7 @@ def settle_ledger(artifacts_root: Path, data_root: Path) -> pd.DataFrame:
     return settled
 
 
-def record_best_pick_tuesday(
+def _record_best_pick_tuesday(
     artifacts_root: Path,
     data_root: Path,
     publication: dict[str, Any],
@@ -452,6 +453,33 @@ def record_best_pick_tuesday(
         }
     except (OSError, ValueError, KeyError, TypeError) as error:
         return skip(f"{CHALLENGER_ID}: {error}")
+
+
+def log_ledger_write(data_root: Path, phase: str, result: dict[str, Any]) -> None:
+    if not result.get("recorded"):
+        return
+    stamp = datetime.now(tz=ZoneInfo("America/New_York")).isoformat(timespec="seconds")
+    line = f"{stamp} BEST-PICK-LEDGER {phase}: {json.dumps(result, default=str)[:300]}"
+    try:
+        with (data_root / "scheduler_log.txt").open("a", encoding="utf-8") as handle:
+            handle.write(line + "\n")
+    except OSError:
+        pass
+
+
+def record_best_pick_tuesday(
+    artifacts_root: Path,
+    data_root: Path,
+    publication: dict[str, Any],
+    *,
+    now: datetime | None = None,
+    replace_week: bool = False,
+) -> dict[str, Any]:
+    result = _record_best_pick_tuesday(
+        artifacts_root, data_root, publication, now=now, replace_week=replace_week
+    )
+    log_ledger_write(data_root, "tuesday", result)
+    return result
 
 
 def _record_best_pick_refresh(
@@ -674,6 +702,7 @@ def record_best_pick_refresh(
         plan,
         record_decisions=record_decisions,
     )
+    log_ledger_write(data_root, "sunday", result)
     if record_decisions:
         atomic_json(
             {
