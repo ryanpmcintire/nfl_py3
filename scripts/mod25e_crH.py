@@ -84,7 +84,10 @@ def run_with_flags(init, setting):
     if dk2.enabled():
         dk2.install_dk2()
     import mod25e_clk as ck
+    import mod25e_gfl as gf
 
+    if gf.enabled():
+        gf.patch()
     if ck.enabled():
         ck.install_ck()
     import mod25e_ckc as kc
@@ -237,6 +240,8 @@ def cmd_e5(a):
         label = label + "tb"
     if os.environ.get("CKC") == "1":
         label = label + "kc"
+    if os.environ.get("GFL") == "1":
+        label = label + "gf"
     dv.DV[label] = dict(dv.DV["crG"])
     outd = ss.OUT / f"e5_{label}_s{a.seed}"
     outd.mkdir(parents=True, exist_ok=True)
