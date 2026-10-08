@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-08T16:19:42.921172+00:00`
+Refreshed at: `2026-10-08T18:44:19.886164+00:00`
 
 ## Start here
 
@@ -21,11 +21,16 @@ Refreshed at: `2026-10-08T16:19:42.921172+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `83df4aee581a` — Lane: Thursday Week 5 dashboard update
-- Pending change set: 59 paths
+- Baseline commit: `de8fd1b2d221` — MOD-25e E102: touchback smoke matches real; 3-seed run launched
+- Pending change set: 64 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - ` M README.md`
+  - ` M docs/findings.html`
+  - ` M docs/history.html`
+  - ` M docs/index.html`
   - `M  docs/lanes/mod25e-e102-touchback.md`
+  - `M  docs/lanes/mod25e-generator-fidelity.md`
+  - ` M docs/model.html`
+  - `M  scripts/mod25e_e100.py`
   - ` M tiebreaker.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -38,12 +43,7 @@ Refreshed at: `2026-10-08T16:19:42.921172+00:00`
   - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
   - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
   - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
-  - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
-  - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
-  - `?? registry/experiments/margin-backtest/20261008T161241Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-04-20261001T211240Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-04-20261002T161446Z.json`
-  - ...and 39 more
+  - ...and 44 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -63,7 +63,7 @@ The 52.55% figure is the distinct secondary close-grade historical classificatio
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 5** from model `8fb163cae627f4b0`, published `2026-10-08T16:19:05.616450+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 5** from model `8fb163cae627f4b0`, published `2026-10-08T16:21:50.172552+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

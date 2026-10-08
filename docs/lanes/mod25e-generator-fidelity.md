@@ -50,9 +50,12 @@ Detailed log: docs/lanes/done/mod25e-generator-fidelity-log-2026-10-04.md.
   touchbacks. Smoke s31 launched 12:04 (artifacts/mod25e3/e5_..xfdcdtb_s31), unscored at write time.
 
 ## Next
-0. 2026-10-08: score the STB smoke (lane e102 Next), then ONE 3-seed e5 with base + STB=1 and the E100
-   bootstrap (scripts/mod25e_e100.py) against ypw2xfdcd; then a per-hook ablation (CDR v PATY v FGD) to
-   find the strength rise; then the late-clock gaps above (E101).
+0. 2026-10-08 DONE: STB KEPT on 3 seeds (lane e102): SD 15.50, strength 56.67 (real 57.96; the E100
+   strength rise is gone, so no ablation needed), xq cov +1.6, Q4 slope -.057; late r2 .132 (.146) and
+   P(final 3 | tied after reg) .546 (.682) moved away. New base ...ypw2xfdcdtb (env + STB=1).
+   NEXT: the late-clock gaps (E101): FG kick with <=5s left .224 v .355, Q4 last play <=5s .311 v .128,
+   Q2 .405 v .263, and last-5-min tie -> final 3 .497 v .625. Bootstrap any candidate with
+   E100_BASE/E100_CAND/E100_OUT env on scripts/mod25e_e100.py.
 Owner 2026-10-04: prioritise abstract human mechanisms (catch-up, effort, risk,
 leader complacency, halftime adjustment) alongside concrete mechanics.
 1. Persistence E +10.3 is the largest gap. Ruled out (measured): play-level effort,

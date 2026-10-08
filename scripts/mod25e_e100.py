@@ -1,4 +1,5 @@
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -11,9 +12,9 @@ import mod25e_e96 as e96  # noqa: E402
 from mod25e_analysis import per_game, season_re  # noqa: E402
 
 E3 = REPO / "artifacts" / "mod25e3"
-OUTD = E3 / "e100"
-BASE = "crHpqokgndecsmfwtjo2as2ypw2"
-CAND = BASE + "xfdcd"
+OUTD = E3 / os.environ.get("E100_OUT", "e100")
+BASE = os.environ.get("E100_BASE", "crHpqokgndecsmfwtjo2as2ypw2")
+CAND = os.environ.get("E100_CAND", BASE + "xfdcd")
 SEEDS = (11, 12, 13)
 NBOOT = 1000
 BURN_SID = 2
