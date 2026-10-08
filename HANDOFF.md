@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-08T22:02:41.760537+00:00`
+Refreshed at: `2026-10-08T22:43:29.917376+00:00`
 
 ## Start here
 
@@ -21,10 +21,11 @@ Refreshed at: `2026-10-08T22:02:41.760537+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `8311d3285ff3` — Lane: correct the Week 5 mismatch note
-- Pending change set: 62 paths
-  - `M  HANDOFF.md`
-  - ` M scripts/mod25e_ckc.py`
+- Baseline commit: `1b1ed301591a` — Refresh handoff
+- Pending change set: 63 paths
+  - `M  docs/lanes/mod25e-e103-lateclock.md`
+  - `M  docs/lanes/mod25e-generator-fidelity.md`
+  - `M  scripts/mod25e_ckc.py`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
@@ -42,8 +43,7 @@ Refreshed at: `2026-10-08T22:02:41.760537+00:00`
   - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
   - `?? registry/experiments/margin-predict/2026-week-04-20261001T211240Z.json`
   - `?? registry/experiments/margin-predict/2026-week-04-20261002T161446Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-04-20261003T161013Z.json`
-  - ...and 42 more
+  - ...and 43 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

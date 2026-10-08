@@ -37,36 +37,24 @@ def obs(R):
     return ev, cb, last
 
 
-def hazards(c, hb, ev, last, nc, nh, a):
+def km_pmf(ci, ev, last, nc):
     D = np.zeros((nc, NB))
     H = np.zeros((nc, NB))
     m = ev >= 0
-    np.add.at(D, (c[m], ev[m]), 1.0)
-    np.add.at(H, (c, last), 1.0)
+    np.add.at(D, (ci[m], ev[m]), 1.0)
+    np.add.at(H, (ci, last), 1.0)
     N = np.cumsum(H[:, ::-1], axis=1)[:, ::-1]
-    Dh = np.zeros((nh, NB))
-    Nh = np.zeros((nh, NB))
-    Dh_c = np.zeros((nh, NB))
-    np.add.at(Dh_c, (hb[m], ev[m]), 1.0)
-    Hh = np.zeros((nh, NB))
-    np.add.at(Hh, (hb, last), 1.0)
-    Nh = np.cumsum(Hh[:, ::-1], axis=1)[:, ::-1]
-    Dh = Dh_c
-    hg = np.clip(Dh.sum(axis=0) / np.maximum(Nh.sum(axis=0), 1.0), 1e-6, 1 - 1e-6)
-    hh = (Dh + hg) / (Nh + 1.0)
-    return D, N, hh, a
+    hz = np.where(N > 0, D / np.maximum(N, 1.0), 0.0)
+    surv = np.cumprod(1 - hz, axis=1)
+    prev = np.concatenate([np.ones((nc, 1)), surv[:, :-1]], axis=1)
+    return np.concatenate([prev * hz, surv[:, -1:]], axis=1)
 
 
-def cell_hz(D, N, hh_rows, a):
-    return np.clip((D + a * hh_rows) / (N + a), 1e-6, 1 - 1e-6)
+def smooth_pm(cn, pc, ph, a):
+    return (cn[:, None] * pc + a * ph) / (cn[:, None] + a)
 
 
-def ll_cens(hz, ev, cb):
-    cum = np.concatenate([np.zeros((hz.shape[0], 1)), np.cumsum(np.log1p(-hz), axis=1)], axis=1)
-    return cum, np.maximum(ev, 0)
-
-
-def fold_ll(sub, spec, a, mode):
+def fold_rows(sub, spec, a, mode):
     import mod25e_clk as ck
 
     edges = ck.EDGES[spec["edges"]]
@@ -76,34 +64,29 @@ def fold_ll(sub, spec, a, mode):
     ss = sub.season.to_numpy()
     uc, ci = np.unique(c, return_inverse=True)
     nh = len(edges) + 1
-    tot, n = 0.0, 0
+    hbc = np.zeros(len(uc), int)
+    hbc[ci] = hb
+    out = np.zeros(len(sub))
     for s in np.unique(ss):
         te, tr = ss == s, ss != s
-        if mode == "haz":
-            D, N, hh, _ = hazards(ci[tr], hb[tr], ev[tr], last[tr], len(uc), nh, a)
-            hh_rows = np.zeros((len(uc), NB))
-            hbc = np.zeros(len(uc), int)
-            hbc[ci] = hb
-            hh_rows = hh[hbc]
-            hz = cell_hz(D, N, hh_rows, a)
-            cum = np.concatenate([np.zeros((hz.shape[0], 1)), np.cumsum(np.log1p(-hz), axis=1)], axis=1)
-            e = np.maximum(ev[te], 0)
-            ll = np.where(ev[te] >= 0, cum[ci[te], e] + np.log(hz[ci[te], e]), cum[ci[te], cb[te]])
+        cn = np.bincount(ci[tr], minlength=len(uc)).astype(float)
+        hn = np.bincount(hb[tr], minlength=nh).astype(float)
+        if mode == "km":
+            pc = km_pmf(ci[tr], ev[tr], last[tr], len(uc))
+            ph = km_pmf(hb[tr], ev[tr], last[tr], nh)
+            ph = (hn[:, None] * ph + 1.0 / (NB + 1)) / (hn[:, None] + 1.0)
         else:
             elb = np.where(ev >= 0, ev, np.minimum(cb, NB))
             cnt = np.zeros((len(uc), NB + 1))
             np.add.at(cnt, (ci[tr], elb[tr]), 1.0)
             mh = np.zeros((nh, NB + 1))
             np.add.at(mh, (hb[tr], elb[tr]), 1.0)
-            margh = (mh + 1.0) / (mh.sum(axis=1, keepdims=True) + NB + 1)
-            hbc = np.zeros(len(uc), int)
-            hbc[ci] = hb
-            pm = (cnt + a * margh[hbc]) / (cnt.sum(axis=1, keepdims=True) + a)
-            tail = np.cumsum(pm[:, ::-1], axis=1)[:, ::-1]
-            ll = np.where(ev[te] >= 0, np.log(pm[ci[te], np.maximum(ev[te], 0)]), np.log(tail[ci[te], cb[te]]))
-        tot += float(ll.sum())
-        n += int(te.sum())
-    return tot / n, n
+            pc = cnt / np.maximum(cn[:, None], 1.0)
+            ph = (mh + 1.0) / (mh.sum(axis=1, keepdims=True) + NB + 1)
+        pm = smooth_pm(cn, pc, ph[hbc], a)
+        tail = np.cumsum(pm[:, ::-1], axis=1)[:, ::-1]
+        out[te] = np.where(ev[te] >= 0, np.log(pm[ci[te], np.maximum(ev[te], 0)]), np.log(tail[ci[te], cb[te]]))
+    return out, ss
 
 
 def fit():
@@ -118,12 +101,17 @@ def fit():
         b = spec[nm]["best"]
         res = []
         for a in ck.SMOOTH:
-            res.append({"a": a, "ll_haz": fold_ll(sub, b, a, "haz")[0], "ll_pool": fold_ll(sub, b, a, "pool")[0]})
+            lk, ss = fold_rows(sub, b, a, "km")
+            lp, _ = fold_rows(sub, b, a, "pool")
+            sg = [float((lk[ss == s] - lp[ss == s]).sum()) for s in np.unique(ss)]
+            res.append({"a": a, "ll_km": float(lk.mean()), "ll_pool": float(lp.mean()), "d": lk - lp, "seasons_pos": int(sum(x > 0 for x in sg)), "seasons": len(sg)})
         out["looks"] += 2 * len(res)
-        bh = max(res, key=lambda r: r["ll_haz"])
+        bk = max(res, key=lambda r: r["ll_km"])
         bp = max(res, key=lambda r: r["ll_pool"])
-        out["classes"][nm] = {"k": k, "n": int(len(sub)), "cens": float(sub.cens.mean()), "edges": b["edges"], "sign": b["sign"], "to": b["to"], "a": bh["a"], "ll_haz": bh["ll_haz"], "ll_pool": bp["ll_pool"], "gain": bh["ll_haz"] - bp["ll_pool"]}
-        print(nm, len(sub), "cens", round(float(sub.cens.mean()), 4), "haz", round(bh["ll_haz"], 4), "a", bh["a"], "pool", round(bp["ll_pool"], 4), "a", bp["a"], "gain", round(bh["ll_haz"] - bp["ll_pool"], 4), flush=True)
+        se = float(np.std(bk["d"], ddof=1) / np.sqrt(len(bk["d"])))
+        gain = bk["ll_km"] - bp["ll_pool"]
+        out["classes"][nm] = {"k": k, "n": int(len(sub)), "cens": float(sub.cens.mean()), "edges": b["edges"], "sign": b["sign"], "to": b["to"], "a": bk["a"], "a_pool": bp["a"], "ll_km": bk["ll_km"], "ll_pool": bp["ll_pool"], "gain": gain, "seasons_pos": bk["seasons_pos"], "seasons": bk["seasons"], "apply": bool(gain > 0)}
+        print(nm, len(sub), "cens", round(float(sub.cens.mean()), 4), "km", round(bk["ll_km"], 4), "a", bk["a"], "pool", round(bp["ll_pool"], 4), "a", bp["a"], "gain", round(gain, 4), "se_same_a", round(se, 4), "seasons+", bk["seasons_pos"], "/", bk["seasons"], flush=True)
     FIT.parent.mkdir(parents=True, exist_ok=True)
     FIT.write_text(json.dumps(out), encoding="utf-8")
     print("looks", out["looks"])
@@ -136,6 +124,8 @@ def tables():
     R = rows()
     T = {}
     for nm, s in spec.items():
+        if not s["apply"]:
+            continue
         k = s["k"]
         sub = R[R.cls == k].reset_index(drop=True)
         edges = ck.EDGES[s["edges"]]
@@ -143,21 +133,20 @@ def tables():
         hb = ck.hbin(sub.hs.to_numpy(), edges)
         ev, cb, last = obs(sub)
         uc, ci = np.unique(c, return_inverse=True)
-        D, N, hh, _ = hazards(ci, hb, ev, last, len(uc), len(edges) + 1, s["a"])
+        nh = len(edges) + 1
+        cn = np.bincount(ci, minlength=len(uc)).astype(float)
+        hn = np.bincount(hb, minlength=nh).astype(float)
+        pc = km_pmf(ci, ev, last, len(uc))
+        ph = km_pmf(hb, ev, last, nh)
+        ph = (hn[:, None] * ph + 1.0 / (NB + 1)) / (hn[:, None] + 1.0)
         hbc = np.zeros(len(uc), int)
         hbc[ci] = hb
-        hz = cell_hz(D, N, hh[hbc], s["a"])
-        hz_h = np.clip(hh, 1e-6, 1 - 1e-6)
-        cdfs = {}
-        for i, cv in enumerate(uc):
-            cdfs[int(cv)] = cdf_of(hz[i])
-        T[k] = {"edges": edges, "sign": s["sign"], "to": s["to"], "cdf": cdfs, "hcdf": {h: cdf_of(hz_h[h]) for h in range(len(edges) + 1)}}
+        pm = smooth_pm(cn, pc, ph[hbc], s["a"])
+        T[k] = {"edges": edges, "sign": s["sign"], "to": s["to"], "cdf": {int(cv): cdf_of(pm[i]) for i, cv in enumerate(uc)}, "hcdf": {h: cdf_of(ph[h]) for h in range(nh)}}
     return T
 
 
-def cdf_of(hz):
-    surv = np.concatenate([[1.0], np.cumprod(1 - hz)])
-    pmf = np.concatenate([surv[:-1] * hz, surv[-1:]])
+def cdf_of(pmf):
     cdf = np.cumsum(pmf)
     cdf[-1] = 1.0
     return cdf
