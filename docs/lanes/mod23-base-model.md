@@ -22,6 +22,7 @@ Done = a change that beats that baseline out of sample, or each unit recorded.
 - Unit 4 DONE (docs/mod23_unit4.md, scripts/mod23_unit4.py, artifacts/mod23_unit4/): blend with compact_net, blend with unit 1 trimmed, shrink served; all 785-718 (-1.13, P>0 0.13-0.18), LL 0.6944/0.6928/0.6933, Brier 0.2506/0.2498/0.2501; every season chose the grid edge (w=0, s=0.25); recorded unresolved_below_power x3. unit3 main() now import-guarded.
 
 - Unit 5 DONE (docs/mod23_unit5.md, scripts/mod23_unit5.py, artifacts/mod23_unit5/): coverage data usable 2018+ (zero-filled before). a man/zone 809-694 (+0.47, [-0.66,1.66], P>0 0.77, LL 0.6964, Brier 0.2515), b coverage type 805-698 (+0.20), c both 801-702 (-0.07); b/c LL 0.738 from a 2020 blowup. Term alone vs margin_vs_open corr 0.001-0.004. Recorded unresolved_below_power x6.
+- Unit 5b DONE (tests/scratch/mod23_unit5_repair.py): 2020 blowup explained. Mechanism (measured): all 10 games of 2020 Week 6 in arms b/c had p=0.999999 (5 wrong, ll 13.8 each; 2020 ll mean 0.985 vs 0.703 excluding week 6). margin.fit_margin_model fits an 80% part to build the residual sample; at Week 6 that part held 10 rows of home_cov_ct at ~1e-18 (shrink(100*league_epa)/100 minus league_epa float noise when a team has no prior charted plays), std 1.1e-18 not seen as constant by StandardScaler, so the 20% part standardised to ~1e16 and residuals reached 1e16 (median 9.9e12); smooth p fell to 0.5013 and the discrete read to 1.0. Weeks 1-5 were exact-zero columns (scaler scale 1), week 7+ real std 0.001+. Repair: deviation computed algebraically (sums - counts*league_epa)/(counts+100), exact 0 with no plays, no constant changed (terms differ <=1.7e-16). Rerun: b 805-698 (+0.20, [-1.06,1.48], P+ 0.600) LL 0.6964 (base 0.6969), Brier 0.2515; c 801-702 (-0.07, [-1.75,1.57], P+ 0.454) LL 0.6977, Brier 0.2521; max p 0.69-0.71; per-season LL vs base within +-0.005. Picks unchanged (wins identical), so only the 0.738 LL was a defect. Looks: 2 reruns of already-counted arms, family mod23_unit5_coverage_matchup (no new look). Draft, not run: nfl-ats weak-signals record for the corrected b/c LL cells with classification unresolved_below_power (check CLI flags in docs/mod23_unit5.md/weak_signals_batch.json); no closing ground. Reuse caveat: any zero-filled pre-2018 column near-constant in the 80% fit part is exposed (unit 2 QB terms zero before 2020 should be checked the same way).
 
 ## Tried (earlier, on the model alone or older profiles)
 - Recency weighting flat; 2011-2025 training no better; trees worse; market
@@ -35,8 +36,7 @@ Done = a change that beats that baseline out of sample, or each unit recorded.
   [-0.66, +1.66], P+ 0.77; standalone correlation with the opener margin
   +0.004. Coverage is charted on 38-50% of plays, 2018+ only.
 - Next: log the man/zone arm's picks weekly beside the served model through
-  2026 Week 18 (no tuning), and explain the 2020 log-loss blowup in the
-  coverage-type arms before any reuse.
+  2026 Week 18 (no tuning), (2020 blowup explained and repaired, Unit 5b).
 - Free public data for the model by itself is otherwise covered by past
   tests (inventory 2026-09-30: ~7,700 registry cells, 328 families).
 
@@ -44,3 +44,5 @@ Done = a change that beats that baseline out of sample, or each unit recorded.
 - Fit gain (MSE, log loss) does not convert to picks; consider grading on a smaller-model probability, not a pick swap.
 - Unit 2 QB arms train only on 2020+ (terms zero before); pre-2020 QB terms not built.
 - Unit 1 sample-blocks in the registry cell (102) was estimated, not counted.
+
+Orchestrator 2026-10-08: verified arm b/c 2020 Week 6 p = 1.0 in artifacts/mod23_unit5 (arm a max .70). Recorded accuracy cells already equal the repaired values (+0.1996, -0.0665); no log-loss cell exists, so no record command run. Root cause sits in margin.fit_margin_model's scaler (shared code): served-path exposure audit in lane margin-scaler-guard.md.
