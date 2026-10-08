@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-08T16:06:40.962592+00:00`
+Refreshed at: `2026-10-08T16:07:04.131607+00:00`
 
 ## Start here
 
@@ -21,9 +21,9 @@ Refreshed at: `2026-10-08T16:06:40.962592+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `aaa523c80a66` — MOD-25e E100-E102: PATY+FGD+CDR base kept on seed bootstrap; stale-log OT FG gap gone; touchback hook
+- Baseline commit: `3476fc096129` — Refresh handoff
 - Pending change set: 52 paths
-  - `M  HANDOFF.md`
+  - `A  docs/lanes/done/ui20-2026-10-08.md`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
