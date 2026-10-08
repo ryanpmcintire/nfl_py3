@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-08T22:02:23.795926+00:00`
+Refreshed at: `2026-10-08T22:02:41.760537+00:00`
 
 ## Start here
 
@@ -21,9 +21,9 @@ Refreshed at: `2026-10-08T22:02:23.795926+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `de8b5801ba91` — Float-noise scaler guard shared by cover logistic and totals; Week 5 forecast mismatch explained (offset and discrete read)
+- Baseline commit: `8311d3285ff3` — Lane: correct the Week 5 mismatch note
 - Pending change set: 62 paths
-  - `M  docs/lanes/done/margin-scaler-guard.md`
+  - `M  HANDOFF.md`
   - ` M scripts/mod25e_ckc.py`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
