@@ -27,3 +27,9 @@ Gaps unmoved because the hook does not touch run. Half-end deficit on run/pass a
 
 ## Open
 Term/pass KM gain is small and its target gaps did not move; serving needs a 3-seed run. Orchestrator to record the run result via weak-signals record.
+
+## GFL smoke + 3-seed (orchestrator 2026-10-08, measured)
+Refit: artifacts/mod25e3/gfl/fit.json, fit2.json (108 looks). Smoke s31 1x4 (artifacts/mod25e3/smoke/e5_..tbgf_s31; scores tests/scratch/e103/gf_score.txt, gf_dec11.txt; scorers need the dirs at artifacts/mod25e3 top level):
+Q4 run hs 10-20 ends half, base -> gf (real): tied .00->.25 (.19); down 1-8 .00->.50 (.00); down 9-16 .25->.33 (.67); down 17+ .17->.46 (.78); sim run n 3-13 per cell, too small. FG snap gsr<=5 .012->.051 (.095). Tied-run share .13->.36 (.19, n 22). P(final3|tied last 5) .654->.478 (.625, n~25). SD 16.40->16.45, noise 207->194, strength 62->75, mass3 .132->.125.
+3-seed e5 GFL=1 seeds 11-13 launched 2026-10-08 ~19:10 ET (logs artifacts/mod25e3/gfl_e5_s1{1,2,3}.log; ~2 h per seed, sequential), then bootstrap E100_OUT=e103_gfl_boot (log gfl_boot.log).
+Next: read artifacts/mod25e3/e103_gfl_boot/e100.txt; keep GFL if the hook's own target (run/pass half-end by deficit) moves toward real and aggregate checks do not move away beyond their intervals; check whether tied-run share rose (choice side effect). If runs are missing, rerun the loop for the missing seed only. Then Q2 end-of-half (.40 v .26), untouched by GFL.

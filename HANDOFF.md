@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-08T22:49:17.035844+00:00`
+Refreshed at: `2026-10-08T23:01:34.830779+00:00`
 
 ## Start here
 
@@ -21,12 +21,9 @@ Refreshed at: `2026-10-08T22:49:17.035844+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `dff69d063631` — MOD-25e E103b: censored clock draw helps term/pass held-out but not run; half-end gap persists, kept off
-- Pending change set: 64 paths
+- Baseline commit: `a9d5c52f19e3` — MOD-25e E103c: game-ending plays mislabelled as possession flips in the clock pool; GFL relabel hook (off)
+- Pending change set: 61 paths
   - `M  docs/lanes/mod25e-e103-lateclock.md`
-  - `M  docs/lanes/mod25e-generator-fidelity.md`
-  - `M  scripts/mod25e_crH.py`
-  - `A  scripts/mod25e_gfl.py`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
@@ -43,7 +40,10 @@ Refreshed at: `2026-10-08T22:49:17.035844+00:00`
   - `?? registry/experiments/margin-backtest/20261008T161241Z.json`
   - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
   - `?? registry/experiments/margin-predict/2026-week-04-20261001T211240Z.json`
-  - ...and 44 more
+  - `?? registry/experiments/margin-predict/2026-week-04-20261002T161446Z.json`
+  - `?? registry/experiments/margin-predict/2026-week-04-20261003T161013Z.json`
+  - `?? registry/experiments/margin-predict/2026-week-04-20261003T173930Z.json`
+  - ...and 41 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
