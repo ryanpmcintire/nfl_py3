@@ -11,10 +11,10 @@ STF shifts punt/kickoff receiving starts off the rule spot (punt touchbacks .001
 - Smoke: see Tried.
 
 ## Tried
-Smoke launched 12:04 (python chain PIDs 42892,10752,1992,37416,16332; log artifacts/mod25e3/stb/smoke_on.log; out artifacts/mod25e3/e5_crHpqokgndecsmfwtjo2as2ypw2xfdcdtb_s31). Not yet scored. Score with: `.tools/uv.exe run --no-sync python <scratchpad>/cmp.py e5_crHpqokgndecsmfwtjo2as2ypw2xfdcdtb_s31` (compares real v off smoke v on; copy cmp.py from the session scratchpad if absent), then move output to smoke/ and kill leftover PIDs.
+Smoke done (872 s), moved to artifacts/mod25e3/smoke/e5_crHpqokgndecsmfwtjo2as2ypw2xfdcdtb_s31 (measured, seed 31, 4 seasons). Touchback share real v off v on: punt .0935 / .0000 / .0962; kickoff .504 / .003 / .506. Punt start mean 74.35 / 74.33 / 74.36; kickoff 76.05 / 75.78 / 76.18. Non-TB punt start 73.77 / 74.33 / 73.76.
 
 ## Next
-Orchestrator 3-seed run if smoke passes: base env + STB=1, `scripts/mod25e_crH.py e5 --workers 3 --seed {11,12,13}`.
+Smoke passed. 3-seed run launched 2026-10-08 by orchestrator (base env + STB=1, seeds 11-13 sequential, --workers 3, logs artifacts/mod25e3/xfdcdtb/run_s*.log, outputs artifacts/mod25e3/e5_..ypw2xfdcdtb_s1{1,2,3}). Then score: ERA_VARIANTS=<label> scripts/mod25e_era.py and scripts/mod25e_e100.py bootstrap vs ypw2xfdcd; if a seed dir is missing, check its run log.
 
 ## Open
 Team-level kickoff TB effect (+154 ll) needs a measured map to the STF coverage latent before it can enter.

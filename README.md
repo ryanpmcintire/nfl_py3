@@ -19,19 +19,19 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 
 | Date        | Matchup    | ATS prediction   | Cover chance   |
 |:------------|:-----------|:-----------------|:---------------|
-| Thu, Oct 08 | TB at DAL  | TB +8.5          | 52.8%          |
-| Sun, Oct 11 | BAL at ATL | ATL -2.5         | 54.2%          |
-| Sun, Oct 11 | CHI at GB  | CHI -2.5         | 61.1%          |
-| Sun, Oct 11 | CIN at MIA | CIN -7.5         | 57.5%          |
+| Thu, Oct 08 | TB at DAL  | TB +8.5          | 53.1%          |
+| Sun, Oct 11 | BAL at ATL | ATL -2.5         | 54.9%          |
+| Sun, Oct 11 | CHI at GB  | CHI -2.5         | 60.7%          |
+| Sun, Oct 11 | CIN at MIA | CIN -7.5         | 56.8%          |
 | Sun, Oct 11 | CLE at NYJ | NYJ -1.5         | 56.0%          |
 | Sun, Oct 11 | DEN at LAC | DEN -3.5         | 58.5%          |
 | Sun, Oct 11 | DET at ARI | ARI +4.5         | 50.7%          |
-| Sun, Oct 11 | HOU at TEN | HOU -6.5         | 56.6%          |
-| Sun, Oct 11 | IND at PIT | PIT -1.5         | 50.9%          |
-| Sun, Oct 11 | LV at NE   | ★ NE -3.5        | 62.7%          |
-| Sun, Oct 11 | MIN at NO  | MIN -1.5         | 57.0%          |
-| Sun, Oct 11 | NYG at WAS | WAS -4.5         | 54.1%          |
-| Sun, Oct 11 | PHI at JAX | JAX -6.5         | 50.5%          |
+| Sun, Oct 11 | HOU at TEN | HOU -6.5         | 56.5%          |
+| Sun, Oct 11 | IND at PIT | PIT -1.5         | 50.8%          |
+| Sun, Oct 11 | LV at NE   | ★ NE -3.5        | 62.5%          |
+| Sun, Oct 11 | MIN at NO  | MIN -1.5         | 57.1%          |
+| Sun, Oct 11 | NYG at WAS | WAS -4.5         | 54.0%          |
+| Sun, Oct 11 | PHI at JAX | JAX -6.5         | 50.4%          |
 | Sun, Oct 11 | SF at SEA  | SF +3.5          | 58.2%          |
 | Mon, Oct 12 | BUF at LA  | BUF +2.5         | 57.4%          |
 
@@ -46,7 +46,7 @@ close. A close-graded number alone is never grounds to reject a candidate
 (see `AGENTS.md`); it is reported below only as the secondary figure it is.
 
 <!-- ACTIVE_MODEL_STATE:START -->
-Active model: `market_residual` with `weak_stack` features (`a162a29fdf3126d2`), regressor `ridge`, ridge alpha `10.0`, calibration `none`.
+Active model: `market_residual` with `weak_stack` features (`8fb163cae627f4b0`), regressor `ridge`, ridge alpha `10.0`, calibration `none`.
 
 - **Opener-graded, probability-rule accuracy (the pool-relevant grade -- picks lock Tuesday against a frozen line):** **53.36%** on **1,537 paired games**, week-blocked 95% interval [50.76%, 55.90%].
 - Close-graded accuracy (secondary -- the market's sharpest, and least representative, decision point): **52.55%** (1,124 of 2,139 non-push games), week-blocked 95% interval [50.63%, 54.74%].

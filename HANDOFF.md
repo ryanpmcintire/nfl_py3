@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-08T16:07:04.131607+00:00`
+Refreshed at: `2026-10-08T16:19:42.921172+00:00`
 
 ## Start here
 
@@ -21,9 +21,12 @@ Refreshed at: `2026-10-08T16:07:04.131607+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `3476fc096129` — Refresh handoff
-- Pending change set: 52 paths
-  - `A  docs/lanes/done/ui20-2026-10-08.md`
+- Baseline commit: `83df4aee581a` — Lane: Thursday Week 5 dashboard update
+- Pending change set: 59 paths
+  - ` M CURRENT_PREDICTIONS.md`
+  - ` M README.md`
+  - `M  docs/lanes/mod25e-e102-touchback.md`
+  - ` M tiebreaker.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
@@ -37,13 +40,10 @@ Refreshed at: `2026-10-08T16:07:04.131607+00:00`
   - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
   - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
   - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
+  - `?? registry/experiments/margin-backtest/20261008T161241Z.json`
   - `?? registry/experiments/margin-predict/2026-week-04-20261001T211240Z.json`
   - `?? registry/experiments/margin-predict/2026-week-04-20261002T161446Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-04-20261003T161013Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-04-20261003T173930Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-04-20261004T000229Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-04-20261004T001736Z.json`
-  - ...and 32 more
+  - ...and 39 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -52,18 +52,18 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `a162a29fdf3126d2`
+- Model ID: `8fb163cae627f4b0`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261008T005809Z`)
+- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261008T161806Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card combines this with the coach component in one fitted calibrated probability, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,124 / 2,139 (52.55%)**
-- Linked forecast: **2026 Week 5**, created `2026-10-08T00:54:40.592955+00:00`
+- Linked forecast: **2026 Week 5**, created `2026-10-08T16:13:29.180360+00:00`
 
 The 52.55% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 5** from model `a162a29fdf3126d2`, published `2026-10-08T16:02:07.399118+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 5** from model `8fb163cae627f4b0`, published `2026-10-08T16:19:05.616450+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 
