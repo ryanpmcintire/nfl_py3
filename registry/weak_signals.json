@@ -213598,6 +213598,62 @@
       "source": "docs/transaction_wire_battery.md, artifacts\\transaction_wire_battery\\20260826T113008Z\\results.json",
       "standard_error": null
     },
+    "u8_kalshi_freeze_vs_opener": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Kalshi game-market spread at the Tuesday pool freeze vs the opener: picking the side the market moved toward, graded at the opener, 2025 only (no 2026 opener archive yet). Regression of opener ATS margin on market-minus-opener: slope 0.94 [0.03,1.91] P+ 0.978 margin pts per pt. Correlates ~0.75-0.78 with the opener-to-close move, so mostly early line movement. One season, not leave-one-season-out; 10 looks in the family.",
+      "effect": 4.04,
+      "effect_units": "accuracy_points",
+      "family": "prediction_market_freeze_vs_opener",
+      "interval": [
+        -2.92,
+        11.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.8722,
+      "recorded_at": "2026-10-08",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 198,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lanes/acc-u8-prediction-markets.md",
+      "standard_error": 3.55
+    },
+    "u8_polymarket_freeze_vs_opener": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Polymarket game-market spread at the Tuesday pool freeze vs the opener: picking the side the market moved toward, graded at the opener, 2025 only (no 2026 opener archive yet). Regression of opener ATS margin on market-minus-opener: slope 0.33 [-1.15,1.94] P+ 0.68. Correlates ~0.75-0.78 with the opener-to-close move, so mostly early line movement. One season, not leave-one-season-out; 10 looks in the family.",
+      "effect": 4.67,
+      "effect_units": "accuracy_points",
+      "family": "prediction_market_freeze_vs_opener",
+      "interval": [
+        -6.65,
+        15.98
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.7905,
+      "recorded_at": "2026-10-08",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 75,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lanes/acc-u8-prediction-markets.md",
+      "standard_error": 5.77
+    },
     "unit_apm_def_front_reliability": {
       "category": "onfield",
       "classification": "unresolved_below_power",

@@ -22,16 +22,13 @@ Kalshi spread-ladder implied spread = logit interpolation of P(home margin > x)=
 ## Open
 Pool opener comparison uses the book opener archive, not the Splash pool line (Splash only 2026). Polymarket price semantics (trade vs mid) are source-defined.
 
-## Orchestrator read 2026-10-01 (measured)
-Backfill done (run 20261001-backfill, manifest written). Usable spread at the
-Tuesday freeze: Kalshi 216 (2025) + 64 (2026); Polymarket 84 (2025) + 58 (2026),
-none in 2024 (moneyline only). The script's freeze-vs-open line has a sign bug:
-implied_home_spread is in line convention, while the schedule's spread_line is
-in home-margin convention. After the sign flip, the markets track the
-sportsbook close tightly: mean abs diff to spread_line 0.37-0.45 pts at the
-deadline and kickoff (corr .994-.996), 0.73-0.77 at the freeze (corr .98).
-Inferred: these markets mostly mirror the books. Their candidate edge is the
-freeze price versus the pool line (an early read on the move), which is small
-n until 2026 accrues.
-Next: grade (freeze market spread minus pool opener) as a term on 2025 and the
-2026 forward weeks; fix the report sign.
+## Result 2026-10-08 (measured, tests/scratch/u8_grade.py)
+Backfill done (log "done", manifest unmatched kalshi 100, poly 235, mostly Aug preseason ids). Report run: sign bug confirmed (freeze vs open corr -0.95; flip implied_home_spread to home margin). Scheduler job prediction_markets_{tue,wed,thu}_1200 exists and OK in data/scheduler_log.txt through 2026-10-08 (1,826-1,987 rows each).
+Grade: y = home margin - opener (2025 open_close archive only, 2026 has no archive opener), d = freeze market spread - opener, 2025 only, one season so no LOSO.
+- Kalshi n 208: beta(y on d) 0.94 pts per pt, bootstrap 95% [0.03, 1.91], probability_positive 0.978. Side-with-d record 107-91 (0.540, binomial p .29); |d|>=1: 58-40 (0.592, n 98).
+- Poly n 78: beta 0.33 [-1.15, 1.94], probability_positive 0.68; side 41-34 (0.547).
+- d correlates 0.78 (Kalshi) / 0.75 (Poly) with open-to-close move: the freeze price is largely the early line move, not independent information.
+Looks: 2 sources x (beta, side, 3 thresholds) = 10, family prediction_market_freeze_vs_opener.
+Draft (not run): nfl-ats weak-signals record --name u8_kalshi_freeze_vs_opener --source tests/scratch/u8_grade.py --effect 0.94 --effect-units ats_points --classification unresolved_below_power --league nfl --season-start 2025 --season-end 2025 --standard-error 0.49 --interval-low 0.03 --interval-high 1.91 --probability-positive 0.978 --sample-games 208 --family prediction_market_freeze_vs_opener --category market (poly: effect 0.33, [-1.15,1.94], pp 0.68, n 78). Units note: beta is margin points per spread point, not strictly ats_points; orchestrator confirm.
+Recorded 2026-10-08 by orchestrator (rerun reproduced every number) in accuracy_points, not the slope: Kalshi +4.04 [-2.92,+11.00] P+ .872 n198; Polymarket +4.67 [-6.65,+15.98] P+ .791 n75; both unresolved_below_power, slopes in the descriptions. Report sign fixed (scripts/mod24_u8_markets.py:536): freeze vs open corr .949 Kalshi, .962 Poly.
+Next: (2) add 2026 weeks once a Splash pool opener is joined (Splash-line keyed, game_features_weak_stack_splash); (3) fit d as a term inside the calibrated probability LOSO once >1 season.

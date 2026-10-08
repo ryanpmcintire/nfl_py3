@@ -533,7 +533,7 @@ def cmd_report(a):
         fz = fz.merge(oc[["home_team", "away_team", "game_date", "opening_home_spread"]].assign(gameday=lambda x: pd.to_datetime(x.game_date)), on=["home_team", "away_team", "gameday"], how="inner")
         fz = fz[fz.implied_home_spread.notna()]
         if len(fz) > 2:
-            print("freeze vs book open n", len(fz), "mean abs diff", round((fz.implied_home_spread - fz.opening_home_spread).abs().mean(), 3), "corr", round(fz.implied_home_spread.corr(fz.opening_home_spread), 3), "mean diff", round((fz.implied_home_spread - fz.opening_home_spread).mean(), 3))
+            print("freeze vs book open n", len(fz), "mean abs diff", round((fz.implied_home_spread + fz.opening_home_spread).abs().mean(), 3), "corr", round(fz.implied_home_spread.corr(-fz.opening_home_spread), 3), "mean diff", round((fz.implied_home_spread + fz.opening_home_spread).mean(), 3))
 
 
 def main():
