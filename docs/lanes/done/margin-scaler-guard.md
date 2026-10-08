@@ -14,9 +14,11 @@ Stop a float-noise column (std ~1e-18) from being standardised to ~1e16 in margi
 - Recompute of 2026 W5 differs from the stored served csv by up to 0.056 in cover p (sorted comparison); same before and after guard, so a data or feature-table drift, not the guard; not investigated.
 
 ## Next
-- Remaining StandardScaler uses (modeling.py logistic cover model, totals.py) not changed; unit 2 QB zero-before-2020 columns share the exposure.
+- None for this lane; orchestrator may move it to done/ after commit.
 
 ## Open
-- Whether to also guard modeling.make_estimator.
+- None.
 
 Orchestrator 2026-10-08 (measured): synthetic 1e-18 noise column, held-out 0.05 -> |z| 2.3e17 plain vs 0.05 guarded; guard fires. Week 5 recompute vs margin_predictions/2026-week-05-20261008T211138Z mismatch: that artifact postdates the 17:07 ET feature write, so a feature change does not explain it; it is the margin-predict challenger output, likely different settings (inferred). Open: compare its config to the audit recompute; extend guard to modeling.py:55 and totals.py:110.
+
+Unit 3 (measured 2026-10-08): W5 mismatch explained, no defect. Served artifact 2026-week-05-20261008T211138Z IS active_ats_model weekly_forecast (same created_at); its config (weak_stack, market_residual, ridge 10, calibration none, gaussian_median base, min_train 500, model 7fc3c6be355d224d) equals the active model. Audit recompute omits two served layers: home_side_offset (margin diff max 0.7798 = bucket 7.5-10 offset, 2 games; vs served predicted_margin_uncorrected diff 0.0) and the discrete conditional read (cover p diff 0.0558 vs uncorrected, base_probability_policy discrete_conditional_non_push_v1). Guard moved to modeling.py (shared), used by margin, modeling.make_estimator (logistic), totals.make_totals_estimator. Totals/logistic inputs have 0 zero-variance and 0 noise columns on current data, so guard is precautionary. Before/after W5 totals (wave1+wave2, 15 games) and logistic cover probs identical (json equal). ruff, mypy src clean; 34 + test_served_total/test_tiebreaker pass.

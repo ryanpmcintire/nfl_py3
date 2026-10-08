@@ -12,11 +12,11 @@ from sklearn.base import BaseEstimator
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import Ridge
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler
 
 from nfl_ats.clv import week_blocked_bootstrap
 from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES
 from nfl_ats.io import atomic_json, run_id
+from nfl_ats.modeling import FloatNoiseGuardedScaler
 
 TOTALS_FEATURES: tuple[str, ...] = (
     "total_line",
@@ -107,7 +107,7 @@ def make_totals_estimator(*, ridge_alpha: float = TOTALS_RIDGE_ALPHA) -> BaseEst
     return Pipeline(
         steps=[
             ("imputer", SimpleImputer(strategy="median", add_indicator=True)),
-            ("scaler", StandardScaler()),
+            ("scaler", FloatNoiseGuardedScaler()),
             ("regressor", Ridge(alpha=ridge_alpha)),
         ]
     )

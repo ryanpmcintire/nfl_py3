@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-08T21:57:22.633678+00:00`
+Refreshed at: `2026-10-08T22:02:06.895739+00:00`
 
 ## Start here
 
@@ -21,11 +21,13 @@ Refreshed at: `2026-10-08T21:57:22.633678+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `45d91ce5dea6` — MOD-23: 2020 log-loss blowup traced to scaler float-noise; accuracy cells unchanged
-- Pending change set: 63 paths
-  - `A  docs/lanes/margin-scaler-guard.md`
+- Baseline commit: `3bc81dac0f27` — Margin fit: treat float-noise columns as constant when scaling; served predictions unchanged on all 146 refits
+- Pending change set: 65 paths
+  - `R  docs/lanes/margin-scaler-guard.md -> docs/lanes/done/margin-scaler-guard.md`
   - ` M scripts/mod25e_ckc.py`
   - `M  src/nfl_ats/margin.py`
+  - `M  src/nfl_ats/modeling.py`
+  - `M  src/nfl_ats/totals.py`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
@@ -41,9 +43,7 @@ Refreshed at: `2026-10-08T21:57:22.633678+00:00`
   - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
   - `?? registry/experiments/margin-backtest/20261008T161241Z.json`
   - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-04-20261001T211240Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-04-20261002T161446Z.json`
-  - ...and 43 more
+  - ...and 45 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

@@ -12,7 +12,6 @@ from sklearn.ensemble import HistGradientBoostingRegressor
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import Ridge
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler
 
 from nfl_ats.apm_unit_feature import APM_UNIT_COLUMNS
 from nfl_ats.calibration import ResidualSmoothingMethod, smoothed_home_cover_probability
@@ -23,7 +22,7 @@ from nfl_ats.constants import (
     SOURCE_ERA_ROSTER_CONTINUITY_COLUMNS,
 )
 from nfl_ats.data import DataContractError
-from nfl_ats.modeling import regular_season_rows
+from nfl_ats.modeling import FloatNoiseGuardedScaler, regular_season_rows
 from nfl_ats.odds import no_vig_probabilities
 
 for _v5_prefix in ("football", "full"):
@@ -536,17 +535,6 @@ class SelectiveMissingnessImputer(TransformerMixin, BaseEstimator):
             for index in self.indicator_features_
         ]
         return np.asarray([*self.feature_names_in_, *indicator_names], dtype=object)
-
-
-class FloatNoiseGuardedScaler(StandardScaler):
-    def fit(self, X: Any, y: Any = None, sample_weight: Any = None) -> FloatNoiseGuardedScaler:
-        super().fit(X, y, sample_weight=sample_weight)
-        values = np.asarray(X, dtype=float)
-        finite = values[np.isfinite(values)]
-        if finite.size:
-            tolerance = np.finfo(float).eps * float(np.abs(finite).max())
-            self.scale_ = np.where(np.sqrt(self.var_) <= tolerance, 1.0, np.sqrt(self.var_))
-        return self
 
 
 class GroupPenaltyScaler(TransformerMixin, BaseEstimator):

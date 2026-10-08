@@ -47,12 +47,23 @@ def validate_model_frame(
         raise RuntimeError(f"Outcome columns leaked into the feature allowlist: {sorted(leaked)}")
 
 
+class FloatNoiseGuardedScaler(StandardScaler):
+    def fit(self, X: Any, y: Any = None, sample_weight: Any = None) -> FloatNoiseGuardedScaler:
+        super().fit(X, y, sample_weight=sample_weight)
+        values = np.asarray(X, dtype=float)
+        finite = values[np.isfinite(values)]
+        if finite.size:
+            tolerance = np.finfo(float).eps * float(np.abs(finite).max())
+            self.scale_ = np.where(np.sqrt(self.var_) <= tolerance, 1.0, np.sqrt(self.var_))
+        return self
+
+
 def make_estimator(model_name: str, random_state: int = 42) -> BaseEstimator:
     if model_name == "logistic":
         return Pipeline(
             steps=[
                 ("imputer", SimpleImputer(strategy="median", add_indicator=True)),
-                ("scaler", StandardScaler()),
+                ("scaler", FloatNoiseGuardedScaler()),
                 (
                     "classifier",
                     LogisticRegression(
