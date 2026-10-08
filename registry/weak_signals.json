@@ -213626,6 +213626,34 @@
       "source": "docs/lanes/acc-u8-prediction-markets.md",
       "standard_error": 3.55
     },
+    "u8_kalshi_freeze_vs_opener_2026": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Kalshi market spread at the Tuesday-noon pool freeze vs the Splash locked line, 2026 Weeks 1-4 decisive games, picking the side of the gap. The 2026 gap is small (SD 0.51 vs 1.94 in 2025, whose opener was the early book open), so it is not commensurable with the 2025 cells and is not pooled with them. Leave-one-season-out logistic on the gap did not beat a constant in either fold (slope sign changes). 18 looks in the family.",
+      "effect": -2.46,
+      "effect_units": "accuracy_points",
+      "family": "prediction_market_freeze_vs_opener",
+      "interval": [
+        -13.93,
+        10.66
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.356,
+      "recorded_at": "2026-10-08",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 61,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "docs/lanes/acc-u8-prediction-markets.md",
+      "standard_error": 6.27
+    },
     "u8_polymarket_freeze_vs_opener": {
       "category": "market",
       "classification": "unresolved_below_power",
@@ -213653,6 +213681,34 @@
       ],
       "source": "docs/lanes/acc-u8-prediction-markets.md",
       "standard_error": 5.77
+    },
+    "u8_polymarket_freeze_vs_opener_2026": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Polymarket market spread at the Tuesday-noon pool freeze vs the Splash locked line, 2026 Weeks 1-4 decisive games, picking the side of the gap. The 2026 gap is small (SD 0.51 vs 1.94 in 2025, whose opener was the early book open), so it is not commensurable with the 2025 cells and is not pooled with them. Leave-one-season-out logistic on the gap did not beat a constant in either fold (slope sign changes). 18 looks in the family.",
+      "effect": -5.17,
+      "effect_units": "accuracy_points",
+      "family": "prediction_market_freeze_vs_opener",
+      "interval": [
+        -18.97,
+        6.9
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.169,
+      "recorded_at": "2026-10-08",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 58,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "docs/lanes/acc-u8-prediction-markets.md",
+      "standard_error": 6.6
     },
     "unit_apm_def_front_reliability": {
       "category": "onfield",

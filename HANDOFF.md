@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-08T21:41:48.392972+00:00`
+Refreshed at: `2026-10-08T21:42:24.331355+00:00`
 
 ## Start here
 
@@ -21,16 +21,15 @@ Refreshed at: `2026-10-08T21:41:48.392972+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `4fbde2ee7287` — ACC-U8: market freeze vs opener graded on 2025 and recorded unresolved; report sign fixed
-- Pending change set: 70 paths
+- Baseline commit: `b54262797bdf` — POL-10/LEAD-53: prospective scorecard through 2026 Week 4; nominee captures verified
+- Pending change set: 69 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - ` M docs/lanes/acc-u8-prediction-markets.md`
-  - `M  docs/lanes/lead53-sunday-renomination.md`
-  - `M  docs/lanes/pol10-prospective-2026.md`
+  - `M  docs/lanes/acc-u8-prediction-markets.md`
   - ` M docs/model.html`
+  - `M  registry/weak_signals.json`
   - ` M tiebreaker.json`
   - `?? docs/lanes/mod25e-e103-lateclock.md`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
@@ -43,7 +42,8 @@ Refreshed at: `2026-10-08T21:41:48.392972+00:00`
   - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
   - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
   - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
-  - ...and 50 more
+  - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
+  - ...and 49 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
