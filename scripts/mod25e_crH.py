@@ -176,6 +176,10 @@ def run_with_flags(init, setting):
 
     if rt.enabled():
         rt.install_rtd()
+    import mod25e_cky2 as cy2
+
+    if cy2.enabled():
+        cy2.install_cky2()
     install_log_sync(dv)
 
 
@@ -304,6 +308,8 @@ def cmd_e5(a):
         label = label + "g2"
     if os.environ.get("RTD") == "1":
         label = label + "rt"
+    if os.environ.get("CKY2") == "1":
+        label = label + "k2"
     dv.DV[label] = dict(dv.DV["crG"])
     outd = ss.OUT / f"e5_{label}_s{a.seed}"
     outd.mkdir(parents=True, exist_ok=True)

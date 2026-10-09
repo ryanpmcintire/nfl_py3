@@ -247,6 +247,7 @@ def fit(k=200):
 
 
 REPICK_KEYS = ("points_off", "points_def", "clock_elapsed", "next_down", "next_distance", "next_yardline", "dist_gained", "off_to_used", "def_to_used", "play_type_code")
+ENGINE_KEEP = ("clock_elapsed", "off_to_used", "def_to_used")
 
 
 class Geo:
@@ -318,7 +319,7 @@ class Geo:
             j = int(ids[min(int(np.searchsorted(c, rng.random() * c[-1], side="right")), len(ids) - 1)])
         shift = self.bias + self.gain * (net_sim - float(self.a["off_row"][j] + self.sign * self.a["def_row"][j]))
         new = dict(drawn)
-        for key in REPICK_KEYS:
+        for key in (k_ for k_ in REPICK_KEYS if k_ not in ENGINE_KEEP):
             new[key] = self.a[key][j]
         new["flip"] = bool(self.a["possession_flip"][j])
         new["auto_first"] = bool(self.a["auto_first"][j])

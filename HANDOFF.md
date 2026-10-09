@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-09T20:49:00.890915+00:00`
+Refreshed at: `2026-10-09T21:06:38.414031+00:00`
 
 ## Start here
 
@@ -21,16 +21,18 @@ Refreshed at: `2026-10-09T20:49:00.890915+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `5f1b491845ab` — MOD-25e E118: margin variance excess +13.1 is noise (+14.6), carried by TDs on drives from own territory (+15.2); GEO expected to close ~63%; return-TD channel under-represented (-1.7)
-- Pending change set: 73 paths
+- Baseline commit: `e48da92c4184` — MOD-25e E120 RTD: game/half-opening kickoffs never drawn (sim04_engine.py:755-761), real return TD .0126/game missing; LOSO-fitted return-TD hook (k35 rule term, 7/9) wired default off; variance effect ~+0.2
+- Pending change set: 76 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `A  docs/lanes/mod25e-e120-returntd.md`
+  - `A  docs/lanes/mod25e-e121-yardtail.md`
+  - `A  docs/lanes/mod25e-e122-finaldrive2.md`
   - ` M docs/model.html`
+  - `A  scripts/mod25e_cky2.py`
   - `M  scripts/mod25e_crH.py`
-  - `A  scripts/mod25e_rtd.py`
+  - `M  scripts/mod25e_geo.py`
   - ` M tiebreaker.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -41,9 +43,7 @@ Refreshed at: `2026-10-09T20:49:00.890915+00:00`
   - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
   - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
   - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
-  - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
-  - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
-  - ...and 53 more
+  - ...and 56 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
