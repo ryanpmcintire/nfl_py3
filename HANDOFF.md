@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-09T06:28:35.415272+00:00`
+Refreshed at: `2026-10-09T06:40:42.094476+00:00`
 
 ## Start here
 
@@ -21,12 +21,9 @@ Refreshed at: `2026-10-09T06:28:35.415272+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `e3ad4d1b7d47` — MOD-25e E106: run-clock censoring fix (CKH) kept on 3 seeds; Q2 last-play timing now matches real
-- Pending change set: 64 paths
-  - `A  docs/lanes/mod25e-e107-q4drive.md`
-  - `M  scripts/mod25e_ckc.py`
-  - `A  scripts/mod25e_cks.py`
-  - `M  scripts/mod25e_crH.py`
+- Baseline commit: `0c384bf38ad1` — MOD-25e E107: late clock runoff depends on score state (decided games let it run); CKS hook (off), held-out +.083 run, 9/9 seasons
+- Pending change set: 61 paths
+  - `M  docs/lanes/mod25e-e107-q4drive.md`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
@@ -43,7 +40,10 @@ Refreshed at: `2026-10-09T06:28:35.415272+00:00`
   - `?? registry/experiments/margin-backtest/20261008T161241Z.json`
   - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
   - `?? registry/experiments/margin-predict/2026-week-04-20261001T211240Z.json`
-  - ...and 44 more
+  - `?? registry/experiments/margin-predict/2026-week-04-20261002T161446Z.json`
+  - `?? registry/experiments/margin-predict/2026-week-04-20261003T161013Z.json`
+  - `?? registry/experiments/margin-predict/2026-week-04-20261003T173930Z.json`
+  - ...and 41 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
