@@ -17,3 +17,7 @@ Score smoke v artifacts/mod25e3/smoke/e5_..tbgh_s31 (tests/scratch/e106/post.py,
 
 ## Open
 Run ll loss is not a closing ground (no resolved wrong sign on the target). No processes left by this unit once the smoke exits.
+
+## Smoke result (2026-10-09, measured; seed 31, 1x4, base ..tbgh v kh ..tbkhgh; tests/scratch/e106/post.txt, sc31_kh.txt, artifacts/mod25e3/clock2/clock2_*_e106.txt)
+After run P(end)/P(1-2s) (real .425/.040, .337/.008, .233/.006 for hs 10-20/20-30/30-45): base .317/.129, .175/.140, .105/.072 -> kh .433/.062, .278/.015, .203/.021. Pass changes small (10-20 end .124 -> .158, real .160). Snaps hs<=1 per 1000 halves real 42 base 136 kh 62; hs(1,2] 75/97/72; spike<=2 6.1/15.6/4.6. Last play <=5s: Q2 real .263 base .374 kh .305; Q4 real .128 base .264 kh .202. Margin SD 16.61 -> 15.68 (real 14.63), noise 189 -> 191, strength 86 -> 54, mass3 .140 -> .131 (.141), P(final3|tied last 5) .48 -> .375 (n 16-24, noise). Smoke 1x4 is noisy (kh dir left at top level; base smoke copy removed).
+Next: orchestrator decides 3-seed CKH=1 run (seeds 11-13) and bootstrap; record run ll loss via weak-signals.
