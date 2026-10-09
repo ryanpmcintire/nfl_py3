@@ -18,3 +18,8 @@ Orchestrator decides: 3-seed GFL=2 run (seeds 11-13, ~2 h each) and bootstrap, o
 
 ## Open
 Kneel and pass last-play timing gaps are not label defects; they stay if the relabel does not move them.
+
+## Orchestrator 2026-10-08
+3-seed GFL=2 e5 seeds 11-13 launched ~21:30 ET (logs artifacts/mod25e3/gfh_e5_s1{1,2,3}.log, sequential ~2 h each), then bootstrap vs gf base -> artifacts/mod25e3/e104_gfh_boot/e100.txt (log gfh_boot.log). gh smoke moved to artifacts/mod25e3/smoke/.
+Keep rule: Q2 last play <=5s (clock2 with CLK_LABEL=...gh) moves toward real .263 and aggregates flat. Caveat: the relabel also clears genuine half-ending turnovers (interception/fumble on the last Q2 play); count them before keeping.
+Then: Q2 last-drive play choice (kneel share .557 v .478; run share .165 v .281).
