@@ -18,3 +18,6 @@ When the smoke log ends with `done ... 31`: move artifacts/mod25e3/smoke/e5_..tb
 
 ## Open
 Leader kneel-out start (l9+ hs0 94 v 114) and Q4 .183 v .128 not yet examined for the timeout mechanism (Q4 gap in defense-TO plays is the same sign). Edited: scripts/mod25e_cdt.py (new), scripts/mod25e_crH.py (CDT wiring).
+
+## Orchestrator smoke score 2026-10-09 (measured; clock2 artifacts/mod25e3/clock2/clock2_*ke*_s31_e108.txt, tests/scratch/e108/sc31_dt.py)
+ke -> kedt (real), seed 31 1x4: Q2 last<=5s .300 -> .407 (.263, worse beyond noise), Q2 plays .3.12 -> 2.71 (2.06); Q4 last<=5s .199 -> .166 (.128); Q4 <=15s .385 -> .378 (.289). Aggregates noisy at 1x4: SD 15.14 -> 15.85, noise 175 -> 162, strength 53 -> 90, mass3 .138 -> .129. NOT KEPT as-is. Next: E108b (why Q2 <=5s rose; non-timeout plays still draw from a pool containing timeout plays).
