@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-09T22:30:28.803857+00:00`
+Refreshed at: `2026-10-09T22:35:21.219429+00:00`
 
 ## Start here
 
@@ -21,16 +21,14 @@ Refreshed at: `2026-10-09T22:30:28.803857+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `7ef81953cc8a` — MOD-25e E124: incompletion deficit is F3 penalty overlay double-removal (pool already unflagged; -1.25 pts v real ~-0.47); EPA tilts cleared; F3W fix in progress
-- Pending change set: 73 paths
+- Baseline commit: `81cdc7f3404c` — MOD-25e E124 F3W (pool reweight by overlay removal prob, gated F3W=1): no effect on inc share (.3576 v .3579, real .3634) because removal prob is not class-specific; kept off
+- Pending change set: 71 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
   - `M  docs/lanes/mod25e-e124-incshare.md`
   - ` M docs/model.html`
-  - `M  scripts/mod25e_crH.py`
-  - `M  scripts/sim09_f3.py`
   - ` M tiebreaker.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -43,7 +41,9 @@ Refreshed at: `2026-10-09T22:30:28.803857+00:00`
   - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
   - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
   - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
-  - ...and 53 more
+  - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
+  - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
+  - ...and 51 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
