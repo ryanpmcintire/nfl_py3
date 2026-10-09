@@ -144,6 +144,10 @@ def run_with_flags(init, setting):
 
     if cdr.enabled():
         cdr.install_cdr()
+    import mod25e_cdt as cdt
+
+    if cdt.enabled():
+        cdt.install_cdt()
     install_log_sync(dv)
 
 
@@ -248,6 +252,8 @@ def cmd_e5(a):
         label = label + "gh"
     if os.environ.get("CKS") == "1" and os.environ.get("CKH") == "1":
         label = label + "ke"
+    if os.environ.get("CDT") == "1":
+        label = label + "dt"
     dv.DV[label] = dict(dv.DV["crG"])
     outd = ss.OUT / f"e5_{label}_s{a.seed}"
     outd.mkdir(parents=True, exist_ok=True)
