@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-09T18:19:55.667315+00:00`
+Refreshed at: `2026-10-09T20:30:44.810601+00:00`
 
 ## Start here
 
@@ -21,15 +21,14 @@ Refreshed at: `2026-10-09T18:19:55.667315+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `91dedb13475f` — MOD-25e GEO: frame-safe locals; GEO=2 smoke shows broken integration (TD rate and pace collapse), off pending debug
-- Pending change set: 72 paths
+- Baseline commit: `a52dc27f3953` — MOD-25e GEO fixes: engine yard shift from ns (YARD_GAIN/DEF_SIGN/YARD_BIAS) instead of TEAM_RATING_YARD_GAIN (fractional yards hid incompletions, +5 s/play); pool keyed on rounded yardline (fractional yl halved TDs); minimal run s77: violations 0, open-field TD/play .0110 (real .0110), Q1 plays 33.7 (34.0)
+- Pending change set: 71 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/mod25e-e115-leadertd.md`
+  - `M  docs/lanes/mod25e-generator-fidelity.md`
   - ` M docs/model.html`
-  - `M  scripts/mod25e_geo.py`
   - ` M tiebreaker.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -43,7 +42,8 @@ Refreshed at: `2026-10-09T18:19:55.667315+00:00`
   - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
   - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
   - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
-  - ...and 52 more
+  - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
+  - ...and 51 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
