@@ -1,4 +1,5 @@
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -19,6 +20,15 @@ PEN = re.compile(r"(?i)Penalty on (\w+)-[^,]+, ([^,]+), (declined|offsetting)")
 COLS = ["game_id", "old_game_id", "play_id", "season", "week", "posteam", "defteam", "home_team", "away_team", "down", "ydstogo", "yardline_100", "score_differential", "qtr", "game_seconds_remaining", "play_type", "no_huddle", "shotgun", "qb_dropback", "qb_kneel", "qb_spike", "air_yards", "pass_length", "yards_gained", "penalty", "penalty_type", "penalty_yards", "penalty_team", "first_down_penalty", "desc", "touchdown", "interception", "fumble_lost", "sack", "posteam_timeouts_remaining", "defteam_timeouts_remaining"]
 
 
+COLS2 = COLS + ["incomplete_pass"]
+HAZ2 = OUT / "f3_haz2.json"
+R2 = REPO / "artifacts" / "mod25e3" / "f3w"
+
+
+def w2():
+    return os.environ.get("F3W") == "2"
+
+
 def fx(down, dist, yl, sd, qtr, home, nh, sg, ispass, deep, sdsd):
     down = np.asarray(down, float)
     n = len(down)
@@ -28,8 +38,8 @@ def fx(down, dist, yl, sd, qtr, home, nh, sg, ispass, deep, sdsd):
     return np.column_stack([np.asarray(c, float) for c in cols])
 
 
-def load_nv(seasons=range(2009, 2018)):
-    d = pd.concat([pd.read_parquet(NV / f"pbp_{s}.parquet", columns=COLS) for s in seasons], ignore_index=True)
+def load_nv(seasons=range(2009, 2018), cols=COLS):
+    d = pd.concat([pd.read_parquet(NV / f"pbp_{s}.parquet", columns=cols) for s in seasons], ignore_index=True)
     return d.drop_duplicates(["game_id", "play_id"])
 
 
@@ -64,7 +74,49 @@ def Xg(X, g):
         X = X.copy()
         X[:, FEATS.index("ispass")] = 0.0
         X[:, FEATS.index("deep")] = 0.0
+        X[:, len(FEATS):] = 0.0
     return X
+
+
+def inc_of(s):
+    desc = s["desc"].fillna("").str.lower()
+    isp = s.play_type == "pass"
+    npl = s.play_type == "no_play"
+    return ((isp & (s.incomplete_pass == 1)) | (npl & (s.ispass == 1) & desc.str.contains("incomplete"))).astype(float).to_numpy()
+
+
+def aug(x, inc):
+    inc = np.asarray(inc, float)
+    return np.column_stack([x, inc, inc * x[:, FEATS.index("deep")]])
+
+
+def cmd_haz2(args):
+    P = json.load(open(OUT / "f3_params.json"))
+    s = snap_table(load_nv(cols=COLS2))
+    X0 = X_of(s, P["sdsd"])
+    inc = inc_of(s)
+    Xa = aug(X0, inc)
+    seasons = sorted(s.season.unique())
+    out = {}
+    for g in GROUPS:
+        C = P["hazard"][g]["C"]
+        y = (s.group == g).to_numpy().astype(float)
+        XB, XA = Xg(X0, g), Xg(Xa, g)
+        llb = lla = 0.0
+        co = []
+        for sn in seasons:
+            te = (s.season == sn).to_numpy()
+            wb = fit_lr(XB[~te], y[~te], C)
+            wa = fit_lr(XA[~te], y[~te], C)
+            llb += logloss(y[te], predict(wb, XB[te])) * te.sum()
+            lla += logloss(y[te], predict(wa, XA[te])) * te.sum()
+            co.append(wa[-2:].tolist())
+        n = len(y)
+        co = np.array(co)
+        w = fit_lr(XA, y, C)
+        out[g] = dict(C=C, w=w.tolist(), loso_ll_blind=llb / n, loso_ll_aware=lla / n, fold_inc=co[:, 0].tolist(), fold_incdeep=co[:, 1].tolist())
+        print(f"{g:7s} LOSO LL blind {llb / n:.5f} aware {lla / n:.5f} gain {(llb - lla) / n:.5f} inc coef mean {co[:, 0].mean():+.3f} sd {co[:, 0].std():.3f} sign+ {int((co[:, 0] > 0).sum())}/{len(co)}; incdeep mean {co[:, 1].mean():+.3f} sd {co[:, 1].std():.3f} sign+ {int((co[:, 1] > 0).sum())}/{len(co)}; full-fit inc {w[-2]:+.3f} incdeep {w[-1]:+.3f}", flush=True)
+    json.dump(out, open(HAZ2, "w"))
 
 
 def X_of(s, sdsd):
@@ -482,6 +534,7 @@ def removal_prob(P, pool, tr, a):
     sdsd = P["sdsd"]
     deepmin = P["deep_air_min"]
     hw = [np.array(P["hazard"][g]["w"]) for g in GROUPS]
+    incv = pool.inc.to_numpy(float) if w2() else None
     tnames = sorted(P["types"])
     code = np.asarray(a["play_type_code"])
     r = np.zeros(len(code))
@@ -512,6 +565,8 @@ def removal_prob(P, pool, tr, a):
         turn = flipv[i] | (pdf > 0)
         x = fx(c["down"], c["dist"], c["yl"], c["sd"], c["qtr"], homev[i], nh[i], sg[i], ispass.astype(int), deep.astype(int), sdsd)
         key = np.where(ispass, np.where(deep, "11", "10"), "00")
+        if w2():
+            x = aug(x, incv[i])
         for k, g in enumerate(GROUPS):
             pre = g.startswith("pre")
             is_off = g.endswith("_off")
@@ -552,7 +607,30 @@ def removal_prob(P, pool, tr, a):
 def load_params():
     P = json.load(open(OUT / "f3_params.json"))
     P["accept"] = json.load(open(OUT / "f3_accept.json")) if (OUT / "f3_accept.json").exists() else None
+    if w2():
+        h2 = json.load(open(HAZ2))
+        for g in GROUPS:
+            P["hazard"][g]["w"] = h2[g]["w"]
     return P
+
+
+def removal_cached(P, pool, tr, a):
+    h = hashlib.sha1()
+    for arr in (a["play_type_code"], a["yards_gained"], a["points_off"], a["points_def"], a["possession_flip"], a["is_home_off"], pool.inc.to_numpy(float), pool.pen.to_numpy(), pool.air_yards.to_numpy(float)):
+        h.update(np.ascontiguousarray(arr).tobytes())
+    h.update(json.dumps([P["hazard"], P["accept"], P["typepmf"], P["types"]], sort_keys=True).encode())
+    key = h.hexdigest()
+    f = R2 / "r2.npy"
+    kf = R2 / "r2.key"
+    if f.exists() and kf.exists() and kf.read_text() == key:
+        return np.load(f)
+    r = removal_prob(P, pool, tr, a)
+    R2.mkdir(parents=True, exist_ok=True)
+    tf = R2 / f"r2.{os.getpid()}.npy"
+    np.save(tf, r)
+    os.replace(tf, f)
+    kf.write_text(key)
+    return r
 
 
 def pool_arrays():
@@ -563,13 +641,17 @@ def pool_arrays():
     tr = dv.sim.build_transition_frame(pbp)
     keys = tr[["game_id", "play_id"]].reset_index(drop=True)
     cols = ["game_id", "play_id", "posteam", "penalty", "penalty_type", "penalty_team", "penalty_yards", "first_down_penalty", "air_yards", "no_huddle", "shotgun", "play_type"]
-    nv = load_nv(range(min(dv.TRAIN), max(dv.TRAIN) + 1))[cols].drop_duplicates(["game_id", "play_id"])
+    if w2():
+        cols = cols + ["incomplete_pass"]
+    nv = load_nv(range(min(dv.TRAIN), max(dv.TRAIN) + 1), COLS2 if w2() else COLS)[cols].drop_duplicates(["game_id", "play_id"])
     x = keys.merge(nv, on=["game_id", "play_id"], how="left")
     assert len(x) == len(keys)
+    if w2():
+        x["inc"] = ((x.play_type == "pass") & (x.incomplete_pass == 1)).astype(float)
     x["pen"] = ((x.penalty == 1) & x.penalty_type.notna() & x.penalty_team.notna()).to_numpy()
     x["poff"] = (x.penalty_team == x.posteam).to_numpy()
     x["grp"] = np.where(x.pen, np.where(x.penalty_type.isin(PRE), "pre", "in") + np.where(x.poff, "_off", "_def"), "")
-    if os.environ.get("F3W") == "1":
+    if os.environ.get("F3W") in ("1", "2"):
         POOL_TR[0] = tr
     return x
 
@@ -587,6 +669,7 @@ class Overlay:
         self.air = pool.air_yards.to_numpy(float)
         self.nh = pool.no_huddle.fillna(0).to_numpy(float)
         self.sg = pool.shotgun.fillna(0).to_numpy(float)
+        self.inc = pool.inc.to_numpy(float) if w2() else None
         self.el = {g: np.asarray(a["clock_elapsed"])[(pool.grp == g).to_numpy() & (np.asarray(a["play_type_code"]) == 6)] for g in GROUPS}
         self.ttau = np.array([P["team"][g]["team_tau"] for g in GROUPS])
         self.ctau = np.array([P["crew"][g]["crew_tau"] for g in GROUPS])
@@ -653,6 +736,8 @@ class Overlay:
         deep = int(ispass and np.isfinite(air) and air >= self.deepmin)
         home_off = 1 if off_home else 0
         x = fx([down], [dist], [yl], [sd], [qtr], [home_off], [self.nh[idx]], [self.sg[idx]], [int(ispass)], [deep], self.sdsd)
+        if self.inc is not None:
+            x = aug(x, [self.inc[idx]])
         ot, dt = (self.home, self.away) if off_home else (self.away, self.home)
         ps = self.haz(x, ot, dt)
         u = self.rng.random()
@@ -746,6 +831,8 @@ def f3_install():
     ipw = np.asarray(ns["IPW"], float) * (~pen)
     if os.environ.get("F3W") == "1":
         ipw = ipw / (1.0 - removal_prob(P, pool, POOL_TR[0], a))
+    if w2():
+        ipw = ipw / (1.0 - removal_cached(P, pool, POOL_TR[0], a))
     ns["IPW"] = ipw
     t["nn_weight_cache_cond"].clear()
     ov = Overlay(P, pool, a, 0)
@@ -946,6 +1033,7 @@ def main():
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("measure")
+    sub.add_parser("haz2")
     ac = sub.add_parser("accept")
     ac.add_argument("--draws", type=int, default=12)
     a = sub.add_parser("audit")
@@ -966,7 +1054,7 @@ def main():
     v = sub.add_parser("validate")
     v.add_argument("--events", default=str(OUT / "play_crzf3"))
     args = ap.parse_args()
-    {"measure": cmd_measure, "accept": cmd_accept, "audit": cmd_audit, "sim": cmd_sim, "e5": cmd_e5, "validate": cmd_validate}[args.cmd](args)
+    {"measure": cmd_measure, "haz2": cmd_haz2, "accept": cmd_accept, "audit": cmd_audit, "sim": cmd_sim, "e5": cmd_e5, "validate": cmd_validate}[args.cmd](args)
 
 
 if __name__ == "__main__":
