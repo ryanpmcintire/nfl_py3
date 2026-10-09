@@ -21,3 +21,8 @@ Leader start-time (l9+ hs0 114 v 92 sim) and start spot (yl0 63 v 59) are separa
 
 ## Orchestrator 2026-10-09
 3-seed CKS=1 run launched (logs artifacts/mod25e3/ke_e5_s1{1,2,3}.log, ~45 min each), then bootstrap -> artifacts/mod25e3/e107_ke_boot/e100.txt and clock2 -> artifacts/mod25e3/clock2/clock2_xfdcdtbkhghke_e107_3seed.txt. Keep if Q4 last play <=5s by score state moves toward real and aggregates stay flat. Smoke moved to artifacts/mod25e3/smoke/.
+
+## 3-seed result (measured 2026-10-09; artifacts/mod25e3/e107_ke_boot/e100.txt, clock2/clock2_xfdcdtbkhghke_e107_3seed.txt)
+Clock-ended last play <=5s kh -> ke (real): Q4 .212 -> .183 (.128); Q2 .270 -> .300 (.263, moved away). P(final3 | tied entering last 5) .451 -> .478 [-.001,+.056] P .94 toward .625; noise -2.5 [-6.1,+1.1] toward 165; SD, strength, Q4 slope, pts, late r2 flat; mass3 -.0017 [-.006,+.002].
+KEPT. New base crHpqokgndecsmfwtjo2as2ypw2xfdcdtbkhghke (base env ... GFL=2 CKH=1 CKS=1).
+Next: (1) Q2 drift: Q2 clock-ended drives start at hs0 43.7 v real 30.1 with 2.92 v 2.06 plays; check the CKS Q2 cells (score bands at halftime matter less; timeouts more). (2) Leader kneel-out start (lead 9+ hs0 94 v 114). (3) Q4 .183 v .128.
