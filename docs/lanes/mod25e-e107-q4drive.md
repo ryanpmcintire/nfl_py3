@@ -18,3 +18,6 @@ Smoke scored (see State). Decide 3-seed ke run (seeds 11-13); leader-kneel timin
 
 ## Open
 Leader start-time (l9+ hs0 114 v 92 sim) and start spot (yl0 63 v 59) are separate composition gaps. Hook not yet in the 3-seed base.
+
+## Orchestrator 2026-10-09
+3-seed CKS=1 run launched (logs artifacts/mod25e3/ke_e5_s1{1,2,3}.log, ~45 min each), then bootstrap -> artifacts/mod25e3/e107_ke_boot/e100.txt and clock2 -> artifacts/mod25e3/clock2/clock2_xfdcdtbkhghke_e107_3seed.txt. Keep if Q4 last play <=5s by score state moves toward real and aggregates stay flat. Smoke moved to artifacts/mod25e3/smoke/.

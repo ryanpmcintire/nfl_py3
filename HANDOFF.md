@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-09T06:40:42.094476+00:00`
+Refreshed at: `2026-10-09T06:40:55.365341+00:00`
 
 ## Start here
 
@@ -21,7 +21,7 @@ Refreshed at: `2026-10-09T06:40:42.094476+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `0c384bf38ad1` — MOD-25e E107: late clock runoff depends on score state (decided games let it run); CKS hook (off), held-out +.083 run, 9/9 seasons
+- Baseline commit: `30f25d5abb0e` — MOD-25e E107: CKS smoke flat on Q4 (n small); 3-seed run launched
 - Pending change set: 61 paths
   - `M  docs/lanes/mod25e-e107-q4drive.md`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
