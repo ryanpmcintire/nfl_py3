@@ -23,3 +23,6 @@ Q2 same pool defect (hook includes Q2). Aggregate effect on noise/SD unknown at 
 ku -> dw (real), Q4 offense up 9+, drives starting 2:00-5:00: clock-ended .158 -> .247 (.282); punt .570 -> .500 (.435); score .158 -> .133 (.157); plays 5.09 -> 4.94 (4.89); first-last dur 97.8 -> 108.2 (105.4). Lead 17+ 5:00->2:00: leader-signed change +.153 -> -.267 (real -.407); P(extend) .215 -> .157 (real .152). Lead 9-16 change -1.00 -> -.49 (real -.465). All toward real; n small (one seed, 4 seasons).
 Aggregates 1x4 (noisy): SD 16.42 -> 16.30, noise 192 -> 201 (165), strength 77 -> 65, mass3 .108 -> .151 (.141), P(final3|tied) .52 -> .45 (.625, away), q4 slope -.015 -> -.017.
 Next: 3-seed run seeds 11-13 CDW=1 + bootstrap (E100_BASE/E100_CAND); decide keep on behavioural targets toward real; noise/final3 are exposed gaps to read on 3 seeds.
+
+## Orchestrator 2026-10-09
+CDW 3-seed run launched (logs artifacts/mod25e3/dw_e5_s1{1,2,3}.log), bootstrap -> artifacts/mod25e3/e110_dw_boot/e100.txt, clock2 -> artifacts/mod25e3/clock2/clock2_dw_e110_3seed.txt; then rerun tests/scratch/e109 drive/window scorers on seeds 11-13. Keep if the leader drive targets and the 5:00-2:00 regression move toward real and noise does not rise beyond its interval.
