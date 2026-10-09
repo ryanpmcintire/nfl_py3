@@ -26,3 +26,6 @@ Next: 3-seed run seeds 11-13 CDW=1 + bootstrap (E100_BASE/E100_CAND); decide kee
 
 ## Orchestrator 2026-10-09
 CDW 3-seed run launched (logs artifacts/mod25e3/dw_e5_s1{1,2,3}.log), bootstrap -> artifacts/mod25e3/e110_dw_boot/e100.txt, clock2 -> artifacts/mod25e3/clock2/clock2_dw_e110_3seed.txt; then rerun tests/scratch/e109 drive/window scorers on seeds 11-13. Keep if the leader drive targets and the 5:00-2:00 regression move toward real and noise does not rise beyond its interval.
+
+## 3-seed verdict (measured 2026-10-09; artifacts/mod25e3/dw_boot.log, clock2/clock2_dw_e110_3seed.txt) — KEPT
+ku -> dw, season bootstrap within seed 11-13: margin SD 15.56 -> 15.38 [-.36,-.01] (real 14.63); noise 185.2 -> 180.7 [-8.0,-0.9] (165); Q4 slope -.046 -> -.055 [-.016,-.002] (-.060); pts/g 45.74 -> 45.14 (45.21); strength 56.8 -> 56.1 [-4.8,+3.3] (58.0); late r2 .127 -> .126 (3 seeds only); mass3 .1248 -> .1246 (.141); P(final3|tied last 5) .472 -> .471 (.625). All moved checks go toward real. NEW BASE crHpqokgndecsmfwtjo2as2ypw2xfdcdtbkhghkekudw (env + CDW=1). Lane done; follow-ups in e111 (Q1/Q3 clock, CLQ), e112 (TPO), e113 (CKY/URG final drive).

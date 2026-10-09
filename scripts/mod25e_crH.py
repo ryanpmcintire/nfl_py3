@@ -152,6 +152,14 @@ def run_with_flags(init, setting):
 
     if cw.enabled():
         cw.install_cdw()
+    import mod25e_tpo as tp
+
+    if tp.enabled():
+        tp.install_tpo()
+    import mod25e_clq as cq
+
+    if cq.enabled():
+        cq.install_clq()
     install_log_sync(dv)
 
 
@@ -260,6 +268,10 @@ def cmd_e5(a):
         label = label + "ku"
     if os.environ.get("CDW") == "1":
         label = label + "dw"
+    if os.environ.get("TPO") == "1":
+        label = label + "tp"
+    if os.environ.get("CLQ") == "1":
+        label = label + "ql"
     if os.environ.get("CDT") == "1":
         label = label + "dt"
     if os.environ.get("CDT") == "2":

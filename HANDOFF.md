@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-09T14:38:09.181201+00:00`
+Refreshed at: `2026-10-09T14:38:25.840090+00:00`
 
 ## Start here
 
@@ -21,14 +21,17 @@ Refreshed at: `2026-10-09T14:38:09.181201+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `08ec5aad5cdd` — Lane: E110 3-seed run state
+- Baseline commit: `e448261449f5` — MOD-25e E110 kept on 3 seeds (SD 15.38, noise 180.7, pts 45.14, Q4 slope -.055, all toward real); E111-E113 diagnoses; TPO/CLQ hooks wired default off
 - Pending change set: 69 paths
-  - `RM docs/lanes/mod25e-e110-leaderburn.md -> docs/lanes/done/mod25e-e110-leaderburn.md`
-  - ` M docs/lanes/mod25e-generator-fidelity.md`
-  - ` M scripts/mod25e_crH.py`
-  - `?? docs/lanes/mod25e-e111-q3var.md`
-  - `?? docs/lanes/mod25e-e112-q4catchup.md`
-  - `?? docs/lanes/mod25e-e113-finaldrive.md`
+  - `M  docs/lanes/done/mod25e-e110-leaderburn.md`
+  - `A  docs/lanes/mod25e-e111-q3var.md`
+  - `A  docs/lanes/mod25e-e112-q4catchup.md`
+  - `A  docs/lanes/mod25e-e113-finaldrive.md`
+  - `M  docs/lanes/mod25e-generator-fidelity.md`
+  - `A  scripts/mod25e_clq.py`
+  - `M  scripts/mod25e_crH.py`
+  - `A  scripts/mod25e_scw.py`
+  - `A  scripts/mod25e_tpo.py`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
@@ -40,9 +43,6 @@ Refreshed at: `2026-10-09T14:38:09.181201+00:00`
   - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
   - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
   - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
-  - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
-  - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
-  - `?? registry/experiments/margin-backtest/20261008T161241Z.json`
   - ...and 49 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
