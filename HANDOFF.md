@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-09T09:39:14.888787+00:00`
+Refreshed at: `2026-10-09T09:39:28.122222+00:00`
 
 ## Start here
 
@@ -21,12 +21,9 @@ Refreshed at: `2026-10-09T09:39:14.888787+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `d3ed14fb9624` — MOD-25e E108b: elapsed depends on timeout use (held-out +.04/+.20, 9/9); CDT=2 pool replaces score-state draw and loses Q4, not kept
-- Pending change set: 64 paths
+- Baseline commit: `8b04f7404b04` — MOD-25e E108c: a timeout stops the half ending (real P .003); CKU conditions the end/elapsed draw on it, held-out +.22 run 9/9; 3-seed run launched
+- Pending change set: 61 paths
   - `M  docs/lanes/mod25e-e108-drivestart.md`
-  - `M  scripts/mod25e_ckc.py`
-  - `A  scripts/mod25e_cku.py`
-  - `M  scripts/mod25e_crH.py`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
@@ -43,7 +40,10 @@ Refreshed at: `2026-10-09T09:39:14.888787+00:00`
   - `?? registry/experiments/margin-backtest/20261008T161241Z.json`
   - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
   - `?? registry/experiments/margin-predict/2026-week-04-20261001T211240Z.json`
-  - ...and 44 more
+  - `?? registry/experiments/margin-predict/2026-week-04-20261002T161446Z.json`
+  - `?? registry/experiments/margin-predict/2026-week-04-20261003T161013Z.json`
+  - `?? registry/experiments/margin-predict/2026-week-04-20261003T173930Z.json`
+  - ...and 41 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
