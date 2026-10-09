@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-09T20:41:50.817458+00:00`
+Refreshed at: `2026-10-09T20:42:27.452634+00:00`
 
 ## Start here
 
@@ -21,13 +21,13 @@ Refreshed at: `2026-10-09T20:41:50.817458+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `c010a6cc8fbb` — MOD-25e E114b: TPO+CLQ2+URG+CKY kept on 3 seeds after E117 fix (OT restored .568; clock and final-drive targets toward real; SD/noise unchanged); new base ...kekudwtpq2ugky
+- Baseline commit: `174d04d3aefa` — MOD-25e GEO=2 smoke: open-field TD/play .0146 -> .0113 (real .0110), Q3 TD/drive and variance to real; 3-seed launched
 - Pending change set: 71 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/mod25e-e115-leadertd.md`
+  - `A  docs/lanes/mod25e-e118-sdgap.md`
   - ` M docs/model.html`
   - ` M tiebreaker.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
