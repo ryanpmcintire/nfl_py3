@@ -117,3 +117,6 @@ single-threaded analysis, foreground only.
 
 ## Open
 None.
+
+## 2026-10-09 E114 3-seed (measured; artifacts/mod25e3/e114_boot.log, tests/scratch/e114/tgt_3seed.txt)
+dw -> dw+TPO+CLQ=2+URG+CKY (label ...kekudwtpq2ugky). Targets all toward real: Q1/Q3 plays 34.74/35.08 -> 33.72/34.10 (real 33.96/34.26); Q2 first snap 18.3 -> 1.1 s (1.3); Q3 pts/team 5.12 -> 4.94 (4.74); Var Q3 change 55.8 -> 54.3 (50.8); trailer 9+ s/snap run 36.2 -> 35.9 (35.2), pass 24.2 -> 23.8 (23.0); final drive score|reach .415 -> .664 (.766), clock|reach .441 -> .150 (.022), P(score) .140 -> .207 (.340); regulation mass3 .0917 -> .0987 (.1004); P(final3|tied last 5) .471 -> .502 (.625). Aggregates flat: SD 15.38 -> 15.36, noise 180.7 -> 178.1 [-6.0,+1.0], pts 45.14 -> 45.26, mass3 .1246 -> .1251, late r2 .126 -> .127. AWAY: P(final3|tied after reg) .573 -> .458 [-.139,-.089] (real .682), OT mass3 .0329 -> .0265. No new hook acts on qtr 5; E117 diagnosing (lane mod25e-e117-otfinal3.md). Provisional base pending E117. GEO=2 smoke on top running (tests/scratch/e114/run_geo.sh -> artifacts/mod25e3/geo_smoke_s31.log).

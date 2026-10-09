@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-09T15:31:47.098402+00:00`
+Refreshed at: `2026-10-09T17:39:11.970120+00:00`
 
 ## Start here
 
@@ -21,9 +21,16 @@ Refreshed at: `2026-10-09T15:31:47.098402+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `89351171bd94` — MOD-25e E115 GEO: TD iff yards>=yardline, exact-yardline consistent re-pick (LOSO +.0085/play 9/9; violations yl 2-5 22.7% -> 0); wired default off; CKY smoke score|reach .43 -> .69 (real .77)
-- Pending change set: 61 paths
-  - `A  docs/lanes/mod25e-e116-tiedhalf.md`
+- Baseline commit: `da460bf16ce5` — MOD-25e E116: tied-at-half Q3 variance dip (real 33 v sim 51) is a 2009-17 quirk; 2018-25 tied 46.1 v rest 46.5; no engine target, not chased
+- Pending change set: 72 paths
+  - ` M CURRENT_PREDICTIONS.md`
+  - ` M README.md`
+  - ` M docs/findings.html`
+  - ` M docs/history.html`
+  - ` M docs/index.html`
+  - `M  docs/lanes/mod25e-generator-fidelity.md`
+  - ` M docs/model.html`
+  - ` M tiebreaker.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
@@ -36,14 +43,7 @@ Refreshed at: `2026-10-09T15:31:47.098402+00:00`
   - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
   - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
   - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
-  - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
-  - `?? registry/experiments/margin-backtest/20261008T161241Z.json`
-  - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-04-20261001T211240Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-04-20261002T161446Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-04-20261003T161013Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-04-20261003T173930Z.json`
-  - ...and 41 more
+  - ...and 52 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -52,18 +52,18 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `7fc3c6be355d224d`
+- Model ID: `bf17307f2f0164d1`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261008T211503Z`)
+- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261009T161758Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card combines this with the coach component in one fitted calibrated probability, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,124 / 2,139 (52.55%)**
-- Linked forecast: **2026 Week 5**, created `2026-10-08T21:11:38.505137+00:00`
+- Linked forecast: **2026 Week 5**, created `2026-10-09T16:12:52.789292+00:00`
 
 The 52.55% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 5** from model `7fc3c6be355d224d`, published `2026-10-08T21:18:46.559753+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 5** from model `bf17307f2f0164d1`, published `2026-10-09T16:21:51.600957+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 
