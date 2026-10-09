@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-09T20:42:27.452634+00:00`
+Refreshed at: `2026-10-09T20:49:00.890915+00:00`
 
 ## Start here
 
@@ -21,14 +21,16 @@ Refreshed at: `2026-10-09T20:42:27.452634+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `174d04d3aefa` — MOD-25e GEO=2 smoke: open-field TD/play .0146 -> .0113 (real .0110), Q3 TD/drive and variance to real; 3-seed launched
-- Pending change set: 71 paths
+- Baseline commit: `5f1b491845ab` — MOD-25e E118: margin variance excess +13.1 is noise (+14.6), carried by TDs on drives from own territory (+15.2); GEO expected to close ~63%; return-TD channel under-represented (-1.7)
+- Pending change set: 73 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `A  docs/lanes/mod25e-e118-sdgap.md`
+  - `A  docs/lanes/mod25e-e120-returntd.md`
   - ` M docs/model.html`
+  - `M  scripts/mod25e_crH.py`
+  - `A  scripts/mod25e_rtd.py`
   - ` M tiebreaker.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -41,9 +43,7 @@ Refreshed at: `2026-10-09T20:42:27.452634+00:00`
   - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
   - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
   - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
-  - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
-  - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
-  - ...and 51 more
+  - ...and 53 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
