@@ -22,6 +22,7 @@ COLS = ["game_id", "old_game_id", "play_id", "season", "week", "posteam", "defte
 
 COLS2 = COLS + ["incomplete_pass"]
 HAZ2 = OUT / "f3_haz2.json"
+TYP2 = OUT / "f3_typ2.json"
 R2 = REPO / "artifacts" / "mod25e3" / "f3w"
 
 
@@ -117,6 +118,58 @@ def cmd_haz2(args):
         out[g] = dict(C=C, w=w.tolist(), loso_ll_blind=llb / n, loso_ll_aware=lla / n, fold_inc=co[:, 0].tolist(), fold_incdeep=co[:, 1].tolist())
         print(f"{g:7s} LOSO LL blind {llb / n:.5f} aware {lla / n:.5f} gain {(llb - lla) / n:.5f} inc coef mean {co[:, 0].mean():+.3f} sd {co[:, 0].std():.3f} sign+ {int((co[:, 0] > 0).sum())}/{len(co)}; incdeep mean {co[:, 1].mean():+.3f} sd {co[:, 1].std():.3f} sign+ {int((co[:, 1] > 0).sum())}/{len(co)}; full-fit inc {w[-2]:+.3f} incdeep {w[-1]:+.3f}", flush=True)
     json.dump(out, open(HAZ2, "w"))
+
+
+def cmd_typ2(args):
+    P = json.load(open(OUT / "f3_params.json"))
+    s = snap_table(load_nv(cols=COLS2))
+    s["inc"] = inc_of(s).astype(int)
+    tt = type_tables(s, lambda x: None)
+    c = s[s.ftype.notna() & s.group.isin(["in_off", "in_def"]) & s.ftype.isin(list(tt))].copy()
+    c["cnt"] = c.acc & c.play_type.isin(["run", "pass"])
+    c["key"] = c.ispass.astype(str) + c.deep.astype(str) + c.inc.astype(str)
+    seasons = sorted(c.season.unique())
+    tp = {}
+    for (g, k), z in c.groupby(["group", "key"]):
+        v = z.ftype.value_counts(normalize=True)
+        tp.setdefault(g, {})[k] = dict(types=list(v.index), p=[float(x) for x in v.values], n=int(len(z)))
+    a = c[c.acc]
+    cn = {}
+    for (t_, i), z in a.groupby(["ftype", "inc"]):
+        cn.setdefault(t_, {})[str(int(i))] = dict(counted=float(z.cnt.mean()), n=int(len(z)))
+    lln = llc = 0.0
+    llt0 = llt1 = 0.0
+    for sn in seasons:
+        te = a[a.season == sn]
+        tr = a[a.season != sn]
+        pt = tr.groupby("ftype").cnt.mean()
+        pti = tr.groupby(["ftype", "inc"]).cnt.mean()
+        p0 = te.ftype.map(pt).fillna(tr.cnt.mean()).to_numpy()
+        p1 = np.array([pti.get((f_, i_), pt.get(f_, tr.cnt.mean())) for f_, i_ in zip(te.ftype, te.inc)])
+        y = te.cnt.to_numpy().astype(float)
+        lln += logloss(y, p0) * len(te)
+        llc += logloss(y, p1) * len(te)
+        ct = c[c.season == sn]
+        cr = c[c.season != sn]
+        for gg, zz in ct.groupby("group"):
+            base = cr[cr.group == gg].groupby("ftype").size()
+            base = (base / base.sum())
+            cond = cr[cr.group == gg].groupby(["key", "ftype"]).size()
+            for (kk, ff), nn in zz.groupby(["key", "ftype"]).size().items():
+                p_base = float(base.get(ff, 1e-6))
+                sub = cond[kk] if kk in cond.index.get_level_values(0) else None
+                p_c = float(sub.get(ff, 0) + 1e-6) / float(sub.sum()) if sub is not None else p_base
+                llt0 -= nn * np.log(max(p_base, 1e-6))
+                llt1 -= nn * np.log(max(p_c, 1e-6))
+    n = len(a)
+    print(f"counted LOSO LL by type {lln / n:.5f} by type x inc {llc / n:.5f} gain {(lln - llc) / n:.5f} n {n}")
+    nc = len(c)
+    print(f"type LOSO LL group {llt0 / nc:.5f} group x key x inc {llt1 / nc:.5f} gain {(llt0 - llt1) / nc:.5f} n {nc}")
+    for g_ in ["in_off", "in_def"]:
+        for i_ in (0, 1):
+            z = a[(a.group == g_) & (a.inc == i_) & (a.ispass == 1)]
+            print(f"{g_} pass inc={i_} accepted n {len(z)} counted share {z.cnt.mean():.3f}")
+    json.dump(dict(tp=tp, counted=cn), open(TYP2, "w"))
 
 
 def X_of(s, sdsd):
@@ -528,6 +581,22 @@ WDRAWS = 1
 WCHUNK = 20000
 
 
+def typ_of(P, g, kt):
+    if w2() and P.get("typ2") and not g.startswith("pre"):
+        t2 = P["typ2"]["tp"].get(g, {}).get(kt)
+        if t2:
+            return t2
+        kb = kt[:-1] if len(kt) == 3 else kt
+    else:
+        kb = kt[:2] if len(kt) == 3 else kt
+    return P["typepmf"][g].get(kb) or P["typepmf"][g].get("00") or next(iter(P["typepmf"][g].values()))
+
+
+def counted_of(P, tname, incb, base):
+    z = (P.get("typ2") or {"counted": {}})["counted"].get(tname, {})
+    return np.where(incb, z.get("1", {}).get("counted", base), z.get("0", {}).get("counted", base))
+
+
 def removal_prob(P, pool, tr, a):
     ep = ep_model()
     acw = np.array(P["accept"]["w"])
@@ -574,10 +643,11 @@ def removal_prob(P, pool, tr, a):
             tid = np.zeros(n, int)
             acc_sum = np.zeros(n)
             for d in range(WDRAWS):
-                for kk in np.unique(key):
-                    m = key == kk
+                kinc = key if not w2() else np.char.add(key.astype(str), (incv[i] > 0).astype(int).astype(str))
+                for kk in np.unique(kinc):
+                    m = kinc == kk
                     kt = "00" if pre else kk
-                    t = P["typepmf"][g].get(kt) or P["typepmf"][g].get("00") or next(iter(P["typepmf"][g].values()))
+                    t = typ_of(P, g, kt)
                     pr = np.array(t["p"], float)
                     pr = pr / pr.sum()
                     names = np.array(t["types"])
@@ -593,7 +663,8 @@ def removal_prob(P, pool, tr, a):
                     nom[m] = rng.choice(info["pmf_yards"], size=int(m.sum()), p=pm / pm.sum())
                     af[m] = info["auto_first_share"] if np.isfinite(info["auto_first_share"]) else 0.0
                     if not pre:
-                        cnt[m] = (rng.random(int(m.sum())) < info["counted"]).astype(float)
+                        pc = np.full(int(m.sum()), info["counted"]) if not w2() else counted_of(P, tnames[ti], incv[i][m] > 0, info["counted"])
+                        cnt[m] = (rng.random(int(m.sum())) < pc).astype(float)
                     dpi[m] = tnames[ti] == "Defensive Pass Interference"
                 nom = np.where(dpi & ispass & np.isfinite(air[i]), np.maximum(air[i], 0.0), nom)
                 isoff = np.full(n, is_off)
@@ -611,6 +682,7 @@ def load_params():
         h2 = json.load(open(HAZ2))
         for g in GROUPS:
             P["hazard"][g]["w"] = h2[g]["w"]
+        P["typ2"] = json.load(open(TYP2)) if TYP2.exists() else None
     return P
 
 
@@ -618,7 +690,7 @@ def removal_cached(P, pool, tr, a):
     h = hashlib.sha1()
     for arr in (a["play_type_code"], a["yards_gained"], a["points_off"], a["points_def"], a["possession_flip"], a["is_home_off"], pool.inc.to_numpy(float), pool.pen.to_numpy(), pool.air_yards.to_numpy(float)):
         h.update(np.ascontiguousarray(arr).tobytes())
-    h.update(json.dumps([P["hazard"], P["accept"], P["typepmf"], P["types"]], sort_keys=True).encode())
+    h.update(json.dumps([P["hazard"], P["accept"], P["typepmf"], P["types"], P.get("typ2")], sort_keys=True).encode())
     key = h.hexdigest()
     f = R2 / "r2.npy"
     kf = R2 / "r2.key"
@@ -715,9 +787,13 @@ class Overlay:
             out.append(min(p * m, 0.5))
         return out
 
-    def pick_type(self, g, ispass, deep):
+    def pick_type(self, g, ispass, deep, inc=0):
         key = "00" if g.startswith("pre") else f"{int(ispass)}{int(deep)}"
-        t = self.tp[g].get(key) or self.tp[g].get("00") or next(iter(self.tp[g].values()))
+        if w2():
+            key = key if g.startswith("pre") else f"{key}{int(inc > 0)}"
+            t = typ_of(self.P, g, key)
+        else:
+            t = self.tp[g].get(key) or self.tp[g].get("00") or next(iter(self.tp[g].values()))
         return t["types"][int(self.rng.choice(len(t["types"]), p=np.array(t["p"]) / np.sum(t["p"])))]
 
     def nominal(self, t):
@@ -755,7 +831,7 @@ class Overlay:
             self.ev.append(row)
             return d
         g = GROUPS[gk]
-        t = self.pick_type(g, ispass, deep)
+        t = self.pick_type(g, ispass, deep, self.inc[idx] if self.inc is not None else 0)
         info = self.types[t]
         tid = sorted(self.types).index(t)
         nom = self.nominal(t)
@@ -764,7 +840,8 @@ class Overlay:
         af = info["auto_first_share"] if np.isfinite(info["auto_first_share"]) else 0.0
         is_off = g.endswith("_off")
         pre = g.startswith("pre")
-        counted = (not pre) and self.rng.random() < info["counted"]
+        pcnt = info["counted"] if not w2() else float(counted_of(self.P, t, np.array([self.inc[idx] > 0]), info["counted"])[0])
+        counted = (not pre) and self.rng.random() < pcnt
         row[7], row[10] = tid, nom
         if is_off:
             amt = min(nom, max((100.0 - yl) / 2.0, 0.0))
@@ -1034,6 +1111,7 @@ def main():
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("measure")
     sub.add_parser("haz2")
+    sub.add_parser("typ2")
     ac = sub.add_parser("accept")
     ac.add_argument("--draws", type=int, default=12)
     a = sub.add_parser("audit")
@@ -1054,7 +1132,7 @@ def main():
     v = sub.add_parser("validate")
     v.add_argument("--events", default=str(OUT / "play_crzf3"))
     args = ap.parse_args()
-    {"measure": cmd_measure, "haz2": cmd_haz2, "accept": cmd_accept, "audit": cmd_audit, "sim": cmd_sim, "e5": cmd_e5, "validate": cmd_validate}[args.cmd](args)
+    {"measure": cmd_measure, "haz2": cmd_haz2, "typ2": cmd_typ2, "accept": cmd_accept, "audit": cmd_audit, "sim": cmd_sim, "e5": cmd_e5, "validate": cmd_validate}[args.cmd](args)
 
 
 if __name__ == "__main__":
