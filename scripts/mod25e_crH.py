@@ -168,6 +168,10 @@ def run_with_flags(init, setting):
 
     if cy.enabled():
         cy.install_cky()
+    import mod25e_geo as ge
+
+    if ge.enabled():
+        ge.install_geo()
     install_log_sync(dv)
 
 
@@ -290,6 +294,10 @@ def cmd_e5(a):
         label = label + "dt"
     if os.environ.get("CDT") == "2":
         label = label + "dn"
+    if os.environ.get("GEO") == "1":
+        label = label + "go"
+    if os.environ.get("GEO") == "2":
+        label = label + "g2"
     dv.DV[label] = dict(dv.DV["crG"])
     outd = ss.OUT / f"e5_{label}_s{a.seed}"
     outd.mkdir(parents=True, exist_ok=True)
