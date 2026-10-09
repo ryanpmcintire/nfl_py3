@@ -23,3 +23,9 @@ Static suspects PASS_W, ADJ, endgame DECIDE: no loss (measured). Wrapper-frame d
 
 ## Open
 r_j for counted conversions needs gain_dec per row (vectorised, ~150k rows x type pmf); 120-game CI on final share not significant alone.
+
+## F3W reweight attempt (2026-10-09, measured; scratch tests/scratch/e124f/)
+- Implemented behind F3W=1: sim09_f3.removal_prob (hazard x accept x wipe-or-convert from row's own state, type pmf sampled WDRAWS=1 per group, nom drawn from the type pmf, DPI at air yards) and f3_install IPW /= (1-r); mod25e_crH label "fw". F3W unset: byte-identical IPW path (git diff). Full-pool r costs 294 s (346,552 rows, mean r over r>0 .080); cached to e124f/r_0_346552.npy for drv.
+- 150 games (22,266 plays): engine row inc share .3669 -> .3677 (+.08 pt); F3 still removes 420 inc (enter 1): .3677 -> .3564; GZ +109/109 -> .3576; final .3576 v base .3579 v real .3634. NO FIX: reweight by total removal r does not touch the asymmetry because r(inc) ~ r(pass+) (30k-row check: .095 v .084); the loss is class-specific (inc leaves class on wipe AND on counted conversion, pass+ stays pass+ on conversion).
+- Class mix final (real/base/fw): run .3315/.3360/.3332, pass+ .2845/.2834/.2851, inc .1624/.1580/.1587, pass_end .0424/.0402/.0383, run_end .0166/.0177/.0168, noplay .0617/.0619/.0634. No-play +.15 pt, pass_end -.19 pt vs base.
+- Reading: weighting the pool cannot fix it; overlay's inc-class departure (10.8%) exceeds what real S->real implies (-0.43 pt). Next: check the overlay's own hazard/accept by outcome class against real (penalty rate on inc v completion among all real snaps incl. flagged), or fit the fallback LOSO inc-share reweight.

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-09T22:11:04.812415+00:00`
+Refreshed at: `2026-10-09T22:30:28.803857+00:00`
 
 ## Start here
 
@@ -21,14 +21,16 @@ Refreshed at: `2026-10-09T22:11:04.812415+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `034f687cbc0c` — MOD-25e full candidate smoke (CDW2 URG2 CKY2 GEO RTD): final-drive score|reach .84, open-field TD at real; 3-seed launched
-- Pending change set: 71 paths
+- Baseline commit: `7ef81953cc8a` — MOD-25e E124: incompletion deficit is F3 penalty overlay double-removal (pool already unflagged; -1.25 pts v real ~-0.47); EPA tilts cleared; F3W fix in progress
+- Pending change set: 73 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `A  docs/lanes/mod25e-e124-incshare.md`
+  - `M  docs/lanes/mod25e-e124-incshare.md`
   - ` M docs/model.html`
+  - `M  scripts/mod25e_crH.py`
+  - `M  scripts/sim09_f3.py`
   - ` M tiebreaker.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -41,9 +43,7 @@ Refreshed at: `2026-10-09T22:11:04.812415+00:00`
   - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
   - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
   - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
-  - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
-  - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
-  - ...and 51 more
+  - ...and 53 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

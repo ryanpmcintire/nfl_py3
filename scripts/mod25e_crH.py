@@ -314,6 +314,8 @@ def cmd_e5(a):
         label = label + "g2"
     if os.environ.get("RTD") == "1":
         label = label + "rt"
+    if os.environ.get("F3W") == "1":
+        label = label + "fw"
     if os.environ.get("CKY2") == "1":
         label = label + "y2"
     if os.environ.get("URG2") == "1":

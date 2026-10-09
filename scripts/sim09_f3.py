@@ -1,5 +1,6 @@
 import argparse
 import json
+import os
 import re
 import sys
 from pathlib import Path
@@ -470,6 +471,82 @@ def cmd_accept(args):
 
 
 SIMS = {}
+POOL_TR = [None]
+WDRAWS = 1
+WCHUNK = 20000
+
+
+def removal_prob(P, pool, tr, a):
+    ep = ep_model()
+    acw = np.array(P["accept"]["w"])
+    sdsd = P["sdsd"]
+    deepmin = P["deep_air_min"]
+    hw = [np.array(P["hazard"][g]["w"]) for g in GROUPS]
+    tnames = sorted(P["types"])
+    code = np.asarray(a["play_type_code"])
+    r = np.zeros(len(code))
+    elig = np.flatnonzero(np.isin(code, (0, 1)) & ~pool.pen.to_numpy())
+    rng = np.random.default_rng([0, 31])
+    num = lambda c: tr[c].to_numpy(float)
+    cols = dict(down=num("down_i"), dist=num("dist_raw"), yl=num("fp_raw"), sd=num("sc_raw"), qtr=num("qtr_actual"), gsr=num("gsr_actual"), to_o=np.nan_to_num(num("off_to_raw"), nan=3.0), to_d=np.nan_to_num(num("def_to_raw"), nan=3.0))
+    yv = np.asarray(a["yards_gained"], float)
+    pov = np.asarray(a["points_off"], float)
+    pdv = np.asarray(a["points_def"], float)
+    flipv = np.asarray(a["possession_flip"]).astype(bool)
+    homev = np.asarray(a["is_home_off"]).astype(float)
+    air = pool.air_yards.to_numpy(float)
+    nh = pool.no_huddle.fillna(0).to_numpy(float)
+    sg = pool.shotgun.fillna(0).to_numpy(float)
+    for lo in range(0, len(elig), WCHUNK):
+        i = elig[lo:lo + WCHUNK]
+        n = len(i)
+        c = {k: v[i] for k, v in cols.items()}
+        ispass = code[i] == 1
+        deep = ispass & np.isfinite(air[i]) & (air[i] >= deepmin)
+        hs = np.where(c["qtr"] <= 2, np.maximum(c["gsr"] - HALF_SECONDS, 0.0), np.maximum(c["gsr"], 0.0))
+        half = np.where(c["qtr"] >= 5, 3.0, np.where(c["qtr"] <= 2, 1.0, 2.0))
+        cx = dict(down=c["down"], dist=c["dist"], yl=c["yl"], hs=hs, half=half, sd=c["sd"], to_o=c["to_o"], to_d=c["to_d"])
+        y = yv[i]
+        po = pov[i]
+        pdf = pdv[i]
+        turn = flipv[i] | (pdf > 0)
+        x = fx(c["down"], c["dist"], c["yl"], c["sd"], c["qtr"], homev[i], nh[i], sg[i], ispass.astype(int), deep.astype(int), sdsd)
+        key = np.where(ispass, np.where(deep, "11", "10"), "00")
+        for k, g in enumerate(GROUPS):
+            pre = g.startswith("pre")
+            is_off = g.endswith("_off")
+            h = np.minimum(predict(hw[k], Xg(x, g)), 0.5)
+            tid = np.zeros(n, int)
+            acc_sum = np.zeros(n)
+            for d in range(WDRAWS):
+                for kk in np.unique(key):
+                    m = key == kk
+                    kt = "00" if pre else kk
+                    t = P["typepmf"][g].get(kt) or P["typepmf"][g].get("00") or next(iter(P["typepmf"][g].values()))
+                    pr = np.array(t["p"], float)
+                    pr = pr / pr.sum()
+                    names = np.array(t["types"])
+                    tid[m] = np.array([tnames.index(z) for z in names])[rng.choice(len(names), size=int(m.sum()), p=pr)]
+                nom = np.zeros(n)
+                af = np.zeros(n)
+                cnt = np.zeros(n)
+                dpi = np.zeros(n, bool)
+                for ti in np.unique(tid):
+                    m = tid == ti
+                    info = P["types"][tnames[ti]]
+                    pm = np.array(info["pmf_p"], float)
+                    nom[m] = rng.choice(info["pmf_yards"], size=int(m.sum()), p=pm / pm.sum())
+                    af[m] = info["auto_first_share"] if np.isfinite(info["auto_first_share"]) else 0.0
+                    if not pre:
+                        cnt[m] = (rng.random(int(m.sum())) < info["counted"]).astype(float)
+                    dpi[m] = tnames[ti] == "Defensive Pass Interference"
+                nom = np.where(dpi & ispass & np.isfinite(air[i]), np.maximum(air[i], 0.0), nom)
+                isoff = np.full(n, is_off)
+                gv, stf = gain_dec(ep, cx, y, po, pdf, turn, nom, af, cnt, isoff, dpi)
+                xa = acc_X(gv, np.full(n, k), stf, cx["sd"], cx["hs"], isoff, sdsd)
+                acc_sum += predict(acw, xa)
+            r[i] += h * acc_sum / WDRAWS
+    return np.clip(r, 0.0, 0.99)
 
 
 def load_params():
@@ -492,6 +569,8 @@ def pool_arrays():
     x["pen"] = ((x.penalty == 1) & x.penalty_type.notna() & x.penalty_team.notna()).to_numpy()
     x["poff"] = (x.penalty_team == x.posteam).to_numpy()
     x["grp"] = np.where(x.pen, np.where(x.penalty_type.isin(PRE), "pre", "in") + np.where(x.poff, "_off", "_def"), "")
+    if os.environ.get("F3W") == "1":
+        POOL_TR[0] = tr
     return x
 
 
@@ -664,7 +743,10 @@ def f3_install():
     code = np.asarray(a["play_type_code"])
     pen = pool.pen.to_numpy() & np.isin(code, (0, 1, 6))
     assert "IPW" in ns
-    ns["IPW"] = np.asarray(ns["IPW"], float) * (~pen)
+    ipw = np.asarray(ns["IPW"], float) * (~pen)
+    if os.environ.get("F3W") == "1":
+        ipw = ipw / (1.0 - removal_prob(P, pool, POOL_TR[0], a))
+    ns["IPW"] = ipw
     t["nn_weight_cache_cond"].clear()
     ov = Overlay(P, pool, a, 0)
     SIMS["ov"] = ov
