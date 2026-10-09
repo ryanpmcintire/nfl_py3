@@ -26,3 +26,9 @@ Leader-specific part of the H2 excess is not located to a wrapper; geometry mism
 - GEO=1 re-picks violators only; GEO=2 re-picks every run/pass from consistent rows at the exact yardline (band 0, chosen LOSO nested in all 9 folds; grid 0,1,2,3,5,8,13,21 is 8 looks x 3 variants x 9 folds). Held-out log-lik vs engine-like K=200 draw (yl<=40, 91k plays): GEO=1 +.0052 nats/play 9/9 folds, game-bootstrap p05..p95 [+.0036,+.0065], probability_positive 1.0; GEO=2 +.0085 9/9. GEO=1 biases TD low (stub yl6-10 .140 v real .198); GEO=2 stub .197 v .198, yl21-40 .0304 v .0309, violations 0.
 - Engine-like violation share of draws: yl2-5 22.7%, yl6-10 13.4%, yl11-40 2.7%. Real TD with yards < yl: 0.21% (tests/scratch/e115/geo.txt).
 - Not run in sim. Wiring: crH after cy.install_cky() block, before install_log_sync(dv); label "go".
+
+## geo_tgt scorer (2026-10-09)
+- tests/scratch/e115/geo_tgt.py: real 2009-17 v sim dirs (violations yl2-5/6-10, TD/play by yl bin x run/pass, open-field, GTG yl1, yl1 share, H1/H2 TD/drive by state; 200-rep game bootstrap). Baseline smoke s31 (no GEO) in tests/scratch/e115/geo_tgt_base.txt: viol yl2-5 .186, yl6-10 .115, open-field +.0036, yl1 share +.0059. Next: score the GEO-on smoke dir against it.
+
+## GEO=2 smoke s31 (measured 2026-10-09; tests/scratch/e115/geo_tgt_smoke.txt, tests/scratch/e114/tgt_geo.txt; dir artifacts/mod25e3/broken_geo2_s31) — BROKEN integration, not a verdict on the mechanism
+Violations yl 2-5 .186 -> .013, yl 6-10 .115 -> .005 (real 0); but TD/play collapsed (run yl 21-40 .0072 v real .0128, pass .0231 v .0440; H1 TD/drive -.04 to -.08), Q1/Q3 plays 29.0 v 34.0, Q4 trailer pass s/snap 33.1 v 23.0. Stubbed fit check had matched real (.0304 v .0309), so the sim integration is defective. Earlier crashes fixed: is_home_sim derived from offense; GEO locals renamed (o_rt/d_rt) so GZ's walk to "off_sim" passes GEO's frame. Debug agent in flight (tests/scratch/e115d/).

@@ -358,21 +358,21 @@ def install_geo():
                 st["k"] = dv._G.get("task_key")
                 st["rng"] = dv.task_rng(SALT, seed)
             L = locals_of()
-            off_sim, def_sim = L["off_sim"], L["def_sim"]
+            o_rt, d_rt = L["off_sim"], L["def_sim"]
             h = tables["team_kernel_h"]
 
             def weight_fn(near):
-                d2 = (arrays["off_row"][near] - off_sim) ** 2 + (arrays["def_row"][near] - def_sim) ** 2
+                d2 = (arrays["off_row"][near] - o_rt) ** 2 + (arrays["def_row"][near] - d_rt) ** 2
                 w = np.exp(-d2 / (2.0 * h * h)) * np.where(arrays["is_home_off"][near] == (1 if L["offense"] == "home" else 0), ns["TEAM_KERNEL_LAMBDA"], 1.0)
                 if "IPW" in ns:
                     w = w * np.asarray(ns["IPW"])[near]
                 if "PASS_W" in ns:
-                    w = w * ns["PASS_W"](None, near, off_sim, def_sim)
+                    w = w * ns["PASS_W"](None, near, o_rt, d_rt)
                 return w
 
             tf = sim.continuous_time_feature(qtr, clock_val)
             f = sim.feature_matrix(np.array([distance]), np.array([float(yardline)]), np.array([score_diff]), np.array([tf]), np.array([0.0]), np.array([0.0]), np.array([sim.compute_phase(qtr, clock_val)]))[0]
-            out = geo.fix(drawn, i, down, float(yardline), f[[0, 2, 3]], float(off_sim - def_sim), weight_fn, st["rng"], force=always)
+            out = geo.fix(drawn, i, down, float(yardline), f[[0, 2, 3]], float(o_rt - d_rt), weight_fn, st["rng"], force=always)
             if out is not None:
                 drawn, j, shift = out
                 st["rep"] = (j, shift)

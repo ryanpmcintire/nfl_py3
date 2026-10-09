@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-09T17:46:13.123494+00:00`
+Refreshed at: `2026-10-09T18:02:24.596332+00:00`
 
 ## Start here
 
@@ -21,18 +21,15 @@ Refreshed at: `2026-10-09T17:46:13.123494+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `4ce8eac7211b` — MOD-25e E114 3-seed: TPO+CLQ2+URG+CKY move every clock/final-drive target toward real, aggregates flat; OT final-3 regression under diagnosis (E117)
-- Pending change set: 75 paths
+- Baseline commit: `3ab707509315` — MOD-25e E117: TPO's local `offense` stopped WFG's frame walk (OT FG/game .425 -> .141, P(final3|tied after reg) -.114); TPO no longer binds it, WFG walks to engine-only ot_possession_index; GEO home flag from offense
+- Pending change set: 72 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `A  docs/lanes/mod25e-e117-otfinal3.md`
-  - `M  docs/lanes/mod25e-generator-fidelity.md`
+  - `M  docs/lanes/mod25e-e115-leadertd.md`
   - ` M docs/model.html`
   - `M  scripts/mod25e_geo.py`
-  - `M  scripts/mod25e_tpo.py`
-  - `M  scripts/mod25e_wfg.py`
   - ` M tiebreaker.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -43,7 +40,10 @@ Refreshed at: `2026-10-09T17:46:13.123494+00:00`
   - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
   - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
   - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
-  - ...and 55 more
+  - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
+  - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
+  - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
+  - ...and 52 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
