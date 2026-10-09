@@ -160,6 +160,14 @@ def run_with_flags(init, setting):
 
     if cq.enabled():
         cq.install_clq()
+    import mod25e_urg as ug
+
+    if ug.enabled():
+        ug.install_urg()
+    import mod25e_cky as cy
+
+    if cy.enabled():
+        cy.install_cky()
     install_log_sync(dv)
 
 
@@ -272,6 +280,12 @@ def cmd_e5(a):
         label = label + "tp"
     if os.environ.get("CLQ") == "1":
         label = label + "ql"
+    if os.environ.get("CLQ") == "2":
+        label = label + "q2"
+    if os.environ.get("URG") == "1":
+        label = label + "ug"
+    if os.environ.get("CKY") == "1":
+        label = label + "ky"
     if os.environ.get("CDT") == "1":
         label = label + "dt"
     if os.environ.get("CDT") == "2":

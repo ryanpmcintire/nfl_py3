@@ -216,6 +216,8 @@ def install_tpo():
 
     def pol(down, distance, yardline, score_diff, qtr, clock_val, drawn):
         fr = sys._getframe(1)
+        while "offense" not in fr.f_locals:
+            fr = fr.f_back
         offense, off_to, def_to = fr.f_locals["offense"], fr.f_locals["off_to"], fr.f_locals["def_to"]  # noqa: F841
         drawn = base(down, distance, yardline, score_diff, qtr, clock_val, drawn)
         code = int(drawn["play_type_code"])
