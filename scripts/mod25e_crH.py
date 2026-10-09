@@ -180,6 +180,10 @@ def run_with_flags(init, setting):
 
     if cy2.enabled():
         cy2.install_cky2()
+    import mod25e_urg2 as u2
+
+    if u2.enabled():
+        u2.install_urg2()
     install_log_sync(dv)
 
 
@@ -309,7 +313,9 @@ def cmd_e5(a):
     if os.environ.get("RTD") == "1":
         label = label + "rt"
     if os.environ.get("CKY2") == "1":
-        label = label + "k2"
+        label = label + "y2"
+    if os.environ.get("URG2") == "1":
+        label = label + "u2"
     dv.DV[label] = dict(dv.DV["crG"])
     outd = ss.OUT / f"e5_{label}_s{a.seed}"
     outd.mkdir(parents=True, exist_ok=True)

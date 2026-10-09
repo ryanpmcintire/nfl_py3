@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-09T21:06:38.414031+00:00`
+Refreshed at: `2026-10-09T21:24:28.783088+00:00`
 
 ## Start here
 
@@ -21,18 +21,18 @@ Refreshed at: `2026-10-09T21:06:38.414031+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `e48da92c4184` — MOD-25e E120 RTD: game/half-opening kickoffs never drawn (sim04_engine.py:755-761), real return TD .0126/game missing; LOSO-fitted return-TD hook (k35 rule term, 7/9) wired default off; variance effect ~+0.2
-- Pending change set: 76 paths
+- Baseline commit: `e1933aafbc23` — MOD-25e E121/E122: GEO keeps engine clock_elapsed and timeout flags (copying them from a phase-blind row cost ~4 plays/game); CKY2 (no edge death bin, per-class apply, Y=40 by nested LOSO) wired default off
+- Pending change set: 75 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `A  docs/lanes/mod25e-e121-yardtail.md`
-  - `A  docs/lanes/mod25e-e122-finaldrive2.md`
+  - ` M docs/lanes/mod25e-e121-yardtail.md`
+  - `M  docs/lanes/mod25e-e122-finaldrive2.md`
   - ` M docs/model.html`
-  - `A  scripts/mod25e_cky2.py`
   - `M  scripts/mod25e_crH.py`
-  - `M  scripts/mod25e_geo.py`
+  - ` M scripts/mod25e_geo.py`
+  - `A  scripts/mod25e_urg2.py`
   - ` M tiebreaker.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -43,7 +43,7 @@ Refreshed at: `2026-10-09T21:06:38.414031+00:00`
   - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
   - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
   - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
-  - ...and 56 more
+  - ...and 55 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
