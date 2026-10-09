@@ -17,7 +17,11 @@ MODES = ("rem", "el")
 
 
 def enabled():
-    return os.environ.get("CDT") == "1"
+    return os.environ.get("CDT") in ("1", "2")
+
+
+def conditioned():
+    return os.environ.get("CDT") == "2"
 
 
 def rows():
@@ -96,7 +100,79 @@ def fit():
     print("looks", out["looks"])
 
 
+HB_WIDTH = 5.0
+HB_TOP = 23
+N_EL = 62
+A_COND = 32.0
+
+
+def install_cdn():
+    import mod25d_variance as dv
+    import mod25e_endgame as eg
+
+    R = rows()
+    R = R[R.hs <= HORIZON[1]]
+    used = (R.u > 0).to_numpy().astype(int)
+    cls = R.cls.to_numpy().astype(int)
+    hbn = np.minimum((R.hs.to_numpy() - 1e-9) // HB_WIDTH, HB_TOP).astype(int)
+    eb = np.minimum(np.round(R.el.to_numpy()).astype(int), N_EL - 1)
+    pool = {}
+    for u in (0, 1):
+        for k in np.unique(cls):
+            for h in np.unique(hbn):
+                mk = (used == u) & (cls == k) & (hbn == h)
+                pool[(u, int(k), int(h))] = eb[mk]
+    cseed = int(dv._G["cfg"].get("seed", 3))
+    st = {"k": None, "rng": None}
+    base = dv._G["pol"]
+
+    def pol(down, distance, yardline, score_diff, qtr, clock_val, drawn):
+        drawn = base(down, distance, yardline, score_diff, qtr, clock_val, drawn)
+        code = int(drawn["play_type_code"])
+        hs = clock_val - 1800.0 if qtr == 2 else clock_val
+        if code not in (0, 1) or qtr not in (2, 4) or hs <= 0 or hs > HORIZON[1]:
+            return drawn
+        if st["k"] != dv._G.get("task_key"):
+            st["k"] = dv._G.get("task_key")
+            st["rng"] = dv.task_rng(SALT, cseed)
+        rng = st["rng"]
+        u = 1 if (float(drawn["off_to_used"]) > 0 or float(drawn["def_to_used"]) > 0) else 0
+        import mod25e_clk as ck
+
+        k = int(ck.klass(code, drawn["yards_gained"], drawn["flip"], drawn["points_off"], drawn["points_def"]))
+        h = int(min((hs - 1e-9) // HB_WIDTH, HB_TOP))
+        src = pool.get((u, k, h))
+        if src is None:
+            return drawn
+        n = len(src)
+        r1, r2 = rng.random(), rng.random()
+        if n and r1 < n / (n + A_COND):
+            b = int(src[int(r2 * n)])
+        else:
+            cnt = np.bincount(src, minlength=N_EL).astype(float) + 1.0
+            b = int(np.searchsorted(np.cumsum(cnt) / cnt.sum(), r2))
+        new = float(min(b, hs))
+        old = float(drawn["clock_elapsed"])
+        drawn = dict(drawn)
+        drawn["clock_elapsed"] = new
+        lg = dv._G.get("log")
+        if lg:
+            tp = list(lg[-1])
+            tp[10] = new
+            lg[-1] = tuple(tp)
+        es = dv._G.get("egst")
+        if es is not None and es["ps"][0] is not None and abs(es["ps"][0] - (clock_val - old)) < 1e-6:
+            stn = float(eg.stop_after(code, float(drawn["yards_gained"]), bool(drawn["flip"]), (drawn["points_off"] + drawn["points_def"]) > 0, float(drawn["off_to_used"]), float(drawn["def_to_used"]), new))
+            es["ps"] = (clock_val - new, stn)
+        return drawn
+
+    dv._G["pol"] = pol
+
+
 def install_cdt():
+    if conditioned():
+        install_cdn()
+        return
     import mod25d_variance as dv
     import mod25e_cdr as cdr
     import mod25e_endgame as eg
