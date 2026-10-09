@@ -39,3 +39,9 @@ ke -> kedt (real), seed 31 1x4: Q2 last<=5s .300 -> .407 (.263, worse beyond noi
 
 ## Orchestrator 2026-10-09
 CKU 3-seed run launched (logs artifacts/mod25e3/ku_e5_s1{1,2,3}.log), then bootstrap -> artifacts/mod25e3/e108_ku_boot/e100.txt and clock2 -> artifacts/mod25e3/clock2/clock2_xfdcdtbkhghkeku_e108_3seed.txt. 1x4 smoke aggregates (SD 16.4, noise 192, mass3 .108) are within 1x4 swing; decide on the 3-seed bootstrap. Keep if the aggregates do not move away beyond their intervals (CKU encodes a near-rule: a timeout stops the half ending).
+
+## CKU 3-seed result (measured 2026-10-09; artifacts/mod25e3/e108_ku_boot/e100.txt, clock2/clock2_xfdcdtbkhghkeku_e108_3seed.txt)
+ke -> ku (real): Q2 last play <=5s .300 -> .287 (.263); Q4 .183 -> .182 (.128); Q2 final-drive hs0 43.7 -> 43.4 (30.1), plays 2.92 -> 2.87 (2.06).
+Toward real: P(final3 | tied after reg) .561 -> .584 [+.002,+.048] (.682); mass3 +.003 [-.001,+.007]. Away: noise 180.5 -> 185.2 [+1.0,+8.3] (165); late r2 -.007 [-.013,-.001] (3 seeds); Q4 slope -.0535 -> -.0464 (-.060, P .94); SD +.10 [-.07,+.27].
+KEPT (E104 precedent): the old draw ended halves on plays followed by a timeout (sim .34 v real .003), a near-impossible event; keeping it because aggregates fit would keep a compensating error. The noise/late-r2/Q4-slope moves are exposed gaps, not new errors. New base crHpqokgndecsmfwtjo2as2ypw2xfdcdtbkhghkeku (... CKH=1 CKS=1 CKU=1).
+Next: (1) noise rose with correct timeout behaviour: find which late-game channel had been suppressing variance (late scoring, OT entry); (2) Q2 final drives still start 13 s late and run 0.8 extra plays (start of final drive, not its end).
