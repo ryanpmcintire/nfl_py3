@@ -193,8 +193,14 @@ def install_ckc():
 
     import mod25e_cks as cks
 
-    T = tables()
-    cks_t = cks.tables() if cks.enabled() else None
+    import mod25e_cku as cku
+
+    cku_on = cku.enabled()
+    if cku_on:
+        T, cks_t = cku.tables()
+    else:
+        T = tables()
+        cks_t = cks.tables() if cks.enabled() else None
     probs = u4.load_probs()
     cseed = int(dv._G["cfg"].get("seed", 3))
     st = {"k": None, "rng": None}
@@ -211,7 +217,8 @@ def install_ckc():
         if hs <= 0 or hs > HZ:
             return drawn
         k = int(ck.klass(code, drawn["yards_gained"], drawn["flip"], drawn["points_off"], drawn["points_def"]))
-        t = T.get(k)
+        ud = cku.used_flag(drawn["off_to_used"], drawn["def_to_used"]) if cku_on else None
+        t = T.get((k, ud) if cku_on else k)
         if t is None:
             return drawn
         if st["k"] != dv._G.get("task_key"):
@@ -225,7 +232,10 @@ def install_ckc():
             cdf = t["hcdf"][int(ck.hbin([hs], t["edges"])[0])]
         pe = None
         if cks_t is not None and k in cks_t:
-            pe = cks.p_end(cks_t[k], hs, score_diff, qtr, float(off_to), float(def_to))
+            if cku_on:
+                pe = cku.p_end(cks_t[k], hs, score_diff, qtr, float(off_to), float(def_to), ud)
+            else:
+                pe = cks.p_end(cks_t[k], hs, score_diff, qtr, float(off_to), float(def_to))
             cb = int(np.ceil(hs))
             mass = float(cdf[min(cb - 1, NB)])
             if mass <= 0.0:

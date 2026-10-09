@@ -252,6 +252,8 @@ def cmd_e5(a):
         label = label + "gh"
     if os.environ.get("CKS") == "1" and os.environ.get("CKH") == "1":
         label = label + "ke"
+    if os.environ.get("CKU") == "1" and os.environ.get("CKS") == "1" and os.environ.get("CKH") == "1":
+        label = label + "ku"
     if os.environ.get("CDT") == "1":
         label = label + "dt"
     if os.environ.get("CDT") == "2":
