@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-09T21:43:04.000148+00:00`
+Refreshed at: `2026-10-09T21:43:36.337227+00:00`
 
 ## Start here
 
@@ -21,17 +21,14 @@ Refreshed at: `2026-10-09T21:43:04.000148+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `98c5a05669d0` — MOD-25e E123: like-for-like play deficit -2.44/game sits in Q2/Q4; -1.52 incompletions/game (share ~1.4 pts low everywhere) and a CDW incompletion clock tail (P(el>20) .08 v .027); CLQ2 and yard shift cleared
-- Pending change set: 74 paths
+- Baseline commit: `7b0ad5d22d7f` — MOD-25e E123 CDW=2: flat +1 prior over 62 bins (mod25e_cdw.py:73,:202) made ~11% of sparse-cell draws uniform, giving incompletions a 20+ s tail (.063 v real .023); 3-tier backoff for inc/term (LOSO +.070/+.110 per play, 9/9); wired, TPO gate accepts CDW=2
+- Pending change set: 71 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/mod25e-e123-playvolume.md`
   - ` M docs/model.html`
-  - `M  scripts/mod25e_cdw.py`
-  - `M  scripts/mod25e_crH.py`
-  - `M  scripts/mod25e_tpo.py`
+  - `M  scripts/mod25e_urg2.py`
   - ` M tiebreaker.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -43,7 +40,10 @@ Refreshed at: `2026-10-09T21:43:04.000148+00:00`
   - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
   - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
   - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
-  - ...and 54 more
+  - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
+  - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
+  - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
+  - ...and 51 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

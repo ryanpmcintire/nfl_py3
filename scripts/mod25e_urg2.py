@@ -500,6 +500,8 @@ def defer_region():
     if which is None:
         return None
     f = json.loads(Path(which).read_text(encoding="utf-8"))
+    if "cfg" in f:
+        return lo, hi, float(f["cfg"]["Y"]), float(f["cfg"]["HP"])
     return lo, hi, float(f["Y"]), float(f["W"])
 
 
