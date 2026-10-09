@@ -148,6 +148,10 @@ def run_with_flags(init, setting):
 
     if cdt.enabled():
         cdt.install_cdt()
+    import mod25e_cdw as cw
+
+    if cw.enabled():
+        cw.install_cdw()
     install_log_sync(dv)
 
 
@@ -254,6 +258,8 @@ def cmd_e5(a):
         label = label + "ke"
     if os.environ.get("CKU") == "1" and os.environ.get("CKS") == "1" and os.environ.get("CKH") == "1":
         label = label + "ku"
+    if os.environ.get("CDW") == "1":
+        label = label + "dw"
     if os.environ.get("CDT") == "1":
         label = label + "dt"
     if os.environ.get("CDT") == "2":
