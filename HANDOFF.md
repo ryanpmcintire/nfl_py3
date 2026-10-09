@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-09T21:24:28.783088+00:00`
+Refreshed at: `2026-10-09T21:25:53.657584+00:00`
 
 ## Start here
 
@@ -21,18 +21,14 @@ Refreshed at: `2026-10-09T21:24:28.783088+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `e1933aafbc23` — MOD-25e E121/E122: GEO keeps engine clock_elapsed and timeout flags (copying them from a phase-blind row cost ~4 plays/game); CKY2 (no edge death bin, per-class apply, Y=40 by nested LOSO) wired default off
-- Pending change set: 75 paths
+- Baseline commit: `d3da04b48ac1` — MOD-25e E122: URG2 (urgency elapsed hs 15-180 continuous at 45, Q4 run +.298/play 9/9; pass incomplete/yards redraw hs<=120, 9/9) wired default off; CKY2 smoke score|reach .79 (real .77), clock|reach .07 (.02); CKY2 suffix y2
+- Pending change set: 71 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - ` M docs/lanes/mod25e-e121-yardtail.md`
-  - `M  docs/lanes/mod25e-e122-finaldrive2.md`
+  - `M  docs/lanes/mod25e-e121-yardtail.md`
   - ` M docs/model.html`
-  - `M  scripts/mod25e_crH.py`
-  - ` M scripts/mod25e_geo.py`
-  - `A  scripts/mod25e_urg2.py`
   - ` M tiebreaker.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -43,7 +39,11 @@ Refreshed at: `2026-10-09T21:24:28.783088+00:00`
   - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
   - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
   - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
-  - ...and 55 more
+  - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
+  - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
+  - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
+  - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
+  - ...and 51 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
