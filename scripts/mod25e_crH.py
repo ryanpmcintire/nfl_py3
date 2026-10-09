@@ -242,6 +242,8 @@ def cmd_e5(a):
         label = label + "kc"
     if os.environ.get("GFL") == "1":
         label = label + "gf"
+    if os.environ.get("GFL") == "2":
+        label = label + "gh"
     dv.DV[label] = dict(dv.DV["crG"])
     outd = ss.OUT / f"e5_{label}_s{a.seed}"
     outd.mkdir(parents=True, exist_ok=True)

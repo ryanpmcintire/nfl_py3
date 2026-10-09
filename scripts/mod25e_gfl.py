@@ -7,11 +7,12 @@ import pandas as pd
 
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "scripts"))
-OUTD = REPO / "artifacts" / "mod25e3" / "gfl"
+HALF = os.environ.get("GFL") == "2"
+OUTD = REPO / "artifacts" / "mod25e3" / ("gfh" if HALF else "gfl")
 
 
 def enabled():
-    return os.environ.get("GFL") == "1"
+    return os.environ.get("GFL") in ("1", "2")
 
 
 def real_rows_fixed():
@@ -23,7 +24,10 @@ def real_rows_fixed():
     R = R[R.hs > 0]
     R["el"] = np.minimum(R.el.astype(float), R.hs)
     fl = R.flip.to_numpy().copy()
-    fl[R.next_qtr.isna().to_numpy()] = False
+    ends = R.next_qtr.isna().to_numpy()
+    if HALF:
+        ends = ends | ((R.qtr == 2) & (R.next_qtr == 3)).to_numpy()
+    fl[ends] = False
     R["flip"] = fl
     R["cls"] = ck.klass(R.code, R.yards, R.flip, R.po, R.pdf)
     return R[R.cls >= 0].reset_index(drop=True)
