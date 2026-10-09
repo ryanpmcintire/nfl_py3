@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-09T17:39:11.970120+00:00`
+Refreshed at: `2026-10-09T17:46:13.123494+00:00`
 
 ## Start here
 
@@ -21,15 +21,18 @@ Refreshed at: `2026-10-09T17:39:11.970120+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `da460bf16ce5` — MOD-25e E116: tied-at-half Q3 variance dip (real 33 v sim 51) is a 2009-17 quirk; 2018-25 tied 46.1 v rest 46.5; no engine target, not chased
-- Pending change set: 72 paths
+- Baseline commit: `4ce8eac7211b` — MOD-25e E114 3-seed: TPO+CLQ2+URG+CKY move every clock/final-drive target toward real, aggregates flat; OT final-3 regression under diagnosis (E117)
+- Pending change set: 75 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - ` M README.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
+  - `A  docs/lanes/mod25e-e117-otfinal3.md`
   - `M  docs/lanes/mod25e-generator-fidelity.md`
   - ` M docs/model.html`
+  - `M  scripts/mod25e_geo.py`
+  - `M  scripts/mod25e_tpo.py`
+  - `M  scripts/mod25e_wfg.py`
   - ` M tiebreaker.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -40,10 +43,7 @@ Refreshed at: `2026-10-09T17:39:11.970120+00:00`
   - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
   - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
   - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
-  - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
-  - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
-  - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
-  - ...and 52 more
+  - ...and 55 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

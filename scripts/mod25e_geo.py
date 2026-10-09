@@ -363,7 +363,7 @@ def install_geo():
 
             def weight_fn(near):
                 d2 = (arrays["off_row"][near] - off_sim) ** 2 + (arrays["def_row"][near] - def_sim) ** 2
-                w = np.exp(-d2 / (2.0 * h * h)) * np.where(arrays["is_home_off"][near] == L["is_home_sim"], ns["TEAM_KERNEL_LAMBDA"], 1.0)
+                w = np.exp(-d2 / (2.0 * h * h)) * np.where(arrays["is_home_off"][near] == (1 if L["offense"] == "home" else 0), ns["TEAM_KERNEL_LAMBDA"], 1.0)
                 if "IPW" in ns:
                     w = w * np.asarray(ns["IPW"])[near]
                 if "PASS_W" in ns:

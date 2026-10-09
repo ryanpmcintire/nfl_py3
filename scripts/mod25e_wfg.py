@@ -56,7 +56,7 @@ def install_wfg():
 
     def pol(dn, distance, yardline, score_diff, qtr, clock_val, drawn):
         fr = sys._getframe(1)
-        while fr is not None and "offense" not in fr.f_locals:
+        while fr is not None and "ot_possession_index" not in fr.f_locals:
             fr = fr.f_back
         L = fr.f_locals
         in_ot, idx_ot = bool(L.get("in_ot")), int(L.get("ot_possession_index", 0))
