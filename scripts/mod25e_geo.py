@@ -250,11 +250,13 @@ REPICK_KEYS = ("points_off", "points_def", "clock_elapsed", "next_down", "next_d
 
 
 class Geo:
-    def __init__(self, arrays, ids, dat, band, k_state, gain):
+    def __init__(self, arrays, ids, dat, band, k_state, gain, sign=-1.0, bias=0.0):
         self.a = arrays
         self.band = int(band)
         self.k = int(k_state)
         self.gain = float(gain)
+        self.sign = float(sign)
+        self.bias = float(bias)
         self.pools = {}
         td = arrays["points_off"] >= 6
         free = (arrays["possession_flip"].astype(bool) | (arrays["points_def"] > 0)) & ~td
@@ -271,7 +273,7 @@ class Geo:
                     "td": td[sel],
                     "free": free[sel],
                     "y": arrays["yards_gained"][sel].astype(float),
-                    "net": (arrays["off_row"][sel] - arrays["def_row"][sel]).astype(float),
+                    "net": (arrays["off_row"][sel] + self.sign * arrays["def_row"][sel]).astype(float),
                 }
 
     def violates(self, drawn, i, q):
@@ -287,7 +289,7 @@ class Geo:
             lo = np.searchsorted(P["fp"], q - w, side="left")
             hi = np.searchsorted(P["fp"], q + w, side="right")
             sl = slice(lo, hi)
-            shift = self.gain * (net_sim - P["net"][sl])
+            shift = self.bias + self.gain * (net_sim - P["net"][sl])
             ok = P["free"][sl] | (P["td"][sl] & (P["fp"][sl] >= q)) | (~P["td"][sl] & ~P["free"][sl] & (P["y"][sl] + shift < q))
             pos = np.flatnonzero(ok) + lo
             if len(pos) > 0 or w >= 99:
@@ -314,7 +316,7 @@ class Geo:
             j = int(ids[int(rng.integers(len(ids)))])
         else:
             j = int(ids[min(int(np.searchsorted(c, rng.random() * c[-1], side="right")), len(ids) - 1)])
-        shift = self.gain * (net_sim - float(self.a["off_row"][j] - self.a["def_row"][j]))
+        shift = self.bias + self.gain * (net_sim - float(self.a["off_row"][j] + self.sign * self.a["def_row"][j]))
         new = dict(drawn)
         for key in REPICK_KEYS:
             new[key] = self.a[key][j]
@@ -340,7 +342,11 @@ def install_geo():
         rows.update(zip(sub.tolist(), tree.data))
     ids = np.array(sorted(rows), dtype=np.int64)
     dat = np.array([rows[i] for i in ids.tolist()])
-    geo = Geo(arrays, ids, dat, spec["final_band"], sim.K_STATE, sim.TEAM_RATING_YARD_GAIN)
+    if "YARD_GAIN" in ns:
+        gain, sign, bias = float(ns["YARD_GAIN"]), float(ns["DEF_SIGN"]), float(ns["YARD_BIAS"])
+    else:
+        gain, sign, bias = sim.TEAM_RATING_YARD_GAIN, -1.0, 0.0
+    geo = Geo(arrays, ids, dat, spec["final_band"], sim.K_STATE, gain, sign, bias)
     st = {"k": None, "rng": None, "rep": None}
     always = os.environ.get("GEO") == "2"
     base = dv._G["pol"]
@@ -353,7 +359,8 @@ def install_geo():
 
     def pol(down, distance, yardline, score_diff, qtr, clock_val, drawn):
         i = drawn.get("idx")
-        if i is not None and int(drawn["play_type_code"]) in RUN_PASS and (always or geo.violates(drawn, i, float(yardline))):
+        qi = float(np.floor(float(yardline) + 0.5))
+        if i is not None and int(drawn["play_type_code"]) in RUN_PASS and (always or geo.violates(drawn, i, qi)):
             if st["k"] != dv._G.get("task_key"):
                 st["k"] = dv._G.get("task_key")
                 st["rng"] = dv.task_rng(SALT, seed)
@@ -372,7 +379,7 @@ def install_geo():
 
             tf = sim.continuous_time_feature(qtr, clock_val)
             f = sim.feature_matrix(np.array([distance]), np.array([float(yardline)]), np.array([score_diff]), np.array([tf]), np.array([0.0]), np.array([0.0]), np.array([sim.compute_phase(qtr, clock_val)]))[0]
-            out = geo.fix(drawn, i, down, float(yardline), f[[0, 2, 3]], float(o_rt - d_rt), weight_fn, st["rng"], force=always)
+            out = geo.fix(drawn, i, down, qi, f[[0, 2, 3]], float(o_rt + sign * d_rt), weight_fn, st["rng"], force=always)
             if out is not None:
                 drawn, j, shift = out
                 st["rep"] = (j, shift)

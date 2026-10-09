@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-09T18:02:24.596332+00:00`
+Refreshed at: `2026-10-09T18:19:55.667315+00:00`
 
 ## Start here
 
@@ -21,7 +21,7 @@ Refreshed at: `2026-10-09T18:02:24.596332+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `3ab707509315` — MOD-25e E117: TPO's local `offense` stopped WFG's frame walk (OT FG/game .425 -> .141, P(final3|tied after reg) -.114); TPO no longer binds it, WFG walks to engine-only ot_possession_index; GEO home flag from offense
+- Baseline commit: `91dedb13475f` — MOD-25e GEO: frame-safe locals; GEO=2 smoke shows broken integration (TD rate and pace collapse), off pending debug
 - Pending change set: 72 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
