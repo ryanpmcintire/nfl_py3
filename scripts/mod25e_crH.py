@@ -292,6 +292,8 @@ def cmd_e5(a):
         label = label + "ku"
     if os.environ.get("CDW") == "1":
         label = label + "dw"
+    if os.environ.get("CDW") == "2":
+        label = label + "w2"
     if os.environ.get("TPO") == "1":
         label = label + "tp"
     if os.environ.get("CLQ") == "1":

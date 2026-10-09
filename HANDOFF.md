@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-09T21:34:51.907029+00:00`
+Refreshed at: `2026-10-09T21:43:04.000148+00:00`
 
 ## Start here
 
@@ -21,14 +21,17 @@ Refreshed at: `2026-10-09T21:34:51.907029+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `dfd4717666a5` — MOD-25e E121b: GEO play loss was a CLQ1/CLQ2 smoke confound; GEO itself -0.9 plays/game (intended TD correction); base is 146.9 v real 150.4 plays/game; phase-pool GEO variant tried and reverted
-- Pending change set: 71 paths
+- Baseline commit: `98c5a05669d0` — MOD-25e E123: like-for-like play deficit -2.44/game sits in Q2/Q4; -1.52 incompletions/game (share ~1.4 pts low everywhere) and a CDW incompletion clock tail (P(el>20) .08 v .027); CLQ2 and yard shift cleared
+- Pending change set: 74 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `A  docs/lanes/mod25e-e123-playvolume.md`
+  - `M  docs/lanes/mod25e-e123-playvolume.md`
   - ` M docs/model.html`
+  - `M  scripts/mod25e_cdw.py`
+  - `M  scripts/mod25e_crH.py`
+  - `M  scripts/mod25e_tpo.py`
   - ` M tiebreaker.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -40,10 +43,7 @@ Refreshed at: `2026-10-09T21:34:51.907029+00:00`
   - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
   - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
   - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
-  - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
-  - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
-  - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
-  - ...and 51 more
+  - ...and 54 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

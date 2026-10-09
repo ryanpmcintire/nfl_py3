@@ -186,7 +186,7 @@ def install_tpo():
 
     fit_ = json.loads(FIT.read_text(encoding="utf-8"))
     cdw_hz = 0.0
-    if os.environ.get("CDW") == "1":
+    if os.environ.get("CDW") in ("1", "2"):
         cdw_hz = float(json.loads(CDW_FIT.read_text(encoding="utf-8"))["chosen"]["spec"]["hz"])
     lo = max(fit_["lo"], cdw_hz)
     R = rows()
