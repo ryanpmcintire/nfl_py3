@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-09T21:25:53.657584+00:00`
+Refreshed at: `2026-10-09T21:34:51.907029+00:00`
 
 ## Start here
 
@@ -21,13 +21,13 @@ Refreshed at: `2026-10-09T21:25:53.657584+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `d3da04b48ac1` — MOD-25e E122: URG2 (urgency elapsed hs 15-180 continuous at 45, Q4 run +.298/play 9/9; pass incomplete/yards redraw hs<=120, 9/9) wired default off; CKY2 smoke score|reach .79 (real .77), clock|reach .07 (.02); CKY2 suffix y2
+- Baseline commit: `dfd4717666a5` — MOD-25e E121b: GEO play loss was a CLQ1/CLQ2 smoke confound; GEO itself -0.9 plays/game (intended TD correction); base is 146.9 v real 150.4 plays/game; phase-pool GEO variant tried and reverted
 - Pending change set: 71 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/mod25e-e121-yardtail.md`
+  - `A  docs/lanes/mod25e-e123-playvolume.md`
   - ` M docs/model.html`
   - ` M tiebreaker.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
