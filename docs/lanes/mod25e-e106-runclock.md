@@ -21,3 +21,9 @@ Run ll loss is not a closing ground (no resolved wrong sign on the target). No p
 ## Smoke result (2026-10-09, measured; seed 31, 1x4, base ..tbgh v kh ..tbkhgh; tests/scratch/e106/post.txt, sc31_kh.txt, artifacts/mod25e3/clock2/clock2_*_e106.txt)
 After run P(end)/P(1-2s) (real .425/.040, .337/.008, .233/.006 for hs 10-20/20-30/30-45): base .317/.129, .175/.140, .105/.072 -> kh .433/.062, .278/.015, .203/.021. Pass changes small (10-20 end .124 -> .158, real .160). Snaps hs<=1 per 1000 halves real 42 base 136 kh 62; hs(1,2] 75/97/72; spike<=2 6.1/15.6/4.6. Last play <=5s: Q2 real .263 base .374 kh .305; Q4 real .128 base .264 kh .202. Margin SD 16.61 -> 15.68 (real 14.63), noise 189 -> 191, strength 86 -> 54, mass3 .140 -> .131 (.141), P(final3|tied last 5) .48 -> .375 (n 16-24, noise). Smoke 1x4 is noisy (kh dir left at top level; base smoke copy removed).
 Next: orchestrator decides 3-seed CKH=1 run (seeds 11-13) and bootstrap; record run ll loss via weak-signals.
+
+## 3-seed result (measured 2026-10-09; artifacts/mod25e3/e106_kh_boot/e100.txt, clock2/clock2_xfdcdtbkhgh_e106_3seed.txt)
+Clock-ended drives, last play <=5s gh -> kh (real): Q2 .363 -> .270 (.263; diff +.006 [-.014,+.026], closed), <=15s .673 -> .602 (.605); Q4 .241 -> .212 (.128, still +.084).
+Aggregates (season bootstrap 90%): SD +.02, noise +.3, strength +.7, mass3 -.001, Q4 slope flat, pts -.20 [-.49,+.05] toward 45.21, late r2 +.002, P(final3|tied after reg) flat, P(final3|tied last 5) -.014 [-.043,+.012].
+KEPT. New base crHpqokgndecsmfwtjo2as2ypw2xfdcdtbkhgh (base env + ... STB=1 GFL=2 CKH=1). Run held-out ll loss (-.065, 2/9) logged here as a lane result; generator hooks are judged in lanes, not the pick-signal registry (precedent E91-E104).
+Next: Q4 remaining gap (.212 v .128): clock-ended Q4 drives start later (hs0 80 v 86) and shorter (hl 21 v 25) with more plays (3.67 v 3.45) from a worse spot (yl0 67.6 v 64.1); then P(final3 | tied last 5) .451 v .625.

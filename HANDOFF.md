@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-09T04:31:34.810889+00:00`
+Refreshed at: `2026-10-09T06:23:40.952585+00:00`
 
 ## Start here
 
@@ -21,13 +21,13 @@ Refreshed at: `2026-10-09T04:31:34.810889+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `5f7c964ab216` — MOD-25e E106: CKH smoke moves Q2/Q4 last-play timing and late-run outcomes toward real; 3-seed run launched
+- Baseline commit: `c15076512ec5` — Republish the site with the latest settled results
 - Pending change set: 65 paths
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - `M  docs/model.html`
-  - `M  tiebreaker.json`
+  - `R  docs/lanes/mod25e-e103-lateclock.md -> docs/lanes/done/mod25e-e103-lateclock.md`
+  - `R  docs/lanes/mod25e-e104-halfend.md -> docs/lanes/done/mod25e-e104-halfend.md`
+  - `R  docs/lanes/mod25e-e105-q2choice.md -> docs/lanes/done/mod25e-e105-q2choice.md`
+  - `M  docs/lanes/mod25e-e106-runclock.md`
+  - `M  docs/lanes/mod25e-generator-fidelity.md`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
