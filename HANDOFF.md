@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-09T15:26:59.797669+00:00`
+Refreshed at: `2026-10-09T15:31:47.098402+00:00`
 
 ## Start here
 
@@ -21,13 +21,9 @@ Refreshed at: `2026-10-09T15:26:59.797669+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `ff49461479d5` — MOD-25e E111-E113 hooks: CLQ=2 censored Q1/Q3 clock + no-play + first snap (LOSO +.0052/play v CLQ1 9/9), URG urgency-graded late elapsed (Q4 run +.053 v CDW 9/9), CKY in-range kick-preserve P(end) (8/9); TPO/URG frame walk fix; smoke s31 TPO+CLQ: Q2 first snap 19.1 -> 1.5 s (real 1.3), trailer pass s/snap 24.5 -> 24.0 (23.0)
-- Pending change set: 65 paths
-  - `M  docs/lanes/mod25e-e113-finaldrive.md`
-  - `A  docs/lanes/mod25e-e115-leadertd.md`
-  - `M  docs/lanes/mod25e-generator-fidelity.md`
-  - `M  scripts/mod25e_crH.py`
-  - `A  scripts/mod25e_geo.py`
+- Baseline commit: `89351171bd94` — MOD-25e E115 GEO: TD iff yards>=yardline, exact-yardline consistent re-pick (LOSO +.0085/play 9/9; violations yl 2-5 22.7% -> 0); wired default off; CKY smoke score|reach .43 -> .69 (real .77)
+- Pending change set: 61 paths
+  - `A  docs/lanes/mod25e-e116-tiedhalf.md`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
@@ -43,7 +39,11 @@ Refreshed at: `2026-10-09T15:26:59.797669+00:00`
   - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
   - `?? registry/experiments/margin-backtest/20261008T161241Z.json`
   - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
-  - ...and 45 more
+  - `?? registry/experiments/margin-predict/2026-week-04-20261001T211240Z.json`
+  - `?? registry/experiments/margin-predict/2026-week-04-20261002T161446Z.json`
+  - `?? registry/experiments/margin-predict/2026-week-04-20261003T161013Z.json`
+  - `?? registry/experiments/margin-predict/2026-week-04-20261003T173930Z.json`
+  - ...and 41 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
