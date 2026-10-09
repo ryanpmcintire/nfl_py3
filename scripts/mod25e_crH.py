@@ -240,6 +240,8 @@ def cmd_e5(a):
         label = label + "tb"
     if os.environ.get("CKC") == "1":
         label = label + "kc"
+    if os.environ.get("CKH") == "1":
+        label = label + "kh"
     if os.environ.get("GFL") == "1":
         label = label + "gf"
     if os.environ.get("GFL") == "2":

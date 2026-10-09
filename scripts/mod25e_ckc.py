@@ -9,15 +9,15 @@ import numpy as np
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "scripts"))
 
-FIT = REPO / "artifacts" / "mod25e3" / "ckc" / "fit.json"
+FIT = REPO / "artifacts" / "mod25e3" / "ckc" / ("fit_h.json" if os.environ.get("CKH") == "1" else "fit.json")
 SALT = 4312
 NB = 61
 HZ = 45.0
-KLASSES = (0, 1, 2, 3, 5)
+KLASSES = (2, 3) if os.environ.get("CKH") == "1" else (0, 1, 2, 3, 5)
 
 
 def enabled():
-    return os.environ.get("CKC") == "1"
+    return os.environ.get("CKC") == "1" or os.environ.get("CKH") == "1"
 
 
 def rows():
@@ -50,6 +50,20 @@ def km_pmf(ci, ev, last, nc):
     return np.concatenate([prev * hz, surv[:, -1:]], axis=1)
 
 
+def cp_pmf(idx, ng, ev, cb, last):
+    g = km_pmf(np.zeros(len(ev), int), ev, last, 1)[0]
+    W = np.zeros((NB + 1, NB + 1))
+    for q in range(NB + 1):
+        v = g.copy()
+        v[:q] = 0
+        W[q] = v / v.sum() if v.sum() > 0 else np.eye(NB + 1)[NB]
+    cnt = np.zeros((ng, NB + 1))
+    m1 = ev >= 0
+    np.add.at(cnt, (idx[m1], ev[m1]), 1.0)
+    np.add.at(cnt, idx[~m1], W[np.minimum(cb[~m1], NB)])
+    return cnt
+
+
 def smooth_pm(cn, pc, ph, a):
     return (cn[:, None] * pc + a * ph) / (cn[:, None] + a)
 
@@ -67,11 +81,17 @@ def fold_rows(sub, spec, a, mode):
     hbc = np.zeros(len(uc), int)
     hbc[ci] = hb
     out = np.zeros(len(sub))
+    pend = np.zeros(len(sub))
+    pnear = np.zeros(len(sub))
     for s in np.unique(ss):
         te, tr = ss == s, ss != s
         cn = np.bincount(ci[tr], minlength=len(uc)).astype(float)
         hn = np.bincount(hb[tr], minlength=nh).astype(float)
-        if mode == "km":
+        if mode == "cp":
+            pc = cp_pmf(ci[tr], len(uc), ev[tr], cb[tr], last[tr]) / np.maximum(cn[:, None], 1.0)
+            mh = cp_pmf(hb[tr], nh, ev[tr], cb[tr], last[tr])
+            ph = (mh + 1.0 / (NB + 1)) / (mh.sum(axis=1, keepdims=True) + 1.0)
+        elif mode == "km":
             pc = km_pmf(ci[tr], ev[tr], last[tr], len(uc))
             ph = km_pmf(hb[tr], ev[tr], last[tr], nh)
             ph = (hn[:, None] * ph + 1.0 / (NB + 1)) / (hn[:, None] + 1.0)
@@ -86,7 +106,9 @@ def fold_rows(sub, spec, a, mode):
         pm = smooth_pm(cn, pc, ph[hbc], a)
         tail = np.cumsum(pm[:, ::-1], axis=1)[:, ::-1]
         out[te] = np.where(ev[te] >= 0, np.log(pm[ci[te], np.maximum(ev[te], 0)]), np.log(tail[ci[te], cb[te]]))
-    return out, ss
+        pend[te] = tail[ci[te], cb[te]]
+        pnear[te] = pm[ci[te], np.maximum(cb[te] - 1, 0)] + pm[ci[te], np.maximum(cb[te] - 2, 0)]
+    return out, ss, pend, pnear
 
 
 def fit():
@@ -101,16 +123,22 @@ def fit():
         b = spec[nm]["best"]
         res = []
         for a in ck.SMOOTH:
-            lk, ss = fold_rows(sub, b, a, "km")
-            lp, _ = fold_rows(sub, b, a, "pool")
+            mode_new = "cp" if os.environ.get("CKH") == "1" else "km"
+            lk, ss, ek, nk = fold_rows(sub, b, a, mode_new)
+            lp, _, ep, npl = fold_rows(sub, b, a, "pool")
+            ev_, cb_, _ = obs(sub)
+            yend = ((ev_ < 0) & (cb_ <= NB)).astype(float)
+            ynear = ((ev_ >= 0) & ((cb_ - ev_ == 1) | (cb_ - ev_ == 2))).astype(float)
+            bend = float(((ep - yend) ** 2).mean() - ((ek - yend) ** 2).mean())
+            bnear = float(((npl - ynear) ** 2).mean() - ((nk - ynear) ** 2).mean())
             sg = [float((lk[ss == s] - lp[ss == s]).sum()) for s in np.unique(ss)]
-            res.append({"a": a, "ll_km": float(lk.mean()), "ll_pool": float(lp.mean()), "d": lk - lp, "seasons_pos": int(sum(x > 0 for x in sg)), "seasons": len(sg)})
+            res.append({"a": a, "ll_km": float(lk.mean()), "ll_pool": float(lp.mean()), "d": lk - lp, "seasons_pos": int(sum(x > 0 for x in sg)), "seasons": len(sg), "bend": bend, "bnear": bnear})
         out["looks"] += 2 * len(res)
         bk = max(res, key=lambda r: r["ll_km"])
         bp = max(res, key=lambda r: r["ll_pool"])
         se = float(np.std(bk["d"], ddof=1) / np.sqrt(len(bk["d"])))
         gain = bk["ll_km"] - bp["ll_pool"]
-        out["classes"][nm] = {"k": k, "n": int(len(sub)), "cens": float(sub.cens.mean()), "edges": b["edges"], "sign": b["sign"], "to": b["to"], "a": bk["a"], "a_pool": bp["a"], "ll_km": bk["ll_km"], "ll_pool": bp["ll_pool"], "gain": gain, "seasons_pos": bk["seasons_pos"], "seasons": bk["seasons"], "apply": bool(gain > 0)}
+        out["classes"][nm] = {"k": k, "n": int(len(sub)), "cens": float(sub.cens.mean()), "edges": b["edges"], "sign": b["sign"], "to": b["to"], "a": bk["a"], "a_pool": bp["a"], "ll_km": bk["ll_km"], "ll_pool": bp["ll_pool"], "gain": gain, "seasons_pos": bk["seasons_pos"], "seasons": bk["seasons"], "bend": bk["bend"], "bnear": bk["bnear"], "apply": bool(bk["bend"] > 0 and bk["bnear"] > 0) if os.environ.get("CKH") == "1" else bool(gain > 0)}
         print(nm, len(sub), "cens", round(float(sub.cens.mean()), 4), "km", round(bk["ll_km"], 4), "a", bk["a"], "pool", round(bp["ll_pool"], 4), "a", bp["a"], "gain", round(gain, 4), "se_same_a", round(se, 4), "seasons+", bk["seasons_pos"], "/", bk["seasons"], flush=True)
     FIT.parent.mkdir(parents=True, exist_ok=True)
     FIT.write_text(json.dumps(out), encoding="utf-8")
@@ -136,9 +164,14 @@ def tables():
         nh = len(edges) + 1
         cn = np.bincount(ci, minlength=len(uc)).astype(float)
         hn = np.bincount(hb, minlength=nh).astype(float)
-        pc = km_pmf(ci, ev, last, len(uc))
-        ph = km_pmf(hb, ev, last, nh)
-        ph = (hn[:, None] * ph + 1.0 / (NB + 1)) / (hn[:, None] + 1.0)
+        if os.environ.get("CKH") == "1":
+            pc = cp_pmf(ci, len(uc), ev, cb, last) / np.maximum(cn[:, None], 1.0)
+            mh = cp_pmf(hb, nh, ev, cb, last)
+            ph = (mh + 1.0 / (NB + 1)) / (mh.sum(axis=1, keepdims=True) + 1.0)
+        else:
+            pc = km_pmf(ci, ev, last, len(uc))
+            ph = km_pmf(hb, ev, last, nh)
+            ph = (hn[:, None] * ph + 1.0 / (NB + 1)) / (hn[:, None] + 1.0)
         hbc = np.zeros(len(uc), int)
         hbc[ci] = hb
         pm = smooth_pm(cn, pc, ph[hbc], s["a"])
@@ -212,4 +245,8 @@ def install_ckc():
 
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "fit":
+        import mod25e_gfl as gf
+
+        if gf.enabled():
+            gf.patch()
         fit()
