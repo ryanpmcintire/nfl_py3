@@ -191,7 +191,10 @@ def install_ckc():
     import mod25e_endgame as eg
     import sim09_u4g as u4
 
+    import mod25e_cks as cks
+
     T = tables()
+    cks_t = cks.tables() if cks.enabled() else None
     probs = u4.load_probs()
     cseed = int(dv._G["cfg"].get("seed", 3))
     st = {"k": None, "rng": None}
@@ -220,7 +223,20 @@ def install_ckc():
         cdf = t["cdf"].get(cv)
         if cdf is None:
             cdf = t["hcdf"][int(ck.hbin([hs], t["edges"])[0])]
-        b = int(min(np.searchsorted(cdf, u, side="left"), NB))
+        pe = None
+        if cks_t is not None and k in cks_t:
+            pe = cks.p_end(cks_t[k], hs, score_diff, qtr, float(off_to), float(def_to))
+            cb = int(np.ceil(hs))
+            mass = float(cdf[min(cb - 1, NB)])
+            if mass <= 0.0:
+                pe = None
+        if pe is not None:
+            if u < pe:
+                b = NB
+            else:
+                b = int(min(np.searchsorted(cdf, (u - pe) / (1.0 - pe) * mass, side="left"), cb - 1))
+        else:
+            b = int(min(np.searchsorted(cdf, u, side="left"), NB))
         new = float(min(b, hs))
         ends = bool(drawn["flip"]) or (drawn["points_off"] + drawn["points_def"]) > 0
         w = u4.WARN_AT.get(qtr)

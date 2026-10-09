@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-09T06:23:40.952585+00:00`
+Refreshed at: `2026-10-09T06:28:35.415272+00:00`
 
 ## Start here
 
@@ -21,13 +21,12 @@ Refreshed at: `2026-10-09T06:23:40.952585+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `c15076512ec5` — Republish the site with the latest settled results
-- Pending change set: 65 paths
-  - `R  docs/lanes/mod25e-e103-lateclock.md -> docs/lanes/done/mod25e-e103-lateclock.md`
-  - `R  docs/lanes/mod25e-e104-halfend.md -> docs/lanes/done/mod25e-e104-halfend.md`
-  - `R  docs/lanes/mod25e-e105-q2choice.md -> docs/lanes/done/mod25e-e105-q2choice.md`
-  - `M  docs/lanes/mod25e-e106-runclock.md`
-  - `M  docs/lanes/mod25e-generator-fidelity.md`
+- Baseline commit: `e3ad4d1b7d47` — MOD-25e E106: run-clock censoring fix (CKH) kept on 3 seeds; Q2 last-play timing now matches real
+- Pending change set: 64 paths
+  - `A  docs/lanes/mod25e-e107-q4drive.md`
+  - `M  scripts/mod25e_ckc.py`
+  - `A  scripts/mod25e_cks.py`
+  - `M  scripts/mod25e_crH.py`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
@@ -43,7 +42,8 @@ Refreshed at: `2026-10-09T06:23:40.952585+00:00`
   - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
   - `?? registry/experiments/margin-backtest/20261008T161241Z.json`
   - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
-  - ...and 45 more
+  - `?? registry/experiments/margin-predict/2026-week-04-20261001T211240Z.json`
+  - ...and 44 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
