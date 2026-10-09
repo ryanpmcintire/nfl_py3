@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-09T20:30:44.810601+00:00`
+Refreshed at: `2026-10-09T20:41:50.817458+00:00`
 
 ## Start here
 
@@ -21,13 +21,13 @@ Refreshed at: `2026-10-09T20:30:44.810601+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `a52dc27f3953` — MOD-25e GEO fixes: engine yard shift from ns (YARD_GAIN/DEF_SIGN/YARD_BIAS) instead of TEAM_RATING_YARD_GAIN (fractional yards hid incompletions, +5 s/play); pool keyed on rounded yardline (fractional yl halved TDs); minimal run s77: violations 0, open-field TD/play .0110 (real .0110), Q1 plays 33.7 (34.0)
+- Baseline commit: `c010a6cc8fbb` — MOD-25e E114b: TPO+CLQ2+URG+CKY kept on 3 seeds after E117 fix (OT restored .568; clock and final-drive targets toward real; SD/noise unchanged); new base ...kekudwtpq2ugky
 - Pending change set: 71 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/mod25e-generator-fidelity.md`
+  - `M  docs/lanes/mod25e-e115-leadertd.md`
   - ` M docs/model.html`
   - ` M tiebreaker.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
