@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-10T00:35:28.003599+00:00`
+Refreshed at: `2026-10-10T02:50:19.413559+00:00`
 
 ## Start here
 
@@ -21,17 +21,14 @@ Refreshed at: `2026-10-10T00:35:28.003599+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `b01e7bf6ebb6` — MOD-25e E125 full candidate 3-seed: SD 14.50 inside gate, noise 168 (165); strength 42 v 58, late r2 .100, pts 42.8 moved away; not adopted, E126 strength diagnosis + no-GEO ablation running
-- Pending change set: 74 paths
+- Baseline commit: `003f5abb21ba` — MOD-25e E126: GEO and GZ re-pick weights lacked the engine's team-rating TILT factor (strength 56 -> 42 with GEO); shared tilt_factor added behind GZT=1; stub pass TD slope .049 -> .084 (engine .081)
+- Pending change set: 71 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `A  docs/lanes/mod25e-e126-strength.md`
+  - `M  docs/lanes/mod25e-generator-fidelity.md`
   - ` M docs/model.html`
-  - `M  scripts/mod25e_crH.py`
-  - `M  scripts/mod25e_geo.py`
-  - `M  scripts/mod25e_gz.py`
   - ` M tiebreaker.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -43,7 +40,10 @@ Refreshed at: `2026-10-10T00:35:28.003599+00:00`
   - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
   - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
   - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
-  - ...and 54 more
+  - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
+  - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
+  - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
+  - ...and 51 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
