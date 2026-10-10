@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-10T02:50:19.413559+00:00`
+Refreshed at: `2026-10-10T23:51:37.764384+00:00`
 
 ## Start here
 
@@ -21,15 +21,18 @@ Refreshed at: `2026-10-10T02:50:19.413559+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `003f5abb21ba` — MOD-25e E126: GEO and GZ re-pick weights lacked the engine's team-rating TILT factor (strength 56 -> 42 with GEO); shared tilt_factor added behind GZT=1; stub pass TD slope .049 -> .084 (engine .081)
-- Pending change set: 71 paths
-  - ` M CURRENT_PREDICTIONS.md`
-  - ` M docs/findings.html`
-  - ` M docs/history.html`
-  - ` M docs/index.html`
-  - `M  docs/lanes/mod25e-generator-fidelity.md`
-  - ` M docs/model.html`
-  - ` M tiebreaker.json`
+- Baseline commit: `92dee8be0946` — MOD-25e E127 no-GEO ablation: clock hooks leave aggregates flat (GEO carried strength drop); final-drive reach worse (.253 v .308); not adopted, E129 diagnosing; L2 (GZT+F3W2) running
+- Pending change set: 81 paths
+  - `M  CURRENT_PREDICTIONS.md`
+  - ` M README.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - `M  docs/model.html`
+  - ` M scripts/mod25e_crH.py`
+  - ` M scripts/mod25e_urg2.py`
+  - `M  tiebreaker.json`
+  - `?? docs/lanes/mod25e-e129-reach.md`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
@@ -40,10 +43,7 @@ Refreshed at: `2026-10-10T02:50:19.413559+00:00`
   - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
   - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
   - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
-  - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
-  - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
-  - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
-  - ...and 51 more
+  - ...and 61 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -52,18 +52,18 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `bf17307f2f0164d1`
+- Model ID: `81da6002603f3e64`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261009T161758Z`)
+- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261010T161310Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card combines this with the coach component in one fitted calibrated probability, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,124 / 2,139 (52.55%)**
-- Linked forecast: **2026 Week 5**, created `2026-10-09T16:12:52.789292+00:00`
+- Linked forecast: **2026 Week 5**, created `2026-10-10T17:40:13.708976+00:00`
 
 The 52.55% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 5** from model `bf17307f2f0164d1`, published `2026-10-09T16:21:51.600957+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 5** from model `81da6002603f3e64`, published `2026-10-10T17:46:31.343398+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 
