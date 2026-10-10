@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-10T00:28:31.956140+00:00`
+Refreshed at: `2026-10-10T00:35:28.003599+00:00`
 
 ## Start here
 
@@ -21,14 +21,17 @@ Refreshed at: `2026-10-10T00:28:31.956140+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `86563d56abf3` — MOD-25e E124d (F3W=2): penalty type and counted draw now outcome-aware (real in_def counted .631 on completions v .026 on incompletions; LOSO counted LL .328 -> .262); pass+ 2x wipe was mostly pre-snap comparison artifact (in-play .025 v .022)
-- Pending change set: 71 paths
+- Baseline commit: `b01e7bf6ebb6` — MOD-25e E125 full candidate 3-seed: SD 14.50 inside gate, noise 168 (165); strength 42 v 58, late r2 .100, pts 42.8 moved away; not adopted, E126 strength diagnosis + no-GEO ablation running
+- Pending change set: 74 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/mod25e-generator-fidelity.md`
+  - `A  docs/lanes/mod25e-e126-strength.md`
   - ` M docs/model.html`
+  - `M  scripts/mod25e_crH.py`
+  - `M  scripts/mod25e_geo.py`
+  - `M  scripts/mod25e_gz.py`
   - ` M tiebreaker.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -40,10 +43,7 @@ Refreshed at: `2026-10-10T00:28:31.956140+00:00`
   - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
   - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
   - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
-  - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
-  - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
-  - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
-  - ...and 51 more
+  - ...and 54 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

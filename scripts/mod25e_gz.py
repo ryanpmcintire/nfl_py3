@@ -107,6 +107,10 @@ def install_gz():
                 w = w * np.asarray(ns["IPW"])[near]
             if "PASS_W" in ns:
                 w = w * ns["PASS_W"](None, near, L["off_sim"], L["def_sim"])
+            if os.environ.get("GZT") == "1" and "TILT_T" in ns:
+                from mod25e_geo import tilt_factor
+
+                w = w * tilt_factor(ns, near, L["off_sim"], L["def_sim"])
             c = np.cumsum(w)
             if not np.isfinite(c[-1]) or c[-1] <= 0.0:
                 j = int(near[int(rng.integers(len(near)))])
