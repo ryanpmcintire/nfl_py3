@@ -1019,6 +1019,7 @@ SCHEDULE: tuple[Job, ...] = (
             added_on="2026-09-23",
         )
         for name, day, at in (
+            ("odds_private_tue", "tue", "14:25"),
             ("odds_private_wed", "wed", "18:00"),
             ("odds_private_fri", "fri", "12:30"),
             ("odds_private_sat", "sat", "10:00"),
