@@ -15,19 +15,19 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 
 **Production policy active:** one calibrated probability combines the model, situational evidence and available line movement to choose each side.
 
-**Best Pick of the week (★):** NE -3.5 in LV at NE. The pool scores one Best Pick per regular-season week. This pick was provisionally chosen because it has the highest estimated chance to cover among eligible games. Its estimated lead over the other picks is uncertain.
+**Best Pick of the week (★):** NE -3.5 in LV at NE. The pool scores one Best Pick per regular-season week. This pick was the star this card carried when the picks locked; once a game is past its deadline the star stays where the pool saw it.
 
 | Date        | Matchup    | ATS prediction   | Cover chance   |
 |:------------|:-----------|:-----------------|:---------------|
 | Thu, Oct 08 | TB at DAL  | TB +8.5          | 53.1%          |
-| Sun, Oct 11 | BAL at ATL | ATL -2.5         | 56.2%          |
-| Sun, Oct 11 | CHI at GB  | CHI -2.5         | 54.4%          |
+| Sun, Oct 11 | BAL at ATL | ATL -2.5         | 58.9%          |
+| Sun, Oct 11 | CHI at GB  | CHI -2.5         | 51.6%          |
 | Sun, Oct 11 | CIN at MIA | CIN -7.5         | 58.9%          |
 | Sun, Oct 11 | CLE at NYJ | NYJ -1.5         | 59.7%          |
 | Sun, Oct 11 | DEN at LAC | DEN -3.5         | 59.0%          |
 | Sun, Oct 11 | DET at ARI | ARI +4.5         | 54.4%          |
-| Sun, Oct 11 | HOU at TEN | HOU -6.5         | 52.1%          |
-| Sun, Oct 11 | IND at PIT | PIT -1.5         | 51.5%          |
+| Sun, Oct 11 | HOU at TEN | TEN +6.5         | 50.7%          |
+| Sun, Oct 11 | IND at PIT | PIT -1.5         | 54.3%          |
 | Sun, Oct 11 | LV at NE   | ★ NE -3.5        | 62.7%          |
 | Sun, Oct 11 | MIN at NO  | MIN -1.5         | 58.6%          |
 | Sun, Oct 11 | NYG at WAS | WAS -4.5         | 54.6%          |
