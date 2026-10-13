@@ -1,8 +1,8 @@
 # NFL ATS predictions: 2026 Week 5
 
-Published from the synchronized weak stack model, 2026-10-12 16:17 UTC.
+Published from the synchronized weak stack model, 2026-10-13 18:48 UTC.
 
-<!-- publication: model_id=62179a55e12f2036 published_at_utc=2026-10-12T16:17:51.780972+00:00 -->
+<!-- publication: model_id=62179a55e12f2036 published_at_utc=2026-10-13T18:48:03.172557+00:00 -->
 
 > **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 
@@ -32,7 +32,7 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 
 **Tiebreaker (last game, BUF at LA):** LA 28 - BUF 26, total 54 (market total 54) -- consistent with the BUF +2.5 pick.
 
-**Source freshness: DEGRADED.** Complete: odds opener, odds refresh, injuries nflverse, injuries nflverse timestamps, projected lineups, referee assignments, pfr transactions, airnow weather. Degraded (allowed fallback): inactives. Blocked: none. Not due yet: none. Not set up: injuries sportradar. Budgets, fallbacks and source states: `docs/source_freshness_policy.md`.
+**Source freshness: COMPLETE.** Complete: odds opener, odds refresh, injuries nflverse, injuries nflverse timestamps, projected lineups, referee assignments, pfr transactions, airnow weather. Degraded (allowed fallback): none. Blocked: none. Not due yet: inactives. Not set up: injuries sportradar. Budgets, fallbacks and source states: `docs/source_freshness_policy.md`.
 
 `Cover chance` is the picked side's chance to cover. Cover chance is a fitted estimate, excluding ties. Across 1,503 past games with each season held out of fitting, strong estimates won 60% and slight estimates won 55%. These broad groups do not establish a large advantage for the single highest estimate.
 
