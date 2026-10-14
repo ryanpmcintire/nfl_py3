@@ -1,8 +1,8 @@
 # NFL ATS predictions: 2026 Week 6
 
-Published from the synchronized weak stack model, 2026-10-13 22:20 UTC.
+Published from the synchronized weak stack model, 2026-10-14 16:20 UTC.
 
-<!-- publication: model_id=403b07a3c70aeef1 published_at_utc=2026-10-13T22:20:55.327905+00:00 -->
+<!-- publication: model_id=3dab640dc07aa35c published_at_utc=2026-10-14T16:20:31.421079+00:00 -->
 
 > **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 
@@ -14,10 +14,10 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 
 | Date        | Matchup    | ATS prediction   | Cover chance   |
 |:------------|:-----------|:-----------------|:---------------|
-| Thu, Oct 15 | SEA at DEN | DEN +2.5         | 53.7%          |
+| Thu, Oct 15 | SEA at DEN | DEN +2.5         | 53.8%          |
 | Sun, Oct 18 | ARI at LA  | ARI +12.5        | 50.5%          |
 | Sun, Oct 18 | BAL at CLE | BAL -4.5         | 52.1%          |
-| Sun, Oct 18 | BUF at LV  | BUF -5.5         | 56.0%          |
+| Sun, Oct 18 | BUF at LV  | BUF -5.5         | 55.8%          |
 | Sun, Oct 18 | CAR at PHI | PHI -1.5         | 54.8%          |
 | Sun, Oct 18 | CHI at ATL | ATL +3.5         | 50.1%          |
 | Sun, Oct 18 | DAL at GB  | DAL +1.5         | 52.0%          |
@@ -31,6 +31,17 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 
 **Tiebreaker (last game, WAS at SF):** SF 28 - WAS 21, total 49 (market total 50.5) -- consistent with the WAS +7.5 pick.
 
-**Source freshness: COMPLETE.** Complete: odds opener, odds refresh, injuries nflverse, injuries nflverse timestamps, projected lineups, referee assignments, player arrests, pfr transactions, airnow weather. Degraded (allowed fallback): none. Blocked: none. Not due yet: inactives. Not set up: injuries sportradar. Budgets, fallbacks and source states: `docs/source_freshness_policy.md`.
+**Source freshness: COMPLETE.** Complete: odds opener, odds refresh, injuries nflverse, injuries nflverse timestamps, projected lineups, referee assignments, pfr transactions, airnow weather. Degraded (allowed fallback): none. Blocked: none. Not due yet: inactives. Not set up: injuries sportradar. Budgets, fallbacks and source states: `docs/source_freshness_policy.md`.
 
 `Cover chance` is the picked side's chance to cover. Cover chance is a fitted estimate, excluding ties. Across 1,503 past games with each season held out of fitting, strong estimates won 60% and slight estimates won 55%. These broad groups do not establish a large advantage for the single highest estimate.
+
+<!-- LATE_WEEK_REFRESH:START -->
+## Late-week refresh
+
+2 picks changed since the Tuesday card. The new picks below replace the corresponding picks above; each keeps its original grading line. Cover chance uses the latest information available before the pick locked.
+
+| Matchup    | Previous pick   | New pick   | Cover chance   |
+|:-----------|:----------------|:-----------|:---------------|
+| ARI at LA  | ARI             | LA         | 50.4%          |
+| CAR at PHI | PHI             | CAR        | 55.4%          |
+<!-- LATE_WEEK_REFRESH:END -->

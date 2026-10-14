@@ -19,10 +19,10 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 
 | Date        | Matchup    | ATS prediction   | Cover chance   |
 |:------------|:-----------|:-----------------|:---------------|
-| Thu, Oct 15 | SEA at DEN | DEN +2.5         | 53.7%          |
+| Thu, Oct 15 | SEA at DEN | DEN +2.5         | 53.8%          |
 | Sun, Oct 18 | ARI at LA  | ARI +12.5        | 50.5%          |
 | Sun, Oct 18 | BAL at CLE | BAL -4.5         | 52.1%          |
-| Sun, Oct 18 | BUF at LV  | BUF -5.5         | 56.0%          |
+| Sun, Oct 18 | BUF at LV  | BUF -5.5         | 55.8%          |
 | Sun, Oct 18 | CAR at PHI | PHI -1.5         | 54.8%          |
 | Sun, Oct 18 | CHI at ATL | ATL +3.5         | 50.1%          |
 | Sun, Oct 18 | DAL at GB  | DAL +1.5         | 52.0%          |
@@ -45,7 +45,7 @@ close. A close-graded number alone is never grounds to reject a candidate
 (see `AGENTS.md`); it is reported below only as the secondary figure it is.
 
 <!-- ACTIVE_MODEL_STATE:START -->
-Active model: `market_residual` with `weak_stack` features (`403b07a3c70aeef1`), regressor `ridge`, ridge alpha `10.0`, calibration `none`.
+Active model: `market_residual` with `weak_stack` features (`3dab640dc07aa35c`), regressor `ridge`, ridge alpha `10.0`, calibration `none`.
 
 - **Opener-graded, probability-rule accuracy (the pool-relevant grade -- picks lock Tuesday against a frozen line):** **53.36%** on **1,537 paired games**, week-blocked 95% interval [50.76%, 55.90%].
 - Close-graded accuracy (secondary -- the market's sharpest, and least representative, decision point): **52.51%** (1,131 of 2,154 non-push games), week-blocked 95% interval [50.58%, 54.63%].
@@ -63,7 +63,7 @@ produce, the same way it already fails on a stale `HANDOFF.md`.
 ## Research state
 
 <!-- RESEARCH_STATE:START -->
-- **Weak-signal registry:** 7,784 results recorded -- 7,699 unresolved_below_power, 85 closed (75 refuted_mechanism, 10 bounded_by_control). An interval crossing zero is never by itself grounds to close a line of work; see `AGENTS.md`.
+- **Weak-signal registry:** 7,786 results recorded -- 7,699 unresolved_below_power, 87 closed (77 refuted_mechanism, 10 bounded_by_control). An interval crossing zero is never by itself grounds to close a line of work; see `AGENTS.md`.
 - **Rotation registry:** 455 declared research families -- 89 open, 1 confirmed/closed/retired, 365 declared for coverage only (no window yet).
 - **Prospective challengers:** 63 of 69 registered challengers are actively tracked prospectively (`artifacts/prospective/challengers.json`).
 <!-- RESEARCH_STATE:END -->

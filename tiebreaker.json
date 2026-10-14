@@ -4,9 +4,9 @@
   "comparison_total_blend_k01": 50.740208352552195,
   "consistency_note": "consistent with the WAS +7.5 pick",
   "current_median_total": 50.5,
-  "forecast_artifact": "margin_predictions/2026-week-06-20261013T221633Z",
+  "forecast_artifact": "margin_predictions/2026-week-06-20261014T161116Z",
   "game_id": "2026_06_WAS_SF",
-  "generated_at_utc": "2026-10-13T22:20:55.327905+00:00",
+  "generated_at_utc": "2026-10-14T16:20:31.421079+00:00",
   "guess_away": 21,
   "guess_home": 28,
   "home": "SF",
@@ -14,7 +14,7 @@
   "lattice_centre_margin": 7.0,
   "market_total": 50.5,
   "method_note": "one lattice, one margin, one total -- see docs/tiebreaker.md",
-  "model_id": "403b07a3c70aeef1",
+  "model_id": "3dab640dc07aa35c",
   "pick_cover_probability": 0.5572257197013556,
   "pick_push_probability": 0.0,
   "pick_side": "AWAY",
@@ -31,7 +31,7 @@
   "total_move_baseline": {
     "blended_total": 49.67936707740592,
     "consistency_note": "consistent with the WAS +7.5 pick",
-    "generated_at_utc": "2026-10-13T22:20:55.327905+00:00",
+    "generated_at_utc": "2026-10-14T16:20:31.421079+00:00",
     "guess_away": 21,
     "guess_home": 28,
     "lattice_centre_margin": 7.0,
@@ -42,9 +42,20 @@
     "pick_spread_line": 7.5,
     "served_total": 49.67936707740592
   },
-  "total_move_fit": null,
-  "total_move_slope": null,
-  "total_move_status": "tuesday_baseline",
+  "total_move_deadline_utc": "2026-10-18T20:00:00+00:00",
+  "total_move_fit": {
+    "path": "artifacts\\tiebreaker_total_move\\fit.json",
+    "sha256": "05f969696ef8a6486c963f828bde358ed1513c639ca377d4c59d3098273f7ea4"
+  },
+  "total_move_quote": {
+    "books": 1,
+    "observed_at_utc": "2026-10-14T22:01:44.657279+00:00",
+    "path": "data\\market\\raw\\20261014T220144Z\\quotes.parquet",
+    "sha256": "4f2c49a53376efab877f40e6cc1e817abc0324db6220a4c06eff765acc5122ca"
+  },
+  "total_move_refreshed_at_utc": "2026-10-14T22:15:49.785668+00:00",
+  "total_move_slope": 0.8,
+  "total_move_status": "zero_adjustment",
   "tuesday_total": 50.5,
   "week": 6
 }
