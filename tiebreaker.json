@@ -53,7 +53,7 @@
     "path": "data\\market\\raw\\20261014T220144Z\\quotes.parquet",
     "sha256": "4f2c49a53376efab877f40e6cc1e817abc0324db6220a4c06eff765acc5122ca"
   },
-  "total_move_refreshed_at_utc": "2026-10-15T16:22:20.892735+00:00",
+  "total_move_refreshed_at_utc": "2026-10-15T19:00:32.668115+00:00",
   "total_move_slope": 0.8,
   "total_move_status": "zero_adjustment",
   "tuesday_total": 50.5,
