@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-16T22:35:40.905614+00:00`
+Refreshed at: `2026-10-16T22:37:52.797466+00:00`
 
 ## Start here
 
@@ -21,12 +21,10 @@ Refreshed at: `2026-10-16T22:35:40.905614+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `5608f805fd43` — MOD-23 unit 8 (starter pageviews, flat) and arm B prospective log for Weeks 7-18 (scheduler jobs added, daemon restarted)
-- Pending change set: 113 paths
-  - `M  ROADMAP.md`
-  - `A  docs/lanes/done/mod23-unit10-proper-score-arms-in-card.md`
-  - `M  registry/weak_signals.json`
-  - `A  scripts/mod23_unit10.py`
+- Baseline commit: `bb9b56b4f7b9` — MOD-23 unit 10: proper-score arms as the card's model input, unresolved, not served
+- Pending change set: 111 paths
+  - `M  docs/lanes/README.md`
+  - `A  docs/lanes/mod25e-e131-sdgap.md`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
@@ -43,7 +41,9 @@ Refreshed at: `2026-10-16T22:35:40.905614+00:00`
   - `?? registry/experiments/margin-backtest/20261008T161241Z.json`
   - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
   - `?? registry/experiments/margin-backtest/20261009T161053Z.json`
-  - ...and 93 more
+  - `?? registry/experiments/margin-backtest/20261010T160851Z.json`
+  - `?? registry/experiments/margin-backtest/20261010T173926Z.json`
+  - ...and 91 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

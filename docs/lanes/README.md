@@ -25,6 +25,7 @@ modified lane when the prompt just says to continue.
 - [lead98-price-skew](lead98-price-skew.md) - 2026-10-16: opener price skew as a fifth term: Tuesday +0.41 (P+ 0.91), full -0.20, Brier worse; not served.
 - [per-flag-weights](per-flag-weights.md) - 2026-10-16: Tuesday-fit coefficients same picks, Brier P+ 0.66, not served; card now quotes Tuesday and late-week landing rates.
 - [mod25e-e129-reach](mod25e-e129-reach.md) - 2026-10-16: E130 (URG2=2, yards redraw off) 3-seed run in flight.
+- [mod25e-e131-sdgap](mod25e-e131-sdgap.md) - 2026-10-16: margin variance +14.3 over real; only resolved part is 17+ Q4 leaders scoring in garbage time; BLS mechanism fit next.
 - [backup-offsite-timeout](backup-offsite-timeout.md) - 2026-10-16: restic job timed out 10-04 and 10-11; fix in progress.
 - [backlog execution](backlog-execution-2026-09-28.md) - 2026-09-28: operations fixes and truthful scheduler status verified; special-teams season-lagged builder produced 7,413 ratings across four declared fits; host verification awaits explicit approval.
 - [backlog research checkpoint](done/backlog-research-2026-09-28.md) - 2026-09-28: corrected frozen scorecard and pool chronology; completed four-cell precision replay and simulator terminal-rule repair/regrade.
