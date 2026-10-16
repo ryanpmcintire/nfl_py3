@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-16T22:28:40.727459+00:00`
+Refreshed at: `2026-10-16T22:33:21.224400+00:00`
 
 ## Start here
 
@@ -21,17 +21,17 @@ Refreshed at: `2026-10-16T22:28:40.727459+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `8d22fd521a0b` — Off-site backup: exclude regenerable simulator parquet and pytest temp dirs (12.4 GB growth caused the 10-04/10-11 timeouts)
-- Pending change set: 122 paths
-  - `M  docs/lanes/backup-offsite-timeout.md`
-  - `A  docs/lanes/card-term-next-2026-10-16.md`
-  - `A  docs/lanes/done/mod23-unit9-armb-in-card.md`
-  - `M  docs/lanes/mod23-unit6-availability-history.md`
-  - ` M docs/lanes/mod23-unit8-pageviews.md`
+- Baseline commit: `1c644f8f3e0b` — MOD-23 unit 9 (arm B in card), total-move card term, prior-work link for unit 6 to acc-u7a; all unresolved, none served
+- Pending change set: 119 paths
+  - `M  ROADMAP.md`
+  - `M  docs/lanes/README.md`
+  - `A  docs/lanes/armb-forward-log.md`
+  - `R  docs/lanes/mod23-unit8-pageviews.md -> docs/lanes/done/mod23-unit8-pageviews.md`
   - `M  registry/weak_signals.json`
-  - `A  scripts/card_term_2026_10_16.py`
-  - `A  scripts/mod23_unit9.py`
-  - `A  scripts/mod24_u7a.py`
+  - `A  scripts/armb_forward_log.py`
+  - `M  scripts/capture_scheduler.py`
+  - `A  scripts/mod23_unit8_fetch.py`
+  - `A  scripts/mod23_unit8_grade.py`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
@@ -43,7 +43,7 @@ Refreshed at: `2026-10-16T22:28:40.727459+00:00`
   - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
   - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
   - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
-  - ...and 102 more
+  - ...and 99 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

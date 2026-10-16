@@ -172877,6 +172877,118 @@
       "source": "artifacts/mod23_unit7/report.json",
       "standard_error": null
     },
+    "mod23_unit8_pageviews_A_qb_proxy_2011_2019_accuracy_diff": {
+      "category": "attention",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model plus home-minus-away abnormal Wikipedia attention to starters (A_qb), paired vs base, 2011-2019; 1139-1092 vs 1142-1089.",
+      "effect": -0.1344688480502017,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit8_player_pageviews",
+      "interval": [
+        -0.49327354260089684,
+        0.18034265103697025
+      ],
+      "league": "nfl",
+      "notes": "Two arms, two eras (four accuracy looks); player-level Wikipedia abnormal-attention difference added as one ridge feature; pageviews exist from 2016 so earlier eras carry zeros.",
+      "plain_summary": "Adding how unusually busy fans were on the starters' Wikipedia pages did not reliably change picks against the opener.",
+      "probability_positive": 0.18455,
+      "recorded_at": "2026-10-16",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod23_unit8/report.json",
+      "standard_error": null
+    },
+    "mod23_unit8_pageviews_A_qb_true_2020_2025_accuracy_diff": {
+      "category": "attention",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model plus home-minus-away abnormal Wikipedia attention to starters (A_qb), paired vs base, 2020-2025; 797-706 vs 802-701.",
+      "effect": -0.33266799733865604,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit8_player_pageviews",
+      "interval": [
+        -1.0248901903367496,
+        0.39011703511053314
+      ],
+      "league": "nfl",
+      "notes": "Two arms, two eras (four accuracy looks); player-level Wikipedia abnormal-attention difference added as one ridge feature; pageviews exist from 2016 so earlier eras carry zeros.",
+      "plain_summary": "Adding how unusually busy fans were on the starters' Wikipedia pages did not reliably change picks against the opener.",
+      "probability_positive": 0.15675,
+      "recorded_at": "2026-10-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit8/report.json",
+      "standard_error": null
+    },
+    "mod23_unit8_pageviews_B_all_proxy_2011_2019_accuracy_diff": {
+      "category": "attention",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model plus home-minus-away abnormal Wikipedia attention to starters (B_all), paired vs base, 2011-2019; 1135-1096 vs 1142-1089.",
+      "effect": -0.31376064545047067,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit8_player_pageviews",
+      "interval": [
+        -0.9433962264150944,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Two arms, two eras (four accuracy looks); player-level Wikipedia abnormal-attention difference added as one ridge feature; pageviews exist from 2016 so earlier eras carry zeros.",
+      "plain_summary": "Adding how unusually busy fans were on the starters' Wikipedia pages did not reliably change picks against the opener.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-10-16",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod23_unit8/report.json",
+      "standard_error": null
+    },
+    "mod23_unit8_pageviews_B_all_true_2020_2025_accuracy_diff": {
+      "category": "attention",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model plus home-minus-away abnormal Wikipedia attention to starters (B_all), paired vs base, 2020-2025; 802-701 vs 802-701.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit8_player_pageviews",
+      "interval": [
+        -1.0309278350515463,
+        1.10803324099723
+      ],
+      "league": "nfl",
+      "notes": "Two arms, two eras (four accuracy looks); player-level Wikipedia abnormal-attention difference added as one ridge feature; pageviews exist from 2016 so earlier eras carry zeros.",
+      "plain_summary": "Adding how unusually busy fans were on the starters' Wikipedia pages did not reliably change picks against the opener.",
+      "probability_positive": 0.46115,
+      "recorded_at": "2026-10-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit8/report.json",
+      "standard_error": null
+    },
     "mod23_unit9_full_accuracy_diff": {
       "category": "modeling",
       "classification": "unresolved_below_power",

@@ -21,7 +21,7 @@ modified lane when the prompt just says to continue.
 ## Active
 
 - [mod23-unit6-availability-history](mod23-unit6-availability-history.md) - 2026-10-16: own backup-QB games discounted: +0.40 pts both eras, pooled P+ 0.93; unit 6b (dose, non-QB) adds nothing; unresolved.
-- [mod23-unit8-pageviews](mod23-unit8-pageviews.md) - 2026-10-16: Wikipedia starter pageviews as pre-lock news; fetch in progress.
+- [armb-forward-log](armb-forward-log.md) - 2026-10-16: unit 6 arm B logged beside the served card Weeks 7-18 (Thu 19:10, Sun 11:10); score after Week 18 only.
 - [lead98-price-skew](lead98-price-skew.md) - 2026-10-16: opener price skew as a fifth term: Tuesday +0.41 (P+ 0.91), full -0.20, Brier worse; not served.
 - [per-flag-weights](per-flag-weights.md) - 2026-10-16: Tuesday-fit coefficients same picks, Brier P+ 0.66, not served; card now quotes Tuesday and late-week landing rates.
 - [mod25e-e129-reach](mod25e-e129-reach.md) - 2026-10-16: E130 (URG2=2, yards redraw off) 3-seed run in flight.
