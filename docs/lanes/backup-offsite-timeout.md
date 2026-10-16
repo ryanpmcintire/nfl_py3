@@ -21,3 +21,5 @@ If the run still times out, scale --timeout from measured bytes or check sftp th
 
 ## Open
 Whether other future artifact dirs of regenerable sim dumps need excludes.
+
+- 2026-10-16 orchestrator: stale lock (PID 17084, 10-11 run, not running) blocks forget --prune; restic unlock was denied to the agent by the permission classifier, so it is not retried by another agent. After the owner runs unlock, rerun `--run-job backup_offsite` and confirm forget --prune passes.

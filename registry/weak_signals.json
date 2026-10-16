@@ -8848,6 +8848,62 @@
       "source": "scripts/bye_overvaluation_screen.py; artifacts/bye_overvaluation_screen/predeclared_run/results.json; docs/bye_overvaluation_screen.md",
       "standard_error": null
     },
+    "card_term_total_move_margin_shift_full_accuracy_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Fifth LOSO card term: leader-median Wednesday-to-deadline total move times minus opener spread over opener total, full view, vs four-term",
+      "effect": -0.13106,
+      "effect_units": "accuracy_points",
+      "family": "card_term_total_move",
+      "interval": [
+        -0.99471,
+        0.7218
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Adding how far the over/under moved, scaled to the spread, to the card changed 50 picks, 24 right and 26 wrong, with no accuracy or Brier gain; too few games to settle a small effect.",
+      "probability_positive": 0.3592,
+      "recorded_at": "2026-10-16",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/card-term-next-2026-10-16.md",
+      "standard_error": null
+    },
+    "card_term_total_move_margin_shift_full_brier_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Fifth LOSO card term: leader-median Wednesday-to-deadline total move times minus opener spread over opener total, full view, vs four-term",
+      "effect": -3.839e-05,
+      "effect_units": "brier_improvement",
+      "family": "card_term_total_move",
+      "interval": [
+        -0.00070123,
+        0.0005711
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Adding how far the over/under moved, scaled to the spread, to the card changed 50 picks, 24 right and 26 wrong, with no accuracy or Brier gain; too few games to settle a small effect.",
+      "probability_positive": 0.4656,
+      "recorded_at": "2026-10-16",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/card-term-next-2026-10-16.md",
+      "standard_error": null
+    },
     "cfb_altitude_cold_home_on_benchmark": {
       "category": "environment",
       "classification": "unresolved_below_power",
@@ -172819,6 +172875,118 @@
         2025
       ],
       "source": "artifacts/mod23_unit7/report.json",
+      "standard_error": null
+    },
+    "mod23_unit9_full_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap reported.",
+      "closing_ground": null,
+      "description": "Arm B logit in card minus served, full view; 860-643 vs 863-640.",
+      "effect": -0.19960079840319359,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit9_armb_in_card",
+      "interval": [
+        -0.587467362924282,
+        0.20357660638278027
+      ],
+      "league": "nfl",
+      "notes": "Four-term card with model logit replaced by unit 6 arm B walk-forward logit, LOSO, paired vs served; 4 looks.",
+      "plain_summary": "Swapping in the availability-adjusted model inside the card did not reliably change accuracy or calibration.",
+      "probability_positive": 0.1311,
+      "recorded_at": "2026-10-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/unit9_results.json",
+      "standard_error": null
+    },
+    "mod23_unit9_full_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap reported.",
+      "closing_ground": null,
+      "description": "Brier improvement (served minus arm B) in card, full view.",
+      "effect": 2.444707492041901e-05,
+      "effect_units": "brier_improvement",
+      "family": "mod23_unit9_armb_in_card",
+      "interval": [
+        -0.00010645321296544915,
+        0.00019595178814757412
+      ],
+      "league": "nfl",
+      "notes": "Four-term card with model logit replaced by unit 6 arm B walk-forward logit, LOSO, paired vs served; 4 looks.",
+      "plain_summary": "Swapping in the availability-adjusted model inside the card did not reliably change accuracy or calibration.",
+      "probability_positive": 0.5937,
+      "recorded_at": "2026-10-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/unit9_results.json",
+      "standard_error": null
+    },
+    "mod23_unit9_tuesday_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap reported.",
+      "closing_ground": null,
+      "description": "Arm B logit in card minus served, tuesday view; 844-659 vs 836-667.",
+      "effect": 0.5322687957418496,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit9_armb_in_card",
+      "interval": [
+        -0.0671591672263264,
+        1.2763241863433312
+      ],
+      "league": "nfl",
+      "notes": "Four-term card with model logit replaced by unit 6 arm B walk-forward logit, LOSO, paired vs served; 4 looks.",
+      "plain_summary": "Swapping in the availability-adjusted model inside the card did not reliably change accuracy or calibration.",
+      "probability_positive": 0.9393,
+      "recorded_at": "2026-10-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/unit9_results.json",
+      "standard_error": null
+    },
+    "mod23_unit9_tuesday_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap reported.",
+      "closing_ground": null,
+      "description": "Brier improvement (served minus arm B) in card, tuesday view.",
+      "effect": 1.1452354724232706e-05,
+      "effect_units": "brier_improvement",
+      "family": "mod23_unit9_armb_in_card",
+      "interval": [
+        -0.00015922462559817726,
+        0.00021264988726286347
+      ],
+      "league": "nfl",
+      "notes": "Four-term card with model logit replaced by unit 6 arm B walk-forward logit, LOSO, paired vs served; 4 looks.",
+      "plain_summary": "Swapping in the availability-adjusted model inside the card did not reliably change accuracy or calibration.",
+      "probability_positive": 0.5255,
+      "recorded_at": "2026-10-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/unit9_results.json",
       "standard_error": null
     },
     "mod24_extended_u1_alpha_only_accuracy_diff": {

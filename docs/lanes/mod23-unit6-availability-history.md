@@ -19,3 +19,6 @@ Log arm B picks beside served model weekly; a pre-registered extension (RB/OL av
 
 ## Open
 Raw rebuild differs from the features parquet on ~5% of games (deltas applied additively, so inherited). Flags need snap_counts, 2013+ only.
+
+## Prior-work correction (orchestrator 2026-10-16)
+This unit is a variant of acc-u7a (scripts/mod24_u7a.py, registry family mod24_availability_history, 2026-10-01: injury-report Out/Doubtful and OL-missing adjusted history, three cells +0.16 P+ 0.71, +0.19 P+ 0.74, -0.11 P+ 0.39, all unresolved_below_power). My pre-launch check grepped one phrase and missed it. Count looks in one family: 3 (u7a) + 4 (unit 6) + 4 (unit 6b) + 4 (unit 9) = 15. Arm B's pooled P+ 0.93 is the best of those 15 looks, not a standalone finding; only the prospective log (docs/lanes/armb-forward-log.md) can test it cleanly.
