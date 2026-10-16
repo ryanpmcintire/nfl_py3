@@ -16,7 +16,13 @@ DEFAULT_SOURCES: tuple[str, ...] = ("data", "artifacts", "registry")
 REPOSITORY = "sftp:backup-server:/data/restic"
 PASSWORD_FILE = Path.home() / ".config" / "restic" / "password"
 LOG_PATH = REPO / "data" / "offsite_backup_log.txt"
-EXCLUDES: tuple[str, ...] = ("scheduler_heartbeat.json", "scheduler_state.json.tmp")
+EXCLUDES: tuple[str, ...] = (
+    "scheduler_heartbeat.json",
+    "scheduler_state.json.tmp",
+    "environment_recovery/pytest_*",
+    "mod25e3/**/play_*.parquet",
+    "mod25e3/**/events_*.parquet",
+)
 RETENTION: tuple[str, ...] = ("--keep-daily", "7", "--keep-weekly", "4", "--keep-monthly", "6")
 QUOTA_BYTES = 100 * (1 << 30)
 QUOTA_WARN_FRACTION = 0.8

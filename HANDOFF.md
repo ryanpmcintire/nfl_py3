@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-16T22:23:52.817942+00:00`
+Refreshed at: `2026-10-16T22:25:22.678892+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-10-16T22:23:52.817942+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `49506f3c1a5c` — Republish the site with the latest settled results
-- Pending change set: 150 paths
-  - `M  CURRENT_PREDICTIONS.md`
-  - `M  HANDOFF.md`
-  - `M  README.md`
-  - `M  ROADMAP.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - `M  docs/lanes/README.md`
-  - `A  docs/lanes/done/card-table-ledger-sync.md`
-  - `A  docs/lanes/done/mod23-unit6b-availability-depth.md`
-  - `A  docs/lanes/done/mod23-unit7-target-line.md`
-  - `M  docs/lanes/independent-combination-validation.md`
-  - `A  docs/lanes/lead98-price-skew.md`
-  - `A  docs/lanes/mod23-unit6-availability-history.md`
-  - `A  docs/lanes/mod23-unit8-pageviews.md`
-  - `A  docs/lanes/mod25e-e129-reach.md`
-  - `A  docs/lanes/per-flag-weights.md`
-  - `M  docs/model.html`
-  - `A  registry/studies/combined_vs_raw_2026_v3.json`
-  - `M  registry/weak_signals.json`
-  - ...and 130 more
+- Baseline commit: `08a75a250820` — Week 6: one Best Pick and one ledger on every surface; v3 validation enrolled; MOD-23 units 6-7, LEAD-98
+- Pending change set: 116 paths
+  - `A  docs/lanes/backup-offsite-timeout.md`
+  - `M  scripts/offsite_backup.py`
+  - `?? docs/lanes/mod23-unit9-armb-in-card.md`
+  - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
+  - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
+  - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
+  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
+  - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
+  - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
+  - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
+  - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
+  - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
+  - `?? registry/experiments/margin-backtest/20261008T161241Z.json`
+  - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
+  - `?? registry/experiments/margin-backtest/20261009T161053Z.json`
+  - `?? registry/experiments/margin-backtest/20261010T160851Z.json`
+  - ...and 96 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
