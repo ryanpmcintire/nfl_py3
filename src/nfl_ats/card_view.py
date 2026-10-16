@@ -266,6 +266,43 @@ def apply_locked_best_pick(
     )
 
 
+HELD_BEST_PICK_NOTE = "the Tuesday star, held until the Sunday-morning re-nomination moves it."
+
+
+def tuesday_best_pick(artifacts_root: Path | None, metadata: Mapping[str, Any]) -> str | None:
+    if artifacts_root is None:
+        return None
+    from nfl_ats.pick_refresh import original_card
+
+    try:
+        card = original_card(
+            artifacts_root,
+            season=int(metadata.get("season") or 0),
+            week=int(metadata.get("week") or 0),
+        )
+    except (OSError, ValueError, KeyError, DataContractError):
+        return None
+    if card.empty or "is_best_pick" not in card.columns:
+        return None
+    flagged = card.loc[card["is_best_pick"].fillna(False).astype(bool)]
+    return str(flagged.iloc[0]["game_id"]) if len(flagged) == 1 else None
+
+
+def apply_held_best_pick(
+    base: BestPickNomination, predictions: pd.DataFrame, held_game_id: str | None
+) -> BestPickNomination:
+
+    if not held_game_id or base.active_game_id is None or "game_id" not in predictions.columns:
+        return base
+    if held_game_id not in set(predictions["game_id"].astype(str)):
+        return base
+    if held_game_id == base.active_game_id:
+        return replace(base, active_tie_note="", method_note=HELD_BEST_PICK_NOTE)
+    return replace(
+        base, active_game_id=held_game_id, active_tie_note="", method_note=HELD_BEST_PICK_NOTE
+    )
+
+
 def resolve_nomination(
     predictions: pd.DataFrame,
     sweep: pd.DataFrame,
@@ -277,6 +314,7 @@ def resolve_nomination(
     renominated_game_id: str | None = None,
     locked_game_id: str | None = None,
     as_of: datetime | None = None,
+    held_game_id: str | None = None,
 ) -> BestPickNomination:
 
     if CALIBRATED_PICK_PROBABILITY_COLUMN in predictions.columns:
@@ -322,6 +360,10 @@ def resolve_nomination(
             active_tie_note=tie_note,
             method_note=method_note,
         )
+        if renominated_game_id:
+            base = apply_sunday_renomination(base, predictions, renominated_game_id)
+        else:
+            base = apply_held_best_pick(base, predictions, held_game_id)
         return apply_locked_best_pick(base, predictions, locked_game_id)
 
     v1_id, v1_tie = _v1_nomination(predictions, sweep)
@@ -539,6 +581,7 @@ def resolve_card_view(
         renominated_game_id=renominated_game_id,
         locked_game_id=locked_game_id,
         as_of=now,
+        held_game_id=tuesday_best_pick(artifacts_root, metadata),
     )
     return CardView(
         probabilities.predictions,

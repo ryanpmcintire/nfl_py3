@@ -34,7 +34,7 @@ B_SCHEMES = [{"edges": e, "band": b, "to": t, "a": a} for e, b, t, a in itertool
 
 
 def enabled():
-    return os.environ.get("URG2") == "1"
+    return os.environ.get("URG2") in ("1", "2")
 
 
 def nhof(w):
@@ -476,7 +476,7 @@ def b_tables(fb):
             np.add.at(cnt, (key[mt], R.yb.to_numpy()[mt]), 1.0)
             out["y_cnt"] = cnt
         out[kind + "_sch"] = sch
-        out[kind + "_apply"] = bool(rec["apply"])
+        out[kind + "_apply"] = bool(rec["apply"]) and not (kind == "yards" and os.environ.get("URG2") == "2")
     return out
 
 

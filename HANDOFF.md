@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-16T17:32:54.065788+00:00`
+Refreshed at: `2026-10-16T22:23:52.817942+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-10-16T17:32:54.065788+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `c6f5097a8e20` — Republish the site with the latest settled results
-- Pending change set: 125 paths
+- Baseline commit: `49506f3c1a5c` — Republish the site with the latest settled results
+- Pending change set: 150 paths
   - `M  CURRENT_PREDICTIONS.md`
-  - ` M README.md`
-  - ` M ROADMAP.md`
+  - `M  HANDOFF.md`
+  - `M  README.md`
+  - `M  ROADMAP.md`
   - `M  docs/findings.html`
   - `M  docs/history.html`
   - `M  docs/index.html`
+  - `M  docs/lanes/README.md`
+  - `A  docs/lanes/done/card-table-ledger-sync.md`
+  - `A  docs/lanes/done/mod23-unit6b-availability-depth.md`
+  - `A  docs/lanes/done/mod23-unit7-target-line.md`
+  - `M  docs/lanes/independent-combination-validation.md`
+  - `A  docs/lanes/lead98-price-skew.md`
+  - `A  docs/lanes/mod23-unit6-availability-history.md`
+  - `A  docs/lanes/mod23-unit8-pageviews.md`
+  - `A  docs/lanes/mod25e-e129-reach.md`
+  - `A  docs/lanes/per-flag-weights.md`
   - `M  docs/model.html`
-  - ` M registry/weak_signals.json`
-  - ` M scripts/mod25e_crH.py`
-  - ` M scripts/mod25e_urg2.py`
-  - `M  tiebreaker.json`
-  - `?? docs/lanes/lead98-price-skew.md`
-  - `?? docs/lanes/mod25e-e129-reach.md`
-  - `?? docs/lanes/per-flag-weights.md`
-  - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
-  - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
-  - ...and 105 more
+  - `A  registry/studies/combined_vs_raw_2026_v3.json`
+  - `M  registry/weak_signals.json`
+  - ...and 130 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -63,7 +63,7 @@ The 52.51% figure is the distinct secondary close-grade historical classificatio
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 6** from model `539ee015623cf546`, published `2026-10-16T16:18:25.182646+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 6** from model `539ee015623cf546`, published `2026-10-16T22:18:40.258014+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

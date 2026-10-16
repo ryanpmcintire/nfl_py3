@@ -324,6 +324,8 @@ def cmd_e5(a):
         label = label + "y2"
     if os.environ.get("URG2") == "1":
         label = label + "u2"
+    if os.environ.get("URG2") == "2":
+        label = label + "u3"
     dv.DV[label] = dict(dv.DV["crG"])
     outd = ss.OUT / f"e5_{label}_s{a.seed}"
     outd.mkdir(parents=True, exist_ok=True)

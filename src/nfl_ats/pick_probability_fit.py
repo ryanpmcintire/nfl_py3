@@ -311,7 +311,9 @@ def _confidence_bands(frame: pd.DataFrame, column: str) -> list[ConfidenceBand]:
     return bands
 
 
-def _strength_bands(frame: pd.DataFrame, column: str) -> list[StrengthBand]:
+def _strength_bands(
+    frame: pd.DataFrame, column: str, tuesday_column: str | None = None
+) -> list[StrengthBand]:
     probability = pd.to_numeric(frame[column], errors="coerce")
     picked_home = probability.ge(0.5)
     correct = picked_home.astype(float).eq(frame["home_covered"]).astype(float)
@@ -332,13 +334,44 @@ def _strength_bands(frame: pd.DataFrame, column: str) -> list[StrengthBand]:
         index=rounded.index,
         dtype=object,
     )
+    tuesday_words = None
+    tuesday_correct = None
+    if tuesday_column is not None:
+        tuesday_probability = pd.to_numeric(frame[tuesday_column], errors="coerce")
+        tuesday_home = tuesday_probability.ge(0.5)
+        tuesday_correct = tuesday_home.astype(float).eq(frame["home_covered"]).astype(float)
+        tuesday_shown = tuesday_probability.where(tuesday_home, 1.0 - tuesday_probability)
+        tuesday_rounded = tuesday_shown.round(STRENGTH_ROUNDING_PLACES)
+        tuesday_words = pd.Series(
+            np.select(
+                [tuesday_rounded.ge(minimums[2]), tuesday_rounded.ge(minimums[1])],
+                [STRENGTH_WORDS[2], STRENGTH_WORDS[1]],
+                default=STRENGTH_WORDS[0],
+            ),
+            index=tuesday_rounded.index,
+            dtype=object,
+        )
     bands: list[StrengthBand] = []
     for index, word in enumerate(STRENGTH_WORDS):
         mask = words.eq(word)
         games = int(mask.sum())
         accuracy = float(correct.loc[mask].mean()) if games else None
+        tuesday_games = None
+        tuesday_accuracy = None
+        if tuesday_words is not None and tuesday_correct is not None:
+            tuesday_mask = tuesday_words.eq(word)
+            tuesday_games = int(tuesday_mask.sum())
+            if tuesday_games:
+                tuesday_accuracy = float(tuesday_correct.loc[tuesday_mask].mean())
         bands.append(
-            StrengthBand(word=word, minimum=minimums[index], games=games, accuracy=accuracy)
+            StrengthBand(
+                word=word,
+                minimum=minimums[index],
+                games=games,
+                accuracy=accuracy,
+                tuesday_games=tuesday_games,
+                tuesday_accuracy=tuesday_accuracy,
+            )
         )
     return bands
 
@@ -386,6 +419,7 @@ def fit_pick_probability(
 
     seasons = sorted(int(value) for value in population["season"].unique())
     out_of_season = pd.Series(np.nan, index=population.index, dtype=float)
+    out_of_season_tuesday = pd.Series(np.nan, index=population.index, dtype=float)
     fold_coefficients: dict[str, dict[str, float]] = {}
     for held in seasons:
         train = population.loc[population["season"].ne(held)]
@@ -399,8 +433,13 @@ def fit_pick_probability(
             FIT_RIDGE,
         )
         out_of_season.loc[test.index] = _predict(test, fold_beta, fold_means, fold_stds)
+        tuesday_test = test.assign(**{MOVE_COLUMN: 0.0, MOVE_AVAILABLE_COLUMN: 0.0})
+        out_of_season_tuesday.loc[test.index] = _predict(
+            tuesday_test, fold_beta, fold_means, fold_stds
+        )
         fold_coefficients[str(held)] = _natural_coefficients(fold_beta, fold_means, fold_stds)
     population["out_of_season_home_probability"] = out_of_season
+    population["out_of_season_tuesday_home_probability"] = out_of_season_tuesday
     chronological = pd.Series(np.nan, index=population.index, dtype=float)
     chronological_coefficients: dict[str, dict[str, float]] = {}
     for held in seasons:
@@ -424,7 +463,13 @@ def fit_pick_probability(
     population["neutral_market_probability"] = 0.5
     scored = population.loc[population["out_of_season_home_probability"].notna()].copy()
 
-    strength = tuple(_strength_bands(scored, "out_of_season_home_probability"))
+    strength = tuple(
+        _strength_bands(
+            scored,
+            "out_of_season_home_probability",
+            "out_of_season_tuesday_home_probability",
+        )
+    )
     confidence = tuple(_confidence_bands(scored, "out_of_season_home_probability"))
     model_confidence = tuple(_confidence_bands(scored, "model_probability"))
 

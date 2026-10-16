@@ -128,7 +128,7 @@ def fetch_forecast(
             "raw_file": f"receipt_{len(receipts):03d}.json",
         }
         if output is not None:
-            atomic_bytes(output / receipt["raw_file"], body)
+            atomic_bytes(body, output / receipt["raw_file"])
         receipts.append(receipt)
         payload = json.loads(body)
         if not isinstance(payload, dict) or not isinstance(payload.get("data"), list):

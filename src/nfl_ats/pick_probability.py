@@ -129,6 +129,8 @@ class StrengthBand:
     minimum: float
     games: int
     accuracy: float | None
+    tuesday_games: int | None = None
+    tuesday_accuracy: float | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -136,16 +138,22 @@ class StrengthBand:
             "minimum": self.minimum,
             "games": self.games,
             "accuracy": self.accuracy,
+            "tuesday_games": self.tuesday_games,
+            "tuesday_accuracy": self.tuesday_accuracy,
         }
 
     @classmethod
     def from_dict(cls, payload: Mapping[str, Any]) -> StrengthBand:
         accuracy = payload.get("accuracy")
+        tuesday_games = payload.get("tuesday_games")
+        tuesday_accuracy = payload.get("tuesday_accuracy")
         return cls(
             word=str(payload["word"]),
             minimum=float(payload["minimum"]),
             games=int(payload["games"]),
             accuracy=None if accuracy is None else float(accuracy),
+            tuesday_games=None if tuesday_games is None else int(tuesday_games),
+            tuesday_accuracy=None if tuesday_accuracy is None else float(tuesday_accuracy),
         )
 
 
@@ -221,14 +229,16 @@ class PickProbabilityModel:
             dtype=object,
         ).where(value.notna())
 
-    def landing_rate(self, word: str) -> float | None:
+    def landing_rate(self, word: str, *, move_used: bool = True) -> float | None:
         for band in self.strength_bands:
             if band.word == word:
-                return band.accuracy
+                return band.accuracy if move_used else band.tuesday_accuracy
         return None
 
-    def graded_games(self) -> int:
-        return sum(band.games for band in self.strength_bands)
+    def graded_games(self, *, move_used: bool = True) -> int:
+        if move_used:
+            return sum(band.games for band in self.strength_bands)
+        return sum(band.tuesday_games or 0 for band in self.strength_bands)
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -959,23 +969,35 @@ def calibrated_discrete_sweep(sweep: pd.DataFrame, predictions: pd.DataFrame) ->
     return result
 
 
-def landing_rate_sentence(model: PickProbabilityModel | None) -> str:
+def landing_rate_sentence(model: PickProbabilityModel | None, *, move_used: bool = True) -> str:
 
     if model is None:
         return ""
-    graded = model.graded_games()
-    strong = model.landing_rate("strong")
-    slight = model.landing_rate("slight")
+    graded = model.graded_games(move_used=move_used)
+    strong = model.landing_rate("strong", move_used=move_used)
+    slight = model.landing_rate("slight", move_used=move_used)
     if not graded or strong is None or slight is None:
         return (
             "Cover chance is a fitted estimate, excluding games that tie the spread. "
             "A higher estimate does not establish that one game is substantially safer."
         )
+    tuesday_strong = model.landing_rate("strong", move_used=False) if move_used else None
+    tuesday_slight = model.landing_rate("slight", move_used=False) if move_used else None
+    if tuesday_strong is not None and tuesday_slight is not None:
+        return (
+            "Cover chance is a fitted estimate, excluding ties. "
+            f"Across {graded:,} past games with each season held out of fitting, strong "
+            f"estimates won {tuesday_strong:.0%} using only Tuesday's information and "
+            f"{strong:.0%} once later line moves were known; slight estimates won "
+            f"{tuesday_slight:.0%} and {slight:.0%}. These broad groups do not establish a "
+            "large advantage for the single highest estimate."
+        )
+    basis = "" if move_used else " using only Tuesday's information"
     return (
         "Cover chance is a fitted estimate, excluding ties. "
-        f"Across {graded:,} past games with each season held out of fitting, strong estimates "
-        f"won {strong:.0%} and slight estimates won {slight:.0%}. These broad groups do not "
-        "establish a large advantage for the single highest estimate."
+        f"Across {graded:,} past games with each season held out of fitting{basis}, strong "
+        f"estimates won {strong:.0%} and slight estimates won {slight:.0%}. These broad groups "
+        "do not establish a large advantage for the single highest estimate."
     )
 
 

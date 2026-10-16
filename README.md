@@ -15,19 +15,19 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 
 **Production policy active:** one calibrated probability combines the model, situational evidence and available line movement to choose each side.
 
-**Best Pick of the week (★):** ATL +3.5 in CHI at ATL. The pool scores one Best Pick per regular-season week. This pick was provisionally chosen because it has the highest estimated chance to cover among eligible games. Its estimated lead over the other picks is uncertain.
+**Best Pick of the week (★):** HOU +2.5 in HOU at JAX. The pool scores one Best Pick per regular-season week. This pick was the Tuesday star, held until the Sunday-morning re-nomination moves it.
 
 | Date        | Matchup    | ATS prediction   | Cover chance   |
 |:------------|:-----------|:-----------------|:---------------|
 | Thu, Oct 15 | SEA at DEN | DEN +2.5         | 54.6%          |
 | Sun, Oct 18 | ARI at LA  | LA -12.5         | 50.3%          |
-| Sun, Oct 18 | BAL at CLE | BAL -4.5         | 53.7%          |
+| Sun, Oct 18 | BAL at CLE | CLE +4.5         | 57.3%          |
 | Sun, Oct 18 | BUF at LV  | BUF -5.5         | 54.8%          |
-| Sun, Oct 18 | CAR at PHI | CAR +1.5         | 55.7%          |
-| Sun, Oct 18 | CHI at ATL | ★ ATL +3.5       | 61.9%          |
-| Sun, Oct 18 | DAL at GB  | DAL +1.5         | 51.1%          |
-| Sun, Oct 18 | HOU at JAX | HOU +2.5         | 56.2%          |
-| Sun, Oct 18 | LAC at KC  | LAC +8.5         | 56.0%          |
+| Sun, Oct 18 | CAR at PHI | CAR +1.5         | 58.4%          |
+| Sun, Oct 18 | CHI at ATL | ATL +3.5         | 51.1%          |
+| Sun, Oct 18 | DAL at GB  | DAL +1.5         | 53.9%          |
+| Sun, Oct 18 | HOU at JAX | ★ HOU +2.5       | 56.2%          |
+| Sun, Oct 18 | LAC at KC  | LAC +8.5         | 58.7%          |
 | Sun, Oct 18 | NO at NYG  | NYG +1.5         | 50.0%          |
 | Sun, Oct 18 | NYJ at NE  | NE -7.5          | 55.5%          |
 | Sun, Oct 18 | PIT at TB  | TB +2.5          | 54.0%          |
@@ -63,7 +63,7 @@ produce, the same way it already fails on a stale `HANDOFF.md`.
 ## Research state
 
 <!-- RESEARCH_STATE:START -->
-- **Weak-signal registry:** 7,786 results recorded -- 7,699 unresolved_below_power, 87 closed (77 refuted_mechanism, 10 bounded_by_control). An interval crossing zero is never by itself grounds to close a line of work; see `AGENTS.md`.
+- **Weak-signal registry:** 7,801 results recorded -- 7,714 unresolved_below_power, 87 closed (77 refuted_mechanism, 10 bounded_by_control). An interval crossing zero is never by itself grounds to close a line of work; see `AGENTS.md`.
 - **Rotation registry:** 455 declared research families -- 89 open, 1 confirmed/closed/retired, 365 declared for coverage only (no window yet).
 - **Prospective challengers:** 63 of 69 registered challengers are actively tracked prospectively (`artifacts/prospective/challengers.json`).
 <!-- RESEARCH_STATE:END -->

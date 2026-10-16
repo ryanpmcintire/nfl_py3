@@ -66,3 +66,11 @@ No signal is closed or served side changed. The future cohort supplies the
 untouched evaluation; no retrospective backfill or interim selection.
 Prior owner-decision proposal remains: remove the redundant CLI help-order
 assertion; no tests were added or removed here.
+
+**Measured 2026-10-16:** v2 stopped by the guard since 2026-10-08 18:02 (de8b5801
+and 3bc81dac changed margin.py and modeling.py, scaler float-noise guard; claimed
+served output unchanged on 146 refits). Last v2 capture 2026-10-08 16:28Z; Week 4
+all 16 games, Week 5 15 games (latest capture Thu 10-08 only); Week 6 zero.
+Every job since 10-08 19:55 failed; manual run fri_1210 failed the same. Guard
+untouched. Decision for orchestrator: enroll v3 explicitly (as v2 was); no
+backfill; v2 stays frozen with its 31 games.

@@ -20,6 +20,12 @@ modified lane when the prompt just says to continue.
 
 ## Active
 
+- [mod23-unit6-availability-history](mod23-unit6-availability-history.md) - 2026-10-16: own backup-QB games discounted: +0.40 pts both eras, pooled P+ 0.93; unit 6b (dose, non-QB) adds nothing; unresolved.
+- [mod23-unit8-pageviews](mod23-unit8-pageviews.md) - 2026-10-16: Wikipedia starter pageviews as pre-lock news; fetch in progress.
+- [lead98-price-skew](lead98-price-skew.md) - 2026-10-16: opener price skew as a fifth term: Tuesday +0.41 (P+ 0.91), full -0.20, Brier worse; not served.
+- [per-flag-weights](per-flag-weights.md) - 2026-10-16: Tuesday-fit coefficients same picks, Brier P+ 0.66, not served; card now quotes Tuesday and late-week landing rates.
+- [mod25e-e129-reach](mod25e-e129-reach.md) - 2026-10-16: E130 (URG2=2, yards redraw off) 3-seed run in flight.
+- [backup-offsite-timeout](backup-offsite-timeout.md) - 2026-10-16: restic job timed out 10-04 and 10-11; fix in progress.
 - [backlog execution](backlog-execution-2026-09-28.md) - 2026-09-28: operations fixes and truthful scheduler status verified; special-teams season-lagged builder produced 7,413 ratings across four declared fits; host verification awaits explicit approval.
 - [backlog research checkpoint](done/backlog-research-2026-09-28.md) - 2026-09-28: corrected frozen scorecard and pool chronology; completed four-cell precision replay and simulator terminal-rule repair/regrade.
 - [independent-combination-validation](independent-combination-validation.md) - 2026-10-01: v1 stopped by source guard; v2 enrolled, all 16 Week 4 games captured pregame.
@@ -42,6 +48,7 @@ modified lane when the prompt just says to continue.
 
 ## Done
 
+- [card-table-ledger-sync](done/card-table-ledger-sync.md) - 2026-10-16: card table rewrites from the refresh ledger rows; card, board and alerts share the held Tuesday Best Pick until the Sunday re-nomination.
 - [one backlog](done/backlog-accounting.md) - 2026-09-28: one canonical list and count; unknown statuses fail visibly; selected-batch completion wording corrected.
 - [seven-category implementation batch](done/seven-backlog-completion.md) - 2026-09-28: selected implementation work completed; remaining work stays in the single backlog in ROADMAP.md.
 

@@ -56020,6 +56020,118 @@
       "source": "docs/lead97_unit1.md",
       "standard_error": null
     },
+    "lead98_price_skew_full_accuracy_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval spans zero; price_skew coefficient positive in only 2 of 6 folds; not a resolved wrong sign, no positive control",
+      "closing_ground": null,
+      "description": "LEAD-98 fifth term: equal-book median no-vig home-cover logit at the pool line from Tuesday opener quotes, fitted LOSO jointly with the four terms; full view, delta = five-term minus four-term out of season",
+      "effect": -0.197,
+      "effect_units": "accuracy_points",
+      "family": "lead98_price_skew",
+      "interval": [
+        -0.926,
+        0.532
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "With the line move included the price skew moved 33 picks, 15-18; no accuracy gain.",
+      "probability_positive": 0.2687,
+      "recorded_at": "2026-10-16",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/lead98_price_skew/results.json",
+      "standard_error": 0.37
+    },
+    "lead98_price_skew_full_brier_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval spans zero; price_skew coefficient positive in only 2 of 6 folds; not a resolved wrong sign, no positive control",
+      "closing_ground": null,
+      "description": "LEAD-98 fifth term: equal-book median no-vig home-cover logit at the pool line from Tuesday opener quotes, fitted LOSO jointly with the four terms; full view, delta = five-term minus four-term out of season",
+      "effect": -0.000307,
+      "effect_units": "brier_improvement",
+      "family": "lead98_price_skew",
+      "interval": [
+        -0.000639,
+        1.14e-05
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The price skew made the full probability slightly worse calibrated out of season.",
+      "probability_positive": 0.031,
+      "recorded_at": "2026-10-16",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/lead98_price_skew/results.json",
+      "standard_error": 0.00017
+    },
+    "lead98_price_skew_tuesday_accuracy_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval spans zero; price_skew coefficient positive in only 2 of 6 folds; not a resolved wrong sign, no positive control",
+      "closing_ground": null,
+      "description": "LEAD-98 fifth term: equal-book median no-vig home-cover logit at the pool line from Tuesday opener quotes, fitted LOSO jointly with the four terms; tuesday view, delta = five-term minus four-term out of season",
+      "effect": 0.406,
+      "effect_units": "accuracy_points",
+      "family": "lead98_price_skew",
+      "interval": [
+        -0.133,
+        0.97
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "On Tuesday information the price skew moved 24 picks, 15-9 for the five-term card; accuracy up 0.4 points but unresolved.",
+      "probability_positive": 0.9137,
+      "recorded_at": "2026-10-16",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/lead98_price_skew/results.json",
+      "standard_error": 0.3
+    },
+    "lead98_price_skew_tuesday_brier_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval spans zero; price_skew coefficient positive in only 2 of 6 folds; not a resolved wrong sign, no positive control",
+      "closing_ground": null,
+      "description": "LEAD-98 fifth term: equal-book median no-vig home-cover logit at the pool line from Tuesday opener quotes, fitted LOSO jointly with the four terms; tuesday view, delta = five-term minus four-term out of season",
+      "effect": -0.000269,
+      "effect_units": "brier_improvement",
+      "family": "lead98_price_skew",
+      "interval": [
+        -0.00057,
+        2.88e-05
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The price skew made the Tuesday probability slightly worse calibrated out of season.",
+      "probability_positive": 0.0386,
+      "recorded_at": "2026-10-16",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/lead98_price_skew/results.json",
+      "standard_error": 0.00015
+    },
     "lead_08_injury_trajectory_refresh_cx14": {
       "category": "health",
       "classification": "unresolved_below_power",
@@ -172429,6 +172541,286 @@
       "source": "docs/mod23_unit5.md",
       "standard_error": null
     },
+    "mod23_unit6_availability_A_proxy_2011_2019_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model with rolling team inputs adjusted for own and opponent starting-QB availability in each past game, paired vs base, 2011-2019; 1138-1093 vs 1142-1089.",
+      "effect": -0.17929179740026893,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit6_availability_history",
+      "interval": [
+        -0.9417040358744395,
+        0.6297795771479981
+      ],
+      "league": "nfl",
+      "notes": "Two arms, two eras (four accuracy looks); starter-QB availability flags from snap counts of completed games; coefficients fit on earlier seasons only.",
+      "plain_summary": "Adjusting a team's recent stats for games the starting quarterback missed did not reliably change picks against the opener.",
+      "probability_positive": 0.304,
+      "recorded_at": "2026-10-16",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod23_unit6/report.json",
+      "standard_error": null
+    },
+    "mod23_unit6_availability_A_true_2020_2025_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model with rolling team inputs adjusted for own and opponent starting-QB availability in each past game, paired vs base, 2020-2025; 794-709 vs 802-701.",
+      "effect": -0.5322687957418496,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit6_availability_history",
+      "interval": [
+        -2.0103761348897535,
+        0.9478672985781991
+      ],
+      "league": "nfl",
+      "notes": "Two arms, two eras (four accuracy looks); starter-QB availability flags from snap counts of completed games; coefficients fit on earlier seasons only.",
+      "plain_summary": "Adjusting a team's recent stats for games the starting quarterback missed did not reliably change picks against the opener.",
+      "probability_positive": 0.2212,
+      "recorded_at": "2026-10-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit6/report.json",
+      "standard_error": null
+    },
+    "mod23_unit6_availability_B_proxy_2011_2019_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model with rolling team inputs adjusted for own starting-QB availability in each past game, paired vs base, 2011-2019; 1151-1080 vs 1142-1089.",
+      "effect": 0.4034065441506051,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit6_availability_history",
+      "interval": [
+        -0.17953321364452424,
+        1.299283154121864
+      ],
+      "league": "nfl",
+      "notes": "Two arms, two eras (four accuracy looks); starter-QB availability flags from snap counts of completed games; coefficients fit on earlier seasons only.",
+      "plain_summary": "Adjusting a team's recent stats for games the starting quarterback missed did not reliably change picks against the opener.",
+      "probability_positive": 0.7816,
+      "recorded_at": "2026-10-16",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod23_unit6/report.json",
+      "standard_error": null
+    },
+    "mod23_unit6_availability_B_true_2020_2025_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model with rolling team inputs adjusted for own starting-QB availability in each past game, paired vs base, 2020-2025; 808-695 vs 802-701.",
+      "effect": 0.3992015968063872,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit6_availability_history",
+      "interval": [
+        -0.2503128911138924,
+        1.272984441301273
+      ],
+      "league": "nfl",
+      "notes": "Two arms, two eras (four accuracy looks); starter-QB availability flags from snap counts of completed games; coefficients fit on earlier seasons only.",
+      "plain_summary": "Adjusting a team's recent stats for games the starting quarterback missed did not reliably change picks against the opener.",
+      "probability_positive": 0.8471,
+      "recorded_at": "2026-10-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit6/report.json",
+      "standard_error": null
+    },
+    "mod23_unit6b_availability_B2_proxy_2011_2019_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model with rolling team inputs adjusted for own QB snap share in each past game, paired vs base, 2011-2019; 1150-1081 vs 1142-1089.",
+      "effect": 0.35858359480053786,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit6b_availability_depth",
+      "interval": [
+        -0.4017857142857143,
+        1.3410818059901655
+      ],
+      "league": "nfl",
+      "notes": "Two arms (continuous own-QB dose; plus own non-QB starter absences), two eras (four accuracy looks); snap counts of completed games; coefficients fit on earlier seasons only.",
+      "plain_summary": "Discounting past games by how much of the lineup was missing gave a small unresolved change in picks against the opener.",
+      "probability_positive": 0.7582,
+      "recorded_at": "2026-10-16",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod23_unit6b/report.json",
+      "standard_error": null
+    },
+    "mod23_unit6b_availability_B2_true_2020_2025_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model with rolling team inputs adjusted for own QB snap share in each past game, paired vs base, 2020-2025; 801-702 vs 802-701.",
+      "effect": -0.0665335994677312,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit6b_availability_depth",
+      "interval": [
+        -1.0974822466107166,
+        0.9803921568627451
+      ],
+      "league": "nfl",
+      "notes": "Two arms (continuous own-QB dose; plus own non-QB starter absences), two eras (four accuracy looks); snap counts of completed games; coefficients fit on earlier seasons only.",
+      "plain_summary": "Discounting past games by how much of the lineup was missing gave a small unresolved change in picks against the opener.",
+      "probability_positive": 0.4454,
+      "recorded_at": "2026-10-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit6b/report.json",
+      "standard_error": null
+    },
+    "mod23_unit6b_availability_B3_proxy_2011_2019_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model with rolling team inputs adjusted for own QB snap share and non-QB starter absences in each past game, paired vs base, 2011-2019; 1140-1091 vs 1142-1089.",
+      "effect": -0.08964589870013447,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit6b_availability_depth",
+      "interval": [
+        -0.938337801608579,
+        0.6266786034019696
+      ],
+      "league": "nfl",
+      "notes": "Two arms (continuous own-QB dose; plus own non-QB starter absences), two eras (four accuracy looks); snap counts of completed games; coefficients fit on earlier seasons only.",
+      "plain_summary": "Discounting past games by how much of the lineup was missing gave a small unresolved change in picks against the opener.",
+      "probability_positive": 0.41215,
+      "recorded_at": "2026-10-16",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod23_unit6b/report.json",
+      "standard_error": null
+    },
+    "mod23_unit6b_availability_B3_true_2020_2025_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model with rolling team inputs adjusted for own QB snap share and non-QB starter absences in each past game, paired vs base, 2020-2025; 805-698 vs 802-701.",
+      "effect": 0.1996007984031936,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit6b_availability_depth",
+      "interval": [
+        -0.5105296745373324,
+        1.0638297872340425
+      ],
+      "league": "nfl",
+      "notes": "Two arms (continuous own-QB dose; plus own non-QB starter absences), two eras (four accuracy looks); snap counts of completed games; coefficients fit on earlier seasons only.",
+      "plain_summary": "Discounting past games by how much of the lineup was missing gave a small unresolved change in picks against the opener.",
+      "probability_positive": 0.6583,
+      "recorded_at": "2026-10-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit6b/report.json",
+      "standard_error": null
+    },
+    "mod23_unit7_A_open_trained": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Base model trained on A_open_trained, graded at the opener vs base 802-701",
+      "effect": -0.0665,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit7_target_line",
+      "interval": [
+        -1.0417,
+        0.813
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Training the base on the opener instead of the close did not change accuracy",
+      "probability_positive": 0.42915,
+      "recorded_at": "2026-10-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit7/report.json",
+      "standard_error": null
+    },
+    "mod23_unit7_C_close_trained_same_rows": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Base model trained on C_close_trained_same_rows, graded at the opener vs base 802-701",
+      "effect": -0.0665,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit7_target_line",
+      "interval": [
+        -1.388,
+        1.0281
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Training the base on the opener instead of the close did not change accuracy",
+      "probability_positive": 0.44805,
+      "recorded_at": "2026-10-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit7/report.json",
+      "standard_error": null
+    },
     "mod24_extended_u1_alpha_only_accuracy_diff": {
       "category": "modeling",
       "classification": "unresolved_below_power",
@@ -181577,6 +181969,62 @@
         2024
       ],
       "source": "docs/per13_durability_prior.md; artifacts/per13_durability_stage1/20260901T190609Z/",
+      "standard_error": null
+    },
+    "per_flag_weights_vs_pooled_full_view_2020_2025": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Paired week-block bootstrap 95% interval wholly below zero for accuracy and Brier also worse; splitting the flag weight adds variance that out-of-season scoring penalises. Closes only the per-flag weighting variant, not any flag.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Four-term pick probability with one LOSO weight per situational flag minus the served single pooled flag weight, full view, opener grade, held-out seasons",
+      "effect": -1.46,
+      "effect_units": "accuracy_points",
+      "family": "per_flag_weights_20261014",
+      "interval": [
+        -2.48,
+        -0.52
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Giving each situational flag its own weight did worse on unseen seasons than the single shared weight, so the card keeps the shared weight.",
+      "probability_positive": 0.0006,
+      "recorded_at": "2026-10-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/per_flag_weights/results.json",
+      "standard_error": null
+    },
+    "per_flag_weights_vs_pooled_tuesday_view_2020_2025": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Paired week-block bootstrap 95% interval wholly below zero for accuracy and Brier also worse; splitting the flag weight adds variance that out-of-season scoring penalises. Closes only the per-flag weighting variant, not any flag.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Four-term pick probability with one LOSO weight per situational flag minus the served single pooled flag weight, tuesday view, opener grade, held-out seasons",
+      "effect": -1.4,
+      "effect_units": "accuracy_points",
+      "family": "per_flag_weights_20261014",
+      "interval": [
+        -2.68,
+        -0.2
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Giving each situational flag its own weight did worse on unseen seasons than the single shared weight, so the card keeps the shared weight.",
+      "probability_positive": 0.0125,
+      "recorded_at": "2026-10-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/per_flag_weights/results.json",
       "standard_error": null
     },
     "physical_underdog_cover_under_all_star_crew": {
@@ -213345,6 +213793,34 @@
       ],
       "source": "artifacts/tuesday_card_clv/20260910T034558Z/part_a_results.json; artifacts/tuesday_card_clv/20260910T034558Z/part_a_null_arms.json; artifacts/tuesday_card_clv/20260910T034558Z/part_b_results.json; artifacts/tuesday_card_clv/20260910T034558Z/part_b_intervals.json; docs/tuesday_card_clv.md",
       "standard_error": 0.21998923671855486
+    },
+    "tuesday_fit_vs_served_move0_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval spans zero; positive but tiny, 5 of 6 seasons favour Tuesday-fit; no closing ground",
+      "closing_ground": null,
+      "description": "Pooled four-term coefficients fitted with move zeroed (Tuesday-fit) versus served full-fit coefficients scored with move zero, LOSO, Tuesday information",
+      "effect": 8.94e-05,
+      "effect_units": "brier_improvement",
+      "family": "tuesday_fit_2026_10_16",
+      "interval": [
+        -0.000313,
+        0.000495
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Fitting the lock-time coefficients without the market move lowers Brier by 0.00009 out of season; unresolved.",
+      "probability_positive": 0.6643,
+      "recorded_at": "2026-10-16",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/tue_fit_out.json",
+      "standard_error": 0.000208
     },
     "turnover_under_rebound_stacked_on_production": {
       "category": "modeling",

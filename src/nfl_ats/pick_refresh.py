@@ -1854,7 +1854,10 @@ def latest_revisions_by_game(
 
 
 def _served_side_rows(
-    result: RefreshResult, ledger_latest: Mapping[str, Mapping[str, Any]] | None
+    result: RefreshResult,
+    ledger_latest: Mapping[str, Mapping[str, Any]] | None,
+    *,
+    changed_only: bool = True,
 ) -> list[dict[str, str]]:
     rows: list[dict[str, str]] = []
     for game in result.games:
@@ -1870,20 +1873,41 @@ def _served_side_rows(
                 continue
             side = str(recorded.get("new_pick_side") or "")
             home_probability = float(recorded.get("new_home_cover_probability") or 0.5)
-        if side not in ("HOME", "AWAY") or side == published:
+        if side not in ("HOME", "AWAY") or (changed_only and side == published):
             continue
         estimate = home_probability if side == "HOME" else 1.0 - home_probability
         previous_team = game.home_team if published == "HOME" else game.away_team
         new_team = game.home_team if side == "HOME" else game.away_team
+        spread = float(game.decision_home_spread)
+        pick_line = -spread if side == "HOME" else spread
         rows.append(
             {
                 "Matchup": f"{game.away_team} at {game.home_team}",
                 "Previous pick": str(previous_team),
                 "New pick": str(new_team),
                 "Cover chance": f"{estimate:.1%}",
+                "_pick_line": "PK" if pick_line == 0.0 else f"{pick_line:+g}",
             }
         )
     return rows
+
+
+def _sync_card_table_rows(text: str, rows: list[dict[str, str]]) -> str:
+    by_matchup = {row["Matchup"]: row for row in rows}
+    if not by_matchup:
+        return text
+    out: list[str] = []
+    for line in text.split("\n"):
+        cells = line.split("|")
+        if line.startswith("|") and len(cells) >= 6 and cells[2].strip() in by_matchup:
+            row = by_matchup[cells[2].strip()]
+            star = "★ " if cells[3].strip().startswith("★") else ""
+            values = {3: f"{star}{row['New pick']} {row['_pick_line']}", 4: row["Cover chance"]}
+            for index, value in values.items():
+                cells[index] = " " + value.ljust(max(len(cells[index]) - 2, len(value))) + " "
+            line = "|".join(cells)
+        out.append(line)
+    return "\n".join(out)
 
 
 def _refresh_section_markdown(
@@ -1898,7 +1922,7 @@ def _refresh_section_markdown(
     if not rows:
         return heading + star + "No pick changes since the Tuesday card.\n"
 
-    table = pd.DataFrame(rows).to_markdown(index=False)
+    table = pd.DataFrame(rows).drop(columns=["_pick_line"]).to_markdown(index=False)
     changed = rows
     plural = "s" if len(changed) != 1 else ""
     intro = (
@@ -1955,6 +1979,14 @@ def append_refresh_to_card(
     text = destination.read_text(encoding="utf-8")
     text = _refreshed_source_freshness_line(text, result, data_root, artifacts_root)
     section = _refresh_section_markdown(result, note, renomination, ledger_latest)
+    if LATE_WEEK_REFRESH_START in text:
+        head, tail = text.split(LATE_WEEK_REFRESH_START, maxsplit=1)
+        served = _served_side_rows(result, ledger_latest, changed_only=False)
+        head = _sync_card_table_rows(head, served)
+        text = head + LATE_WEEK_REFRESH_START + tail
+    else:
+        served = _served_side_rows(result, ledger_latest, changed_only=False)
+        text = _sync_card_table_rows(text, served)
     block = f"{LATE_WEEK_REFRESH_START}\n{section.rstrip()}\n{LATE_WEEK_REFRESH_END}"
     if LATE_WEEK_REFRESH_START in text or LATE_WEEK_REFRESH_END in text:
         if text.count(LATE_WEEK_REFRESH_START) != 1 or text.count(LATE_WEEK_REFRESH_END) != 1:
