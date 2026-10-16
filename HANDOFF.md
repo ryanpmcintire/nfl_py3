@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-16T22:37:52.797466+00:00`
+Refreshed at: `2026-10-16T22:42:49.113079+00:00`
 
 ## Start here
 
@@ -21,10 +21,10 @@ Refreshed at: `2026-10-16T22:37:52.797466+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `bb9b56b4f7b9` — MOD-23 unit 10: proper-score arms as the card's model input, unresolved, not served
+- Baseline commit: `0a9384018697` — MOD-25e E131: margin-variance gap decomposed; blowout-leader garbage-time scoring is the only resolved component
 - Pending change set: 111 paths
-  - `M  docs/lanes/README.md`
-  - `A  docs/lanes/mod25e-e131-sdgap.md`
+  - `M  docs/lanes/mod25e-e131-sdgap.md`
+  - `A  scripts/mod25e_bls.py`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
