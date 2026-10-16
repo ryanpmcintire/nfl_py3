@@ -1,8 +1,8 @@
 # NFL ATS predictions: 2026 Week 6
 
-Published from the synchronized weak stack model, 2026-10-15 16:19 UTC.
+Published from the synchronized weak stack model, 2026-10-15 21:17 UTC.
 
-<!-- publication: model_id=1ede24a75c4d43a7 published_at_utc=2026-10-15T16:19:59.469094+00:00 -->
+<!-- publication: model_id=c793624d8fbf2c45 published_at_utc=2026-10-15T21:17:02.557737+00:00 -->
 
 > **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 
