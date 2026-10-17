@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-17T00:49:35.248730+00:00`
+Refreshed at: `2026-10-17T03:20:02.053235+00:00`
 
 ## Start here
 
@@ -21,9 +21,11 @@ Refreshed at: `2026-10-17T00:49:35.248730+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `d0f3d1844022` — MOD-25e E130: yards redraw off recovers little final-drive reach, noise worse; not adopted, base unchanged
-- Pending change set: 110 paths
+- Baseline commit: `1fd6f50e4545` — MOD-25e: dated E130 rejection in generator-fidelity lane
+- Pending change set: 112 paths
+  - `M  docs/lanes/mod25e-e131-sdgap.md`
   - `M  docs/lanes/mod25e-generator-fidelity.md`
+  - `M  scripts/mod25e_crH.py`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
@@ -41,9 +43,7 @@ Refreshed at: `2026-10-17T00:49:35.248730+00:00`
   - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
   - `?? registry/experiments/margin-backtest/20261009T161053Z.json`
   - `?? registry/experiments/margin-backtest/20261010T160851Z.json`
-  - `?? registry/experiments/margin-backtest/20261010T173926Z.json`
-  - `?? registry/experiments/margin-backtest/20261011T133814Z.json`
-  - ...and 90 more
+  - ...and 92 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
