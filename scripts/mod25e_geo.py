@@ -330,11 +330,11 @@ class Geo:
 
 
 def tilt_active(ns):
-    return os.environ.get("GZT") == "1" and "TILT_T" in ns
+    return os.environ.get("GZT") in ("1", "2") and "TILT_T" in ns
 
 
-def tilt_factor(ns, rows, o_rt, d_rt):
-    return np.exp(ns["TILT_T"][rows] @ (ns["TILT_AO"] * (o_rt - ns["TILT_LO"]) + ns["TILT_AD"] * (d_rt - ns["TILT_LD"])))
+def tilt_factor(ns, rows, o_rt, d_rt, drop=0):
+    return np.exp(ns["TILT_T"][rows][:, drop:] @ (ns["TILT_AO"][drop:] * (o_rt - ns["TILT_LO"]) + ns["TILT_AD"][drop:] * (d_rt - ns["TILT_LD"])))
 
 
 def install_geo():

@@ -328,6 +328,8 @@ def cmd_e5(a):
         label = label + "f2"
     if os.environ.get("GZT") == "1":
         label = label + "gt"
+    if os.environ.get("GZT") == "2":
+        label = label + "gv"
     if os.environ.get("CKY2") == "1":
         label = label + "y2"
     if os.environ.get("URG2") == "1":
