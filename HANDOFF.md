@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-17T10:52:08.143554+00:00`
+Refreshed at: `2026-10-17T10:54:58.387953+00:00`
 
 ## Start here
 
@@ -21,7 +21,7 @@ Refreshed at: `2026-10-17T10:52:08.143554+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `af6a82e25afa` — MOD-25e E144 3-seed: GEO+GZT3 brings margin SD 14.94 and noise 167.6 near real with strength intact, but pts/g -2.3 and Q4 slope away; candidate, not adopted
+- Baseline commit: `9fa6cae2f401` — MOD-25e E145: D1 pts deficit is drive reach (inside-10 drives -0.30/g), finishing matches; 4th-down go rate and conversion low; blowout conversion now matches real
 - Pending change set: 111 paths
   - `M  docs/lanes/mod25e-e126-strength.md`
   - ` M scripts/mod25e_lpo.py`
