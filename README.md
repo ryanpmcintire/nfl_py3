@@ -20,19 +20,19 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 | Date        | Matchup    | ATS prediction   | Cover chance   |
 |:------------|:-----------|:-----------------|:---------------|
 | Thu, Oct 15 | SEA at DEN | DEN +2.5         | 54.6%          |
-| Sun, Oct 18 | ARI at LA  | LA -12.5         | 50.3%          |
-| Sun, Oct 18 | BAL at CLE | CLE +4.5         | 57.3%          |
-| Sun, Oct 18 | BUF at LV  | BUF -5.5         | 54.8%          |
-| Sun, Oct 18 | CAR at PHI | CAR +1.5         | 58.4%          |
-| Sun, Oct 18 | CHI at ATL | ATL +3.5         | 51.1%          |
-| Sun, Oct 18 | DAL at GB  | DAL +1.5         | 53.9%          |
-| Sun, Oct 18 | HOU at JAX | ★ HOU +2.5       | 56.2%          |
-| Sun, Oct 18 | LAC at KC  | LAC +8.5         | 58.7%          |
-| Sun, Oct 18 | NO at NYG  | NYG +1.5         | 50.0%          |
-| Sun, Oct 18 | NYJ at NE  | NE -7.5          | 55.5%          |
-| Sun, Oct 18 | PIT at TB  | TB +2.5          | 54.0%          |
+| Sun, Oct 18 | ARI at LA  | LA -12.5         | 50.1%          |
+| Sun, Oct 18 | BAL at CLE | CLE +4.5         | 60.0%          |
+| Sun, Oct 18 | BUF at LV  | BUF -5.5         | 54.7%          |
+| Sun, Oct 18 | CAR at PHI | CAR +1.5         | 56.7%          |
+| Sun, Oct 18 | CHI at ATL | ATL +3.5         | 51.5%          |
+| Sun, Oct 18 | DAL at GB  | DAL +1.5         | 51.0%          |
+| Sun, Oct 18 | HOU at JAX | ★ HOU +2.5       | 55.2%          |
+| Sun, Oct 18 | LAC at KC  | LAC +8.5         | 58.2%          |
+| Sun, Oct 18 | NO at NYG  | NO -1.5          | 50.3%          |
+| Sun, Oct 18 | NYJ at NE  | NE -7.5          | 55.6%          |
+| Sun, Oct 18 | PIT at TB  | TB +2.5          | 53.9%          |
 | Sun, Oct 18 | TEN at IND | IND -6.5         | 56.0%          |
-| Mon, Oct 19 | WAS at SF  | WAS +7.5         | 51.5%          |
+| Mon, Oct 19 | WAS at SF  | WAS +7.5         | 51.0%          |
 
 [Open the standalone card](CURRENT_PREDICTIONS.md) for provenance and interpretation.
 <!-- CURRENT_PREDICTIONS:END -->
@@ -45,7 +45,7 @@ close. A close-graded number alone is never grounds to reject a candidate
 (see `AGENTS.md`); it is reported below only as the secondary figure it is.
 
 <!-- ACTIVE_MODEL_STATE:START -->
-Active model: `market_residual` with `weak_stack` features (`539ee015623cf546`), regressor `ridge`, ridge alpha `10.0`, calibration `none`.
+Active model: `market_residual` with `weak_stack` features (`2d28639024aa4e88`), regressor `ridge`, ridge alpha `10.0`, calibration `none`.
 
 - **Opener-graded, probability-rule accuracy (the pool-relevant grade -- picks lock Tuesday against a frozen line):** **53.36%** on **1,537 paired games**, week-blocked 95% interval [50.76%, 55.90%].
 - Close-graded accuracy (secondary -- the market's sharpest, and least representative, decision point): **52.51%** (1,131 of 2,154 non-push games), week-blocked 95% interval [50.58%, 54.63%].
