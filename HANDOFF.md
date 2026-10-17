@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-17T11:26:09.423436+00:00`
+Refreshed at: `2026-10-17T14:04:52.421189+00:00`
 
 ## Start here
 
@@ -21,11 +21,9 @@ Refreshed at: `2026-10-17T11:26:09.423436+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `dd199f0bf48d` — MOD-25e E151: 2nd-down gain=dist criterion bucket was a subsample artifact (population .0170); 4th-down conversion loss is the y+shift<q candidate filter selecting on outcome (mod25e_geo.py:328-333); censor-at-goal proposed
-- Pending change set: 115 paths
+- Baseline commit: `a5a567a05ddc` — MOD-25e E152: GEOX=1 censor-at-goal (no outcome filter); smoke restores 3rd&1/4th&1 arrivals, Q4 slope -.077, mass3 .132; strength 81 to check at 3 seeds
+- Pending change set: 113 paths
   - `M  docs/lanes/mod25e-e126-strength.md`
-  - `M  scripts/mod25e_crH.py`
-  - `M  scripts/mod25e_geo.py`
   - ` M scripts/mod25e_lpo.py`
   - ` M scripts/sim04_engine.py`
   - `?? an.csv`
@@ -43,7 +41,9 @@ Refreshed at: `2026-10-17T11:26:09.423436+00:00`
   - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
   - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
   - `?? registry/experiments/margin-backtest/20261008T161241Z.json`
-  - ...and 95 more
+  - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
+  - `?? registry/experiments/margin-backtest/20261009T161053Z.json`
+  - ...and 93 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
