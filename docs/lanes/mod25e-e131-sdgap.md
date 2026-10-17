@@ -61,3 +61,8 @@ Run as ONE background call: `bash tests/scratch/e131/run_e133.sh` (env base B + 
 
 ## E133 smoke (2026-10-16; measured; 1 world x 4 seasons, seed 31, SCLIP=35, BLS off)
 Exit 0, 553 s, no crash. ch.py (ch_sc_smoke.txt): leader Q4 pts (Q4-start leaders) real 3.162 v sim 3.549 (+.387 [-.26,+.95]); base was +.44 (3.60); one world, not conclusive. Run the 3-seed per Next above. No processes left running.
+
+## E133 verdict 2026-10-17 (measured; artifacts/mod25e3/e133_boot.log, tests/scratch/e131/tgt_e133.txt, ch_sc.txt) - NOT ADOPTED
+Base B + SCLIP=35 (BLS off), 3 seeds: leader Q4 pts in games led at Q4 start 3.574 v base 3.60 v real 3.162 (+.41 [+.13,+.68]); leader Q4 points/drive 1.283 v real 1.127 (+.157 [+.061,+.251]); drives/plays match. Margin SD 15.46 v 15.38 (+.08 [-.08,+.26], away from 14.63); noise 181.8 v 180.6; strength 57.6 v 56.1 (toward 58.0); mass3 .1224 v .1272 (-.0048 [-.0083,-.0010], away from .141); pts 45.27; final-drive reach .292 v .308 (away).
+Verdict: extending the clip (and the hand 24 cells) does not move leader scoring; the excess is points per drive at equal drive and play counts, so the score-state-conditioned draws are not where it is generated. Base stays B. SCLIP stays available, default unchanged.
+Next (analysis only, no run): find which engine draws are NOT conditioned on lead (yards/TD-on-play, explosive-play tail, red-zone conversion, turnover) by comparing sim leader per-play outcomes in 24+ against the same sim draws in 0-8 leads, and real; the component whose sim lead-gradient is flat while real falls is the missing mechanism (file:line).
