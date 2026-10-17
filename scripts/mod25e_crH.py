@@ -334,6 +334,10 @@ def cmd_e5(a):
         label = label + "gw" + os.environ.get("GZT3_COLS", "1,2,3").replace(",", "")
     if os.environ.get("GEOD") == "1":
         label = label + "dm"
+    if os.environ.get("GEOC") == "1":
+        label = label + "gc"
+    if os.environ.get("YDITH") == "1":
+        label = label + "yd"
     if os.environ.get("CKY2") == "1":
         label = label + "y2"
     if os.environ.get("URG2") == "1":

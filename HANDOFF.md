@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-17T11:01:49.636027+00:00`
+Refreshed at: `2026-10-17T11:04:12.385178+00:00`
 
 ## Start here
 
@@ -21,10 +21,13 @@ Refreshed at: `2026-10-17T11:01:49.636027+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `079c0d0359dd` — MOD-25e E147: exact-distance Geo re-pick (GEOD=1) fails its declared stub (0/6 buckets); conversion loss sits in Geo candidate filtering
-- Pending change set: 111 paths
+- Baseline commit: `86c848bc2709` — MOD-25e E148: real 4th conv .638 at dist1 (stub scored TDs as failures); Geo 4th pools median 23 rows; continuous yard shift v integer distance loses line-to-gain mass engine-wide; asymmetric TD truncation after band widening
+- Pending change set: 114 paths
   - `M  docs/lanes/mod25e-e126-strength.md`
+  - `M  scripts/mod25e_crH.py`
+  - `M  scripts/mod25e_geo.py`
   - ` M scripts/mod25e_lpo.py`
+  - `M  scripts/sim04_engine.py`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
@@ -40,10 +43,7 @@ Refreshed at: `2026-10-17T11:01:49.636027+00:00`
   - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
   - `?? registry/experiments/margin-backtest/20261008T161241Z.json`
   - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
-  - `?? registry/experiments/margin-backtest/20261009T161053Z.json`
-  - `?? registry/experiments/margin-backtest/20261010T160851Z.json`
-  - `?? registry/experiments/margin-backtest/20261010T173926Z.json`
-  - ...and 91 more
+  - ...and 94 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

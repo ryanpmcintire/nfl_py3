@@ -62,6 +62,10 @@ PLAY_TYPE_CODES = {
 }
 
 
+def dither_yards(y, shift, rng):
+    return float(np.floor(y + shift + rng.random()))
+
+
 def load_reg_seasons(seasons: tuple[int, ...]) -> pd.DataFrame:
     frames = []
     for season in seasons:
@@ -1002,7 +1006,7 @@ def run_one_game(
             "next_down": arrays["next_down"][idx],
             "next_distance": arrays["next_distance"][idx],
             "next_yardline": arrays["next_yardline"][idx],
-            "yards_gained": arrays["yards_gained"][idx] + yard_shift,
+            "yards_gained": dither_yards(arrays["yards_gained"][idx], yard_shift, rng) if os.environ.get("YDITH") == "1" else arrays["yards_gained"][idx] + yard_shift,
             "dist_gained": arrays["dist_gained"][idx],
             "auto_first": bool(arrays["auto_first"][idx]),
             "repeat_down": bool(arrays["repeat_down"][idx]),

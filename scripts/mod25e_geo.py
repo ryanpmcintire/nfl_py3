@@ -250,6 +250,12 @@ REPICK_KEYS = ("points_off", "points_def", "clock_elapsed", "next_down", "next_d
 ENGINE_KEEP = ("clock_elapsed", "off_to_used", "def_to_used")
 
 
+def sim_dither(y, shift, rng):
+    import sim04_engine as sim
+
+    return sim.dither_yards(y, shift, rng)
+
+
 class Geo:
     def __init__(self, arrays, ids, dat, band, k_state, gain, sign=-1.0, bias=0.0):
         self.a = arrays
@@ -284,13 +290,23 @@ class Geo:
             return False
         return float(drawn["yards_gained"]) >= q
 
-    def candidates(self, P, q, net_sim):
+    def candidates(self, P, q, net_sim, dexact=None):
         w = self.band
+        gc = os.environ.get("GEOC") == "1"
         while True:
-            lo = np.searchsorted(P["fp"], q - w, side="left")
+            lo = np.searchsorted(P["fp"], (q if gc else q - w), side="left")
             hi = np.searchsorted(P["fp"], q + w, side="right")
             sl = slice(lo, hi)
             shift = self.bias + self.gain * (net_sim - P["net"][sl])
+            if gc:
+                ok = P["free"][sl] | P["td"][sl] | (P["y"][sl] + shift < q)
+                if dexact is not None:
+                    ok = ok & (np.abs(P["f3"][sl, 0] - dexact) < 1e-9)
+                pos = np.flatnonzero(ok) + lo
+                if len(pos) >= self.k or w >= 99:
+                    return pos
+                w += 1
+                continue
             ok = P["free"][sl] | (P["td"][sl] & (P["fp"][sl] >= q)) | (~P["td"][sl] & ~P["free"][sl] & (P["y"][sl] + shift < q))
             pos = np.flatnonzero(ok) + lo
             if len(pos) > 0 or w >= 99:
@@ -304,7 +320,7 @@ class Geo:
         P = self.pools.get((d, int(drawn["play_type_code"])))
         if P is None:
             return None
-        pos = self.candidates(P, q, net_sim)
+        pos = self.candidates(P, q, net_sim, float(f3q[0]))
         if len(pos) == 0:
             return None
         k = min(self.k, len(pos))
@@ -328,7 +344,7 @@ class Geo:
         new["flip"] = bool(self.a["possession_flip"][j])
         new["auto_first"] = bool(self.a["auto_first"][j])
         new["repeat_down"] = bool(self.a["repeat_down"][j])
-        new["yards_gained"] = self.a["yards_gained"][j] + shift
+        new["yards_gained"] = sim_dither(self.a["yards_gained"][j], shift, rng) if os.environ.get("YDITH") == "1" else self.a["yards_gained"][j] + shift
         new["idx"] = j
         return new, j, shift
 
