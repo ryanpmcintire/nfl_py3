@@ -160,26 +160,41 @@ def install_bls():
     sch = spec["scheme"]
     probs = np.asarray(spec["probs"], dtype=float)
     base = ns["pick_index_nn_conditioned"]
-    stats = {"draws": 0, "reweighted": 0}
+    stats = {"calls": 0, "lead_calls": 0, "draws": 0, "reweighted": 0, "no_frame": 0, "no_cache": 0, "no_mass": 0, "cur_bad": 0, "p_bad": 0, "by_bin": {}}
     dv._G["bls_stats"] = stats
+    stat_path = OUTD.parent / f"bls_stats_{os.getpid()}.json"
+
+    def bump(kind, sc):
+        b = str(int(np.digitize(sc, SD_FINE)))
+        d = stats["by_bin"].setdefault(b, {})
+        d[kind] = d.get(kind, 0) + 1
 
     def pick(rng, tables, down, phase, dist, fp, score, time_raw, off_to, def_to, k_state, off_sim, def_sim, is_home_sim):
         idx = base(rng, tables, down, phase, dist, fp, score, time_raw, off_to, def_to, k_state, off_sim, def_sim, is_home_sim)
+        stats["calls"] += 1
+        if stats["calls"] % 5000 == 0:
+            stat_path.write_text(json.dumps(stats), encoding="utf-8")
         if score < MIN_LEAD:
             return idx
+        stats["lead_calls"] += 1
         fr = sys._getframe(1)
         while fr is not None and "offense" not in fr.f_locals:
             fr = fr.f_back
         if fr is None:
+            stats["no_frame"] += 1
+            bump("no_frame", score)
             return idx
         q_now = int(fr.f_locals["qtr"])
         if q_now not in (3, 4):
             return idx
         stats["draws"] += 1
+        bump("draws", score)
         key = ns["round_state_key"](down if down in (1, 2, 3, 4) else 4, phase, dist, fp, score, time_raw, off_to, def_to)
         nb = tables["nn_cache_cond"].get(key)
         cw = tables["nn_weight_cache_cond"].get((key, off_sim, def_sim, is_home_sim))
         if nb is None or cw is None:
+            stats["no_cache"] += 1
+            bump("no_nb" if nb is None else "no_cw", score)
             return idx
         w = np.diff(np.r_[0.0, cdf_of(cw)])
         b = isb[nb]
@@ -187,15 +202,20 @@ def install_bls():
         ms = b == 0
         sw = float(w[mb | ms].sum())
         if sw <= 0.0:
+            stats["no_mass"] += 1
+            bump("no_mass", score)
             return idx
         cur = float(w[mb].sum()) / sw
         c = int(cells(np.array([score]), np.array([q_now]), np.array([time_raw]), sch)[0])
         p = float(probs[c])
         if not (0.0 < cur < 1.0 and 0.0 < p < 1.0):
+            stats["cur_bad" if not 0.0 < cur < 1.0 else "p_bad"] += 1
+            bump("cur_bad" if not 0.0 < cur < 1.0 else "p_bad", score)
             return idx
         w2 = np.where(mb, w * p / cur, np.where(ms, w * (1.0 - p) / (1.0 - cur), w))
         c2 = np.cumsum(w2)
         stats["reweighted"] += 1
+        bump("reweighted", score)
         return int(nb[min(int(np.searchsorted(c2, rng.random() * c2[-1], side="right")), len(nb) - 1)])
 
     def cdf_of(cw):

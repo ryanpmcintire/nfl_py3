@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-17T03:20:02.053235+00:00`
+Refreshed at: `2026-10-17T03:29:12.590349+00:00`
 
 ## Start here
 
@@ -21,11 +21,10 @@ Refreshed at: `2026-10-17T03:20:02.053235+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `1fd6f50e4545` — MOD-25e: dated E130 rejection in generator-fidelity lane
-- Pending change set: 112 paths
+- Baseline commit: `0a44efd6869c` — MOD-25e E132: BLS backup-passer reweight leaves blowout targets unmoved; not adopted
+- Pending change set: 111 paths
   - `M  docs/lanes/mod25e-e131-sdgap.md`
-  - `M  docs/lanes/mod25e-generator-fidelity.md`
-  - `M  scripts/mod25e_crH.py`
+  - `M  scripts/mod25e_bls.py`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
@@ -43,7 +42,8 @@ Refreshed at: `2026-10-17T03:20:02.053235+00:00`
   - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
   - `?? registry/experiments/margin-backtest/20261009T161053Z.json`
   - `?? registry/experiments/margin-backtest/20261010T160851Z.json`
-  - ...and 92 more
+  - `?? registry/experiments/margin-backtest/20261010T173926Z.json`
+  - ...and 91 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
