@@ -316,7 +316,17 @@ class Geo:
     def candidates(self, P, q, net_sim, dexact=None):
         w = self.band
         gc = os.environ.get("GEOC") == "1"
+        gx = os.environ.get("GEOX") == "1"
         while True:
+            if gx:
+                lo = np.searchsorted(P["fp"], q - w, side="left")
+                hi = np.searchsorted(P["fp"], q + w, side="right")
+                ok = np.ones(hi - lo, bool) if dexact is None else np.abs(P["f3"][lo:hi, 0] - dexact) < 1e-9
+                pos = np.flatnonzero(ok) + lo
+                if len(pos) >= self.k or w >= 99:
+                    return pos
+                w += 1
+                continue
             lo = np.searchsorted(P["fp"], (q if gc else q - w), side="left")
             hi = np.searchsorted(P["fp"], q + w, side="right")
             sl = slice(lo, hi)
@@ -360,9 +370,11 @@ class Geo:
             w, tilt_shift = tilt_weights(w, self.a["yards_gained"][ids].astype(float), self.bias + self.gain * (net_sim - (self.a["off_row"][ids] + self.sign * self.a["def_row"][ids])))
         c = np.cumsum(w)
         if not np.isfinite(c[-1]) or c[-1] <= 0.0:
-            j = int(ids[int(rng.integers(len(ids)))])
+            jp = int(rng.integers(len(ids)))
         else:
-            j = int(ids[min(int(np.searchsorted(c, rng.random() * c[-1], side="right")), len(ids) - 1)])
+            jp = min(int(np.searchsorted(c, rng.random() * c[-1], side="right")), len(ids) - 1)
+        j = int(ids[jp])
+        jpos = int(near[jp]) if k < len(pos) else int(pos[jp])
         shift = tilt_shift if tilt else self.bias + self.gain * (net_sim - float(self.a["off_row"][j] + self.sign * self.a["def_row"][j]))
         new = dict(drawn)
         for key in (k_ for k_ in REPICK_KEYS if k_ not in ENGINE_KEEP):
@@ -372,6 +384,18 @@ class Geo:
         new["repeat_down"] = bool(self.a["repeat_down"][j])
         new["yards_gained"] = float(self.a["yards_gained"][j]) if tilt else sim_dither(self.a["yards_gained"][j], shift, rng) if os.environ.get("YDITH") == "1" else self.a["yards_gained"][j] + shift
         new["idx"] = j
+        if os.environ.get("GEOX") == "1" and not P["td"][jpos] and not P["free"][jpos] and float(self.a["yards_gained"][j]) + shift >= q:
+            tdp = pos[P["td"][pos] & (P["fp"][pos] >= q)]
+            if len(tdp) == 0:
+                tdp = np.flatnonzero(P["td"] & (P["fp"] >= q))
+            if len(tdp):
+                t = int(P["ids"][tdp[int(rng.integers(len(tdp)))]])
+                for key in (k_ for k_ in REPICK_KEYS if k_ not in ENGINE_KEEP):
+                    new[key] = self.a[key][t]
+                new["flip"] = bool(self.a["possession_flip"][t])
+                new["auto_first"] = bool(self.a["auto_first"][t])
+                new["repeat_down"] = bool(self.a["repeat_down"][t])
+                new["yards_gained"] = float(q)
         return new, j, shift
 
 
