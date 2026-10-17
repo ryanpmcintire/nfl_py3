@@ -307,6 +307,10 @@ class Geo:
         pos = self.candidates(P, q, net_sim)
         if len(pos) == 0:
             return None
+        k = min(self.k, len(pos))
+        if os.environ.get("GEOD") == "1" and len(pos) > k:
+            dcol = np.abs(P["f3"][pos, 0] - f3q[0])
+            pos = pos[dcol <= np.partition(dcol, k - 1)[k - 1]]
         dd = ((P["f3"][pos] - f3q[None, :]) ** 2).sum(axis=1)
         k = min(self.k, len(pos))
         near = pos[np.argpartition(dd, k - 1)[:k]] if k < len(pos) else pos
