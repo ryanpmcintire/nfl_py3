@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-17T17:11:43.087380+00:00`
+Refreshed at: `2026-10-17T17:14:21.746791+00:00`
 
 ## Start here
 
@@ -21,7 +21,7 @@ Refreshed at: `2026-10-17T17:11:43.087380+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `1cdb834b6916` — Republish the site with the latest settled results
+- Baseline commit: `99d5682b8806` — MOD-25e E154 3-seed: X2 closest pts (44.19) and drive pts, but SD/noise back to B and blowout leader Q4 pts 3.97 v 3.16; not adopted
 - Pending change set: 117 paths
   - `M  docs/lanes/mod25e-e126-strength.md`
   - ` M scripts/mod25e_lpo.py`
