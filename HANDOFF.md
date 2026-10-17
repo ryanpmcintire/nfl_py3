@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-17T19:49:45.498331+00:00`
+Refreshed at: `2026-10-17T20:01:28.566846+00:00`
 
 ## Start here
 
@@ -21,11 +21,13 @@ Refreshed at: `2026-10-17T19:49:45.498331+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `4c0c1d2bb59f` — MOD-25e E157: X2 turnover-start deficit is a defect: flip rows copy absolute next_yardline from farther-out source rows under the one-sided window (receiver -11.4 yd after failed 4th downs); re-anchor fix specified
-- Pending change set: 123 paths
+- Baseline commit: `92b56b7a3a1f` — MOD-25e: E156 run void (SCLIP not applied, re-ran X2); E158 flip re-anchor next
+- Pending change set: 125 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/index.html`
   - `M  docs/lanes/mod25e-e126-strength.md`
+  - `M  scripts/mod25e_crH.py`
+  - `M  scripts/mod25e_geo.py`
   - ` M scripts/mod25e_lpo.py`
   - ` M scripts/sim04_engine.py`
   - ` M tiebreaker.json`
@@ -41,9 +43,7 @@ Refreshed at: `2026-10-17T19:49:45.498331+00:00`
   - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
   - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
   - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
-  - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
-  - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
-  - ...and 103 more
+  - ...and 105 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

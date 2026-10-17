@@ -385,6 +385,8 @@ class Geo:
         new["repeat_down"] = bool(self.a["repeat_down"][j])
         new["yards_gained"] = float(self.a["yards_gained"][j]) if tilt else sim_dither(self.a["yards_gained"][j], shift, rng) if os.environ.get("YDITH") == "1" else self.a["yards_gained"][j] + shift
         new["idx"] = j
+        if os.environ.get("FLIPA") == "1" and new["flip"]:
+            new["next_yardline"] = float(min(max(float(self.a["next_yardline"][j]) + (float(P["fp"][jpos]) - float(q)) + (float(new["yards_gained"]) - float(self.a["yards_gained"][j])), 1.0), 99.0))
         if os.environ.get("GEOX") in ("1", "2") and not P["td"][jpos] and not P["free"][jpos] and float(self.a["yards_gained"][j]) + shift >= q:
             tdp = pos[P["td"][pos] & (P["fp"][pos] >= q)]
             if len(tdp) == 0:
