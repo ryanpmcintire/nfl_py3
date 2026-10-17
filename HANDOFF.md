@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-17T08:08:00.988114+00:00`
+Refreshed at: `2026-10-17T08:19:52.973699+00:00`
 
 ## Start here
 
@@ -21,9 +21,12 @@ Refreshed at: `2026-10-17T08:08:00.988114+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `97b4a8467177` — MOD-25e E142: flat-ratings null collapses strength_re_var to the shuffled floor; no team-identity channel, E141 orthogonal share was the linear fit understating the rating effect
-- Pending change set: 111 paths
+- Baseline commit: `59752c918644` — MOD-25e E143: team-season rating response B 59.5/-46.4, GEO no tilt -13%, GEO+GZT1 +16-21%; open-field tilt over-corrects yards; GZT=3 column-subset fix specified
+- Pending change set: 114 paths
   - `M  docs/lanes/mod25e-e126-strength.md`
+  - `M  scripts/mod25e_crH.py`
+  - `M  scripts/mod25e_geo.py`
+  - `M  scripts/mod25e_gz.py`
   - ` M scripts/mod25e_lpo.py`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -40,10 +43,7 @@ Refreshed at: `2026-10-17T08:08:00.988114+00:00`
   - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
   - `?? registry/experiments/margin-backtest/20261008T161241Z.json`
   - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
-  - `?? registry/experiments/margin-backtest/20261009T161053Z.json`
-  - `?? registry/experiments/margin-backtest/20261010T160851Z.json`
-  - `?? registry/experiments/margin-backtest/20261010T173926Z.json`
-  - ...and 91 more
+  - ...and 94 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

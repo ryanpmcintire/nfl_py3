@@ -330,11 +330,16 @@ class Geo:
 
 
 def tilt_active(ns):
-    return os.environ.get("GZT") in ("1", "2") and "TILT_T" in ns
+    return os.environ.get("GZT") in ("1", "2", "3") and "TILT_T" in ns
 
 
-def tilt_factor(ns, rows, o_rt, d_rt, drop=0):
-    return np.exp(ns["TILT_T"][rows][:, drop:] @ (ns["TILT_AO"][drop:] * (o_rt - ns["TILT_LO"]) + ns["TILT_AD"][drop:] * (d_rt - ns["TILT_LD"])))
+def open_cols():
+    return [int(c) for c in os.environ.get("GZT3_COLS", "1,2,3").split(",")]
+
+
+def tilt_factor(ns, rows, o_rt, d_rt, drop=0, cols=None):
+    cols = list(range(drop, ns["TILT_T"].shape[1])) if cols is None else cols
+    return np.exp(ns["TILT_T"][rows][:, cols] @ (ns["TILT_AO"][cols] * (o_rt - ns["TILT_LO"]) + ns["TILT_AD"][cols] * (d_rt - ns["TILT_LD"])))
 
 
 def install_geo():
@@ -385,7 +390,7 @@ def install_geo():
                 if "PASS_W" in ns:
                     w = w * ns["PASS_W"](None, near, o_rt, d_rt)
                 if tilt_active(ns):
-                    w = w * tilt_factor(ns, near, o_rt, d_rt)
+                    w = w * tilt_factor(ns, near, o_rt, d_rt, cols=open_cols() if os.environ.get("GZT") == "3" else None)
                 return w
 
             tf = sim.continuous_time_feature(qtr, clock_val)
