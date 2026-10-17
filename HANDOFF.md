@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-17T06:46:52.193113+00:00`
+Refreshed at: `2026-10-17T06:52:31.255515+00:00`
 
 ## Start here
 
@@ -21,7 +21,7 @@ Refreshed at: `2026-10-17T06:46:52.193113+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `bb9b2603217b` — MOD-25e E135: LPO leader-pass outcome fit (LOSO, +.036 LL/row) and hook; smoke shows hook acting but recorded yards unmoved, tracing
+- Baseline commit: `615a6eeb821b` — MOD-25e E136: LPO yards pass through intact; 24+ pass-yards gap is play-state composition plus a TD scoring convention in the gradient scorer
 - Pending change set: 111 paths
   - `M  docs/lanes/mod25e-e131-sdgap.md`
   - ` M scripts/mod25e_lpo.py`
