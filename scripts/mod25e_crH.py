@@ -124,6 +124,10 @@ def run_with_flags(init, setting):
 
     if bl.enabled():
         bl.install_bls()
+    import mod25e_lpo as lp
+
+    if lp.enabled():
+        lp.install_lpo()
     import mod25e_ylm as ym
 
     if ym.enabled():
@@ -332,6 +336,8 @@ def cmd_e5(a):
         label = label + "u3"
     if os.environ.get("BLS") == "1":
         label = label + "bl"
+    if os.environ.get("LPO") == "1":
+        label = label + "lp"
     if os.environ.get("SCLIP"):
         label = label + "sc" + os.environ["SCLIP"]
     dv.DV[label] = dict(dv.DV["crG"])

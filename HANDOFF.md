@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-17T06:05:13.066610+00:00`
+Refreshed at: `2026-10-17T06:17:33.457998+00:00`
 
 ## Start here
 
@@ -21,9 +21,11 @@ Refreshed at: `2026-10-17T06:05:13.066610+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `f580c36a3f91` — MOD-25e E133: score clip 35 leaves blowout scoring unmoved, mass3 worse; not adopted
-- Pending change set: 110 paths
+- Baseline commit: `4e5836462d75` — MOD-25e E134: blowout excess is leader pass yardage (24+ Q4 gradient real -0.77, sim +0.40 yds/play); one joint neighbour draw cannot reach it; LPO mechanism designed
+- Pending change set: 112 paths
   - `M  docs/lanes/mod25e-e131-sdgap.md`
+  - `M  scripts/mod25e_crH.py`
+  - `A  scripts/mod25e_lpo.py`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
@@ -41,9 +43,7 @@ Refreshed at: `2026-10-17T06:05:13.066610+00:00`
   - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
   - `?? registry/experiments/margin-backtest/20261009T161053Z.json`
   - `?? registry/experiments/margin-backtest/20261010T160851Z.json`
-  - `?? registry/experiments/margin-backtest/20261010T173926Z.json`
-  - `?? registry/experiments/margin-backtest/20261011T133814Z.json`
-  - ...and 90 more
+  - ...and 92 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
