@@ -134,3 +134,6 @@ base ...kekudwtpq2ugky -> L ...kekuw2tpq2g2rty2u2: margin SD 15.38 -> 14.50 [-1.
 
 ## 2026-10-09 E127 no-GEO ablation 3-seed (measured; artifacts/mod25e3/e127_boot.log, tests/scratch/e114/tgt_3seed_ng.txt) — NOT ADOPTED
 B -> B+CDW2+URG2+CKY2+RTD (...kekuw2tpq2rty2u2): SD 15.38 -> 15.42, noise 180.6 -> 182.0, strength 56.1 -> 55.9, late r2 .128 -> .129, mass3 .127 -> .126, pts 45.34 -> 44.94 [-.70,-.14]; so GEO (not the clock hooks) carried E125's strength drop (E126: missing TILT, fixed behind GZT=1). Final drive tie/trail 1-3 WORSE: reach .308 -> .253 (real .423), P(score) .220 -> .188 (.340), drives/g .129 -> .119; score|reach .671 -> .695, clock|reach .170 -> .125. E129 diagnosing (lane mod25e-e129-reach.md). Running: L2 = full + GZT=1 + F3W=2 (tests/scratch/e114/run_l2.sh: smoke s31 then 3-seed -> artifacts/mod25e3/e128_boot.log, tests/scratch/e114/tgt_3seed_l2.txt).
+
+## 2026-10-16 E130 (URG2=2) rejected
+3-seed vs B: reach(tie/trail1-3 final Q4) .262 vs .308 (real .423), P(score) .199 vs .220 (.340), finals/g .123 vs .129 (.141). Reach moved away; base stays B. Next: split URG2 elapsed class 3 (sack vs completion), test out-of-bounds stop from pbp. See mod25e-e129-reach.md.
