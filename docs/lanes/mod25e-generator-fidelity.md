@@ -144,3 +144,8 @@ Next (analysis only): sim04_engine SCORE_CLIP = +-21 makes 24+ states share neig
 
 ## 2026-10-17 E132 BLS and E133 SCLIP=35 rejected
 Both leave blowout leader scoring unmoved (leader Q4 pts 3.57-3.60 v real 3.16; points per drive +.16 at equal drives/plays). E133 mass3 .1224 (away). Base stays B. Next: locate the lead-unconditioned per-play draw (docs/lanes/mod25e-e131-sdgap.md).
+
+## 2026-10-17 E128 L2 = L + F3W=2 + GZT=1 3-seed vs B (measured; artifacts/mod25e3/e128_boot.log, tests/scratch/e114/tgt_3seed_l2.txt) - NOT ADOPTED
+Label ...kekuw2tpq2g2rtf2gty2u2. Season bootstrap 90%: margin SD 15.379 -> 15.839 (+.46 [+.27,+.64]; real 14.63); noise 180.6 -> 173.5 (-7.1 [-10.0,-4.0]; real 165); strength_re_var 56.1 -> 77.7 (+21.5 [+16.8,+26.2]; real 58.0, overshoot; E125 without TILT was 42.3); xq_cov +0.2 -> +22.2 (real -6.4); Q4 slope -.056 -> -.013 (real -.060); mass3 .1272 -> .1208 (-.006 [-.011,-.003]; real .141); pts/g 45.34 -> 43.27 (-2.07 [-2.38,-1.82]; real 45.21); late r2 .128 -> .192 (real .146). Adding TILT to Geo/GZ weights overshot strength by +20 where its absence undershot by -14.
+E138 (analysis, tests/scratch/e138/ess4.py, ess5.py): see lane mod25e-e126-strength.md.
+E138 measured: no double tilt found; GEO=2+GZT=1 S slopes match engine (pass dTD .0844 v .0812) but goal zone (yl<=10) TD slope is +21% pass / +37% run and defense-only pass TD +49%; p(1-p) rescale refuted; GZT=2 not built. Next: in-sim per-play audit and F3W2 isolation (lane mod25e-e126-strength.md).

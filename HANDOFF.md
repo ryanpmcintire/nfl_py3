@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-17T06:52:31.255515+00:00`
+Refreshed at: `2026-10-17T07:06:03.578431+00:00`
 
 ## Start here
 
@@ -21,9 +21,10 @@ Refreshed at: `2026-10-17T06:52:31.255515+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `615a6eeb821b` — MOD-25e E136: LPO yards pass through intact; 24+ pass-yards gap is play-state composition plus a TD scoring convention in the gradient scorer
-- Pending change set: 111 paths
-  - `M  docs/lanes/mod25e-e131-sdgap.md`
+- Baseline commit: `c1f0622d9102` — MOD-25e E137: corrected gradients; leader points/drive excess is TD conversion from long plays (+.25 of +.265 at 24+), TD flag copied from neighbour row; same mechanism as GEO=2
+- Pending change set: 112 paths
+  - `M  docs/lanes/mod25e-e126-strength.md`
+  - `M  docs/lanes/mod25e-generator-fidelity.md`
   - ` M scripts/mod25e_lpo.py`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -42,8 +43,7 @@ Refreshed at: `2026-10-17T06:52:31.255515+00:00`
   - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
   - `?? registry/experiments/margin-backtest/20261009T161053Z.json`
   - `?? registry/experiments/margin-backtest/20261010T160851Z.json`
-  - `?? registry/experiments/margin-backtest/20261010T173926Z.json`
-  - ...and 91 more
+  - ...and 92 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
