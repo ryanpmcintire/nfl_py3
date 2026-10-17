@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-17T03:29:12.590349+00:00`
+Refreshed at: `2026-10-17T03:40:03.850521+00:00`
 
 ## Start here
 
@@ -21,10 +21,14 @@ Refreshed at: `2026-10-17T03:29:12.590349+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `0a44efd6869c` — MOD-25e E132: BLS backup-passer reweight leaves blowout targets unmoved; not adopted
-- Pending change set: 111 paths
+- Baseline commit: `14af09448822` — MOD-25e E131: BLS acted on 48% of late big-lead draws (pools hold little backup mass); real 24+ behaviour differs from 17-23, SCORE_CLIP extension designed with LOSO clip selection
+- Pending change set: 115 paths
   - `M  docs/lanes/mod25e-e131-sdgap.md`
   - `M  scripts/mod25e_bls.py`
+  - `M  scripts/mod25e_crH.py`
+  - `M  scripts/mod25e_scorestate.py`
+  - `M  scripts/mod25e_sel.py`
+  - `M  scripts/sim04_engine.py`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
@@ -39,11 +43,7 @@ Refreshed at: `2026-10-17T03:29:12.590349+00:00`
   - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
   - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
   - `?? registry/experiments/margin-backtest/20261008T161241Z.json`
-  - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
-  - `?? registry/experiments/margin-backtest/20261009T161053Z.json`
-  - `?? registry/experiments/margin-backtest/20261010T160851Z.json`
-  - `?? registry/experiments/margin-backtest/20261010T173926Z.json`
-  - ...and 91 more
+  - ...and 95 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

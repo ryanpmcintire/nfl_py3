@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from datetime import UTC, datetime
 from functools import lru_cache
@@ -37,7 +38,7 @@ SCALE_YDSTOGO = 5.0
 SCALE_FP = 2.5
 SCALE_TIME = 300.0
 SCALE_TIMEOUTS = 1.0
-SCORE_CLIP = 21.0
+SCORE_CLIP = float(os.environ.get("SCLIP") or 21.0)
 SCORE_INNER = 8.0
 SCORE_INNER_SCALE = 2.0
 SCORE_OUTER_SCALE = 8.0

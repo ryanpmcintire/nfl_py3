@@ -24,7 +24,8 @@ def enabled():
 
 
 def scheme_cells(sd, qt, name):
-    sdc = np.clip(sd, -24, 24)
+    _hc = float(os.environ.get("SCLIP") or 24.0)
+    sdc = np.clip(sd, -_hc, _hc)
     q = np.minimum(qt, 5).astype(int)
     if name == "none":
         return np.zeros(len(sd), dtype=int)

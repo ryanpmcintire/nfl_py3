@@ -1,5 +1,6 @@
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -229,7 +230,8 @@ def install_css(cfg):
                 code0 = int(arrays["play_type_code"][idx])
                 if code0 == 6 or in_ot or down not in (1, 2, 3) or m25.in_late(qtr, clock_val):
                     return idx
-                sdc = min(max(score_diff, -24.0), 24.0)
+                _hc = float(os.environ.get("SCLIP") or 24.0)
+                sdc = min(max(score_diff, -_hc), _hc)
                 p = P[down - 1, m25.nearest(m25.DL_AX, distance), m25.nearest(m25.YL_AX, yardline), m25.nearest(m25.SD_AX, sdc), m25.nearest(GW_AX, clock_val), 1 if off_to > 0 else 0, 1 if def_to > 0 else 0].astype(np.float64)
                 c = np.cumsum(p)
                 ci = min(int(np.searchsorted(c, rng2.random() * c[-1])), 4)
