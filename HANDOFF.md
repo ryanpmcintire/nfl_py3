@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-17T11:06:07.246570+00:00`
+Refreshed at: `2026-10-17T11:09:02.613993+00:00`
 
 ## Start here
 
@@ -21,11 +21,9 @@ Refreshed at: `2026-10-17T11:06:07.246570+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `8e416a16bb5d` — MOD-25e E149: symmetric truncation + dither (GEOC/YDITH, default off) puts 4 of 6 conversion buckets inside real intervals; d1 and 2nd gain=dist narrowly out, declared criterion not met
-- Pending change set: 114 paths
+- Baseline commit: `3ed3324c5d74` — MOD-25e E150: tilt-preserving integer yards (YDITH=2) also 4/6; gain=dist excess is in the candidate pool, not the shift
+- Pending change set: 112 paths
   - `M  docs/lanes/mod25e-e126-strength.md`
-  - `M  scripts/mod25e_crH.py`
-  - `M  scripts/mod25e_geo.py`
   - ` M scripts/mod25e_lpo.py`
   - ` M scripts/sim04_engine.py`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
@@ -43,7 +41,9 @@ Refreshed at: `2026-10-17T11:06:07.246570+00:00`
   - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
   - `?? registry/experiments/margin-backtest/20261008T161241Z.json`
   - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
-  - ...and 94 more
+  - `?? registry/experiments/margin-backtest/20261009T161053Z.json`
+  - `?? registry/experiments/margin-backtest/20261010T160851Z.json`
+  - ...and 92 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
