@@ -338,6 +338,8 @@ def cmd_e5(a):
         label = label + "gc"
     if os.environ.get("GEOX") == "1":
         label = label + "gx"
+    if os.environ.get("GEOX") == "2":
+        label = label + "gx2"
     if os.environ.get("YDITH") == "1":
         label = label + "yd"
     if os.environ.get("YDITH") == "2":

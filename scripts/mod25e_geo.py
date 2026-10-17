@@ -316,10 +316,11 @@ class Geo:
     def candidates(self, P, q, net_sim, dexact=None):
         w = self.band
         gc = os.environ.get("GEOC") == "1"
-        gx = os.environ.get("GEOX") == "1"
+        gx = os.environ.get("GEOX") in ("1", "2")
+        gx2 = os.environ.get("GEOX") == "2"
         while True:
             if gx:
-                lo = np.searchsorted(P["fp"], q - w, side="left")
+                lo = np.searchsorted(P["fp"], (q if gx2 else q - w), side="left")
                 hi = np.searchsorted(P["fp"], q + w, side="right")
                 ok = np.ones(hi - lo, bool) if dexact is None else np.abs(P["f3"][lo:hi, 0] - dexact) < 1e-9
                 pos = np.flatnonzero(ok) + lo
@@ -384,7 +385,7 @@ class Geo:
         new["repeat_down"] = bool(self.a["repeat_down"][j])
         new["yards_gained"] = float(self.a["yards_gained"][j]) if tilt else sim_dither(self.a["yards_gained"][j], shift, rng) if os.environ.get("YDITH") == "1" else self.a["yards_gained"][j] + shift
         new["idx"] = j
-        if os.environ.get("GEOX") == "1" and not P["td"][jpos] and not P["free"][jpos] and float(self.a["yards_gained"][j]) + shift >= q:
+        if os.environ.get("GEOX") in ("1", "2") and not P["td"][jpos] and not P["free"][jpos] and float(self.a["yards_gained"][j]) + shift >= q:
             tdp = pos[P["td"][pos] & (P["fp"][pos] >= q)]
             if len(tdp) == 0:
                 tdp = np.flatnonzero(P["td"] & (P["fp"] >= q))

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-17T14:10:18.143935+00:00`
+Refreshed at: `2026-10-17T14:24:25.037560+00:00`
 
 ## Start here
 
@@ -21,9 +21,11 @@ Refreshed at: `2026-10-17T14:10:18.143935+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `679ab058477e` — MOD-25e E152 3-seed: GEOX strength 59.9 and drive pts gap -1.47 (D1 -1.99) but SD 15.19, Q4 slope and blowout away; drives stall at 11-20; not adopted
-- Pending change set: 113 paths
+- Baseline commit: `4906181556e6` — MOD-25e E153: X red-zone stall = symmetric GEOX window serves nearer-yardline TDs at q plus censored far rows (TD/play .132 v .115 at yl 11-14); one-sided window with censoring proposed
+- Pending change set: 115 paths
   - `M  docs/lanes/mod25e-e126-strength.md`
+  - `M  scripts/mod25e_crH.py`
+  - `M  scripts/mod25e_geo.py`
   - ` M scripts/mod25e_lpo.py`
   - ` M scripts/sim04_engine.py`
   - `?? an.csv`
@@ -41,9 +43,7 @@ Refreshed at: `2026-10-17T14:10:18.143935+00:00`
   - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
   - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
   - `?? registry/experiments/margin-backtest/20261008T161241Z.json`
-  - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
-  - `?? registry/experiments/margin-backtest/20261009T161053Z.json`
-  - ...and 93 more
+  - ...and 95 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
