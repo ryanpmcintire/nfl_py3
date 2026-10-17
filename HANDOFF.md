@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-17T17:14:21.746791+00:00`
+Refreshed at: `2026-10-17T17:25:09.144000+00:00`
 
 ## Start here
 
@@ -21,7 +21,7 @@ Refreshed at: `2026-10-17T17:14:21.746791+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `99d5682b8806` — MOD-25e E154 3-seed: X2 closest pts (44.19) and drive pts, but SD/noise back to B and blowout leader Q4 pts 3.97 v 3.16; not adopted
+- Baseline commit: `b7502f6bfdfc` — MOD-25e E155: under X2 the 24+ leader excess moved from conversion to progress (+.139) and drive start (-8.2 yd after turnovers, X2-only); leader efficiency gradients flat in sim; E156 = X2 + SCLIP=35
 - Pending change set: 117 paths
   - `M  docs/lanes/mod25e-e126-strength.md`
   - ` M scripts/mod25e_lpo.py`
