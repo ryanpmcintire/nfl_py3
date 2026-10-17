@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-17T07:51:29.235466+00:00`
+Refreshed at: `2026-10-17T08:03:59.376410+00:00`
 
 ## Start here
 
@@ -21,9 +21,11 @@ Refreshed at: `2026-10-17T07:51:29.235466+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `762985679699` — MOD-25e E140: GZT=2 (rz_td dropped from goal-zone tilt) fixes the defence goal-zone TD slope; strength overshoot only ~30% recovered (smoke 90.4 v b1 101.7, real 58)
-- Pending change set: 111 paths
+- Baseline commit: `885f87c262de` — MOD-25e E141: ~85% of strength_re_var is team persistence orthogonal to ratings (B too); not spread or per-play slope; cross-game state next
+- Pending change set: 113 paths
   - `M  docs/lanes/mod25e-e126-strength.md`
+  - `M  scripts/mod25_generator.py`
+  - `M  scripts/mod25e_crH.py`
   - ` M scripts/mod25e_lpo.py`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -41,9 +43,7 @@ Refreshed at: `2026-10-17T07:51:29.235466+00:00`
   - `?? registry/experiments/margin-backtest/20261008T161241Z.json`
   - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
   - `?? registry/experiments/margin-backtest/20261009T161053Z.json`
-  - `?? registry/experiments/margin-backtest/20261010T160851Z.json`
-  - `?? registry/experiments/margin-backtest/20261010T173926Z.json`
-  - ...and 91 more
+  - ...and 93 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

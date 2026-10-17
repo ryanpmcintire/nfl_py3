@@ -342,6 +342,8 @@ def cmd_e5(a):
         label = label + "lp"
     if os.environ.get("SCLIP"):
         label = label + "sc" + os.environ["SCLIP"]
+    if os.environ.get("FLATR") == "1":
+        label = label + "fl"
     dv.DV[label] = dict(dv.DV["crG"])
     outd = ss.OUT / f"e5_{label}_s{a.seed}"
     outd.mkdir(parents=True, exist_ok=True)

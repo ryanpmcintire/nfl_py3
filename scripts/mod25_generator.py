@@ -519,9 +519,13 @@ def season_ratings(weekly, qb_out, fit, setting, league_off, league_def):
         for w in range(18):
             p = p * qb["p_stay_out"] + (1.0 - p) * qb["p_start_out"]
             centre[w] = p * shock
+    flat = os.environ.get("FLATR") == "1"
     for w in range(18):
         per = []
         for t in range(N_TEAMS):
+            if flat:
+                per.append((league_off, league_def))
+                continue
             off = weekly[w, t, 0] + (shock if qb_out[w, t] else 0.0) - centre[w]
             per.append((league_off + scale * off, league_def + scale * weekly[w, t, 1]))
         ratings[w + 1] = per
