@@ -250,6 +250,29 @@ REPICK_KEYS = ("points_off", "points_def", "clock_elapsed", "next_down", "next_d
 ENGINE_KEEP = ("clock_elapsed", "off_to_used", "def_to_used")
 
 
+def tilt_weights(w, y, shifts):
+    sw = float(w.sum())
+    if not np.isfinite(sw) or sw <= 0.0:
+        return w, 0.0
+    mean_shift = float((w * shifts).sum() / sw)
+    ymin, ymax = float(y.min()), float(y.max())
+    if ymax <= ymin:
+        return w, mean_shift
+    target = min(max(float((w * y).sum() / sw) + mean_shift, ymin), ymax)
+    yc = y - float((w * y).sum() / sw)
+    lam = 0.0
+    for _ in range(100):
+        e = w * np.exp(np.clip(lam * yc, -700.0, 700.0))
+        z = float(e.sum())
+        m = float((e * yc).sum() / z)
+        v = float((e * yc * yc).sum() / z) - m * m
+        gap = m - (target - float((w * y).sum() / sw))
+        if abs(gap) < 1e-9 or v <= 0.0:
+            break
+        lam = lam - gap / v
+    return w * np.exp(np.clip(lam * yc, -700.0, 700.0)), mean_shift
+
+
 def sim_dither(y, shift, rng):
     import sim04_engine as sim
 
@@ -332,19 +355,22 @@ class Geo:
         near = pos[np.argpartition(dd, k - 1)[:k]] if k < len(pos) else pos
         ids = P["ids"][near]
         w = weight_fn(ids)
+        tilt = os.environ.get("YDITH") == "2"
+        if tilt:
+            w, tilt_shift = tilt_weights(w, self.a["yards_gained"][ids].astype(float), self.bias + self.gain * (net_sim - (self.a["off_row"][ids] + self.sign * self.a["def_row"][ids])))
         c = np.cumsum(w)
         if not np.isfinite(c[-1]) or c[-1] <= 0.0:
             j = int(ids[int(rng.integers(len(ids)))])
         else:
             j = int(ids[min(int(np.searchsorted(c, rng.random() * c[-1], side="right")), len(ids) - 1)])
-        shift = self.bias + self.gain * (net_sim - float(self.a["off_row"][j] + self.sign * self.a["def_row"][j]))
+        shift = tilt_shift if tilt else self.bias + self.gain * (net_sim - float(self.a["off_row"][j] + self.sign * self.a["def_row"][j]))
         new = dict(drawn)
         for key in (k_ for k_ in REPICK_KEYS if k_ not in ENGINE_KEEP):
             new[key] = self.a[key][j]
         new["flip"] = bool(self.a["possession_flip"][j])
         new["auto_first"] = bool(self.a["auto_first"][j])
         new["repeat_down"] = bool(self.a["repeat_down"][j])
-        new["yards_gained"] = sim_dither(self.a["yards_gained"][j], shift, rng) if os.environ.get("YDITH") == "1" else self.a["yards_gained"][j] + shift
+        new["yards_gained"] = float(self.a["yards_gained"][j]) if tilt else sim_dither(self.a["yards_gained"][j], shift, rng) if os.environ.get("YDITH") == "1" else self.a["yards_gained"][j] + shift
         new["idx"] = j
         return new, j, shift
 

@@ -338,6 +338,8 @@ def cmd_e5(a):
         label = label + "gc"
     if os.environ.get("YDITH") == "1":
         label = label + "yd"
+    if os.environ.get("YDITH") == "2":
+        label = label + "yt"
     if os.environ.get("CKY2") == "1":
         label = label + "y2"
     if os.environ.get("URG2") == "1":

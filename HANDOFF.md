@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-17T11:04:12.385178+00:00`
+Refreshed at: `2026-10-17T11:06:07.246570+00:00`
 
 ## Start here
 
@@ -21,13 +21,13 @@ Refreshed at: `2026-10-17T11:04:12.385178+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `86c848bc2709` — MOD-25e E148: real 4th conv .638 at dist1 (stub scored TDs as failures); Geo 4th pools median 23 rows; continuous yard shift v integer distance loses line-to-gain mass engine-wide; asymmetric TD truncation after band widening
+- Baseline commit: `8e416a16bb5d` — MOD-25e E149: symmetric truncation + dither (GEOC/YDITH, default off) puts 4 of 6 conversion buckets inside real intervals; d1 and 2nd gain=dist narrowly out, declared criterion not met
 - Pending change set: 114 paths
   - `M  docs/lanes/mod25e-e126-strength.md`
   - `M  scripts/mod25e_crH.py`
   - `M  scripts/mod25e_geo.py`
   - ` M scripts/mod25e_lpo.py`
-  - `M  scripts/sim04_engine.py`
+  - ` M scripts/sim04_engine.py`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
