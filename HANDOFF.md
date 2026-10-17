@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-17T14:04:52.421189+00:00`
+Refreshed at: `2026-10-17T14:10:18.143935+00:00`
 
 ## Start here
 
@@ -21,7 +21,7 @@ Refreshed at: `2026-10-17T14:04:52.421189+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `a5a567a05ddc` — MOD-25e E152: GEOX=1 censor-at-goal (no outcome filter); smoke restores 3rd&1/4th&1 arrivals, Q4 slope -.077, mass3 .132; strength 81 to check at 3 seeds
+- Baseline commit: `679ab058477e` — MOD-25e E152 3-seed: GEOX strength 59.9 and drive pts gap -1.47 (D1 -1.99) but SD 15.19, Q4 slope and blowout away; drives stall at 11-20; not adopted
 - Pending change set: 113 paths
   - `M  docs/lanes/mod25e-e126-strength.md`
   - ` M scripts/mod25e_lpo.py`
