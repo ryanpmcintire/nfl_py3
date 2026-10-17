@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-17T17:25:09.144000+00:00`
+Refreshed at: `2026-10-17T19:49:45.498331+00:00`
 
 ## Start here
 
@@ -21,11 +21,14 @@ Refreshed at: `2026-10-17T17:25:09.144000+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `b7502f6bfdfc` — MOD-25e E155: under X2 the 24+ leader excess moved from conversion to progress (+.139) and drive start (-8.2 yd after turnovers, X2-only); leader efficiency gradients flat in sim; E156 = X2 + SCLIP=35
-- Pending change set: 117 paths
+- Baseline commit: `4c0c1d2bb59f` — MOD-25e E157: X2 turnover-start deficit is a defect: flip rows copy absolute next_yardline from farther-out source rows under the one-sided window (receiver -11.4 yd after failed 4th downs); re-anchor fix specified
+- Pending change set: 123 paths
+  - ` M CURRENT_PREDICTIONS.md`
+  - ` M docs/index.html`
   - `M  docs/lanes/mod25e-e126-strength.md`
   - ` M scripts/mod25e_lpo.py`
   - ` M scripts/sim04_engine.py`
+  - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -40,10 +43,7 @@ Refreshed at: `2026-10-17T17:25:09.144000+00:00`
   - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
   - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
   - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
-  - `?? registry/experiments/margin-backtest/20261008T161241Z.json`
-  - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
-  - `?? registry/experiments/margin-backtest/20261009T161053Z.json`
-  - ...and 97 more
+  - ...and 103 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -57,13 +57,13 @@ trust live Git output after checkout.
 - Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261017T161350Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card combines this with the coach component in one fitted calibrated probability, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,131 / 2,154 (52.51%)**
-- Linked forecast: **2026 Week 6**, created `2026-10-17T16:10:17.372383+00:00`
+- Linked forecast: **2026 Week 6**, created `2026-10-17T17:40:21.668864+00:00`
 
 The 52.51% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 6** from model `2d28639024aa4e88`, published `2026-10-17T16:17:04.222363+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 6** from model `2d28639024aa4e88`, published `2026-10-17T17:46:27.801692+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 
