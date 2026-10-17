@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-16T22:42:49.113079+00:00`
+Refreshed at: `2026-10-17T00:49:14.549208+00:00`
 
 ## Start here
 
@@ -21,10 +21,10 @@ Refreshed at: `2026-10-16T22:42:49.113079+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `0a9384018697` — MOD-25e E131: margin-variance gap decomposed; blowout-leader garbage-time scoring is the only resolved component
+- Baseline commit: `90b7c070e633` — MOD-25e E131: blowout channel is 24+ lead points per drive; BLS backup-passer hook fit LOSO (not yet run)
 - Pending change set: 111 paths
-  - `M  docs/lanes/mod25e-e131-sdgap.md`
-  - `A  scripts/mod25e_bls.py`
+  - `M  docs/lanes/mod25e-e129-reach.md`
+  - ` M docs/lanes/mod25e-generator-fidelity.md`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`

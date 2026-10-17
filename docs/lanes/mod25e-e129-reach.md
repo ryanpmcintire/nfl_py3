@@ -28,3 +28,14 @@ Script tests/scratch/e114/run_e130.sh (arg `smoke` = 1 world 4 seasons seed 31, 
 
 Update 2026-10-16: smoke dir moved to artifacts/mod25e3/smoke/. Full launched as background task bvjvtebeb (out artifacts/mod25e3/e130_full.out); scorer: tests/scratch/e114/tgt_3seed_u3.txt written by run script.
 Run is detached bash MSYS PID 40989 (winpid 27124), child python MSYS 40990; wait task bg3vwss34 (tail --pid).
+
+## E130 verdict 2026-10-16 (measured, tgt_3seed_u3.txt, seeds 11-13, 39168 games each)
+URG2=2 vs B: reach .262 vs B .308 (real .423; sim-real -.160 [-.204,-.108]), P(score) .199 vs .220 (real .340), finals/game .123 vs .129 (real .141, interval excludes 0), P(score|reach) .704 vs .671, clock expiry .112 vs .170. Reach moved away from real. NOT ADOPTED; base stays B (...kekudwtpq2ugky). Run complete, processes exited.
+Next: E129 Next 2: split URG2 elapsed class 3 sack vs completion; test out-of-bounds stop from pbp.
+
+## E130 result 2026-10-16 (measured; tests/scratch/e114/tgt_3seed_u3.txt, artifacts/mod25e3/e130_boot.log) - NOT ADOPTED
+Candidate ...kekuw2tpq2rty2u3 (E127 N with URG2=2, yards redraw off) v base B ...kekudwtpq2ugky, 3 seeds:
+final drive tie/trail 1-3 reach .262 (B .308, N .253, real .423); P(score) .199 (B .220, real .340); score|reach .704 (B .671, real .766); clock|reach .112 (B .170, real .022); finals/g .123 (B .129, real .141).
+Aggregates v B: margin SD 15.53 v 15.38 (+.15 [-.02,+.31], away from 14.63); noise 185.6 v 180.6 (+5.0 [+1.7,+8.4], away from 165); strength 55.8 v 56.1; late r2 .122 v .128; mass3 .125 v .127; pts 45.20 v 45.34.
+Verdict: turning the yards redraw off recovers only .009 of N's .055 reach loss, so the yards lump was not the main cause; the rest of N's reach loss sits in CDW2/CKY2 pre-range clock deaths (E129: +.044). Base stays B.
+Next: E129 Next 2 (split URG2 elapsed class 3 sack v completion; out-of-bounds stop from pbp) and isolate CDW2 v CKY2 on pre-range clock deaths with frames (analysis before any run). BLS (docs/lanes/mod25e-e131-sdgap.md) is tested on base B first.
