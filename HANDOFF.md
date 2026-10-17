@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-17T10:48:06.764604+00:00`
+Refreshed at: `2026-10-17T10:52:08.143554+00:00`
 
 ## Start here
 
@@ -21,7 +21,7 @@ Refreshed at: `2026-10-17T10:48:06.764604+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `1cc80a89396b` — MOD-25e E144: GZT=3 open-field tilt on conv+sack only (declared stub selection); smoke strength 70.1 v b1 101.7, SD back to B
+- Baseline commit: `af6a82e25afa` — MOD-25e E144 3-seed: GEO+GZT3 brings margin SD 14.94 and noise 167.6 near real with strength intact, but pts/g -2.3 and Q4 slope away; candidate, not adopted
 - Pending change set: 111 paths
   - `M  docs/lanes/mod25e-e126-strength.md`
   - ` M scripts/mod25e_lpo.py`
