@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-18T22:56:49.908023+00:00`
+Refreshed at: `2026-10-18T22:59:44.269066+00:00`
 
 ## Start here
 
@@ -21,21 +21,17 @@ Refreshed at: `2026-10-18T22:56:49.908023+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `077b4c8f578e` — Weak-signal unit rate_pp for simulator rate gaps; six MOD-25e records moved out of the accuracy pool; MOD-23 unit 10b draft-capital prior (audited, coverage and coefficient-map fixes, re-recorded); FD5 s12 contamination noted
-- Pending change set: 137 paths
-  - `A  docs/lanes/draftcap-forward-log.md`
-  - `M  docs/lanes/mod25e-e172c-returntd.md`
-  - `M  docs/lanes/mod25e-generator-fidelity.md`
-  - `A  docs/lanes/snap-counts-2026.md`
+- Baseline commit: `65130861b8ee` — Draft-capital forward log with Thu/Sun jobs; forward logs read 2026 starters from the current-season loader (snapshots stop at 2025 by design); CLSDRAW fitted class draw (default-off, not installed); return-TD kernel finding retracted
+- Pending change set: 133 paths
+  - `M  docs/lanes/snap-counts-2026.md`
   - `M  registry/weak_signals.json`
-  - `M  scripts/armb_forward_log.py`
-  - `M  scripts/capture_scheduler.py`
-  - `A  scripts/draftcap_forward_log.py`
-  - `M  scripts/mod24_forward_log.py`
   - ` M scripts/mod25c_noise.py`
-  - `A  scripts/mod25e_clsdraw.py`
   - ` M scripts/mod25e_crH.py`
   - ` M scripts/mod25e_toh.py`
+  - `M  src/nfl_ats/deadline_drag_challenger.py`
+  - `M  src/nfl_ats/nflverse_current_season.py`
+  - `M  src/nfl_ats/prospective.py`
+  - `M  src/nfl_ats/transaction_flag_features.py`
   - `?? an.csv`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -43,7 +39,11 @@ Refreshed at: `2026-10-18T22:56:49.908023+00:00`
   - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
   - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
   - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
-  - ...and 117 more
+  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
+  - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
+  - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
+  - ...and 113 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

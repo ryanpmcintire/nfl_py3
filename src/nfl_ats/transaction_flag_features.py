@@ -87,11 +87,17 @@ def default_transactions_index(
     return frame.reset_index(drop=True)
 
 
-def default_snap_counts(repo_root: Path | None = None) -> pd.DataFrame:
+def default_snap_counts(
+    repo_root: Path | None = None, *, season: int | None = None, before_week: int | None = None
+) -> pd.DataFrame:
 
     root = repo_root or REPO_ROOT
     snapshot = latest_player_snapshot(root / "data" / "players" / "raw")
     frame = pd.read_parquet(snapshot.snaps_path)
+    if season is not None and before_week is not None:
+        from nfl_ats.nflverse_current_season import snaps_with_current_season
+
+        frame = snaps_with_current_season(frame, season, before_week)
     required = {"player", "team", "season", "week", "offense_pct", "defense_pct"}
     missing = sorted(required.difference(frame.columns))
     if missing:

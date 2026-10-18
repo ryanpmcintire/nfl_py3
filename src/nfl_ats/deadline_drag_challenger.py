@@ -75,7 +75,11 @@ def build_stacked_features(
         raise DataContractError("Transaction snapshot is future-dated")
     transactions = default_transactions_index(snapshot=paths[-1])
     schedule = default_schedule(data_root.parent)
-    snaps = default_snap_counts(data_root.parent)
+    snaps = default_snap_counts(
+        data_root.parent,
+        season=int(card["season"].min()),
+        before_week=int(card["week"].min()),
+    )
     features = base_features.drop(
         columns=["deadline_integration_drag_flag"], errors="ignore"
     ).copy()

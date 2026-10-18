@@ -478,12 +478,16 @@ def load_nflcom_report(injuries_parquet: Path) -> tuple[pd.DataFrame, dict[str, 
 
 
 def nflcom_starter_key_sets(
-    snaps_path: Path,
+    snaps_path: Path, *, current_season: int | None = None, before_week: int | None = None
 ) -> tuple[set[tuple[int, int, str, str]], set[tuple[int, int, str, str, str]]]:
     snaps = pd.read_parquet(
         snaps_path,
         columns=["season", "game_type", "week", "team", "player", "offense_pct", "defense_pct"],
     )
+    if current_season is not None and before_week is not None:
+        from nfl_ats.nflverse_current_season import snaps_with_current_season
+
+        snaps = snaps_with_current_season(snaps, current_season, before_week)
     snaps = snaps.loc[snaps["game_type"] == "REG"].copy()
     snaps["norm_name"] = snaps["player"].map(_normalize_nflcom_name)
     snaps["share"] = snaps[["offense_pct", "defense_pct"]].max(axis=1)
@@ -515,7 +519,11 @@ def nflcom_team_starter_out_counts(
 
     qa, _counts = load_nflcom_report(snapshot_dir / "injuries.parquet")
     out_rows = qa.loc[qa["status_norm"].eq("out")].copy()
-    starter_exact, starter_fuzzy = nflcom_starter_key_sets(snaps_path)
+    starter_exact, starter_fuzzy = nflcom_starter_key_sets(
+        snaps_path,
+        current_season=int(out_rows["season"].max()) if len(out_rows) else None,
+        before_week=int(out_rows["week"].max()) if len(out_rows) else None,
+    )
     is_starter: list[bool] = []
     for row_season, row_week, row_team, name in zip(
         out_rows["season"], out_rows["week"], out_rows["team"], out_rows["norm_name"], strict=True

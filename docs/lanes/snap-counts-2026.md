@@ -18,3 +18,8 @@ Find whether 2026 snap counts reach the served card and the forward logs; make t
 
 ## Open
 - Week 6 snap feed lags (93 rows); some teams use a week-4/5 prior game. Pregame-safe, stale by a week.
+
+## Challenger fix (2026-10-18 evening, measured)
+- snaps_with_current_season(base, season, before_week) in src/nfl_ats/nflverse_current_season.py (asserts max week < target; on fetch error logs one stderr line and falls back to the snapshot). Used by prospective.nflcom_starter_key_sets / nflcom_team_starter_out_counts, transaction_flag_features.default_snap_counts, deadline_drag_challenger.py:78. None is a served member (four_overlay_composition.py:59-80). pytest -k "prospective or transaction or nflcom": 63 passed.
+- Week 7 starter keys now 45 across 2 teams only, because nflverse week-6 snaps hold 93 rows (DEN, SEA); weeks 2-7 present.
+- SECOND dead input: the newest nflcom injuries snapshot is 20260825, so starter-out counts are empty and the nflcom challenger cannot fire. Next: find the nflcom injuries capture job in scripts/capture_scheduler.py and data/scheduler_log.txt, why it stopped after 08-25, and repair it.

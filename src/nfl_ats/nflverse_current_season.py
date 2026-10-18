@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sys
 from dataclasses import dataclass
 from typing import Any
 
@@ -13,6 +14,7 @@ __all__ = [
     "load_season_frame",
     "load_seasons_frame",
     "nflreadpy_current_season",
+    "snaps_with_current_season",
 ]
 
 
@@ -98,3 +100,34 @@ def load_seasons_frame(dataset: str, seasons: list[int]) -> pd.DataFrame:
     if len(frames) == 1:
         return frames[0]
     return pd.concat(frames, ignore_index=True)
+
+
+def _before_week(base: pd.DataFrame, season: int, before_week: int) -> pd.DataFrame:
+    future = base["season"].astype(int).eq(int(season)) & base["week"].astype(int).ge(int(before_week))
+    return base.loc[~future]
+
+
+def snaps_with_current_season(base: pd.DataFrame, season: int, before_week: int) -> pd.DataFrame:
+    from nfl_ats.players import canonicalize_snaps
+
+    try:
+        fresh = canonicalize_snaps(load_season_frame("snap_counts", int(season)))
+    except Exception as error:
+        print(
+            f"snap_counts {season} current-season fetch failed ({type(error).__name__}); "
+            "using the snapshot only",
+            file=sys.stderr,
+        )
+        return _before_week(base, season, before_week)
+    fresh = fresh.loc[fresh["week"].astype(int) < int(before_week)]
+    if fresh.empty:
+        return _before_week(base, season, before_week)
+    if int(fresh["week"].max()) >= int(before_week):
+        raise ValueError("snap rows from the target week or later would enter a pregame feature")
+    base = base.loc[base["season"].astype(int) != int(season)]
+    columns = [column for column in base.columns if column in fresh.columns]
+    merged = pd.concat([base[columns], fresh[columns]], ignore_index=True)
+    key = ["game_id", "team", "player"]
+    if set(key).issubset(merged.columns) and merged.duplicated(key).any():
+        raise ValueError("merged snap counts contain duplicate game/team/player rows")
+    return merged

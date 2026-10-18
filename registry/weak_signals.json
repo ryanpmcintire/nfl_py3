@@ -24019,8 +24019,9 @@
       "effect_units": "mae",
       "family": "mod25e_e172_returntd",
       "interval": null,
+      "invalidated_reason": "Measured on 300 replay queries; at 60,000 queries (tests/scratch/e172/cd_run.txt) the served kernel gives 3.478 [3.37,3.60] returned TDs per turnover v K-set 3.49, so the 4.12 to 5.23 lift was small-sample noise. Not a closure of the return-TD gap.",
       "league": "nfl",
-      "notes": "",
+      "notes": "[2026-10-18T22:57:27.140319+00:00] invalidated: Measured on 300 replay queries; at 60,000 queries (tests/scratch/e172/cd_run.txt) the served kernel gives 3.478 [3.37,3.60] returned TDs per turnover v K-set 3.49, so the 4.12 to 5.23 lift was small-sample noise. Not a closure of the return-TD gap.. Superseded by: 'e172_clsdraw_loso_class_ll_vs_window'. Invalidation is not closure.",
       "plain_summary": "Return TDs per turnover rise from 4.12 to 5.23 percent when the Geo pick weights rows by team rating nearness; real is 3.40",
       "probability_positive": null,
       "recorded_at": "2026-10-18",
@@ -24032,7 +24033,9 @@
         2024
       ],
       "source": "docs/lanes/mod25e-e172c-returntd.md",
-      "standard_error": null
+      "standard_error": null,
+      "status": "invalidated",
+      "superseded_by": "e172_clsdraw_loso_class_ll_vs_window"
     },
     "e174c mid-game trailer regime class-ratio reweight (RGM)": {
       "category": "modeling",
