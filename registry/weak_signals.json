@@ -23981,6 +23981,90 @@
       "source": "tests/scratch/e174/p2_an.txt",
       "standard_error": null
     },
+    "e174d TDR trailer play-mix reweight": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "9/9 folds positive; trims pass share only, does not extend drives; not installed",
+      "closing_ground": null,
+      "description": "Q2-Q4 trailers depth{1-8,9-16,17+} x down{1-2,3,4} lam 25 run/pass class ratio, nested LOSO; held-out LL per query v unadjusted; 48 combos x 9 folds",
+      "effect": 0.001,
+      "effect_units": "log_loss_improvement",
+      "family": "mod25e-e174",
+      "interval": [
+        0.0003,
+        0.0019
+      ],
+      "league": "nfl",
+      "notes": "interval is fold min-max not a bootstrap; not installed",
+      "plain_summary": "Reweighting trailer run/pass mix toward real fits each season slightly better but does not extend drives, so it cannot close the trailer scoring gap.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e174/tdr_fit.txt",
+      "standard_error": null
+    },
+    "e174e trailer 17+ 4th-down go rate sim v real residual": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "residual conflicts with FD4/FD5 matching real on real states (E174d); cells ignore time and exact deficit; needs sim play logs with distance",
+      "closing_ground": null,
+      "description": "Sim minus real 4th-down go rate on trailer 17+ drives Q2-Q4 gsr>300; within dist5 x yl4 cell residual after standardising states",
+      "effect": -2.2,
+      "effect_units": "accuracy_points",
+      "family": "mod25e-e174",
+      "interval": [
+        -3.6,
+        -0.8
+      ],
+      "league": "nfl",
+      "notes": "effect in pp; 90pct game bootstrap; probability_positive is that of a positive sim-minus-real gap",
+      "plain_summary": "Simulated far-behind teams go for it on fourth down about two points less often than real teams even in matching situations, but the fitted decision rule matches real, so the gap is upstream and unpinned.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e174/e174e.txt",
+      "standard_error": null
+    },
+    "e176-neutral-3rd7plus-run-conv-residual-after-ctxD": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Neutral 3rd&7+ run first-down conversion, real minus served pool; residual after CTX D is 4.3pp, after a declared distance-bucket extension (E) 3.0pp",
+      "effect": 3.0,
+      "effect_units": "accuracy_points",
+      "family": "e176-ctx-distance",
+      "interval": [
+        1.3,
+        4.9
+      ],
+      "league": "nfl",
+      "notes": "n=1472 neutral 3rd&7+ runs; 90% game bootstrap; E minus D heldout dLL +0.00166 [0.00145,0.00186] LOSO; looks: 5 cells x 2 scopes, one E variant declared single",
+      "plain_summary": null,
+      "probability_positive": 0.996,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2400,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e176/ctx_cells.py",
+      "standard_error": null
+    },
     "e177-ctx-ratios-C-no-d4-no-goalzone": {
       "category": "modeling",
       "classification": "unresolved_below_power",
@@ -24036,6 +24120,62 @@
       ],
       "source": "tests/scratch/e177/ctx_an_D.log",
       "standard_error": 0.00022
+    },
+    "e177-ctx-ratios-E-distance-split": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "E = D cells x run-to-go {<=3,4-6,7+}, lam 5 parent, fixed combo; held-out dLL v current +0.00882 [0.00841,0.00925] 9/9, in-sample +0.01455 gap 0.0057; v D +0.00166 [0.00145,0.00186] P>0 1.000; RGT territory v ref -0.00444 [-0.00673,-0.00224] P>0 0.000 (worse than D -0.00164); 1 of 20 E161 buckets IN->OUT (2nd d>=7 gd .0158 v [.0163,.0179]) where D 0; 4th d6+ conv IN; neutral 3rd&<=3 run .680 v real .675 (+0.5pp, D +1.4); neutral 3rd&7+ run .258 v .290 OUT; fails bar so not installed as served; no refuting ground",
+      "closing_ground": null,
+      "description": "Distance-split context class ratios (E161 bar variant E of E177 D); 1 declared variant, 20 bucket looks, ~25 effect rows, family now 97 combos",
+      "effect": 0.00166,
+      "effect_units": "log_loss_improvement",
+      "family": "e177-ctx-ratios",
+      "interval": [
+        0.00145,
+        0.00186
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 1.0,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e177/ctx_an_E.log",
+      "standard_error": 0.00012
+    },
+    "e177-ctx-ratios-F-run-distance-outside-rgt": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "E177 F: context class-ratio reweight D cells plus run-to-go split on run plays outside Q4<=300 trailing territory",
+      "effect": 0.00833,
+      "effect_units": "log_loss_improvement",
+      "family": "e177-ctx-ratios",
+      "interval": [
+        0.00791,
+        0.00879
+      ],
+      "league": "nfl",
+      "notes": "held-out LOSO dLL/query v current; v D +0.00100 [0.00090,0.00112] P>0 1.000; RGT terr -0.00165 v D -0.00164; E161 bucket bar 0/20 IN->OUT; 9/9 folds; gap 0.00425; 6th variant, 122 combo-looks",
+      "plain_summary": "Adds distance-to-go cells for run plays outside late trailing; passes bucket bar",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e177/ctx_an_F.log",
+      "standard_error": 0.00027
     },
     "ecdf_smoothing_accuracy": {
       "category": "modeling",
@@ -173969,6 +174109,118 @@
       "source": "tests/scratch/unit9_results.json",
       "standard_error": null
     },
+    "mod23_unit9_two_sided_P1_sbr_2011_2019_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Two-sided points labels arm P1 paired vs base, 2011-2019; 1149-1082 vs 1142-1089.",
+      "effect": 0.31376064545047067,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit9_two_sided",
+      "interval": [
+        -0.9395973154362416,
+        1.477832512315271
+      ],
+      "league": "nfl",
+      "notes": "Home and away points fitted as separate ridge targets (residual to market-implied team points), margin by difference, arm P1; four looks (two arms, two eras).",
+      "plain_summary": "Predicting each side's points separately and subtracting moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.6942,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod23_unit9/report_all.json",
+      "standard_error": null
+    },
+    "mod23_unit9_two_sided_P1_tuesday_2020_2025_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Two-sided points labels arm P1 paired vs base, 2020-2025; 791-712 vs 802-701.",
+      "effect": -0.7318695941450433,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit9_two_sided",
+      "interval": [
+        -1.4122394082044385,
+        -0.06447453255963895
+      ],
+      "league": "nfl",
+      "notes": "Home and away points fitted as separate ridge targets (residual to market-implied team points), margin by difference, arm P1; four looks (two arms, two eras).",
+      "plain_summary": "Predicting each side's points separately and subtracting moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.0131,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit9/report_all.json",
+      "standard_error": null
+    },
+    "mod23_unit9_two_sided_P2_sbr_2011_2019_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Two-sided points labels arm P2 paired vs base, 2011-2019; 1129-1102 vs 1142-1089.",
+      "effect": -0.5826983415508741,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit9_two_sided",
+      "interval": [
+        -1.0695187165775402,
+        -0.09041591320072333
+      ],
+      "league": "nfl",
+      "notes": "Home and away points fitted as separate ridge targets (residual to market-implied team points), margin by difference, arm P2; four looks (two arms, two eras).",
+      "plain_summary": "Predicting each side's points separately and subtracting moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.0049,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod23_unit9/report_all.json",
+      "standard_error": null
+    },
+    "mod23_unit9_two_sided_P2_tuesday_2020_2025_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Two-sided points labels arm P2 paired vs base, 2020-2025; 798-705 vs 802-701.",
+      "effect": -0.2661343978709248,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit9_two_sided",
+      "interval": [
+        -0.5798969072164949,
+        0.06954102920723226
+      ],
+      "league": "nfl",
+      "notes": "Home and away points fitted as separate ridge targets (residual to market-implied team points), margin by difference, arm P2; four looks (two arms, two eras).",
+      "plain_summary": "Predicting each side's points separately and subtracting moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.0468,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit9/report_all.json",
+      "standard_error": null
+    },
     "mod24_extended_u1_alpha_only_accuracy_diff": {
       "category": "modeling",
       "classification": "unresolved_below_power",
@@ -175956,6 +176208,34 @@
       ],
       "source": "docs/lanes/mod25e-e175-leader-q4.md",
       "standard_error": 1.58
+    },
+    "mod25e-e175f-enlarged-pool-leader-conv": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "gap 3.02 to 2.11 pp (absgap reduction 0.9), but all-state guard moves away (-0.76 to -1.25) and nonleader -1.86 to -2.23; generic pool lowering, not leader-specific; no wrong-sign or positive-control closing ground",
+      "closing_ground": null,
+      "description": "E175f offline replay: exact-distance filter dropped, 5 LOSO-fitted class weights (distance gap, lead class); remaining sim minus real 3rd-down conv for 17+ Q4 leaders after reweight; guard all-state conv gap worsened -0.76 to -1.25",
+      "effect": 2.11,
+      "effect_units": "accuracy_points",
+      "family": "mod25e-e175",
+      "interval": [
+        0.19,
+        4.08
+      ],
+      "league": "nfl",
+      "notes": "90 pct game bootstrap; 1 family 5 params 9 LOSO folds 3 eval sets; not installed; tests/scratch/e175/f1.py",
+      "plain_summary": "Widening the pool of comparable third downs trims the simulated big-lead conversion excess by under a point but also lowers every other situation, so it does not explain the excess",
+      "probability_positive": 0.961,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "docs/lanes/mod25e-e175-leader-q4.md",
+      "standard_error": 1.2
     },
     "motivation_ladder_elim_visitor_alive_host": {
       "category": "schedule",

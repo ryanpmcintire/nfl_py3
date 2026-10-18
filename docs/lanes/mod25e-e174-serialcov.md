@@ -37,7 +37,7 @@ Identity: 2*sum xq cov = sum over drives of (centred margin after prior quarter 
 - Verdict: unresolved_below_power for a named mechanism. Candidate: series-yards shortfall (global, would be a base-engine yards/series check, not a trailer fix). Next: recompute the within-cell go residual with time and exact deficit from sim play logs carrying distance (needs a sim run, not allowed here).
 
 ## Next
-Drive-level trailer mechanism: 4th-down go rate and pass mix at 17+/9-16 in Q2-Q4 (LDR-style policy reweight, LOSO by held-out LL on real play-type/4th-down choices; needs raw pbp with distance/yardline); plays/drive and turnover per drive. RGM stays uninstalled. Do not use ADJ2.
+Drive-level trailer re-measure (2026-10-18, no new fit): every requested measure already exists (E174b/c/d/e); no module written because TRL would duplicate TDR (trailer play mix, scripts/mod25e_tdr.py, env TDR) and FD5 (go, matches real on real states). Only unfilled piece is trailer turnover per drive (sim 17+ other-end -2.1pp [-3.0,-1.0]); sim play frames lack turnover flags, so it needs a sim run with distance and turnover logged (not allowed offline). E174d and E174e cells recorded via weak-signals (family mod25e-e174). crH patch for TDR if wanted: after scripts/mod25e_crH.py:125 (f5.install_fd5()) add `import mod25e_tdr as td` and `if td.enabled(): td.install_tdr()` (mod25e_tdr.py:25, :198), plus a label suffix near the FD5 label line; never with ADJ2; RGM stays uninstalled.
 
 ## Open
 Joint CI for windows; prev-end type is inferred. Note: importing e131 ch.py re-ran its main and overwrote tests/scratch/e131/Rd.pkl and ch.txt with the full-base label.

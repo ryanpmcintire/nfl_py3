@@ -18,5 +18,14 @@ Gap-conditioned share, bin decomposition, Geo candidate replay (K-set 3.2-3.6 pe
 2. If confirmed: default-off module that restricts free-row admission to the fp-window rate (no unconditional pass), fitted on real window rates, same-state paired by hand against g2 only after owner lifts sim freeze.
 3. SAFEG first; crH patch deferred (another agent owns scripts/mod25e_crH.py). TILTL does not fix this.
 
+- p4 cheaper copy tests/scratch/e172/p4b.py (P4N env = query count, seed 11, default 1000). Run with F:\Repos\nfl_py3\.venv\Scripts\python.exe -u (uv is not on bash PATH). stdout is block-buffered and p4b.txt stayed empty after ~90 CPU s (killed, 0 left); the 1000-query run still did not finish. Next: rerun with python -u and P4N=300 as one background call (no trailing &, which detaches and orphans a second run), read per-q-band win/cand/kset rtd and flip.
+- Read: GEOC=1 exists (mod25e_geo.py:318,336) and gates free rows on fp>=q; the unconditional free pass at :344 is the default path. Name FREEGEO unused (git grep). Install point candidate mod25e_crH.py:198-201 beside ge.install_geo(). Line 344 NOT confirmed or refuted.
+
 ## Open
 Why returned turnovers per row fall 5-13% at yl 0-90 under g2 while return TDs rise at yl 60+.
+
+## E172d p4b result (measured 2026-10-18 18:25 ET, orchestrator; P4N=300, seed 11; output tests/scratch/e172/p4b.txt via task log)
+- Candidate set == fp window (mean 725.9 rows both; identical rtd/flip 3.73): free-row admission at mod25e_geo.py:344 removes nothing here -> NOT the carrier.
+- rtd per flip: window 3.73, unweighted K-set (nearest 200) 4.12, weighted K-set (team kernel + ipw + tilt) 5.23; real share ~3.40. Carrier = served weighting (geo ~:458-466) plus nearest-200 selection.
+- By q band (win/kset rtd%): 40-60 .158/.221, 80-100 .454/.528; 60-80 kset below window.
+- Next: decompose 5.23 into team kernel, ipw, tilt (each off in turn, same 300 queries); name which weight upweights returned turnovers and why (e.g. ipw on rare rows).

@@ -16,8 +16,18 @@ Closing grounds: only whole interval below zero or a powered positive control; e
 - Unit 9 EWMA span request was a duplicate of unit-8 candidate 2 (scripts/mod23_unit8_span.py, artifacts/mod23_unit8_span/report_all.json, family mod23_unit8_span, 4 looks, unresolved_below_power): family-LOSO 2011-19 -0.31 [-1.25,0.49] P+.24, 2020-25 +0.27 [-0.28,1.07] P+.69; global-LOSO 2011-19 +1.35 [0.09,2.50] P+.98, 2020-25 -0.87 [-2.37,0.65] P+.13; span 24 (grid edge) chosen in all global folds. No new run. Optional wider-grid extension (32, 48, season-long) deferred, low value.
 - Span-adjacent work that does not vary builder span: base-model-recency (row weights), era_weighting_screen, acc-u7b, mod06.
 
+## Result (measured 2026-10-18; scripts/mod23_unit9b.py, artifacts/mod23_unit9/report_all.json, run.log; scripts/mod23_unit9.py was an existing unrelated file so the script is unit9b)
+Checks: base 802-701 and 1142-1089 reproduced; P0 identity max abs prediction diff vs base 2.5e-14 (identical by construction, confirmed); alpha selection unchanged when latest-season outcomes corrupted; positive control (home points shifted by 3x spread) changes selection. Eval cache disabled.
+d_acc vs base (season-block 95% interval, P+), flips W-L, log loss arm/base/market, Brier arm/base/market:
+P1 per-side alpha 2011-19 1149-1082: +0.31 [-0.94,1.48] P+.69, flips 141-134, LL .7033/.7195/.6933, Brier .2547/.2590/.2501.
+P1 2020-25 791-712: -0.73 [-1.41,-0.06] P+.013, flips 79-90, LL .6960/.6969, Brier .2514/.2517.
+P2 side inputs 2011-19 1129-1102: -0.58 [-1.07,-0.09] P+.005, flips 10-23, LL .7191, Brier .2588.
+P2 2020-25 798-705: -0.27 [-0.58,0.07] P+.047, flips 9-13, LL .6968, Brier .2516.
+P1 chosen alphas: 1000 (grid edge) both sides in 14 of 16 seasons, 10 in 2; so P1 is mostly heavy shrinkage of the residual targets toward the market, which improves 2011-19 log loss/Brier (calibration) but not current-era picks. Per-season P1 d_acc 2011-19: 0,.8,0,1.6,2.0,3.3,-.4,-.8,-3.6; 2020-25: -1.4,.4,-1.2,-1.9,.4,-.7.
+Four looks recorded unresolved_below_power (family mod23_unit9_two_sided); intervals for P1 2020-25 and P2 2011-19 lie below zero but the recorded classification stays unresolved since no wrong_sign closing ground was declared and P1 is grid-edge selected. Not served.
+
 ## Next
-Run scripts/mod23_unit9b.py, record cells, write results here.
+Optional: P1 with grid beyond 1000 (edge hit) only if CPU is free; otherwise candidate 3 is exhausted. No further two-sided variants declared.
 
 ## Open
 Whether the wider-grid span extension is worth CPU.

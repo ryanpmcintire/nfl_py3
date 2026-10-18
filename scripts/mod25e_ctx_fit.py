@@ -15,7 +15,9 @@ import mod25e_ctx as cx
 SCR = REPO / "tests" / "scratch"
 POOL = SCR / "e177" / "ctx_pool.npz"
 META = SCR / "e162" / "gp_meta.npz"
-LOG = SCR / "e177" / "ctx_an_D.log"
+LOGS = {"1": SCR / "e177" / "ctx_an_D.log", "2": SCR / "e177" / "ctx_an_F.log"}
+ANS = {"1": "tests/scratch/e177/ctx_anD.py", "2": "tests/scratch/e177/ctx_anF.py"}
+DIST_EDGES = [3.0, 6.0]
 NCL = 12
 TD_CLASS = 10
 SCORE_EDGES = [-16.5, -8.5, -0.5, 0.5, 8.5, 16.5]
@@ -23,6 +25,7 @@ SCORE_MAP = [0, 0, 1, 2, 3, 4, 4]
 TIME_EDGES = [60.0, 120.0, 180.0]
 PHASE_EDGE = 300.0
 GOAL_GUARD = 10.0
+RECORDED = {"1": "e177-ctx-ratios-D-td-frozen-rg-kept", "2": "e177-ctx-ratios-F-run-distance-outside-rgt"}
 SEASONS = list(range(2009, 2018))
 MERGE = "S5"
 LAM = 5.0
@@ -32,7 +35,7 @@ PARENT_PRIOR = 1.0
 SPEC = dict(score_edges=SCORE_EDGES, score_map=SCORE_MAP, time_edges=TIME_EDGES, phase_edge=PHASE_EDGE)
 
 
-def load():
+def load(dist=False):
     P = np.load(POOL)
     M = np.load(META, allow_pickle=True)
     q = P["q"]
@@ -52,14 +55,25 @@ def load():
         q=q, H=H, RC=RC, sidx=sidx, code=code,
         sc=M["sc"][q], tm=M["tm"][q], qt=M["qtr"][q], dn=M["down"][q], fpq=M["fpq"][q],
     )
-    d["cell"] = cx.cell_index(SPEC, code, d["sc"], d["qt"], d["tm"], d["dn"])
+    spec = dict(SPEC, dist_edges=DIST_EDGES) if dist else SPEC
+    d["dist"] = M["dist"][q]
+    cell = cx.cell_index(spec, code, d["sc"], d["qt"], d["tm"], d["dn"], d["dist"])
+    if dist:
+        smap = np.asarray(spec["score_map"])
+        sb = smap[np.digitize(d["sc"], spec["score_edges"])]
+        late = (d["qt"] == 4) & (d["tm"] <= spec["phase_edge"])
+        trailing = sb <= 1
+        splits = (code == 0) & ~(late & trailing)
+        cell = np.where(splits, cell, (cell // (len(DIST_EDGES) + 1)) * (len(DIST_EDGES) + 1))
+    d["cell"] = cell
+    d["spec"] = spec
     d["par"] = code * 3 + np.where(d["dn"] <= 2, 0, np.where(d["dn"] == 3, 1, 2))
     d["inC"] = (d["dn"] != 4) & (d["fpq"] > GOAL_GUARD)
     return d
 
 
 def fit(d, train, hsel):
-    nc = 2 * (max(SCORE_MAP) + 1) * (len(TIME_EDGES) + 4) * 3
+    nc = 2 * (max(SCORE_MAP) + 1) * (len(TIME_EDGES) + 4) * 3 * (len(d["spec"].get("dist_edges", [])) + 1)
     npar = 6
     R = np.zeros((nc, NCL))
     N = np.zeros((nc, NCL))
@@ -88,27 +102,29 @@ def fit(d, train, hsel):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--fold", type=int, default=None)
-    ap.add_argument("--out", default=str(cx.FIT))
+    ap.add_argument("--mode", default="1", choices=sorted(cx.FITS))
+    ap.add_argument("--out", default=None)
     a = ap.parse_args()
-    log = LOG.read_text(encoding="utf-8")
+    out_path = a.out or str(cx.FITS[a.mode])
+    log = LOGS[a.mode].read_text(encoding="utf-8")
     modal = ast.literal_eval(re.search(r"modal combo (\(.*\))", log).group(1))
     chosen = ast.literal_eval(re.search(r"^chosen (\[.*\])", log, re.M).group(1))
     assert modal == (MERGE, LAM, TGT), modal
-    d = load()
+    d = load(a.mode == "2")
     if a.fold is not None:
         si = a.fold - SEASONS[0]
         rest = [u for u in range(len(SEASONS)) if u != si]
         o = fit(d, rest, lambda t: si)
-        np.save(a.out, o)
+        np.save(out_path, o)
         return
     o = fit(d, range(len(SEASONS)), lambda t: t)
-    out = Path(a.out)
+    out = Path(out_path)
     out.parent.mkdir(parents=True, exist_ok=True)
-    spec = dict(SPEC)
+    spec = dict(d["spec"])
     spec.update(
         ratio=o.tolist(), goal_guard=GOAL_GUARD, lam=LAM, merge=MERGE, parent_target=bool(TGT),
         td_class=TD_CLASS, seasons=SEASONS,
-        provenance=dict(source="tests/scratch/e177/ctx_anD.py", log="tests/scratch/e177/ctx_an_D.log", fold_chosen=[list(c) for c in chosen], recorded="e177-ctx-ratios-D-td-frozen-rg-kept", pool_queries=int(len(d["q"]))),
+        provenance=dict(source=ANS[a.mode], log=str(LOGS[a.mode].relative_to(REPO)).replace("\\", "/"), fold_chosen=[list(c) for c in chosen], mode=a.mode, recorded=RECORDED[a.mode], pool_queries=int(len(d["q"]))),
     )
     out.write_text(json.dumps(spec), encoding="utf-8")
     print("wrote", out, "cells", o.shape, "queries", len(d["q"]))

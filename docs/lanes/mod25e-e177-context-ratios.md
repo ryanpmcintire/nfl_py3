@@ -24,6 +24,17 @@ One general variant replacing RG+RGT: class-ratio reweight of Geo-served run and
     if os.environ.get("CTX") == "1":
         label = label + "cx"
 
+- E177 E RAN (2026-10-18; tests/scratch/e177/ctx_anE.py = ctx_anD.py with cells x run-to-go {<=3,4-6,7+}, fixed S5 lam 5 parent, ctx_an_E.log): held-out dLL v current +0.00882 [0.00841,0.00925] 9/9, gap 0.0057; v D +0.00166 (E176e). RGT territory E minus ref -0.00444 P>0 0.000 (D -0.00164). E161 bucket bar: 1 of 20 IN->OUT (2nd d>=7 gd .0158 v [.0163,.0179]; D 0), 4th d6+ conv IN (ref OUT). Neutral 3rd&<=3 run served .680 v real .675 (+0.5pp IN; D overshoot +1.4pp reduced); neutral 3rd&7+ run .258 v .290 OUT, 4-6 .501 IN. E FAILS the no-IN->OUT bar by one near-miss bucket; NOT built as served. Recorded e177-ctx-ratios-E-distance-split (unresolved_below_power).
+- E177 F DECLARED before running (2026-10-18; 6th variant in family e177-ctx-ratios, 1 fixed combo S5 lam 5 parent, no selection; combo-looks so far 24 A + 48 B + 24 C + 24 D + 1 E + 1 F = 122): E's run-to-go split (<=3/4-6/7+) applies only to run-play queries outside RGT territory (Q4<=300 trailing); D cells (no split) for pass queries, RGT territory, and everything else; goal guard, down 4 skip, RG territory unchanged. Harness tests/scratch/e177/ctx_anF.py = ctx_anE.py with the distance bin forced to 0 outside run-and-not-RGT; same bucket bar (20 looks). Pass rule: 0 IN->OUT and RGT-territory dLL no worse than D (-0.00164).
+
+- E177 F RAN (ctx_anF.py, ctx_an_F.log): S5 lam 5 parent 9/9. Held-out dLL v current +0.00833 [0.00791,0.00879] P>0 1.000 9/9, in-sample +0.01258, gap 0.00425; F minus D +0.00100 [0.00090,0.00112] P>0 1.000 (E v D +0.00166); v RG+RGT +0.00370 [0.00342,0.00400]. RGT territory F minus ref -0.00165 [-0.00347,+0.00014] P>0 0.058 (D -0.00164; E -0.00444); RG territory 0; outside both +0.00419. sd log ratio median 0.029, split-half 0.888. E161 bucket bar 0 of 20 IN->OUT (ref 1: 4th d6+ conv). Neutral run 3rd: <=3 .680 v real .675 IN; 4-6 .501 v .519 IN; 7+ .258 v .290 OUT (cur .221 OUT; all-score 7+ IN). PASSES. Recorded e177-ctx-ratios-F-run-distance-outside-rgt (unresolved_below_power).
+- F BUILT as CTX=2: scripts/mod25e_ctx.py (fit_F.json; pol passes distance 0 for pass queries and Q4<=300 trailing so those use the D cell; OT trailing run is split, as in the harness), scripts/mod25e_ctx_fit.py --mode 2 wrote artifacts/mod25e3/ctx/fit_F.json (630x12). Replays tests/scratch/e177/ctx_replay2.py: mode 2 fold-2013 wrapper matched ctx_F_W.npz exactly (max diff 0.0, 29382 served, 2599 skips, 807 RG rows 1.0); mode 1 D replay max diff 0.0. D fit.json unchanged. 3-seed script tests/scratch/e177/run_cx2_3seed.sh (cand label +cx2, RGR=1 CTX=2), NOT launched.
+- crH PATCH update: the install block is unchanged (cxm.enabled() accepts CTX 1 or 2); near line 440 use
+    if os.environ.get("CTX") == "1":
+        label = label + "cx"
+    if os.environ.get("CTX") == "2":
+        label = label + "cx2"
+
 ## Tried
 A, B, C failed the E161 bucket bar (TD class ratio and RG territory). D passes.
 
