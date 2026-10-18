@@ -23981,6 +23981,34 @@
       "source": "tests/scratch/e172/cd_real.txt",
       "standard_error": null
     },
+    "e172_clsdraw_loso_class_ll_vs_window": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "LOSO multinomial class model (returned TD, other turnover, none) held-out log likelihood per query minus best-shrunk window class shares, 60000 queries, game bootstrap 90 percent",
+      "effect": 0.001035,
+      "effect_units": "log_loss_improvement",
+      "family": "e172_clsdraw",
+      "interval": [
+        -3.79e-05,
+        0.0021434
+      ],
+      "league": "nfl",
+      "notes": "vs kernel K-set shares +0.01414 interval 0.01266 to 0.01560 probability_positive 1.0; 7 of 9 seasons positive vs window",
+      "plain_summary": "A fitted class model predicts returned-touchdown turnovers slightly better out of season than window shares and much better than the nearest-neighbour kernel shares.",
+      "probability_positive": 0.943,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2300,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e172/cd_run.txt",
+      "standard_error": 0.00065
+    },
     "e172d_teamkernel_returntd_lift": {
       "category": "modeling",
       "classification": "unresolved_below_power",

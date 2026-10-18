@@ -445,6 +445,26 @@ SCHEDULE: tuple[Job, ...] = (
     ),
     *(
         Job(
+            f"draftcap_forward_log_{day}_{at.replace(':', '')}",
+            day,
+            at,
+            60,
+            [
+                str(UV),
+                "run",
+                "--no-sync",
+                "python",
+                str(REPO / "scripts" / "draftcap_forward_log.py"),
+            ],
+            True,
+            "Log the frozen MOD-23 unit-10 arm B starter draft-capital model-alone pick beside the "
+            "same-pipeline base and the served model for the forward study.",
+            added_on="2026-10-18",
+        )
+        for day, at in (("thu", "19:15"), ("sun", "11:15"))
+    ),
+    *(
+        Job(
             f"mod25_forward_q_{day}_{at.replace(':', '')}",
             day,
             at,

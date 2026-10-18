@@ -306,3 +306,29 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+def current_season_snaps(week):
+    from nfl_ats.nflverse_current_season import SeasonReleaseNotPublished, load_season_frame
+    from nfl_ats.players import canonicalize_snaps
+
+    files = sorted((ROOT / "data" / "players" / "raw").glob("2*/snap_counts.parquet"))
+    base = pd.read_parquet(files[-1])
+    base = base.loc[base["season"].astype(int) != SEASON]
+    try:
+        fresh = canonicalize_snaps(load_season_frame("snap_counts", SEASON))
+    except SeasonReleaseNotPublished:
+        fresh = base.iloc[0:0]
+    fresh = fresh.loc[fresh["week"].astype(int) < int(week)]
+    if len(fresh) and not (fresh["week"].astype(int) < int(week)).all():
+        raise SystemExit("snap rows from the target week or later would enter a pregame feature")
+    columns = [c for c in base.columns if c in fresh.columns]
+    merged = pd.concat([base[columns], fresh[columns]], ignore_index=True)
+    if merged.duplicated(["game_id", "team", "player"]).any():
+        raise SystemExit("merged snap counts contain duplicate game/team/player rows")
+    folder = ROOT / "data" / "players" / "forward_snaps"
+    folder.mkdir(parents=True, exist_ok=True)
+    path = folder / f"snap_counts_{SEASON}_before_week_{int(week):02d}.parquet"
+    merged.to_parquet(path)
+    print("snap counts", files[-1].parent.name, "plus", SEASON, "rows", len(fresh), "through week", int(fresh["week"].max()) if len(fresh) else None, flush=True)
+    return path

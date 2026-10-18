@@ -206,6 +206,7 @@ def record(week, now, dry):
     if not eligible:
         print(json.dumps({"week": week, "logged": [], "refused": refused}, indent=1))
         return
+    U6["SNAP_GLOB"] = str(M.current_season_snaps(week))
     snapshot = latest_snapshot(ROOT / "data" / "raw")
     delta, coef, schedules, snap_path = build_delta(snapshot)
     table, digest = coefficient_digest(coef)
