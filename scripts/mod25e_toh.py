@@ -14,6 +14,7 @@ POOL = tuple(range(2009, 2018))
 FEATS = ("lh", "sc", "tied", "otr", "q4", "run", "dto", "le30", "le60", "le120")
 COUNT = {"calls": 0, "eligible": 0, "called": 0, "no_donor": 0}
 _STATE = {"k": None, "rng": None}
+SALT = 9901
 
 
 def enabled():
@@ -155,7 +156,7 @@ def install_toh():
         COUNT["eligible"] += 1
         if _STATE["k"] != dv._G.get("task_key"):
             _STATE["k"] = dv._G.get("task_key")
-            _STATE["rng"] = dv.task_rng("toh", seed)
+            _STATE["rng"] = dv.task_rng(SALT, seed)
         r = _STATE["rng"]
         p = float(predict(spec, design([qtr], [clock_val], [score_diff], [off_to], [def_to], [code]))[0])
         t = int(r.random() < p)

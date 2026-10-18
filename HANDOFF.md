@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-18T18:54:13.746490+00:00`
+Refreshed at: `2026-10-18T19:34:10.584110+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-10-18T18:54:13.746490+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `e7dacf95018e` — Fix paired-wind save argument order; card-ledger check ignores flag-only drift; MOD-25e default-off hooks RGT, FD5, SERVEDIDX, GSTOP2 and lanes
-- Pending change set: 148 paths
+- Baseline commit: `80cdbba9f69d` — MOD-25e default-off hooks STBK, TOH, SAFEG, SAFEGP, LDR2 and lanes; new base XFA+LDR+RG adopted on clean paired boots
+- Pending change set: 145 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/independent-combination-validation.md`
   - `M  docs/lanes/mod23-unit8-candidates.md`
-  - `M  docs/lanes/mod25e-e168-variance.md`
-  - `A  docs/lanes/mod25e-e172-defscores.md`
-  - `A  docs/lanes/mod25e-e172c-returntd.md`
-  - `A  docs/lanes/mod25e-e173-timeouts.md`
-  - `A  docs/lanes/mod25e-e174-serialcov.md`
-  - `M  docs/lanes/mod25e-generator-fidelity.md`
-  - `M  docs/lanes/week6-lock-2026-10-18.md`
+  - `M  docs/lanes/mod25e-e162-leader-close.md`
+  - `M  docs/lanes/mod25e-e172c-returntd.md`
+  - `M  docs/lanes/mod25e-e174-serialcov.md`
+  - `A  docs/lanes/mod25e-e175-leader-q4.md`
+  - `A  docs/lanes/mod25e-e176-neutral-yards.md`
+  - `A  docs/lanes/mod25e-e177-context-ratios.md`
+  - `A  docs/lanes/mod25e-hook-review-2026-10-18.md`
   - ` M docs/model.html`
-  - `M  scripts/mod25e_crH.py`
-  - `A  scripts/mod25e_ldr2.py`
+  - ` M registry/weak_signals.json`
+  - `M  scripts/mod25e_gstop2.py`
   - ` M scripts/mod25e_lpo.py`
-  - `A  scripts/mod25e_safeg.py`
-  - `A  scripts/mod25e_safegp.py`
-  - `A  scripts/mod25e_stbk.py`
-  - ...and 128 more
+  - `A  scripts/mod25e_tdr.py`
+  - `M  scripts/mod25e_toh.py`
+  - ` M tiebreaker.json`
+  - `?? an.csv`
+  - ...and 125 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

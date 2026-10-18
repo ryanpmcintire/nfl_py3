@@ -3,7 +3,8 @@ import os
 import numpy as np
 
 COUNT = {"calls": 0, "same_cls": 0, "stop_only": 0, "self": 0}
-_STATE = {"n": 0}
+_STATE = {"k": None, "rng": None}
+SALT = 9903
 
 
 def enabled():
@@ -35,8 +36,10 @@ def install_gstop2():
         near = cap["near"]
         sj = stop[int(j)]
         ci = cls[int(i)]
-        _STATE["n"] += 1
-        r = np.random.default_rng([int(i), int(j), _STATE["n"]])
+        if _STATE["k"] != dv._G.get("task_key"):
+            _STATE["k"] = dv._G.get("task_key")
+            _STATE["rng"] = dv.task_rng(SALT, int(dv._G["cfg"].get("seed", 3)))
+        r = _STATE["rng"]
         COUNT["calls"] += 1
         m = near[(stop[near] == sj) & (cls[near] == ci)]
         if len(m):

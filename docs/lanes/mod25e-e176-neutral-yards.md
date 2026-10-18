@@ -1,0 +1,28 @@
+# E176 neutral-state per-play net yardline gain, sim v real
+## Goal
+Name the carrier of the neutral-drive deficit (4th down reached +2.6 yd farther from goal than real; 2nd-down distance +0.17) among penalties, lattice/shift, Geo pool composition, yard_shift. No yards knob.
+## State (measured; scripts tests/scratch/e176/m1.py m2.py; frames tests/scratch/e166/S.pkl T.pkl, s11-13 XFA+LDR+RG)
+- Penalties ARE in the sim: engine draws play_type_code 6 (no_play) from the same transition frame (sim04_engine.py:53 LIVE_TYPES, :61 code 6, :706); share of snaps S 6.03% (346,724/5.75M) v R 6.18% (21,381/346k). Geo repicks only run/pass (mod25e_geo.py:16 RUN_PASS, :316-348), so penalty draws are untouched by Geo.
+- yard_shift (sim04_engine.py:36 gain .6425, :996-997) in neutral states: mean -0.0054 yd [-0.0055,-0.0052], sd 0.035; by down -0.005; all play types equal. Not a carrier. Note it is applied to code-6 penalty rows too (shifts a signed penalty yardage; size 0.005 yd).
+- m3/m4 (neutral, 2.97M sim v 179k real snaps, game bootstrap 90%): net gain/snap sim 5.131 v real 5.150, diff -0.019 [-0.056,+0.017]; composition +0.009, within-cell -0.027 [-0.063,+0.008]. Down2 -0.079 [-0.135,-0.012] (within-cell -0.060); d1 -0.001, d3 -0.044 [-0.128,+0.040]. Penalties: rate S 6.83% v R 7.08% (-0.26pp [-0.37,-0.15]); penalty contribution -0.006 [-0.016,+0.005] (about a third of -0.019, interval spans 0); pos-penalty net 8.5 v 9.5-9.7 at 2nd and 5+ (sim ~1.1 yd short, ~0.01 yd/snap).
+- 4th down +1.45 yd/snap diff is composition (+1.46 [1.18,1.76]), within-cell -0.01: go-for-it/kick mix (run share .436 v .316; 4th no_play share .34 v .51 incl kick-formation penalties), not yards.
+- 3rd-down conversion by dist (net>=dist or TD): diffs within +-.006, dist-mix weighted 0.000 [-.004,.004]. 1st-down run/pass cells equal within bootstrap.
+## Verdict
+Per-play neutral yards are NOT the carrier of the drive-level 4th-down reach deficit; no per-play yard deficit resolved (best: 2nd down -0.06, penalty -0.006). Lattice (E161) acts at 4th-and-1/goal zone only; Geo repick fires only on goal violations; yard_shift is negligible. Deficit is drive-level (sequence/selection), not a yards scale.
+## Next
+Penalty module only as small fix: fit pospen yardage by down x dist and rate by snap class from real; expected effect <0.01 yd/snap. Better next subtask: drive-sequence decomposition (plays per drive, 3rd-attempt arrival rate, 4th-arrival distance by 3rd-down result) sim v real.
+
+## E176b drive-sequence decomposition (measured; tests/scratch/e176/m6b.py m9.py m10.py; neutral drives, half-end drives dropped, 423,841 sim v 25,295 real drives, game bootstrap 90%)
+- Drive start yl equal (72.30 v 72.28). Series/drive 2.462 v 2.498 (-0.036 [-0.054,-0.019]); 1-series drives +0.8pp [0.3,1.4]; best-reach yl +0.51 [0.24,0.80] farther. 3rd arrivals per series .464 v .462 and 3rd conv equal; 4th-per-3rd .611 v .602.
+- Series-birth deficit by source (per play, total -0.0036): 1st-down run -0.0013 [-0.0018,-0.0007]; 3rd-down run -0.0014 [-0.0020,-0.0010] (pass +0.0009 offsets); all 4th -0.0010; penalties -0.0005 [-0.0012,+0.0001].
+- Run conversion by cell (sim v real): 1st&7+ 10.4 v 11.3% (-0.8pp [-1.1,-0.5]); 3rd&<=3 55.1 v 58.4% (-3.2pp [-4.6,-2.0]); 3rd&7+ 17.0 v 23.8% (-6.9pp [-8.7,-4.9]). Pass 3rd&7+ +0.8pp [0.2,1.4], 1st&7+ +0.5pp [0.1,1.0]. Run share same.
+- 4th down: go share 4.9 v 5.9% of 4th arrivals, punt 69.2 v 66.1%; 4th no_play 1.5 v 3.9% (real = kick-formation penalties, mean dist 6.8, yl 50 v sim dist 3.8, yl 38; all penalty, 3359 of 3484 flagged). Go conv equal (.558 v .577).
+- Not a carrier: starting field, 3rd-down arrival/conversion, turnover rate, half-end drives (labelling differs: real flips at half, sim does not).
+## E176b verdict
+Carrier: run-play gain tail conditional on yards-to-go (runs reach the line less often at equal mean gain), plus ~1/4 from 4th-down mix. Code not located (not searched). One mechanism: distance-conditional run first-down hazard P(gain>=dist | dist, down); fit per dist bucket from real, LOSO by season, check vs 1st/3rd run cells above. Secondary: 4th-down kick-formation penalty rows (no_play at punt/FG) missing.
+
+## E176d Geo conflict resolved (measured; tests/scratch/e176/m13.py m14.py; S.pkl idx indexes T.pkl rows)
+- Code (read): GEO=2 sets always=True (mod25e_geo.py:438); pol (:447-475) routes every run/pass draw through Geo.fix(force=always) (:350). Pools per (down, play type) (:289-307); candidates() with GEOX=2 (:322-330) takes fp in [q, q+w], keeps rows with dist == query dist (:325), widens w by 1 until >=K_STATE=200 rows; then 200 nearest on (dist, score, time) (:364-366), team-kernel weights (:458-467); next_down/next_distance/yards come from the picked real row (REPICK_KEYS :249, ENGINE_KEEP only clock/timeouts :250). E176 "fires only on goal violations" was wrong for GEO=2.
+- Frames: served run/pass rows have code and down equal to played (100%), row dist == query dist 97.0% (3rd&7+ run 95.2%). So DEXR would be a duplicate; not built.
+- Neutral 3rd&7+ runs: served-row conversion 21.5%, served-yards 20.4% (yard shift costs ~1pp), real 26.3% (n=1501). LOSO unweighted exact-dist pool for the same real queries: 22.9% (knn200 = whole window), so pool itself is ~3.4pp below neutral real. 3rd&<=3 runs equal (62.3 v 62.0); code shares equal.
+- Cause: exact-dist pool pools all score/time states; neutral long-yardage runs convert more (scramble/designed mix) and f3 nearest-200 does not separate them (knn == window mean). Gap is context (score/time/leader), not distance. Next: conversion-class by context in pool (score band x qtr) LOSO; LDR covers only leading states.

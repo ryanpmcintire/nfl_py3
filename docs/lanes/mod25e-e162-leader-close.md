@@ -37,3 +37,8 @@ Find why sim leaders gain more yards / pass more than real (Q4 close and blowout
 
 ## Open
 Pass yards for close leaders unchecked. Team kernel absent from all E162 pools. Fold-s ratio pools exclude {s,u}; inner selection includes held-out inner season (mild).
+
+## E162i hook-order audit (measured 2026-10-18; tests/scratch/e162i/run.py + run.sh; seed 95, 1 world x 1 season; env as run_ldrg_3seed.sh minus FD5, whose pickle needs __main__.Choice under a foreign runner)
+- Read: engine calls ns-global pick_index_nn_conditioned once per play (sim04_engine.py:943); LDR wraps that entry (ldr.py install_ldr, cap :196). Hooks installed after LDR (crH.py:210-233: rg, rgt, rtd, cky2, urg2) wrap pol/Geo.fix only; none re-wraps pick. Geo.fix keeps (down, play_type_code) (geo.py:354). Only 4th down swaps idx after the pick (engine :976-991). No override found by reading. No patch needed from this evidence.
+- Measured (leaders 1-3, Q4<=120; n 36/28/23/17 downs 1-4; one worker file truncated): pre-LDR proposals pass d1 10/81, d2 24/70; LDR output pass d1 0/36, d2 3/28; pol input d1 2/36, d2 3/28; pol output d1 2/36, d2 2/28; pol changed play type 3/104 (all to code 6). LDR cuts the proposal and nothing downstream undoes it here; n too small to reproduce the .128 excess.
+- Open anomaly: LDR-returned pass count differs from pol-input pass count on the same plays (d1 0 v 2, d3 5 v 2) though idx is unchanged on downs 1-3: LDR's code[j]/rowcls (arrays captured at install) may differ from the engine's play_type_code at idx. Next unit: per-play rows (j, code[j], rowcls[j], drawn code, ids of arrays) in a 3-seed LDR run; then compare.
