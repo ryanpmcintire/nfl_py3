@@ -33,3 +33,14 @@ Aligned (measured). build_transition_frame with and without team_ratings both gi
 - GSTOP2 smoke (tests/scratch/e163/tgt_g2s_smoke.txt, tests/scratch/e179/cells.py) v base ldrg v real: final-drive reach .282 v .329 v .423 (gap -.141 [-.246,-.059] v -.094 [-.195,+.009], moved away); P(score) .269 v .329 v .340; clock expiry|reach .045 v .042 v .022; Q4 last play <=5s .268 v .250 v .214; FG kicked <=5s (gsr<=60) .295 v .394 v .404 (n 78/66/319, wide). Checks: SD 14.57 v 15.15, mass3 .129 v .154, pts/g 44.35 v 44.16.
 - Verdict GSTOP2: no target moved toward real; reach and FG<=5s moved away; no 3-seed script written. Recorded weak-signals mod25e-gstop2-smoke-s31-final-drive-reach (unresolved_below_power; probability_positive 0.5 placeholder, no interval from a 1-seed smoke).
 - g2sth (GSTOP2+TOH): dir ...g2sthldrg_s31 has no e5.json; unscored, still pending. Run score: tgt.py base,g2sth then cells.py with label g2sthldrg.
+
+## GSTOP2 mechanism (measured, tests/scratch/e179/fd.py, seed 31, burn 2, game bootstrap 300 reps, 90%)
+- Read: mod25e_gstop2.py wraps Geo.fix; after the repick it replaces only clock_elapsed with a random near-set row sharing the repicked row's stop flag and the drawn row's class. Geo.pol runs it before the base policy (mod25e_geo.py:447-471), so pace multipliers and hurry-up edits still apply. Touches every run/pass draw under GEO=2.
+- Final drives (tie/trail 1-3), real v base v GSTOP2, n 324/73/78: plays 4.53/4.38/4.74; s/play 12.0/14.0/14.2; start clock 56/67/64 s; reach .423/.329/.282; clock-end share .417/.575/.615; turnover .077/.014/.000; downs .034/.041/.077; score .340/.329/.269; yards per run/pass 6.9/7.1/6.8; offense timeouts used .58/.14/.14.
+- GSTOP2 minus base (unpaired): reach -4.7pp [-16.9,+7.3] P(>0) .26; plays +.32 [-.75,+1.3]; s/play +.12 [-2.3,+2.6]; start -4 s [-31,+15]. Nothing shifts beyond noise (SE of reach diff ~7pp).
+- Carrier: none found. Ruled out: pace/policy override (fix runs before base pol), plays per drive, s/play, start clock. The reach drop is within one-world sampling noise (different RNG streams give different games).
+- Real shortfalls present in BOTH sims, so not GSTOP2: offense timeout use (.14 v .58), sim s/play 2 s slower, turnovers ~0 v .077, clock-end share too high. These are the candidate mechanisms for the reach gap.
+- Recorded mod25e-gstop2-smoke-s31-final-drive-mechanism (unresolved_below_power, rate_pp).
+
+## Next (added)
+- Default-off spec (named mechanism, no constant): final-drive timeout use by the trailing offense, taken from the real stop rate conditional on state (clock, margin, timeouts left), added to the stop flag; measure first with a 3-seed base-only read of timeout use in Q4 trailing drives. Do not run more GSTOP2 seeds for reach.

@@ -54,3 +54,7 @@ Run queries only (down != 4, fp > 10, not late-lead run territory). Second Geo w
 - Built default-off: scripts/mod25e_ctxscr.py (CTXSCR=1, requires CTX=2), scripts/mod25e_ctxscr_fit.py, artifacts/mod25e3/ctxscr/fit.json, tests/scratch/e178/run_cs_3seed.sh (cand ...cx2cs v base ...cx2; not launched).
 ## E178b Next
 crH patch (owner of crH applies): after `cxm.install_ctx()` add `import mod25e_ctxscr as csm` and `if csm.enabled(): csm.install_ctxscr()`; in label block after the CTX==2 branch add `if os.environ.get("CTXSCR") == "1": label = label + "cs"`. Then run tests/scratch/e178/run_cs_3seed.sh once CTX F base seeds exist.
+## E178c CTXSCR on its own target (measured; tests/scratch/e178/scr_target_run.py + scr_target_agg.py; LOSO 2009-2017; n=102817 affected run queries; game bootstrap 90%, 1000)
+- Scramble-flag LL/query, CS v marginal +0.035463 [0.033769,0.037179] P+ 1.000 folds+ 9/9 in-sample +0.036007 gap +0.000545; v run-to-go-only +0.034911 [0.033242,0.036589] 9/9; v CTX F implied scramble prob +0.004143 [0.003557,0.004714] P+ 1.000 8/9 (gap +0.000826). Most of the gain is the context cells already in CTX F (F v marginal +0.031320); CTXSCR adds +0.0041 on top.
+- Joint (class, scr) CS v F +0.001073 [0.000469,0.001675] P+ 0.999 8/9 in-sample +0.001894 gap +0.000821; class-only -0.000061 is its marginal.
+- Decision: supports run_cs_3seed.sh; queue line kept. Recorded e178-ctxscr-scrflag-vs-marginal, e178-ctxscr-joint-class-scramble-vs-ctxF (unresolved_below_power).

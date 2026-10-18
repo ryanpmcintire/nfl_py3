@@ -25,3 +25,12 @@ e91, e92, e95, e97, e99, e100, e101, e102, e106, e107, e108, e111, e112, e113, e
 
 ## Next
 Install CTX (+TDR) in crH via sole editor; then run the queue, one 3-worker sim at a time, thread caps.
+
+## 2026-10-18 evening update (orchestrator; supersedes rows above where they differ)
+- Row 1 SD/noise/persistence: CTX F (CTX=2) 3-seed running (tests/scratch/e177/run_cx2_3seed.sh, base ...gx2faldrg). CTXSCR (scramble share, cs) queued on top of CTX F; TDR (tr) 3-seed queued. Trailer turnover per drive still needs a turnover-logging sim.
+- Row 2 mass3: FD5 provisional (s11+s13) no gain, OT final-3 worse; s12 contaminated, rerun queued.
+- Row 3 late clock: GSTOP2 smoke failed (reach within noise, -4.7 [-16.9,+7.3]); real carrier shared by base and GSTOP2 = trailing offense timeout use on final drives .14 v real .58 (lane hook-review). TOH (timeout calls) init fixed; GSTOP2+TOH smoke queued third.
+- Row 4 leader 3rd-down: E175f enlarged pool fails all-state guard; CTX F covers leader FD offline; check in the CTX F run.
+- Row 5 neutral 3rd&7+ run: scrambles carry it (real 44.5% scramble share; conv .445 v designed .138). CTXSCR offline: .2845 v real .2901 IN; scramble-flag held-out LL +0.0041 v CTX F, joint +0.0011.
+- Row 6 return-TD: static kernel is NOT the carrier (60k-query replay 3.48 v real ~3.40; earlier 5.23 was 300-query noise, record invalidated). CLSDRAW (cl) smoke queued second.
+- Hooks: crash-loop guard in crH (worker init failure aborts the run). Simulator gap records use --effect-units rate_pp.
