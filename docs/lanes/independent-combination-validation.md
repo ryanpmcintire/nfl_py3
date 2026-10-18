@@ -74,3 +74,21 @@ all 16 games, Week 5 15 games (latest capture Thu 10-08 only); Week 6 zero.
 Every job since 10-08 19:55 failed; manual run fri_1210 failed the same. Guard
 untouched. Decision for orchestrator: enroll v3 explicitly (as v2 was); no
 backfill; v2 stays frozen with its 31 games.
+
+## 2026-10-18 source-changed failures
+**Read:** the guard is src/nfl_ats/independent_validation.py:90-91. It compares
+_sources() (sha256 of pinned .py files: model/margin/features/overlay names,
+PINNED_NAMES, cli_commands/prediction.py; lines 58-69) with enrollment
+source_sha256. It never reads model_id, feature-table hash or artifact paths, so
+routine same-week re-syncs cannot trip it; only edits to pinned source files do.
+**Measured:** all FAIL(2) from 10-08 19:55 to the 10-16 18:09 manual run hit the v2
+study (default then); v2 held 31 games (Week 4 all 16, Week 5 15), last capture
+10-08. v3 (Week 6-18, 192 games) was enrolled 10-16 18:21Z-22:21Z; the 18:21 rerun,
+10-17 12:10 and all 10-18 jobs are OK. v3 status: source_unchanged=true, 13
+captured, 13 Week 6 cohort games (all kicking off 10-18) each captured pregame.
+**Lost (v2, not recoverable, no backfill):** Week 5 Sun/Mon 10-11/10-12 refresh
+captures and the Week 5 game missing from v2; Week 6 Thursday 10-15 game (kicked
+off before v3 enrollment, in neither cohort); Thu 19:55, Fri 12:10 snapshots.
+**Decision:** no guard change. Treating "same-method" edits as the same source
+would let unverified model code mix versions, which the protocol forbids. Batch
+pinned-source edits after Week 18 or enroll v4 explicitly.

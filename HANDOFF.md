@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-18T18:37:36.842766+00:00`
+Refreshed at: `2026-10-18T18:54:13.746490+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-10-18T18:37:36.842766+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `c12efefa5eb2` — Best Pick lock follows the served Sunday star; MOD-25e default-off hooks GSTOP, LDR, RG, GEOV1, TILTL and session lanes
-- Pending change set: 152 paths
+- Baseline commit: `e7dacf95018e` — Fix paired-wind save argument order; card-ledger check ignores flag-only drift; MOD-25e default-off hooks RGT, FD5, SERVEDIDX, GSTOP2 and lanes
+- Pending change set: 148 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `A  docs/lanes/ledger-model-change.md`
-  - `A  docs/lanes/mod23-unit8-candidates.md`
-  - `M  docs/lanes/mod25e-e160-reach-x2.md`
-  - `M  docs/lanes/mod25e-e162-leader-close.md`
-  - `M  docs/lanes/mod25e-e166-leader-served.md`
-  - `A  docs/lanes/mod25e-e167-points-deficit.md`
-  - `AM docs/lanes/mod25e-e168-variance.md`
-  - `A  docs/lanes/mod25e-e169-reach-base.md`
-  - `A  docs/lanes/mod25e-e171-keynumbers.md`
+  - `M  docs/lanes/independent-combination-validation.md`
+  - `M  docs/lanes/mod23-unit8-candidates.md`
+  - `M  docs/lanes/mod25e-e168-variance.md`
+  - `A  docs/lanes/mod25e-e172-defscores.md`
+  - `A  docs/lanes/mod25e-e172c-returntd.md`
+  - `A  docs/lanes/mod25e-e173-timeouts.md`
+  - `A  docs/lanes/mod25e-e174-serialcov.md`
   - `M  docs/lanes/mod25e-generator-fidelity.md`
-  - `A  docs/lanes/ntfy-ios-delivery.md`
-  - `A  docs/lanes/paired-wind-failures.md`
+  - `M  docs/lanes/week6-lock-2026-10-18.md`
   - ` M docs/model.html`
-  - `M  scripts/capture_paired_wind_forecast.py`
   - `M  scripts/mod25e_crH.py`
-  - `A  scripts/mod25e_fd5.py`
-  - ...and 132 more
+  - `A  scripts/mod25e_ldr2.py`
+  - ` M scripts/mod25e_lpo.py`
+  - `A  scripts/mod25e_safeg.py`
+  - `A  scripts/mod25e_safegp.py`
+  - `A  scripts/mod25e_stbk.py`
+  - ...and 128 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

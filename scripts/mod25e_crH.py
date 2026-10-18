@@ -149,7 +149,11 @@ def run_with_flags(init, setting):
         ym.install_ylm()
     import mod25e_stb as sb
 
-    if sb.enabled():
+    import mod25e_stbk as sbk
+
+    if sbk.enabled():
+        sbk.install_stbk()
+    elif sb.enabled():
         sb.install_stb()
     import mod25e_stf as sf
 
@@ -199,6 +203,14 @@ def run_with_flags(init, setting):
 
     if v1.enabled():
         v1.install_v1ad()
+    import mod25e_safeg as sg
+
+    if sg.enabled():
+        sg.install_safeg()
+    import mod25e_safegp as sgp
+
+    if sgp.enabled():
+        sgp.install_safegp()
     import mod25e_gstop as gst
 
     if gst.enabled():
@@ -207,6 +219,10 @@ def run_with_flags(init, setting):
 
     if gs2.enabled():
         gs2.install_gstop2()
+    import mod25e_toh as toh
+
+    if toh.enabled():
+        toh.install_toh()
     import mod25e_ldr as ld
 
     if ld.enabled():
@@ -409,6 +425,14 @@ def cmd_e5(a):
         label = label + "gs"
     if os.environ.get("GSTOP2") == "1":
         label = label + "g2s"
+    if os.environ.get("STBK") == "1":
+        label = label + "tk"
+    if os.environ.get("TOH") == "1":
+        label = label + "th"
+    if os.environ.get("SAFEG") == "1":
+        label = label + "sg"
+    if os.environ.get("SAFEGP") == "1":
+        label = label + "sp"
     if os.environ.get("LDR") == "1":
         label = label + "ld"
     if os.environ.get("RGR") == "1":
