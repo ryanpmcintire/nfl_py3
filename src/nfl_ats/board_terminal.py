@@ -2326,6 +2326,20 @@ def _season_so_far_challenger_row_html(row: SeasonChallengerRecord) -> str:
     )
 
 
+def _week_strip_html(block: SeasonSoFar) -> str:
+    chips = []
+    for week, wins, losses, pushes in block.week_records:
+        record = f"{wins}-{losses}-{pushes}" if pushes else f"{wins}-{losses}"
+        tone = "up" if wins > losses else "down" if losses > wins else "even"
+        chips.append(
+            f'<li class="wk-chip {tone}"><span class="wk-name">Week {week}</span>'
+            f'<span class="wk-record">{record}</span></li>'
+        )
+    return (
+        '<ul class="week-strip" aria-label="Card record, week by week">' + "".join(chips) + "</ul>"
+    )
+
+
 def _season_so_far_section_html(block: SeasonSoFar | None) -> str:
 
     if block is None:
@@ -2358,7 +2372,9 @@ def _season_so_far_section_html(block: SeasonSoFar | None) -> str:
         f'<span class="foot">{escape(block.best_pick_text)}</span></div>'
         "</div>",
         *(
-            [f'<p class="policy-note">{escape(block.week_by_week_text)}</p>']
+            [_week_strip_html(block)]
+            if block.week_records
+            else [f'<p class="policy-note">{escape(block.week_by_week_text)}</p>']
             if block.week_by_week_text
             else []
         ),

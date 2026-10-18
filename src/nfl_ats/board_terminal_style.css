@@ -172,6 +172,14 @@
   .kpi .value.good{ color:var(--green); }
   .kpi .value.muted{ color:var(--text); }
   .kpi .foot{ font-family:var(--font-mono); font-size:11.5px; color:var(--text-faint); }
+  .week-strip{ list-style:none; margin:14px 0 0; padding:0; display:flex; flex-wrap:wrap; gap:1px; background:var(--line); border:1px solid var(--line); }
+  .wk-chip{ background:var(--panel); padding:10px 14px; display:flex; flex-direction:column; gap:4px; min-width:84px; flex:1 1 84px; border-top:2px solid var(--text-faint); }
+  .wk-chip.up{ border-top-color:var(--green); }
+  .wk-chip.down{ border-top-color:var(--red); }
+  .wk-chip .wk-name{ font-family:var(--font-cond); text-transform:uppercase; letter-spacing:.08em; font-size:11px; font-weight:600; color:var(--text-dim); }
+  .wk-chip .wk-record{ font-family:var(--font-mono); font-weight:700; font-size:17px; color:var(--text); }
+  .wk-chip.up .wk-record{ color:var(--green); }
+  .wk-chip.down .wk-record{ color:var(--red); }
   .kpi .foot b{ color:var(--text-dim); font-weight:600; }
 
   .season-shape{ display:flex; gap:4px; align-items:flex-end; margin-top:2px; }

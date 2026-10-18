@@ -6,6 +6,34 @@
     "A pooled estimate justifies ONE predeclared combined look on a rotation window none of the inputs touched. It is never itself a finding."
   ],
   "signals": {
+    "E162f regime class-ratio reweight of Geo run outcome, phase 3 leads 1+": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "held-out LL per query positive 9/9 folds, in-sample 0.0668 gap 0.0107; installed as RG (RGR=1) default-off; sim-level late-leader excess not closed; no closing ground",
+      "closing_ground": null,
+      "description": "Class-ratio reweight (yards bin x first down, TD, turnover) of Geo-served run outcomes for late leaders (Q4 under 300s, lead 1+), 12 classes, cells lead{1-8,9+} x time{4 bins}, lam 1 chosen 9/9 folds LOSO",
+      "effect": 0.0561,
+      "effect_units": "log_loss_improvement",
+      "family": "mod25e-e162-regime-ratio",
+      "interval": [
+        0.0492,
+        0.0633
+      ],
+      "league": "nfl",
+      "notes": "installed as mod25e_rg.py; sample_games not stated in lane",
+      "plain_summary": "Reweighting simulated run outcomes for late leaders fits real play outcomes better out of season",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "docs/lanes/mod25e-e162-leader-close.md",
+      "standard_error": null
+    },
     "E162g regime class-ratio reweight of Geo run+pass outcomes, leads 9+ Q3/Q4": {
       "category": "modeling",
       "classification": "unresolved_below_power",
@@ -23924,6 +23952,90 @@
       ],
       "source": "artifacts/mod25e3/tiltl/fit.json",
       "standard_error": null
+    },
+    "e174c mid-game trailer regime class-ratio reweight (RGM)": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Q2-Q4 gsr>300 trailing run/pass Geo class ratios, nested LOSO, 12 combos; held-out LL per query vs LOSO Geo pool, K=200",
+      "effect": 0.00334,
+      "effect_units": "log_loss_improvement",
+      "family": "mod25e-e174",
+      "interval": [
+        0.00292,
+        0.00379
+      ],
+      "league": "nfl",
+      "notes": "interval is 90 pct game bootstrap; 12 combos x 9 folds; effect per query; not installed",
+      "plain_summary": "Reweighting mid-game trailer play outcomes toward real improves per-play fit slightly in all 9 seasons but lowers trailer touchdown and first-down rates, so it does not close the trailer scoring gap.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e174/p2_an.txt",
+      "standard_error": null
+    },
+    "e177-ctx-ratios-C-no-d4-no-goalzone": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "held-out dLL v current 9/9 folds; minus RG+RGT +0.00270 [0.0024,0.00302], RG territory -0.01013, RGT territory -0.00075; 3 of 20 E161 buckets IN->OUT (TD yl21-40, TD yl41-99, pp11-14 reach); not served",
+      "closing_ground": null,
+      "description": "Context class-ratio reweight (score5 x 7 periods x 3 downs, lam 5, parent target) excluding down 4 and yl<=10; nested LOSO; family A,B,C = 72 combos x 9 folds plus ~100 effect cells plus 20 E161 bucket looks",
+      "effect": 0.00734,
+      "effect_units": "log_loss_improvement",
+      "family": "e177-ctx-ratios",
+      "interval": [
+        0.00691,
+        0.00775
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 1.0,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2300,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e177/ctx_an_C.log",
+      "standard_error": 0.00022
+    },
+    "e177-ctx-ratios-D-td-frozen-rg-kept": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "held-out dLL v current 9/9 folds, in-sample +0.01072 gap 0.0034; minus RG+RGT +0.00269 [0.00242,0.00299] 9/9 folds, RGT territory -0.00164 [-0.00344,+0.00013] P>0 0.062, outside both +0.00309; 0 of 20 E161 buckets IN->OUT; split-half 0.887; not served (simulator unserved)",
+      "closing_ground": null,
+      "description": "Context class-ratio reweight (score5 x 7 periods x 3 downs, lam 5, parent target), TD class ratio frozen to 1, down 4 and yl<=10 served unchanged, RG lead/time cells kept in Q4<=300 lead-run territory; nested LOSO; family A-D = 96 combos x 9 folds plus ~100 effect cells plus 20 E161 bucket looks",
+      "effect": 0.00733,
+      "effect_units": "log_loss_improvement",
+      "family": "e177-ctx-ratios",
+      "interval": [
+        0.00689,
+        0.00776
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 1.0,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2300,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e177/ctx_an_D.log",
+      "standard_error": 0.00022
     },
     "ecdf_smoothing_accuracy": {
       "category": "modeling",
@@ -173465,6 +173577,62 @@
       "source": "artifacts/mod23_unit7/report.json",
       "standard_error": null
     },
+    "mod23_unit8_label_weights_sbr_2011_2019_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model trained with game weights from measured label noise, paired vs base, 2011-2019; 1139-1092 vs 1142-1089.",
+      "effect": -0.1344688480502017,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit8_label_weights",
+      "interval": [
+        -1.5765765765765767,
+        1.494633028880291
+      ],
+      "league": "nfl",
+      "notes": "Ridge alpha 10 trained with weights of one over the out-of-fold residual variance of each completed-game stratum (QB change, fourth-quarter margin band, non-offensive touchdown), variances from prior seasons only; two looks (two eras), single-stratum ablations unrecorded.",
+      "plain_summary": "Giving noisy-result games less weight in training moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.4062,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod23_unit8/report_all.json",
+      "standard_error": null
+    },
+    "mod23_unit8_label_weights_tuesday_2020_2025_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model trained with game weights from measured label noise, paired vs base, 2020-2025; 785-718 vs 802-701.",
+      "effect": -1.1310711909514304,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit8_label_weights",
+      "interval": [
+        -3.395472703062583,
+        0.5870841487279843
+      ],
+      "league": "nfl",
+      "notes": "Ridge alpha 10 trained with weights of one over the out-of-fold residual variance of each completed-game stratum (QB change, fourth-quarter margin band, non-offensive touchdown), variances from prior seasons only; two looks (two eras), single-stratum ablations unrecorded.",
+      "plain_summary": "Giving noisy-result games less weight in training moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.1487,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit8/report_all.json",
+      "standard_error": null
+    },
     "mod23_unit8_pageviews_A_qb_proxy_2011_2019_accuracy_diff": {
       "category": "attention",
       "classification": "unresolved_below_power",
@@ -173575,6 +173743,118 @@
         2025
       ],
       "source": "artifacts/mod23_unit8/report.json",
+      "standard_error": null
+    },
+    "mod23_unit8_span_fam_sbr_2011_2019_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model with per-family span chosen leave-one-season-out, paired vs span 8 base, 2011-2019; 1135-1096 vs 1142-1089.",
+      "effect": -0.31376064545047067,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit8_span",
+      "interval": [
+        -1.2505582849486379,
+        0.4941710378328056
+      ],
+      "league": "nfl",
+      "notes": "Base ridge alpha 10 with the exponentially weighted team-state span (per-family span chosen leave-one-season-out) over a grid of 3 to 24 games, scored on the held-out season; four looks (two eras by family and global arms); the declared penalty and special-teams families have no state input and were not tested.",
+      "plain_summary": "Letting the memory length of team form be chosen from other seasons moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.23735,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod23_unit8_span/report_all.json",
+      "standard_error": null
+    },
+    "mod23_unit8_span_fam_tuesday_2020_2025_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model with per-family span chosen leave-one-season-out, paired vs span 8 base, 2020-2025; 806-697 vs 802-701.",
+      "effect": 0.2661343978709248,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit8_span",
+      "interval": [
+        -0.2777777777777778,
+        1.0745466756212223
+      ],
+      "league": "nfl",
+      "notes": "Base ridge alpha 10 with the exponentially weighted team-state span (per-family span chosen leave-one-season-out) over a grid of 3 to 24 games, scored on the held-out season; four looks (two eras by family and global arms); the declared penalty and special-teams families have no state input and were not tested.",
+      "plain_summary": "Letting the memory length of team form be chosen from other seasons moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.6887,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit8_span/report_all.json",
+      "standard_error": null
+    },
+    "mod23_unit8_span_glob_sbr_2011_2019_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model with one global span chosen leave-one-season-out, paired vs span 8 base, 2011-2019; 1172-1059 vs 1142-1089.",
+      "effect": 1.344688480502017,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit8_span",
+      "interval": [
+        0.09000900090009001,
+        2.5000279142474295
+      ],
+      "league": "nfl",
+      "notes": "Base ridge alpha 10 with the exponentially weighted team-state span (one global span chosen leave-one-season-out) over a grid of 3 to 24 games, scored on the held-out season; four looks (two eras by family and global arms); the declared penalty and special-teams families have no state input and were not tested.",
+      "plain_summary": "Letting the memory length of team form be chosen from other seasons moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.98035,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod23_unit8_span/report_all.json",
+      "standard_error": null
+    },
+    "mod23_unit8_span_glob_tuesday_2020_2025_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model with one global span chosen leave-one-season-out, paired vs span 8 base, 2020-2025; 789-714 vs 802-701.",
+      "effect": -0.8649367930805056,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit8_span",
+      "interval": [
+        -2.370275464445868,
+        0.649772579597141
+      ],
+      "league": "nfl",
+      "notes": "Base ridge alpha 10 with the exponentially weighted team-state span (one global span chosen leave-one-season-out) over a grid of 3 to 24 games, scored on the held-out season; four looks (two eras by family and global arms); the declared penalty and special-teams families have no state input and were not tested.",
+      "plain_summary": "Letting the memory length of team form be chosen from other seasons moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.12855,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit8_span/report_all.json",
       "standard_error": null
     },
     "mod23_unit9_full_accuracy_diff": {
@@ -175648,6 +175928,34 @@
       ],
       "source": "artifacts/mod25_pipeline_v2/grade_ridge_nomkt.json",
       "standard_error": 0.00034
+    },
+    "mod25e-e175-leader17-3rd-conv-gap": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "positive sim excess is a model defect not a signal; mechanism candidates (strength, backup QB, pool share, tilt, score-first rerank) each unresolved; real-only leader dummy -1.1pp P+ 0.25; no closing ground met",
+      "closing_ground": null,
+      "description": "Sim minus real 3rd-down conversion for offence leading by 17+ in Q4 gsr 300-900, play level, base XFA+LDR+RG s11-13 v real 2009-17; carrier not strength, personnel, pool, yard shift, tilt (+0.6 of +3.9) or re-ranking; rating kernel x candidate state",
+      "effect": 5.0,
+      "effect_units": "accuracy_points",
+      "family": "mod25e-e175",
+      "interval": [
+        2.3,
+        7.5
+      ],
+      "league": "nfl",
+      "notes": "interval is 90 pct game bootstrap; E175b-e looks 17+17+336; not installed",
+      "plain_summary": "Simulated big-lead offences convert third downs about 5 points more often than real ones and no tested mechanism yet explains it",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "docs/lanes/mod25e-e175-leader-q4.md",
+      "standard_error": 1.58
     },
     "motivation_ladder_elim_visitor_alive_host": {
       "category": "schedule",

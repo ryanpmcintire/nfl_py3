@@ -429,6 +429,7 @@ class SeasonSoFar:
     challenger_summary_text: str
     nothing_settled_text: str | None
     week_by_week_text: str = ""
+    week_records: tuple[tuple[int, int, int, int], ...] = ()
 
     @property
     def has_rows(self) -> bool:
@@ -444,6 +445,15 @@ def _settled_pick_counts(rows: Sequence[HistoryPickRow]) -> tuple[int, int, int]
     losses = sum(row.status == "settled" and row.correct is False for row in rows)
     pushes = sum(row.status == "push" for row in rows)
     return wins, losses, pushes
+
+
+def _week_records(rows: Sequence[HistoryPickRow]) -> tuple[tuple[int, int, int, int], ...]:
+    records = []
+    for week in sorted({row.week for row in rows if row.week is not None}):
+        wins, losses, pushes = _settled_pick_counts([row for row in rows if row.week == week])
+        if wins + losses + pushes:
+            records.append((int(week), wins, losses, pushes))
+    return tuple(records) if len(records) >= 2 else ()
 
 
 def _week_by_week_text(rows: Sequence[HistoryPickRow]) -> str:
@@ -587,6 +597,7 @@ def _build_season_so_far(
         challenger_summary_text=challenger_summary,
         nothing_settled_text=None,
         week_by_week_text=_week_by_week_text(season_rows),
+        week_records=_week_records(season_rows),
     )
 
 

@@ -91,8 +91,14 @@ def install_fd5():
     import mod25d_variance as dv
     import mod25e_fourth as f4
 
+    class _Unpickler(pickle.Unpickler):
+        def find_class(self, module, name):
+            if name == "Choice":
+                return Choice
+            return super().find_class(module, name)
+
     with open(OUT / "model.pkl", "rb") as fh:
-        model = pickle.load(fh)
+        model = _Unpickler(fh).load()
     era = float(json.loads((OUT / "fit.json").read_text())["era_at_sim"])
     ns = dv._G["ns"]
     seed = int(dv._G["cfg"].get("seed", 3))
