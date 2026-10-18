@@ -23953,6 +23953,34 @@
       "source": "artifacts/mod25e3/tiltl/fit.json",
       "standard_error": null
     },
+    "e172_cd_real_rtd_rating_gradient": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Real 2009-17 run/pass turnover rows: P(returned TD|turnover) falls with offence and defence rating quintile (offence 5.36 to 2.32 pct, defence 4.97 to 2.49); P(turnover|play) nearly flat. Kernel-implied lift 4.12 to 5.23 not decomposed by rating quintile.",
+      "effect": -3.044,
+      "effect_units": "rate_pp",
+      "family": "e172_returntd",
+      "interval": [
+        -3.79,
+        -2.272
+      ],
+      "league": "nfl",
+      "notes": "Offence top-minus-bottom quintile rtd per turnover pp, game bootstrap 90 pct, 1000 draws; defence -2.482 [-3.302,-1.787]; turnover per play offence +0.495 [0.305,0.706], defence +0.10 [-0.097,0.301]. Not a closing ground; units are pp of rate not accuracy.\n[2026-10-18T22:48:20.245978+00:00] effect_units retagged: 'accuracy_points' -> 'rate_pp'. Reason: units corrected on 2026-10-18: effect is a simulator-minus-real (or real-minus-served) gap in percentage points of an event rate, not pick accuracy",
+      "plain_summary": null,
+      "probability_positive": 0.0,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2300,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e172/cd_real.txt",
+      "standard_error": null
+    },
     "e172d_teamkernel_returntd_lift": {
       "category": "modeling",
       "classification": "unresolved_below_power",
@@ -24041,14 +24069,14 @@
       "closing_ground": null,
       "description": "Sim minus real 4th-down go rate on trailer 17+ drives Q2-Q4 gsr>300; within dist5 x yl4 cell residual after standardising states",
       "effect": -2.2,
-      "effect_units": "accuracy_points",
+      "effect_units": "rate_pp",
       "family": "mod25e-e174",
       "interval": [
         -3.6,
         -0.8
       ],
       "league": "nfl",
-      "notes": "effect in pp; 90pct game bootstrap; probability_positive is that of a positive sim-minus-real gap",
+      "notes": "effect in pp; 90pct game bootstrap; probability_positive is that of a positive sim-minus-real gap\n[2026-10-18T22:48:23.106241+00:00] effect_units retagged: 'accuracy_points' -> 'rate_pp'. Reason: units corrected on 2026-10-18: effect is a simulator-minus-real (or real-minus-served) gap in percentage points of an event rate, not pick accuracy",
       "plain_summary": "Simulated far-behind teams go for it on fourth down about two points less often than real teams even in matching situations, but the fitted decision rule matches real, so the gap is upstream and unpinned.",
       "probability_positive": 0.0,
       "recorded_at": "2026-10-18",
@@ -24069,14 +24097,14 @@
       "closing_ground": null,
       "description": "Neutral 3rd&7+ run first-down conversion, real minus served pool; residual after CTX D is 4.3pp, after a declared distance-bucket extension (E) 3.0pp",
       "effect": 3.0,
-      "effect_units": "accuracy_points",
+      "effect_units": "rate_pp",
       "family": "e176-ctx-distance",
       "interval": [
         1.3,
         4.9
       ],
       "league": "nfl",
-      "notes": "n=1472 neutral 3rd&7+ runs; 90% game bootstrap; E minus D heldout dLL +0.00166 [0.00145,0.00186] LOSO; looks: 5 cells x 2 scopes, one E variant declared single",
+      "notes": "n=1472 neutral 3rd&7+ runs; 90% game bootstrap; E minus D heldout dLL +0.00166 [0.00145,0.00186] LOSO; looks: 5 cells x 2 scopes, one E variant declared single\n[2026-10-18T22:48:26.171296+00:00] effect_units retagged: 'accuracy_points' -> 'rate_pp'. Reason: units corrected on 2026-10-18: effect is a simulator-minus-real (or real-minus-served) gap in percentage points of an event rate, not pick accuracy",
       "plain_summary": null,
       "probability_positive": 0.996,
       "recorded_at": "2026-10-18",
@@ -172846,6 +172874,118 @@
       "source": "tests/scratch/unit10_results.json; docs/lanes/mod23-unit10-proper-score-arms-in-card.md",
       "standard_error": null
     },
+    "mod23_unit10_draft_capital_A_sbr_2013_2019_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Starter draft capital arm A paired vs base, 2013-2019; 885-846 vs 897-834.",
+      "effect": -0.6932409012131716,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit10_draft_capital",
+      "interval": [
+        -1.7991874637260592,
+        0.28968713789107764
+      ],
+      "league": "nfl",
+      "notes": "Base fit plus starter draft-capital inputs, arm A (offence/defence draft pick and years in league); four looks (two arms, two eras).",
+      "plain_summary": "Adding the draft pedigree and experience of last week's starters to the base inputs moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.08535,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 7,
+      "sample_games": 1731,
+      "seasons": [
+        2013,
+        2019
+      ],
+      "source": "artifacts/mod23_unit10b/report_all.json",
+      "standard_error": null
+    },
+    "mod23_unit10_draft_capital_A_tuesday_2020_2025_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Starter draft capital arm A paired vs base, 2020-2025; 797-706 vs 802-701.",
+      "effect": -0.33266799733865604,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit10_draft_capital",
+      "interval": [
+        -1.196808510638298,
+        0.5383580080753702
+      ],
+      "league": "nfl",
+      "notes": "Base fit plus starter draft-capital inputs, arm A (offence/defence draft pick and years in league); four looks (two arms, two eras).",
+      "plain_summary": "Adding the draft pedigree and experience of last week's starters to the base inputs moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.2168,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit10b/report_all.json",
+      "standard_error": null
+    },
+    "mod23_unit10_draft_capital_B_sbr_2013_2019_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Starter draft capital arm B paired vs base, 2013-2019; 902-829 vs 897-834.",
+      "effect": 0.28885037550548814,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit10_draft_capital",
+      "interval": [
+        -0.4034582132564842,
+        0.9883720930232558
+      ],
+      "league": "nfl",
+      "notes": "Base fit plus starter draft-capital inputs, arm B (offence/defence draft pick only); four looks (two arms, two eras).",
+      "plain_summary": "Adding the draft pedigree and experience of last week's starters to the base inputs moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.75465,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 7,
+      "sample_games": 1731,
+      "seasons": [
+        2013,
+        2019
+      ],
+      "source": "artifacts/mod23_unit10b/report_all.json",
+      "standard_error": null
+    },
+    "mod23_unit10_draft_capital_B_tuesday_2020_2025_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Starter draft capital arm B paired vs base, 2020-2025; 810-693 vs 802-701.",
+      "effect": 0.5322687957418496,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit10_draft_capital",
+      "interval": [
+        0.1384083044982699,
+        1.1096605744125327
+      ],
+      "league": "nfl",
+      "notes": "Base fit plus starter draft-capital inputs, arm B (offence/defence draft pick only); four looks (two arms, two eras).",
+      "plain_summary": "Adding the draft pedigree and experience of last week's starters to the base inputs moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.99905,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit10b/report_all.json",
+      "standard_error": null
+    },
     "mod23_unit10_robust_target_H_sbr_2011_2019_accuracy_diff": {
       "category": "modeling",
       "classification": "unresolved_below_power",
@@ -176325,14 +176465,14 @@
       "closing_ground": null,
       "description": "Sim minus real 3rd-down conversion for offence leading by 17+ in Q4 gsr 300-900, play level, base XFA+LDR+RG s11-13 v real 2009-17; carrier not strength, personnel, pool, yard shift, tilt (+0.6 of +3.9) or re-ranking; rating kernel x candidate state",
       "effect": 5.0,
-      "effect_units": "accuracy_points",
+      "effect_units": "rate_pp",
       "family": "mod25e-e175",
       "interval": [
         2.3,
         7.5
       ],
       "league": "nfl",
-      "notes": "interval is 90 pct game bootstrap; E175b-e looks 17+17+336; not installed",
+      "notes": "interval is 90 pct game bootstrap; E175b-e looks 17+17+336; not installed\n[2026-10-18T22:48:29.317575+00:00] effect_units retagged: 'accuracy_points' -> 'rate_pp'. Reason: units corrected on 2026-10-18: effect is a simulator-minus-real (or real-minus-served) gap in percentage points of an event rate, not pick accuracy",
       "plain_summary": "Simulated big-lead offences convert third downs about 5 points more often than real ones and no tested mechanism yet explains it",
       "probability_positive": 1.0,
       "recorded_at": "2026-10-18",
@@ -176353,14 +176493,14 @@
       "closing_ground": null,
       "description": "E175f offline replay: exact-distance filter dropped, 5 LOSO-fitted class weights (distance gap, lead class); remaining sim minus real 3rd-down conv for 17+ Q4 leaders after reweight; guard all-state conv gap worsened -0.76 to -1.25",
       "effect": 2.11,
-      "effect_units": "accuracy_points",
+      "effect_units": "rate_pp",
       "family": "mod25e-e175",
       "interval": [
         0.19,
         4.08
       ],
       "league": "nfl",
-      "notes": "90 pct game bootstrap; 1 family 5 params 9 LOSO folds 3 eval sets; not installed; tests/scratch/e175/f1.py",
+      "notes": "90 pct game bootstrap; 1 family 5 params 9 LOSO folds 3 eval sets; not installed; tests/scratch/e175/f1.py\n[2026-10-18T22:48:32.503805+00:00] effect_units retagged: 'accuracy_points' -> 'rate_pp'. Reason: units corrected on 2026-10-18: effect is a simulator-minus-real (or real-minus-served) gap in percentage points of an event rate, not pick accuracy",
       "plain_summary": "Widening the pool of comparable third downs trims the simulated big-lead conversion excess by under a point but also lowers every other situation, so it does not explain the excess",
       "probability_positive": 0.961,
       "recorded_at": "2026-10-18",
@@ -176381,11 +176521,11 @@
       "closing_ground": null,
       "description": "GSTOP2 (clock from near-set row with served stop class) vs LDR+RG base, 1 world 4 seasons seed 31, burn 2, 544 games each; final drive tie/trail 1-3 P(reach yl<=40) sim-real gap -0.094 base to -0.141 GSTOP2 (moved away from real .423); P(score) .329 to .269 v real .340; Q4 last play <=5s .250 to .268 v real .214; clock expiry given reach .042 to .045 v .022; margin_sd 15.15 to 14.57, mass3 .154 to .129, pts/g 44.16 to 44.35. g2sth smoke had no e5.json at scoring.",
       "effect": -4.7,
-      "effect_units": "accuracy_points",
+      "effect_units": "rate_pp",
       "family": "mod25e-late-clock-hooks",
       "interval": null,
       "league": "nfl",
-      "notes": "",
+      "notes": "[2026-10-18T22:48:35.490051+00:00] effect_units retagged: 'accuracy_points' -> 'rate_pp'. Reason: units corrected on 2026-10-18: effect is a simulator-minus-real (or real-minus-served) gap in percentage points of an event rate, not pick accuracy",
       "plain_summary": "One-world smoke is below power; GSTOP2 did not move the final-drive reach target toward real.",
       "probability_positive": 0.5,
       "recorded_at": "2026-10-18",

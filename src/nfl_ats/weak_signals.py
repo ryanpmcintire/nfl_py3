@@ -67,6 +67,7 @@ EFFECT_UNITS = (
     "payout_first_pp",
     "pool_points_per_week",
     "elapsed_seconds_bias",
+    "rate_pp",
 )
 
 NONDIRECTIONAL_EFFECT_UNITS = frozenset({"elapsed_seconds_bias"})

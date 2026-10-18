@@ -33,3 +33,7 @@ Which 4th-down hook is live; mass at 9-15 excess is the mirror of missing 3/14.
 
 ## FD5 scorer ready (2026-10-18)
 tests/scratch/e171/score_fe.py --base <label> --cand <label> [--seeds 11,12,13 --nb 300]; prints sim-real for base and cand and paired cand-base (90% game bootstrap, 18 metrics) for mass 3/6/7/10/14/17, FG-by-winner endings, made FG/game q4 last5 tied/trail1-3/lead1-3, P(final3|tied last5), punt trail1-3 last2min, 4th-down go/punt/fg shares and plays/game. Self-test base v base (tests/scratch/e171/score_fe_selftest.log): mass3 .1272, punt .0970 reproduced, deltas 0. Candidate fe label s11-13 had no play files yet (no e5.json); rerun once its seeds finish. Run takes about 2 min.
+
+## FD5 3-seed (measured 2026-10-18 18:50 ET; artifacts/mod25e3/e171_fe_boot.log, tests/scratch/e163/tgt_3seed_fe.txt)
+- Seed 12 CONTAMINATED: two run_fe_3seed.sh copies wrote the same s12 dir (16:34 and 16:36; the later was killed). s12 cand q4_slope -.244, xq_cov -72 v ~-.04/+1 elsewhere. Dir moved to ..._s12_dup_contaminated; s12 rerun queued (tests/scratch/e178/queue.txt, run_fe_3seed.sh skips finished seeds and re-runs boot + tgt).
+- Seeds 11+13 (provisional): mass3 unchanged (.1272 v .1272, P+ .51); P(final3 | tied after reg) .573 v base .631 (real .682), -.058 [-.081,-.037]; OT share of mass3 down -.021; regulation-decided mass3 +.0026 P+ .90; SD/noise flat. Provisional reading: FD5 does not lift mass3 and worsens OT FG endings. Verdict after the s12 rerun; then weak-signals record.

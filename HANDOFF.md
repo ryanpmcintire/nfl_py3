@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-18T22:26:26.575225+00:00`
+Refreshed at: `2026-10-18T22:49:43.024142+00:00`
 
 ## Start here
 
@@ -21,19 +21,17 @@ Refreshed at: `2026-10-18T22:26:26.575225+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `650cb1013d95` — MOD-23 unit 9b two-sided labels (no gain, recorded); CTX variant F as CTX=2; E175f, E176e, E172d results; 32 finished MOD-25e lanes to done/
-- Pending change set: 135 paths
-  - `M  docs/lanes/done/mod25e-e161-ydist-pool.md`
-  - `A  docs/lanes/mod23-unit10-candidates.md`
-  - `M  docs/lanes/mod25e-e162-leader-close.md`
+- Baseline commit: `60d4fbfde2ca` — MOD-25e crH installs TDR, CTX (D/F) and LDR3 default-off; LDR3 refit on DECIDE outputs; V1AD parse repair; MOD-23 unit 10 robust target (no gain, recorded); GSTOP2 smoke scored
+- Pending change set: 134 paths
+  - `M  docs/lanes/mod23-unit10-candidates.md`
+  - `M  docs/lanes/mod25e-e171-keynumbers.md`
   - `M  docs/lanes/mod25e-e172c-returntd.md`
   - `M  docs/lanes/mod25e-generator-fidelity.md`
-  - `M  docs/lanes/mod25e-hook-review-2026-10-18.md`
   - `M  registry/weak_signals.json`
-  - `A  scripts/mod23_unit10_robust.py`
-  - `M  scripts/mod25e_crH.py`
-  - `A  scripts/mod25e_ldr3.py`
-  - `M  scripts/mod25e_v1ad.py`
+  - `A  scripts/mod23_unit10b.py`
+  - `M  src/nfl_ats/board_site_content.py`
+  - `M  src/nfl_ats/weak_signals.py`
+  - `M  tests/test_weak_signals.py`
   - `?? an.csv`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -43,7 +41,9 @@ Refreshed at: `2026-10-18T22:26:26.575225+00:00`
   - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
   - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
   - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
-  - ...and 115 more
+  - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
+  - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
+  - ...and 114 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

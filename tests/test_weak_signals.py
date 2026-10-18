@@ -692,6 +692,7 @@ def test_existing_effect_units_are_unchanged_by_the_new_additions() -> None:
         "payout_first_pp",
         "pool_points_per_week",
         "elapsed_seconds_bias",
+        "rate_pp",
     }
 
 
