@@ -34,3 +34,11 @@ Carrier: run-play gain tail conditional on yards-to-go (runs reach the line less
 - Recorded weak-signal e176-neutral-3rd7plus-run-conv-residual-after-ctxD (unresolved_below_power, P>0 .996 real>served).
 ## E176e Next
 Build E as default-off hook in a new module (not crH, not mod25e_ctx.py), env name unused per git grep (CTXDB); fit 630x12 LOSO artifact; then ask what the other ~3pp is (run-type mix scramble/designed within neutral long yardage, served-yards shift ~1pp) before any sim run.
+
+## E178 scramble-mix decomposition of the CTX F residual (measured; tests/scratch/e178_scr.py; neutral |sd|<=8 Q1-3 3rd&7+ runs, n=1466 of 1472, game bootstrap 90%)
+- Coding (read): pool play_type from nflfastR play_type; scrambles are play_type run with qb_dropback=1 (6110 of 120780 runs 2009-17), so the pool already codes them as run; sacks are pass. No qb_scramble or run_gap column in the snapshot. Not a coding bug.
+- Real neutral 3rd&7+ runs: scramble share 44.5% [42.3,46.8] (all-score 35.2%); conv scramble 44.5% v designed 13.8%. Gap real .274 v CTX F expected .244: +3.08pp [1.26,4.88] P>0 .996.
+- No-context LOSO exact-dist pool proxy (not Geo-served rows; inferred): share 34.3%, conv .223; real minus proxy +5.12 [3.34,6.93] = share effect +2.90 [2.31,3.56] + within-scramble +1.55 [0.21,2.93] P>0 .968 + within-designed +0.64 [-0.42,1.66] P>0 .83. So ~57% of the pre-CTX gap is scramble mix; CTX F removes the context part of designed and part of scramble share but cannot see scramble status.
+- Recorded e178-neutral-3rd7plus-run-scramble-mix-gap (unresolved_below_power, rate_pp).
+## E178 Next (default-off fix spec, not built)
+CTXSCR=1 (git grep: unused), new module mod25e_ctxscr.py installed after mod25e_ctx.install_ctx. Second Geo weight_fn factor on run queries: per pool row scramble flag (run & qb_dropback, from the pbp used by load_real), weight = P(scr | context cell, run-to-go bucket)/P(scr | pool) fitted LOSO by season from real runs, shrunk to parent as CTX does (lam 5 parent), no constants. Offline gate first: held-out dLL on run queries v CTX F, then the neutral 3rd cells and E161 bucket bar. Needs pool S to carry the flag (rebuild ctx_pool H/S by scramble) since served scramble share is not derivable from current npz.

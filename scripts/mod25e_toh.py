@@ -127,7 +127,7 @@ def install_toh():
     if getattr(dv._G["pol"], "_toh", False):
         return
     spec = json.loads(FIT.read_text(encoding="utf-8"))["fits"][season_key()]
-    a = dv._G["tables"]["arrays"]
+    a = dict(dv._G["tables"]["arrays"], **dv._G["toh_cols"])
     stop = np.asarray(dv._G["f2h"]["stop"])
     don = Donors(a, stop)
     base = dv._G["pol"]

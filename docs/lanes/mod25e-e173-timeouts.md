@@ -22,3 +22,8 @@ Whether timeouts alone move reach (E103: not at hs 10-20); effect of removing ov
 - crH install patch: in mod25e_crH.py right after the `gs2.install_gstop2()` block insert
   `import mod25e_toh as toh` / `if toh.enabled():` / `    toh.install_toh()` (must follow geo and gstop2; ldr/rg later hooks do not touch pol).
 - Smoke pass bar (TOH=1 GEO=2 GSTOP2=1 vs same without TOH, same seeds, no sim run yet): final-drive reach tie/trail 1-3 up from .30 toward .423; P(final 3|tied last 5) toward .625; hs0 not worse; Q4 drives/game not below baseline by more than interval; guards (score/margin dist, plays/game, TO-used per game) unchanged within interval. Report COUNT (eligible, called ~ .16).
+
+## Worker-init crash fix (2026-10-18, measured)
+- Cause: install_toh read phase, sc_raw, off_to_raw, time_raw from dv._G["tables"]["arrays"], which holds only the fields at sim04_engine.py:795-816. Fix: mod25c_noise.c_init stashes those columns plus def_to_raw in _G["toh_cols"] when TOH=1 (after _G.update); mod25e_toh.install_toh merges them into the arrays dict. Donors and fit unchanged.
+- In-process worker init (H_ss path, smoke env, 5m41s) completes: toh_cols 346552 rows each. Guard: mod25e_crH.guarded_init wraps H_budget/H_ss; in a pool worker it prints the traceback, kills the parent, exits 1; in the main process it re-raises.
+- smoke_g2sth.sh re-queued at the end of tests/scratch/e178/queue.txt.

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-18T22:59:44.269066+00:00`
+Refreshed at: `2026-10-18T23:12:39.397296+00:00`
 
 ## Start here
 
@@ -21,17 +21,16 @@ Refreshed at: `2026-10-18T22:59:44.269066+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `65130861b8ee` — Draft-capital forward log with Thu/Sun jobs; forward logs read 2026 starters from the current-season loader (snapshots stop at 2025 by design); CLSDRAW fitted class draw (default-off, not installed); return-TD kernel finding retracted
-- Pending change set: 133 paths
+- Baseline commit: `2d8d25df04e0` — Challengers read 2026 starters from the current-season snap loader (fail-soft, pregame-asserted); noisy return-TD kernel record invalidated
+- Pending change set: 134 paths
+  - `M  docs/lanes/mod25e-e173-timeouts.md`
+  - `M  docs/lanes/mod25e-e176-neutral-yards.md`
+  - `M  docs/lanes/mod25e-generator-fidelity.md`
   - `M  docs/lanes/snap-counts-2026.md`
-  - `M  registry/weak_signals.json`
-  - ` M scripts/mod25c_noise.py`
-  - ` M scripts/mod25e_crH.py`
-  - ` M scripts/mod25e_toh.py`
-  - `M  src/nfl_ats/deadline_drag_challenger.py`
-  - `M  src/nfl_ats/nflverse_current_season.py`
-  - `M  src/nfl_ats/prospective.py`
-  - `M  src/nfl_ats/transaction_flag_features.py`
+  - ` M registry/weak_signals.json`
+  - `M  scripts/mod25c_noise.py`
+  - `M  scripts/mod25e_crH.py`
+  - `M  scripts/mod25e_toh.py`
   - `?? an.csv`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -43,7 +42,8 @@ Refreshed at: `2026-10-18T22:59:44.269066+00:00`
   - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
   - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
   - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
-  - ...and 113 more
+  - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
+  - ...and 114 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

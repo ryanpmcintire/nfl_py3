@@ -22,4 +22,9 @@ Find whether 2026 snap counts reach the served card and the forward logs; make t
 ## Challenger fix (2026-10-18 evening, measured)
 - snaps_with_current_season(base, season, before_week) in src/nfl_ats/nflverse_current_season.py (asserts max week < target; on fetch error logs one stderr line and falls back to the snapshot). Used by prospective.nflcom_starter_key_sets / nflcom_team_starter_out_counts, transaction_flag_features.default_snap_counts, deadline_drag_challenger.py:78. None is a served member (four_overlay_composition.py:59-80). pytest -k "prospective or transaction or nflcom": 63 passed.
 - Week 7 starter keys now 45 across 2 teams only, because nflverse week-6 snaps hold 93 rows (DEN, SEA); weeks 2-7 present.
-- SECOND dead input: the newest nflcom injuries snapshot is 20260825, so starter-out counts are empty and the nflcom challenger cannot fire. Next: find the nflcom injuries capture job in scripts/capture_scheduler.py and data/scheduler_log.txt, why it stopped after 08-25, and repair it.
+
+## nflcom injuries stop (2026-10-18, read)
+- Writer: scripts/ingest_nflcom_injuries.py (scrapes nfl.com/injuries, line 25) run via INJURY_CAPTURE (capture_scheduler.py:118); snapshots in data/raw/nflcom_injuries (newest 20260825T194201Z).
+- Cause: jobs injuries_wed/thu/fri/sat (capture_scheduler.py:1068-1115) have enabled=False, PAUSED by MKT-09 source policy (NFL.com terms need express consent for systematic retrieval). Deliberate, not a failure; scheduler_log has 0 nflcom lines because disabled jobs never run. Sportradar replacement (capture_scheduler.py:156,1116) is enabled only with SPORTRADAR_API_KEY (no data/raw/sportradar_injuries, no key).
+- Not served: consumers are prospective.py:571-626 and nflcom_refresh_overlay.py:79 (challengers only).
+- Decision: do NOT re-enable or run the writer (policy). The nflcom starters-out challenger stays dead for 2026 unless the owner lifts MKT-09; alternative feed is the nflverse injuries release (already captured, per LEAD-64) -- next subtask: point the starters-out challenger at the nflverse injuries snapshot instead.

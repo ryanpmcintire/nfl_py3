@@ -203,6 +203,10 @@ def run_with_flags(init, setting):
 
     if ge.enabled():
         ge.install_geo()
+    import mod25e_clsdraw as cdm
+
+    if cdm.enabled():
+        cdm.install_clsdraw()
     import mod25e_v1ad as v1
 
     if v1.enabled():
@@ -282,12 +286,29 @@ def install_log_sync(dv):
     dv._G["pol"] = pol
 
 
+def guarded_init(init, setting):
+    import multiprocessing as mp
+    import traceback
+
+    try:
+        run_with_flags(init, setting)
+    except BaseException:
+        if mp.parent_process() is None:
+            raise
+        traceback.print_exc()
+        sys.stderr.flush()
+        try:
+            os.kill(os.getppid(), 15)
+        finally:
+            os._exit(1)
+
+
 def H_budget(setting):
-    run_with_flags(eg.eg_init_budget, setting)
+    guarded_init(eg.eg_init_budget, setting)
 
 
 def H_ss(setting):
-    run_with_flags(eg.eg_init_ss, setting)
+    guarded_init(eg.eg_init_ss, setting)
 
 
 def install():
@@ -465,6 +486,8 @@ def cmd_e5(a):
         label = label + "cx2"
     if os.environ.get("TDR") == "1":
         label = label + "tr"
+    if os.environ.get("CLSDRAW") == "1":
+        label = label + "cl"
     dv.DV[label] = dict(dv.DV["crG"])
     outd = ss.OUT / f"e5_{label}_s{a.seed}"
     outd.mkdir(parents=True, exist_ok=True)

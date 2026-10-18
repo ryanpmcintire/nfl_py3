@@ -1,6 +1,7 @@
 import argparse
 import inspect
 import json
+import os
 import sys
 import time
 from pathlib import Path
@@ -405,6 +406,8 @@ def c_init(train, cfg_json):
         return drawn
 
     _G.update(tables=tables, ns=ns, pol=pol, log=log, cfg=cfg, to_arr=(trans["off_to_used"].to_numpy() + trans["def_to_used"].to_numpy()))
+    if os.environ.get("TOH") == "1":
+        _G["toh_cols"] = {k: trans[k].to_numpy() for k in ("phase", "sc_raw", "time_raw", "off_to_raw", "def_to_raw")}
 
 
 def c_batch(task):
