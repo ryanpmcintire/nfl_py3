@@ -17,8 +17,21 @@ Find why sim leaders gain more yards / pass more than real (Q4 close and blowout
 ## E163 smoke LDR+RG (s31, 1 world x 4 seasons; tests/scratch/e163/)
 - Lead 1-3 Q4<=120: pass .191 [.124] FAIL, run yds 3.43 [2.64] FAIL, FD .243 [.153] FAIL, kneel diff .034 FAIL; leads 4-8/9-16 near real. Single world, SE pass ~.03: noisy miss. Guards moved (mass3 .099 to .154, strength 94 to 58) unresolved. 3-seed script not written.
 
+## E163 3-seed LDR+RG (seeds 11-13; tests/scratch/e163/a1m.py, a1m.out; game-bootstrap 90%)
+- Lead 1-3 Q4<=120: pass .189 v real .124 (+.065 [.039,.091]) bar .15 FAIL, outside interval; run yds 2.84 v 2.64 (+.20 [-.37,.63]) bar 3.2 PASS; FD .180 v .153 (+.028 [-.005,.059]) bar .20 PASS; kneel .450 v .482 (-.032 [-.079,.007]) bar .03 marginal FAIL, inside interval.
+- Leads 4-8/9-16 <=120 near real except 4-8 pass +.025 [.009,.044]. 120-300 run yds under real (-.30..-.49, outside interval), pass/FD/kneel on real.
+- v XFA (s12-13, all vs real): XFA run yds +1.0..+1.4 and FD +.10 over real at 4-8/9-16; LDR+RG cuts them (-.84..-1.45, -.08..-.10). Pass share residual at 1-3 remains: XFA .171, LDRG -> ldrg minus XFA +.020 [.007,.035] (LDRG s12-13 above XFA).
+- Looks 24 cells x 2 comparisons; no verdict recorded (no closing ground; pass residual unresolved).
+
+## E162h diagnosis (measured 2026-10-18; tests/scratch/e162h/an.py; 3-seed LDR+RG vs real, lead 1-3 Q4<=120, 403 real/6588 sim plays, game-bootstrap 90%)
+- LDR cell = lead bin {1-3,4-8,9-16,17+} x 7 time bins (mod25e_ldr.py:14,36-39; fit.json scheme seven, lam 1) x 9 classes; NO down or distance in the cell, ratios pooled across downs. Not pooled with 4-8; no other hook reorders play type (LDR wraps pick_index_nn_conditioned; phase 3 only).
+- Excess is 1st/2nd down: pass share 1st sim .128 v real .029 (+.099 [.069,.127]), 2nd .161 v .049 (+.112 [.082,.143]); 3rd .247 v .248 (-.001 [-.055,.057]); 3rd with def timeouts>0 sim .264 v .488 (-.224 [-.335,-.092]). Dist large +.086 [.057,.117]; short 3rd-down short under (-.12). Defense timeouts 0 v >0 both +.07/+.06 (not the carrier). Real 1st/2nd leaders pass ~4%; down-agnostic ratio cannot cut those without cutting 3rd.
+- E162h fit (27 combos: time {two,four,seven} x down {none,12|34,1|2|34,12|3|4} x lam {1,5,25}, nested LOSO): chosen 9/9 seven|12,3,4|lam 1. Held-out LL/query -1.1081 v LDR -1.1333 (+.0253, folds +.0187..+.0349); lead 1-3 <=120 (n 940) +.054. Offline pass there: LDR2 ~.09 v LDR ~.08 v engine .25 v real .05. Files: scripts/mod25e_ldr2.py (LDR2=1, install_ldr2 replaces LDR; label l2 not yet in crH), artifacts/mod25e3/ldr2/fit.json, tests/scratch/e162h/.
+- Offline LDR on real states: 1st .055 v real .015, 2nd .084 v .027, 3rd .145 v .208. 10-try cap (ldr.py:196) forces 13% unadjusted in <60 s cells (accept .23), 5% overall; moves pass only +.013: not the cause.
+- Sim gap exceeds offline terms: sim XFA 1st-down pass .100, LDRG .128 (LDR did not cut); 60-90 s .135 to .183. Cause in sim unresolved (hook order: lpo/adj/bls/desp/risk wrap before LDR); needs LDR COUNT forced/calls from a real run.
+
 ## Next
-1. Diagnose lead 1-3 residual (LDR cell 1-3 <=120) or run 3-seed to resolve noise.
+1. (done above) Diagnose lead 1-3 residual (LDR cell 1-3 <=120) or run 3-seed to resolve noise.
 2. Locate blowout excess outside Geo: sim v real play mix and drive outcomes for 24+ leads by play type.
 3. Record E162c/d/e/f via weak-signals (unresolved_below_power).
 

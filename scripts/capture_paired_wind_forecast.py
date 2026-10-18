@@ -274,9 +274,8 @@ def capture(args: argparse.Namespace) -> int:
         "output": str(output) if output else None,
     }
     if output is not None:
-        atomic_parquet(output / "forecasts.parquet", frame)
+        atomic_parquet(frame, output / "forecasts.parquet")
         atomic_json(
-            output / "manifest.json",
             {
                 **summary,
                 "schema_version": 1,
@@ -288,6 +287,7 @@ def capture(args: argparse.Namespace) -> int:
                 "station_map_sha256": hashlib.sha256(args.station_map.read_bytes()).hexdigest(),
                 "receipts": receipts,
             },
+            output / "manifest.json",
         )
     print(json.dumps(summary, sort_keys=True))
     if source_error:

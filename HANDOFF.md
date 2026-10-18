@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-18T15:59:36.003563+00:00`
+Refreshed at: `2026-10-18T18:37:36.842766+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-10-18T15:59:36.003563+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `2ddfeaa655d8` — Card stars the Sunday Best Pick (CLE +4.5); refresh-picks rewrites the card when the star moves without a side change
-- Pending change set: 151 paths
-  - `M  CURRENT_PREDICTIONS.md`
-  - `M  README.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - `M  docs/lanes/backup-offsite-timeout.md`
-  - `A  docs/lanes/done/cloud-offload.md`
-  - `A  docs/lanes/done/data-share.md`
-  - `A  docs/lanes/mod23-unit7-rb-ol-availability.md`
-  - `M  docs/lanes/mod25e-e159-strength-x2.md`
+- Baseline commit: `c12efefa5eb2` — Best Pick lock follows the served Sunday star; MOD-25e default-off hooks GSTOP, LDR, RG, GEOV1, TILTL and session lanes
+- Pending change set: 152 paths
+  - ` M CURRENT_PREDICTIONS.md`
+  - ` M docs/findings.html`
+  - ` M docs/history.html`
+  - ` M docs/index.html`
+  - `A  docs/lanes/ledger-model-change.md`
+  - `A  docs/lanes/mod23-unit8-candidates.md`
   - `M  docs/lanes/mod25e-e160-reach-x2.md`
-  - `M  docs/lanes/mod25e-e161-ydist-pool.md`
   - `M  docs/lanes/mod25e-e162-leader-close.md`
-  - `A  docs/lanes/mod25e-e166-leader-served.md`
+  - `M  docs/lanes/mod25e-e166-leader-served.md`
+  - `A  docs/lanes/mod25e-e167-points-deficit.md`
+  - `AM docs/lanes/mod25e-e168-variance.md`
+  - `A  docs/lanes/mod25e-e169-reach-base.md`
+  - `A  docs/lanes/mod25e-e171-keynumbers.md`
   - `M  docs/lanes/mod25e-generator-fidelity.md`
-  - `M  docs/lanes/week6-lock-2026-10-18.md`
-  - `M  docs/model.html`
-  - `M  registry/weak_signals.json`
-  - `M  scripts/mod23_unit7.py`
-  - `A  scripts/mod25e_axish.py`
-  - ...and 131 more
+  - `A  docs/lanes/ntfy-ios-delivery.md`
+  - `A  docs/lanes/paired-wind-failures.md`
+  - ` M docs/model.html`
+  - `M  scripts/capture_paired_wind_forecast.py`
+  - `M  scripts/mod25e_crH.py`
+  - `A  scripts/mod25e_fd5.py`
+  - ...and 132 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -57,13 +57,13 @@ trust live Git output after checkout.
 - Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261018T134822Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card combines this with the coach component in one fitted calibrated probability, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,131 / 2,154 (52.51%)**
-- Linked forecast: **2026 Week 6**, created `2026-10-18T13:44:53.041364+00:00`
+- Linked forecast: **2026 Week 6**, created `2026-10-18T16:17:00.617823+00:00`
 
 The 52.51% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 6** from model `d1d6f128617d1b7a`, published `2026-10-18T15:56:46.071470+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 6** from model `d1d6f128617d1b7a`, published `2026-10-18T16:24:03.502477+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

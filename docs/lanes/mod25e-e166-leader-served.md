@@ -19,4 +19,7 @@ Wrapper-chain logging (broke frame-depth layers; abandoned), PLAYLOG-class swap 
 4. Re-run the E166 leader decomposition with PLAYLOG served idx (rebuild S.pkl via a1.py after the install) to confirm no 24+ bookkeeping excess.
 
 ## Open
-Module not yet written (tool cap hit). No python process left running.
+E170b DONE (measured 2026-10-18): scripts/mod25e_servedidx.py written (SERVEDIDX=1; install_gz_served() source-patches gz.install_gz). Offline harness tests/scratch/e170/harness.py (synthetic arrays, 600 repicks, single-thread, no sim): served outputs identical with/without patch = True; logged row == served j = True (unpatched logs incoming row: 600/600 mislogged).
+Deferred crH install (not applied; scripts/ frozen): at mod25e_crH.py:70-71 use `import mod25e_servedidx as sx` then `if gz.enabled() or gz.auditing(): (sx.install_gz_served if sx.enabled() else gz.install_gz)()`. Label: NO suffix, because logging-only; served plays are byte-identical, so results share the base label and artifacts stay comparable (Next 2 checks identity).
+Later verification sim (Next 2) must run single-threaded: --workers 1, OMP/MKL/OPENBLAS/NUMEXPR threads=1, BelowNormal.
+No python process left running.

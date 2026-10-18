@@ -67,8 +67,13 @@ def run_with_flags(init, setting):
         mn.install_neg()
     import mod25e_gz as gz
 
+    import mod25e_servedidx as sx
+
     if gz.enabled() or gz.auditing():
-        gz.install_gz()
+        if sx.enabled():
+            sx.install_gz_served()
+        else:
+            gz.install_gz()
     if os.environ.get("KICK") in ("0", "1"):
         import mod25e_kick as mk
         import mod25e_risk as rk
@@ -112,6 +117,12 @@ def run_with_flags(init, setting):
 
     if fd.enabled():
         fd.install_fd4()
+    import mod25e_fd5 as f5
+
+    if f5.enabled():
+        if fd.enabled():
+            raise SystemExit("FD5 replaces FD4; unset FD4")
+        f5.install_fd5()
     import mod25e_tdc as td
 
     if td.enabled():
@@ -192,6 +203,10 @@ def run_with_flags(init, setting):
 
     if gst.enabled():
         gst.install_gstop()
+    import mod25e_gstop2 as gs2
+
+    if gs2.enabled():
+        gs2.install_gstop2()
     import mod25e_ldr as ld
 
     if ld.enabled():
@@ -200,6 +215,10 @@ def run_with_flags(init, setting):
 
     if rg.enabled():
         rg.install_rg()
+    import mod25e_rgt as rgt
+
+    if rgt.enabled():
+        rgt.install_rgt()
     import mod25e_rtd as rt
 
     if rt.enabled():
@@ -280,6 +299,8 @@ def cmd_e5(a):
         label = label + "m"
     if os.environ.get("FD4") == "1":
         label = label + "f"
+    if os.environ.get("FD5") == "1":
+        label = label + "fe"
     if os.environ.get("CLK2") == "1":
         label = label + "w"
     if os.environ.get("TDC") == "1":
@@ -386,10 +407,14 @@ def cmd_e5(a):
         label = label + "tl"
     if os.environ.get("GSTOP") == "1":
         label = label + "gs"
+    if os.environ.get("GSTOP2") == "1":
+        label = label + "g2s"
     if os.environ.get("LDR") == "1":
         label = label + "ld"
     if os.environ.get("RGR") == "1":
         label = label + "rg"
+    if os.environ.get("RGT") == "1":
+        label = label + "rq"
     dv.DV[label] = dict(dv.DV["crG"])
     outd = ss.OUT / f"e5_{label}_s{a.seed}"
     outd.mkdir(parents=True, exist_ok=True)

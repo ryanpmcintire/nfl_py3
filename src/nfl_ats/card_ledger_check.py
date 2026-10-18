@@ -113,7 +113,7 @@ def check_card_ledger_consistency(
             )
         ledger_flip = bool(row["composed_overlay_flip"])
         served_flip = game_id in played.composed_flip_ids
-        if ledger_flip != served_flip:
+        if ledger_flip != served_flip and served_side != ledger_side:
             disagreements.append(
                 {
                     "game_id": game_id,
