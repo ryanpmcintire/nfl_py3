@@ -1,26 +1,26 @@
 # mod25e-e162-leader-close
 
 ## Goal
-Find why sim leaders in Q4 (<=120 s) gain more yards and pass more than real; name carrier; default-off hook fitted LOSO; deferred crH install patch. Offline only; no existing scripts/ edited.
+Find why sim leaders gain more yards / pass more than real (Q4 close and blowouts); default-off hooks fitted LOSO; deferred crH install patches. Offline; no existing scripts/ edited (except mod25e_ldr.py).
 
-## State (measured 2026-10-18; X2 seeds 11-13, game bootstrap 90%; tests/scratch/e162/)
-- Q4 leaders <=120 s sim v real (lead 1-3/4-8/9-16): pass share .182/.103/.064 v .124/.082/.058; run yds 3.72/3.85/3.71 v 2.64/2.94/2.65; first-down rate .265/.256/.265 v .153/.160/.169. Kneel share matches.
-- Pass/punt/kneel carrier (read): engine neighbour draw sim04_engine.py:477-537 (K_STATE=200 :33). LDR hook fixes it (below).
-- Run-yards: Geo GEO=2 always repick (mod25e_geo.py:433,447) pools all phases, nearest on (dist,score,time) only (:339-362). Sim phase-3 leader run sources 18.6%; phase-3 source 3.16/3.25/2.73 v other-phase 3.85/3.98/3.93 (b1/b5).
-- Not carriers: yard_shift, YLM, team tilt (b1-b5).
-- E162c (geo_phase.py, geo_phase_b.py, geo_phase_an.py, geo_phase_bprep.py, logs gp_an.log gpc_an.log; 290,204 real run/pass queries, pools leave-one-season-out, uniform K=200, no team weights): phase mismatch is widespread: 45.8% of Geo-served rows differ in phase from the query (Q1-3 32.6%, Q4<=120 77.7%, Q4 120-300 82.2%, Q2<=120 87.8%). Yard gap v real from it is small overall (+0.085 [.056,.117] all; +0.38 [.23,.51] Q4<=120).
-- Variant A (declared first): exact phase match, widen fp band to K rows, fall back to all phases if <K at band 99. FAIL: held-out LL worse 9/9 folds (yards -.0076 [-.0083,-.0069]); fallback 21% overall and 59-66% in the leader cells; leader run yds only -0.06..-0.10 (real-state Geo expects 4.54/4.69/4.79 v real 2.82/3.26/2.94). Where phase-3 pool exists (no fallback, mismatch 0): ph 3.76/3.85/3.78 v real 2.95/3.23/3.42 v cur 3.94/4.11/3.94, so a residual +.5..+.8 survives exact phase.
-- Variant B (second look, declared after A failed): time axis scale lam in {2,4,8,16,32} chosen nested LOSO by held-out total LL. FAIL: held-out gain -.00028 v selection-set +.00017 (gap .00045), chosen lam inconsistent (2,8,16), 3/9 folds positive; yards LL delta -.00011 [-.00057,+.00034] P(>0)=.325; leader yds +.01..+.03; Q2<=120 yards +.0030 [+.0011,+.0050] only. 45+5 looks. 12 E161 buckets: A flips 3 IN->OUT (4th d1 conv, TD yl21-40, pp 21-30 reach), B flips 2 (TD yl21-40, pp 21-30 reach); neither fixes an OUT bucket.
-- Conclusion: pool phase composition is not the main carrier of leader run yards; the residual is a state feature Geo lacks (defence/box expectation when the run is known, or timeouts/clock-kill intent). No hook written, no install patch (fail rule). Unused names kept for later: env GEOPH, label suffix "gp".
-- Pass share and kneel are not Geo effects (Geo keeps play type).
+## State (measured 2026-10-18; tests/scratch/e162/)
+- Q4<=120 leaders sim v real: pass share .182/.103/.064 v .124/.082/.058 (lead 1-3/4-8/9-16); run yds 3.72/3.85/3.71 v 2.64/2.94/2.65; FD .265/.256/.265 v .153/.160/.169. Pass share carrier = engine draw; LDR fixes it.
+- FAILED pool-feature variants (none installed): E162c phase/time scale, E162d def_to, E162e K. Unused names GEOPH GEOTO GEOK.
+- E162f PASS: regime class-ratio reweight of Geo run outcome, phase 3 (Q4<=300) leads 1+, 12 classes, cells lead{1-8,9+} x time{<=60,60-120,120-180,180-300}, lam 1 (9/9 folds). Held-out LL/query +0.0561 [0.0492,0.0633], in-sample +.0668, gap .0107. Late-leader run yds <=120: real 2.82/3.26/2.95 v cur 4.26/4.39/4.35 v adj 2.71/2.79/2.79. 12 E161 buckets: 0 IN->OUT. Files: scripts/mod25e_rg.py (RGR=1, suffix rg, fit artifacts/mod25e3/rg/fit.json by rg_fit.py), rg_pool.py, rg_an.py.
+- E162g (declared before run: run+pass reweight, leads 9-16/17-23/24+ x Q3/Q4, run in phase 3 excluded as RG territory so zero overlap; 12 combos = {lead 1 bin or 3 bins} x {Q3|Q4, or Q3|Q4>300|Q4<=300} x lam{1,5,25}; nested LOSO; pools K=200; 25,741 queries run 13,738 pass 12,003). Chosen 9/9: lead 9+, Q3|Q4 split, lam 1. Held-out LL/query +0.00575 [0.00476,0.00672] P>0 1.000, 9/9 folds (+.0017..+.0089), in-sample +.0076, gap .0018; run +.0057, pass +.0058. Ratio stable (run 10nf .63 [.56,.67], <=0 fd .10, TO .65; pass 1-2 fd .33, TO .75). Effect on target is small: Geo pools do NOT over-gain blowout leaders. 24+ Q4 run yds real 3.91 v cur 4.05 v adj 3.94; pass real 5.62 v cur 5.73 v adj 5.90 (away); Q3 24+ run real 4.54 v 4.04 v 4.14, pass 6.73 v 5.80 v 6.03 (Geo UNDER real). FD gradient 24+ minus 9-16: real -.005 [-.017,.006], cur -.010, adj -.013. 24+ TD/play real .040 cur .037 adj .036; reach/play .118/.114/.115. Verdict: statistically real, practically small, not on the blowout-excess carrier; NOT installed, mod25e_rgb.py not written. Recorded via weak-signals (unresolved_below_power, family mod25e-e162-regime-ratio; sample-games field approximate). E161 12-bucket check not run for E162g (gk covers all 25,765 queries; do it only if installing). Files: rgb_pool.py/.npz/.log, rgb_an.py/.log.
+- Implication: the blowout-leader excess (E155/E156b) sits outside Geo outcome pools: play mix, drive-level decisions, or non-Geo sim plays (kneels, punts/FG, clock).
 
-## Hook (default off, not installed)
-scripts/mod25e_ldr.py: LDR=1. LOSO refit 2026-10-18 (9 classes), held-out LL/play adjusted -1.1333 v engine draw -1.3650 (9/9 folds positive), in-sample gap .002. Class ratios run 1.012/1.047, pass .835/.793, kneel 1.155. Deferred crH patch: after `ge.install_geo()` block (mod25e_crH.py:182) add `import mod25e_ldr as ld` / `if ld.enabled():` / `    ld.install_ldr()`; after the GEOX=="2" label block add `if os.environ.get("LDR") == "1": label = label + "ld"`. Install after KN.
-Pass bar smoke: leaders <=120 pass share lead 1-3 <=.15, first-down rate <=.20, kneel within .03. Run yds <=3.2 is NOT reachable by LDR alone while GEO=2 repicks.
+## Hook
+- LDR=1 (scripts/mod25e_ldr.py): LOSO LL/play -1.1333 v -1.3650 (9/9); patch after `ge.install_geo()` block (mod25e_crH.py:182): `import mod25e_ldr as ld` / `if ld.enabled():` / `    ld.install_ldr()`; label `if os.environ.get("LDR") == "1": label = label + "ld"`.
+- RG: after Geo, LDR, KN: `import mod25e_rg as rg` / `if rg.enabled():` / `    rg.install_rg()`; label `if os.environ.get("RGR") == "1": label = label + "rg"`.
+
+## E163 smoke LDR+RG (s31, 1 world x 4 seasons; tests/scratch/e163/)
+- Lead 1-3 Q4<=120: pass .191 [.124] FAIL, run yds 3.43 [2.64] FAIL, FD .243 [.153] FAIL, kneel diff .034 FAIL; leads 4-8/9-16 near real. Single world, SE pass ~.03: noisy miss. Guards moved (mass3 .099 to .154, strength 94 to 58) unresolved. 3-seed script not written.
 
 ## Next
-1. Orchestrator installs LDR patch after runs end; smoke then 3-seed.
-2. E162d: find the missing Geo state feature for leader runs: candidates are timeouts (defence timeouts left, in engine kernel but not Geo f3), run-expected-by-defence (score x time x lead already in f3, so test residual by down/distance and offence rating), clock-kill intent; fit LOSO by held-out LL on Q4<=300 leader rows only (record via weak-signals).
+1. Diagnose lead 1-3 residual (LDR cell 1-3 <=120) or run 3-seed to resolve noise.
+2. Locate blowout excess outside Geo: sim v real play mix and drive outcomes for 24+ leads by play type.
+3. Record E162c/d/e/f via weak-signals (unresolved_below_power).
 
 ## Open
-Team-kernel weights omitted from E162c (uniform K). Selection for variant B uses other seasons' pools that include the query's own season less itself (mild leak, reported gap). Fixed-bin game-end drive share in a1 mis-binned.
+Pass yards for close leaders unchecked. Team kernel absent from all E162 pools. Fold-s ratio pools exclude {s,u}; inner selection includes held-out inner season (mild).

@@ -1006,7 +1006,7 @@ def run_one_game(
             "next_down": arrays["next_down"][idx],
             "next_distance": arrays["next_distance"][idx],
             "next_yardline": arrays["next_yardline"][idx],
-            "yards_gained": dither_yards(arrays["yards_gained"][idx], yard_shift, rng) if os.environ.get("YDITH") == "1" else arrays["yards_gained"][idx] + yard_shift,
+            "yards_gained": dither_yards(arrays["yards_gained"][idx], yard_shift, rng) if os.environ.get("YDITH") in ("1", "2") else arrays["yards_gained"][idx] + yard_shift,
             "dist_gained": arrays["dist_gained"][idx],
             "auto_first": bool(arrays["auto_first"][idx]),
             "repeat_down": bool(arrays["repeat_down"][idx]),

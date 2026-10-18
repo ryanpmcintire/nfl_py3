@@ -35,3 +35,12 @@ Smoke bar (1 world, 4 seasons): inc share dt>=15 at (60,120] <= B .096 and movin
 
 ## Open
 Share of reach gap due to the inc clock tail unmeasured below the hook run. Real cohort n 324.
+
+## E163 smoke GSTOP (measured 2026-10-18; 1 world x 4 seasons, seed 31, burn 2; tests/scratch/e163/{score_gs.py,tgt_gs_smoke.txt,audit_gs.txt}; ~25 cells looked at)
+GSTOP COUNT is not logged from worker processes, so firing is inferred from outcomes, not a fallback share. Paired base = XFA s31 (544 games); cohort n is 62 (XFA) v 54 (GS) final drives, so every cohort number is single-world noise.
+- Fired (inferred): Q4 incompletion dt at (60,120], all drives: R 5.24, X2 8.34, XFA 8.31 (n 306), GS 7.10 (n 332); share dt>=15: R .010, X2 .107, XFA .101, GS .063. Cohort pre-range (60,120] only n 7 v 5 (15.4 v 16.0 s), unreadable.
+- Q4 cycle s/play R 18.15, X2 19.78, XFA 19.75, GS 19.09 (toward real). Cycle s 105.6 R, 115.2 XFA, 105.4 GS. hs0 R 55.7, X2 67.0, XFA 85.4, GS 54.3.
+- FAIL bar: final-drive reach tie/trail 1-3 R .423, XFA .306, GS .241 (tgt: -.116 [-.232,-.019] v -.182 [-.273,-.068]); moved AWAY from real. P(score|reach) .579 -> .769 (real .766); clock expiry|reach .263 -> .000 (real .022); clock end without reach .726 -> .667 (R .417). P(final 3 | tied at 300 s left) .383 (18/47) v .382 (21/55) (real .625), flat. Yards, plays/cohort drive 4.24 -> 4.35 (R 4.53).
+- Guards (single world, report only): margin SD 16.13 -> 16.13; noise 164.5 -> 191.4; strength 94.4 -> 67.4; pts/g 43.97 -> 44.64; Q4 slope +.0015 -> -.0367; mass3 .0993 -> .1103; final drives/game .114 -> .099 (real .141).
+- Verdict: clock mechanisms improved (inc seconds, tail share, cycle, hs0), reach bar failed. 3-seed script not written, not launched. Reading (inferred): shorter pre-range clock burn gets drives to the range at the same or fewer rates; reach is driven elsewhere (yards/first-down selection, E160b), GSTOP is a clock fix not a reach fix.
+Next: owner call on whether to 3-seed GSTOP anyway for its clock gains (needs reach bar waived, own bars: inc share, cycle, hs0, noise/strength guards); reach carrier still open.

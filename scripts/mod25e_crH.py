@@ -53,6 +53,10 @@ def run_with_flags(init, setting):
     if ot.enabled():
         assert seen["n"] >= 1
         ot.install(dv)
+    import mod25e_tiltl as tl
+
+    if tl.enabled():
+        tl.install()
     import mod25e_paty as py
 
     if py.enabled():
@@ -180,6 +184,22 @@ def run_with_flags(init, setting):
 
     if ge.enabled():
         ge.install_geo()
+    import mod25e_v1ad as v1
+
+    if v1.enabled():
+        v1.install_v1ad()
+    import mod25e_gstop as gst
+
+    if gst.enabled():
+        gst.install_gstop()
+    import mod25e_ldr as ld
+
+    if ld.enabled():
+        ld.install_ldr()
+    import mod25e_rg as rg
+
+    if rg.enabled():
+        rg.install_rg()
     import mod25e_rtd as rt
 
     if rt.enabled():
@@ -360,6 +380,16 @@ def cmd_e5(a):
         label = label + "fl"
     if os.environ.get("FLIPA") == "1":
         label = label + "fa"
+    if os.environ.get("GEOV1") == "1":
+        label = label + "v1"
+    if os.environ.get("TILTL") == "1":
+        label = label + "tl"
+    if os.environ.get("GSTOP") == "1":
+        label = label + "gs"
+    if os.environ.get("LDR") == "1":
+        label = label + "ld"
+    if os.environ.get("RGR") == "1":
+        label = label + "rg"
     dv.DV[label] = dict(dv.DV["crG"])
     outd = ss.OUT / f"e5_{label}_s{a.seed}"
     outd.mkdir(parents=True, exist_ok=True)

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-18T13:00:49.439585+00:00`
+Refreshed at: `2026-10-18T15:59:36.003563+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-10-18T13:00:49.439585+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `9958b50ba86d` — Republish the site with the latest settled results
-- Pending change set: 133 paths
+- Baseline commit: `2ddfeaa655d8` — Card stars the Sunday Best Pick (CLE +4.5); refresh-picks rewrites the card when the star moves without a side change
+- Pending change set: 151 paths
   - `M  CURRENT_PREDICTIONS.md`
+  - `M  README.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
   - `M  docs/index.html`
-  - `A  docs/lanes/mod25e-e159-strength-x2.md`
-  - `A  docs/lanes/mod25e-e160-reach-x2.md`
-  - `A  docs/lanes/mod25e-e161-ydist-pool.md`
-  - `A  docs/lanes/mod25e-e162-leader-close.md`
+  - `M  docs/lanes/backup-offsite-timeout.md`
+  - `A  docs/lanes/done/cloud-offload.md`
+  - `A  docs/lanes/done/data-share.md`
+  - `A  docs/lanes/mod23-unit7-rb-ol-availability.md`
+  - `M  docs/lanes/mod25e-e159-strength-x2.md`
+  - `M  docs/lanes/mod25e-e160-reach-x2.md`
+  - `M  docs/lanes/mod25e-e161-ydist-pool.md`
+  - `M  docs/lanes/mod25e-e162-leader-close.md`
+  - `A  docs/lanes/mod25e-e166-leader-served.md`
   - `M  docs/lanes/mod25e-generator-fidelity.md`
-  - `A  docs/lanes/week6-lock-2026-10-18.md`
-  - ` M scripts/mod25e_lpo.py`
-  - ` M scripts/sim04_engine.py`
-  - `M  src/nfl_ats/best_pick_renomination.py`
-  - `M  src/nfl_ats/cli_commands/publishing.py`
-  - `M  tiebreaker.json`
-  - `?? an.csv`
-  - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
-  - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
-  - ...and 113 more
+  - `M  docs/lanes/week6-lock-2026-10-18.md`
+  - `M  docs/model.html`
+  - `M  registry/weak_signals.json`
+  - `M  scripts/mod23_unit7.py`
+  - `A  scripts/mod25e_axish.py`
+  - ...and 131 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -52,18 +52,18 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `2d28639024aa4e88`
+- Model ID: `d1d6f128617d1b7a`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261017T161350Z`)
+- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261018T134822Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card combines this with the coach component in one fitted calibrated probability, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,131 / 2,154 (52.51%)**
-- Linked forecast: **2026 Week 6**, created `2026-10-17T17:40:21.668864+00:00`
+- Linked forecast: **2026 Week 6**, created `2026-10-18T13:44:53.041364+00:00`
 
 The 52.51% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 6** from model `2d28639024aa4e88`, published `2026-10-17T17:46:27.801692+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 6** from model `d1d6f128617d1b7a`, published `2026-10-18T15:56:46.071470+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

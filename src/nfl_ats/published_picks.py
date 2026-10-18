@@ -104,6 +104,11 @@ def locked_best_pick(artifacts_root: Path, *, season: int, week: int, now: datet
     if rows.empty:
         return None
     game_id = str(rows.iloc[-1]["game_id"])
+    from nfl_ats.pick_refresh import served_best_pick
+
+    served = served_best_pick(artifacts_root, season=int(season), week=int(week))
+    if served:
+        game_id = served
     published = load_published_picks(artifacts_root)
     if not published.empty:
         published = published.loc[

@@ -6,6 +6,34 @@
     "A pooled estimate justifies ONE predeclared combined look on a rotation window none of the inputs touched. It is never itself a finding."
   ],
   "signals": {
+    "E162g regime class-ratio reweight of Geo run+pass outcomes, leads 9+ Q3/Q4": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "held-out LL positive 9/9 folds but served-yard effect on blowout leaders small; Geo pools already do not over-gain 24+ leaders",
+      "closing_ground": null,
+      "description": "Class-ratio reweight (yards bin x first down, TD, turnover) of Geo-served run and pass outcomes for leads 9-16/17-23/24+ in Q3 and Q4, run phase-3 excluded as RG territory; cells and shrinkage nested LOSO; 12 combos x 9 folds",
+      "effect": 0.00575,
+      "effect_units": "log_loss_improvement",
+      "family": "mod25e-e162-regime-ratio",
+      "interval": [
+        0.00476,
+        0.00672
+      ],
+      "league": "nfl",
+      "notes": "in-sample 0.00760 gap 0.00184; run +0.00570 pass +0.00581; not installed",
+      "plain_summary": "Reweighting simulated play outcomes for big leads improves likelihood slightly but does not explain blowout leaders gaining too much",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2300,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "docs/lanes/mod25e-e162-leader-close.md",
+      "standard_error": null
+    },
     "LEAD-71-unit2-look1": {
       "category": "market",
       "classification": "unresolved_below_power",
@@ -23559,6 +23587,342 @@
         2025
       ],
       "source": "scripts/dst_transition_battery_screen.py; artifacts/dst_transition_battery/20260826T112321Z/results.json; docs/dst_transition_battery.md",
+      "standard_error": null
+    },
+    "e156b_xsc_lead24_pts_per_drive_gap": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; game-bootstrap 90% interval vs real, 3 seeds; XFA comparison in lane section E156b 3-seed verdict.",
+      "closing_ground": null,
+      "description": "E156b XFA+SCLIP35 sim-minus-real 24+ lead Q3+Q4 points per drive (XFA +0.170 [0.029,0.300])",
+      "effect": 0.1501,
+      "effect_units": "mae",
+      "family": "e156b_xfa_sclip35_leader_targets",
+      "interval": [
+        0.0125,
+        0.2728
+      ],
+      "league": "nfl",
+      "notes": "Simulator diagnostic, sim-minus-real gap, units are the metric's own (points, yards, rate), not mae; no matching unit. Look family of 5 declared targets, counted in lane.",
+      "plain_summary": "Adding the clip trims the big-lead scoring excess slightly but it stays above real.",
+      "probability_positive": 0.97,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 200,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "docs/lanes/mod25e-generator-fidelity.md",
+      "standard_error": null
+    },
+    "e156b_xsc_leader_q4_ppd_gap": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; game-bootstrap 90% interval vs real, 3 seeds; XFA comparison in lane section E156b 3-seed verdict.",
+      "closing_ground": null,
+      "description": "E156b sim-minus-real leader Q4 points per drive, lead>=17 (real 1.127; XFA +0.265 [0.175,0.357])",
+      "effect": 0.243,
+      "effect_units": "mae",
+      "family": "e156b_xfa_sclip35_leader_targets",
+      "interval": [
+        0.143,
+        0.339
+      ],
+      "league": "nfl",
+      "notes": "Simulator diagnostic, sim-minus-real gap, units are the metric's own (points, yards, rate), not mae; no matching unit. Look family of 5 declared targets, counted in lane.",
+      "plain_summary": "Per-drive scoring for big leaders in Q4 moves only a hair toward real.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 200,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "docs/lanes/mod25e-generator-fidelity.md",
+      "standard_error": null
+    },
+    "e156b_xsc_leader_q4_pts_gap": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; game-bootstrap 90% interval vs real, 3 seeds; XFA comparison in lane section E156b 3-seed verdict.",
+      "closing_ground": null,
+      "description": "E156b sim-minus-real leader Q4 points, lead>=17 (real 3.162; XFA +0.567 [0.289,0.808])",
+      "effect": 0.488,
+      "effect_units": "mae",
+      "family": "e156b_xfa_sclip35_leader_targets",
+      "interval": [
+        0.199,
+        0.769
+      ],
+      "league": "nfl",
+      "notes": "Simulator diagnostic, sim-minus-real gap, units are the metric's own (points, yards, rate), not mae; no matching unit. Look family of 5 declared targets, counted in lane.",
+      "plain_summary": "Big-lead teams still score more in the fourth quarter than real, a bit less than without the clip.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 200,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "docs/lanes/mod25e-generator-fidelity.md",
+      "standard_error": null
+    },
+    "e156b_xsc_run_ypp_level_gap": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; game-bootstrap 90% interval vs real, 3 seeds; XFA comparison in lane section E156b 3-seed verdict.",
+      "closing_ground": null,
+      "description": "E156b sim-minus-real 24+ lead run yds/play level (XFA +0.257 [0.044,0.467])",
+      "effect": 0.2963,
+      "effect_units": "mae",
+      "family": "e156b_xfa_sclip35_leader_targets",
+      "interval": [
+        0.1002,
+        0.491
+      ],
+      "league": "nfl",
+      "notes": "Simulator diagnostic, sim-minus-real gap, units are the metric's own (points, yards, rate), not mae; no matching unit. Look family of 5 declared targets, counted in lane.",
+      "plain_summary": "Running plays by big leaders gain slightly more than real, a little worse with the clip.",
+      "probability_positive": 0.99,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 200,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "docs/lanes/mod25e-generator-fidelity.md",
+      "standard_error": null
+    },
+    "e156b_xsc_success_gradient_gap": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; game-bootstrap 90% interval vs real, 3 seeds; XFA comparison in lane section E156b 3-seed verdict.",
+      "closing_ground": null,
+      "description": "E156b sim-minus-real success-rate gradient 24+ minus 0-8 (XFA +0.0325 [0.0186,0.0450])",
+      "effect": 0.0279,
+      "effect_units": "mae",
+      "family": "e156b_xfa_sclip35_leader_targets",
+      "interval": [
+        0.0147,
+        0.0412
+      ],
+      "league": "nfl",
+      "notes": "Simulator diagnostic, sim-minus-real gap, units are the metric's own (points, yards, rate), not mae; no matching unit. Look family of 5 declared targets, counted in lane.",
+      "plain_summary": "The success-rate slope with lead is still too positive, a bit less than without the clip.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 200,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "docs/lanes/mod25e-generator-fidelity.md",
+      "standard_error": null
+    },
+    "e159d_x2_minus_b_offense_slope": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-block bootstrap 90% interval reported; mechanism not refuted.",
+      "closing_ground": null,
+      "description": "Held-out offense drive-point slope, X2 minus B, like-for-like.",
+      "effect": 1.6,
+      "effect_units": "mae",
+      "family": "e159_strength_excess",
+      "interval": [
+        -0.2,
+        3.8
+      ],
+      "league": "nfl",
+      "notes": "Simulator diagnostic, units are held-out strength random-effect variance points (or rating slope points), not mae; no matching unit exists. Looks counted in the lane file.",
+      "plain_summary": "X2 raises offense rating transfer slightly over the base simulator.",
+      "probability_positive": 0.94,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 144,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "docs/lanes/mod25e-e159-strength-x2.md",
+      "standard_error": null
+    },
+    "e159d_x2_minus_b_strength_re_var": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-block bootstrap 90% interval reported; mechanism not refuted.",
+      "closing_ground": null,
+      "description": "Held-out like-for-like strength_re_var, X2 minus B, 3 seeds x 8 worlds x 6 seasons.",
+      "effect": 9.3,
+      "effect_units": "mae",
+      "family": "e159_strength_excess",
+      "interval": [
+        3.0,
+        15.6
+      ],
+      "league": "nfl",
+      "notes": "Simulator diagnostic, units are held-out strength random-effect variance points (or rating slope points), not mae; no matching unit exists. Looks counted in the lane file.",
+      "plain_summary": "The X2 simulator spreads team strength more than the base simulator and more than real games.",
+      "probability_positive": 0.988,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 144,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "docs/lanes/mod25e-e159-strength-x2.md",
+      "standard_error": null
+    },
+    "e159e_geo_step_strength_re_var": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-block bootstrap 90% interval reported; mechanism not refuted.",
+      "closing_ground": null,
+      "description": "Held-out strength_re_var step from B to g2 adding GEO=2, seed 11.",
+      "effect": -16.4,
+      "effect_units": "mae",
+      "family": "e159_strength_excess",
+      "interval": [
+        -20.4,
+        -12.4
+      ],
+      "league": "nfl",
+      "notes": "Simulator diagnostic, units are held-out strength random-effect variance points (or rating slope points), not mae; no matching unit exists. Looks counted in the lane file.",
+      "plain_summary": "Redrawing violating rows under the same kernel narrows team-strength spread.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 48,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "docs/lanes/mod25e-e159-strength-x2.md",
+      "standard_error": null
+    },
+    "e159e_gzt_cols13_step_strength_re_var": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-block bootstrap 90% interval reported; mechanism not refuted.",
+      "closing_ground": null,
+      "description": "Held-out strength_re_var step from g2rt to D1 adding GZT3 tilt cols 1 and 3, seed 11.",
+      "effect": 13.2,
+      "effect_units": "mae",
+      "family": "e159_strength_excess",
+      "interval": [
+        9.3,
+        17.0
+      ],
+      "league": "nfl",
+      "notes": "Simulator diagnostic, units are held-out strength random-effect variance points (or rating slope points), not mae; no matching unit exists. Looks counted in the lane file.",
+      "plain_summary": "The rate tilt on conversions and sacks restores the team-strength spread the kernel narrowed.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 48,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "docs/lanes/mod25e-e159-strength-x2.md",
+      "standard_error": null
+    },
+    "e159f_gzt_conv_col1_step_strength_re_var": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-block bootstrap 90% interval reported; mechanism not refuted.",
+      "closing_ground": null,
+      "description": "Held-out strength_re_var step from g2rt adding GZT3 col 1 (conversion) only, seed 11.",
+      "effect": 6.7,
+      "effect_units": "mae",
+      "family": "e159f_tilt_columns",
+      "interval": [
+        2.6,
+        10.6
+      ],
+      "league": "nfl",
+      "notes": "Simulator diagnostic, units are held-out strength random-effect variance points (or rating slope points), not mae; no matching unit exists. Looks counted in the lane file.",
+      "plain_summary": "The conversion tilt alone adds team-strength spread.",
+      "probability_positive": 0.995,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 48,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "docs/lanes/mod25e-e159-strength-x2.md",
+      "standard_error": null
+    },
+    "e159f_gzt_sack_col3_step_strength_re_var": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-block bootstrap 90% interval reported; mechanism not refuted.",
+      "closing_ground": null,
+      "description": "Held-out strength_re_var step from g2rt adding GZT3 col 3 (sack) only, seed 11.",
+      "effect": 10.6,
+      "effect_units": "mae",
+      "family": "e159f_tilt_columns",
+      "interval": [
+        6.4,
+        14.9
+      ],
+      "league": "nfl",
+      "notes": "Simulator diagnostic, units are held-out strength random-effect variance points (or rating slope points), not mae; no matching unit exists. Looks counted in the lane file.",
+      "plain_summary": "The sack tilt carries most of the added team-strength spread.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 48,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "docs/lanes/mod25e-e159-strength-x2.md",
+      "standard_error": null
+    },
+    "e159g_loso_tilt_vs_current_heldout_ll": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; 6 of 9 folds positive; interval is fold-normal approximation (inferred).",
+      "closing_ground": null,
+      "description": "Held-out Bernoulli log-lik of conv and sack outcomes under kernel-weighted candidates (K=200, 54000 queries), LOSO refit AO/AD and LO/LD v current in-sample constants; mean per-fold gain in nats.",
+      "effect": 1.69,
+      "effect_units": "log_loss_improvement",
+      "family": "e159g_tilt_loso",
+      "interval": [
+        0.26,
+        3.12
+      ],
+      "league": "nfl",
+      "notes": "Gain is tiny per play (0.0003 nats); main finding is current sack AO -1.99 over-transfers offense rate SD (.0145 v real .0080) while LOSO -0.35 gives .0090.",
+      "plain_summary": "Refitting the rate tilt out of season shrinks the sack gain about fivefold with slightly better held-out fit.",
+      "probability_positive": 0.97,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 54000,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/mod25e3/tiltl/fit.json",
       "standard_error": null
     },
     "ecdf_smoothing_accuracy": {
@@ -173035,6 +173399,62 @@
       "plain_summary": "Training the base on the opener instead of the close did not change accuracy",
       "probability_positive": 0.44805,
       "recorded_at": "2026-10-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit7/report.json",
+      "standard_error": null
+    },
+    "mod23_unit7_availability_B5_proxy_2011_2019_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model with rolling team inputs adjusted for own QB snap share in each past game, paired vs base, 2011-2019; 1145-1086 vs 1142-1089.",
+      "effect": 0.1344688480502017,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit7_availability_depth",
+      "interval": [
+        -0.5800981704596162,
+        0.8558558558558559
+      ],
+      "league": "nfl",
+      "notes": "B5 adds a top-2 RB absence group to unit 6b B3; two eras (two new looks, family total 21); snap counts of completed games; coefficients fit on earlier seasons only.",
+      "plain_summary": "Also discounting past games by running-back absence gave a small unresolved change in picks against the opener.",
+      "probability_positive": 0.6188,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod23_unit7/report.json",
+      "standard_error": null
+    },
+    "mod23_unit7_availability_B5_true_2020_2025_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model with rolling team inputs adjusted for own QB snap share in each past game, paired vs base, 2020-2025; 802-701 vs 802-701.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit7_availability_depth",
+      "interval": [
+        -0.6333122229259025,
+        0.9213323883770376
+      ],
+      "league": "nfl",
+      "notes": "B5 adds a top-2 RB absence group to unit 6b B3; two eras (two new looks, family total 21); snap counts of completed games; coefficients fit on earlier seasons only.",
+      "plain_summary": "Also discounting past games by running-back absence gave a small unresolved change in picks against the opener.",
+      "probability_positive": 0.42475,
+      "recorded_at": "2026-10-18",
       "reliability": null,
       "sample_blocks": 6,
       "sample_games": 1503,
