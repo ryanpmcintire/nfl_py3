@@ -1588,8 +1588,8 @@ def _cmd_refresh_picks(args: argparse.Namespace) -> None:
     reclassify_inactive_challengers(result, REFRESH_CHALLENGER_RESULT_KEYS, _artifacts_root())
     result["failed_recorders"] = collect_failed_recorders(result, REFRESH_CHALLENGER_RESULT_KEYS)
     recorded_change = bool(args.record_decisions and plan.changed_games)
-    if args.publish_card or recorded_change:
-        star_moved = renomination is not None and renomination.moved
+    star_served = renomination is not None and renomination.served and bool(renomination.game_id)
+    if args.publish_card or recorded_change or (args.record_decisions and star_served):
         try:
             ledger_latest = latest_revisions_by_game(_artifacts_root(), season=season, week=week)
             append_refresh_to_card(
@@ -1606,7 +1606,7 @@ def _cmd_refresh_picks(args: argparse.Namespace) -> None:
                 "destination": str(args.destination),
                 "trigger": "publish_card" if args.publish_card else "recorded_pick_change",
             }
-            if star_moved and renomination is not None:
+            if star_served and renomination is not None:
                 card["best_pick"] = apply_star_to_card(args.destination, renomination)
             result["card"] = card
         except (ValueError, FileNotFoundError) as error:

@@ -400,10 +400,13 @@ def _restar(cell: str, *, star: bool) -> str:
     return f" {value}".ljust(width)
 
 
-def best_pick_note_line(renomination: SundayRenomination, pick: str, previous_pick: str) -> str:
+def best_pick_note_line(
+    renomination: SundayRenomination, pick: str, previous_pick: str, previous_matchup: str = ""
+) -> str:
 
     tuesday = (
-        f" Tuesday's Best Pick was {previous_pick} in {renomination.previous_matchup}."
+        f" Tuesday's Best Pick was {previous_pick} in "
+        f"{previous_matchup or renomination.previous_matchup}."
         if previous_pick
         else ""
     )
@@ -418,7 +421,7 @@ def best_pick_note_line(renomination: SundayRenomination, pick: str, previous_pi
 
 def apply_star_to_card(destination: Path, renomination: SundayRenomination) -> dict[str, Any]:
 
-    if not renomination.moved:
+    if not (renomination.served and renomination.game_id):
         return {"moved": False, "reason": renomination.reason or "the Best Pick did not move"}
     if not destination.is_file():
         raise ValueError(
@@ -428,6 +431,7 @@ def apply_star_to_card(destination: Path, renomination: SundayRenomination) -> d
     lines = destination.read_text(encoding="utf-8").split("\n")
     pick = ""
     previous_pick = ""
+    previous_matchup = ""
     starred = False
     for index, line in enumerate(lines):
         if not line.startswith("|"):
@@ -439,6 +443,7 @@ def apply_star_to_card(destination: Path, renomination: SundayRenomination) -> d
         wants_star = matchup == renomination.matchup
         if cells[3].strip().startswith(BEST_PICK_MARK.strip()) and not wants_star:
             previous_pick = _restar(cells[3], star=False).strip()
+            previous_matchup = matchup
         elif not wants_star:
             continue
         cells[3] = _restar(cells[3], star=wants_star)
@@ -450,16 +455,18 @@ def apply_star_to_card(destination: Path, renomination: SundayRenomination) -> d
         raise ValueError(
             f"The re-nominated Best Pick {renomination.matchup} is not on the published card"
         )
+    if not previous_pick:
+        return {"moved": False, "reason": "the card already stars the served Best Pick"}
     note_index = next(
         (index for index, line in enumerate(lines) if line.startswith(BEST_PICK_NOTE_PREFIX)),
         None,
     )
     if note_index is not None:
-        lines[note_index] = best_pick_note_line(renomination, pick, previous_pick)
+        lines[note_index] = best_pick_note_line(renomination, pick, previous_pick, previous_matchup)
     atomic_text("\n".join(lines), destination)
     return {
         "moved": True,
-        "from": renomination.previous_matchup,
+        "from": previous_matchup,
         "to": renomination.matchup,
         "pick": pick,
         "note_rewritten": note_index is not None,

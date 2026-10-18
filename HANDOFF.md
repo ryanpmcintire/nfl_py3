@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-18T12:40:06.227496+00:00`
+Refreshed at: `2026-10-18T13:00:49.439585+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-10-18T12:40:06.227496+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `775b897e0cc4` — MOD-25e E158: FLIPA=1 re-anchors Geo-served flip rows' next_yardline to the sim spot; smoke failed-4th start +0.7 v real -0.4 (X2 -11.4)
-- Pending change set: 134 paths
+- Baseline commit: `9958b50ba86d` — Republish the site with the latest settled results
+- Pending change set: 133 paths
   - `M  CURRENT_PREDICTIONS.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
   - `M  docs/index.html`
-  - ` M docs/lanes/mod25e-generator-fidelity.md`
-  - `M  docs/model.html`
+  - `A  docs/lanes/mod25e-e159-strength-x2.md`
+  - `A  docs/lanes/mod25e-e160-reach-x2.md`
+  - `A  docs/lanes/mod25e-e161-ydist-pool.md`
+  - `A  docs/lanes/mod25e-e162-leader-close.md`
+  - `M  docs/lanes/mod25e-generator-fidelity.md`
+  - `A  docs/lanes/week6-lock-2026-10-18.md`
   - ` M scripts/mod25e_lpo.py`
   - ` M scripts/sim04_engine.py`
+  - `M  src/nfl_ats/best_pick_renomination.py`
+  - `M  src/nfl_ats/cli_commands/publishing.py`
   - `M  tiebreaker.json`
   - `?? an.csv`
-  - `?? docs/lanes/mod25e-e159-strength-x2.md`
-  - `?? docs/lanes/mod25e-e160-reach-x2.md`
-  - `?? docs/lanes/mod25e-e161-ydist-pool.md`
-  - `?? docs/lanes/mod25e-e162-leader-close.md`
-  - `?? docs/lanes/week6-lock-2026-10-18.md`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
   - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
   - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
-  - ...and 114 more
+  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
+  - ...and 113 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
