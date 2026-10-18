@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import math
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
@@ -34,6 +35,8 @@ INACTIVES_LEAD_MINUTES = 90
 
 SOURCE_NO_SNAPSHOT = "tuesday_card (no in-window snapshot)"
 SOURCE_STRUCTURALLY_EXCLUDED = "tuesday_card (SNF/MNF excluded)"
+SOURCE_PARTIAL_LIST = "tuesday_card (partial inactives list)"
+INACTIVES_FLOOR_QUANTILE = 0.05
 ET = ZoneInfo("America/New_York")
 _SNAPSHOT_SCHEMA = "nflcom_inactives_snapshot/1"
 _RECOGNIZED_SOURCES = frozenset({"primary", "fallback"})
@@ -257,6 +260,67 @@ def inactives_rows_for_game(
     return game_rows
 
 
+def inactives_team_floor(data_root: Path, *, season: int) -> int | None:
+    paths = sorted((data_root / "players" / "raw").glob("*/weekly_rosters.parquet"))
+    if not paths:
+        return None
+    try:
+        rosters = pd.read_parquet(paths[-1], columns=["season", "week", "team", "status", "game_type"])
+    except (OSError, ValueError, KeyError):
+        return None
+    listed = rosters.loc[
+        rosters["status"].eq("INA") & rosters["game_type"].eq("REG") & rosters["season"].lt(season)
+    ]
+    if listed.empty:
+        return None
+    per_team_week = listed.groupby(["season", "week", "team"]).size()
+    return int(math.floor(float(per_team_week.quantile(INACTIVES_FLOOR_QUANTILE))))
+
+
+def inactives_game_complete(
+    game_rows: pd.DataFrame, *, home_team: str, away_team: str, floor: int | None
+) -> bool:
+    if game_rows.empty:
+        return False
+    counts = game_rows.groupby("team").size()
+    needed = max(1, 0 if floor is None else floor)
+    return all(int(counts.get(team, 0)) >= needed for team in (home_team, away_team))
+
+
+def inactives_partial_detail(data_root: Path, due_game_ids: frozenset[str]) -> str:
+    if not due_game_ids:
+        return ""
+    snapshots = [s for s in load_inactives_snapshots(data_root) if s.reported_inactives]
+    newest_rows: dict[str, pd.DataFrame] = {}
+    season: int | None = None
+    needed = {"game_id", "home_team", "away_team", "team"}
+    for snapshot in snapshots:
+        rows = read_inactives_rows(snapshot)
+        if rows.empty or not needed.issubset(rows.columns):
+            continue
+        for game_id in due_game_ids:
+            game_rows = rows.loc[rows["game_id"].astype(str).eq(game_id)]
+            if not game_rows.empty:
+                newest_rows[game_id] = game_rows
+                season = snapshot.season
+    if not newest_rows:
+        return ""
+    floor = None if season is None else inactives_team_floor(data_root, season=season)
+    partial = 0
+    for game_rows in newest_rows.values():
+        first = game_rows.iloc[0]
+        home = TEAM_ABBREVIATION_ALIASES.get(str(first["home_team"]), str(first["home_team"]))
+        away = TEAM_ABBREVIATION_ALIASES.get(str(first["away_team"]), str(first["away_team"]))
+        if not inactives_game_complete(game_rows, home_team=home, away_team=away, floor=floor):
+            partial += 1
+    if not partial:
+        return ""
+    return (
+        f"{partial} of {len(newest_rows)} games already due are missing a team or list "
+        f"fewer than {'1' if not floor else floor} inactives for one"
+    )
+
+
 @dataclass(frozen=True)
 class PlayerContext:
     identities: dict[tuple[int, str, str], str]
@@ -462,6 +526,7 @@ def build_inactives_refresh_overlay_rows(
     )
 
     snapshots = load_inactives_snapshots(data_root)
+    floor = inactives_team_floor(data_root, season=plan.season)
     sources: dict[str, str] = {}
     matched: dict[str, InactivesSnapshot] = {}
     for game in eligible:
@@ -490,6 +555,14 @@ def build_inactives_refresh_overlay_rows(
         )
         if aligned.empty:
             sources[game_id] = SOURCE_NO_SNAPSHOT
+            continue
+        if not inactives_game_complete(
+            aligned,
+            home_team=TEAM_ABBREVIATION_ALIASES.get(str(game.home_team), str(game.home_team)),
+            away_team=TEAM_ABBREVIATION_ALIASES.get(str(game.away_team), str(game.away_team)),
+            floor=floor,
+        ):
+            sources[game_id] = SOURCE_PARTIAL_LIST
             continue
         sources[game_id] = snapshot_source_tag(snapshot.snapshot_id)
         matched[game_id] = snapshot

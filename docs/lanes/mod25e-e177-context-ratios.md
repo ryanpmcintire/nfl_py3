@@ -44,3 +44,6 @@ A, B, C failed the E161 bucket bar (TD class ratio and RG territory). D passes.
 
 ## Open
 Neutral definition inferred (|sd|<=8, Q1-Q3). OT in last period. RGT territory CTX slightly below RGT (P>0 0.062): D keeps CTX there; alternative is RGT kept, undeclared.
+
+## CTX F sim, seed 11 only (measured 2026-10-18 19:45 ET; e5.json base ...gx2faldrg_s11 v ...cx2_s11; provisional, seed sd of SD ~0.3)
+margin SD 15.28 v 15.02 (away from <=14.87); noise_re_var 177.1 v 170.6 (away, real 165); mass3 .125 v .132 (away, real .141); late r2 .143 v .137 (toward .146); Q4 slope -.048 v -.039 (toward -.060); strength 57.3 v 55.0; xq_cov 6.3 v 1.5; pts/g flat. Verdict waits for s12-13 + e100 bootstrap (tests/scratch/e177/run_cx2_3seed.sh writes artifacts/mod25e3/e177_cx2_boot.log and tests/scratch/e177/tgt_3seed_cx2.txt).

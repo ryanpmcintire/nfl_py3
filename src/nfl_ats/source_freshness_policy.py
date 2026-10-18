@@ -399,6 +399,7 @@ class SourceObservation:
     observed_at: datetime | None
     detail: str = ""
     row_count: int | None = None
+    partial_detail: str = ""
 
 
 @dataclass(frozen=True)
@@ -469,10 +470,15 @@ class SourcePolicyReport:
         def _names(ids: tuple[str, ...]) -> str:
             return ", ".join(humanize_identifier(i) for i in ids) if ids else "none"
 
+        partial = tuple(
+            row.source_id for row in self.sources if row.reason.startswith("partial ")
+        )
+        partial_text = f"Partial lists: {_names(partial)}. " if partial else ""
         return (
             f"**Source freshness: {self.state.upper()}.** "
             f"Complete: {_names(self.complete)}. "
             f"Degraded (allowed fallback): {_names(self.degraded)}. "
+            f"{partial_text}"
             f"Blocked: {_names(self.blocked)}. "
             f"Not due yet: {_names(self._ids(NOT_DUE))}. "
             f"Not set up: {_names(self._ids(NOT_CONFIGURED))}. "
@@ -573,6 +579,16 @@ def _evaluate_one(
             fallback=policy.fallback,
             detail=observation.detail,
         )
+    if policy.source_id == "inactives" and observation.partial_detail:
+        return SourceState(
+            source_id=policy.source_id,
+            state=DEGRADED,
+            reason=f"partial inactives: {observation.partial_detail}",
+            age_minutes=age,
+            budget_minutes=budget,
+            fallback=policy.fallback,
+            detail=observation.detail,
+        )
     return SourceState(
         source_id=policy.source_id,
         state=COMPLETE,
@@ -634,6 +650,7 @@ def observe_from_disk(
     artifacts_root: Path | None,
     source_ids: Iterable[str] | None = None,
     overrides: Mapping[str, SourceObservation] | None = None,
+    inactives_due_game_ids: frozenset[str] = frozenset(),
 ) -> tuple[SourceObservation, ...]:
 
     wanted = tuple(source_ids) if source_ids is not None else tuple(SOURCE_FRESHNESS_POLICIES)
@@ -649,9 +666,14 @@ def observe_from_disk(
             continue
         target = root / policy.location.relative_path
         row_count: int | None = None
+        partial_detail = ""
         if policy.location.kind == "snapshot_dir":
             if source_id == "inactives":
                 instant, row_count = newest_snapshot_manifest_row_count(target)
+                if data_root is not None and row_count and inactives_due_game_ids:
+                    from nfl_ats.inactives_refresh_overlay import inactives_partial_detail
+
+                    partial_detail = inactives_partial_detail(data_root, inactives_due_game_ids)
             else:
                 instant = newest_snapshot_instant(target)
             detail = f"newest snapshot dir under {policy.location.relative_path}"
@@ -662,7 +684,7 @@ def observe_from_disk(
                 if policy.location.json_key
                 else policy.location.relative_path
             )
-        observations.append(SourceObservation(source_id, instant, detail, row_count))
+        observations.append(SourceObservation(source_id, instant, detail, row_count, partial_detail))
     return tuple(observations)
 
 
@@ -753,21 +775,32 @@ def report_for_publication(
         overrides["injuries_nflverse_timestamps"] = player_snapshot_injury_timestamp_observation(
             player_snapshot_root, season=player_snapshot_season
         )
+    kickoffs = _current_week_kickoffs(data_root, now)
     return evaluate_sources(
         observe_from_disk(
             data_root=data_root,
             artifacts_root=artifacts_root,
             source_ids=source_ids,
             overrides=overrides,
+            inactives_due_game_ids=frozenset(
+                game_id
+                for game_id, kickoff in kickoffs.items()
+                if _as_utc(now) >= kickoff - timedelta(minutes=90)
+            ),
         ),
         now,
-        first_kickoff=_first_week_kickoff(data_root, now),
+        first_kickoff=min(kickoffs.values()) if kickoffs else None,
     )
 
 
 def _first_week_kickoff(data_root: Path | None, now: datetime) -> datetime | None:
+    kickoffs = _current_week_kickoffs(data_root, now)
+    return min(kickoffs.values()) if kickoffs else None
+
+
+def _current_week_kickoffs(data_root: Path | None, now: datetime) -> dict[str, datetime]:
     if data_root is None:
-        return None
+        return {}
     import pandas as pd
 
     from nfl_ats.market_data_halves import current_week_kickoff_window
@@ -782,7 +815,7 @@ def _first_week_kickoff(data_root: Path | None, now: datetime) -> datetime | Non
         if captured <= now_utc:
             candidates.append(path)
     if not candidates:
-        return None
+        return {}
     try:
         schedule = pd.read_parquet(candidates[-1])
         schedule = schedule.loc[
@@ -800,16 +833,21 @@ def _first_week_kickoff(data_root: Path | None, now: datetime) -> datetime | Non
         if current.empty:
             current = schedule.loc[schedule["kickoff"].ge(end)].sort_values("kickoff")
         if current.empty:
-            return None
+            return {}
         first = current.sort_values("kickoff").iloc[0]
         slate = schedule.loc[
             schedule["season"].eq(first["season"])
             & schedule["week"].eq(first["week"])
             & schedule["game_type"].eq(first["game_type"])
         ]
-        return pd.Timestamp(slate["kickoff"].min()).to_pydatetime()
+        ids = slate["game_id"] if "game_id" in slate.columns else slate.index.to_series()
+        return {
+            str(game_id): pd.Timestamp(kickoff).to_pydatetime()
+            for game_id, kickoff in zip(ids, slate["kickoff"], strict=True)
+            if pd.notna(kickoff)
+        }
     except (OSError, ValueError, KeyError, TypeError):
-        return None
+        return {}
 
 
 def policy_table() -> tuple[dict[str, Any], ...]:

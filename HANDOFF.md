@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-18T23:37:57.986050+00:00`
+Refreshed at: `2026-10-18T23:50:56.177912+00:00`
 
 ## Start here
 
@@ -21,11 +21,17 @@ Refreshed at: `2026-10-18T23:37:57.986050+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `14bbc7e8fccc` — MOD-25e PTO clock-aware pass-turnover draw (fitted LOSO, default-off, installed); E180 final-drive turnover gap; CLSDRAW smoke held for class fix
-- Pending change set: 127 paths
-  - `M  docs/lanes/mod25e-e172c-returntd.md`
-  - `M  registry/weak_signals.json`
-  - `M  scripts/mod25e_clsdraw.py`
+- Baseline commit: `3a05654cca1d` — MOD-25e CLSDRAW classes fixed (offensive TDs were counted as turnovers), refit LOSO; return-TD gap restated per true turnover (sim 9.6-10.1 v real 6.98); flip-denominator records invalidated
+- Pending change set: 133 paths
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - `A  docs/lanes/inactives-capture-completeness.md`
+  - `M  docs/lanes/lead64-friday-designations.md`
+  - `M  docs/lanes/mod25e-e177-context-ratios.md`
+  - `M  docs/model.html`
+  - `M  src/nfl_ats/inactives_refresh_overlay.py`
+  - `M  src/nfl_ats/source_freshness_policy.py`
   - `?? an.csv`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -37,13 +43,7 @@ Refreshed at: `2026-10-18T23:37:57.986050+00:00`
   - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
   - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
   - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
-  - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
-  - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
-  - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
-  - `?? registry/experiments/margin-backtest/20261008T161241Z.json`
-  - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
-  - `?? registry/experiments/margin-backtest/20261009T161053Z.json`
-  - ...and 107 more
+  - ...and 113 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

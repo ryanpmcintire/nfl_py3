@@ -61,3 +61,38 @@ Run: `.tools/uv.exe run --no-sync python scripts/lead64_freshness_audit.py --as-
 ## Record commands
 
 None: descriptive source audit only; no effect estimate, fit, score, or research closure verdict.
+
+## Rerun 2026-10-18 (Weeks 1-6; join: `tests/scratch/codex/lead64_join.py`)
+
+**Measured:** inactive ground truth exists only Weeks 3-6 (201 player-weeks, 33 team-weeks, 23 games; pregame-only,
+Week 5 has 5 teams). 104 parsed headline designations (40 questionable, 39 IR, 20 out, 1 doubtful, 4 active);
+23 checkable (16 team-weeks). Headline out 1/4 inactive (Wilson 5-70%); questionable 0/9 (0-30%); all 1/23
+(0.8-21%). Only 1 of 201 inactives had any headline. Headline v nflverse official: 13/103 player-weeks matched;
+headline earlier in 7/13, median lead 12.1 h, IQR -10.2 to +13.7 h (nflverse first capture is hourly-scale, not
+publication). nflverse rows carry no date_modified, so no authoritative official publication time; rule
+official time <= capture <= cutoff < kickoff is unusable. Zero 2026 weekly-report intervals recorded; no unit fits
+(precision is not accuracy_points), so no weak-signals record.
+
+## Declaration (not built)
+
+Pregame-safe feature candidate: per team-week, count of starter-level Out/Doubtful headline designations dated strictly
+before Friday cutoff and before kickoff, leak-asserted at build; test only as a fitted term in the one calibrated
+probability, LOSO, never a flip. Not testable yet: needs official publication time and a historical headline archive.
+Precision half-width <= 0.10 needs about 96 checkable out/doubtful headlines (now 4); at 1 per team-week-pair rate
+(~1 per 4 captured team-weeks, ~8 team-weeks/week) that is roughly 12 further weeks of inactives coverage.
+
+## Join audit 2026-10-18 (supersedes the Rerun precision numbers above; script `tests/scratch/codex/lead64_join2.py`)
+
+**Measured:** the old join was defective. `headline_guess` is a slug fragment, so parsed "names" were junk
+("breece hall adonai mitchell among jets", "mike hall questionable with an ankle injury mason graham") and 23 of 104
+rows had no team. Fix: match every nflverse/inactives player name (normalised, suffixes stripped, len>=8) as a substring
+of the slug; team from the player; week = that team's next kickoff after the page lastmod. Result: 98 named-player rows,
+21 in captured team-weeks. Out 5/9 inactive (Wilson 27-81%), questionable 3/8 (14-69%), doubtful 0/0, all single-
+designation 8/17 (26-69%); old figures 1/4, 0/9 were join artefacts. Headline-named inactives 10 of 201 (v 1).
+Misses are explained, not noise: DeVonta Smith W4 (official Out; PHI W4 inactive capture holds only 3 names, truncated);
+Smith W6 and Chase W5 (played; stories mislabelled "mixed"/post-game); Cooper W5 (season-ending IR, IR is not "inactive").
+Headline v nflverse official: 76/76 player-weeks in file are earlier in the headline, median 14.3 h (IQR 13.5-17.8) before the
+first official capture; before the inactive capture median 46.1 h (n=10). Caveat: lastmod is page modification, not
+publication, so leads are lower bounds on lateness. Inactive coverage is Weeks 3-6, 23 games, some teams truncated.
+Still `unresolved_below_power`; no weak-signals record (precision is not accuracy_points). Next: use official Out/Doubtful
+(not inactives) as ground truth, treat IR as a separate class, and only then enter as a fitted LOSO term, never a flip.
