@@ -1488,6 +1488,55 @@ SCHEDULE: tuple[Job, ...] = (
         catch_up=False,
     ),
     Job(
+        "inactives_sun_intl",
+        "sun",
+        "08:35",
+        15,
+        _inactives_capture("sun_early"),
+        True,
+        "Sun 09:30 ET international kickoff (6 games in 2026, docs/inactives_channel.md "
+        "Section 2) had no capture inside [T-90, kickoff) in Weeks 3-6; 08:35 is T-55 "
+        "so the page is likely populated. Slot label sun_early because SLOTS is a "
+        "fixed set and the label only tags the manifest.",
+        dedupe_dir="data/players/inactives",
+        dedupe_minutes=60,
+        added_on="2026-10-18",
+        catch_up=False,
+    ),
+    Job(
+        "inactives_sun_early_second",
+        "sun",
+        "12:20",
+        15,
+        _inactives_capture("sun_early"),
+        True,
+        "Second pass for the 13:00 ET slate (T-40): measured Weeks 3-6, the 11:35 pass "
+        "saw only 7-9 of 24-28 pending teams listed by rotowire, which posts per game "
+        "staggered. dedupe_minutes=30 because the 60-minute default would swallow "
+        "this run (11:35 snapshot is 45 minutes older).",
+        dedupe_dir="data/players/inactives",
+        dedupe_minutes=30,
+        added_on="2026-10-18",
+        catch_up=False,
+    ),
+    Job(
+        "inactives_sun_late_second",
+        "sun",
+        "15:20",
+        15,
+        _inactives_capture("sun_late"),
+        True,
+        "Second pass for the 16:05/16:25 ET slate (T-45/T-65): the 14:40 pass saw 0-2 "
+        "of 10-12 pending teams listed. 15:20 is after the Sunday 16:00 ET lock only "
+        "for the 16:25+ cluster; captures after the lock feed only the research ledger "
+        "and freshness, not the served pick. dedupe_minutes=30 because the 14:40 "
+        "snapshot is 40 minutes older and the 60-minute default would swallow this run.",
+        dedupe_dir="data/players/inactives",
+        dedupe_minutes=30,
+        added_on="2026-10-18",
+        catch_up=False,
+    ),
+    Job(
         "inactives_thu_afternoon_early",
         "thu",
         "11:35",

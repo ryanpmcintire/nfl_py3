@@ -782,15 +782,28 @@ def report_for_publication(
             artifacts_root=artifacts_root,
             source_ids=source_ids,
             overrides=overrides,
-            inactives_due_game_ids=frozenset(
-                game_id
-                for game_id, kickoff in kickoffs.items()
-                if _as_utc(now) >= kickoff - timedelta(minutes=90)
-            ),
+            inactives_due_game_ids=_inactives_due_game_ids(kickoffs, now),
         ),
         now,
         first_kickoff=min(kickoffs.values()) if kickoffs else None,
     )
+
+
+def _inactives_due_game_ids(kickoffs: Mapping[str, datetime], now: datetime) -> frozenset[str]:
+    if not kickoffs:
+        return frozenset()
+    import pandas as pd
+
+    from nfl_ats.pick_refresh import pick_deadline, sunday_pick_lock
+
+    lock = sunday_pick_lock(pd.Series([pd.Timestamp(k) for k in kickoffs.values()]))
+    now_utc = _as_utc(now)
+    due = set()
+    for game_id, kickoff in kickoffs.items():
+        opens = kickoff - timedelta(minutes=90)
+        if now_utc >= opens and pd.Timestamp(opens) < pick_deadline(pd.Timestamp(kickoff), lock):
+            due.add(game_id)
+    return frozenset(due)
 
 
 def _first_week_kickoff(data_root: Path | None, now: datetime) -> datetime | None:

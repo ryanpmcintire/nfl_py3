@@ -27,3 +27,17 @@ Week 5 only 2 snapshots with rows; whether missing teams are absent from the pag
 
 ## Update 2026-10-18 (scoping)
 Freshness completeness is now scoped to the current-week plan: source_freshness_policy.py _current_week_kickoffs (game_id->kickoff of the current slate), report_for_publication passes games whose T-90 has passed as inactives_due_game_ids to observe_from_disk; inactives_partial_detail(data_root, due_game_ids) uses the latest reported snapshot containing each due game; not-due games and other-week snapshots are ignored. Measured: Tue 2026-10-20 16:00Z -> inactives complete; Sun 2026-10-18 19:00Z -> degraded "3 of 5 games already due" partial. tests 92 passed. Limit: a due game absent from every snapshot is still not counted.
+
+## Capture-side finding 2026-10-18 (measured, scratchpad m.py/n.py replaying saved fallback.html through _parse_rotowire_grid and the schedule)
+Weeks 3-6, 122 team-weeks: 33 captured; 40 no capture inside [T-90, kickoff); 49 capture was inside the window but the rotowire page did not yet list the team; 0 dropped by the parser (kept teams == page teams with kickoff after capture, in every snapshot; rows at/after kickoff are rejected by design, inactives_capture.py:~470). Raw fallback.html and primary.html are saved per snapshot.
+No-capture windows (all by schedule): Sun 16:25 slate (14:40 ET job is T-105), Sun 09:30 international, SNF 20:20, MNF 20:15 (no mon/sun-night jobs; Wed/Thu/Sat jobs exist). Page-lacked: rotowire posts per game as nfl.com does, staggered; 11:35 ET sun_early saw 7-9 teams of 24-28 pending, 14:40 sun_late saw 0-2 of 10-12 pending.
+Smallest fix (scheduler.py is orchestrator-owned): add sun jobs at ~09:05 ET (intl), ~14:55 and ~16:00 ET (late-slate, before 16:00 lock caveat), 19:00 ET (SNF), and mon 18:50 ET (MNF); and add repeat captures at T-60 and T-30 for the 13:00 slate (sun 12:00, 12:30 ET). Same-slot dedupe_minutes=60 must be lowered to ~20 for the repeats. No parser fix needed; no NFL.com retrieval (MKT-09), rotowire only.
+
+## Scheduler jobs added 2026-10-18 (uncommitted)
+capture_scheduler.py: inactives_sun_intl sun 08:35; inactives_sun_early_second sun 12:20 (dedupe 30); inactives_sun_late_second sun 15:20 (dedupe 30); inactives_snf sun 19:15; inactives_mnf mon 19:05. Slot labels reuse sun_early/sun_late (SLOTS in src is fixed). Dry runs OK (each wrote a real snapshot dir 20261018T2353xxZ). tests/test_capture_scheduler.py: snf/mnf/second-late exempted in test_no_inactives_row_targets_snf_or_mnf; 57 passed. Next: after next Sunday, re-measure coverage per window.
+
+## Update 2026-10-18 (SNF/MNF correction)
+- Removed inactives_snf and inactives_mnf from scripts/capture_scheduler.py (owner design: SNF/MNF excluded, T-90 after Sunday 16:00 ET lock). Test restored to committed form (git diff empty). Kept inactives_sun_intl, _sun_early_second, _sun_late_second.
+- source_freshness_policy._inactives_due_game_ids: due = T-90 passed AND T-90 < pick_deadline(kickoff, sunday_pick_lock). Verified: Sun 21:00 ET Wk6 excludes SNF (DAL_GB) and MNF (WAS_SF), inactives degraded (partial, honest); Tue Wk7 inactives complete.
+- Pytest capture_scheduler + source_freshness_policy + cli: 149 passed.
+- Dry-run snapshots data/players/inactives/20261018T23531{2,4,6,8}Z and 20261018T235320Z came from `--dry` ~19:53 ET; ordinary timestamped captures, no action.
