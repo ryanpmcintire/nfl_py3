@@ -14,6 +14,7 @@ Find why sim leaders gain more yards / pass more than real (Q4 close and blowout
 
 ## LDR3 (this round)
 - scripts/mod25e_ldr3.py: wraps ns["DECIDE"] outermost (LDR3=1, install_ldr3), ratio rejection on DECIDE output class, cell = lead x time x down. `counts` command draws pick+DECIDE 300x per real leader state (phase 3, lead 1+, 2009-2017) from the built sim tables and tallies by row season x class into artifacts/mod25e3/ldr3/decide_counts.npz; `fit` does nested LOSO (36 combos) with season-exclusion exact via the season tally, writes artifacts/mod25e3/ldr3/fit.json. Env: tests/scratch/e162/ldr3_env.sh counts|fit.
+- LDR3 refit DONE (14,122 leader queries x 300 draws, 44 min; artifacts/mod25e3/ldr3/fit.json, chosen 9/9 two|d12_3_4|lam 25): held-out LL/query adj -1.6395 v raw DECIDE -1.6404 (+0.0009, folds +.0013 +.0020 +.0009 +.0033 +.0016 -.0015 +.0013 0 -.0004; lead1-3<=120 n940 +.0031/query) v old LDR ratios applied to DECIDE -1.6603 (+.0208). Offline DECIDE pass share at lead 1-3<=120 is already ~.07 (adj ~.065) v real ~.05: the sim excess (.19) is not in DECIDE-at-real-states; look at sim state path. Counts harness uses fake caller frame (possessions=10, task_key (0,0,0)).
 - crH patch installed default-off: mod25e_crH.py install after install_log_sync(dv) (:250-256) and label "l3" before "rg" (:444-447); raises if LDR=1 too.
 - 3-seed script written, NOT launched: tests/scratch/e162/run_ldr3_3seed.sh (cand ...gx2fal3rg v base ...gx2faldrg).
 

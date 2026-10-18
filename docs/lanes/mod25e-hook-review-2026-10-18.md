@@ -28,3 +28,8 @@ Fix 1-2 (use dv.task_rng with int salt) before running smoke_g2sth/g2s.
 
 ## #5 SAFEG alignment
 Aligned (measured). build_transition_frame with and without team_ratings both give 346552 rows, identical game_id, play_id, down_i, fp_raw, yards_gained, points_def, next_yardline in order; loss.npy length 346552. Ratings merge is a left merge on game_id and runs before the sort, so no rows are dropped. No edit to mod25e_safeg.py; check not re-run.
+
+## Smoke scoring 2026-10-18 (measured, seed 31, 1 world 4 seasons, burn 2, 544 games)
+- GSTOP2 smoke (tests/scratch/e163/tgt_g2s_smoke.txt, tests/scratch/e179/cells.py) v base ldrg v real: final-drive reach .282 v .329 v .423 (gap -.141 [-.246,-.059] v -.094 [-.195,+.009], moved away); P(score) .269 v .329 v .340; clock expiry|reach .045 v .042 v .022; Q4 last play <=5s .268 v .250 v .214; FG kicked <=5s (gsr<=60) .295 v .394 v .404 (n 78/66/319, wide). Checks: SD 14.57 v 15.15, mass3 .129 v .154, pts/g 44.35 v 44.16.
+- Verdict GSTOP2: no target moved toward real; reach and FG<=5s moved away; no 3-seed script written. Recorded weak-signals mod25e-gstop2-smoke-s31-final-drive-reach (unresolved_below_power; probability_positive 0.5 placeholder, no interval from a 1-seed smoke).
+- g2sth (GSTOP2+TOH): dir ...g2sthldrg_s31 has no e5.json; unscored, still pending. Run score: tgt.py base,g2sth then cells.py with label g2sthldrg.

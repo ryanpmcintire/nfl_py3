@@ -23953,6 +23953,31 @@
       "source": "artifacts/mod25e3/tiltl/fit.json",
       "standard_error": null
     },
+    "e172d_teamkernel_returntd_lift": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "300 queries seed 11 single replay, no interval; shuffled-rating control gives 3.63 so rating information carries the lift; not a wrong sign",
+      "closing_ground": null,
+      "description": "Team kernel (hard home/away match x BLUP off/def rating nearness) lifts defensive return-TD per turnover from 4.12 to 5.23 pct in the nearest-200 Geo K-set replay; ipw and tilt do not",
+      "effect": 1.83,
+      "effect_units": "mae",
+      "family": "mod25e_e172_returntd",
+      "interval": null,
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Return TDs per turnover rise from 4.12 to 5.23 percent when the Geo pick weights rows by team rating nearness; real is 3.40",
+      "probability_positive": null,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 300,
+      "seasons": [
+        2013,
+        2024
+      ],
+      "source": "docs/lanes/mod25e-e172c-returntd.md",
+      "standard_error": null
+    },
     "e174c mid-game trailer regime class-ratio reweight (RGM)": {
       "category": "modeling",
       "classification": "unresolved_below_power",
@@ -172821,6 +172846,118 @@
       "source": "tests/scratch/unit10_results.json; docs/lanes/mod23-unit10-proper-score-arms-in-card.md",
       "standard_error": null
     },
+    "mod23_unit10_robust_target_H_sbr_2011_2019_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Robust target arm H paired vs base, 2011-2019; 1135-1096 vs 1142-1089.",
+      "effect": -0.31376064545047067,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit10_robust_target",
+      "interval": [
+        -1.6172506738544474,
+        0.8100810081008101
+      ],
+      "league": "nfl",
+      "notes": "Base fit with Huber loss at a cut chosen leave-one-season-out on prior seasons, arm H; four looks (two arms, two eras).",
+      "plain_summary": "Capping extreme game margins in training, or down-weighting them with a robust loss, moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.3059,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod23_unit10r/report_all.json",
+      "standard_error": null
+    },
+    "mod23_unit10_robust_target_H_tuesday_2020_2025_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Robust target arm H paired vs base, 2020-2025; 803-700 vs 802-701.",
+      "effect": 0.0665335994677312,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit10_robust_target",
+      "interval": [
+        -0.5836575875486382,
+        0.79628400796284
+      ],
+      "league": "nfl",
+      "notes": "Base fit with Huber loss at a cut chosen leave-one-season-out on prior seasons, arm H; four looks (two arms, two eras).",
+      "plain_summary": "Capping extreme game margins in training, or down-weighting them with a robust loss, moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.5164,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit10r/report_all.json",
+      "standard_error": null
+    },
+    "mod23_unit10_robust_target_W_sbr_2011_2019_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Robust target arm W paired vs base, 2011-2019; 1124-1107 vs 1142-1089.",
+      "effect": -0.8068130883012102,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit10_robust_target",
+      "interval": [
+        -1.9282511210762332,
+        0.35810205908683973
+      ],
+      "league": "nfl",
+      "notes": "Base fit with winsorized labels at a cut chosen leave-one-season-out on prior seasons, arm W; four looks (two arms, two eras).",
+      "plain_summary": "Capping extreme game margins in training, or down-weighting them with a robust loss, moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.07725,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod23_unit10r/report_all.json",
+      "standard_error": null
+    },
+    "mod23_unit10_robust_target_W_tuesday_2020_2025_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Robust target arm W paired vs base, 2020-2025; 804-699 vs 802-701.",
+      "effect": 0.1330671989354624,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit10_robust_target",
+      "interval": [
+        -0.19843246063365583,
+        0.4857737682165163
+      ],
+      "league": "nfl",
+      "notes": "Base fit with winsorized labels at a cut chosen leave-one-season-out on prior seasons, arm W; four looks (two arms, two eras).",
+      "plain_summary": "Capping extreme game margins in training, or down-weighting them with a robust loss, moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.707,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit10r/report_all.json",
+      "standard_error": null
+    },
     "mod23_unit1_nested_alpha_only": {
       "category": "modeling",
       "classification": "unresolved_below_power",
@@ -176236,6 +176373,31 @@
       ],
       "source": "docs/lanes/mod25e-e175-leader-q4.md",
       "standard_error": 1.2
+    },
+    "mod25e-gstop2-smoke-s31-final-drive-reach": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "GSTOP2 (clock from near-set row with served stop class) vs LDR+RG base, 1 world 4 seasons seed 31, burn 2, 544 games each; final drive tie/trail 1-3 P(reach yl<=40) sim-real gap -0.094 base to -0.141 GSTOP2 (moved away from real .423); P(score) .329 to .269 v real .340; Q4 last play <=5s .250 to .268 v real .214; clock expiry given reach .042 to .045 v .022; margin_sd 15.15 to 14.57, mass3 .154 to .129, pts/g 44.16 to 44.35. g2sth smoke had no e5.json at scoring.",
+      "effect": -4.7,
+      "effect_units": "accuracy_points",
+      "family": "mod25e-late-clock-hooks",
+      "interval": null,
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "One-world smoke is below power; GSTOP2 did not move the final-drive reach target toward real.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 544,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/mod25e3/e5_crHpqokgndecsmfwtjo2as2ypw2xfdcdtbkhghkekudwtpq2ugkyg2rtgw13gx2fag2sldrg_s31/e5.json",
+      "standard_error": null
     },
     "motivation_ladder_elim_visitor_alive_host": {
       "category": "schedule",

@@ -23,6 +23,7 @@ def sigmoid(z):
 
 def fit_command():
     src = ESS21.read_text(encoding="utf-8").split("tdA = np.zeros(nq)")[0]
+    src = src.replace("FORMS = {", 'FORMS = {"F1_type": (2, mkform(1))}\n_all_forms = {', 1)
     ns = {"__name__": "ess21_fit"}
     exec(compile(src, "ess21fit", "exec"), ns)
     form = "F1_type"
@@ -45,11 +46,8 @@ def install_v1ad():
     import mod25e_geo as ge
 
     spec = json.loads(FIT.read_text(encoding="utf-8"))
-    orig_fix = ge.Geo.fix
-    rep_keys = None
 
     def fix(self, drawn, i, down, q, f3q, net_sim, weight_fn, rng, force=False):
-        nonlocal rep_keys
         if not force and not self.violates(drawn, i, q):
             return None
         d = down if down in (1, 2, 3, 4) else 4

@@ -123,6 +123,10 @@ def run_with_flags(init, setting):
         if fd.enabled():
             raise SystemExit("FD5 replaces FD4; unset FD4")
         f5.install_fd5()
+    import mod25e_tdr as tdr
+
+    if tdr.enabled():
+        tdr.install_tdr()
     import mod25e_tdc as td
 
     if td.enabled():
@@ -235,6 +239,12 @@ def run_with_flags(init, setting):
 
     if rgt.enabled():
         rgt.install_rgt()
+    import mod25e_ctx as cxm
+
+    if cxm.enabled():
+        if rgt.enabled():
+            raise SystemExit("CTX replaces RGT; unset RGT")
+        cxm.install_ctx()
     import mod25e_rtd as rt
 
     if rt.enabled():
@@ -248,6 +258,12 @@ def run_with_flags(init, setting):
     if u2.enabled():
         u2.install_urg2()
     install_log_sync(dv)
+    import mod25e_ldr3 as l3
+
+    if l3.enabled():
+        if ld.enabled():
+            raise SystemExit("LDR3 replaces LDR; unset LDR")
+        l3.install_ldr3()
 
 
 def install_log_sync(dv):
@@ -435,10 +451,20 @@ def cmd_e5(a):
         label = label + "sp"
     if os.environ.get("LDR") == "1":
         label = label + "ld"
+    if os.environ.get("LDR3") == "1":
+        if os.environ.get("LDR") == "1":
+            raise SystemExit("LDR3 replaces LDR; unset LDR")
+        label = label + "l3"
     if os.environ.get("RGR") == "1":
         label = label + "rg"
     if os.environ.get("RGT") == "1":
         label = label + "rq"
+    if os.environ.get("CTX") == "1":
+        label = label + "cx"
+    if os.environ.get("CTX") == "2":
+        label = label + "cx2"
+    if os.environ.get("TDR") == "1":
+        label = label + "tr"
     dv.DV[label] = dict(dv.DV["crG"])
     outd = ss.OUT / f"e5_{label}_s{a.seed}"
     outd.mkdir(parents=True, exist_ok=True)

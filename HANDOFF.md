@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-18T21:54:27.349528+00:00`
+Refreshed at: `2026-10-18T22:26:26.575225+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-10-18T21:54:27.349528+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `83dafac0e7d3` — History week-by-week record strip; MOD-25e CTX hook (variant D) and FD5 fit loader; E175/E177 recorded; Week 6 card refresh
-- Pending change set: 171 paths
-  - `R  docs/lanes/mod25e-e100-seedboot.md -> docs/lanes/done/mod25e-e100-seedboot.md`
-  - `R  docs/lanes/mod25e-e101-logrecheck.md -> docs/lanes/done/mod25e-e101-logrecheck.md`
-  - `R  docs/lanes/mod25e-e102-touchback.md -> docs/lanes/done/mod25e-e102-touchback.md`
-  - `R  docs/lanes/mod25e-e106-runclock.md -> docs/lanes/done/mod25e-e106-runclock.md`
-  - `R  docs/lanes/mod25e-e107-q4drive.md -> docs/lanes/done/mod25e-e107-q4drive.md`
-  - `R  docs/lanes/mod25e-e108-drivestart.md -> docs/lanes/done/mod25e-e108-drivestart.md`
-  - `R  docs/lanes/mod25e-e111-q3var.md -> docs/lanes/done/mod25e-e111-q3var.md`
-  - `R  docs/lanes/mod25e-e112-q4catchup.md -> docs/lanes/done/mod25e-e112-q4catchup.md`
-  - `R  docs/lanes/mod25e-e113-finaldrive.md -> docs/lanes/done/mod25e-e113-finaldrive.md`
-  - `R  docs/lanes/mod25e-e115-leadertd.md -> docs/lanes/done/mod25e-e115-leadertd.md`
-  - `R  docs/lanes/mod25e-e116-tiedhalf.md -> docs/lanes/done/mod25e-e116-tiedhalf.md`
-  - `R  docs/lanes/mod25e-e117-otfinal3.md -> docs/lanes/done/mod25e-e117-otfinal3.md`
-  - `R  docs/lanes/mod25e-e118-sdgap.md -> docs/lanes/done/mod25e-e118-sdgap.md`
-  - `R  docs/lanes/mod25e-e120-returntd.md -> docs/lanes/done/mod25e-e120-returntd.md`
-  - `R  docs/lanes/mod25e-e121-yardtail.md -> docs/lanes/done/mod25e-e121-yardtail.md`
-  - `R  docs/lanes/mod25e-e122-finaldrive2.md -> docs/lanes/done/mod25e-e122-finaldrive2.md`
-  - `R  docs/lanes/mod25e-e123-playvolume.md -> docs/lanes/done/mod25e-e123-playvolume.md`
-  - `R  docs/lanes/mod25e-e124-incshare.md -> docs/lanes/done/mod25e-e124-incshare.md`
-  - `R  docs/lanes/mod25e-e126-strength.md -> docs/lanes/done/mod25e-e126-strength.md`
-  - `R  docs/lanes/mod25e-e129-reach.md -> docs/lanes/done/mod25e-e129-reach.md`
-  - ...and 151 more
+- Baseline commit: `650cb1013d95` — MOD-23 unit 9b two-sided labels (no gain, recorded); CTX variant F as CTX=2; E175f, E176e, E172d results; 32 finished MOD-25e lanes to done/
+- Pending change set: 135 paths
+  - `M  docs/lanes/done/mod25e-e161-ydist-pool.md`
+  - `A  docs/lanes/mod23-unit10-candidates.md`
+  - `M  docs/lanes/mod25e-e162-leader-close.md`
+  - `M  docs/lanes/mod25e-e172c-returntd.md`
+  - `M  docs/lanes/mod25e-generator-fidelity.md`
+  - `M  docs/lanes/mod25e-hook-review-2026-10-18.md`
+  - `M  registry/weak_signals.json`
+  - `A  scripts/mod23_unit10_robust.py`
+  - `M  scripts/mod25e_crH.py`
+  - `A  scripts/mod25e_ldr3.py`
+  - `M  scripts/mod25e_v1ad.py`
+  - `?? an.csv`
+  - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
+  - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
+  - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
+  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
+  - ...and 115 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
