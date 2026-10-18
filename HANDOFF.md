@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-18T23:35:24.298410+00:00`
+Refreshed at: `2026-10-18T23:37:57.986050+00:00`
 
 ## Start here
 
@@ -21,16 +21,11 @@ Refreshed at: `2026-10-18T23:35:24.298410+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `dafed3524a18` — MOD-25e CTXSCR scramble-share weight on CTX F run queries (default-off, installed); offline gate recorded
-- Pending change set: 132 paths
-  - `M  docs/lanes/mod25e-e176-neutral-yards.md`
-  - `A  docs/lanes/mod25e-e180-final-drive-turnovers.md`
-  - `M  docs/lanes/mod25e-gap-table.md`
-  - `M  docs/lanes/mod25e-generator-fidelity.md`
-  - `M  docs/lanes/mod25e-hook-review-2026-10-18.md`
+- Baseline commit: `14bbc7e8fccc` — MOD-25e PTO clock-aware pass-turnover draw (fitted LOSO, default-off, installed); E180 final-drive turnover gap; CLSDRAW smoke held for class fix
+- Pending change set: 127 paths
+  - `M  docs/lanes/mod25e-e172c-returntd.md`
   - `M  registry/weak_signals.json`
-  - `M  scripts/mod25e_crH.py`
-  - `A  scripts/mod25e_pto.py`
+  - `M  scripts/mod25e_clsdraw.py`
   - `?? an.csv`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -43,7 +38,12 @@ Refreshed at: `2026-10-18T23:35:24.298410+00:00`
   - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
   - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
   - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
-  - ...and 112 more
+  - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
+  - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
+  - `?? registry/experiments/margin-backtest/20261008T161241Z.json`
+  - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
+  - `?? registry/experiments/margin-backtest/20261009T161053Z.json`
+  - ...and 107 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

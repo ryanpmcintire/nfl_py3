@@ -44,9 +44,9 @@ def class_probs(fit, X):
 
 def class_of(a):
     rp = np.isin(a["play_type_code"], (0, 1))
-    flip = a["possession_flip"].astype(bool) & rp
     rtd = (a["points_def"] >= 6) & rp
-    return np.where(rtd, 0, np.where(flip, 1, 2)).astype(np.int8)
+    other = a["possession_flip"].astype(bool) & (a["points_off"] < 6) & (a["points_def"] < 6) & rp
+    return np.where(rtd, 0, np.where(other, 1, 2)).astype(np.int8)
 
 
 def load_fit():
