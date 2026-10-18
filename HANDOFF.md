@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-17T20:01:28.566846+00:00`
+Refreshed at: `2026-10-18T12:40:06.227496+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-10-17T20:01:28.566846+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `92b56b7a3a1f` — MOD-25e: E156 run void (SCLIP not applied, re-ran X2); E158 flip re-anchor next
-- Pending change set: 125 paths
-  - ` M CURRENT_PREDICTIONS.md`
-  - ` M docs/index.html`
-  - `M  docs/lanes/mod25e-e126-strength.md`
-  - `M  scripts/mod25e_crH.py`
-  - `M  scripts/mod25e_geo.py`
+- Baseline commit: `775b897e0cc4` — MOD-25e E158: FLIPA=1 re-anchors Geo-served flip rows' next_yardline to the sim spot; smoke failed-4th start +0.7 v real -0.4 (X2 -11.4)
+- Pending change set: 134 paths
+  - `M  CURRENT_PREDICTIONS.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - ` M docs/lanes/mod25e-generator-fidelity.md`
+  - `M  docs/model.html`
   - ` M scripts/mod25e_lpo.py`
   - ` M scripts/sim04_engine.py`
-  - ` M tiebreaker.json`
+  - `M  tiebreaker.json`
   - `?? an.csv`
+  - `?? docs/lanes/mod25e-e159-strength-x2.md`
+  - `?? docs/lanes/mod25e-e160-reach-x2.md`
+  - `?? docs/lanes/mod25e-e161-ydist-pool.md`
+  - `?? docs/lanes/mod25e-e162-leader-close.md`
+  - `?? docs/lanes/week6-lock-2026-10-18.md`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
   - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
   - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
-  - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
-  - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
-  - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
-  - ...and 105 more
+  - ...and 114 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
