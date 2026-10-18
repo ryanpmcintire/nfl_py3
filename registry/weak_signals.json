@@ -24261,6 +24261,90 @@
       "source": "tests/scratch/e177/ctx_an_F.log",
       "standard_error": 0.00027
     },
+    "e178-ctxscr-vs-ctxF-all-affected": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CTXSCR v CTX F held-out dLL per query, all queries (102817 affected run queries); 2/9 folds positive; in-sample -0.000045; class likelihood does not see scramble status so it cannot reward the mix",
+      "effect": -6.1e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "e178-ctxscr",
+      "interval": [
+        -0.000116,
+        -3e-06
+      ],
+      "league": "nfl",
+      "notes": "one declared look, lam 5 parent run-to-go bucket from CTX F; log tests/scratch/e178/ctx_an_SCR.log",
+      "plain_summary": null,
+      "probability_positive": 0.044,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "docs/lanes/mod25e-e176-neutral-yards.md",
+      "standard_error": null
+    },
+    "e178-ctxscr-vs-ctxF-neutral-3rd7plus-run": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CTXSCR v CTX F held-out dLL on neutral 3rd&7+ run queries n=872; rate 28.45 v real 29.01 (CTX F 25.75); E161 bucket bar 0 IN->OUT of 20",
+      "effect": 0.004394,
+      "effect_units": "log_loss_improvement",
+      "family": "e178-ctxscr",
+      "interval": [
+        -0.001954,
+        0.011059
+      ],
+      "league": "nfl",
+      "notes": "one declared look, lam 5 parent run-to-go bucket from CTX F; log tests/scratch/e178/ctx_an_SCR.log",
+      "plain_summary": null,
+      "probability_positive": 0.878,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "docs/lanes/mod25e-e176-neutral-yards.md",
+      "standard_error": null
+    },
+    "e178-neutral-3rd7plus-run-scramble-mix-gap": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Neutral 3rd and 7+ run conversion: real minus no-context LOSO exact-distance pool, decomposed into scramble-share effect (real 44.5% scrambles v pool 34.3%), within-scramble and within-designed conversion",
+      "effect": 2.9,
+      "effect_units": "rate_pp",
+      "family": "e178-scramble-mix",
+      "interval": [
+        2.31,
+        3.56
+      ],
+      "league": "nfl",
+      "notes": "game bootstrap 90%; within-scramble +1.55 [0.21,2.93] P>0 .968; within-designed +0.64 [-0.42,1.66]; proxy is LOSO exact-dist pool, not Geo-served rows (inferred)",
+      "plain_summary": "Share effect 2.90pp of a 5.1pp pool gap; CTX F leaves 3.08pp [1.26,4.88]",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1466,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "docs/lanes/mod25e-e176-neutral-yards.md",
+      "standard_error": 0.4
+    },
     "ecdf_smoothing_accuracy": {
       "category": "modeling",
       "classification": "unresolved_below_power",

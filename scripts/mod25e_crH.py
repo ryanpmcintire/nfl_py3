@@ -249,6 +249,10 @@ def run_with_flags(init, setting):
         if rgt.enabled():
             raise SystemExit("CTX replaces RGT; unset RGT")
         cxm.install_ctx()
+    import mod25e_ctxscr as csm
+
+    if csm.enabled():
+        csm.install_ctxscr()
     import mod25e_rtd as rt
 
     if rt.enabled():
@@ -484,6 +488,8 @@ def cmd_e5(a):
         label = label + "cx"
     if os.environ.get("CTX") == "2":
         label = label + "cx2"
+    if os.environ.get("CTXSCR") == "1":
+        label = label + "cs"
     if os.environ.get("TDR") == "1":
         label = label + "tr"
     if os.environ.get("CLSDRAW") == "1":

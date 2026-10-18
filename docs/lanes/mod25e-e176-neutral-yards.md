@@ -42,3 +42,15 @@ Build E as default-off hook in a new module (not crH, not mod25e_ctx.py), env na
 - Recorded e178-neutral-3rd7plus-run-scramble-mix-gap (unresolved_below_power, rate_pp).
 ## E178 Next (default-off fix spec, not built)
 CTXSCR=1 (git grep: unused), new module mod25e_ctxscr.py installed after mod25e_ctx.install_ctx. Second Geo weight_fn factor on run queries: per pool row scramble flag (run & qb_dropback, from the pbp used by load_real), weight = P(scr | context cell, run-to-go bucket)/P(scr | pool) fitted LOSO by season from real runs, shrunk to parent as CTX does (lam 5 parent), no constants. Offline gate first: held-out dLL on run queries v CTX F, then the neutral 3rd cells and E161 bucket bar. Needs pool S to carry the flag (rebuild ctx_pool H/S by scramble) since served scramble share is not derivable from current npz.
+
+## E178b CTXSCR declared before fitting (one fixed spec, 1 look, family e178-ctxscr)
+Run queries only (down != 4, fp > 10, not late-lead run territory). Second Geo weight on pool rows: scramble rows x rho_s[cell], designed rows x rho_d[cell]; rho = (real count + 5 x parent) / (pool-expected count under CTX F weights + 5), parent = run-to-go bucket, prior 1; cell = CTX F cell; LOSO by season with the CTX F fold ratios; lam 5 and parent shrink copied from CTX F's selected combo (S5, 5, parent), not re-tuned. Scramble flag = play_type run and qb_dropback (pool tallies HS/SS in tests/scratch/e177/ctx_pool_scr.npz). Harness tests/scratch/e178/ctx_anSCR.py.
+
+## E178b CTXSCR result (measured; tests/scratch/e178/ctx_an_SCR.log; ctx_pool_scr.npz HS/SS; 1 look; exact replay fold 2013 max diff 0.0 over 11449 queries x 2 flags)
+- Held-out dLL v CTX F, all queries: -0.000061 [-0.000116,-0.000003] P>0 0.044, folds+ 2/9, in-sample -0.000045 (class LL cannot see scramble status, so mix-only reweighting is not rewarded). Neutral 3rd&7+ run n=872: +0.00439 [-0.00195,+0.01106] P>0 0.878. RGT territory -0.00023 [-0.00069,+0.00023] P>0 0.215 (run only -0.0015, P>0 .215).
+- Conversion v real (IN/OUT of real 90% boot): neutral 3rd&7+ run real .2901, F .2575 OUT, CTXSCR .2845 IN; 3rd&4-6 .5193 v F .5011 v .5297 IN; 3rd&<=3 .6754 v .6802 v .6814; all-score 3rd&7+ run .2346 v F .2258 v .2421 IN. Neutral 3rd&7+ yds 7.48 v F 7.25 v 7.69 IN; turnover .0126 v F .0202 OUT v .0176 IN. Served scramble share .328 (F) to .434 (real .477). rho_s mean 1.38, rho_d 0.81.
+- E161 20-bucket bar: 0 IN->OUT v cur and v CTX F.
+- Recorded e178-ctxscr-vs-ctxF-all-affected and e178-ctxscr-vs-ctxF-neutral-3rd7plus-run (unresolved_below_power).
+- Built default-off: scripts/mod25e_ctxscr.py (CTXSCR=1, requires CTX=2), scripts/mod25e_ctxscr_fit.py, artifacts/mod25e3/ctxscr/fit.json, tests/scratch/e178/run_cs_3seed.sh (cand ...cx2cs v base ...cx2; not launched).
+## E178b Next
+crH patch (owner of crH applies): after `cxm.install_ctx()` add `import mod25e_ctxscr as csm` and `if csm.enabled(): csm.install_ctxscr()`; in label block after the CTX==2 branch add `if os.environ.get("CTXSCR") == "1": label = label + "cs"`. Then run tests/scratch/e178/run_cs_3seed.sh once CTX F base seeds exist.
