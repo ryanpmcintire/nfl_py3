@@ -30,3 +30,5 @@ Side finding: possession_flip is true on scoring plays (pass flip .0728 = TD .03
 
 ## Open
 Real numerator includes sack-fumbles lost on pass plays; sim flip on pass includes the same class only if the engine marks it (unchecked). Whether the candidate pool holds enough turnover rows late (pool ceiling) is untested.
+
+Update 2026-10-18: PTO crash fixed (mod25e_pto.py play_frame walks up to pol frame for qtr/clock_val/score_diff/distance; RG wrapper frame had no qtr). Tiny run (tests/scratch/e180/smoke_pt_tiny.sh, 1 world 1 season 1 worker) simulated all plays with PTO in 467s; died after sim in all_metrics (ZeroDivision, burn 2 > 1 season, no games kept), so no turnover rate. smoke_pt.sh appended to e178/queue.txt.

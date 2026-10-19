@@ -115,11 +115,17 @@ def install_pto():
             fr = fr.f_back
         return fr.f_locals
 
+    def play_frame():
+        fr = sys._getframe(2)
+        while fr is not None and not ("clock_val" in fr.f_locals and "score_diff" in fr.f_locals and "qtr" in fr.f_locals):
+            fr = fr.f_back
+        return fr.f_locals
+
     def fix(self, drawn, i, down, q, f3q, net_sim, weight_fn, rng, force=False):
         if not force and not self.violates(drawn, i, q):
             return None
         code = int(drawn["play_type_code"])
-        pf = sys._getframe(1).f_locals
+        pf = play_frame()
         qtr = int(pf["qtr"])
         if code != PASS_CODE or down not in DOWNS or qtr >= 5:
             return orig(self, drawn, i, down, q, f3q, net_sim, weight_fn, rng, force)
