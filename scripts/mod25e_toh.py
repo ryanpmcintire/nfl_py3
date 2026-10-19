@@ -14,7 +14,29 @@ POOL = tuple(range(2009, 2018))
 FEATS = ("lh", "sc", "tied", "otr", "q4", "run", "dto", "le30", "le60", "le120")
 COUNT = {"calls": 0, "eligible": 0, "called": 0, "no_donor": 0}
 _STATE = {"k": None, "rng": None}
+CELLS = {}
+CELL_EDGES = (30.0, 60.0, 120.0, 300.0)
 SALT = 9901
+
+
+def time_cell(tf):
+    for e in CELL_EDGES:
+        if tf <= e:
+            return "le%d" % int(e)
+    return "gt%d" % int(CELL_EDGES[-1])
+
+
+def tally(ph, tf, code, field):
+    key = "p%d|%s|%s" % (int(ph), time_cell(tf), "run" if int(code) == 0 else "pass")
+    c = CELLS.setdefault(key, {"eligible": 0, "called": 0, "no_donor": 0})
+    c[field] += 1
+    return c
+
+
+def dump_counts():
+    outd = Path(os.environ.get("BUD_OUT", str(REPO / "artifacts" / "mod25e")))
+    outd.mkdir(parents=True, exist_ok=True)
+    (outd / ("toh_count_%d.json" % os.getpid())).write_text(json.dumps({"pid": os.getpid(), "total": dict(COUNT), "cells": CELLS}, indent=1), encoding="utf-8")
 
 
 def enabled():
@@ -154,6 +176,7 @@ def install_toh():
         if not late_mask(np.array([ph]), np.array([score_diff]), np.array([off_to]), np.array([tf]))[0]:
             return drawn
         COUNT["eligible"] += 1
+        tally(ph, tf, code, "eligible")
         if _STATE["k"] != dv._G.get("task_key"):
             _STATE["k"] = dv._G.get("task_key")
             _STATE["rng"] = dv.task_rng(SALT, seed)
@@ -164,8 +187,11 @@ def install_toh():
         k = don.draw(ph, code, t, f, r, se.K_STATE)
         if k is None:
             COUNT["no_donor"] += 1
+            tally(ph, tf, code, "no_donor")
             return drawn
         COUNT["called"] += t
+        if t:
+            tally(ph, tf, code, "called")
         new = dict(drawn)
         new["clock_elapsed"] = a["clock_elapsed"][k]
         new["off_to_used"] = a["off_to_used"][k]
@@ -174,6 +200,14 @@ def install_toh():
 
     pol._toh = True
     dv._G["pol"] = pol
+    orig = dv.d_play_season
+
+    def d_play_season(task):
+        res = orig(task)
+        dump_counts()
+        return res
+
+    dv.d_play_season = d_play_season
 
 
 def wilson(k, n, z=1.96):

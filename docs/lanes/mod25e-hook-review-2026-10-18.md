@@ -44,3 +44,9 @@ Aligned (measured). build_transition_frame with and without team_ratings both gi
 
 ## Next (added)
 - Default-off spec (named mechanism, no constant): final-drive timeout use by the trailing offense, taken from the real stop rate conditional on state (clock, margin, timeouts left), added to the stop flag; measure first with a 3-seed base-only read of timeout use in Q4 trailing drives. Do not run more GSTOP2 seeds for reach.
+
+## TOH smoke scoring 2026-10-18 (measured, seed 31, 1 world, 544 games; scorers tests/scratch/e173/score_th.py, final3.py)
+- Final-drive reach real .423 v base .329 v g2s .282 v g2sth .250 (g2sth-base -8.6pp [-20.4,+3.5] P>0 .12). Offense TOs used per drive real .58 v .137 v .141 v .176 (g2sth-base +.040 [-.077,+.152] P>0 .73). Score .340/.329/.269/.147 (g2sth-base -19pp [-29,-8]). Clock-end share .417/.575/.615/.676.
+- Timeout-call cells (offense >=1 TO, trailing/tied, drop in oto): real <=30s .53, 60-300s .069; g2sth .049 and .036 (g2sth-base 60-300 -.7pp [-1.3,-.1]). TOH does not raise calls; engine rate flat. COUNT of TOH eligible/called not logged in output; hook suspected not effective (check COUNT, oto write-back).
+- P(final 3|tied last 5): real .581 (my def), base .571, g2s .623, g2sth .543 (n 46). Aggregates g2sth: SD 15.65 (base 15.15), pts/g 44.23, mass3 .112 (base .154), noise var 177.8 (base 166.7).
+- Verdict: fails bar; no 3-seed script. Recorded mod25e-toh-smoke-s31-final-drive-reach (unresolved_below_power). Next: diagnose why TOH leaves calls at ~.05 (COUNT, whether oto/lo_otu sees donor off_to_used).
