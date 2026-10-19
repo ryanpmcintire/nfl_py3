@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-19T13:25:56.439752+00:00`
+Refreshed at: `2026-10-19T13:26:25.799543+00:00`
 
 ## Start here
 
@@ -21,11 +21,11 @@ Refreshed at: `2026-10-19T13:25:56.439752+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `bcf67d894644` — MOD-25e GZIDX 3-seed: adopt as base correction (SD -0.19, xq_cov -3.3 toward real; smoke noise/mass3 moves did not replicate; strength var -4.6 open)
+- Baseline commit: `744bff8c2e52` — MOD-25e queue rebased on GZIDX base: PACE2, TDR, LDR3 tiny runs then 3-seeds; CTXSCR and TILTL dropped from queue
 - Pending change set: 126 paths
-  - `A  docs/lanes/mod25e-rebase-gzidx.md`
+  - `A  docs/lanes/mod25e-e187-strength-var.md`
+  - `M  scripts/mod25e_e100.py`
   - `?? an.csv`
-  - `?? docs/lanes/mod25e-e187-strength-var.md`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
