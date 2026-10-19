@@ -38,3 +38,10 @@ Whether timeouts alone move reach (E103: not at hs 10-20); effect of removing ov
 
 ## TOH count dump (done, unrun)
 scripts/mod25e_toh.py now wraps dv.d_play_season in install_toh and writes BUD_OUT/toh_count_<pid>.json (total + cells keyed p<phase>|le30/le60/le120/le300/gt300|run/pass; eligible/called/no_donor). Stub-verified only. tests/scratch/e173/smoke_th2.sh queued in e178/queue.txt after smoke_dl.sh. Its output dir label equals the earlier g2sth smoke and overwrites it; the prior dir was renamed to the same name + `_run1` to keep the scored run.
+
+## TOH rescore (2026-10-18, measured; tests/scratch/e173/score_th2.py)
+- Mismatch (read): real .530/.402/.121/.019 = tab.csv, fit.py:30-33,40 universe (run/completion, in-bounds, no score/flip, sd<=0, off_to>=1). score_th.py:39 sim universe = code<=1 (adds incompletions, out-of-bounds) with no stop filter; the sim parquet has no this-play stop column (pstop of the next row is contaminated by the timeout itself), so exact matching is only possible via the TOH counters.
+- Logged sim call rate (oto drop on next play), broad / run-or-yards>0: base .046/.048, g2s .041/.044, th run1 = run2 .039/.043 (cells ~.05 flat, 120-300 .031-.043). Real .16 overall.
+- Counters (3 workers, 4 seasons incl. 2 scored): called 944 of 7010 eligible; ~470 expected calls in the 2 scored seasons v ~183 logged. Calls drawn by TOH do not appear in logged oto: TOH logged rate = g2s. So the earlier "inert" verdict stands on the logged output; the scorer-universe explanation does not rescue it (the counters pass the cells, the engine state does not show them). Unresolved: where drawn off_to_used is lost between toh pol and the logged oto.
+- run1 v run2: play parquets byte-identical (md5 play_0_2), so final-drive numbers are identical; the record number is correct, no invalidation.
+- No run_th_3seed.sh written (bar not met on logged output).

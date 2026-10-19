@@ -24560,10 +24560,97 @@
         -21.9,
         -5.3
       ],
+      "invalidated_reason": "per-state shortfall was an artifact of real kneel rows excluded plus last-drive drop (trailer final drives dropped in real, kept in sim: clock-end plays 4.3% real v 10.8% sim) and of an un-yardline-controlled mix; aligned universe gap -0.1 centipoints [-9.8,+9.9]",
       "league": "nfl",
-      "notes": "game bootstrap 1000, sim seeds 11-12 sim games 2 arms, real 2304 games, EP lookup 154 down x dist x 10yd cells fit on real 2009-17 pooled",
+      "notes": "game bootstrap 1000, sim seeds 11-12 sim games 2 arms, real 2304 games, EP lookup 154 down x dist x 10yd cells fit on real 2009-17 pooled\n[2026-10-19T03:22:02.293998+00:00] invalidated: per-state shortfall was an artifact of real kneel rows excluded plus last-drive drop (trailer final drives dropped in real, kept in sim: clock-end plays 4.3% real v 10.8% sim) and of an un-yardline-controlled mix; aligned universe gap -0.1 centipoints [-9.8,+9.9]. Superseded by: 'e181-q4-trailer-aligned-ep-gap'. Invalidation is not closure.",
       "plain_summary": null,
       "probability_positive": 0.01,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "docs/lanes/mod25e-e177-context-ratios.md",
+      "standard_error": null,
+      "status": "invalidated",
+      "superseded_by": "e181-q4-trailer-aligned-ep-gap"
+    },
+    "e179-decide-q4-trailer-ep-effect": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "DECIDE idx_out v idx_in EP of resulting state per call, Q4 trailers 1-8 (centipoints/call, positive = DECIDE raises trailer EP)",
+      "effect": 3.22,
+      "effect_units": "rate_pp",
+      "family": "e179-decide-declog",
+      "interval": [
+        -0.21,
+        6.92
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "DECIDE re-picks raise, not lower, trailer outcomes; not the carrier of the Q4 trailer shortfall",
+      "probability_positive": 0.97,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1088,
+      "seasons": [
+        2018,
+        2021
+      ],
+      "source": "docs/lanes/mod25e-e177-context-ratios.md",
+      "standard_error": 1.8
+    },
+    "e180-ctxF-kernel-served-q4-trailer-firstdown": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Kernel-served CTX F first-down rate minus real at real Q4 trailer run/pass query states (down 1-3, fp>10), E172 weighting, game bootstrap 90%",
+      "effect": -0.549,
+      "effect_units": "rate_pp",
+      "family": "e177-ctx-ratios",
+      "interval": [
+        -0.922,
+        -0.201
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "At the real Q4 trailer states the weighted candidate mix gives 0.55 points fewer first downs than real, but more yards and higher expected points per play, so the selection and weighting do not carry the simulator's trailer shortfall.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e177/ctx_kernB.txt",
+      "standard_error": 0.22
+    },
+    "e181-q4-trailer-aligned-ep-gap": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Q4 trailer run/pass plays down 1-3 yl>10, sim base minus real realised drive points minus real E[drive pts] of the play state, after dropping drives ending in the last 120s and plays with 120s or less left (real kneel rows removed and final drive dropped, sim keeps them); stored x100 as centipoints; single-step EP gap -1.2 centipoints [-2.5,0.0]; punt share +3.7pp offset by turnover/downs share -3.9pp",
+      "effect": -0.1,
+      "effect_units": "rate_pp",
+      "family": "mod25e-e177-context-ratios",
+      "interval": [
+        -9.8,
+        9.9
+      ],
+      "league": "nfl",
+      "notes": "game bootstrap 800, sim base seeds 11-12 v real 2009-17; unaligned gap was -11.8 centipoints [-21.3,-2.8]",
+      "plain_summary": null,
+      "probability_positive": 0.48,
       "recorded_at": "2026-10-19",
       "reliability": null,
       "sample_blocks": null,

@@ -50,3 +50,6 @@ Aligned (measured). build_transition_frame with and without team_ratings both gi
 - Timeout-call cells (offense >=1 TO, trailing/tied, drop in oto): real <=30s .53, 60-300s .069; g2sth .049 and .036 (g2sth-base 60-300 -.7pp [-1.3,-.1]). TOH does not raise calls; engine rate flat. COUNT of TOH eligible/called not logged in output; hook suspected not effective (check COUNT, oto write-back).
 - P(final 3|tied last 5): real .581 (my def), base .571, g2s .623, g2sth .543 (n 46). Aggregates g2sth: SD 15.65 (base 15.15), pts/g 44.23, mass3 .112 (base .154), noise var 177.8 (base 166.7).
 - Verdict: fails bar; no 3-seed script. Recorded mod25e-toh-smoke-s31-final-drive-reach (unresolved_below_power). Next: diagnose why TOH leaves calls at ~.05 (COUNT, whether oto/lo_otu sees donor off_to_used).
+
+## TOH rescore addendum (2026-10-18)
+Run2 plays are byte-identical to run1 (same seed), so weak-signals record mod25e-toh-smoke-s31-final-drive-reach stands. Logged timeout rate with TOH (.043 run-or-yards>0) equals g2s (.044) despite 944 counted calls; see mod25e-e173-timeouts.md. 3-seed not queued.
