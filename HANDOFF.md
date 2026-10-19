@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-19T01:00:59.058328+00:00`
+Refreshed at: `2026-10-19T01:31:46.644659+00:00`
 
 ## Start here
 
@@ -21,12 +21,12 @@ Refreshed at: `2026-10-19T01:00:59.058328+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `bedc7a62d24d` — Inactives: three extra pre-lock Sunday capture passes (international, second early, second late; SNF/MNF stay excluded per the 2026-09-01 design); inactives counted due only when T-90 precedes the pick deadline
+- Baseline commit: `0b58f3c7a11a` — MOD-25e DECLOG observer on the DECIDE chain (default-off, installed outermost); CTX F mechanism work: base leader-turnover overshoot was offsetting weak trailers; Q4 trailer gap is per-state rate, not occupancy
 - Pending change set: 128 paths
+  - `M  docs/lanes/mod25e-e176-neutral-yards.md`
   - `M  docs/lanes/mod25e-e177-context-ratios.md`
-  - `M  registry/weak_signals.json`
-  - `M  scripts/mod25e_crH.py`
-  - `A  scripts/mod25e_declog.py`
+  - `M  docs/lanes/mod25e-gap-table.md`
+  - ` M registry/weak_signals.json`
   - `?? an.csv`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`

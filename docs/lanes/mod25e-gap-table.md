@@ -34,3 +34,4 @@ Install CTX (+TDR) in crH via sole editor; then run the queue, one 3-worker sim 
 - Row 5 neutral 3rd&7+ run: scrambles carry it (real 44.5% scramble share; conv .445 v designed .138). CTXSCR offline: .2845 v real .2901 IN; scramble-flag held-out LL +0.0041 v CTX F, joint +0.0011.
 - Row 6 return-TD: static kernel is NOT the carrier (60k-query replay 3.48 v real ~3.40; earlier 5.23 was 300-query noise, record invalidated). CLSDRAW (cl) smoke queued second.
 - Hooks: crash-loop guard in crH (worker init failure aborts the run). Simulator gap records use --effect-units rate_pp.
+- 21:55 ET: CTX F 3-seed not adopted alone (SD +0.23, noise +5.5, xq_cov +4.6, Q4 slope toward real); it removes a compensating leader-turnover error; Q4 trailer per-state rate is the catch-up carrier (rate part +0.156 pts/drive, occupancy -0.036); penalties ruled out; DECIDE re-picks are the untested suspect (DECLOG smoke queued).

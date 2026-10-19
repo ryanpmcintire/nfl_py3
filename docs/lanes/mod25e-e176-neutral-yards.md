@@ -58,3 +58,8 @@ crH patch (owner of crH applies): after `cxm.install_ctx()` add `import mod25e_c
 - Scramble-flag LL/query, CS v marginal +0.035463 [0.033769,0.037179] P+ 1.000 folds+ 9/9 in-sample +0.036007 gap +0.000545; v run-to-go-only +0.034911 [0.033242,0.036589] 9/9; v CTX F implied scramble prob +0.004143 [0.003557,0.004714] P+ 1.000 8/9 (gap +0.000826). Most of the gain is the context cells already in CTX F (F v marginal +0.031320); CTXSCR adds +0.0041 on top.
 - Joint (class, scr) CS v F +0.001073 [0.000469,0.001675] P+ 0.999 8/9 in-sample +0.001894 gap +0.000821; class-only -0.000061 is its marginal.
 - Decision: supports run_cs_3seed.sh; queue line kept. Recorded e178-ctxscr-scrflag-vs-marginal, e178-ctxscr-joint-class-scramble-vs-ctxF (unresolved_below_power).
+
+## E176f F3 void rate sim v real (measured; scratchpad pen.py; downs 1-3, non-turnover non-scoring run/pass + no_play, sim seeds 11-12 v real 2009-17, game bootstrap 90%)
+- Void share (pp) sim | real | diff: Q4 trail 6.36|6.90|-0.54 [-0.75,-0.33] P+ 0.00 (off -0.17 [-0.32,-0.02], def -0.21 [-0.35,-0.07]); Q4 lead 6.14|5.99|+0.15 [-0.10,+0.38] P+ .85; Q1-2 neutral 6.87|6.94|-0.08 [-0.22,+0.06]. Real trail-minus-lead +0.91pp, sim +0.22pp.
+- Voided-play penalty first-down rate sim|real: trail 35.2|34.1 (+1.0 [-0.4,+2.6]); lead 24.8|25.7; neutral 26.2|26.1. Real pbp has no pre-penalty yards (no_play yards 0), so would-have-been first down not observable.
+- Verdict: sim under-voids trailers; acceptance step (sim09_f3.py:857) not implicated as over-voiding. Recorded e176-q4-trailer-penalty-void-rate-sim-v-real (rate_pp, unresolved_below_power).
