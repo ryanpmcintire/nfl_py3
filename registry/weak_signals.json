@@ -24774,6 +24774,90 @@
       "source": "docs/lanes/mod25e-e177-context-ratios.md",
       "standard_error": null
     },
+    "e182-q4-trailer-drive-start-lt3min-share": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Share of Q4 trailer drives starting under 3 min left, sim v real, aligned",
+      "effect": 0.058,
+      "effect_units": "rate_pp",
+      "family": "mod25e-catchup-possessions",
+      "interval": [
+        -0.269,
+        0.393
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Under-3-minute trailer drive share matches",
+      "probability_positive": 0.63,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "scratchpad pace.py; docs/lanes/mod25e-gap-table.md",
+      "standard_error": null
+    },
+    "e182-q4-trailer-drive-start-lt5min-share": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Share of Q4 trailer drives (aligned: kneels/spikes dropped real, final-120s drives dropped both sides) starting with under 5 min left, sim base FD5 v real 2009-17",
+      "effect": -1.566,
+      "effect_units": "rate_pp",
+      "family": "mod25e-catchup-possessions",
+      "interval": [
+        -2.344,
+        -0.806
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Sim has fewer late Q4 trailer drives",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "scratchpad pace.py; docs/lanes/mod25e-gap-table.md",
+      "standard_error": null
+    },
+    "e182_pace2_q3_q4mid_elapsed_ll": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "PACE2 nested-LOSO held-out log likelihood of per-snap elapsed v served CLQ/CLK parent cell, Q3 inc/term/run/pass plus Q4 hs420-900 inc/term; n-weighted over 6 class groups, interval from independent group bootstraps; distance tercile cuts fold-local",
+      "effect": 0.012294,
+      "effect_units": "log_loss_improvement",
+      "family": "mod25e_e182_pace",
+      "interval": [
+        0.01127,
+        0.01332
+      ],
+      "league": "nfl",
+      "notes": "186 looks; fold-local distance cuts (8,10 in every fold, identical to all-season cuts) reproduce prior numbers; per-group P+ .644 to 1.0; gain is down and distance not lead band",
+      "plain_summary": null,
+      "probability_positive": 1.0,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/mod25e3/pace2/fit.json",
+      "standard_error": null
+    },
     "ecdf_smoothing_accuracy": {
       "category": "modeling",
       "classification": "unresolved_below_power",

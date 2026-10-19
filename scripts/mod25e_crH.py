@@ -187,6 +187,10 @@ def run_with_flags(init, setting):
 
     if tp.enabled():
         tp.install_tpo()
+    import mod25e_pace2 as p2
+
+    if p2.enabled():
+        p2.install_pace2()
     import mod25e_clq as cq
 
     if cq.enabled():
@@ -508,6 +512,8 @@ def cmd_e5(a):
         label = label + "cl"
     if os.environ.get("PTO") == "1":
         label = label + "pt"
+    if os.environ.get("PACE2") == "1":
+        label = label + "p2"
     if os.environ.get("DECLOG") == "1":
         label = label + "dl"
     if os.environ.get("TOLOG") == "1":
