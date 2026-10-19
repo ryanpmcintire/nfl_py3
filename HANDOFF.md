@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-19T06:57:38.379326+00:00`
+Refreshed at: `2026-10-19T07:14:26.511424+00:00`
 
 ## Start here
 
@@ -21,10 +21,10 @@ Refreshed at: `2026-10-19T06:57:38.379326+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `dc4a67f7635d` — MOD-25e sim working rules recorded in the generator lane
+- Baseline commit: `7b470c53a315` — MOD-25e CLSDRAW seed 11 widens persistence like CTX F and PTO; pattern noted
 - Pending change set: 126 paths
-  - `M  docs/lanes/mod25e-e172c-returntd.md`
   - `M  docs/lanes/mod25e-gap-table.md`
+  - `M  registry/weak_signals.json`
   - `?? an.csv`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
