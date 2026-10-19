@@ -73,3 +73,12 @@ tests/scratch/e171/score_fe.py --base <label> --cand <label> [--seeds 11,12,13 -
 - crH patch (not applied; label suffix tg, unused: existing t,tb,tp,tl,tk,th,tr): after the `dlg.install_declog()` block in run_with_flags add `import mod25e_tolog as tlg` / `if tlg.enabled(): tlg.install_tolog()`; after the DECLOG label block add `if os.environ.get("TOLOG") == "1": label = label + "tg"`.
 - Smoke (do not launch until crH patched): bash tests/scratch/e171/smoke_tolog.sh (FD5 base + GSTOP2 TOH TOLOG, worlds 1 seasons 4 workers 3 seed 31).
 - Next: patch crH, run smoke, compare oto_used>0 counts with f2pr reconstructed oto; rescore TOH with logged timeouts and redo the FD5 gap decomposition.
+
+## E171g FD5 implementation gap with engine timeouts (2026-10-19, measured; tests/scratch/e173/score_toh_engine.py, section 3; smoke ...fag2sthldrgtg_s31, 1 world, 2 scored seasons; FD5 at sim states, model.pkl, era from fit.json)
+- f2pr oto/dto differs from engine oto_pre/dto_pre at 77.2% of sim 4th-down states.
+- Q4 last 5, trailer, n=452: sim punt .215 [.188,.242]; FD5 at engine timeouts .188 [.168,.209]; at f2pr timeouts .171. Implementation gap (sim - FD5): engine +.027 [+.005,+.050] v f2pr +.044 [+.022,+.068]. Go gap engine -.045 [-.071,-.019] v f2pr -.064.
+- Q4>5 min trailer n=624: impl gap engine +.011 [-.003,+.023] v f2pr +.021; go -.010 v -.026.
+- dist2-3 yl36-50 cell: n=11 in two scored seasons, no information.
+- Reading: true timeouts shrink the Q4 last-5 gap from +.044 to +.027 (about 40%) and the Q4>5 gap by half, but it does not vanish (lower bound +.005; probability positive about .96, inferred from the 90% interval). The smoke carries GSTOP2+TOH, so it is not the plain FD5 base; the prior +.031/+.059 were on 3 seeds. Remaining gap is a draw-v-prescription residual or post-DECIDE policy rewrites; recorded rate_pp unresolved_below_power.
+## Next
+- Log returned v realised class inside the policy chain (post-DECIDE rewrites) in a plain FD5 + TOLOG smoke, then the 3-seed t.py decomposition with to_*.parquet.
