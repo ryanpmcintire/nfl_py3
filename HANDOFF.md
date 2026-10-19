@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-19T02:44:31.243183+00:00`
+Refreshed at: `2026-10-19T02:50:32.546355+00:00`
 
 ## Start here
 
@@ -21,12 +21,10 @@ Refreshed at: `2026-10-19T02:44:31.243183+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `876528ee47c1` — MOD-25e PTO reads play state from the pol frame (smoke crashed on the RG wrapper frame)
-- Pending change set: 128 paths
-  - `M  docs/lanes/mod25e-e173-timeouts.md`
-  - `M  docs/lanes/mod25e-hook-review-2026-10-18.md`
+- Baseline commit: `2aeb754fde74` — MOD-25e TOH smoke scored (inert in sim; write path verified), per-worker eligible/called counts for the rerun
+- Pending change set: 126 paths
+  - `M  docs/lanes/mod25e-e180-final-drive-turnovers.md`
   - `M  registry/weak_signals.json`
-  - `M  scripts/mod25e_toh.py`
   - `?? an.csv`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -43,7 +41,9 @@ Refreshed at: `2026-10-19T02:44:31.243183+00:00`
   - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
   - `?? registry/experiments/margin-backtest/20261008T161241Z.json`
   - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
-  - ...and 108 more
+  - `?? registry/experiments/margin-backtest/20261009T161053Z.json`
+  - `?? registry/experiments/margin-backtest/20261010T160851Z.json`
+  - ...and 106 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

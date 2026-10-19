@@ -176915,6 +176915,34 @@
       "source": "tests/scratch/e180/pto_replay.txt",
       "standard_error": 0.0002
     },
+    "mod25e-e180-pto-smoke-late-pass-to": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "PTO v matched FD4 base, trailing 1-8 Q4 pass turnover rate, drive start <=120s, 1 world x 2 kept seasons seed 31",
+      "effect": 4.96,
+      "effect_units": "rate_pp",
+      "family": "mod25e-e180",
+      "interval": [
+        2.24,
+        7.61
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Smoke: late trailing pass turnover rate rises from 2.1% to 7.1% (real 8.6%); one world, below power",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 544,
+      "seasons": [
+        2011,
+        2012
+      ],
+      "source": "tests/scratch/e180/pt_an.txt",
+      "standard_error": null
+    },
     "mod25e-gstop2-smoke-s31-final-drive-mechanism": {
       "category": "modeling",
       "classification": "unresolved_below_power",
