@@ -93,3 +93,7 @@ E172d/E172e conclusions are SUPERSEDED: the 300-query p4b/p5-p9 rates (kernel 5.
 
 ## CLSDRAW 3-seed, seed 11 only (measured 2026-10-19 03:40 ET; FD5 base _s11 v cl_s11 e5.json; provisional)
 SD 15.040 -> 15.575, noise 168.9 -> 178.7, xq_cov 0.3 -> 16.4, Q4 slope -.046 -> -.017, mass3 .128 -> .119, late r2 .139 -> .155, pts 43.60 -> 42.83.
+
+## CLSDRAW 3-seed VERDICT (measured 2026-10-19 05:00 ET; artifacts/mod25e3/e172_cd_boot.log; FD5 base v FD5+CLSDRAW)
+SD +0.601 [+0.431,+0.756]; noise +10.0 [+6.7,+13.2]; strength +8.6 [+4.5,+12.7]; xq_cov +17.2 [+13.2,+21.2]; Q4 slope +.030 (away from real -.060); mass3 -.0078 [-.0115,-.0040] (away); pts/g -0.70 [-0.94,-0.46]. Every check moves away with whole intervals on the wrong side.
+Decision: NOT adopted alone. The per-play target (returned TDs per true turnover toward real) is met in the smoke; like CTX F and PTO it removes the base's state-independent turnover spread that was supplying catch-up (gap-table E183). Candidate component for a joint adoption once a real catch-up channel is modelled.
