@@ -50,7 +50,7 @@ def install_ctxscr():
     rho_s = np.asarray(spec["rho_scramble"])
     rho_d = np.asarray(spec["rho_designed"])
     guard = cspec["goal_guard"]
-    arrays = dv._G["tables"]["arrays"]
+    arrays = dict(dv._G["tables"]["arrays"], **dv._G["ctxscr_cols"])
     flags = scramble_flags(arrays)
     state = {"cell": None, "lead_late": False}
     prev_fix = ge.Geo.fix

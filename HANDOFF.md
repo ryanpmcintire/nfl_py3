@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-19T08:43:06.983028+00:00`
+Refreshed at: `2026-10-19T09:13:26.088189+00:00`
 
 ## Start here
 
@@ -21,10 +21,14 @@ Refreshed at: `2026-10-19T08:43:06.983028+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `c4fcf5e5b9d8` — MOD-25e GZIDX (default-off): goal-line repick keeps the served row index; play-log yards were the stale row's on goal-to-go plays; E186 alignment audit
-- Pending change set: 126 paths
-  - `M  docs/lanes/mod25e-e172c-returntd.md`
+- Baseline commit: `9cb25a9f3094` — MOD-25e CLSDRAW 3-seed verdict: not adopted alone (persistence widens like CTX F and PTO)
+- Pending change set: 130 paths
+  - `M  docs/lanes/mod25e-e176-neutral-yards.md`
   - `M  docs/lanes/mod25e-gap-table.md`
+  - `M  docs/lanes/mod25e-generator-fidelity.md`
+  - `M  scripts/mod25c_noise.py`
+  - ` M scripts/mod25e_crH.py`
+  - `M  scripts/mod25e_ctxscr.py`
   - `?? an.csv`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -39,11 +43,7 @@ Refreshed at: `2026-10-19T08:43:06.983028+00:00`
   - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
   - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
   - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
-  - `?? registry/experiments/margin-backtest/20261008T161241Z.json`
-  - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
-  - `?? registry/experiments/margin-backtest/20261009T161053Z.json`
-  - `?? registry/experiments/margin-backtest/20261010T160851Z.json`
-  - ...and 106 more
+  - ...and 110 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

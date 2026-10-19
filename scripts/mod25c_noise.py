@@ -408,6 +408,9 @@ def c_init(train, cfg_json):
     _G.update(tables=tables, ns=ns, pol=pol, log=log, cfg=cfg, to_arr=(trans["off_to_used"].to_numpy() + trans["def_to_used"].to_numpy()))
     if os.environ.get("TOH") == "1":
         _G["toh_cols"] = {k: trans[k].to_numpy() for k in ("phase", "sc_raw", "time_raw", "off_to_raw", "def_to_raw")}
+    if os.environ.get("CTXSCR") == "1":
+        _G["ctxscr_cols"] = {k: trans[k].to_numpy() for k in ("game_id", "play_id")}
+        assert all(len(v) == len(tables["arrays"]["down_i"]) for v in _G["ctxscr_cols"].values())
 
 
 def c_batch(task):
