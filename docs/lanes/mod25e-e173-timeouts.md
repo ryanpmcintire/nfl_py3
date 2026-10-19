@@ -67,3 +67,12 @@ init 339 s; pol chain 29 layers, TOH at depth 3 (innermost first); COUNT calls 8
 
 ## Cross-reference (2026-10-18)
 f2pr extra_fields rebuilds oto/dto from pool otu/dtu with a per-half reset and ignores post-DECIDE rewrites of off_to_used/def_to_used, so TOH's added calls cannot appear in logged oto (plausible cause of the inert verdict). Engine-truth observer scripts/mod25e_tolog.py (TOLOG=1) built; plan and crH patch text in docs/lanes/mod25e-e171-keynumbers.md "TOLOG observer built".
+
+## Probe result, correct layer (2026-10-19, measured; run2.log, td=25, 60 games, exit 0, no process left)
+off_to_used>0 at layer 24 (base) / 25 (TOH) / 28 (top): eligible-called n52 17/52/52; eligible-not-called n323 26/0/0; not-eligible n8489 169/169/169. Base eligible rate 43/375=.115; TOH 52/375=.139. Removed 26 base calls (t=0 donor), added 52 (17 of them already base calls): net +26 calls (+9 pp of eligible). Not-eligible untouched. Survival layer 25 to 28 is 52/52: the write path and all wrappers are clean.
+## Next (fix spec)
+- Hypothesis confirmed in part: TOH removes base calls on eligible no-call plays, but net is positive, and drawn calls survive to the engine. The ~60% logged shortfall is therefore downstream: scorer (score_th2.py next-play oto-drop misses drive-end, Q2/Q4 end, game-end plays) or the logged oto, not wrappers. Next: count engine-side home_to/away_to decrements per game directly and compare with 52-per-60-games.
+- Fix (not built): on t=0 keep base off_to_used/def_to_used (take only clock_elapsed from the donor); on t=1 set off_to_used from the donor, keep def_to_used from base. No constants.
+
+## Orchestrator decision on the probe fix spec (2026-10-19 00:40 ET)
+Probe (td=25, 60 games): TOH on eligible plays calls 52/375 (.139), erases 26 base calls, adds 35 new, all survive to the top layer; non-eligible plays untouched. The spec "on t=0 keep base off_to_used" is REJECTED: TOH's fitted P(call | state) is the whole timeout decision on eligible plays (per-cell called/eligible matches real: le30 pass .508 v .53), so keeping base calls on t=0 would double-count. TOH behaves as designed (scripts/mod25e_toh.py:164-199). The remaining defect is measurement: the play log rebuilds oto/dto from the pool row (mod25e_f2pr.py:84-125), so TOH calls never appear. TOLOG (scripts/mod25e_tolog.py, installed default-off, smoke tests/scratch/e171/smoke_tolog.sh first in queue) logs the engine's real timeouts; rescore TOH from to_*.parquet, not from the play log.

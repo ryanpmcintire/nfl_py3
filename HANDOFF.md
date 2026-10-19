@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-19T03:35:06.744450+00:00`
+Refreshed at: `2026-10-19T03:38:23.570636+00:00`
 
 ## Start here
 
@@ -21,14 +21,9 @@ Refreshed at: `2026-10-19T03:35:06.744450+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `229ccbea4b7a` — MOD-25e correction: Q4 trailer per-state gap was a kneel/final-drive artifact (aligned -0.001); records invalidated/replaced; TOH counters show calls drawn but lost before the logged timeout state
-- Pending change set: 130 paths
-  - `M  docs/lanes/mod25e-e171-keynumbers.md`
+- Baseline commit: `7088d8dc4357` — MOD-25e TOLOG engine-timeout observer installed default-off (play log rebuilds timeouts from the pool row, hiding TOH calls); FD5 trailer punt gap traced to reconstructed timeouts
+- Pending change set: 125 paths
   - `M  docs/lanes/mod25e-e173-timeouts.md`
-  - `M  docs/lanes/mod25e-e177-context-ratios.md`
-  - `M  registry/weak_signals.json`
-  - `M  scripts/mod25e_crH.py`
-  - `A  scripts/mod25e_tolog.py`
   - `?? an.csv`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -43,7 +38,12 @@ Refreshed at: `2026-10-19T03:35:06.744450+00:00`
   - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
   - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
   - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
-  - ...and 110 more
+  - `?? registry/experiments/margin-backtest/20261008T161241Z.json`
+  - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
+  - `?? registry/experiments/margin-backtest/20261009T161053Z.json`
+  - `?? registry/experiments/margin-backtest/20261010T160851Z.json`
+  - `?? registry/experiments/margin-backtest/20261010T173926Z.json`
+  - ...and 105 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
