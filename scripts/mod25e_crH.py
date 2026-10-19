@@ -300,10 +300,33 @@ def install_log_sync(dv):
         if lg and len(lg) == n + 1:
             row = list(lg[-1])
             row[6:11] = [int(drawn["play_type_code"]), float(drawn["points_off"]), float(drawn["points_def"]), bool(drawn["flip"]), float(drawn["clock_elapsed"])]
+            if os.environ.get("GZIDX") == "1" and len(row) > 11 and drawn.get("idx") is not None:
+                row[11] = int(drawn["idx"])
             lg[-1] = tuple(row)
         return drawn
 
     dv._G["pol"] = pol
+
+    if os.environ.get("GZIDX") == "1":
+        ns = dv._G["ns"]
+        yg = dv._G["tables"]["arrays"]["yards_gained"]
+        pend = {}
+        inner = pol
+
+        def pol_pl(down, distance, yardline, score_diff, qtr, clock_val, drawn):
+            drawn = inner(down, distance, yardline, score_diff, qtr, clock_val, drawn)
+            pend["idx"] = drawn.get("idx")
+            pend["y"] = float(drawn["yards_gained"])
+            return drawn
+
+        class PLS(list):
+            def append(self, v):
+                j = pend.pop("idx", None)
+                y = pend.pop("y", None)
+                super().append(v if j is None else (v[0], int(j), y - float(yg[int(j)])))
+
+        ns["PLAYLOG"] = PLS(ns["PLAYLOG"])
+        dv._G["pol"] = pol_pl
 
 
 def guarded_init(init, setting):
