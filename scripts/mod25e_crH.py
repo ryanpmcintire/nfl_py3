@@ -290,6 +290,10 @@ def run_with_flags(init, setting):
         tlg.install_tolog()
 
 
+def idx_sync_on():
+    return os.environ.get("GZIDX") == "1" or os.environ.get("SAFEGP") == "1"
+
+
 def install_log_sync(dv):
     base = dv._G["pol"]
 
@@ -300,14 +304,14 @@ def install_log_sync(dv):
         if lg and len(lg) == n + 1:
             row = list(lg[-1])
             row[6:11] = [int(drawn["play_type_code"]), float(drawn["points_off"]), float(drawn["points_def"]), bool(drawn["flip"]), float(drawn["clock_elapsed"])]
-            if os.environ.get("GZIDX") == "1" and len(row) > 11 and drawn.get("idx") is not None:
+            if idx_sync_on() and len(row) > 11 and drawn.get("idx") is not None:
                 row[11] = int(drawn["idx"])
             lg[-1] = tuple(row)
         return drawn
 
     dv._G["pol"] = pol
 
-    if os.environ.get("GZIDX") == "1":
+    if idx_sync_on():
         ns = dv._G["ns"]
         yg = dv._G["tables"]["arrays"]["yards_gained"]
         pend = {}

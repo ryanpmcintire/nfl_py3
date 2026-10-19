@@ -178215,6 +178215,62 @@
       "source": "artifacts/mod25e3/e5_crHpqokgndecsmfwtjo2as2ypw2xfdcdtbkhghkekudwtpq2ugkyg2rtgw13gx2fag2sldrg_s31/e5.json",
       "standard_error": null
     },
+    "mod25e-stbk-smoke-s31-kickoff-touchback-guard": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "STBK minus base kickoff touchback share (start 75/80) after scores; STF shifts the unflagged kick row off the lattice",
+      "effect": -42.7,
+      "effect_units": "rate_pp",
+      "family": "mod25e-stbk-smoke",
+      "interval": [
+        -44.2,
+        -41.4
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Kickoff touchback share fell from .459 to .032 versus real .471; a wrapper defect, not a measurement of the mechanism",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 544,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e183/tk_score.txt",
+      "standard_error": null
+    },
+    "mod25e-stbk-smoke-s31-late-leader-start60": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "STBK minus base, leader drive start<=60 after trailer TD, Q4, lead 17+, gsr<=600 (1 world, 4 seasons, seed 31)",
+      "effect": 25.2,
+      "effect_units": "rate_pp",
+      "family": "mod25e-stbk-smoke",
+      "interval": [
+        14.7,
+        39.2
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Late leader starts at or inside own 40 rose from .221 to .473 (real .418); one world, game bootstrap 90%",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 544,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e183/tk_score.txt",
+      "standard_error": null
+    },
     "mod25e-toh-smoke-s31-final-drive-reach": {
       "category": "modeling",
       "classification": "unresolved_below_power",

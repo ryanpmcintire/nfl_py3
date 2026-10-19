@@ -53,3 +53,13 @@ Aligned (measured). build_transition_frame with and without team_ratings both gi
 
 ## TOH rescore addendum (2026-10-18)
 Run2 plays are byte-identical to run1 (same seed), so weak-signals record mod25e-toh-smoke-s31-final-drive-reach stands. Logged timeout rate with TOH (.043 run-or-yards>0) equals g2s (.044) despite 944 counted calls; see mod25e-e173-timeouts.md. 3-seed not queued.
+
+## SAFEG/SAFEGP log sync (2026-10-19)
+Only SAFEGP rewrites drawn idx outside geo's PL wrap (SAFEG patches Geo.fix, so geo's PLAYLOG sync covers it; clsdraw/pto/gz paths not touched here). scripts/mod25e_crH.py now has idx_sync_on() (GZIDX or SAFEGP) used in install_log_sync. Tiny run: tests/scratch/e163/smoke_sg_tiny.sh -> artifacts/mod25e3/e189_sg_tiny.log (task bm13g8nkw); result pending, check for the integrity assertion. smoke_sg.sh appended to tests/scratch/e178/queue.txt.
+
+## STBK smoke scoring 2026-10-19 (measured, seed 31, 1 world, 544 games; tests/scratch/e183/tk_score.py, tk_score.txt)
+- Target cells, STBK v base v real, Q4 leader drive start<=60 after trailer TD: 17+ late (gsr<=600) .473 v .221 v .418 (diff +25.2pp [+14.7,+39.2] P+ 1.00); 8-16 late .255 v .165 v .305 (+9.0 [+0.1,+17.4] P+ .95); non-late .292/.158/.234 and .103/.105/.119 (wide). Moves toward real.
+- Guard FAILS: kickoff TB (start 75/80) .032 v .459 v real .471 (-42.7pp [-44.2,-41.4]); the pass bar needs overall kick TB ~.47. Cause (read): stbk.py returns the kick-hook row without stb_tb, so STF (mod25e_stf.py:230) shifts every kick row incl. TB spots off the 75/80 lattice. Punt TB .088 v .088 unchanged; punt start<=60 .170 v .181 (-1.1pp [-2.1,0.0]).
+- Checks: pts/g 43.54 v 44.16, SD 15.13 v 15.15, mass3 .136 v .154, noise var 165.0 v 166.7, Q4 slope -.0367 v -.0283. Return yards not logged by the sim (unscored).
+- Verdict: not adopted; no 3-seed script, no tiny run (script gated on pass). Fix needed (scripts/ edit, orchestrator): set new["stb_tb"]=True on the returned kick row when its spot is a TB spot (or skip STF for flagged kick rows), then re-smoke. Recorded mod25e-stbk-smoke-s31-late-leader-start60 and mod25e-stbk-smoke-s31-kickoff-touchback-guard (unresolved_below_power, rate_pp).
+Result: e189_sg_tiny.log passes the integrity assertion (only the known 1-season ZeroDivisionError).

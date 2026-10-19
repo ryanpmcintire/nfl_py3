@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-19T09:17:10.895039+00:00`
+Refreshed at: `2026-10-19T09:30:34.358099+00:00`
 
 ## Start here
 
@@ -21,9 +21,12 @@ Refreshed at: `2026-10-19T09:17:10.895039+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `911e519d7b0e` — MOD-25e CTXSCR init reads game_id/play_id from stashed trans columns (tiny real-path run passes); tiny-run rule for new hooks
-- Pending change set: 125 paths
+- Baseline commit: `a76fac561df8` — MOD-25e GZIDX log sync: both logs carry the final drawn row index under GZIDX (integrity assertion passes on a tiny real-path run)
+- Pending change set: 128 paths
+  - `M  docs/lanes/mod25e-hook-review-2026-10-18.md`
+  - `M  registry/weak_signals.json`
   - `M  scripts/mod25e_crH.py`
+  - ` M scripts/mod25e_stbk.py`
   - `?? an.csv`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -40,10 +43,7 @@ Refreshed at: `2026-10-19T09:17:10.895039+00:00`
   - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
   - `?? registry/experiments/margin-backtest/20261008T161241Z.json`
   - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
-  - `?? registry/experiments/margin-backtest/20261009T161053Z.json`
-  - `?? registry/experiments/margin-backtest/20261010T160851Z.json`
-  - `?? registry/experiments/margin-backtest/20261010T173926Z.json`
-  - ...and 105 more
+  - ...and 108 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
