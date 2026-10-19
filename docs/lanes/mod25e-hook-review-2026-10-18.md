@@ -73,3 +73,9 @@ Scripts tests/scratch/e164/v1_ind_3s.py, conv4.py (XFA3/V13 pickles in e155). Ba
 - Checks (e5.json): pts/g 44.16 v 44.05; SD 15.15 v 15.78; mass3 .154 v .112; noise var 166.7 v 171.7; Q4 slope -.028 v -.023.
 - Verdict: FAILS the joint bar (net safeties up, yl<80 and yl80-89 scrimmage not repaired; only SAFEGP punt part moves toward real). Not adopted; no 3-seed script (gated on pass). If rebuilt later, point at the GZIDX base if adopted (FD5 base label ...gx2faldrg, GZIDX label ...gi); cand label here is ...gx2fasgspldrg.
 - Open: SAFEG repicks apparently do not act on sim far-field/yl80-89 safeties (replay on real states cannot show it); diagnose with COUNT of SAFEG violations in the sim path before another smoke. Recorded mod25e-safegsafegp-smoke-s31-safeties-all and -safeties-scrim-yl-lt80 (unresolved_below_power, rate_pp). Tiny run not made (gated on pass).
+
+## STBK v2 smoke 2026-10-19 09:35 (measured, s31 one world, FD5+TOLOG base ...faldrgtg v ...fatkldrgtg; tests/scratch/e183/tk2_score.py, tk2_score.txt)
+- Guard now passes approximately: kickoff TB .445 v base .464 v real .471 (-2.0pp [-3.8,-0.2]); ko start yl +0.40; punts unchanged.
+- Target Q4 leader start<=60 after trailer TD, 17+ late: .417 v .292 v real .418 (+12.5pp [+1.7,+24.6]); 8-16 late .198 v .147 v .305 (+5.1 [-1.8,+14.3]). Early (gsr>600) cells move away (17+ .087 v .241 v .234; 8-16 .057 v .147 v .119; n 23-35, wide).
+- One-world checks: noise 191.0 -> 172.0, SD 15.96 -> 15.79, mass3 .119 -> .112, Q4 slope -.040 -> -.002 (real -.060, AWAY). Single-world aggregates did not replicate for GZIDX, so watch Q4 slope and xq_cov in the 3-seed.
+- Verdict: passes guard + target; 3-seed on GZIDX base queued (tests/scratch/e163/run_tk_3seed_gi.sh, before e187 replication). Adopt only if Q4 slope/xq_cov do not move away beyond their intervals.

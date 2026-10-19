@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-19T13:26:25.799543+00:00`
+Refreshed at: `2026-10-19T13:37:51.136455+00:00`
 
 ## Start here
 
@@ -21,10 +21,9 @@ Refreshed at: `2026-10-19T13:26:25.799543+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `744bff8c2e52` — MOD-25e queue rebased on GZIDX base: PACE2, TDR, LDR3 tiny runs then 3-seeds; CTXSCR and TILTL dropped from queue
-- Pending change set: 126 paths
-  - `A  docs/lanes/mod25e-e187-strength-var.md`
-  - `M  scripts/mod25e_e100.py`
+- Baseline commit: `03f73234ad1f` — MOD-25e E187: GZIDX strength-var drop -4.6 is ~2.8 sd, unexplained; paired seeds 14-16 replication queued; e100 seeds via E100_SEEDS
+- Pending change set: 125 paths
+  - `M  docs/lanes/mod25e-hook-review-2026-10-18.md`
   - `?? an.csv`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -43,7 +42,8 @@ Refreshed at: `2026-10-19T13:26:25.799543+00:00`
   - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
   - `?? registry/experiments/margin-backtest/20261009T161053Z.json`
   - `?? registry/experiments/margin-backtest/20261010T160851Z.json`
-  - ...and 106 more
+  - `?? registry/experiments/margin-backtest/20261010T173926Z.json`
+  - ...and 105 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
