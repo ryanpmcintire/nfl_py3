@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-19T13:49:59.167810+00:00`
+Refreshed at: `2026-10-19T14:03:52.349069+00:00`
 
 ## Start here
 
@@ -21,10 +21,10 @@ Refreshed at: `2026-10-19T13:49:59.167810+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `96574499209b` — MOD-25e STBK v2 smoke: touchback guard repaired (.445 v real .471), late 17+ leader start<=60 matches real; 3-seed on GZIDX base queued
+- Baseline commit: `c10d9ca85f93` — MOD-25e TDR: bind qtr in pick wrapper so sim09_half frame lookup works (tiny run KeyError); re-queued
 - Pending change set: 126 paths
-  - `M  docs/lanes/mod25e-rebase-gzidx.md`
-  - `M  scripts/mod25e_tdr.py`
+  - `A  docs/lanes/served-probability-calibration-2026.md`
+  - ` M registry/weak_signals.json`
   - `?? an.csv`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
