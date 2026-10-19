@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-19T10:34:01.564727+00:00`
+Refreshed at: `2026-10-19T10:42:32.098268+00:00`
 
 ## Start here
 
@@ -21,10 +21,9 @@ Refreshed at: `2026-10-19T10:34:01.564727+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `ccf7478ea553` — MOD-25e GZIDX smoke: goal-line logs fixed and outcomes move toward real on one world (noise, Q4 slope, mass3); 3-seed queued first
-- Pending change set: 126 paths
-  - `M  docs/lanes/mod25e-hook-review-2026-10-18.md`
-  - `M  registry/weak_signals.json`
+- Baseline commit: `112c4556d1b1` — MOD-25e SAFEG+SAFEGP smoke fails (safeties rise .075 -> .109 v real .057); GZIDX 3-seed running
+- Pending change set: 125 paths
+  - `M  docs/lanes/mod25e-gap-table.md`
   - `?? an.csv`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -43,7 +42,8 @@ Refreshed at: `2026-10-19T10:34:01.564727+00:00`
   - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
   - `?? registry/experiments/margin-backtest/20261009T161053Z.json`
   - `?? registry/experiments/margin-backtest/20261010T160851Z.json`
-  - ...and 106 more
+  - `?? registry/experiments/margin-backtest/20261010T173926Z.json`
+  - ...and 105 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
