@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-19T06:08:45.154329+00:00`
+Refreshed at: `2026-10-19T06:57:38.379326+00:00`
 
 ## Start here
 
@@ -21,9 +21,10 @@ Refreshed at: `2026-10-19T06:08:45.154329+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `15804aaf8914` — MOD-25e correction: play-log timeouts match the engine on only 52.6% of plays; final-drive timeout gap was an artifact; TOH still under-calls; FD5 punt implementation gap shrinks with engine timeouts
-- Pending change set: 125 paths
-  - `M  docs/lanes/mod25e-generator-fidelity.md`
+- Baseline commit: `dc4a67f7635d` — MOD-25e sim working rules recorded in the generator lane
+- Pending change set: 126 paths
+  - `M  docs/lanes/mod25e-e172c-returntd.md`
+  - `M  docs/lanes/mod25e-gap-table.md`
   - `?? an.csv`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -42,8 +43,7 @@ Refreshed at: `2026-10-19T06:08:45.154329+00:00`
   - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
   - `?? registry/experiments/margin-backtest/20261009T161053Z.json`
   - `?? registry/experiments/margin-backtest/20261010T160851Z.json`
-  - `?? registry/experiments/margin-backtest/20261010T173926Z.json`
-  - ...and 105 more
+  - ...and 106 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

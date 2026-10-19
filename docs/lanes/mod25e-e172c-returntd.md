@@ -90,3 +90,6 @@ E172d/E172e conclusions are SUPERSEDED: the 300-query p4b/p5-p9 rates (kernel 5.
 - rtd per 100 true turnovers: base 9.58 [8.53,10.60] v cl 5.85 [4.97,6.69] (real 6.98 [6.56,7.43]); diff -3.74 [-5.06,-2.42] P+ 0.000. True-turnover share base 2.84 cl 3.16 (real 3.40); n true 1899/2119, rtd 182/124. So the excess is a class-draw effect, and cl slightly undershoots.
 - Guards: non-turnover yards mean 3.12/3.14, sd 14.66/14.80, P(>=10) .197/.198 (diffs inside noise); offensive TD share 3.67/3.81 P+ .93. e5.json: pts/g 44.16/43.94, margin SD 15.15/16.45, mass3 .154/.118, mass7 .068/.101, q4 slope -.028/-.015. Rating quintiles not available (play log oto/dto are 0-3 tiers).
 - Note matched base lacks FD5. 3-seed script tests/scratch/e172/run_cd_3seed.sh written (PTO unset, label B+cl verified at crH.py:503), NOT launched. Recorded e172_clsdraw_smoke_rtd_per_true_turnover.
+
+## CLSDRAW 3-seed, seed 11 only (measured 2026-10-19 03:40 ET; FD5 base _s11 v cl_s11 e5.json; provisional)
+SD 15.040 -> 15.575, noise 168.9 -> 178.7, xq_cov 0.3 -> 16.4, Q4 slope -.046 -> -.017, mass3 .128 -> .119, late r2 .139 -> .155, pts 43.60 -> 42.83.
