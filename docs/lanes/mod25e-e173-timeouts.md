@@ -45,3 +45,25 @@ scripts/mod25e_toh.py now wraps dv.d_play_season in install_toh and writes BUD_O
 - Counters (3 workers, 4 seasons incl. 2 scored): called 944 of 7010 eligible; ~470 expected calls in the 2 scored seasons v ~183 logged. Calls drawn by TOH do not appear in logged oto: TOH logged rate = g2s. So the earlier "inert" verdict stands on the logged output; the scorer-universe explanation does not rescue it (the counters pass the cells, the engine state does not show them). Unresolved: where drawn off_to_used is lost between toh pol and the logged oto.
 - run1 v run2: play parquets byte-identical (md5 play_0_2), so final-drive numbers are identical; the record number is correct, no invalidation.
 - No run_th_3seed.sh written (bar not met on logged output).
+
+## TOH overwrite trace (2026-10-18, read; probe in flight)
+- Read: no wrapper after TOH rewrites off_to_used. RG (rg.py:53-95) and LDR (ldr.py:185-205) only wrap Geo.fix/pick and return base drawn; ctx/ctxscr/rgt return base; RTD sets off_to_used=0 only on return-TD plays (rtd.py:191); cky2 (cky2.py:486-526) copies dict and changes clock_elapsed only; log_sync (crH.py:285-298) touches log cols only. Install order crH.py:233-241 correct. No overwriting line found by reading.
+- Probe: tests/scratch/e173/probe/probe.py (smoke env, 60 games, monitors every pol layer, prints off_to_used per layer for TOH draws); log tests/scratch/e173/probe/run.log, pid in tests/scratch/e173/probe/out/r.pkl.pid. Read run.log "lost by TOP" and per-layer lines.
+## Next
+- Read run.log; if off_to_used survives to TOP, loss is downstream of policy (engine/DECIDE/oto logging at mod25d_variance.py:755-767 tolog), not wrappers.
+
+## TOH probe result (measured 2026-10-19 00:00 ET; tests/scratch/e173/probe/run.log, probe.py; 60 games, workers 1; orchestrator took over the probe PID 36348, it exited 0)
+init 339 s; pol chain 29 layers, TOH at depth 3 (innermost first); COUNT calls 8,864, eligible 375, called 52, no_donor 0; TOH outputs with off_to_used>0: 212 of 8,864; "lost by TOP": 27 (13% of those). Per-layer survival dicts all (1.0, 0.0) as printed. Interpretation open: 27 lost of 212 does not match the ~60% shortfall (470 expected v ~183 logged in the smoke); 212 includes donor rows on no-call plays (donor off_to_used>0) — next: split survival by called v not-called and compare to logged oto drops for the same plays.
+
+## Probe audit (2026-10-19, read; no run)
+- Probe bug (probe.py:113-115 v :71): td comes from enumerate(names), names outermost-first, so TOH=3; depth_of numbers innermost-first (chain[0]=top -> TOP=28), so TOH is depth 25 and depth 3 is sim09_u4g install_tw. "212 of 8,864 off_to>0" and "27 lost by TOP" measure the base draw after layer 3, not TOH outputs. Printed (off_to,def_to) dicts show the real structure: 0.0 starting at 25 (TOH replaces base timeout with y=0 donor, intended) or at 17 (fgd zeroes it).
+- Logged oto = pre-play count: install_chain2 decide sets st["to"] from DECIDE args (mod25d_variance.py:745-753), pol appends it (:764); engine decrements after policy (sim04_engine.py:1036-1042). score_th2.py:30-31 reads a call as the oto drop on the NEXT same-offense play; it misses last play of a drive (flip), Q2/Q4 end plays, game end. Calls need off_to>=1 so zero-timeout case is not a loss.
+- Accounting (probe, one 60-game run): calls 8,864 -> TOH eligible 375 -> called 52 (.139) -> survive to engine: UNMEASURED (probe looked at wrong layer) -> logged: UNMEASURED.
+## Next
+- Rerun probe with td = depth of the toh qualname (25) and split called v not-called; count called with off_to_used>0 at TOP and next-play oto drop; fix only the scorer if survival is 52/52, else the wrapper that zeroes it.
+
+## Probe rerun in flight (2026-10-19)
+- probe.py fixed (td = len(chain)-1-toh_d[0] = 25; tally wrapper flags eligible/called per top call; CLASS lines per class at layers 24/25/28). Running: PID 17856, log tests/scratch/e173/probe/run2.log (ends with "exit N"). Read CLASS lines there. TOH write path (read): mod25e_toh.py:164-199 touches only eligible plays (:169-170,:176 early returns give base drawn); on eligible plays writes clock_elapsed, off_to_used, def_to_used from one donor (:196-198), including t=0 donors (off_to_used=0), overwriting a base call.
+
+## Cross-reference (2026-10-18)
+f2pr extra_fields rebuilds oto/dto from pool otu/dtu with a per-half reset and ignores post-DECIDE rewrites of off_to_used/def_to_used, so TOH's added calls cannot appear in logged oto (plausible cause of the inert verdict). Engine-truth observer scripts/mod25e_tolog.py (TOLOG=1) built; plan and crH patch text in docs/lanes/mod25e-e171-keynumbers.md "TOLOG observer built".

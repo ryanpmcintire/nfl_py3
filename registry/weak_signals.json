@@ -23953,6 +23953,118 @@
       "source": "artifacts/mod25e3/tiltl/fit.json",
       "standard_error": null
     },
+    "e171d-fd5-trailer-q4-2to3-yl36-50-punt": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "FD5 base trailer Q4 dist 2-3 yl 36-50 punt share sim minus real (n=103 real)",
+      "effect": 14.8,
+      "effect_units": "rate_pp",
+      "family": "mod25e-e171d-fd5-trailer-4th-down",
+      "interval": [
+        9.7,
+        19.7
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Fourth and short at midfield late: sim punts 25 percent v real 11 percent; model itself predicts 16 percent at real states (fit gap) and 20 percent at sim states",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e171d/t.out",
+      "standard_error": null
+    },
+    "e171d-fd5-trailer-q4-4to6-yl51-65-punt": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "FD5 base trailer Q4 dist 4-6 yl 51-65 punt share sim minus real (n=193 real)",
+      "effect": 7.4,
+      "effect_units": "rate_pp",
+      "family": "mod25e-e171d-fd5-trailer-4th-down",
+      "interval": [
+        1.2,
+        13.2
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Model right at real states (54 v 55 percent); sim punts 62 percent, mostly implementation not state path",
+      "probability_positive": 0.98,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e171d/t.out",
+      "standard_error": null
+    },
+    "e171d-fd5-trailer-q4last5-go": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "FD5 base trailer Q4 last 5 min go share sim minus real",
+      "effect": -3.1,
+      "effect_units": "rate_pp",
+      "family": "mod25e-e171d-fd5-trailer-4th-down",
+      "interval": [
+        -4.6,
+        -1.5
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Sim trailers go for it less late in games than real",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e171d/t.out",
+      "standard_error": null
+    },
+    "e171d-fd5-trailer-q4last5-punt": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "FD5 base trailer Q4 last 5 min punt share sim minus real, state-path vs implementation split",
+      "effect": 4.5,
+      "effect_units": "rate_pp",
+      "family": "mod25e-e171d-fd5-trailer-4th-down",
+      "interval": [
+        3.2,
+        5.7
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Sim trailers punt more late in games than real; the fitted choice model matches real at real states, the sim punts more than the model says at its own states",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e171d/t.out",
+      "standard_error": null
+    },
     "e172_cd_real_rtd_rating_gradient": {
       "category": "modeling",
       "classification": "unresolved_below_power",

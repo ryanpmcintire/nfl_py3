@@ -280,6 +280,10 @@ def run_with_flags(init, setting):
 
     if dlg.enabled():
         dlg.install_declog()
+    import mod25e_tolog as tlg
+
+    if tlg.enabled():
+        tlg.install_tolog()
 
 
 def install_log_sync(dv):
@@ -506,6 +510,8 @@ def cmd_e5(a):
         label = label + "pt"
     if os.environ.get("DECLOG") == "1":
         label = label + "dl"
+    if os.environ.get("TOLOG") == "1":
+        label = label + "tg"
     dv.DV[label] = dict(dv.DV["crG"])
     outd = ss.OUT / f"e5_{label}_s{a.seed}"
     outd.mkdir(parents=True, exist_ok=True)

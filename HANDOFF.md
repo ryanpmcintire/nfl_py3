@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-19T03:22:48.634321+00:00`
+Refreshed at: `2026-10-19T03:35:06.744450+00:00`
 
 ## Start here
 
@@ -21,13 +21,14 @@ Refreshed at: `2026-10-19T03:22:48.634321+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `790b0a8517a0` — MOD-25e CLSDRAW smoke: return-TD excess is a class-draw effect (9.6 -> 5.9 per 100 true turnovers, real 7.0); 3-seed queued after PTO
-- Pending change set: 129 paths
+- Baseline commit: `229ccbea4b7a` — MOD-25e correction: Q4 trailer per-state gap was a kneel/final-drive artifact (aligned -0.001); records invalidated/replaced; TOH counters show calls drawn but lost before the logged timeout state
+- Pending change set: 130 paths
+  - `M  docs/lanes/mod25e-e171-keynumbers.md`
   - `M  docs/lanes/mod25e-e173-timeouts.md`
   - `M  docs/lanes/mod25e-e177-context-ratios.md`
-  - `M  docs/lanes/mod25e-gap-table.md`
-  - `M  docs/lanes/mod25e-hook-review-2026-10-18.md`
   - `M  registry/weak_signals.json`
+  - `M  scripts/mod25e_crH.py`
+  - `A  scripts/mod25e_tolog.py`
   - `?? an.csv`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -42,8 +43,7 @@ Refreshed at: `2026-10-19T03:22:48.634321+00:00`
   - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
   - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
   - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
-  - `?? registry/experiments/margin-backtest/20261008T161241Z.json`
-  - ...and 109 more
+  - ...and 110 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
