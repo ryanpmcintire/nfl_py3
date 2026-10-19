@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-19T01:31:46.644659+00:00`
+Refreshed at: `2026-10-19T02:24:13.739943+00:00`
 
 ## Start here
 
@@ -21,12 +21,11 @@ Refreshed at: `2026-10-19T01:31:46.644659+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `0b58f3c7a11a` — MOD-25e DECLOG observer on the DECIDE chain (default-off, installed outermost); CTX F mechanism work: base leader-turnover overshoot was offsetting weak trailers; Q4 trailer gap is per-state rate, not occupancy
-- Pending change set: 128 paths
-  - `M  docs/lanes/mod25e-e176-neutral-yards.md`
-  - `M  docs/lanes/mod25e-e177-context-ratios.md`
-  - `M  docs/lanes/mod25e-gap-table.md`
-  - ` M registry/weak_signals.json`
+- Baseline commit: `95af193ec1b5` — MOD-25e CTX F 3-seed verdict (not adopted alone; removes an offsetting leader-turnover error) and catch-up carrier notes
+- Pending change set: 127 paths
+  - `M  docs/lanes/mod25e-e171-keynumbers.md`
+  - `M  docs/lanes/mod25e-generator-fidelity.md`
+  - `M  registry/weak_signals.json`
   - `?? an.csv`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -43,7 +42,8 @@ Refreshed at: `2026-10-19T01:31:46.644659+00:00`
   - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
   - `?? registry/experiments/margin-backtest/20261008T161241Z.json`
   - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
-  - ...and 108 more
+  - `?? registry/experiments/margin-backtest/20261009T161053Z.json`
+  - ...and 107 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

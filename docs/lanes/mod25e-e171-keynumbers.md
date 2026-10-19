@@ -37,3 +37,8 @@ tests/scratch/e171/score_fe.py --base <label> --cand <label> [--seeds 11,12,13 -
 ## FD5 3-seed (measured 2026-10-18 18:50 ET; artifacts/mod25e3/e171_fe_boot.log, tests/scratch/e163/tgt_3seed_fe.txt)
 - Seed 12 CONTAMINATED: two run_fe_3seed.sh copies wrote the same s12 dir (16:34 and 16:36; the later was killed). s12 cand q4_slope -.244, xq_cov -72 v ~-.04/+1 elsewhere. Dir moved to ..._s12_dup_contaminated; s12 rerun queued (tests/scratch/e178/queue.txt, run_fe_3seed.sh skips finished seeds and re-runs boot + tgt).
 - Seeds 11+13 (provisional): mass3 unchanged (.1272 v .1272, P+ .51); P(final3 | tied after reg) .573 v base .631 (real .682), -.058 [-.081,-.037]; OT share of mass3 down -.021; regulation-decided mass3 +.0026 P+ .90; SD/noise flat. Provisional reading: FD5 does not lift mass3 and worsens OT FG endings. Verdict after the s12 rerun; then weak-signals record.
+
+## FD5 VERDICT (measured 2026-10-18 22:40 ET; clean 3 seeds after the s12 rerun; artifacts/mod25e3/e171_fe_boot.log, tests/scratch/e171/score_fe_3seed.txt)
+- Aggregates flat: SD +0.011 [-0.157,+0.183], noise -0.50, xq_cov -0.40, Q4 slope -0.002, mass3 +.0013 [-.0030,+.0057], pts flat. The provisional "OT final-3 worse" came from the contaminated s12 and is withdrawn.
+- Target: P(punt) trail 1-3 last 2 min .0970 -> .0435 (-5.36pp [-6.50,-4.44]; real .0044). Guards: 4th-down punt share -.0011 [-.0026,+.0005], 4th-down plays/game +0.01. P(final 3 | tied last 5) +.002 ns.
+- ADOPTED: FD5 replaces FD4 in the base (env FD5=1, FD4 unset; label ...smfewtjo2...gx2faldrg). Queued runs already in tests/scratch/e178/queue.txt still compare against the old FD4 base pairwise; new run scripts should use the FD5 base. Recorded mod25e-e171-fd5-trailing-punt-last2min (rate_pp).
