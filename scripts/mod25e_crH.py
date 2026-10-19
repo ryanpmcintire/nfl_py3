@@ -276,6 +276,10 @@ def run_with_flags(init, setting):
         if ld.enabled():
             raise SystemExit("LDR3 replaces LDR; unset LDR")
         l3.install_ldr3()
+    import mod25e_declog as dlg
+
+    if dlg.enabled():
+        dlg.install_declog()
 
 
 def install_log_sync(dv):
@@ -500,6 +504,8 @@ def cmd_e5(a):
         label = label + "cl"
     if os.environ.get("PTO") == "1":
         label = label + "pt"
+    if os.environ.get("DECLOG") == "1":
+        label = label + "dl"
     dv.DV[label] = dict(dv.DV["crG"])
     outd = ss.OUT / f"e5_{label}_s{a.seed}"
     outd.mkdir(parents=True, exist_ok=True)

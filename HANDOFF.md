@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-18T23:56:35.329927+00:00`
+Refreshed at: `2026-10-19T01:00:59.058328+00:00`
 
 ## Start here
 
@@ -21,11 +21,12 @@ Refreshed at: `2026-10-18T23:56:35.329927+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `d28754e22024` — Inactives completeness fails closed: a due game counts only with both teams at or above the nflverse 5th-percentile inactive count; freshness shows partial lists instead of COMPLETE; scoped to the current slate past T-90. LEAD-64 join fixed (scratch)
-- Pending change set: 127 paths
-  - `M  docs/lanes/inactives-capture-completeness.md`
-  - `M  scripts/capture_scheduler.py`
-  - `M  src/nfl_ats/source_freshness_policy.py`
+- Baseline commit: `bedc7a62d24d` — Inactives: three extra pre-lock Sunday capture passes (international, second early, second late; SNF/MNF stay excluded per the 2026-09-01 design); inactives counted due only when T-90 precedes the pick deadline
+- Pending change set: 128 paths
+  - `M  docs/lanes/mod25e-e177-context-ratios.md`
+  - `M  registry/weak_signals.json`
+  - `M  scripts/mod25e_crH.py`
+  - `A  scripts/mod25e_declog.py`
   - `?? an.csv`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -42,8 +43,7 @@ Refreshed at: `2026-10-18T23:56:35.329927+00:00`
   - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
   - `?? registry/experiments/margin-backtest/20261008T161241Z.json`
   - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
-  - `?? registry/experiments/margin-backtest/20261009T161053Z.json`
-  - ...and 107 more
+  - ...and 108 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

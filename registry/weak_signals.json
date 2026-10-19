@@ -24323,6 +24323,34 @@
       "source": "tests/scratch/e177/ctx_an_F.log",
       "standard_error": 0.00027
     },
+    "e177-ctxF-kernel-served-q4-trailer-turnover": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "residual CTX F undershoots real Q4 trailer turnovers after kernel; mechanism not refuted, direction opposite to the sim catch-up weakening",
+      "closing_ground": null,
+      "description": "CTX F x kernel-served weights v real, Q4 trailing run+pass non-TD turnover share, offline replay",
+      "effect": -0.65,
+      "effect_units": "rate_pp",
+      "family": "e177-ctx-ratios",
+      "interval": [
+        -0.838,
+        -0.477
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "With the team kernel applied, CTX F leaves Q4 trailers about 0.65 points short of the real turnover share, and does not overshoot leaders",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e177/ctx_kern2.txt",
+      "standard_error": null
+    },
     "e178-ctxscr-joint-class-scramble-vs-ctxF": {
       "category": "onfield",
       "classification": "unresolved_below_power",
@@ -24462,6 +24490,34 @@
       ],
       "source": "docs/lanes/mod25e-e176-neutral-yards.md",
       "standard_error": 0.4
+    },
+    "e178-q4-trailer-state-rate-cx-occupancy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Q4 trailer drives (trail1-8 and trail>8), sim base minus real points per drive beyond real-EP value of the drive start state: -0.139 pts/drive, stored x100 as centipoints; leader-minus-trailer gap rate part +0.156 [+0.057,+0.257] vs occupancy -0.036; CTX F same (+0.158 rate, -0.045 occupancy)",
+      "effect": -13.9,
+      "effect_units": "rate_pp",
+      "family": "mod25e-e177-context-ratios",
+      "interval": [
+        -21.9,
+        -5.3
+      ],
+      "league": "nfl",
+      "notes": "game bootstrap 1000, sim seeds 11-12 sim games 2 arms, real 2304 games, EP lookup 154 down x dist x 10yd cells fit on real 2009-17 pooled",
+      "plain_summary": null,
+      "probability_positive": 0.01,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "docs/lanes/mod25e-e177-context-ratios.md",
+      "standard_error": null
     },
     "ecdf_smoothing_accuracy": {
       "category": "modeling",
