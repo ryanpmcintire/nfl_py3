@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-19T09:30:34.358099+00:00`
+Refreshed at: `2026-10-19T09:38:56.482861+00:00`
 
 ## Start here
 
@@ -21,12 +21,10 @@ Refreshed at: `2026-10-19T09:30:34.358099+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `a76fac561df8` — MOD-25e GZIDX log sync: both logs carry the final drawn row index under GZIDX (integrity assertion passes on a tiny real-path run)
-- Pending change set: 128 paths
+- Baseline commit: `dfb039c46337` — MOD-25e log-index sync covers SAFEGP as well as GZIDX (tiny run passes the integrity assertion); STBK smoke scored (touchback-flag wrapper defect)
+- Pending change set: 126 paths
   - `M  docs/lanes/mod25e-hook-review-2026-10-18.md`
-  - `M  registry/weak_signals.json`
-  - `M  scripts/mod25e_crH.py`
-  - ` M scripts/mod25e_stbk.py`
+  - `M  scripts/mod25e_stbk.py`
   - `?? an.csv`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -43,7 +41,9 @@ Refreshed at: `2026-10-19T09:30:34.358099+00:00`
   - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
   - `?? registry/experiments/margin-backtest/20261008T161241Z.json`
   - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
-  - ...and 108 more
+  - `?? registry/experiments/margin-backtest/20261009T161053Z.json`
+  - `?? registry/experiments/margin-backtest/20261010T160851Z.json`
+  - ...and 106 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

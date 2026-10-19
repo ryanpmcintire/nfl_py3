@@ -35,7 +35,10 @@ def install_stbk():
     def pol(dn, distance, yardline, score_diff, qtr, clock_val, drawn):
         res = stb_pol(dn, distance, yardline, score_diff, qtr, clock_val, drawn)
         if last["drawn_by_kick"]:
-            return last["out"]
+            out = dict(last["out"])
+            if float(out["next_yardline"]) in sb.TB_SPOTS["kick"] + sb.TB_SPOTS["punt"]:
+                out["stb_tb"] = True
+            return out
         return res
 
     dv._G["pol"] = pol
