@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-19T14:03:52.349069+00:00`
+Refreshed at: `2026-10-19T14:04:39.323104+00:00`
 
 ## Start here
 
@@ -21,9 +21,9 @@ Refreshed at: `2026-10-19T14:03:52.349069+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `c10d9ca85f93` — MOD-25e TDR: bind qtr in pick wrapper so sim09_half frame lookup works (tiny run KeyError); re-queued
+- Baseline commit: `22b7489d6cfa` — Served probability 2026 audit: not overconfident (LOSO hit .574 v mean .558); coach-fired 2026 12-19; per-member coefficients no held-out gain (+.00004 LL), not served
 - Pending change set: 126 paths
-  - `A  docs/lanes/served-probability-calibration-2026.md`
+  - `M  docs/lanes/served-probability-calibration-2026.md`
   - ` M registry/weak_signals.json`
   - `?? an.csv`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
