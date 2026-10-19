@@ -24043,6 +24043,34 @@
       "status": "invalidated",
       "superseded_by": "e172_clsdraw3_loso_class_ll_vs_window"
     },
+    "e172_clsdraw_smoke_rtd_per_true_turnover": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CLSDRAW v matched base, 1 world x 4 seasons seed 31 (2 scored), returned TDs per 100 true turnovers on run/pass rows; diff cl minus base",
+      "effect": -3.737,
+      "effect_units": "rate_pp",
+      "family": "e172_returntd",
+      "interval": [
+        -5.062,
+        -2.415
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The class-draw fix cut simulated returned touchdowns per turnover from 9.6 to 5.9 in a one-season-world smoke; the real rate is 7.0.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 544,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e172/cd_smoke.py",
+      "standard_error": null
+    },
     "e172_sim_v_real_rtd_per_true_turnover": {
       "category": "modeling",
       "classification": "unresolved_below_power",

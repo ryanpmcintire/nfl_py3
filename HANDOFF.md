@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-19T02:50:32.546355+00:00`
+Refreshed at: `2026-10-19T03:00:14.152955+00:00`
 
 ## Start here
 
@@ -21,9 +21,9 @@ Refreshed at: `2026-10-19T02:50:32.546355+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `2aeb754fde74` — MOD-25e TOH smoke scored (inert in sim; write path verified), per-worker eligible/called counts for the rerun
+- Baseline commit: `4e0c39c4d3f0` — MOD-25e PTO smoke passes its bar (trailing Q4 late pass turnovers toward real); 3-seed against the FD5 base queued
 - Pending change set: 126 paths
-  - `M  docs/lanes/mod25e-e180-final-drive-turnovers.md`
+  - `M  docs/lanes/mod25e-e172c-returntd.md`
   - `M  registry/weak_signals.json`
   - `?? an.csv`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
