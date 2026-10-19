@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-19T10:42:32.098268+00:00`
+Refreshed at: `2026-10-19T11:33:53.419524+00:00`
 
 ## Start here
 
@@ -21,9 +21,10 @@ Refreshed at: `2026-10-19T10:42:32.098268+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `112c4556d1b1` — MOD-25e SAFEG+SAFEGP smoke fails (safeties rise .075 -> .109 v real .057); GZIDX 3-seed running
-- Pending change set: 125 paths
-  - `M  docs/lanes/mod25e-gap-table.md`
+- Baseline commit: `32ddc5cda2c3` — MOD-25e GZIDX carrier reading: only the CLK clock correction reads the stale idx; smoke TD shift likely logging
+- Pending change set: 126 paths
+  - `A  docs/lanes/done/recent-weeks-audit-2026-10-19.md`
+  - `A  docs/lanes/live-weather-features.md`
   - `?? an.csv`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -42,8 +43,7 @@ Refreshed at: `2026-10-19T10:42:32.098268+00:00`
   - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
   - `?? registry/experiments/margin-backtest/20261009T161053Z.json`
   - `?? registry/experiments/margin-backtest/20261010T160851Z.json`
-  - `?? registry/experiments/margin-backtest/20261010T173926Z.json`
-  - ...and 105 more
+  - ...and 106 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
