@@ -37,3 +37,8 @@ Update 2026-10-18 smoke scored (tests/scratch/e180/pt_an.py -> pt_an.txt; 1 worl
 
 ## PTO 3-seed, seed 11 only (measured 2026-10-19 00:10 ET; FD5 base ..._s11 v ...pt_s11 e5.json; provisional)
 SD 15.040 -> 15.777, noise 168.9 -> 186.2, xq_cov 0.3 -> 17.8, Q4 slope -.046 -> -.020 (real -.060), mass3 .128 -> .121, late r2 flat, pts flat. All persistence checks move away.
+- Seed 12 (measured): SD 15.235 -> 15.767, noise 172.2 -> 183.0, xq_cov 5.5 -> 17.3, Q4 slope -.044 -> -.018, mass3 .129 -> .122, late r2 .148 -> .153. Two seeds agree: PTO raises persistence strongly (xq_cov +12..+18). Expected verdict after s13 + boot: not adopted alone; candidate component once the missing catch-up channel is modelled (gap table E182: Q4 possessions -0.38/game).
+
+## PTO 3-seed VERDICT (measured 2026-10-19 02:00 ET; artifacts/mod25e3/e180_pt_boot.log; FD5 base v FD5+PTO)
+SD 15.179 -> 15.766 (+0.587 [+0.419,+0.743]); noise 170.8 -> 184.5 (+13.7 [+10.2,+17.1]); xq_cov 3.8 -> 17.6 (+13.8 [+9.7,+17.7]); Q4 slope -.042 -> -.018 (+.024, away from real -.060); mass3 -.0075 [-.0113,-.0036] (away); strength +4.5; late r2 flat; pts flat. Every persistence check moves away with whole intervals on the wrong side.
+Decision: NOT adopted alone. The per-play target is correct (smoke: trailing <=120 s pass TO .071 v real .086, base .021) but adding real late-trailer turnovers widens the catch-up gap, like CTX F. Both stay candidate components for when the missing catch-up channel (E182 Q4 possessions -0.38/game and its unexplained remainder) is modelled.

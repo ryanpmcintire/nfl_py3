@@ -40,3 +40,4 @@ Install CTX (+TDR) in crH via sole editor; then run the queue, one 3-worker sim 
 
 ## Next
 Install CTX (+TDR) in crH via sole editor; run queue; then E182 pace extension.
+- 02:00 ET: PTO 3-seed not adopted alone (SD +0.59, noise +13.7, xq_cov +13.8, Q4 slope +.024, all intervals on the wrong side). Third piece of evidence that correct per-play fixes widen persistence; the sim lacks a catch-up channel. TOLOG smoke running (tests/scratch/e171/smoke_tolog.sh).
