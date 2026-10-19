@@ -24871,8 +24871,9 @@
         -1.0736,
         1.1587
       ],
+      "invalidated_reason": "EP built from sim play-log yards, which are pool-row yards attached by position (mod25e_scorestate.py:336-343) and differ from engine field movement on 3.4% of runs (goal-line -70s); net-from-yl run SD 6.0 v real 6.3, trailing Q4 run mean gap -0.46 not -1.03 (tests/scratch/e184/sd5.py)",
       "league": "nfl",
-      "notes": "game bootstrap 500, 90pct; EPplay rows are points*100 per play",
+      "notes": "game bootstrap 500, 90pct; EPplay rows are points*100 per play\n[2026-10-19T07:17:42.414367+00:00] invalidated: EP built from sim play-log yards, which are pool-row yards attached by position (mod25e_scorestate.py:336-343) and differ from engine field movement on 3.4% of runs (goal-line -70s); net-from-yl run SD 6.0 v real 6.3, trailing Q4 run mean gap -0.46 not -1.03 (tests/scratch/e184/sd5.py). Superseded by: None. Invalidation is not closure.",
       "plain_summary": null,
       "probability_positive": 0.496,
       "recorded_at": "2026-10-19",
@@ -24884,7 +24885,9 @@
         2017
       ],
       "source": "tests/scratch/e184/expl.log",
-      "standard_error": null
+      "standard_error": null,
+      "status": "invalidated",
+      "superseded_by": null
     },
     "e184 sim-real leading Q4 all P20pp": {
       "category": "modeling",
@@ -25039,8 +25042,9 @@
         -0.9526,
         1.2268
       ],
+      "invalidated_reason": "EP built from sim play-log yards, which are pool-row yards attached by position (mod25e_scorestate.py:336-343) and differ from engine field movement on 3.4% of runs (goal-line -70s); net-from-yl run SD 6.0 v real 6.3, trailing Q4 run mean gap -0.46 not -1.03 (tests/scratch/e184/sd5.py)",
       "league": "nfl",
-      "notes": "game bootstrap 500, 90pct; EPplay rows are points*100 per play",
+      "notes": "game bootstrap 500, 90pct; EPplay rows are points*100 per play\n[2026-10-19T07:17:36.819948+00:00] invalidated: EP built from sim play-log yards, which are pool-row yards attached by position (mod25e_scorestate.py:336-343) and differ from engine field movement on 3.4% of runs (goal-line -70s); net-from-yl run SD 6.0 v real 6.3, trailing Q4 run mean gap -0.46 not -1.03 (tests/scratch/e184/sd5.py). Superseded by: None. Invalidation is not closure.",
       "plain_summary": null,
       "probability_positive": 0.61,
       "recorded_at": "2026-10-19",
@@ -25052,7 +25056,9 @@
         2017
       ],
       "source": "tests/scratch/e184/expl.log",
-      "standard_error": null
+      "standard_error": null,
+      "status": "invalidated",
+      "superseded_by": null
     },
     "e184 sim-real leading Q4 run P20pp": {
       "category": "modeling",
@@ -25123,8 +25129,9 @@
         -5.1153,
         -3.4209
       ],
+      "invalidated_reason": "EP built from sim play-log yards, which are pool-row yards attached by position (mod25e_scorestate.py:336-343) and differ from engine field movement on 3.4% of runs (goal-line -70s); net-from-yl run SD 6.0 v real 6.3, trailing Q4 run mean gap -0.46 not -1.03 (tests/scratch/e184/sd5.py)",
       "league": "nfl",
-      "notes": "game bootstrap 500, 90pct; EPplay rows are points*100 per play",
+      "notes": "game bootstrap 500, 90pct; EPplay rows are points*100 per play\n[2026-10-19T07:17:45.228860+00:00] invalidated: EP built from sim play-log yards, which are pool-row yards attached by position (mod25e_scorestate.py:336-343) and differ from engine field movement on 3.4% of runs (goal-line -70s); net-from-yl run SD 6.0 v real 6.3, trailing Q4 run mean gap -0.46 not -1.03 (tests/scratch/e184/sd5.py). Superseded by: None. Invalidation is not closure.",
       "plain_summary": null,
       "probability_positive": 0.0,
       "recorded_at": "2026-10-19",
@@ -25136,7 +25143,9 @@
         2017
       ],
       "source": "tests/scratch/e184/expl.log",
-      "standard_error": null
+      "standard_error": null,
+      "status": "invalidated",
+      "superseded_by": null
     },
     "e184 sim-real trailing Q4 all P20pp": {
       "category": "modeling",
@@ -25291,8 +25300,9 @@
         -12.076,
         -9.2266
       ],
+      "invalidated_reason": "EP built from sim play-log yards, which are pool-row yards attached by position (mod25e_scorestate.py:336-343) and differ from engine field movement on 3.4% of runs (goal-line -70s); net-from-yl run SD 6.0 v real 6.3, trailing Q4 run mean gap -0.46 not -1.03 (tests/scratch/e184/sd5.py)",
       "league": "nfl",
-      "notes": "game bootstrap 500, 90pct; EPplay rows are points*100 per play",
+      "notes": "game bootstrap 500, 90pct; EPplay rows are points*100 per play\n[2026-10-19T07:17:39.637536+00:00] invalidated: EP built from sim play-log yards, which are pool-row yards attached by position (mod25e_scorestate.py:336-343) and differ from engine field movement on 3.4% of runs (goal-line -70s); net-from-yl run SD 6.0 v real 6.3, trailing Q4 run mean gap -0.46 not -1.03 (tests/scratch/e184/sd5.py). Superseded by: None. Invalidation is not closure.",
       "plain_summary": null,
       "probability_positive": 0.0,
       "recorded_at": "2026-10-19",
@@ -25304,7 +25314,9 @@
         2017
       ],
       "source": "tests/scratch/e184/expl.log",
-      "standard_error": null
+      "standard_error": null,
+      "status": "invalidated",
+      "superseded_by": null
     },
     "e184 sim-real trailing Q4 run P20pp": {
       "category": "modeling",

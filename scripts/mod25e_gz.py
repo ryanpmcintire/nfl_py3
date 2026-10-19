@@ -124,7 +124,7 @@ def install_gz():
             new["auto_first"] = bool(arrays["auto_first"][j])
             new["repeat_down"] = bool(arrays["repeat_down"][j])
             new["yards_gained"] = arrays["yards_gained"][j] + shift
-            new["idx"] = int(i0)
+            new["idx"] = int(j) if os.environ.get("GZIDX") == "1" else int(i0)
             st["shift"] = shift
             if auditing():
                 bump(y, "repicked")
