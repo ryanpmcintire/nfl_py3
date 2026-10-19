@@ -178243,6 +178243,62 @@
       "source": "artifacts/mod25e3/e5_crHpqokgndecsmfwtjo2as2ypw2xfdcdtbkhghkekudwtpq2ugkyg2rtgw13gx2fag2sldrg_s31/e5.json",
       "standard_error": null
     },
+    "mod25e-safegsafegp-smoke-s31-safeties-all": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "SAFEG+SAFEGP minus FD4 base, safeties per 100 games, all (real 5.73 base 7.54 sg 10.85)",
+      "effect": 3.3,
+      "effect_units": "rate_pp",
+      "family": "mod25e-safeg-smoke",
+      "interval": [
+        0.36,
+        6.43
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.96,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 544,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e190/sg_score.txt",
+      "standard_error": null
+    },
+    "mod25e-safegsafegp-smoke-s31-safeties-scrim-yl-lt80": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "SAFEG+SAFEGP minus base, scrimmage safeties per 100 games snap yl<80 (real 0.04 base 1.10 sg 1.47; bar <=1.0)",
+      "effect": 0.38,
+      "effect_units": "rate_pp",
+      "family": "mod25e-safeg-smoke",
+      "interval": [
+        -0.74,
+        1.47
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.66,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 544,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e190/sg_score.txt",
+      "standard_error": null
+    },
     "mod25e-stbk-smoke-s31-kickoff-touchback-guard": {
       "category": "modeling",
       "classification": "unresolved_below_power",
