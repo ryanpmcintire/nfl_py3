@@ -209,6 +209,10 @@ def install_tdr():
     tries = int(np.ceil(np.log(1e-3) / np.log(0.5)))
 
     def pick(rng, tbl, down, phase, dist, fp, score, time_raw, off_to, def_to, k_state, off_sim, def_sim, is_home_sim):
+        fr = sys._getframe(1)
+        while fr is not None and "qtr" not in fr.f_locals:
+            fr = fr.f_back
+        qtr = fr.f_locals["qtr"] if fr is not None else None  # noqa: F841
         j = base(rng, tbl, down, phase, dist, fp, score, time_raw, off_to, def_to, k_state, off_sim, def_sim, is_home_sim)
         if phase not in PHASES or score > -1:
             return j

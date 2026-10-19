@@ -18,3 +18,4 @@ Read tiny logs for Traceback (artifacts/mod25e3/e182_p2_gi_tiny.log, e174_tr_gi_
 
 ## Open
 Hooks not in the existing queue tail (smoke_tk2 onward in sim_queue.log) are unaffected.
+- 09:48 TDR tiny FAILED: KeyError 'qtr' at scripts/sim09_half.py:62 (reads caller frame locals; TDR's pick wrapper sat between ADJ, which binds qtr, and the half pick). Fix: scripts/mod25e_tdr.py pick binds qtr by walking frames (same pattern as mod25e_adj.py:289). Tiny re-queued first, TDR 3-seed after PACE2 3-seed. PACE2 tiny passed (only the known one-season ZeroDivisionError in all_metrics).
