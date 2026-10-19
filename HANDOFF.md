@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-19T10:14:41.675281+00:00`
+Refreshed at: `2026-10-19T10:24:24.201865+00:00`
 
 ## Start here
 
@@ -21,10 +21,10 @@ Refreshed at: `2026-10-19T10:14:41.675281+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `e0cd756348f5` — MOD-25e STBK touchback rows carry the stb_tb flag so STF leaves 75/80 starts (tiny run passes)
+- Baseline commit: `00df430764d3` — MOD-25e V1AD 3-seed: aggregates flat, declared bar fails (d1 repaired, d3 overshoots); not re-run on FD5
 - Pending change set: 127 paths
   - `M  docs/lanes/mod25e-gap-table.md`
-  - `M  docs/lanes/mod25e-hook-review-2026-10-18.md`
+  - `M  docs/lanes/mod25e-generator-fidelity.md`
   - `M  registry/weak_signals.json`
   - `?? an.csv`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
