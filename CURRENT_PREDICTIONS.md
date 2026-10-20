@@ -1,8 +1,8 @@
 # NFL ATS predictions: 2026 Week 6
 
-Published from the synchronized weak stack model, 2026-10-19 16:17 UTC.
+Published from the synchronized weak stack model, 2026-10-20 18:46 UTC.
 
-<!-- publication: model_id=b50f4319ec3d4479 published_at_utc=2026-10-19T16:17:58.589648+00:00 -->
+<!-- publication: model_id=b50f4319ec3d4479 published_at_utc=2026-10-20T18:46:53.527668+00:00 -->
 
 > **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 
@@ -31,7 +31,7 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 
 **Tiebreaker (last game, WAS at SF):** SF 29 - WAS 23, total 52 (market total 52.5) -- consistent with the WAS +7.5 pick.
 
-**Source freshness: DEGRADED.** Complete: odds opener, odds refresh, injuries nflverse, injuries nflverse timestamps, projected lineups, referee assignments, pfr transactions, airnow weather. Degraded (allowed fallback): inactives. Partial lists: inactives. Blocked: none. Not due yet: none. Not set up: injuries sportradar. Budgets, fallbacks and source states: `docs/source_freshness_policy.md`.
+**Source freshness: COMPLETE.** Complete: odds opener, odds refresh, injuries nflverse, injuries nflverse timestamps, inactives, projected lineups, referee assignments, pfr transactions, airnow weather. Degraded (allowed fallback): none. Blocked: none. Not due yet: none. Not set up: injuries sportradar. Budgets, fallbacks and source states: `docs/source_freshness_policy.md`.
 
 `Cover chance` is the picked side's chance to cover. Cover chance is a fitted estimate, excluding ties. Across 1,503 past games with each season held out of fitting, strong estimates won 59% using only Tuesday's information and 60% once later line moves were known; slight estimates won 52% and 55%. These broad groups do not establish a large advantage for the single highest estimate.
 
