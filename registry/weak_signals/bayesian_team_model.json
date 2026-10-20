@@ -1,0 +1,229 @@
+{
+  "family": "bayesian_team_model",
+  "signals": {
+    "bayesian_team_leaked_strength_on_production_opener": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval spans zero. This is deliberately a leaked arm and it is recorded as a diagnostic, NOT as a positive control: a control that detects nothing proves nothing about the instrument's sensitivity, so it may never be cited as the positive_control_bound closing ground for anything",
+      "closing_ground": null,
+      "description": "Leak diagnostic for the team-quality family: team strengths fitted once over the whole 2020-2025 evaluation sample, so the ratings see the future, then stacked on production's served opener pick at the same weight k=0.008424. 1,503 non-push games, 106 picks changed",
+      "effect": -0.5322687957418496,
+      "effect_units": "accuracy_points",
+      "family": "bayesian_team_model",
+      "interval": [
+        -1.8941868060091442,
+        0.8021524511294321
+      ],
+      "league": "nfl",
+      "notes": "In-house reproduction on NFL openers of the docs/pool_edge_plan.md standing lesson that measuring team quality better is bounded near zero. Ridge alpha 10 on a 32-team plus home-field design over the evaluation sample itself",
+      "plain_summary": "Even if we had known in advance exactly how good every team would turn out to be, that knowledge would not have improved our picks against the opening line. The line already contains it.",
+      "probability_positive": 0.2182,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9468475073313781,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/bayesian_team_model_on_production/20260911T043121Z/summary.json",
+      "standard_error": null
+    },
+    "bayesian_team_posterior_column_in_walk_forward_stack_opener": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval spans zero; no admissible closing ground applies. The posterior's split-half reliability is +0.947 across odd and even seasons so the reliability ground does not apply. This is the properly partialled version of the primary: partialling production's own signal out of the weight shrinks the feature's cost from -0.931 to -0.400, the expected direction",
+      "closing_ground": null,
+      "description": "Single-variable isolation: the same weekly walk-forward OLS with and without the state-space team-strength residual column, everything else held identical. Control 52.352 percent, candidate 51.952 percent, 38 picks changed out of 999",
+      "effect": -0.40040040040040037,
+      "effect_units": "accuracy_points",
+      "family": "bayesian_team_model",
+      "interval": [
+        -1.529051987767584,
+        0.7028112449799196
+      ],
+      "league": "nfl",
+      "notes": "Correlated with bayesian_team_posterior_walk_forward_stack_replaces_production_opener (same fitted stack, different comparator) and with the full-archive primary (same feature, different weight derivation). Not an independent vote",
+      "plain_summary": "When the power rating is added to a fit that already contains our own signal, it changes 38 picks in a thousand and costs about four tenths of a game in a hundred. Too small to call either way.",
+      "probability_positive": 0.241875,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9468475073313781,
+      "sample_blocks": 69,
+      "sample_games": 999,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts/bayesian_team_model_on_production/20260911T043121Z/summary.json",
+      "standard_error": null
+    },
+    "bayesian_team_posterior_residual_on_production_opener": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% upper edge is +0.0663, above zero, so this is NOT a resolved wrong sign and no admissible closing ground applies. Season-blocked upper +0.0709, also above zero. The posterior's split-half reliability is +0.947 across odd and even seasons, so the no-reliability ground does not apply either, and the leak diagnostic detected nothing so it cannot bound anything",
+      "closing_ground": null,
+      "description": "MOD-06 dynamic arm, primary: a chronological state-space team-strength posterior (weekly random walk, fitted offseason reversion 0.607, Kalman filter on games strictly before each prediction) stacked as a points-valued residual on production's served opener pick at the out-of-window weight k=0.008424 derived on 2012-2019. 1,503 non-push opener-graded games, 68 picks changed, candidate 27-41 on the changed picks",
+      "effect": -0.9314703925482368,
+      "effect_units": "accuracy_points",
+      "family": "bayesian_team_model",
+      "interval": [
+        -1.9776199553694884,
+        0.0663129973474801
+      ],
+      "league": "nfl",
+      "notes": "Predeclared docs/bayesian_team_model_on_production.md. Per-season accuracy points 2020 +0.91 / 2021 +0.85 / 2022 -1.61 / 2023 -2.63 / 2024 -1.13 / 2025 -1.50. Frozen-pick null mean -0.042 [-1.198,+1.068], observed percentile 0.075. Weight sweep monotone against: 0.25k -0.27, 0.5k -0.47, k -0.93, 2k -2.33, 4k -2.33. Full 2020-2025 archive is a reused descriptive look, not an untouched window; assigned rotation window [2020,2021] recorded separately. Within-season odd/even-week reliability +0.992 (Spearman-Brown +0.996)",
+      "plain_summary": "A running power rating for every team, updated each week and pulled partway back to average each offseason, disagreeing with the betting line is not a reason to switch our pick. Adding it changed 68 of 1,503 picks and those picks went 27-41.",
+      "probability_positive": 0.0328,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9468475073313781,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/bayesian_team_model_on_production/20260911T043121Z/summary.json",
+      "standard_error": null
+    },
+    "bayesian_team_posterior_residual_on_production_opener_2020_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval spans zero and the sign is toward the candidate; no admissible closing ground applies. This window disagrees in sign with the predeclared full-archive primary (-0.931, probability_positive 0.0328) and the two seasons in it are exactly the two positive seasons in the per-season table, so it is disclosed rather than substituted",
+      "closing_ground": null,
+      "description": "MOD-06 dynamic arm on the rotation-assigned opener window [2020, 2021]: the same state-space team-strength posterior stacked as a residual on production's served opener pick at the same out-of-window weight k=0.008424. 456 non-push games, 14 picks changed, candidate 9-5 on the changed picks",
+      "effect": 0.8771929824561403,
+      "effect_units": "accuracy_points",
+      "family": "bayesian_team_model",
+      "interval": [
+        -0.6651884700665188,
+        2.4282560706401766
+      ],
+      "league": "nfl",
+      "notes": "Assigned by nfl-ats rotation assign on 2026-09-11 and spent the same day through nfl-ats rotation record, verdict unresolved. Correlated with the full-archive entry bayesian_team_posterior_residual_on_production_opener: the window is a subset of it, not an independent vote",
+      "plain_summary": "On the two seasons this idea was formally allotted, the power-rating overlay changed 14 picks and won 9 of them. On all six seasons it loses, so the good window is not evidence the idea works.",
+      "probability_positive": 0.8607,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9468475073313781,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/bayesian_team_model_on_production/20260911T043121Z/summary.json",
+      "standard_error": null
+    },
+    "bayesian_team_posterior_walk_forward_stack_replaces_production_opener": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "The entire week-blocked 95% interval [-5.419, -0.994] sits below zero, a RESOLVED wrong sign, which is the admissible closing ground wrong_sign_resolved. Season-blocked [-4.315, -1.880] agrees. What is refuted is the replacement machinery, not the Bayesian column: the same stack with the Bayesian column removed still loses about 2.8 points to production, and the single-variable isolation of the column alone is -0.400 [-1.529, +0.703], unresolved",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Replacing production's fitted probability mapping with a weekly walk-forward two-column OLS (production's own opener signal plus the state-space team-strength residual), expanding window, 500 minimum training games, pick = sign of the fitted market residual. 999 covered opener-graded games, 130 picks changed",
+      "effect": -3.203203203203203,
+      "effect_units": "accuracy_points",
+      "family": "bayesian_team_model",
+      "interval": [
+        -5.418793400201791,
+        -0.9940111071406735
+      ],
+      "league": "nfl",
+      "notes": "Paired against the saved production picks on identical rows. Coverage starts in 2022 because the walk-forward stack needs 500 prior archive games. Companion entry bayesian_team_posterior_column_in_walk_forward_stack_opener isolates the added column against the same machinery",
+      "plain_summary": "Rebuilding the pick rule each week from a simple two-ingredient fit is worse than what we already do, by about three games in a hundred. Not close, and not worth revisiting.",
+      "probability_positive": 0.00275,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9468475073313781,
+      "sample_blocks": 69,
+      "sample_games": 999,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts/bayesian_team_model_on_production/20260911T043121Z/summary.json",
+      "standard_error": null
+    },
+    "production_opener_accuracy_by_bayesian_posterior_sd_tercile": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval spans zero at the week block; season-blocked is [-0.034, +8.400], probability_positive 0.9746, also spanning zero by a hair. Nothing is closed. probability_positive 0.9245 favours the ordering being real",
+      "closing_ground": null,
+      "description": "Uncertainty screen with zero pick changes: production's own served opener picks split by the state-space posterior SD of the game's strength difference. Highest-SD tercile 55.69 percent versus lowest-SD tercile 51.10 percent, 501 games each. The posterior SD is a season-calendar variable on this sample (Spearman with week-of-season -0.910), so this is an early-season versus late-season split",
+      "effect": 4.590818363273453,
+      "effect_units": "accuracy_points",
+      "family": "bayesian_team_model",
+      "interval": [
+        -1.627857,
+        10.758318
+      ],
+      "league": "nfl",
+      "notes": "Displayed-confidence input, not a pick change. Mean stated probability is flat at 0.557 / 0.558 / 0.558 across the three terciles while realised accuracy moves 4.6 points. Early beats late in five of six seasons (2023 is the exception). The team-specific residualised version of this split is recorded separately as production_opener_accuracy_by_team_specific_posterior_sd and is flat",
+      "plain_summary": "Our picks are about four and a half games in a hundred better in the first half of the season than in the second, and the confidence number we print does not move at all between the two. Weeks 1-9 run 56.0 percent, weeks 10 and later 53.1 percent.",
+      "probability_positive": 0.924475,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9468475073313781,
+      "sample_blocks": 107,
+      "sample_games": 1002,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/bayesian_team_model_on_production/20260911T043121Z/summary.json",
+      "standard_error": null
+    },
+    "production_opener_accuracy_by_team_specific_posterior_sd": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval spans zero and the tercile ordering is non-monotone (the middle tercile is the worst), so there is no usable ordering, but neither is the mechanism refuted: no wrong sign is resolved and the underlying posterior's split-half reliability is +0.947",
+      "closing_ground": null,
+      "description": "Team-specific uncertainty, the calendar removed: the state-space posterior SD with the archive's own per-week mean subtracted (Spearman with week-of-season now +0.021), terciled, scoring production's own served opener picks. Low 55.89 percent, mid 52.50 percent, high 55.29 percent, 501 games per tercile",
+      "effect": 0.5988023952095856,
+      "effect_units": "accuracy_points",
+      "family": "bayesian_team_model",
+      "interval": [
+        -5.342624764621762,
+        6.677025618407103
+      ],
+      "league": "nfl",
+      "notes": "This is the arm that isolates team-specific uncertainty from the season calendar. Its flatness is why the raw tercile result production_opener_accuracy_by_bayesian_posterior_sd_tercile must be described as a calendar effect and never as a team-uncertainty effect",
+      "plain_summary": "Once the time of year is taken out, how sure the power rating is about a particular matchup tells us nothing about whether our pick will land.",
+      "probability_positive": 0.567275,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9468475073313781,
+      "sample_blocks": 107,
+      "sample_games": 1002,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/bayesian_team_model_on_production/20260911T043121Z/summary.json",
+      "standard_error": null
+    },
+    "production_opener_brier_by_bayesian_posterior_sd_tercile": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-0.001355, +0.017140] spans zero; season-blocked [+0.003048, +0.012412], probability_positive 0.9994, does not, but the primary block for this project is the week and nothing is closed on a positive result in any case",
+      "closing_ground": null,
+      "description": "The same posterior-SD tercile split scored on production's published opener probability rather than its pick: Brier 0.2487 in the highest-SD (early season) tercile against 0.2567 in the lowest-SD (late season) tercile, 501 games each",
+      "effect": 0.007979456029562793,
+      "effect_units": "brier_improvement",
+      "family": "bayesian_team_model",
+      "interval": [
+        -0.001355,
+        0.01714
+      ],
+      "league": "nfl",
+      "notes": "Pick-free calibration read that agrees in direction with production_opener_accuracy_by_bayesian_posterior_sd_tercile and is the same 1,002 games, so the two are one measurement in two units, not two votes",
+      "plain_summary": "The confidence numbers we print are better calibrated in the first half of the season than in the second, by about eight thousandths of a Brier score.",
+      "probability_positive": 0.95475,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9468475073313781,
+      "sample_blocks": 107,
+      "sample_games": 1002,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/bayesian_team_model_on_production/20260911T043121Z/summary.json",
+      "standard_error": null
+    }
+  }
+}

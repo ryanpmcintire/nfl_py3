@@ -1,0 +1,33 @@
+{
+  "family": "motivation_ladder_tank_zone_stacked_on_production",
+  "signals": {
+    "motivation_ladder_tank_zone_fade_stacked_on_production": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Mined-seasons read on an already-looked-at archive; CONTEXT, not a gate. The 95% interval crosses zero at BOTH predeclared blockings (week-blocked [-0.3979, +0.4537]; season-blocked [-0.5222, +0.5326]), so there is no RESOLVED wrong sign, and no positive control was run for this composed form -- neither admissible closing ground applies. The population is structurally thin by construction (weeks 14-18 only, exactly one flagged side, and the pick must already be on it): 10 scored games that production does not already flip, across six seasons. That is a power statement, not a defect. The underlying single-cell evidence remains registry/weak_signals.json:motivation_ladder_tank_zone_wk14_18 (+0.3049 accuracy points, week-blocked 95% [-0.0794, +0.6966], P+ 0.9334; season-blocked P+ 0.9856), also unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Tank-zone fade tilt (REG weeks 14-18; exactly one side in the league's bottom two records entering the week, and the model picks that side -> flip off it) STACKED ON the played production chain (four_overlay_composition union: coach fade, division-revenge tilt, player-arrests back-side, spread-gap zone fade), opener-graded on the frozen 1,537-game 2020-2025 archive. Candidate 55.4225% vs production 55.4225%: 16 flips (14 scored), 11 not already flipped by production (10 scored), of which exactly 5 were already right and 5 already wrong, so the point estimate is exactly zero. Week-blocked 95% [-0.3979, +0.4537] P+ 0.4277; season-blocked 95% [-0.5222, +0.5326] P+ 0.4011. Bootstrap draws: 42.77% positive, 12.33% exactly zero (no flipped game resampled), 44.90% negative. Reproduced bit-identically on two independent runs (seed 20260901, 20,000 samples).",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "motivation_ladder_tank_zone_stacked_on_production",
+      "interval": [
+        -0.3979,
+        0.4537
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Late in the season the two worst teams in the league are usually bad bets, and this rule refuses to pick them in weeks 14-18. On top of the picks we already play, it moved 11 games over six seasons and got 5 of them right and 5 wrong -- it did not help and it did not hurt, on far too few games to tell either way.",
+      "probability_positive": 0.4277,
+      "recorded_at": "2026-09-01",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/tank_zone_fade_stacked/20260901T194008Z/results.json",
+      "standard_error": null
+    }
+  }
+}

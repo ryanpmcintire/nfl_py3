@@ -1,0 +1,33 @@
+{
+  "family": "mnf_road_short_week_on_production",
+  "signals": {
+    "mnf_road_short_week_on_production": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Opener primary (week-blocked): 0.000 accuracy points, P+=0.349, interval crosses zero. Neither terminal ground applies: wrong_sign_resolved requires the whole interval on the wrong side (it does not -- the interval is nearly symmetric around zero), and no_split_half_reliability is inadmissible by construction -- mnf_road_short_week_flag is a deterministic function of the published schedule (weekday, home/away designation, calendar gap), with zero measurement noise to split in half (docs/schedule_flag_battery.md section 2). The +44.298-point positive control demonstrates the harness can detect an effect of that size but does not bound THIS effect to a known small ceiling. Therefore unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Opener-grade confirmation: predeclared Monday-night-road short-week flag (signed +1 away team's immediately preceding in-season game was a Monday road game and this game is the following Sunday, -1 reverse, 0 both/neither) on top of production weak_stack versus production unmodified, paired forced-pick probability-rule accuracy.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mnf_road_short_week_on_production",
+      "interval": [
+        -0.6652,
+        0.6494
+      ],
+      "league": "nfl",
+      "notes": "Rotation family mnf_road_short_week_on_production, window [2020,2021] spent 2026-09-05. Parent screened cell travel_rest_short_week_road: effect +0.0442 accuracy_points, 95% [-0.3116,+0.4041], P+=0.5933, n=4317/294 weeks, seasons 2009-2025 (registry/weak_signals.json). Flag fires 287/4902 games (5.9%) across full 2009-2026 schedule, 49 positive/238 negative. Per-season nonzero counts: 2009=14,2010=16,2011=16,2012=14,2013=17,2014=15,2015=17,2016=14,2017=17,2018=16,2019=15,2020=17,2021=13,2022=15,2023=16,2024=20,2025=20.",
+      "plain_summary": "Fading a team coming off a Monday road game into a short week did not move the needle at all on this two-season card -- only two picks changed and they cancelled out.",
+      "probability_positive": 0.349,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/schedule_flag_on_production/mnf_road/20260905T022823Z/results.json",
+      "standard_error": null
+    }
+  }
+}

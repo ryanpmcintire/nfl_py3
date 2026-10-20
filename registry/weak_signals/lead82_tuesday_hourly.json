@@ -1,0 +1,89 @@
+{
+  "family": "lead82_tuesday_hourly",
+  "signals": {
+    "lead82_tuesday_hourly_vs_served_accuracy_points_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong-sign interval, split-half refutation, or powered positive control; retain unresolved under AGENTS.md:65-84.",
+      "closing_ground": null,
+      "description": "One hourly Tuesday move coefficient added to the served four-term probability; LOSO 2023-2025.",
+      "effect": -1.2515644555694618,
+      "effect_units": "accuracy_points",
+      "family": "lead82_tuesday_hourly",
+      "interval": [
+        -3.101736972704715,
+        0.37037037037037035
+      ],
+      "league": "nfl",
+      "notes": "216 reporting looks within a 261-look ceiling; fixed ridge; 10000 paired season-stratified week bootstrap draws; retrospective selected-feature replay. Positive means improvement. Three correlated candidate-versus-served endpoints; binary RPS duplicates Brier and is not recorded twice.",
+      "plain_summary": "Adding Tuesday afternoon line moves slightly improved the confidence estimates, but the changed picks went 13-23. Keep the current picks while this is studied further.",
+      "probability_positive": 0.0606,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead82_unit2.md",
+      "standard_error": 0.8688956123605536
+    },
+    "lead82_tuesday_hourly_vs_served_brier_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong-sign interval, split-half refutation, or powered positive control; retain unresolved under AGENTS.md:65-84.",
+      "closing_ground": null,
+      "description": "One hourly Tuesday move coefficient added to the served four-term probability; LOSO 2023-2025.",
+      "effect": 0.00024235772562066968,
+      "effect_units": "brier_improvement",
+      "family": "lead82_tuesday_hourly",
+      "interval": [
+        -0.0011366360947698752,
+        0.0015717489544428823
+      ],
+      "league": "nfl",
+      "notes": "216 reporting looks within a 261-look ceiling; fixed ridge; 10000 paired season-stratified week bootstrap draws; retrospective selected-feature replay. Positive means improvement. Three correlated candidate-versus-served endpoints; binary RPS duplicates Brier and is not recorded twice.",
+      "plain_summary": "Adding Tuesday afternoon line moves slightly improved the confidence estimates, but the changed picks went 13-23. Keep the current picks while this is studied further.",
+      "probability_positive": 0.6467,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead82_unit2.md",
+      "standard_error": 0.0006876527490532985
+    },
+    "lead82_tuesday_hourly_vs_served_log_loss_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong-sign interval, split-half refutation, or powered positive control; retain unresolved under AGENTS.md:65-84.",
+      "closing_ground": null,
+      "description": "One hourly Tuesday move coefficient added to the served four-term probability; LOSO 2023-2025.",
+      "effect": 0.0005574718712427691,
+      "effect_units": "log_loss_improvement",
+      "family": "lead82_tuesday_hourly",
+      "interval": [
+        -0.0023892457172547533,
+        0.003383471953780184
+      ],
+      "league": "nfl",
+      "notes": "216 reporting looks within a 261-look ceiling; fixed ridge; 10000 paired season-stratified week bootstrap draws; retrospective selected-feature replay. Positive means improvement. Three correlated candidate-versus-served endpoints; binary RPS duplicates Brier and is not recorded twice.",
+      "plain_summary": "Adding Tuesday afternoon line moves slightly improved the confidence estimates, but the changed picks went 13-23. Keep the current picks while this is studied further.",
+      "probability_positive": 0.6567,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead82_unit2.md",
+      "standard_error": 0.0014679833151037447
+    }
+  }
+}

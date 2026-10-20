@@ -1,0 +1,33 @@
+{
+  "family": "inactives_channel_historical_proxy_v1",
+  "signals": {
+    "inactives_channel_historical_proxy_v1": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Primary week-blocked estimate -1.3986 accuracy points, 95% interval [-3.1963, +0.2427], probability_positive 0.0418 over 429 paired opener-graded games and 33 weeks. The realised-margin oracle control on the identical rows measured +45.9207 points, week-blocked 95% [+40.0911, +51.9139], probability_positive 1.000, so the instrument detects a large known effect but does not bound this approximately 1.4-point candidate effect. The primary interval and the control do not justify a terminal classification; record unresolved_below_power under the binding taxonomy.",
+      "closing_ground": null,
+      "description": "Historical kickoff-minus-90 surprise-absence proxy versus the incumbent Tuesday opener card.",
+      "effect": -1.398601398601399,
+      "effect_units": "accuracy_points",
+      "family": "inactives_channel_historical_proxy_v1",
+      "interval": [
+        -3.19634703196347,
+        0.24271844660194172
+      ],
+      "league": "nfl",
+      "notes": "Bootstrap samples=20000 seed=20260819; within-week paired-label permutation draws=200 seed=20260902; candidate modifies seven unavailability columns only, value-lost columns unchanged; artifact retains per-game rows.",
+      "plain_summary": "Trying to spot last-minute surprise inactives before kickoff using only past patterns did not beat the existing Tuesday card in this test (about 4% likely to help); a control check confirmed the test itself can find real effects, it just did not find one here.",
+      "probability_positive": 0.0418,
+      "recorded_at": "2026-09-02",
+      "reliability": null,
+      "sample_blocks": 33,
+      "sample_games": 429,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/inactives_channel_historical_proxy/20260902T155950Z/results.json",
+      "standard_error": null
+    }
+  }
+}

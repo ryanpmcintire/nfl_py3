@@ -1,0 +1,89 @@
+{
+  "family": "half_line_script",
+  "signals": {
+    "lead02_half_line_1h": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground established; retain the predeclared lead.",
+      "closing_ground": null,
+      "description": "Pregame corrected 1H script disagreement: fade the full-game favorite; full.",
+      "effect": 5.292792792792792,
+      "effect_units": "accuracy_points",
+      "family": "half_line_script",
+      "interval": [
+        -2.5131760758269914,
+        12.604166666666668
+      ],
+      "league": "nfl",
+      "notes": "2026-09-05 rerun after point-in-time fix 42d78f6; supersedes artifacts/lead02_half_line_script/20260905T174147Z/results.json. Offline cached archive, future movements rejected and in-play rows excluded. Predeclared empirical 20th-percentile rule retained; current cut 0.5133333333333333. Split-half reliability not estimated by this screen, not zero. Close-graded lead; no opener card estimate. Era full.",
+      "plain_summary": "We checked whether backing the underdog helps when its opponent has an unusually short 1H line compared with the full-game line. The corrected historical check remains unresolved.",
+      "probability_positive": 0.90925,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 43,
+      "sample_games": 48,
+      "seasons": [
+        2005,
+        2016
+      ],
+      "source": "artifacts/vegasinsider/cx7_42d78f6_lead02/results.json",
+      "standard_error": null
+    },
+    "lead02_half_line_1h_era_2005_2010": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground established; retain the predeclared lead.",
+      "closing_ground": null,
+      "description": "Pregame corrected 1H script disagreement: fade the full-game favorite; 2005_2010.",
+      "effect": -1.136363636363637,
+      "effect_units": "accuracy_points",
+      "family": "half_line_script",
+      "interval": [
+        -16.363636363636363,
+        19.09090909090909
+      ],
+      "league": "nfl",
+      "notes": "2026-09-05 rerun after point-in-time fix 42d78f6; supersedes artifacts/lead02_half_line_script/20260905T174147Z/results.json. Offline cached archive, future movements rejected and in-play rows excluded. Predeclared empirical 20th-percentile rule retained; current cut 0.5133333333333333. Split-half reliability not estimated by this screen, not zero. Close-graded lead; no opener card estimate. Era 2005_2010.",
+      "plain_summary": "We checked whether backing the underdog helps when its opponent has an unusually short 1H line compared with the full-game line. The corrected historical check remains unresolved.",
+      "probability_positive": 0.41037662939873254,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 10,
+      "sample_games": 11,
+      "seasons": [
+        2005,
+        2010
+      ],
+      "source": "artifacts/vegasinsider/cx7_42d78f6_lead02/results.json",
+      "standard_error": null
+    },
+    "lead02_half_line_1h_era_2011_2016": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground established; retain the predeclared lead.",
+      "closing_ground": null,
+      "description": "Pregame corrected 1H script disagreement: fade the full-game favorite; 2011_2016.",
+      "effect": 7.269338303821063,
+      "effect_units": "accuracy_points",
+      "family": "half_line_script",
+      "interval": [
+        -0.9828009828009832,
+        14.209307051412303
+      ],
+      "league": "nfl",
+      "notes": "2026-09-05 rerun after point-in-time fix 42d78f6; supersedes artifacts/lead02_half_line_script/20260905T174147Z/results.json. Offline cached archive, future movements rejected and in-play rows excluded. Predeclared empirical 20th-percentile rule retained; current cut 0.5133333333333333. Split-half reliability not estimated by this screen, not zero. Close-graded lead; no opener card estimate. Era 2011_2016.",
+      "plain_summary": "We checked whether backing the underdog helps when its opponent has an unusually short 1H line compared with the full-game line. The corrected historical check remains unresolved.",
+      "probability_positive": 0.9567978398919946,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 33,
+      "sample_games": 37,
+      "seasons": [
+        2011,
+        2016
+      ],
+      "source": "artifacts/vegasinsider/cx7_42d78f6_lead02/results.json",
+      "standard_error": null
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "family": "road_fav_big_fade_on_production",
+  "signals": {
+    "road_fav_big_fade_on_production": {
+      "category": "schedule",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Opener primary (week-blocked, production rule): -1.5351 accuracy points, 95% CI [-2.8634, -0.2188], P+=0.00785 -- the WHOLE interval sits below zero at both week-blocking (35 blocks) and season-blocking (2 blocks, same sign). wrong_sign_resolved is admissible: this is a RESOLVED wrong sign, not merely a lean. This is the symmetric on-production stack docs/schedule_flag_battery.md 'Wave 3' predeclares (task-instructed extension of lane G's one-sided public_claim_road_fav_big_fade claim, which only tested fading the road favorite). Ablation (measured, not separately recorded): isolating either half alone (away-big-favorite only, or home-big-favorite only) crosses zero individually -- the resolved negative is a property of the POOLED symmetric column, an instance of AGENTS.md's own pooling-can-transform-a-result principle realized in the negative direction. The sign-rule read on the identical population leans the OPPOSITE way and crosses zero (P+ 0.94185) -- a disclosed secondary diagnostic, not decisive (AGENTS.md: grade at the opener using the production rule). This refutes the ON-PRODUCTION STACK specifically; lane G's original close-graded public_claim_road_fav_big_fade cell remains its own unresolved_below_power entry and is not reclassified.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Opener-grade confirmation: symmetric on-production road_fav_big_fade flag (signed +1 away team favored >=7 at Tuesday opener, -1 home team favored >=7, 0 otherwise) on top of production weak_stack versus production unmodified, paired forced-pick probability-rule accuracy.",
+      "effect": -1.5351,
+      "effect_units": "accuracy_points",
+      "family": "road_fav_big_fade_on_production",
+      "interval": [
+        -2.8634,
+        -0.2188
+      ],
+      "league": "nfl",
+      "notes": "Rotation family road_fav_big_fade_on_production, window [2020,2021] spent 2026-09-05, verdict closed_negative / wrong_sign_resolved. Flag fires 403/4902 games (8.2%) across full 2009-2026 schedule, 124 positive (away big favorite)/279 negative (home big favorite, the untested mirror extension). Reliability 1.0 stated for completeness (deterministic schedule + Tuesday-opener market fact, zero measurement noise) though the closing ground used is wrong_sign_resolved, not no_split_half_reliability.",
+      "plain_summary": "Stacking a rule that fades big favorites (7+ points) of either side onto the production model, graded the way real picks are made, made forced picks measurably WORSE across two full seasons -- the confidence interval for the effect sits entirely on the losing side, not just near zero.",
+      "probability_positive": 0.00785,
+      "recorded_at": "2026-09-05",
+      "reliability": 1.0,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/schedule_flag_on_production/road_fav_big_fade/20260905T035118Z/results.json",
+      "standard_error": null
+    }
+  }
+}

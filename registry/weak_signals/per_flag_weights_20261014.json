@@ -1,0 +1,61 @@
+{
+  "family": "per_flag_weights_20261014",
+  "signals": {
+    "per_flag_weights_vs_pooled_full_view_2020_2025": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Paired week-block bootstrap 95% interval wholly below zero for accuracy and Brier also worse; splitting the flag weight adds variance that out-of-season scoring penalises. Closes only the per-flag weighting variant, not any flag.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Four-term pick probability with one LOSO weight per situational flag minus the served single pooled flag weight, full view, opener grade, held-out seasons",
+      "effect": -1.46,
+      "effect_units": "accuracy_points",
+      "family": "per_flag_weights_20261014",
+      "interval": [
+        -2.48,
+        -0.52
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Giving each situational flag its own weight did worse on unseen seasons than the single shared weight, so the card keeps the shared weight.",
+      "probability_positive": 0.0006,
+      "recorded_at": "2026-10-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/per_flag_weights/results.json",
+      "standard_error": null
+    },
+    "per_flag_weights_vs_pooled_tuesday_view_2020_2025": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Paired week-block bootstrap 95% interval wholly below zero for accuracy and Brier also worse; splitting the flag weight adds variance that out-of-season scoring penalises. Closes only the per-flag weighting variant, not any flag.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Four-term pick probability with one LOSO weight per situational flag minus the served single pooled flag weight, tuesday view, opener grade, held-out seasons",
+      "effect": -1.4,
+      "effect_units": "accuracy_points",
+      "family": "per_flag_weights_20261014",
+      "interval": [
+        -2.68,
+        -0.2
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Giving each situational flag its own weight did worse on unseen seasons than the single shared weight, so the card keeps the shared weight.",
+      "probability_positive": 0.0125,
+      "recorded_at": "2026-10-14",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/per_flag_weights/results.json",
+      "standard_error": null
+    }
+  }
+}

@@ -1,0 +1,117 @@
+{
+  "family": "coach_speak",
+  "signals": {
+    "coach_speak_incremental_accuracy_2013_2024": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval sits entirely above zero but the magnitude is a fifth of one accuracy point on a player-level call, and the paired log-loss read on the identical cross-fit is a coin flip (P+ 0.41); no admissible closing-ground applies (no whole-interval wrong sign, no positive-control bound on this comparison), so this stays unresolved_below_power per AGENTS.md rather than being over-read as a resolved finding.",
+      "closing_ground": null,
+      "description": "Does a predeclared coach-speak phrase (game-time decision/questionable/doubtful/hopeful/day-to-day/trending/expected-to-play/will-not-play/ruled-out) in a PFT headline add accuracy beyond that week's own official injury report_status at predicting next-game inactive status? Cross-fit odd/even kickoff-month, report_status-only baseline vs report_status+phrase_category candidate, 0.5-threshold accuracy read, 2013-2024 skill-position REG population, 11718 player-weeks.",
+      "effect": 0.21334698754053594,
+      "effect_units": "accuracy_points",
+      "family": "coach_speak",
+      "interval": [
+        0.025407474483783173,
+        0.4012757248628683
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Presser phrases like 'ruled out' or 'expected to play' barely move the needle once you already know the official questionable/doubtful/out tag -- a razor-thin edge, not a useful signal.",
+      "probability_positive": 0.98755,
+      "recorded_at": "2026-09-11",
+      "reliability": -0.227,
+      "sample_blocks": 208,
+      "sample_games": 11718,
+      "seasons": [
+        2013,
+        2024
+      ],
+      "source": "docs/coach_speak_base_rates.md",
+      "standard_error": null
+    },
+    "coach_speak_incremental_log_loss_2013_2024": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero and leans slightly negative (P+ 0.41); this is the calibrated-probability companion to coach_speak_incremental_accuracy_2013_2024's thresholded-accuracy read on the identical cross-fit, and the two disagree, which is itself evidence the accuracy read is a marginal threshold effect rather than a real probability shift. unresolved_below_power, no admissible closing-ground.",
+      "closing_ground": null,
+      "description": "Same cross-fit design as coach_speak_incremental_accuracy_2013_2024 (report_status-only baseline vs report_status+phrase_category candidate, 2013-2024 skill-position REG, 11718 player-weeks), scored as calibrated Bernoulli log loss instead of thresholded accuracy.",
+      "effect": -0.0001824868834205029,
+      "effect_units": "log_loss_improvement",
+      "family": "coach_speak",
+      "interval": [
+        -0.0017669124086332679,
+        0.0014910852253909132
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "On a properly calibrated probability rather than a yes/no call, the coach-speak phrase adds essentially nothing beyond the official designation.",
+      "probability_positive": 0.40965,
+      "recorded_at": "2026-09-11",
+      "reliability": -0.227,
+      "sample_blocks": 208,
+      "sample_games": 11718,
+      "seasons": [
+        2013,
+        2024
+      ],
+      "source": "docs/coach_speak_base_rates.md",
+      "standard_error": null
+    },
+    "coach_speak_production_screen_accuracy_2020_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval crosses zero (P+ 0.43); the paired positive control on the identical 237-switch decision set resolves to +45.4 points, P+ 1.0, so the instrument clearly can detect an effect of that size and this -0.2 point read sits nowhere near that bound -- not bounded_by_control, genuinely unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Starter-weighted (prior-week trailing snap share >=0.5, asof-joined independent of this-week's outcome) expected-absence fade built from phrase-fired player-weeks, stacked on the active model's opener pick, week-blocked bootstrap against the served opener evaluation (model d49194e04945a5e5). Seasons 2020-2025 (2025 games carry zero signal by construction: official report_status unreadable that season), 1503 graded games, 237 flips.",
+      "effect": -0.1996007984031936,
+      "effect_units": "accuracy_points",
+      "family": "coach_speak",
+      "interval": [
+        -2.182575793388169,
+        1.798830779480344
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Trying to turn presser-phrase reading into an actual pick-flipping rule on top of today's model did not beat just playing the model's own pick.",
+      "probability_positive": 0.430625,
+      "recorded_at": "2026-09-11",
+      "reliability": -0.227,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/coach_speak_base_rates.md",
+      "standard_error": null
+    },
+    "coach_speak_production_screen_positive_control_2020_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "This is the positive-control measurement itself (perfect foresight), not a hypothesis being adjudicated, so no closing-ground applies to it; recorded unresolved_below_power to match this repository's precedent for positive-control cells (docs/follow_news_gate.md's PC arms), purely so the instrument's demonstrated power is on the record beside the null it bounds.",
+      "closing_ground": null,
+      "description": "Positive control for coach_speak_production_screen_accuracy_2020_2025: perfect foresight on the identical 237-game switch decision set, same week-blocked bootstrap, same 1503-game population.",
+      "effect": 45.44244843646041,
+      "effect_units": "accuracy_points",
+      "family": "coach_speak",
+      "interval": [
+        42.847638057218894,
+        48.09711286089239
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "If you could somehow know in advance exactly who would sit out, that alone would be worth roughly 45 accuracy points on this slice -- which is the yardstick the -0.2 point screen result above is measured against.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-11",
+      "reliability": -0.227,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/coach_speak_base_rates.md",
+      "standard_error": null
+    }
+  }
+}

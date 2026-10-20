@@ -1,0 +1,173 @@
+{
+  "family": "rookie_priors_per_season",
+  "signals": {
+    "xlg06_rookie_prior_surplus_tilt_2020": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval spans zero, which per AGENTS.md is the expected outcome at this resolution and is never a closing ground. No wrong sign is resolved on any single-season cut, and the underlying prior has measured split-half reliability, so neither terminal ground applies.",
+      "closing_ground": null,
+      "description": "Rookie-prior-surplus tilt on production weak_stack, opener grade, 2020 alone (66 picks changed); week-blocked bootstrap",
+      "effect": 4.54545455,
+      "effect_units": "accuracy_points",
+      "family": "rookie_priors_per_season",
+      "interval": [
+        -2.79069767,
+        12.61271786
+      ],
+      "league": "nfl",
+      "notes": "One season of the 2020-2025 secondary read; a correlated decomposition of xlg06_rookie_prior_surplus_tilt_full_opener_archive, not an independent vote. Recorded under its own family so the decomposition is visible to the pool.",
+      "plain_summary": "In 2020 the rookie rule picked about four and a half more games in a hundred correctly than the model alone.",
+      "probability_positive": 0.87785,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.41222972,
+      "sample_blocks": 17,
+      "sample_games": 220,
+      "seasons": [
+        2020,
+        2020
+      ],
+      "source": "artifacts/xlg06_rookie_priors/production_results.json",
+      "standard_error": null
+    },
+    "xlg06_rookie_prior_surplus_tilt_2021": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval spans zero, which per AGENTS.md is the expected outcome at this resolution and is never a closing ground. No wrong sign is resolved on any single-season cut, and the underlying prior has measured split-half reliability, so neither terminal ground applies.",
+      "closing_ground": null,
+      "description": "Rookie-prior-surplus tilt on production weak_stack, opener grade, 2021 alone (47 picks changed); week-blocked bootstrap",
+      "effect": 0.42372881,
+      "effect_units": "accuracy_points",
+      "family": "rookie_priors_per_season",
+      "interval": [
+        -5.85835589,
+        6.41025641
+      ],
+      "league": "nfl",
+      "notes": "One season of the 2020-2025 secondary read; a correlated decomposition of xlg06_rookie_prior_surplus_tilt_full_opener_archive, not an independent vote. Recorded under its own family so the decomposition is visible to the pool.",
+      "plain_summary": "In 2021 the rookie rule was essentially a wash against the model alone.",
+      "probability_positive": 0.558275,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.41222972,
+      "sample_blocks": 18,
+      "sample_games": 236,
+      "seasons": [
+        2021,
+        2021
+      ],
+      "source": "artifacts/xlg06_rookie_priors/production_results.json",
+      "standard_error": null
+    },
+    "xlg06_rookie_prior_surplus_tilt_2022": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval spans zero, which per AGENTS.md is the expected outcome at this resolution and is never a closing ground. No wrong sign is resolved on any single-season cut, and the underlying prior has measured split-half reliability, so neither terminal ground applies.",
+      "closing_ground": null,
+      "description": "Rookie-prior-surplus tilt on production weak_stack, opener grade, 2022 alone (80 picks changed); week-blocked bootstrap",
+      "effect": 0.80645161,
+      "effect_units": "accuracy_points",
+      "family": "rookie_priors_per_season",
+      "interval": [
+        -7.6,
+        8.64197531
+      ],
+      "league": "nfl",
+      "notes": "One season of the 2020-2025 secondary read; a correlated decomposition of xlg06_rookie_prior_surplus_tilt_full_opener_archive, not an independent vote. Recorded under its own family so the decomposition is visible to the pool.",
+      "plain_summary": "In 2022 the rookie rule was slightly ahead of the model alone.",
+      "probability_positive": 0.587925,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.41222972,
+      "sample_blocks": 18,
+      "sample_games": 248,
+      "seasons": [
+        2022,
+        2022
+      ],
+      "source": "artifacts/xlg06_rookie_priors/production_results.json",
+      "standard_error": null
+    },
+    "xlg06_rookie_prior_surplus_tilt_2023": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval spans zero, which per AGENTS.md is the expected outcome at this resolution and is never a closing ground. No wrong sign is resolved on any single-season cut, and the underlying prior has measured split-half reliability, so neither terminal ground applies.",
+      "closing_ground": null,
+      "description": "Rookie-prior-surplus tilt on production weak_stack, opener grade, 2023 alone (52 picks changed); week-blocked bootstrap",
+      "effect": -3.0075188,
+      "effect_units": "accuracy_points",
+      "family": "rookie_priors_per_season",
+      "interval": [
+        -7.60456274,
+        1.50943396
+      ],
+      "league": "nfl",
+      "notes": "One season of the 2020-2025 secondary read; a correlated decomposition of xlg06_rookie_prior_surplus_tilt_full_opener_archive, not an independent vote. Recorded under its own family so the decomposition is visible to the pool.",
+      "plain_summary": "2023 is the rule's worst season: it picked about three fewer games in a hundred correctly than the model alone.",
+      "probability_positive": 0.10025,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.41222972,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "artifacts/xlg06_rookie_priors/production_results.json",
+      "standard_error": null
+    },
+    "xlg06_rookie_prior_surplus_tilt_2024": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval entirely above zero on this single-season cut; no terminal ground applies and none is claimed. One season is not a resolved result on its own.",
+      "closing_ground": null,
+      "description": "Rookie-prior-surplus tilt on production weak_stack, opener grade, 2024 alone (30 picks changed); week-blocked bootstrap",
+      "effect": 4.5112782,
+      "effect_units": "accuracy_points",
+      "family": "rookie_priors_per_season",
+      "interval": [
+        1.09081028,
+        7.98479087
+      ],
+      "league": "nfl",
+      "notes": "One season of the 2020-2025 secondary read; a correlated decomposition of xlg06_rookie_prior_surplus_tilt_full_opener_archive, not an independent vote. Recorded under its own family so the decomposition is visible to the pool.",
+      "plain_summary": "2024 is the rule's best season: about four and a half more games in a hundred picked correctly than the model alone.",
+      "probability_positive": 0.993125,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.41222972,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "artifacts/xlg06_rookie_priors/production_results.json",
+      "standard_error": null
+    },
+    "xlg06_rookie_prior_surplus_tilt_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval spans zero, which per AGENTS.md is the expected outcome at this resolution and is never a closing ground. No wrong sign is resolved on any single-season cut, and the underlying prior has measured split-half reliability, so neither terminal ground applies.",
+      "closing_ground": null,
+      "description": "Rookie-prior-surplus tilt on production weak_stack, opener grade, 2025 alone (43 picks changed); week-blocked bootstrap",
+      "effect": -0.37453184,
+      "effect_units": "accuracy_points",
+      "family": "rookie_priors_per_season",
+      "interval": [
+        -4.49438202,
+        3.83141762
+      ],
+      "league": "nfl",
+      "notes": "One season of the 2020-2025 secondary read; a correlated decomposition of xlg06_rookie_prior_surplus_tilt_full_opener_archive, not an independent vote. Recorded under its own family so the decomposition is visible to the pool.",
+      "plain_summary": "In 2025 the rookie rule was essentially level with the model alone.",
+      "probability_positive": 0.4282,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.41222972,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "artifacts/xlg06_rookie_priors/production_results.json",
+      "standard_error": null
+    }
+  }
+}

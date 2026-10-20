@@ -1,0 +1,89 @@
+{
+  "family": "cfb_true_freshman_road_qb_on_benchmark",
+  "signals": {
+    "cfb_true_freshman_road_qb_on_benchmark": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CFB true-freshman road QB fade (LEAD-47): unsigned flag backing home when the away team's post-hoc starter is a true freshman, on the frozen XLG-03 benchmark arm",
+      "effect": 0.0009138381201044386,
+      "effect_units": "accuracy_points",
+      "family": "cfb_true_freshman_road_qb_on_benchmark",
+      "interval": [
+        -0.0025056230166219467,
+        0.004266261645377383
+      ],
+      "league": "cfb",
+      "notes": "Flag cfb_lead47_true_freshman_road_qb_flag: 1 iff the AWAY team's post-hoc same-game starter (most dropbacks that game, via cfb_qb_dependence.build_cfb_qb_game_metrics, reused not rebuilt) is a true freshman by the 'first local roster-appearance-season' proxy (the local experience_years field is MEASURED to be frozen/static per athlete_id across seasons in this archive -- e.g. athlete_id 487698 reads experience_years==3.0 in 2018, 2019, AND 2021 alike -- and is not used; see docs/cfb_lead_screens_wave2.md). Population restricted to 2014-2019+2021-2025 (2012-2013 excluded: measured mean players/team-game 31.76/32.37 in 2012/2013 vs 105.51/112.14 in 2014/2015 confirms the stat-credited-only roster regime that cannot distinguish true from redshirt freshmen). 604 flagged of 7660 scored games / 168 weeks (away starter identified in 6818 of 7799 in-scope games, 87.4%; home true-freshman starters counted as a diagnostic, 657, never pooled into this flag). Positive control +48.460 pts P+ 1.000. Per-era: 2014-2019 -0.049 pts P+ 0.428 (week), 0.476 (season); 2021-2025 +0.251 pts P+ 0.889 (week), 0.952 (season) -- recorded separately, material divergence (sign flip, ~46-point P+ swing). Null clean: mean -0.003 pts, observed at the 69th percentile. Never pooled with XLG-06's recruiting-rating entries (no recruiting rating is read anywhere in this construct). Close-graded CFB; no NFL window spent or earned.",
+      "plain_summary": "Fading a CFB road team when it starts a true freshman quarterback leans the predicted way pooled across 2014-2025, but the band still touches zero.",
+      "probability_positive": 0.682,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 168,
+      "sample_games": 7660,
+      "seasons": [
+        2014,
+        2025
+      ],
+      "source": "artifacts/cfb_lead_screens_wave2/true_freshman_road_qb/20260905T174603Z/results.json",
+      "standard_error": null
+    },
+    "cfb_true_freshman_road_qb_on_benchmark_era_2014_2019": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CFB true-freshman road QB fade (LEAD-47), era 2014-2019 slice on the frozen XLG-03 benchmark arm",
+      "effect": -0.0004906771344455348,
+      "effect_units": "accuracy_points",
+      "family": "cfb_true_freshman_road_qb_on_benchmark",
+      "interval": [
+        -0.006338423131137193,
+        0.004882673214010227
+      ],
+      "league": "cfb",
+      "notes": "Era slice of cfb_true_freshman_road_qb_on_benchmark (2014-2019 half of the restricted population). 405 of 4076 games flagged / 91 weeks. Week-blocked P+ 0.428, season-blocked P+ 0.476, both intervals contain zero -- leans the OPPOSITE of the predicted FADE direction here but does not resolve (whole interval must sit below zero to be wrong_sign_resolved; it does not). Recorded because the two eras diverge materially from each other (this era vs. 2021-2025's +0.251 pts P+ 0.889), not because either resolves on its own. Close-graded CFB; no NFL window spent or earned.",
+      "plain_summary": "In 2014-2019, fading a CFB road true-freshman starter leaned slightly AGAINST the idea, but the sample is thin and the band crosses zero.",
+      "probability_positive": 0.428,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 4076,
+      "seasons": [
+        2014,
+        2019
+      ],
+      "source": "artifacts/cfb_lead_screens_wave2/true_freshman_road_qb/20260905T174603Z/results.json",
+      "standard_error": null
+    },
+    "cfb_true_freshman_road_qb_on_benchmark_era_2021_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CFB true-freshman road QB fade (LEAD-47), era 2021-2025 slice on the frozen XLG-03 benchmark arm",
+      "effect": 0.0025111607142857145,
+      "effect_units": "accuracy_points",
+      "family": "cfb_true_freshman_road_qb_on_benchmark",
+      "interval": [
+        -0.0011470795904106785,
+        0.005932464343961143
+      ],
+      "league": "cfb",
+      "notes": "Era slice of cfb_true_freshman_road_qb_on_benchmark (2021-2025 half). 199 of 3584 games flagged / 77 weeks. Week-blocked P+ 0.889, season-blocked P+ 0.952 -- leans strongly the predicted (FADE) direction but the week-blocked interval [-0.00115,+0.00593] pts still contains zero, so it stays unresolved_below_power (an interval crossing zero is never grounds to close, per AGENTS.md). Recorded because this era diverges materially from 2014-2019's -0.049 pts P+ 0.428 (sign flip, ~46-point P+ swing). Close-graded CFB; no NFL window spent or earned.",
+      "plain_summary": "In 2021-25, fading a true-freshman quarterback making a road start leaned strongly the expected way (close to 90% likely to help) -- the closest this lead has come to resolving, but the range still just touches zero.",
+      "probability_positive": 0.889,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 3584,
+      "seasons": [
+        2021,
+        2025
+      ],
+      "source": "artifacts/cfb_lead_screens_wave2/true_freshman_road_qb/20260905T174603Z/results.json",
+      "standard_error": null
+    }
+  }
+}

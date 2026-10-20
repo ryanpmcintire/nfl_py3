@@ -1,0 +1,61 @@
+{
+  "family": "weak_stack_v5_fluview_away",
+  "signals": {
+    "weak_stack_v5_fluview_away_opener": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, no zero reliability, and no positive control bounding detection at this scale.",
+      "closing_ground": null,
+      "description": "Away-market continuous as-of FluView added to current weak_stack; paired opener accuracy on feature-covered games.",
+      "effect": -1.0721944245889923,
+      "effect_units": "accuracy_points",
+      "family": "weak_stack_v5_fluview_away",
+      "interval": [
+        -2.374339382458341,
+        0.21739524545196548
+      ],
+      "league": "nfl",
+      "notes": "One continuous away-state ILI column; strict pre-Tuesday release cutoff. Reused 2020-2025 archive, mined-era and sibling FluView selection discount, not independent confirmation or an independent pooling vote. Baseline saved current Gaussian opener picks verified by exact replay. Full archive and assigned window overlap. Prior 0.9814 is recorded trait reliability, not newly measured v5 feature reliability.",
+      "plain_summary": "Uses flu activity near the visiting team to adjust the predicted margin.",
+      "probability_positive": 0.0492,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1399,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/weak_stack_v5_opener_eval/20260907T140503Z/opener_summary.json",
+      "standard_error": null
+    },
+    "weak_stack_v5_fluview_away_opener_2020_2021": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, no zero reliability, and no positive control bounding detection at this scale.",
+      "closing_ground": null,
+      "description": "Away-market continuous as-of FluView added to current weak_stack; paired opener accuracy on feature-covered games.",
+      "effect": 0.49019607843137253,
+      "effect_units": "accuracy_points",
+      "family": "weak_stack_v5_fluview_away",
+      "interval": [
+        -1.4925373134328357,
+        2.500156641603996
+      ],
+      "league": "nfl",
+      "notes": "One continuous away-state ILI column; strict pre-Tuesday release cutoff. Reused 2020-2025 archive, mined-era and sibling FluView selection discount, not independent confirmation or an independent pooling vote. Baseline saved current Gaussian opener picks verified by exact replay. Full archive and assigned window overlap. Prior 0.9814 is recorded trait reliability, not newly measured v5 feature reliability.",
+      "plain_summary": "Uses flu activity near the visiting team to adjust the predicted margin.",
+      "probability_positive": 0.64455,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 408,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/weak_stack_v5_opener_eval/20260907T140503Z/opener_summary.json",
+      "standard_error": null
+    }
+  }
+}

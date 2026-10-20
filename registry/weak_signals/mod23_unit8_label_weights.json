@@ -1,0 +1,61 @@
+{
+  "family": "mod23_unit8_label_weights",
+  "signals": {
+    "mod23_unit8_label_weights_sbr_2011_2019_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model trained with game weights from measured label noise, paired vs base, 2011-2019; 1139-1092 vs 1142-1089.",
+      "effect": -0.1344688480502017,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit8_label_weights",
+      "interval": [
+        -1.5765765765765767,
+        1.494633028880291
+      ],
+      "league": "nfl",
+      "notes": "Ridge alpha 10 trained with weights of one over the out-of-fold residual variance of each completed-game stratum (QB change, fourth-quarter margin band, non-offensive touchdown), variances from prior seasons only; two looks (two eras), single-stratum ablations unrecorded.",
+      "plain_summary": "Giving noisy-result games less weight in training moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.4062,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod23_unit8/report_all.json",
+      "standard_error": null
+    },
+    "mod23_unit8_label_weights_tuesday_2020_2025_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model trained with game weights from measured label noise, paired vs base, 2020-2025; 785-718 vs 802-701.",
+      "effect": -1.1310711909514304,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit8_label_weights",
+      "interval": [
+        -3.395472703062583,
+        0.5870841487279843
+      ],
+      "league": "nfl",
+      "notes": "Ridge alpha 10 trained with weights of one over the out-of-fold residual variance of each completed-game stratum (QB change, fourth-quarter margin band, non-offensive touchdown), variances from prior seasons only; two looks (two eras), single-stratum ablations unrecorded.",
+      "plain_summary": "Giving noisy-result games less weight in training moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.1487,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit8/report_all.json",
+      "standard_error": null
+    }
+  }
+}

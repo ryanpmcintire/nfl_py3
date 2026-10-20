@@ -1,0 +1,61 @@
+{
+  "family": "mod24_beat_reporter_news",
+  "signals": {
+    "mod24_beat_reporter_news_pickterm_all": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval not wholly on wrong side; no positive control",
+      "closing_ground": null,
+      "description": "Beat-reporter Bluesky starter-absence news before pick deadline, value-weighted, as a fifth fitted term in the four-term pick logit; LOSO, scored 2024-2025 vs base",
+      "effect": -1.313,
+      "effect_units": "accuracy_points",
+      "family": "mod24_beat_reporter_news",
+      "interval": [
+        -3.882,
+        1.692
+      ],
+      "league": "nfl",
+      "notes": "all-pre-deadline value-weighted absence; decisive 14 up 21 down; LL improvement -0.0048; per-fold coef -7.3..+1.2 unstable; coverage 355/533 games",
+      "plain_summary": null,
+      "probability_positive": 0.1751,
+      "recorded_at": "2026-10-20",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "docs/mod24_u9_beat_grade.json",
+      "standard_error": 1.432
+    },
+    "mod24_beat_reporter_news_pickterm_lead": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval not wholly on wrong side; no positive control",
+      "closing_ground": null,
+      "description": "Beat-reporter Bluesky starter-absence news before pick deadline, value-weighted, as a fifth fitted term in the four-term pick logit; LOSO, scored 2024-2025 vs base",
+      "effect": 0.75,
+      "effect_units": "accuracy_points",
+      "family": "mod24_beat_reporter_news",
+      "interval": [
+        0.185,
+        1.509
+      ],
+      "league": "nfl",
+      "notes": "pre-Wednesday-18Z variant; decisive 5 up 1 down only (6 games); LL improvement +0.00001, Brier +0.00004; coverage 306/533; coef -0.5..-5 sign negative on training folds",
+      "plain_summary": null,
+      "probability_positive": 0.9924,
+      "recorded_at": "2026-10-20",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "docs/mod24_u9_beat_grade.json",
+      "standard_error": 0.358
+    }
+  }
+}

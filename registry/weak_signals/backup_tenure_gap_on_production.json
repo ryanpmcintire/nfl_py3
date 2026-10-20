@@ -1,0 +1,33 @@
+{
+  "family": "backup_tenure_gap_on_production",
+  "signals": {
+    "backup_tenure_gap_on_production": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Opener primary (week-blocked production rule): +0.2193 accuracy points, P+=0.5737, interval [-0.8753,+1.3333] crosses zero. Neither terminal ground applies: wrong_sign_resolved requires the whole interval on the wrong side (it does not -- point estimate is positive and favours the candidate); no_split_half_reliability is inadmissible by construction -- backup_tenure_gap_flag is a deterministic function of the published schedule's listed starters plus weekly-roster season/team membership, zero measurement noise to split in half (docs/schedule_flag_battery.md Wave 9). The +44.298-point positive control (candidate column replaced by realized ats_margin, P+ 1.0 both blockings) demonstrates the harness can detect an effect of that size but does not bound THIS effect to a known small ceiling. Therefore unresolved_below_power. Per AGENTS.md's promotion-bar/decision-bar rule, P+ 0.5737 > 0.5 favours the candidate; this is not itself a promotion decision on a single confirmation look.",
+      "closing_ground": null,
+      "description": "Opener-grade confirmation: LEAD-15 backup tenure-gap valuation. Signed flag +1 when HOME starts a system-tenured (>=2 prior seasons same franchise) backup QB OR AWAY starts a new-system backup (favours home), -1 the mirror, 0 otherwise (no backup start, or both sides independently favour the same side), on top of production weak_stack versus production unmodified, paired forced-pick probability-rule accuracy.",
+      "effect": 0.2193,
+      "effect_units": "accuracy_points",
+      "family": "backup_tenure_gap_on_production",
+      "interval": [
+        -0.8753,
+        1.3333
+      ],
+      "league": "nfl",
+      "notes": "Rotation family backup_tenure_gap_on_production, window [2020,2021] spent 2026-09-05. Sign-rule secondary read on the identical population disagrees in direction (delta -0.4386 pts, week-blocked P+ 0.0) -- not the decision quantity (AGENTS.md: grade the decision at the opener using the production rule). Season-blocked P+ 0.74545 rests on only 2 season blocks and is not treated as informative at that block count. 9/456 forced picks flip under the production rule. Full-schedule population (declared 2013-2025 restriction): 757/4902 games have a backup start (835 sides: 269 system-tenured, 566 new-system, 0 unresolved -- every backup gsis_id resolved against weekly_rosters); 708 games carry a nonzero signed flag (347 positive, 361 negative); flagged-game counts by season 2013=48,2014=50,2015=55,2016=51,2017=55,2018=45,2019=55,2020=60,2021=71,2022=70,2023=69,2024=62,2025=66. Depth-chart QB1 is approximated as the team's own most recent prior-game starter (no season-boundary reset, a declared proxy for a preseason depth chart absent a live feed); lane AB's concurrent all-position depth-chart archive (data/players/raw/depth_charts/) was NOT read, per the fleet task's explicit out-of-scope instruction. spec/script=scripts/backup_tenure_flags_on_production.py; predeclaration=docs/schedule_flag_battery.md#section-22----backup_tenure_gap_on_production.",
+      "plain_summary": "Backing a team that starts a quarterback who has been its backup for two or more seasons, and fading a team that starts a brand-new backup, leaned slightly toward helping picks but the result is far from conclusive on this two-season card.",
+      "probability_positive": 0.5737,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/backup_tenure_flag_on_production/20260905T163658Z/results.json",
+      "standard_error": null
+    }
+  }
+}

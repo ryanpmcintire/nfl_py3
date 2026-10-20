@@ -1,0 +1,313 @@
+{
+  "family": "public_split_on_card",
+  "signals": {
+    "public_split_on_card_a1_ticket_ge70_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "An interval containing zero is never grounds to close; this cell is category 3. No admissible closing ground applies: the sign is not resolved in BOTH the week- and season-blocked blocks, split-half reliability was not the question, and the arm-C positive control resolves only at the perfect-foresight magnitude, not at the size a real split effect would have.",
+      "closing_ground": null,
+      "description": "Opener-graded forced-pick accuracy of the side the public's TICKETS are on, minus 50, on games whose larger spread ticket share is >=70%. Latest actionnetwork consensus reading strictly before min(kickoff, Sunday 16:00 ET), 2020-2025 opener archive.",
+      "effect": 2.0,
+      "effect_units": "accuracy_points",
+      "family": "public_split_on_card",
+      "interval": [
+        -7.647059,
+        12.162162
+      ],
+      "league": "nfl",
+      "notes": "season-blocked 2.0000 [-8.3333, 8.8889], P+ 0.6590. Subset cover rate 0.5200",
+      "plain_summary": "When 70%+ of spread bets are on one side, that side beat the Tuesday opening line 52.0% of the time in 75 games.",
+      "probability_positive": 0.651125,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 33,
+      "sample_games": 75,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/public_split_on_card/20260909T231541Z/result.json; docs/public_split_on_card.md",
+      "standard_error": 5.037654
+    },
+    "public_split_on_card_a2_ticket_60_70_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "An interval containing zero is never grounds to close; this cell is category 3. No admissible closing ground applies: the sign is not resolved in BOTH the week- and season-blocked blocks, split-half reliability was not the question, and the arm-C positive control resolves only at the perfect-foresight magnitude, not at the size a real split effect would have.",
+      "closing_ground": null,
+      "description": "Same ticket-side accuracy, minus 50, on games whose larger spread ticket share is 60-70%.",
+      "effect": -6.470588,
+      "effect_units": "accuracy_points",
+      "family": "public_split_on_card",
+      "interval": [
+        -16.666667,
+        4.320988
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -6.4706 [-19.8630, 8.1818], P+ 0.1798. Subset cover rate 0.4353",
+      "plain_summary": "When 60-70% of spread bets are on one side, that side beat the opener 43.5% of the time in 85 games.",
+      "probability_positive": 0.116525,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 85,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/public_split_on_card/20260909T231541Z/result.json; docs/public_split_on_card.md",
+      "standard_error": 5.357621
+    },
+    "public_split_on_card_a3_ticket_lt60_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "An interval containing zero is never grounds to close; this cell is category 3. No admissible closing ground applies: the sign is not resolved in BOTH the week- and season-blocked blocks, split-half reliability was not the question, and the arm-C positive control resolves only at the perfect-foresight magnitude, not at the size a real split effect would have.",
+      "closing_ground": null,
+      "description": "Same ticket-side accuracy, minus 50, on games with no side above 60% of tickets.",
+      "effect": 5.0,
+      "effect_units": "accuracy_points",
+      "family": "public_split_on_card",
+      "interval": [
+        -5.0,
+        14.356436
+      ],
+      "league": "nfl",
+      "notes": "season-blocked 5.0000 [-2.7778, 15.8228], P+ 0.8900. Subset cover rate 0.5500",
+      "plain_summary": "With the betting public split near evenly, the slightly more popular side beat the opener 55.0% of the time in 100 games.",
+      "probability_positive": 0.849,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 37,
+      "sample_games": 100,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/public_split_on_card/20260909T231541Z/result.json; docs/public_split_on_card.md",
+      "standard_error": 4.91171
+    },
+    "public_split_on_card_a4_handle_ge70_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "An interval containing zero is never grounds to close; this cell is category 3. No admissible closing ground applies: the sign is not resolved in BOTH the week- and season-blocked blocks, split-half reliability was not the question, and the arm-C positive control resolves only at the perfect-foresight magnitude, not at the size a real split effect would have.",
+      "closing_ground": null,
+      "description": "Opener-graded forced-pick accuracy of the side the public's HANDLE (money%) is on, minus 50, where the larger money share is >=70%. Money share exists only in the site's era2 schema (Nov 2022 on).",
+      "effect": 6.164384,
+      "effect_units": "accuracy_points",
+      "family": "public_split_on_card",
+      "interval": [
+        -3.031076,
+        15.0
+      ],
+      "league": "nfl",
+      "notes": "season-blocked 6.1644 [5.2632, 7.1429], P+ 1.0000. Subset cover rate 0.5616",
+      "plain_summary": "When 70%+ of the money is on one side, that side beat the opener 56.2% of the time in 73 games.",
+      "probability_positive": 0.90805,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 73,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/public_split_on_card/20260909T231541Z/result.json; docs/public_split_on_card.md",
+      "standard_error": 4.626935
+    },
+    "public_split_on_card_a5_handle_60_70_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "An interval containing zero is never grounds to close; this cell is category 3. No admissible closing ground applies: the sign is not resolved in BOTH the week- and season-blocked blocks, split-half reliability was not the question, and the arm-C positive control resolves only at the perfect-foresight magnitude, not at the size a real split effect would have.",
+      "closing_ground": null,
+      "description": "Same handle-side accuracy, minus 50, where the larger money share is 60-70%.",
+      "effect": -21.428571,
+      "effect_units": "accuracy_points",
+      "family": "public_split_on_card",
+      "interval": [
+        -37.5,
+        -2.0
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -21.4286 [-40.0000, 25.0000], P+ 0.0355. Subset cover rate 0.2857",
+      "plain_summary": "When 60-70% of the money is on one side, that side beat the opener only 28.6% of the time in 28 games.",
+      "probability_positive": 0.016075,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 16,
+      "sample_games": 28,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/public_split_on_card/20260909T231541Z/result.json; docs/public_split_on_card.md",
+      "standard_error": 9.101781
+    },
+    "public_split_on_card_a6_handle_lt60_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "An interval containing zero is never grounds to close; this cell is category 3. No admissible closing ground applies: the sign is not resolved in BOTH the week- and season-blocked blocks, split-half reliability was not the question, and the arm-C positive control resolves only at the perfect-foresight magnitude, not at the size a real split effect would have.",
+      "closing_ground": null,
+      "description": "Same handle-side accuracy, minus 50, with no side above 60% of the money.",
+      "effect": -12.5,
+      "effect_units": "accuracy_points",
+      "family": "public_split_on_card",
+      "interval": [
+        -30.952381,
+        8.333333
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -12.5000 [-34.2105, 25.0000], P+ 0.2963. Subset cover rate 0.3750",
+      "plain_summary": "With the money split near evenly, the slightly heavier side beat the opener 37.5% of the time in 32 games.",
+      "probability_positive": 0.1172,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 14,
+      "sample_games": 32,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/public_split_on_card/20260909T231541Z/result.json; docs/public_split_on_card.md",
+      "standard_error": 9.996492
+    },
+    "public_split_on_card_a7_disagreement_follow_handle_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "An interval containing zero is never grounds to close; this cell is category 3. No admissible closing ground applies: the sign is not resolved in BOTH the week- and season-blocked blocks, split-half reliability was not the question, and the arm-C positive control resolves only at the perfect-foresight magnitude, not at the size a real split effect would have.",
+      "closing_ground": null,
+      "description": "Opener-graded accuracy, minus 50, of following the MONEY side on the cell where the ticket-majority side and the money-majority side disagree (the standard sharp-money signature).",
+      "effect": -14.516129,
+      "effect_units": "accuracy_points",
+      "family": "public_split_on_card",
+      "interval": [
+        -27.777778,
+        3.846154
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -14.5161 [-26.4706, 0.0000], P+ 0.1481. Subset cover rate 0.3548",
+      "plain_summary": "When most bets are on one team but most of the money is on the other, the money side beat the opener 35.5% of the time in 31 games.",
+      "probability_positive": 0.055925,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 31,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/public_split_on_card/20260909T231541Z/result.json; docs/public_split_on_card.md",
+      "standard_error": 8.037304
+    },
+    "public_split_on_card_b1_ticket35_handle45_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "An interval containing zero is never grounds to close; this cell is category 3. No admissible closing ground applies: the sign is not resolved in BOTH the week- and season-blocked blocks, split-half reliability was not the question, and the arm-C positive control resolves only at the perfect-foresight magnitude, not at the size a real split effect would have.",
+      "closing_ground": null,
+      "description": "Frozen fade-the-public tilt ON TOP OF the served nine-member card (four_overlay_composition POLICY_ID v3) at each game's pick deadline: flip the played pick to the side with <=35% of tickets when that side's handle is also <=45%, else keep. Paired delta in opener-graded forced-pick accuracy over the whole 260-game scored population.",
+      "effect": -1.153846,
+      "effect_units": "accuracy_points",
+      "family": "public_split_on_card",
+      "interval": [
+        -4.24731,
+        1.992032
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -1.1538 [-4.1475, 0.9091], P+ 0.1746. Served card on this population 0.5731. Flips 23 of 260",
+      "plain_summary": "Switching our pick to the unpopular side when barely anyone is betting or funding it would have cost about 1.2 wins per 100 picks.",
+      "probability_positive": 0.230125,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 40,
+      "sample_games": 260,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/public_split_on_card/20260909T231541Z/result.json; docs/public_split_on_card.md",
+      "standard_error": 1.583026
+    },
+    "public_split_on_card_b2_ticket35_only_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "An interval containing zero is never grounds to close; this cell is category 3. No admissible closing ground applies: the sign is not resolved in BOTH the week- and season-blocked blocks, split-half reliability was not the question, and the arm-C positive control resolves only at the perfect-foresight magnitude, not at the size a real split effect would have.",
+      "closing_ground": null,
+      "description": "Same tilt on top of the same served card with the handle condition dropped (flip to the side with <=35% of tickets), so the 130 archive games that predate money-share reporting are not dropped from the question.",
+      "effect": -1.923077,
+      "effect_units": "accuracy_points",
+      "family": "public_split_on_card",
+      "interval": [
+        -6.844106,
+        2.941176
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -1.9231 [-3.7037, 0.4310], P+ 0.0455. Served card on this population 0.5731. Flips 53 of 260",
+      "plain_summary": "Switching our pick to whichever side is under 35% of the bets would have cost about 1.9 wins per 100 picks.",
+      "probability_positive": 0.219075,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 40,
+      "sample_games": 260,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/public_split_on_card/20260909T231541Z/result.json; docs/public_split_on_card.md",
+      "standard_error": 2.49079
+    },
+    "public_split_on_card_c1_control_b1_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Positive control, recorded so the instrument's resolution on this population is on the record. It bounds nothing by itself: it resolves at the perfect-foresight magnitude only. An interval containing zero is never grounds to close; this cell is category 3. No admissible closing ground applies: the sign is not resolved in BOTH the week- and season-blocked blocks, split-half reliability was not the question, and the arm-C positive control resolves only at the perfect-foresight magnitude, not at the size a real split effect would have.",
+      "closing_ground": null,
+      "description": "Positive control: a perfect-foresight flip on exactly the games arm B1 touches (23 picks of 260), same population and bootstrap, so the harness's resolution at that flip count is known.",
+      "effect": 3.846154,
+      "effect_units": "accuracy_points",
+      "family": "public_split_on_card",
+      "interval": [
+        1.550388,
+        6.51341
+      ],
+      "league": "nfl",
+      "notes": "season-blocked 3.8462 [0.0000, 7.7253], P+ 0.9552. Served card on this population 0.5731. Flips 23 of 260",
+      "plain_summary": "Sanity check: getting those same 23 picks right every time would have been worth about 3.8 wins per 100 picks.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 40,
+      "sample_games": 260,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/public_split_on_card/20260909T231541Z/result.json; docs/public_split_on_card.md",
+      "standard_error": 1.268861
+    },
+    "public_split_on_card_c2_control_b2_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Positive control, recorded so the instrument's resolution on this population is on the record. It bounds nothing by itself: it resolves at the perfect-foresight magnitude only. An interval containing zero is never grounds to close; this cell is category 3. No admissible closing ground applies: the sign is not resolved in BOTH the week- and season-blocked blocks, split-half reliability was not the question, and the arm-C positive control resolves only at the perfect-foresight magnitude, not at the size a real split effect would have.",
+      "closing_ground": null,
+      "description": "Positive control: a perfect-foresight flip on exactly the games arm B2 touches (53 picks of 260).",
+      "effect": 9.230769,
+      "effect_units": "accuracy_points",
+      "family": "public_split_on_card",
+      "interval": [
+        5.859375,
+        12.903523
+      ],
+      "league": "nfl",
+      "notes": "season-blocked 9.2308 [7.2555, 11.5578], P+ 1.0000. Served card on this population 0.5731. Flips 53 of 260",
+      "plain_summary": "Sanity check: getting those same 53 picks right every time would have been worth about 9.2 wins per 100 picks.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 40,
+      "sample_games": 260,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/public_split_on_card/20260909T231541Z/result.json; docs/public_split_on_card.md",
+      "standard_error": 1.797835
+    }
+  }
+}

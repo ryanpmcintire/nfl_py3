@@ -1,0 +1,98 @@
+{
+  "family": "leader_median_override_distance_v1",
+  "signals": {
+    "leader_median_deep_overrides_vs_card": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "The leader-median line-move follow rule's deep overrides (model probability furthest below 0.5 for the served side) against the card they overturn",
+      "effect": 1.5019,
+      "effect_units": "accuracy_points",
+      "family": "leader_median_override_distance_v1",
+      "interval": [
+        -1.4907,
+        4.602
+      ],
+      "invalidated_reason": "Superseded by a from-scratch redo at owner direction: the deep-override half was scored on the same flips its median cut was chosen from, and its point estimate needed independent verification. See docs/leader_median_model_confidence.md and docs/lanes/leader-median-model-confidence.md.",
+      "league": "nfl",
+      "notes": "[2026-09-14T20:30:08.600876+00:00] invalidated: Superseded by a from-scratch redo at owner direction: the deep-override half was scored on the same flips its median cut was chosen from, and its point estimate needed independent verification. See docs/leader_median_model_confidence.md and docs/lanes/leader-median-model-confidence.md.. Superseded by: 'leader_median_follow_median_split_deep'. Invalidation is not closure.",
+      "plain_summary": "The flips where the rule overrules the model hardest win at the same rate as its mildest flips.",
+      "probability_positive": 0.8331,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_median_override_distance/20260914T190753Z/summary.json",
+      "standard_error": null,
+      "status": "invalidated",
+      "superseded_by": "leader_median_follow_median_split_deep"
+    },
+    "leader_median_override_distance_foresight_control": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Foresight control: flipping only the leader-median fires the card got wrong, to show the harness resolves an effect at this flip count",
+      "effect": 12.2653,
+      "effect_units": "accuracy_points",
+      "family": "leader_median_override_distance_v1",
+      "interval": [
+        9.7468,
+        14.899
+      ],
+      "invalidated_reason": "Superseded by a from-scratch redo at owner direction: replaced by an independently-implemented positive control on the same flip count. See docs/leader_median_model_confidence.md and docs/lanes/leader-median-model-confidence.md.",
+      "league": "nfl",
+      "notes": "[2026-09-14T20:30:14.822511+00:00] invalidated: Superseded by a from-scratch redo at owner direction: replaced by an independently-implemented positive control on the same flip count. See docs/leader_median_model_confidence.md and docs/lanes/leader-median-model-confidence.md.. Superseded by: 'leader_median_follow_foresight_control'. Invalidation is not closure.",
+      "plain_summary": "Positive control: a rule that only flipped the losers would gain 12 points, so this test can see an effect.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_median_override_distance/20260914T190753Z/summary.json",
+      "standard_error": null,
+      "status": "invalidated",
+      "superseded_by": "leader_median_follow_foresight_control"
+    },
+    "leader_median_shallow_only_vs_full_rule": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Restricting the promoted leader-median line-move follow rule to its shallow half by override distance, against firing on every flip",
+      "effect": -1.5019,
+      "effect_units": "accuracy_points",
+      "family": "leader_median_override_distance_v1",
+      "interval": [
+        -4.602,
+        1.4907
+      ],
+      "invalidated_reason": "Superseded by a from-scratch redo at owner direction: the shallow/deep override-distance split was scored on the same flips its median cut was chosen from, and the identical 61-49 halves needed independent verification. See docs/leader_median_model_confidence.md and docs/lanes/leader-median-model-confidence.md.",
+      "league": "nfl",
+      "notes": "[2026-09-14T20:30:01.913372+00:00] invalidated: Superseded by a from-scratch redo at owner direction: the shallow/deep override-distance split was scored on the same flips its median cut was chosen from, and the identical 61-49 halves needed independent verification. See docs/leader_median_model_confidence.md and docs/lanes/leader-median-model-confidence.md.. Superseded by: 'leader_median_follow_median_split_shallow'. Invalidation is not closure.",
+      "plain_summary": "Taking only the shallow half of the line-move rule's flips scores worse than taking them all.",
+      "probability_positive": 0.1669,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_median_override_distance/20260914T190753Z/summary.json",
+      "standard_error": null,
+      "status": "invalidated",
+      "superseded_by": "leader_median_follow_median_split_shallow"
+    }
+  }
+}

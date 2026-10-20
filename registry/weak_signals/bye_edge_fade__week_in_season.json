@@ -1,0 +1,89 @@
+{
+  "family": "bye_edge_fade__week_in_season",
+  "signals": {
+    "bye_edge_fade__week_in_season_weeks_13_18_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval [-0.41, 1.65] with decisive exact two-sided p=0.607 (9-6 on 15); no admissible closing ground applies; unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Bye-week rest rule leave-one-out marginal on the played 9-member card, weeks 13 18, opener grade, paired accuracy points",
+      "effect": 0.6048,
+      "effect_units": "accuracy_points",
+      "family": "bye_edge_fade__week_in_season",
+      "interval": [
+        -0.4124,
+        1.6497
+      ],
+      "league": "nfl",
+      "notes": "Decisive first: signal wins 9, model side wins 6 on 15 decisive games (exact two-sided p=0.607). Signal-atlas harness v1 (scripts/signal_atlas.py), leave-one-out of signal-unique flips, paired week-blocked bootstrap, 2000 draws, seed 20260821, 90pct CI, per-game artifacts/opener_evaluation/20260917T161504Z/per_game.parquet. Correlated with every other served-member entry (same 2020-2025 opener archive).",
+      "plain_summary": "In weeks 13 to 18, the bye-week rest rule picked up about 0.6 more correct games per hundred on that slice so far (9-6 on 15 games where it mattered).",
+      "probability_positive": 0.783,
+      "recorded_at": "2026-09-17",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 496,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/signal_atlas.py; registry/split_library.json v1",
+      "standard_error": 0.6502
+    },
+    "bye_edge_fade__week_in_season_weeks_1_4_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Zero fires: the marginal is unidentified, not a measured zero. No admissible closing ground applies; unresolved_below_power per AGENTS.md. Recorded without a standard error so the degenerate cell stays out of the inverse-variance pool.",
+      "closing_ground": null,
+      "description": "Bye-week rest rule leave-one-out marginal on the played 9-member card, weeks 1 4, opener grade, paired accuracy points DEGENERATE: never fires in this cell, marginal unidentified.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "bye_edge_fade__week_in_season",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Decisive first: signal wins 0, model side wins 0 on 0 decisive games (exact two-sided p=1.0). Signal-atlas harness v1 (scripts/signal_atlas.py), leave-one-out of signal-unique flips, paired week-blocked bootstrap, 2000 draws, seed 20260821, 90pct CI, per-game artifacts/opener_evaluation/20260917T161504Z/per_game.parquet. Correlated with every other served-member entry (same 2020-2025 opener archive).",
+      "plain_summary": "In the first four weeks of the season, the bye-week rest rule never fires, so there is nothing to measure there.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-17",
+      "reliability": null,
+      "sample_blocks": 24,
+      "sample_games": 360,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/signal_atlas.py; registry/split_library.json v1",
+      "standard_error": null
+    },
+    "bye_edge_fade__week_in_season_weeks_5_12_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval [-1.37, 1.4] with decisive exact two-sided p=1.0 (19-19 on 38); no admissible closing ground applies; unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Bye-week rest rule leave-one-out marginal on the played 9-member card, weeks 5 12, opener grade, paired accuracy points",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "bye_edge_fade__week_in_season",
+      "interval": [
+        -1.3721,
+        1.4019
+      ],
+      "league": "nfl",
+      "notes": "Decisive first: signal wins 19, model side wins 19 on 38 decisive games (exact two-sided p=1.0). Signal-atlas harness v1 (scripts/signal_atlas.py), leave-one-out of signal-unique flips, paired week-blocked bootstrap, 2000 draws, seed 20260821, 90pct CI, per-game artifacts/opener_evaluation/20260917T161504Z/per_game.parquet. Correlated with every other served-member entry (same 2020-2025 opener archive).",
+      "plain_summary": "In weeks 5 to 12, the bye-week rest rule has been about even on that slice so far (19-19 on 38 games where it mattered).",
+      "probability_positive": 0.452,
+      "recorded_at": "2026-09-17",
+      "reliability": null,
+      "sample_blocks": 48,
+      "sample_games": 647,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/signal_atlas.py; registry/split_library.json v1",
+      "standard_error": 0.8453
+    }
+  }
+}

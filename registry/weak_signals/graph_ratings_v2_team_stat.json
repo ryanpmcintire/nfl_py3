@@ -1,0 +1,1069 @@
+{
+  "family": "graph_ratings_v2_team_stat",
+  "signals": {
+    "graph_team_stat_active_roster_continuity": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted active_roster_continuity (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away active_roster_continuity differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": -3.485254691689008,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -6.768256325848592,
+        -0.7977668017561634
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 46.25% vs raw-differential control 49.73%. Season-blocked P+ 0.000. Against the market baseline the graph arm is -3.217 pts and the raw control +0.268 pts. Conservative reference: within-week permutation null (200 permutations) centres at -1.498 pts with SD 1.093, so the observed delta sits at the 4.5th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. Interval resolved entirely below zero, reported as continuous evidence only: this run is CLOSE-graded and the predeclaration reserves any terminal classification for the opener grade. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.\n[2026-09-01T19:31:32.260625+00:00] reliability set: None -> 0.6565 95% [0.4825, 0.7719]. Method: team-season odd/even-week split-half of the underlying continuous trait, Spearman-Brown corrected, block bootstrap over team-seasons (nfl_ats.cfb_qb_dependence.split_half_reliability, seed 20260901, 4000 draws). Measured from: artifacts/reliability_sweep/graph_team_stat/20260901T193017Z/results.json. Reason: Split-half reliability of the team-week column 'active_roster_continuity' (home/away pair home_active_roster_continuity/away_active_roster_continuity), measured on this cell's own seasons [2011, 2013]; scripts/graph_team_stat_screen.py:123-176 builds this cell's graph-rating arm from exactly that pair, so the column IS the cell's underlying construct. Measurement only: no classification, closing_ground or effect changed.. Reliability fields only; effect/interval/classification/closing_ground untouched, and this measurement does not by itself reclassify the entry.",
+      "plain_summary": "Tests whether adjusting a team's roster-continuity number for strength of schedule beats simply using the raw number as-is.",
+      "probability_positive": 0.002,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.656522,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_active_roster_mean_experience": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted active_roster_mean_experience (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away active_roster_mean_experience differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": 1.6085790884718498,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -0.13369431379707777,
+        3.5773589937330543
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 48.39% vs raw-differential control 46.78%. Season-blocked P+ 1.000. Against the market baseline the graph arm is -1.072 pts and the raw control -2.681 pts. Conservative reference: within-week permutation null (200 permutations) centres at +0.532 pts with SD 1.008, so the observed delta sits at the 83.0th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.\n[2026-09-01T19:31:35.317004+00:00] reliability set: None -> 0.9956 95% [0.9936, 0.9971]. Method: team-season odd/even-week split-half of the underlying continuous trait, Spearman-Brown corrected, block bootstrap over team-seasons (nfl_ats.cfb_qb_dependence.split_half_reliability, seed 20260901, 4000 draws). Measured from: artifacts/reliability_sweep/graph_team_stat/20260901T193017Z/results.json. Reason: Split-half reliability of the team-week column 'active_roster_mean_experience' (home/away pair home_active_roster_mean_experience/away_active_roster_mean_experience), measured on this cell's own seasons [2011, 2013]; scripts/graph_team_stat_screen.py:123-176 builds this cell's graph-rating arm from exactly that pair, so the column IS the cell's underlying construct. Measurement only: no classification, closing_ground or effect changed.. Reliability fields only; effect/interval/classification/closing_ground untouched, and this measurement does not by itself reclassify the entry.",
+      "plain_summary": "Tests whether schedule-adjusting active_roster_mean_experience beats using it raw.",
+      "probability_positive": 0.954,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.99563,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_ats_residual": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted ats_residual (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away ats_residual differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": -0.938337801608579,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -4.111954022988505,
+        2.1681689642983386
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.32% vs raw-differential control 48.26%. Season-blocked P+ 0.248. Against the market baseline the graph arm is -2.145 pts and the raw control -1.206 pts. Conservative reference: within-week permutation null (200 permutations) centres at -0.960 pts with SD 1.007, so the observed delta sits at the 48.0th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.\n[2026-09-01T19:31:38.235684+00:00] reliability set: None -> 0.9692 95% [0.9553, 0.9790]. Method: team-season odd/even-week split-half of the underlying continuous trait, Spearman-Brown corrected, block bootstrap over team-seasons (nfl_ats.cfb_qb_dependence.split_half_reliability, seed 20260901, 4000 draws). Measured from: artifacts/reliability_sweep/graph_team_stat/20260901T193017Z/results.json. Reason: Split-half reliability of the team-week column 'ats_residual' (home/away pair home_ats_residual/away_ats_residual), measured on this cell's own seasons [2011, 2013]; scripts/graph_team_stat_screen.py:123-176 builds this cell's graph-rating arm from exactly that pair, so the column IS the cell's underlying construct. Measurement only: no classification, closing_ground or effect changed.. Reliability fields only; effect/interval/classification/closing_ground untouched, and this measurement does not by itself reclassify the entry.",
+      "plain_summary": "Tests whether schedule-adjusting ats_residual beats using it raw.",
+      "probability_positive": 0.289,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9692,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_bias_playoff_holdover": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted bias_playoff_holdover (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away bias_playoff_holdover differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -2.699146514935989,
+        2.527189240325574
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 48.26% vs raw-differential control 48.26%. Season-blocked P+ 0.371. Against the market baseline the graph arm is -1.206 pts and the raw control -1.206 pts. Conservative reference: within-week permutation null (200 permutations) centres at +0.082 pts with SD 0.777, so the observed delta sits at the 41.5th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.",
+      "plain_summary": "Tests whether schedule-adjusting bias_playoff_holdover beats using it raw.",
+      "probability_positive": 0.492,
+      "recorded_at": "2026-08-26",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_bias_week2_anchor": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted bias_week2_anchor (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away bias_week2_anchor differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": -0.2680965147453083,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -3.059022437266797,
+        2.4425833428842902
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.45% vs raw-differential control 47.72%. Season-blocked P+ 0.253. Against the market baseline the graph arm is -2.011 pts and the raw control -1.743 pts. Conservative reference: within-week permutation null (200 permutations) centres at -0.214 pts with SD 1.055, so the observed delta sits at the 45.0th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.",
+      "plain_summary": "Tests whether schedule-adjusting bias_week2_anchor beats using it raw.",
+      "probability_positive": 0.435,
+      "recorded_at": "2026-08-26",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_def_rush_epa_per_play": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted def_rush_epa_per_play (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away def_rush_epa_per_play differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": -1.4745308310991956,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -4.1559154431530745,
+        0.9447975433835606
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 46.65% vs raw-differential control 48.12%. Season-blocked P+ 0.139. Against the market baseline the graph arm is -2.815 pts and the raw control -1.340 pts. Conservative reference: within-week permutation null (200 permutations) centres at -1.474 pts with SD 1.226, so the observed delta sits at the 51.0th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.\n[2026-09-01T19:31:41.183902+00:00] reliability set: None -> 0.9825 95% [0.9754, 0.9881]. Method: team-season odd/even-week split-half of the underlying continuous trait, Spearman-Brown corrected, block bootstrap over team-seasons (nfl_ats.cfb_qb_dependence.split_half_reliability, seed 20260901, 4000 draws). Measured from: artifacts/reliability_sweep/graph_team_stat/20260901T193017Z/results.json. Reason: Split-half reliability of the team-week column 'def_rush_epa_per_play' (home/away pair home_def_rush_epa_per_play/away_def_rush_epa_per_play), measured on this cell's own seasons [2011, 2013]; scripts/graph_team_stat_screen.py:123-176 builds this cell's graph-rating arm from exactly that pair, so the column IS the cell's underlying construct. Measurement only: no classification, closing_ground or effect changed.. Reliability fields only; effect/interval/classification/closing_ground untouched, and this measurement does not by itself reclassify the entry.",
+      "plain_summary": "Tests whether schedule-adjusting def_rush_epa_per_play beats using it raw.",
+      "probability_positive": 0.139,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.982485,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_def_sack_rate": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted def_sack_rate (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away def_sack_rate differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": -1.742627345844504,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -3.7737122195910673,
+        0.13228830708910388
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 45.58% vs raw-differential control 47.32%. Season-blocked P+ 0.000. Against the market baseline the graph arm is -3.887 pts and the raw control -2.145 pts. Conservative reference: within-week permutation null (200 permutations) centres at -0.199 pts with SD 0.769, so the observed delta sits at the 2.5th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.\n[2026-09-01T19:31:44.110619+00:00] reliability set: None -> 0.9776 95% [0.9649, 0.9860]. Method: team-season odd/even-week split-half of the underlying continuous trait, Spearman-Brown corrected, block bootstrap over team-seasons (nfl_ats.cfb_qb_dependence.split_half_reliability, seed 20260901, 4000 draws). Measured from: artifacts/reliability_sweep/graph_team_stat/20260901T193017Z/results.json. Reason: Split-half reliability of the team-week column 'def_sack_rate' (home/away pair home_def_sack_rate/away_def_sack_rate), measured on this cell's own seasons [2011, 2013]; scripts/graph_team_stat_screen.py:123-176 builds this cell's graph-rating arm from exactly that pair, so the column IS the cell's underlying construct. Measurement only: no classification, closing_ground or effect changed.. Reliability fields only; effect/interval/classification/closing_ground untouched, and this measurement does not by itself reclassify the entry.",
+      "plain_summary": "Tests whether schedule-adjusting def_sack_rate beats using it raw.",
+      "probability_positive": 0.028,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.977648,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_def_takeaway_rate": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted def_takeaway_rate (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away def_takeaway_rate differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": -1.3404825737265416,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -4.973285611948074,
+        2.396884154460719
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.86% vs raw-differential control 49.20%. Season-blocked P+ 0.139. Against the market baseline the graph arm is -1.609 pts and the raw control -0.268 pts. Conservative reference: within-week permutation null (200 permutations) centres at -0.896 pts with SD 1.388, so the observed delta sits at the 36.0th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.\n[2026-09-01T19:31:46.858295+00:00] reliability set: None -> 0.9787 95% [0.9700, 0.9852]. Method: team-season odd/even-week split-half of the underlying continuous trait, Spearman-Brown corrected, block bootstrap over team-seasons (nfl_ats.cfb_qb_dependence.split_half_reliability, seed 20260901, 4000 draws). Measured from: artifacts/reliability_sweep/graph_team_stat/20260901T193017Z/results.json. Reason: Split-half reliability of the team-week column 'def_takeaway_rate' (home/away pair home_def_takeaway_rate/away_def_takeaway_rate), measured on this cell's own seasons [2011, 2013]; scripts/graph_team_stat_screen.py:123-176 builds this cell's graph-rating arm from exactly that pair, so the column IS the cell's underlying construct. Measurement only: no classification, closing_ground or effect changed.. Reliability fields only; effect/interval/classification/closing_ground untouched, and this measurement does not by itself reclassify the entry.",
+      "plain_summary": "Tests whether schedule-adjusting def_takeaway_rate beats using it raw.",
+      "probability_positive": 0.252,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.978682,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_def_yards_per_play": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted def_yards_per_play (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away def_yards_per_play differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": 2.1447721179624666,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -0.13388230340717708,
+        4.588549075391181
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 48.53% vs raw-differential control 46.38%. Season-blocked P+ 0.861. Against the market baseline the graph arm is -0.938 pts and the raw control -3.083 pts. Conservative reference: within-week permutation null (200 permutations) centres at +0.279 pts with SD 1.040, so the observed delta sits at the 95.5th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.\n[2026-09-01T19:31:49.684496+00:00] reliability set: None -> 0.9869 95% [0.9806, 0.9911]. Method: team-season odd/even-week split-half of the underlying continuous trait, Spearman-Brown corrected, block bootstrap over team-seasons (nfl_ats.cfb_qb_dependence.split_half_reliability, seed 20260901, 4000 draws). Measured from: artifacts/reliability_sweep/graph_team_stat/20260901T193017Z/results.json. Reason: Split-half reliability of the team-week column 'def_yards_per_play' (home/away pair home_def_yards_per_play/away_def_yards_per_play), measured on this cell's own seasons [2011, 2013]; scripts/graph_team_stat_screen.py:123-176 builds this cell's graph-rating arm from exactly that pair, so the column IS the cell's underlying construct. Measurement only: no classification, closing_ground or effect changed.. Reliability fields only; effect/interval/classification/closing_ground untouched, and this measurement does not by itself reclassify the entry.",
+      "plain_summary": "Tests whether schedule-adjusting def_yards_per_play beats using it raw.",
+      "probability_positive": 0.965,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.986876,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_drive_seconds_per_drive_allowed": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted drive_seconds_per_drive_allowed (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away drive_seconds_per_drive_allowed differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": -0.40214477211796246,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -3.7045690550363433,
+        3.0033047149945835
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.05% vs raw-differential control 47.45%. Season-blocked P+ 0.405. Against the market baseline the graph arm is -2.413 pts and the raw control -2.011 pts. Conservative reference: within-week permutation null (200 permutations) centres at -1.167 pts with SD 1.392, so the observed delta sits at the 67.0th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.\n[2026-09-01T19:31:52.762738+00:00] reliability set: None -> 0.9761 95% [0.9659, 0.9842]. Method: team-season odd/even-week split-half of the underlying continuous trait, Spearman-Brown corrected, block bootstrap over team-seasons (nfl_ats.cfb_qb_dependence.split_half_reliability, seed 20260901, 4000 draws). Measured from: artifacts/reliability_sweep/graph_team_stat/20260901T193017Z/results.json. Reason: Split-half reliability of the team-week column 'drive_seconds_per_drive_allowed' (home/away pair home_drive_seconds_per_drive_allowed/away_drive_seconds_per_drive_allowed), measured on this cell's own seasons [2011, 2013]; scripts/graph_team_stat_screen.py:123-176 builds this cell's graph-rating arm from exactly that pair, so the column IS the cell's underlying construct. Measurement only: no classification, closing_ground or effect changed.. Reliability fields only; effect/interval/classification/closing_ground untouched, and this measurement does not by itself reclassify the entry.",
+      "plain_summary": "Tests whether schedule-adjusting drive_seconds_per_drive_allowed beats using it raw.",
+      "probability_positive": 0.42,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.976135,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_drive_turnover_rate": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted drive_turnover_rate (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away drive_turnover_rate differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": -2.1447721179624666,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -4.227988408553137,
+        0.003306878306875299
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.32% vs raw-differential control 49.46%. Season-blocked P+ 0.043. Against the market baseline the graph arm is -2.145 pts and the raw control +0.000 pts. Conservative reference: within-week permutation null (200 permutations) centres at -0.050 pts with SD 1.093, so the observed delta sits at the 0.5th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.\n[2026-09-01T19:31:55.618862+00:00] reliability set: None -> 0.9805 95% [0.9729, 0.9861]. Method: team-season odd/even-week split-half of the underlying continuous trait, Spearman-Brown corrected, block bootstrap over team-seasons (nfl_ats.cfb_qb_dependence.split_half_reliability, seed 20260901, 4000 draws). Measured from: artifacts/reliability_sweep/graph_team_stat/20260901T193017Z/results.json. Reason: Split-half reliability of the team-week column 'drive_turnover_rate' (home/away pair home_drive_turnover_rate/away_drive_turnover_rate), measured on this cell's own seasons [2011, 2013]; scripts/graph_team_stat_screen.py:123-176 builds this cell's graph-rating arm from exactly that pair, so the column IS the cell's underlying construct. Measurement only: no classification, closing_ground or effect changed.. Reliability fields only; effect/interval/classification/closing_ground untouched, and this measurement does not by itself reclassify the entry.",
+      "plain_summary": "Tests whether schedule-adjusting drive_turnover_rate beats using it raw.",
+      "probability_positive": 0.025,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.980489,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_front_lineup_continuity": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted front_lineup_continuity (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away front_lineup_continuity differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -0.9421900854216502,
+        1.0513523727632368
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.99% vs raw-differential control 47.99%. Season-blocked P+ 0.000. Against the market baseline the graph arm is -1.475 pts and the raw control -1.475 pts. Conservative reference: within-week permutation null (200 permutations) centres at -0.056 pts with SD 0.778, so the observed delta sits at the 51.5th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.\n[2026-09-01T19:31:58.812445+00:00] reliability set: None -> 0.6851 95% [0.3628, 0.8450]. Method: team-season odd/even-week split-half of the underlying continuous trait, Spearman-Brown corrected, block bootstrap over team-seasons (nfl_ats.cfb_qb_dependence.split_half_reliability, seed 20260901, 4000 draws). Measured from: artifacts/reliability_sweep/graph_team_stat/20260901T193017Z/results.json. Reason: Split-half reliability of the team-week column 'front_lineup_continuity' (home/away pair home_front_lineup_continuity/away_front_lineup_continuity), measured on this cell's own seasons [2011, 2013]; scripts/graph_team_stat_screen.py:123-176 builds this cell's graph-rating arm from exactly that pair, so the column IS the cell's underlying construct. Measurement only: no classification, closing_ground or effect changed.. Reliability fields only; effect/interval/classification/closing_ground untouched, and this measurement does not by itself reclassify the entry.",
+      "plain_summary": "Tests whether schedule-adjusting front_lineup_continuity beats using it raw.",
+      "probability_positive": 0.442,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.685119,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_gap_division_revenge": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted gap_division_revenge (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away gap_division_revenge differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": -0.5361930294906166,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -2.310257221560452,
+        1.319480214585808
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.18% vs raw-differential control 47.72%. Season-blocked P+ 0.280. Against the market baseline the graph arm is -2.279 pts and the raw control -1.743 pts. Conservative reference: within-week permutation null (200 permutations) centres at -1.233 pts with SD 0.703, so the observed delta sits at the 83.0th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.\n[2026-09-01T19:32:02.070117+00:00] reliability set: None -> -0.1766 95% [-0.6765, 0.1856]. Method: team-season odd/even-week split-half of the underlying continuous trait, Spearman-Brown corrected, block bootstrap over team-seasons (nfl_ats.cfb_qb_dependence.split_half_reliability, seed 20260901, 4000 draws). Measured from: artifacts/reliability_sweep/graph_team_stat/20260901T193017Z/results.json. Reason: Split-half reliability of the team-week column 'gap_division_revenge' (home/away pair gap_division_revenge_home/gap_division_revenge_away), measured on this cell's own seasons [2011, 2013]; scripts/graph_team_stat_screen.py:123-176 builds this cell's graph-rating arm from exactly that pair, so the column IS the cell's underlying construct. Measurement only: no classification, closing_ground or effect changed.. Reliability fields only; effect/interval/classification/closing_ground untouched, and this measurement does not by itself reclassify the entry.",
+      "plain_summary": "Tests whether schedule-adjusting gap_division_revenge beats using it raw.",
+      "probability_positive": 0.257,
+      "recorded_at": "2026-08-26",
+      "reliability": -0.176622,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_gap_post_blowout_loss_bounce": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted gap_post_blowout_loss_bounce (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away gap_post_blowout_loss_bounce differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": -0.6702412868632708,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -2.677376171352075,
+        1.216506581615722
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 46.92% vs raw-differential control 47.59%. Season-blocked P+ 0.290. Against the market baseline the graph arm is -2.547 pts and the raw control -1.877 pts. Conservative reference: within-week permutation null (200 permutations) centres at -0.675 pts with SD 1.051, so the observed delta sits at the 49.5th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.\n[2026-09-01T19:32:05.297787+00:00] reliability set: None -> 0.3726 95% [0.0210, 0.5897]. Method: team-season odd/even-week split-half of the underlying continuous trait, Spearman-Brown corrected, block bootstrap over team-seasons (nfl_ats.cfb_qb_dependence.split_half_reliability, seed 20260901, 4000 draws). Measured from: artifacts/reliability_sweep/graph_team_stat/20260901T193017Z/results.json. Reason: Split-half reliability of the team-week column 'gap_post_blowout_loss_bounce' (home/away pair gap_post_blowout_loss_bounce_home/gap_post_blowout_loss_bounce_away), measured on this cell's own seasons [2011, 2013]; scripts/graph_team_stat_screen.py:123-176 builds this cell's graph-rating arm from exactly that pair, so the column IS the cell's underlying construct. Measurement only: no classification, closing_ground or effect changed.. Reliability fields only; effect/interval/classification/closing_ground untouched, and this measurement does not by itself reclassify the entry.",
+      "plain_summary": "Tests whether schedule-adjusting gap_post_blowout_loss_bounce beats using it raw.",
+      "probability_positive": 0.233,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.372593,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_gap_post_blowout_win_letdown": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted gap_post_blowout_win_letdown (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away gap_post_blowout_win_letdown differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": -0.40214477211796246,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -3.1055168914020577,
+        2.8542026723990164
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.72% vs raw-differential control 48.12%. Season-blocked P+ 0.248. Against the market baseline the graph arm is -1.743 pts and the raw control -1.340 pts. Conservative reference: within-week permutation null (200 permutations) centres at +0.009 pts with SD 1.017, so the observed delta sits at the 32.5th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.\n[2026-09-01T19:32:08.764468+00:00] reliability set: None -> 0.3333 95% [0.0204, 0.5678]. Method: team-season odd/even-week split-half of the underlying continuous trait, Spearman-Brown corrected, block bootstrap over team-seasons (nfl_ats.cfb_qb_dependence.split_half_reliability, seed 20260901, 4000 draws). Measured from: artifacts/reliability_sweep/graph_team_stat/20260901T193017Z/results.json. Reason: Split-half reliability of the team-week column 'gap_post_blowout_win_letdown' (home/away pair gap_post_blowout_win_letdown_home/gap_post_blowout_win_letdown_away), measured on this cell's own seasons [2011, 2013]; scripts/graph_team_stat_screen.py:123-176 builds this cell's graph-rating arm from exactly that pair, so the column IS the cell's underlying construct. Measurement only: no classification, closing_ground or effect changed.. Reliability fields only; effect/interval/classification/closing_ground untouched, and this measurement does not by itself reclassify the entry.",
+      "plain_summary": "Tests whether schedule-adjusting gap_post_blowout_win_letdown beats using it raw.",
+      "probability_positive": 0.359,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.333331,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_injury_defense_disruption_value_lost": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted injury_defense_disruption_value_lost (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away injury_defense_disruption_value_lost differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": -1.0723860589812333,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -2.234123792121878,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.05% vs raw-differential control 48.12%. Season-blocked P+ 0.000. Against the market baseline the graph arm is -2.413 pts and the raw control -1.340 pts. Conservative reference: within-week permutation null (200 permutations) centres at +0.326 pts with SD 0.715, so the observed delta sits at the 1.0th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.\n[2026-09-01T19:32:12.016515+00:00] reliability set: None -> 0.8953 95% [0.8352, 0.9383]. Method: team-season odd/even-week split-half of the underlying continuous trait, Spearman-Brown corrected, block bootstrap over team-seasons (nfl_ats.cfb_qb_dependence.split_half_reliability, seed 20260901, 4000 draws). Measured from: artifacts/reliability_sweep/graph_team_stat/20260901T193017Z/results.json. Reason: Split-half reliability of the team-week column 'injury_defense_disruption_value_lost' (home/away pair home_injury_defense_disruption_value_lost/away_injury_defense_disruption_value_lost), measured on this cell's own seasons [2011, 2013]; scripts/graph_team_stat_screen.py:123-176 builds this cell's graph-rating arm from exactly that pair, so the column IS the cell's underlying construct. Measurement only: no classification, closing_ground or effect changed.. Reliability fields only; effect/interval/classification/closing_ground untouched, and this measurement does not by itself reclassify the entry.",
+      "plain_summary": "Tests whether schedule-adjusting injury_defense_disruption_value_lost beats using it raw.",
+      "probability_positive": 0.013,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.895274,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_injury_offensive_line_unavailability": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted injury_offensive_line_unavailability (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away injury_offensive_line_unavailability differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": -0.2680965147453083,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -2.673886275941556,
+        1.992098096973807
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.45% vs raw-differential control 47.72%. Season-blocked P+ 0.395. Against the market baseline the graph arm is -2.011 pts and the raw control -1.743 pts. Conservative reference: within-week permutation null (200 permutations) centres at +0.394 pts with SD 0.917, so the observed delta sits at the 21.5th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.\n[2026-09-01T19:32:15.316050+00:00] reliability set: None -> 0.9556 95% [0.9332, 0.9768]. Method: team-season odd/even-week split-half of the underlying continuous trait, Spearman-Brown corrected, block bootstrap over team-seasons (nfl_ats.cfb_qb_dependence.split_half_reliability, seed 20260901, 4000 draws). Measured from: artifacts/reliability_sweep/graph_team_stat/20260901T193017Z/results.json. Reason: Split-half reliability of the team-week column 'injury_offensive_line_unavailability' (home/away pair home_injury_offensive_line_unavailability/away_injury_offensive_line_unavailability), measured on this cell's own seasons [2011, 2013]; scripts/graph_team_stat_screen.py:123-176 builds this cell's graph-rating arm from exactly that pair, so the column IS the cell's underlying construct. Measurement only: no classification, closing_ground or effect changed.. Reliability fields only; effect/interval/classification/closing_ground untouched, and this measurement does not by itself reclassify the entry.",
+      "plain_summary": "Tests whether schedule-adjusting injury_offensive_line_unavailability beats using it raw.",
+      "probability_positive": 0.355,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.955587,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_injury_secondary_unavailability": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted injury_secondary_unavailability (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away injury_secondary_unavailability differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -1.995014633000085,
+        2.086808357994798
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.32% vs raw-differential control 47.32%. Season-blocked P+ 0.395. Against the market baseline the graph arm is -2.145 pts and the raw control -2.145 pts. Conservative reference: within-week permutation null (200 permutations) centres at +0.421 pts with SD 0.875, so the observed delta sits at the 27.5th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.\n[2026-09-01T19:32:18.489513+00:00] reliability set: None -> 0.9701 95% [0.9531, 0.9862]. Method: team-season odd/even-week split-half of the underlying continuous trait, Spearman-Brown corrected, block bootstrap over team-seasons (nfl_ats.cfb_qb_dependence.split_half_reliability, seed 20260901, 4000 draws). Measured from: artifacts/reliability_sweep/graph_team_stat/20260901T193017Z/results.json. Reason: Split-half reliability of the team-week column 'injury_secondary_unavailability' (home/away pair home_injury_secondary_unavailability/away_injury_secondary_unavailability), measured on this cell's own seasons [2011, 2013]; scripts/graph_team_stat_screen.py:123-176 builds this cell's graph-rating arm from exactly that pair, so the column IS the cell's underlying construct. Measurement only: no classification, closing_ground or effect changed.. Reliability fields only; effect/interval/classification/closing_ground untouched, and this measurement does not by itself reclassify the entry.",
+      "plain_summary": "Tests whether schedule-adjusting injury_secondary_unavailability beats using it raw.",
+      "probability_positive": 0.474,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.97008,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_injury_skill_epa_value_lost": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted injury_skill_epa_value_lost (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away injury_skill_epa_value_lost differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": -0.6702412868632708,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -1.462863475177305,
+        0.1326259946949602
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.72% vs raw-differential control 48.39%. Season-blocked P+ 0.000. Against the market baseline the graph arm is -1.743 pts and the raw control -1.072 pts. Conservative reference: within-week permutation null (200 permutations) centres at +0.174 pts with SD 0.494, so the observed delta sits at the 4.5th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.\n[2026-09-01T19:32:21.669481+00:00] reliability set: None -> 0.8955 95% [0.8334, 0.9526]. Method: team-season odd/even-week split-half of the underlying continuous trait, Spearman-Brown corrected, block bootstrap over team-seasons (nfl_ats.cfb_qb_dependence.split_half_reliability, seed 20260901, 4000 draws). Measured from: artifacts/reliability_sweep/graph_team_stat/20260901T193017Z/results.json. Reason: Split-half reliability of the team-week column 'injury_skill_epa_value_lost' (home/away pair home_injury_skill_epa_value_lost/away_injury_skill_epa_value_lost), measured on this cell's own seasons [2011, 2013]; scripts/graph_team_stat_screen.py:123-176 builds this cell's graph-rating arm from exactly that pair, so the column IS the cell's underlying construct. Measurement only: no classification, closing_ground or effect changed.. Reliability fields only; effect/interval/classification/closing_ground untouched, and this measurement does not by itself reclassify the entry.",
+      "plain_summary": "Tests whether schedule-adjusting injury_skill_epa_value_lost beats using it raw.",
+      "probability_positive": 0.031,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.895489,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_injury_skill_unavailability": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted injury_skill_unavailability (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away injury_skill_unavailability differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": 1.3404825737265416,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -0.13387329478773,
+        3.1459970882884867
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 49.06% vs raw-differential control 47.72%. Season-blocked P+ 0.957. Against the market baseline the graph arm is -0.402 pts and the raw control -1.743 pts. Conservative reference: within-week permutation null (200 permutations) centres at +0.200 pts with SD 0.710, so the observed delta sits at the 93.5th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.\n[2026-09-01T19:32:24.411579+00:00] reliability set: None -> 0.9703 95% [0.9558, 0.9848]. Method: team-season odd/even-week split-half of the underlying continuous trait, Spearman-Brown corrected, block bootstrap over team-seasons (nfl_ats.cfb_qb_dependence.split_half_reliability, seed 20260901, 4000 draws). Measured from: artifacts/reliability_sweep/graph_team_stat/20260901T193017Z/results.json. Reason: Split-half reliability of the team-week column 'injury_skill_unavailability' (home/away pair home_injury_skill_unavailability/away_injury_skill_unavailability), measured on this cell's own seasons [2011, 2013]; scripts/graph_team_stat_screen.py:123-176 builds this cell's graph-rating arm from exactly that pair, so the column IS the cell's underlying construct. Measurement only: no classification, closing_ground or effect changed.. Reliability fields only; effect/interval/classification/closing_ground untouched, and this measurement does not by itself reclassify the entry.",
+      "plain_summary": "Tests whether schedule-adjusting injury_skill_unavailability beats using it raw.",
+      "probability_positive": 0.949,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.970255,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_injury_special_teams_unavailability": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted injury_special_teams_unavailability (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away injury_special_teams_unavailability differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": -1.742627345844504,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -4.32082043343653,
+        0.9224807627617524
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.32% vs raw-differential control 49.06%. Season-blocked P+ 0.285. Against the market baseline the graph arm is -2.145 pts and the raw control -0.402 pts. Conservative reference: within-week permutation null (200 permutations) centres at +0.006 pts with SD 0.819, so the observed delta sits at the 1.0th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.\n[2026-09-01T19:32:27.390103+00:00] reliability set: None -> 0.9812 95% [0.9700, 0.9916]. Method: team-season odd/even-week split-half of the underlying continuous trait, Spearman-Brown corrected, block bootstrap over team-seasons (nfl_ats.cfb_qb_dependence.split_half_reliability, seed 20260901, 4000 draws). Measured from: artifacts/reliability_sweep/graph_team_stat/20260901T193017Z/results.json. Reason: Split-half reliability of the team-week column 'injury_special_teams_unavailability' (home/away pair home_injury_special_teams_unavailability/away_injury_special_teams_unavailability), measured on this cell's own seasons [2011, 2013]; scripts/graph_team_stat_screen.py:123-176 builds this cell's graph-rating arm from exactly that pair, so the column IS the cell's underlying construct. Measurement only: no classification, closing_ground or effect changed.. Reliability fields only; effect/interval/classification/closing_ground untouched, and this measurement does not by itself reclassify the entry.",
+      "plain_summary": "Tests whether schedule-adjusting injury_special_teams_unavailability beats using it raw.",
+      "probability_positive": 0.089,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.981225,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_off_cpoe": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted off_cpoe (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away off_cpoe differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -2.3778071334214,
+        2.7745694440540762
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.45% vs raw-differential control 47.45%. Season-blocked P+ 0.358. Against the market baseline the graph arm is -2.011 pts and the raw control -2.011 pts. Conservative reference: within-week permutation null (200 permutations) centres at -0.296 pts with SD 1.112, so the observed delta sits at the 60.0th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.\n[2026-09-01T19:32:30.169965+00:00] reliability set: None -> 0.9922 95% [0.9886, 0.9948]. Method: team-season odd/even-week split-half of the underlying continuous trait, Spearman-Brown corrected, block bootstrap over team-seasons (nfl_ats.cfb_qb_dependence.split_half_reliability, seed 20260901, 4000 draws). Measured from: artifacts/reliability_sweep/graph_team_stat/20260901T193017Z/results.json. Reason: Split-half reliability of the team-week column 'off_cpoe' (home/away pair home_off_cpoe/away_off_cpoe), measured on this cell's own seasons [2011, 2013]; scripts/graph_team_stat_screen.py:123-176 builds this cell's graph-rating arm from exactly that pair, so the column IS the cell's underlying construct. Measurement only: no classification, closing_ground or effect changed.. Reliability fields only; effect/interval/classification/closing_ground untouched, and this measurement does not by itself reclassify the entry.",
+      "plain_summary": "Tests whether schedule-adjusting off_cpoe beats using it raw.",
+      "probability_positive": 0.477,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.99221,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_off_rush_epa_per_play": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted off_rush_epa_per_play (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away off_rush_epa_per_play differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": 1.6085790884718498,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -0.6693889652570011,
+        3.9631157983761227
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 48.79% vs raw-differential control 47.18%. Season-blocked P+ 1.000. Against the market baseline the graph arm is -0.670 pts and the raw control -2.279 pts. Conservative reference: within-week permutation null (200 permutations) centres at +1.450 pts with SD 1.100, so the observed delta sits at the 53.5th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.\n[2026-09-01T19:32:33.003545+00:00] reliability set: None -> 0.9832 95% [0.9760, 0.9883]. Method: team-season odd/even-week split-half of the underlying continuous trait, Spearman-Brown corrected, block bootstrap over team-seasons (nfl_ats.cfb_qb_dependence.split_half_reliability, seed 20260901, 4000 draws). Measured from: artifacts/reliability_sweep/graph_team_stat/20260901T193017Z/results.json. Reason: Split-half reliability of the team-week column 'off_rush_epa_per_play' (home/away pair home_off_rush_epa_per_play/away_off_rush_epa_per_play), measured on this cell's own seasons [2011, 2013]; scripts/graph_team_stat_screen.py:123-176 builds this cell's graph-rating arm from exactly that pair, so the column IS the cell's underlying construct. Measurement only: no classification, closing_ground or effect changed.. Reliability fields only; effect/interval/classification/closing_ground untouched, and this measurement does not by itself reclassify the entry.",
+      "plain_summary": "Tests whether schedule-adjusting off_rush_epa_per_play beats using it raw.",
+      "probability_positive": 0.911,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.983206,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_off_sack_rate": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted off_sack_rate (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away off_sack_rate differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": 2.949061662198391,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        0.40050737867978436,
+        5.706810823311748
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 50.40% vs raw-differential control 47.45%. Season-blocked P+ 1.000. Against the market baseline the graph arm is +0.938 pts and the raw control -2.011 pts. Conservative reference: within-week permutation null (200 permutations) centres at +1.227 pts with SD 1.115, so the observed delta sits at the 92.5th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.\n[2026-09-01T19:32:35.736589+00:00] reliability set: None -> 0.9887 95% [0.9841, 0.9923]. Method: team-season odd/even-week split-half of the underlying continuous trait, Spearman-Brown corrected, block bootstrap over team-seasons (nfl_ats.cfb_qb_dependence.split_half_reliability, seed 20260901, 4000 draws). Measured from: artifacts/reliability_sweep/graph_team_stat/20260901T193017Z/results.json. Reason: Split-half reliability of the team-week column 'off_sack_rate' (home/away pair home_off_sack_rate/away_off_sack_rate), measured on this cell's own seasons [2011, 2013]; scripts/graph_team_stat_screen.py:123-176 builds this cell's graph-rating arm from exactly that pair, so the column IS the cell's underlying construct. Measurement only: no classification, closing_ground or effect changed.. Reliability fields only; effect/interval/classification/closing_ground untouched, and this measurement does not by itself reclassify the entry.",
+      "plain_summary": "Tests whether schedule-adjusting off_sack_rate beats using it raw.",
+      "probability_positive": 0.987,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.988734,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_offense_lineup_continuity": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted offense_lineup_continuity (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away offense_lineup_continuity differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": -0.13404825737265416,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -1.2212499653864257,
+        1.06951871657754
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.72% vs raw-differential control 47.86%. Season-blocked P+ 0.000. Against the market baseline the graph arm is -1.743 pts and the raw control -1.609 pts. Conservative reference: within-week permutation null (200 permutations) centres at +0.241 pts with SD 0.611, so the observed delta sits at the 20.0th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.\n[2026-09-01T19:32:43.985316+00:00] reliability set: None -> 0.8111 95% [0.6952, 0.8902]. Method: team-season odd/even-week split-half of the underlying continuous trait, Spearman-Brown corrected, block bootstrap over team-seasons (nfl_ats.cfb_qb_dependence.split_half_reliability, seed 20260901, 4000 draws). Measured from: artifacts/reliability_sweep/graph_team_stat/20260901T193017Z/results.json. Reason: Split-half reliability of the team-week column 'offense_lineup_continuity' (home/away pair home_offense_lineup_continuity/away_offense_lineup_continuity), measured on this cell's own seasons [2011, 2013]; scripts/graph_team_stat_screen.py:123-176 builds this cell's graph-rating arm from exactly that pair, so the column IS the cell's underlying construct. Measurement only: no classification, closing_ground or effect changed.. Reliability fields only; effect/interval/classification/closing_ground untouched, and this measurement does not by itself reclassify the entry.",
+      "plain_summary": "Tests whether schedule-adjusting offense_lineup_continuity beats using it raw.",
+      "probability_positive": 0.39,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.811054,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_pbp_def_explosive_rate_allowed": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted pbp_def_explosive_rate_allowed (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away pbp_def_explosive_rate_allowed differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": 1.3404825737265416,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -0.79917701824342,
+        3.4947412408283767
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 48.66% vs raw-differential control 47.32%. Season-blocked P+ 0.966. Against the market baseline the graph arm is -0.804 pts and the raw control -2.145 pts. Conservative reference: within-week permutation null (200 permutations) centres at -0.113 pts with SD 1.021, so the observed delta sits at the 92.0th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.\n[2026-09-01T19:32:46.869133+00:00] reliability set: None -> 0.9799 95% [0.9696, 0.9872]. Method: team-season odd/even-week split-half of the underlying continuous trait, Spearman-Brown corrected, block bootstrap over team-seasons (nfl_ats.cfb_qb_dependence.split_half_reliability, seed 20260901, 4000 draws). Measured from: artifacts/reliability_sweep/graph_team_stat/20260901T193017Z/results.json. Reason: Split-half reliability of the team-week column 'pbp_def_explosive_rate_allowed' (home/away pair home_pbp_def_explosive_rate_allowed/away_pbp_def_explosive_rate_allowed), measured on this cell's own seasons [2011, 2013]; scripts/graph_team_stat_screen.py:123-176 builds this cell's graph-rating arm from exactly that pair, so the column IS the cell's underlying construct. Measurement only: no classification, closing_ground or effect changed.. Reliability fields only; effect/interval/classification/closing_ground untouched, and this measurement does not by itself reclassify the entry.",
+      "plain_summary": "Tests whether schedule-adjusting pbp_def_explosive_rate_allowed beats using it raw.",
+      "probability_positive": 0.884,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.979947,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_pbp_drives": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted pbp_drives (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away pbp_drives differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": -1.3404825737265416,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -5.265807135287882,
+        2.3749060790857777
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.45% vs raw-differential control 48.79%. Season-blocked P+ 0.148. Against the market baseline the graph arm is -2.011 pts and the raw control -0.670 pts. Conservative reference: within-week permutation null (200 permutations) centres at -1.162 pts with SD 1.476, so the observed delta sits at the 43.0th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.\n[2026-09-01T19:32:49.705052+00:00] reliability set: None -> 0.9824 95% [0.9739, 0.9881]. Method: team-season odd/even-week split-half of the underlying continuous trait, Spearman-Brown corrected, block bootstrap over team-seasons (nfl_ats.cfb_qb_dependence.split_half_reliability, seed 20260901, 4000 draws). Measured from: artifacts/reliability_sweep/graph_team_stat/20260901T193017Z/results.json. Reason: Split-half reliability of the team-week column 'pbp_drives' (home/away pair home_pbp_drives/away_pbp_drives), measured on this cell's own seasons [2011, 2013]; scripts/graph_team_stat_screen.py:123-176 builds this cell's graph-rating arm from exactly that pair, so the column IS the cell's underlying construct. Measurement only: no classification, closing_ground or effect changed.. Reliability fields only; effect/interval/classification/closing_ground untouched, and this measurement does not by itself reclassify the entry.",
+      "plain_summary": "Tests whether schedule-adjusting pbp_drives beats using it raw.",
+      "probability_positive": 0.229,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.982435,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_pbp_matchup_explosive_rate": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted pbp_matchup_explosive_rate (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away pbp_matchup_explosive_rate differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": 1.6085790884718498,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -0.9409554438204691,
+        4.319653299916457
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 48.39% vs raw-differential control 46.78%. Season-blocked P+ 0.857. Against the market baseline the graph arm is -1.072 pts and the raw control -2.681 pts. Conservative reference: within-week permutation null (200 permutations) centres at -0.105 pts with SD 1.118, so the observed delta sits at the 92.5th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.\n[2026-09-01T19:32:52.587043+00:00] reliability set: None -> 0.9586 95% [0.9368, 0.9730]. Method: team-season odd/even-week split-half of the underlying continuous trait, Spearman-Brown corrected, block bootstrap over team-seasons (nfl_ats.cfb_qb_dependence.split_half_reliability, seed 20260901, 4000 draws). Measured from: artifacts/reliability_sweep/graph_team_stat/20260901T193017Z/results.json. Reason: Split-half reliability of the team-week column 'pbp_matchup_explosive_rate' (home/away pair home_pbp_matchup_explosive_rate/away_pbp_matchup_explosive_rate), measured on this cell's own seasons [2011, 2013]; scripts/graph_team_stat_screen.py:123-176 builds this cell's graph-rating arm from exactly that pair, so the column IS the cell's underlying construct. Measurement only: no classification, closing_ground or effect changed.. Reliability fields only; effect/interval/classification/closing_ground untouched, and this measurement does not by itself reclassify the entry.",
+      "plain_summary": "Tests whether schedule-adjusting pbp_matchup_explosive_rate beats using it raw.",
+      "probability_positive": 0.879,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.958613,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_pbp_off_pass_rate": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted pbp_off_pass_rate (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away pbp_off_pass_rate differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": 0.2680965147453083,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -1.8518518518518516,
+        2.3938567025537596
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.99% vs raw-differential control 47.72%. Season-blocked P+ 0.734. Against the market baseline the graph arm is -1.475 pts and the raw control -1.743 pts. Conservative reference: within-week permutation null (200 permutations) centres at +0.115 pts with SD 1.072, so the observed delta sits at the 52.0th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.\n[2026-09-01T19:32:55.515016+00:00] reliability set: None -> 0.9946 95% [0.9922, 0.9963]. Method: team-season odd/even-week split-half of the underlying continuous trait, Spearman-Brown corrected, block bootstrap over team-seasons (nfl_ats.cfb_qb_dependence.split_half_reliability, seed 20260901, 4000 draws). Measured from: artifacts/reliability_sweep/graph_team_stat/20260901T193017Z/results.json. Reason: Split-half reliability of the team-week column 'pbp_off_pass_rate' (home/away pair home_pbp_off_pass_rate/away_pbp_off_pass_rate), measured on this cell's own seasons [2011, 2013]; scripts/graph_team_stat_screen.py:123-176 builds this cell's graph-rating arm from exactly that pair, so the column IS the cell's underlying construct. Measurement only: no classification, closing_ground or effect changed.. Reliability fields only; effect/interval/classification/closing_ground untouched, and this measurement does not by itself reclassify the entry.",
+      "plain_summary": "Tests whether schedule-adjusting pbp_off_pass_rate beats using it raw.",
+      "probability_positive": 0.595,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.99461,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_pbp_off_success_rate": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted pbp_off_success_rate (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away pbp_off_success_rate differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": 0.6702412868632708,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -1.7567004582696826,
+        3.1962744937045504
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 48.26% vs raw-differential control 47.59%. Season-blocked P+ 1.000. Against the market baseline the graph arm is -1.206 pts and the raw control -1.877 pts. Conservative reference: within-week permutation null (200 permutations) centres at +0.078 pts with SD 1.433, so the observed delta sits at the 68.5th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.\n[2026-09-01T19:32:58.578876+00:00] reliability set: None -> 0.9940 95% [0.9910, 0.9960]. Method: team-season odd/even-week split-half of the underlying continuous trait, Spearman-Brown corrected, block bootstrap over team-seasons (nfl_ats.cfb_qb_dependence.split_half_reliability, seed 20260901, 4000 draws). Measured from: artifacts/reliability_sweep/graph_team_stat/20260901T193017Z/results.json. Reason: Split-half reliability of the team-week column 'pbp_off_success_rate' (home/away pair home_pbp_off_success_rate/away_pbp_off_success_rate), measured on this cell's own seasons [2011, 2013]; scripts/graph_team_stat_screen.py:123-176 builds this cell's graph-rating arm from exactly that pair, so the column IS the cell's underlying construct. Measurement only: no classification, closing_ground or effect changed.. Reliability fields only; effect/interval/classification/closing_ground untouched, and this measurement does not by itself reclassify the entry.",
+      "plain_summary": "Tests whether schedule-adjusting pbp_off_success_rate beats using it raw.",
+      "probability_positive": 0.698,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.993976,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_pbp_pressure_allowed_rate": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted pbp_pressure_allowed_rate (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away pbp_pressure_allowed_rate differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": 0.6702412868632708,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -1.1986029351392065,
+        2.593598126951844
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 46.78% vs raw-differential control 46.11%. Season-blocked P+ 0.844. Against the market baseline the graph arm is -2.681 pts and the raw control -3.351 pts. Conservative reference: within-week permutation null (200 permutations) centres at +0.185 pts with SD 0.938, so the observed delta sits at the 67.0th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.\n[2026-09-01T19:33:01.704131+00:00] reliability set: None -> 0.9876 95% [0.9826, 0.9915]. Method: team-season odd/even-week split-half of the underlying continuous trait, Spearman-Brown corrected, block bootstrap over team-seasons (nfl_ats.cfb_qb_dependence.split_half_reliability, seed 20260901, 4000 draws). Measured from: artifacts/reliability_sweep/graph_team_stat/20260901T193017Z/results.json. Reason: Split-half reliability of the team-week column 'pbp_pressure_allowed_rate' (home/away pair home_pbp_pressure_allowed_rate/away_pbp_pressure_allowed_rate), measured on this cell's own seasons [2011, 2013]; scripts/graph_team_stat_screen.py:123-176 builds this cell's graph-rating arm from exactly that pair, so the column IS the cell's underlying construct. Measurement only: no classification, closing_ground or effect changed.. Reliability fields only; effect/interval/classification/closing_ground untouched, and this measurement does not by itself reclassify the entry.",
+      "plain_summary": "Tests whether schedule-adjusting pbp_pressure_allowed_rate beats using it raw.",
+      "probability_positive": 0.762,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.987589,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_pbp_start_yardline_100": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted pbp_start_yardline_100 (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away pbp_start_yardline_100 differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -3.728736016861653,
+        3.8217356272375165
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.86% vs raw-differential control 47.86%. Season-blocked P+ 0.280. Against the market baseline the graph arm is -1.609 pts and the raw control -1.609 pts. Conservative reference: within-week permutation null (200 permutations) centres at -0.506 pts with SD 1.316, so the observed delta sits at the 64.0th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.\n[2026-09-01T19:33:04.800958+00:00] reliability set: None -> 0.9857 95% [0.9788, 0.9904]. Method: team-season odd/even-week split-half of the underlying continuous trait, Spearman-Brown corrected, block bootstrap over team-seasons (nfl_ats.cfb_qb_dependence.split_half_reliability, seed 20260901, 4000 draws). Measured from: artifacts/reliability_sweep/graph_team_stat/20260901T193017Z/results.json. Reason: Split-half reliability of the team-week column 'pbp_start_yardline_100' (home/away pair home_pbp_start_yardline_100/away_pbp_start_yardline_100), measured on this cell's own seasons [2011, 2013]; scripts/graph_team_stat_screen.py:123-176 builds this cell's graph-rating arm from exactly that pair, so the column IS the cell's underlying construct. Measurement only: no classification, closing_ground or effect changed.. Reliability fields only; effect/interval/classification/closing_ground untouched, and this measurement does not by itself reclassify the entry.",
+      "plain_summary": "Tests whether schedule-adjusting pbp_start_yardline_100 beats using it raw.",
+      "probability_positive": 0.488,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.985651,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_qb_start_probability": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted qb_start_probability (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away qb_start_probability differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": -0.938337801608579,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -3.9639194929315704,
+        1.854489573059039
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.32% vs raw-differential control 48.26%. Season-blocked P+ 0.043. Against the market baseline the graph arm is -2.145 pts and the raw control -1.206 pts. Conservative reference: within-week permutation null (200 permutations) centres at -0.987 pts with SD 1.266, so the observed delta sits at the 52.5th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.\n[2026-09-01T19:33:08.027234+00:00] reliability set: None -> 0.4448 95% [0.0884, 0.7118]. Method: team-season odd/even-week split-half of the underlying continuous trait, Spearman-Brown corrected, block bootstrap over team-seasons (nfl_ats.cfb_qb_dependence.split_half_reliability, seed 20260901, 4000 draws). Measured from: artifacts/reliability_sweep/graph_team_stat/20260901T193017Z/results.json. Reason: Split-half reliability of the team-week column 'qb_start_probability' (home/away pair home_qb_start_probability/away_qb_start_probability), measured on this cell's own seasons [2011, 2013]; scripts/graph_team_stat_screen.py:123-176 builds this cell's graph-rating arm from exactly that pair, so the column IS the cell's underlying construct. Measurement only: no classification, closing_ground or effect changed.. Reliability fields only; effect/interval/classification/closing_ground untouched, and this measurement does not by itself reclassify the entry.",
+      "plain_summary": "Tests whether schedule-adjusting qb_start_probability beats using it raw.",
+      "probability_positive": 0.232,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.44476,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_qb_starter_experience_log": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted qb_starter_experience_log (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away qb_starter_experience_log differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": 0.938337801608579,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -2.041165781381045,
+        4.540456457666826
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.59% vs raw-differential control 46.65%. Season-blocked P+ 0.863. Against the market baseline the graph arm is -1.877 pts and the raw control -2.815 pts. Conservative reference: within-week permutation null (200 permutations) centres at +0.765 pts with SD 1.016, so the observed delta sits at the 55.5th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.\n[2026-09-01T19:33:11.119533+00:00] reliability set: None -> 0.9782 95% [0.9697, 0.9853]. Method: team-season odd/even-week split-half of the underlying continuous trait, Spearman-Brown corrected, block bootstrap over team-seasons (nfl_ats.cfb_qb_dependence.split_half_reliability, seed 20260901, 4000 draws). Measured from: artifacts/reliability_sweep/graph_team_stat/20260901T193017Z/results.json. Reason: Split-half reliability of the team-week column 'qb_starter_experience_log' (home/away pair home_qb_starter_experience_log/away_qb_starter_experience_log), measured on this cell's own seasons [2011, 2013]; scripts/graph_team_stat_screen.py:123-176 builds this cell's graph-rating arm from exactly that pair, so the column IS the cell's underlying construct. Measurement only: no classification, closing_ground or effect changed.. Reliability fields only; effect/interval/classification/closing_ground untouched, and this measurement does not by itself reclassify the entry.",
+      "plain_summary": "Tests whether schedule-adjusting qb_starter_experience_log beats using it raw.",
+      "probability_positive": 0.716,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.978214,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_secondary_lineup_continuity": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted secondary_lineup_continuity (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away secondary_lineup_continuity differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": -0.2680965147453083,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -1.8449615255235048,
+        1.206515393928911
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.45% vs raw-differential control 47.72%. Season-blocked P+ 0.000. Against the market baseline the graph arm is -2.011 pts and the raw control -1.743 pts. Conservative reference: within-week permutation null (200 permutations) centres at -0.160 pts with SD 0.552, so the observed delta sits at the 32.5th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.\n[2026-09-01T19:33:13.972053+00:00] reliability set: None -> 0.6867 95% [0.4923, 0.8240]. Method: team-season odd/even-week split-half of the underlying continuous trait, Spearman-Brown corrected, block bootstrap over team-seasons (nfl_ats.cfb_qb_dependence.split_half_reliability, seed 20260901, 4000 draws). Measured from: artifacts/reliability_sweep/graph_team_stat/20260901T193017Z/results.json. Reason: Split-half reliability of the team-week column 'secondary_lineup_continuity' (home/away pair home_secondary_lineup_continuity/away_secondary_lineup_continuity), measured on this cell's own seasons [2011, 2013]; scripts/graph_team_stat_screen.py:123-176 builds this cell's graph-rating arm from exactly that pair, so the column IS the cell's underlying construct. Measurement only: no classification, closing_ground or effect changed.. Reliability fields only; effect/interval/classification/closing_ground untouched, and this measurement does not by itself reclassify the entry.",
+      "plain_summary": "Tests whether schedule-adjusting secondary_lineup_continuity beats using it raw.",
+      "probability_positive": 0.347,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.686737,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_skill_lineup_continuity": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted skill_lineup_continuity (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away skill_lineup_continuity differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": 0.2680965147453083,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -0.5277744728204194,
+        1.063900709219858
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.72% vs raw-differential control 47.45%. Season-blocked P+ 0.672. Against the market baseline the graph arm is -1.743 pts and the raw control -2.011 pts. Conservative reference: within-week permutation null (200 permutations) centres at +0.121 pts with SD 0.488, so the observed delta sits at the 53.5th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.\n[2026-09-01T19:33:16.678850+00:00] reliability set: None -> 0.8749 95% [0.7377, 0.9405]. Method: team-season odd/even-week split-half of the underlying continuous trait, Spearman-Brown corrected, block bootstrap over team-seasons (nfl_ats.cfb_qb_dependence.split_half_reliability, seed 20260901, 4000 draws). Measured from: artifacts/reliability_sweep/graph_team_stat/20260901T193017Z/results.json. Reason: Split-half reliability of the team-week column 'skill_lineup_continuity' (home/away pair home_skill_lineup_continuity/away_skill_lineup_continuity), measured on this cell's own seasons [2011, 2013]; scripts/graph_team_stat_screen.py:123-176 builds this cell's graph-rating arm from exactly that pair, so the column IS the cell's underlying construct. Measurement only: no classification, closing_ground or effect changed.. Reliability fields only; effect/interval/classification/closing_ground untouched, and this measurement does not by itself reclassify the entry.",
+      "plain_summary": "Tests whether schedule-adjusting skill_lineup_continuity beats using it raw.",
+      "probability_positive": 0.729,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.874904,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_special_teams_lineup_continuity": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted special_teams_lineup_continuity (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away special_teams_lineup_continuity differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": -0.13404825737265416,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -1.088546894167503,
+        0.8064516129032258
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.32% vs raw-differential control 47.45%. Season-blocked P+ 0.000. Against the market baseline the graph arm is -2.145 pts and the raw control -2.011 pts. Conservative reference: within-week permutation null (200 permutations) centres at +0.267 pts with SD 0.716, so the observed delta sits at the 27.0th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.\n[2026-09-01T19:33:19.584036+00:00] reliability set: None -> 0.6678 95% [0.4067, 0.8448]. Method: team-season odd/even-week split-half of the underlying continuous trait, Spearman-Brown corrected, block bootstrap over team-seasons (nfl_ats.cfb_qb_dependence.split_half_reliability, seed 20260901, 4000 draws). Measured from: artifacts/reliability_sweep/graph_team_stat/20260901T193017Z/results.json. Reason: Split-half reliability of the team-week column 'special_teams_lineup_continuity' (home/away pair home_special_teams_lineup_continuity/away_special_teams_lineup_continuity), measured on this cell's own seasons [2011, 2013]; scripts/graph_team_stat_screen.py:123-176 builds this cell's graph-rating arm from exactly that pair, so the column IS the cell's underlying construct. Measurement only: no classification, closing_ground or effect changed.. Reliability fields only; effect/interval/classification/closing_ground untouched, and this measurement does not by itself reclassify the entry.",
+      "plain_summary": "Tests whether schedule-adjusting special_teams_lineup_continuity beats using it raw.",
+      "probability_positive": 0.358,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.667844,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_team_games": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted team_games (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away team_games differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": -0.13404825737265416,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -1.20337027772986,
+        0.8209063350876961
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.72% vs raw-differential control 47.86%. Season-blocked P+ 0.266. Against the market baseline the graph arm is -1.743 pts and the raw control -1.609 pts. Conservative reference: within-week permutation null (200 permutations) centres at -0.092 pts with SD 0.591, so the observed delta sits at the 37.5th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.",
+      "plain_summary": "Tests whether schedule-adjusting team_games beats using it raw.",
+      "probability_positive": 0.352,
+      "recorded_at": "2026-08-26",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    }
+  }
+}

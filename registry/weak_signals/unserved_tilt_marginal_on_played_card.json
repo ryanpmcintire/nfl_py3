@@ -1,0 +1,453 @@
+{
+  "family": "unserved_tilt_marginal_on_played_card",
+  "signals": {
+    "unserved_tilt_on_played_card_all_probability_positive_union": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Frozen 2020-2025 opener archive, 1503 graded games. Served card 55.8882% vs union 56.8862%; week-blocked delta +0.9980 accuracy points, interval [-0.6618, +2.6560], probability_positive 0.8827 (season-blocked 0.9404). The member set was chosen by the sign of each member's own marginal on this same archive, so the union figure is selection-influenced. No refuted mechanism and no positive control bound was established, so this stays unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Joint-OR union of the six unserved tilt overlays whose own marginal on the played card has week-blocked probability_positive above 0.5 (tank_zone_fade_tilt_overlay, forecast_cold_visitor_tilt_overlay, forecast_weather_kn_precip_high_total_tilt_overlay, interim_hc_first_game_tilt_overlay, bye_edge_fade_overlay, pbp08_protection_mismatch_tilt_overlay), added on top of the served three-member composition and graded at the Tuesday opener.",
+      "effect": 0.998003992,
+      "effect_units": "accuracy_points",
+      "family": "unserved_tilt_marginal_on_played_card",
+      "interval": [
+        -0.6618243258,
+        2.6560424967
+      ],
+      "league": "nfl",
+      "notes": "seed=20260821; samples=20000; week-blocked bootstrap is primary and the season-blocked read is secondary; baseline is the PLAYED card, not the raw model, so this is a marginal and not a standalone effect. No split-half reliability applies to a per-game policy exposure. Correlated with every other row in this family (same games, same baseline); never pool these as independent votes. artifact=artifacts\\unserved_tilt_marginals\\20260909T210338Z\\result.json",
+      "plain_summary": "Add every adjustment that is more likely than not to help, all at once, on top of the picks we already publish.",
+      "probability_positive": 0.8827,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts\\unserved_tilt_marginals\\20260909T210338Z\\result.json; docs/unserved_tilt_marginals.md",
+      "standard_error": 0.8474616064
+    },
+    "unserved_tilt_on_played_card_backup_qb_fade_overlay": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Frozen 2020-2025 opener archive, 1503 graded games, 107 week blocks. The member flips 174 archive games, 30 of which the played card already flips, leaving 144 incremental flips. Served card 55.8882% vs 54.2249%; week-blocked delta -1.6633 accuracy points, interval [-3.3619, -0.0667], probability_positive 0.0208 (season-blocked 0.0114). This re-uses an already-looked-at window and is a post-result read; no wrong sign is resolved and no positive control bounds it, so it is unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Marginal of backup_qb_fade_overlay evaluated ON TOP OF the served three-member overlay composition (coach_fade OR division_revenge_tilt OR player_arrests_back_side_policy) at the Tuesday-opener decision line. Joint OR, complemented once, so a flip the played card already makes contributes nothing.",
+      "effect": -1.6633399867,
+      "effect_units": "accuracy_points",
+      "family": "unserved_tilt_marginal_on_played_card",
+      "interval": [
+        -3.3619128913,
+        -0.0666666667
+      ],
+      "league": "nfl",
+      "notes": "seed=20260821; samples=20000; week-blocked bootstrap is primary and the season-blocked read is secondary; baseline is the PLAYED card, not the raw model, so this is a marginal and not a standalone effect. No split-half reliability applies to a per-game policy exposure. Correlated with every other row in this family (same games, same baseline); never pool these as independent votes. artifact=artifacts\\unserved_tilt_marginals\\20260909T210338Z\\result.json",
+      "plain_summary": "Our pick is on a team starting a backup quarterback. Switch to the opponent.",
+      "probability_positive": 0.02075,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts\\unserved_tilt_marginals\\20260909T210338Z\\result.json; docs/unserved_tilt_marginals.md",
+      "standard_error": 0.8455164921
+    },
+    "unserved_tilt_on_played_card_bye_edge_fade_overlay": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Frozen 2020-2025 opener archive, 1503 graded games, 107 week blocks. The member flips 73 archive games, 9 of which the played card already flips, leaving 64 incremental flips. Served card 55.8882% vs 56.4205%; week-blocked delta +0.5323 accuracy points, interval [-0.3942, +1.4531], probability_positive 0.8710 (season-blocked 0.9097). This re-uses an already-looked-at window and is a post-result read; no wrong sign is resolved and no positive control bounds it, so it is unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Marginal of bye_edge_fade_overlay evaluated ON TOP OF the served three-member overlay composition (coach_fade OR division_revenge_tilt OR player_arrests_back_side_policy) at the Tuesday-opener decision line. Joint OR, complemented once, so a flip the played card already makes contributes nothing.",
+      "effect": 0.5322687957,
+      "effect_units": "accuracy_points",
+      "family": "unserved_tilt_marginal_on_played_card",
+      "interval": [
+        -0.394218134,
+        1.4531283696
+      ],
+      "league": "nfl",
+      "notes": "seed=20260821; samples=20000; week-blocked bootstrap is primary and the season-blocked read is secondary; baseline is the PLAYED card, not the raw model, so this is a marginal and not a standalone effect. No split-half reliability applies to a per-game policy exposure. Correlated with every other row in this family (same games, same baseline); never pool these as independent votes. artifact=artifacts\\unserved_tilt_marginals\\20260909T210338Z\\result.json",
+      "plain_summary": "Our pick is on the team coming off a bye week. Switch to the opponent.",
+      "probability_positive": 0.87105,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts\\unserved_tilt_marginals\\20260909T210338Z\\result.json; docs/unserved_tilt_marginals.md",
+      "standard_error": 0.4657044455
+    },
+    "unserved_tilt_on_played_card_forecast_cold_visitor_tilt_overlay": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Frozen 2020-2025 opener archive, 1503 graded games, 107 week blocks. The member flips 57 archive games, 13 of which the played card already flips, leaving 44 incremental flips. Served card 55.8882% vs 56.2874%; week-blocked delta +0.3992 accuracy points, interval [-0.4660, +1.2769], probability_positive 0.8185 (season-blocked 0.9110). This re-uses an already-looked-at window and is a post-result read; no wrong sign is resolved and no positive control bounds it, so it is unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Marginal of forecast_cold_visitor_tilt_overlay evaluated ON TOP OF the served three-member overlay composition (coach_fade OR division_revenge_tilt OR player_arrests_back_side_policy) at the Tuesday-opener decision line. Joint OR, complemented once, so a flip the played card already makes contributes nothing.",
+      "effect": 0.3992015968,
+      "effect_units": "accuracy_points",
+      "family": "unserved_tilt_marginal_on_played_card",
+      "interval": [
+        -0.466045273,
+        1.2768817204
+      ],
+      "league": "nfl",
+      "notes": "seed=20260821; samples=20000; week-blocked bootstrap is primary and the season-blocked read is secondary; baseline is the PLAYED card, not the raw model, so this is a marginal and not a standalone effect. No split-half reliability applies to a per-game policy exposure. Correlated with every other row in this family (same games, same baseline); never pool these as independent votes. artifact=artifacts\\unserved_tilt_marginals\\20260909T210338Z\\result.json",
+      "plain_summary": "A visiting team is walking into weather far colder than it is used to and our pick is on the visitor. Switch to the home team.",
+      "probability_positive": 0.8185,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts\\unserved_tilt_marginals\\20260909T210338Z\\result.json; docs/unserved_tilt_marginals.md",
+      "standard_error": 0.44822264
+    },
+    "unserved_tilt_on_played_card_forecast_weather_kn_precip_high_total_tilt_overlay": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Frozen 2020-2025 opener archive, 1503 graded games, 107 week blocks. The member flips 15 archive games, 4 of which the played card already flips, leaving 11 incremental flips. Served card 55.8882% vs 55.9548%; week-blocked delta +0.0665 accuracy points, interval [-0.3318, +0.4670], probability_positive 0.6319 (season-blocked 0.7160). This re-uses an already-looked-at window and is a post-result read; no wrong sign is resolved and no positive control bounds it, so it is unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Marginal of forecast_weather_kn_precip_high_total_tilt_overlay evaluated ON TOP OF the served three-member overlay composition (coach_fade OR division_revenge_tilt OR player_arrests_back_side_policy) at the Tuesday-opener decision line. Joint OR, complemented once, so a flip the played card already makes contributes nothing.",
+      "effect": 0.0665335995,
+      "effect_units": "accuracy_points",
+      "family": "unserved_tilt_marginal_on_played_card",
+      "interval": [
+        -0.3317850033,
+        0.4669779853
+      ],
+      "league": "nfl",
+      "notes": "seed=20260821; samples=20000; week-blocked bootstrap is primary and the season-blocked read is secondary; baseline is the PLAYED card, not the raw model, so this is a marginal and not a standalone effect. No split-half reliability applies to a per-game policy exposure. Correlated with every other row in this family (same games, same baseline); never pool these as independent votes. artifact=artifacts\\unserved_tilt_marginals\\20260909T210338Z\\result.json",
+      "plain_summary": "Rain or snow is forecast for an outdoor game the market expects to be high scoring and our pick is on the visitor. Switch to the home team.",
+      "probability_positive": 0.631925,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts\\unserved_tilt_marginals\\20260909T210338Z\\result.json; docs/unserved_tilt_marginals.md",
+      "standard_error": 0.1999530095
+    },
+    "unserved_tilt_on_played_card_forecast_weather_kn_warm_team_cold_late_tilt_overlay": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Frozen 2020-2025 opener archive, 1503 graded games, 107 week blocks. The member flips 2 archive games, 1 of which the played card already flips, leaving 1 incremental flips. Served card 55.8882% vs 55.8217%; week-blocked delta -0.0665 accuracy points, interval [-0.2016, +0.0000], probability_positive 0.1837 (season-blocked 0.1698). This re-uses an already-looked-at window and is a post-result read; no wrong sign is resolved and no positive control bounds it, so it is unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Marginal of forecast_weather_kn_warm_team_cold_late_tilt_overlay evaluated ON TOP OF the served three-member overlay composition (coach_fade OR division_revenge_tilt OR player_arrests_back_side_policy) at the Tuesday-opener decision line. Joint OR, complemented once, so a flip the played card already makes contributes nothing.",
+      "effect": -0.0665335995,
+      "effect_units": "accuracy_points",
+      "family": "unserved_tilt_marginal_on_played_card",
+      "interval": [
+        -0.2016129032,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "seed=20260821; samples=20000; week-blocked bootstrap is primary and the season-blocked read is secondary; baseline is the PLAYED card, not the raw model, so this is a marginal and not a standalone effect. No split-half reliability applies to a per-game policy exposure. Correlated with every other row in this family (same games, same baseline); never pool these as independent votes. artifact=artifacts\\unserved_tilt_marginals\\20260909T210338Z\\result.json",
+      "plain_summary": "A warm-weather visitor plays outdoors in the cold late in the season and our pick is on that visitor. Switch to the home team.",
+      "probability_positive": 0.183725,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts\\unserved_tilt_marginals\\20260909T210338Z\\result.json; docs/unserved_tilt_marginals.md",
+      "standard_error": 0.07323308335635483
+    },
+    "unserved_tilt_on_played_card_injury_value_tilt_overlay": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Frozen 2020-2025 opener archive, 1503 graded games, 107 week blocks. The member flips 711 archive games, 128 of which the played card already flips, leaving 583 incremental flips. Served card 55.8882% vs 52.3619%; week-blocked delta -3.5263 accuracy points, interval [-6.9216, +0.0000], probability_positive 0.0243 (season-blocked 0.0000). This re-uses an already-looked-at window and is a post-result read; no wrong sign is resolved and no positive control bounds it, so it is unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Marginal of injury_value_tilt_overlay evaluated ON TOP OF the served three-member overlay composition (coach_fade OR division_revenge_tilt OR player_arrests_back_side_policy) at the Tuesday-opener decision line. Joint OR, complemented once, so a flip the played card already makes contributes nothing.",
+      "effect": -3.5262807718,
+      "effect_units": "accuracy_points",
+      "family": "unserved_tilt_marginal_on_played_card",
+      "interval": [
+        -6.9216062935,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "seed=20260821; samples=20000; week-blocked bootstrap is primary and the season-blocked read is secondary; baseline is the PLAYED card, not the raw model, so this is a marginal and not a standalone effect. No split-half reliability applies to a per-game policy exposure. Correlated with every other row in this family (same games, same baseline); never pool these as independent votes. artifact=artifacts\\unserved_tilt_marginals\\20260909T210338Z\\result.json",
+      "plain_summary": "Our pick is on the team that has lost more value to injury than its opponent. Switch to the healthier side.",
+      "probability_positive": 0.0243,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts\\unserved_tilt_marginals\\20260909T210338Z\\result.json; docs/unserved_tilt_marginals.md",
+      "standard_error": 1.7344255014
+    },
+    "unserved_tilt_on_played_card_interim_hc_first_game_tilt_overlay": {
+      "category": "offfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Frozen 2020-2025 opener archive, 1503 graded games, 107 week blocks. The member flips 6 archive games, 4 of which the played card already flips, leaving 2 incremental flips. Served card 55.8882% vs 56.0213%; week-blocked delta +0.1331 accuracy points, interval [+0.0000, +0.3358], probability_positive 0.9326 (season-blocked 0.9555). This re-uses an already-looked-at window and is a post-result read; no wrong sign is resolved and no positive control bounds it, so it is unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Marginal of interim_hc_first_game_tilt_overlay evaluated ON TOP OF the served three-member overlay composition (coach_fade OR division_revenge_tilt OR player_arrests_back_side_policy) at the Tuesday-opener decision line. Joint OR, complemented once, so a flip the played card already makes contributes nothing.",
+      "effect": 0.1330671989,
+      "effect_units": "accuracy_points",
+      "family": "unserved_tilt_marginal_on_played_card",
+      "interval": [
+        0.0,
+        0.3357958361
+      ],
+      "league": "nfl",
+      "notes": "seed=20260821; samples=20000; week-blocked bootstrap is primary and the season-blocked read is secondary; baseline is the PLAYED card, not the raw model, so this is a marginal and not a standalone effect. No split-half reliability applies to a per-game policy exposure. Correlated with every other row in this family (same games, same baseline); never pool these as independent votes. artifact=artifacts\\unserved_tilt_marginals\\20260909T210338Z\\result.json",
+      "plain_summary": "A team is playing its first game under an interim head coach and our pick is against them. Switch to the interim team.",
+      "probability_positive": 0.932625,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts\\unserved_tilt_marginals\\20260909T210338Z\\result.json; docs/unserved_tilt_marginals.md",
+      "standard_error": 0.0941760256
+    },
+    "unserved_tilt_on_played_card_pace_mismatch_dog_tilt_overlay": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Frozen 2020-2025 opener archive, 1503 graded games, 107 week blocks. The member flips 177 archive games, 39 of which the played card already flips, leaving 138 incremental flips. Served card 55.8882% vs 55.2894%; week-blocked delta -0.5988 accuracy points, interval [-2.1334, +0.9409], probability_positive 0.2232 (season-blocked 0.0665). This re-uses an already-looked-at window and is a post-result read; no wrong sign is resolved and no positive control bounds it, so it is unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Marginal of pace_mismatch_dog_tilt_overlay evaluated ON TOP OF the served three-member overlay composition (coach_fade OR division_revenge_tilt OR player_arrests_back_side_policy) at the Tuesday-opener decision line. Joint OR, complemented once, so a flip the played card already makes contributes nothing.",
+      "effect": -0.5988023952,
+      "effect_units": "accuracy_points",
+      "family": "unserved_tilt_marginal_on_played_card",
+      "interval": [
+        -2.1333689126,
+        0.9408602151
+      ],
+      "league": "nfl",
+      "notes": "seed=20260821; samples=20000; week-blocked bootstrap is primary and the season-blocked read is secondary; baseline is the PLAYED card, not the raw model, so this is a marginal and not a standalone effect. No split-half reliability applies to a per-game policy exposure. Correlated with every other row in this family (same games, same baseline); never pool these as independent votes. artifact=artifacts\\unserved_tilt_marginals\\20260909T210338Z\\result.json",
+      "plain_summary": "Two teams play at very different speeds and our pick is on the favourite. Switch to the underdog.",
+      "probability_positive": 0.2232,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts\\unserved_tilt_marginals\\20260909T210338Z\\result.json; docs/unserved_tilt_marginals.md",
+      "standard_error": 0.7852600914
+    },
+    "unserved_tilt_on_played_card_pbp08_protection_mismatch_tilt_overlay": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Frozen 2020-2025 opener archive, 1503 graded games, 107 week blocks. The member flips 111 archive games, 23 of which the played card already flips, leaving 88 incremental flips. Served card 55.8882% vs 56.2874%; week-blocked delta +0.3992 accuracy points, interval [-0.6649, +1.4570], probability_positive 0.7714 (season-blocked 0.7411). This re-uses an already-looked-at window and is a post-result read; no wrong sign is resolved and no positive control bounds it, so it is unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Marginal of pbp08_protection_mismatch_tilt_overlay evaluated ON TOP OF the served three-member overlay composition (coach_fade OR division_revenge_tilt OR player_arrests_back_side_policy) at the Tuesday-opener decision line. Joint OR, complemented once, so a flip the played card already makes contributes nothing.",
+      "effect": 0.3992015968,
+      "effect_units": "accuracy_points",
+      "family": "unserved_tilt_marginal_on_played_card",
+      "interval": [
+        -0.664893617,
+        1.4569536424
+      ],
+      "league": "nfl",
+      "notes": "seed=20260821; samples=20000; week-blocked bootstrap is primary and the season-blocked read is secondary; baseline is the PLAYED card, not the raw model, so this is a marginal and not a standalone effect. No split-half reliability applies to a per-game policy exposure. Correlated with every other row in this family (same games, same baseline); never pool these as independent votes. artifact=artifacts\\unserved_tilt_marginals\\20260909T210338Z\\result.json",
+      "plain_summary": "One offense has been getting its quarterback hit constantly and is about to face a defense that generates pressure. Back the defense.",
+      "probability_positive": 0.77145,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts\\unserved_tilt_marginals\\20260909T210338Z\\result.json; docs/unserved_tilt_marginals.md",
+      "standard_error": 0.5378139769
+    },
+    "unserved_tilt_on_played_card_special_teams_return_tilt_overlay": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Frozen 2020-2025 opener archive, 1503 graded games, 107 week blocks. The member flips 275 archive games, 50 of which the played card already flips, leaving 225 incremental flips. Served card 55.8882% vs 54.8902%; week-blocked delta -0.9980 accuracy points, interval [-2.9081, +0.9315], probability_positive 0.1535 (season-blocked 0.0050). This re-uses an already-looked-at window and is a post-result read; no wrong sign is resolved and no positive control bounds it, so it is unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Marginal of special_teams_return_tilt_overlay evaluated ON TOP OF the served three-member overlay composition (coach_fade OR division_revenge_tilt OR player_arrests_back_side_policy) at the Tuesday-opener decision line. Joint OR, complemented once, so a flip the played card already makes contributes nothing.",
+      "effect": -0.998003992,
+      "effect_units": "accuracy_points",
+      "family": "unserved_tilt_marginal_on_played_card",
+      "interval": [
+        -2.908129544,
+        0.9315014209
+      ],
+      "league": "nfl",
+      "notes": "seed=20260821; samples=20000; week-blocked bootstrap is primary and the season-blocked read is secondary; baseline is the PLAYED card, not the raw model, so this is a marginal and not a standalone effect. No split-half reliability applies to a per-game policy exposure. Correlated with every other row in this family (same games, same baseline); never pool these as independent votes. artifact=artifacts\\unserved_tilt_marginals\\20260909T210338Z\\result.json",
+      "plain_summary": "One team had a far better kick and punt return unit last season and our pick is on the other side. Switch to the return team.",
+      "probability_positive": 0.1535,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts\\unserved_tilt_marginals\\20260909T210338Z\\result.json; docs/unserved_tilt_marginals.md",
+      "standard_error": 0.9803240783
+    },
+    "unserved_tilt_on_played_card_spread_gap_zone_fade_overlay": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Frozen 2020-2025 opener archive, 1503 graded games, 107 week blocks. The member flips 195 archive games, 42 of which the played card already flips, leaving 153 incremental flips. Served card 55.8882% vs 55.4890%; week-blocked delta -0.3992 accuracy points, interval [-1.9947, +1.2760], probability_positive 0.3149 (season-blocked 0.3317). This re-uses an already-looked-at window and is a post-result read; no wrong sign is resolved and no positive control bounds it, so it is unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Marginal of spread_gap_zone_fade_overlay evaluated ON TOP OF the served three-member overlay composition (coach_fade OR division_revenge_tilt OR player_arrests_back_side_policy) at the Tuesday-opener decision line. Joint OR, complemented once, so a flip the played card already makes contributes nothing.",
+      "effect": -0.3992015968,
+      "effect_units": "accuracy_points",
+      "family": "unserved_tilt_marginal_on_played_card",
+      "interval": [
+        -1.9946808511,
+        1.2760241773
+      ],
+      "league": "nfl",
+      "notes": "seed=20260821; samples=20000; week-blocked bootstrap is primary and the season-blocked read is secondary; baseline is the PLAYED card, not the raw model, so this is a marginal and not a standalone effect. No split-half reliability applies to a per-game policy exposure. Correlated with every other row in this family (same games, same baseline); never pool these as independent votes. artifact=artifacts\\unserved_tilt_marginals\\20260909T210338Z\\result.json",
+      "plain_summary": "Our pick sits in the seven-to-ten point spread range where the model has been weakest. Switch sides.",
+      "probability_positive": 0.314925,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts\\unserved_tilt_marginals\\20260909T210338Z\\result.json; docs/unserved_tilt_marginals.md",
+      "standard_error": 0.8374608766
+    },
+    "unserved_tilt_on_played_card_surface_switch_tilt_overlay": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Frozen 2020-2025 opener archive, 1503 graded games, 107 week blocks. The member flips 225 archive games, 42 of which the played card already flips, leaving 183 incremental flips. Served card 55.8882% vs 54.6906%; week-blocked delta -1.1976 accuracy points, interval [-2.8456, +0.4008], probability_positive 0.0748 (season-blocked 0.0958). This re-uses an already-looked-at window and is a post-result read; no wrong sign is resolved and no positive control bounds it, so it is unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Marginal of surface_switch_tilt_overlay evaluated ON TOP OF the served three-member overlay composition (coach_fade OR division_revenge_tilt OR player_arrests_back_side_policy) at the Tuesday-opener decision line. Joint OR, complemented once, so a flip the played card already makes contributes nothing.",
+      "effect": -1.1976047904,
+      "effect_units": "accuracy_points",
+      "family": "unserved_tilt_marginal_on_played_card",
+      "interval": [
+        -2.8455822969,
+        0.4008016032
+      ],
+      "league": "nfl",
+      "notes": "seed=20260821; samples=20000; week-blocked bootstrap is primary and the season-blocked read is secondary; baseline is the PLAYED card, not the raw model, so this is a marginal and not a standalone effect. No split-half reliability applies to a per-game policy exposure. Correlated with every other row in this family (same games, same baseline); never pool these as independent votes. artifact=artifacts\\unserved_tilt_marginals\\20260909T210338Z\\result.json",
+      "plain_summary": "A team is switching between grass and turf from its home field. Adjust the pick accordingly.",
+      "probability_positive": 0.0748,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts\\unserved_tilt_marginals\\20260909T210338Z\\result.json; docs/unserved_tilt_marginals.md",
+      "standard_error": 0.8333491461
+    },
+    "unserved_tilt_on_played_card_tank_zone_fade_tilt_overlay": {
+      "category": "attention",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Frozen 2020-2025 opener archive, 1503 graded games, 107 week blocks. The member flips 17 archive games, 3 of which the played card already flips, leaving 14 incremental flips. Served card 55.8882% vs 55.9548%; week-blocked delta +0.0665 accuracy points, interval [-0.3309, +0.4679], probability_positive 0.6280 (season-blocked 0.6190). This re-uses an already-looked-at window and is a post-result read; no wrong sign is resolved and no positive control bounds it, so it is unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Marginal of tank_zone_fade_tilt_overlay evaluated ON TOP OF the served three-member overlay composition (coach_fade OR division_revenge_tilt OR player_arrests_back_side_policy) at the Tuesday-opener decision line. Joint OR, complemented once, so a flip the played card already makes contributes nothing.",
+      "effect": 0.0665335995,
+      "effect_units": "accuracy_points",
+      "family": "unserved_tilt_marginal_on_played_card",
+      "interval": [
+        -0.3309066843,
+        0.4679144385
+      ],
+      "league": "nfl",
+      "notes": "seed=20260821; samples=20000; week-blocked bootstrap is primary and the season-blocked read is secondary; baseline is the PLAYED card, not the raw model, so this is a marginal and not a standalone effect. No split-half reliability applies to a per-game policy exposure. Correlated with every other row in this family (same games, same baseline); never pool these as independent votes. artifact=artifacts\\unserved_tilt_marginals\\20260909T210338Z\\result.json",
+      "plain_summary": "Late in the year, when one team is clearly playing for draft position and our pick is on that team, switch to the other side.",
+      "probability_positive": 0.628,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts\\unserved_tilt_marginals\\20260909T210338Z\\result.json; docs/unserved_tilt_marginals.md",
+      "standard_error": 0.2005180814
+    },
+    "unserved_tilt_on_played_card_third_down_reversion_fade_overlay": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Frozen 2020-2025 opener archive, 1503 graded games, 107 week blocks. The member flips 312 archive games, 49 of which the played card already flips, leaving 263 incremental flips. Served card 55.8882% vs 55.2894%; week-blocked delta -0.5988 accuracy points, interval [-2.9082, +1.6745], probability_positive 0.3018 (season-blocked 0.2245). This re-uses an already-looked-at window and is a post-result read; no wrong sign is resolved and no positive control bounds it, so it is unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Marginal of third_down_reversion_fade_overlay evaluated ON TOP OF the served three-member overlay composition (coach_fade OR division_revenge_tilt OR player_arrests_back_side_policy) at the Tuesday-opener decision line. Joint OR, complemented once, so a flip the played card already makes contributes nothing.",
+      "effect": -0.5988023952,
+      "effect_units": "accuracy_points",
+      "family": "unserved_tilt_marginal_on_played_card",
+      "interval": [
+        -2.9081776281,
+        1.6744809109
+      ],
+      "league": "nfl",
+      "notes": "seed=20260821; samples=20000; week-blocked bootstrap is primary and the season-blocked read is secondary; baseline is the PLAYED card, not the raw model, so this is a marginal and not a standalone effect. No split-half reliability applies to a per-game policy exposure. Correlated with every other row in this family (same games, same baseline); never pool these as independent votes. artifact=artifacts\\unserved_tilt_marginals\\20260909T210338Z\\result.json",
+      "plain_summary": "Our pick is on a team that converted third downs at an unsustainable rate last season. Switch to the opponent.",
+      "probability_positive": 0.3018,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts\\unserved_tilt_marginals\\20260909T210338Z\\result.json; docs/unserved_tilt_marginals.md",
+      "standard_error": 1.1644858933
+    },
+    "unserved_tilt_on_played_card_turnover_luck_rebound_tilt_overlay": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Frozen 2020-2025 opener archive, 1503 graded games, 107 week blocks. The member flips 305 archive games, 63 of which the played card already flips, leaving 242 incremental flips. Served card 55.8882% vs 53.0938%; week-blocked delta -2.7944 accuracy points, interval [-4.6327, -0.8696], probability_positive 0.0023 (season-blocked 0.0003). This re-uses an already-looked-at window and is a post-result read; no wrong sign is resolved and no positive control bounds it, so it is unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Marginal of turnover_luck_rebound_tilt_overlay evaluated ON TOP OF the served three-member overlay composition (coach_fade OR division_revenge_tilt OR player_arrests_back_side_policy) at the Tuesday-opener decision line. Joint OR, complemented once, so a flip the played card already makes contributes nothing.",
+      "effect": -2.7944111776,
+      "effect_units": "accuracy_points",
+      "family": "unserved_tilt_marginal_on_played_card",
+      "interval": [
+        -4.6327258044,
+        -0.8695652174
+      ],
+      "league": "nfl",
+      "notes": "seed=20260821; samples=20000; week-blocked bootstrap is primary and the season-blocked read is secondary; baseline is the PLAYED card, not the raw model, so this is a marginal and not a standalone effect. No split-half reliability applies to a per-game policy exposure. Correlated with every other row in this family (same games, same baseline); never pool these as independent votes. artifact=artifacts\\unserved_tilt_marginals\\20260909T210338Z\\result.json",
+      "plain_summary": "One team has been giving the ball away far more than usual and our pick is against them. Switch to the team due a rebound.",
+      "probability_positive": 0.002275,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts\\unserved_tilt_marginals\\20260909T210338Z\\result.json; docs/unserved_tilt_marginals.md",
+      "standard_error": 0.96261951
+    }
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "family": "mod24_luck_stripped_inputs",
+  "signals": {
+    "mod24_u7b_b1_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from season-blocked bootstrap.",
+      "closing_ground": null,
+      "description": "Model-alone opener test 2011-2025, point and margin inputs with defensive, return and blocked-kick TDs removed and fumble-lost plays set to out-of-season expected value; paired vs base, pooled record 1921-1813 vs 1944-1790.",
+      "effect": -0.6159614354579539,
+      "effect_units": "accuracy_points",
+      "family": "mod24_luck_stripped_inputs",
+      "interval": [
+        -1.2601871823228699,
+        0.026596275604686807
+      ],
+      "league": "nfl",
+      "notes": "Inputs rebuilt, target and model unchanged; graded vs opener (SBR open 2011-2019, Tuesday open 2020-2025); season-blocked 20000 draws.",
+      "plain_summary": "Strips lucky non-repeating scores from each team's recent-form numbers and asks whether picks against the opening line improve.",
+      "probability_positive": 0.0254,
+      "recorded_at": "2026-10-01",
+      "reliability": null,
+      "sample_blocks": 15,
+      "sample_games": 3734,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/mod24_u7b/report.json",
+      "standard_error": null
+    },
+    "mod24_u7b_b2_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from season-blocked bootstrap.",
+      "closing_ground": null,
+      "description": "Model-alone opener test 2011-2025, B1 plus EPA inputs with the same replacements; paired vs base, pooled record 1931-1803 vs 1944-1790.",
+      "effect": -0.34815211569362614,
+      "effect_units": "accuracy_points",
+      "family": "mod24_luck_stripped_inputs",
+      "interval": [
+        -0.9942503565152835,
+        0.3248533090083507
+      ],
+      "league": "nfl",
+      "notes": "Inputs rebuilt, target and model unchanged; graded vs opener (SBR open 2011-2019, Tuesday open 2020-2025); season-blocked 20000 draws.",
+      "plain_summary": "Strips lucky non-repeating scores from each team's recent-form numbers and asks whether picks against the opening line improve.",
+      "probability_positive": 0.1412,
+      "recorded_at": "2026-10-01",
+      "reliability": null,
+      "sample_blocks": 15,
+      "sample_games": 3734,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/mod24_u7b/report.json",
+      "standard_error": null
+    },
+    "mod24_u7b_b3_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from season-blocked bootstrap.",
+      "closing_ground": null,
+      "description": "Model-alone opener test 2011-2025, B2 inputs blended with raw by out-of-season weight; paired vs base, pooled record 1932-1802 vs 1944-1790.",
+      "effect": -0.32137118371719336,
+      "effect_units": "accuracy_points",
+      "family": "mod24_luck_stripped_inputs",
+      "interval": [
+        -0.7932363395087827,
+        0.10590415673815197
+      ],
+      "league": "nfl",
+      "notes": "Inputs rebuilt, target and model unchanged; graded vs opener (SBR open 2011-2019, Tuesday open 2020-2025); season-blocked 20000 draws.",
+      "plain_summary": "Strips lucky non-repeating scores from each team's recent-form numbers and asks whether picks against the opening line improve.",
+      "probability_positive": 0.0621,
+      "recorded_at": "2026-10-01",
+      "reliability": null,
+      "sample_blocks": 15,
+      "sample_games": 3734,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/mod24_u7b/report.json",
+      "standard_error": null
+    }
+  }
+}

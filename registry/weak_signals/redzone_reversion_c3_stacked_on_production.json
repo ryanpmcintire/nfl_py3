@@ -1,0 +1,33 @@
+{
+  "family": "redzone_reversion_c3_stacked_on_production",
+  "signals": {
+    "redzone_reversion_c3_stacked_on_production": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither the week-blocked 95% interval [-2.978, +1.192] nor the season-blocked 95% interval [-2.183, +0.773] sits entirely below zero (both upper bounds are positive), so the admissible closing ground wrong_sign_resolved (whole interval on the wrong side of zero) does NOT apply. Per AGENTS.md an interval crossing zero is never grounds to close a line of work; this stacked-on-production read stays unresolved_below_power and does not block registering third_down_reversion_fade_overlay as a prospective challenger.",
+      "closing_ground": null,
+      "description": "Third-down mean-reversion fade (redzone_reversion_c3_third_down_over_fade / third_down_reversion_fade_overlay) applied on top of the PLAYED four-overlay production union (coach fade + division-revenge tilt + player-arrests back-side policy + spread-gap zone fade), not a bare baseline. Frozen opener archive artifacts/opener_evaluation/20260819T174244Z/per_game.parquet, 1,537 REG games 2020-2025, 1,503 scored. n_flipped=319 (311 scored, 232 incremental over the production union). Week-blocked (primary) candidate-minus-production: -0.8649367930805063 accuracy points, 95% [-2.978209466122605, +1.1920529801324412], probability_positive 0.2000, 107 week blocks. Season-blocked (secondary): -0.8649367930805063, 95% [-2.182539682539686, +0.7726980038634812], probability_positive 0.1448, 6 season blocks. Context only, not the registered figure: the SOLO (vs bare baseline, not stacked) week-blocked read is +1.3972055888223589 accuracy points, 95% [-1.0013685805673165, +3.789956655837258], probability_positive 0.86565 -- consistent with the underlying cell's own +0.87185.",
+      "effect": -0.8649367930805063,
+      "effect_units": "accuracy_points",
+      "family": "redzone_reversion_c3_stacked_on_production",
+      "interval": [
+        -2.978209466122605,
+        1.192052980132441
+      ],
+      "league": "nfl",
+      "notes": "Mined-seasons diagnostic (scripts/third_down_reversion_fade_stacked_backtest.py), CONTEXT not a gate, spends no rotation-registry window. Incumbent = nfl_ats.four_overlay_composition's overlay_union_coach_division_revenge_player_arrests_spread_gap_v1 reconstructed on the archive. Baseline accuracy 53.3599%, production (incumbent) accuracy 55.4225%, candidate (incumbent+third-down fade) accuracy 54.5576% -- all week-blocked point estimates.",
+      "plain_summary": "Fading a team whose 3rd-down conversion rate was elite last season, applied ON TOP of what the pool actually plays (not a bare market baseline), reads slightly negative here (about -0.86 accuracy points) but the interval still crosses zero on both ways of slicing the seasons, so this stacked read is inconclusive, not proof the fade hurts once it is layered on the real card.",
+      "probability_positive": 0.2,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.407,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/third_down_reversion_fade_stacked/20260901T195114Z/results.json",
+      "standard_error": null
+    }
+  }
+}

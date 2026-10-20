@@ -1,0 +1,145 @@
+{
+  "family": "lead29_playcaller_change_v1",
+  "signals": {
+    "lead29_playcaller_change_v1_first_game": {
+      "category": "offfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/playcaller_change_leads.md), family lead29_playcaller_change_v1, screened before any sign was read. Grade=opener, seasons 2020-2025, design one_sided_vs_everyone_else, sign=+1. Flag 6-6 (50.00%) vs complement 50.00% on 2994 team-games (3006 in population, fraction_of_slate=0.0040). Raw covered-minus-baseline gap +0.0000 pts, week-blocked 95% [-28.7058, +33.3987] (107 blocks, 20000 draws, seed 20260817, within-week correlation zero), probability_positive=0.4500; season-blocked [-22.8123, +37.6033] (6 blocks, DEGENERATE), probability_positive=0.4297. Full-slate-scaled effect +0.0000 pts, 95% [-0.1146, +0.1333]. No admissible closing ground was established; classification remains unresolved_below_power. Use probability_positive reported above for the continuous evidence (estimate=+0.0000, interval=[-0.1146, +0.1333]). No positive control was run, so bounded_by_control cannot be claimed.",
+      "closing_ground": null,
+      "description": "LEAD-29: a team's FIRST regular-season game after an in-season offensive or defensive coordinator change (dated Wikipedia staff-template revision instant strictly before kickoff; staff_change and playcaller_role adjudications), vs everyone else in the paired Tuesday-opener archive. Direction: back that team.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "lead29_playcaller_change_v1",
+      "interval": [
+        -0.114594,
+        0.133328
+      ],
+      "league": "nfl",
+      "notes": "seed=20260817; samples=20000; screen only (no rotation window, no overlay, no challenger). Secondary close grade 2020-2025: 6-6 (50.00% vs 50.00%), raw gap +0.0000 pts, week-blocked 95% [-28.6987, +33.3956], probability_positive 0.4500. Events counted (12): 2022 CAR DC Phil Snow->Al Holcomb @2022-10-10T19:33:25Z (staff_change); 2022 IND OC Marcus Brady->Parks Frazier @2022-11-09T15:46:43Z (playcaller_role); 2023 BUF OC Ken Dorsey->Joe Brady (American football coach) @2023-11-14T16:40:27Z (staff_change); 2023 LV OC Mick Lombardi->Bo Hardegree @2023-11-01T15:13:06Z (staff_change); 2023 PIT OC Mike Sullivan (American football coach)->Eddie Faulkner @2023-11-21T18:02:37Z (staff_change); 2024 CHI OC Shane Waldron->Thomas Brown (American football coach) @2024-11-12T15:21:40Z (staff_change); 2024 CHI OC Thomas Brown (American football coach)->Chris Beatty @2024-12-02T18:26:04Z (staff_change); 2024 LV OC Luke Getsy->Scott Turner (American football) @2024-11-05T20:07:29Z (staff_change); 2025 LV OC Chip Kelly->Greg Olson (American football) @2025-11-24T20:13:05Z (playcaller_role); 2025 NYG OC Mike Kafka->Tim Kelly (American football) @2025-11-12T17:44:03Z (staff_change); 2025 NYG DC Shane Bowen->Charlie Bullen @2025-11-24T17:19:51Z (staff_change); 2025 NYJ DC Steve Wilks->Chris Harris (safety) @2025-12-15T19:25:32Z (staff_change) Line: tue_open_home_spread from the opener archive; decision timestamp = kickoff; minimum revision-to-kickoff lead 96.3 h.",
+      "plain_summary": "A team's first game right after it changes its offensive or defensive coordinator in the middle of the season. Back that team.",
+      "probability_positive": 0.45,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 3006,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/playcaller_change_leads.md; results at C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneR\\run1\\results.json",
+      "standard_error": 0.0621
+    },
+    "lead29_playcaller_change_v1_games_2_to_4": {
+      "category": "offfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/playcaller_change_leads.md), family lead29_playcaller_change_v1, screened before any sign was read. Grade=opener, seasons 2020-2025, design one_sided_vs_everyone_else, sign=+1. Flag 17-14 (54.84%) vs complement 49.95% on 2975 team-games (3006 in population, fraction_of_slate=0.0103). Raw covered-minus-baseline gap +4.8891 pts, week-blocked 95% [-11.4070, +21.5294] (107 blocks, 20000 draws, seed 20260817, within-week correlation zero), probability_positive=0.6927; season-blocked [+0.0000, +11.9933] (6 blocks, DEGENERATE), probability_positive=0.9119. Full-slate-scaled effect +0.0504 pts, 95% [-0.1176, +0.2220]. No admissible closing ground was established; classification remains unresolved_below_power. Use probability_positive reported above for the continuous evidence (estimate=+0.0504, interval=[-0.1176, +0.2220]). No positive control was run, so bounded_by_control cannot be claimed.",
+      "closing_ground": null,
+      "description": "LEAD-29 descriptive companion: games 2-4 after an in-season OC/DC change vs everyone else, opener archive. Same sign convention as the first-game cell; the interim-HC screen found its bump in game 1 only, so this is context.",
+      "effect": 0.05042,
+      "effect_units": "accuracy_points",
+      "family": "lead29_playcaller_change_v1",
+      "interval": [
+        -0.117637,
+        0.222027
+      ],
+      "league": "nfl",
+      "notes": "seed=20260817; samples=20000; screen only (no rotation window, no overlay, no challenger). Secondary close grade 2020-2025: 14-17 (45.16% vs 50.05%), raw gap -4.8866 pts, week-blocked 95% [-22.0971, +12.6276], probability_positive 0.2561. Events counted (12): 2022 CAR DC Phil Snow->Al Holcomb @2022-10-10T19:33:25Z (staff_change); 2022 IND OC Marcus Brady->Parks Frazier @2022-11-09T15:46:43Z (playcaller_role); 2023 BUF OC Ken Dorsey->Joe Brady (American football coach) @2023-11-14T16:40:27Z (staff_change); 2023 LV OC Mick Lombardi->Bo Hardegree @2023-11-01T15:13:06Z (staff_change); 2023 PIT OC Mike Sullivan (American football coach)->Eddie Faulkner @2023-11-21T18:02:37Z (staff_change); 2024 CHI OC Shane Waldron->Thomas Brown (American football coach) @2024-11-12T15:21:40Z (staff_change); 2024 CHI OC Thomas Brown (American football coach)->Chris Beatty @2024-12-02T18:26:04Z (staff_change); 2024 LV OC Luke Getsy->Scott Turner (American football) @2024-11-05T20:07:29Z (staff_change); 2025 LV OC Chip Kelly->Greg Olson (American football) @2025-11-24T20:13:05Z (playcaller_role); 2025 NYG OC Mike Kafka->Tim Kelly (American football) @2025-11-12T17:44:03Z (staff_change); 2025 NYG DC Shane Bowen->Charlie Bullen @2025-11-24T17:19:51Z (staff_change); 2025 NYJ DC Steve Wilks->Chris Harris (safety) @2025-12-15T19:25:32Z (staff_change) Line: tue_open_home_spread from the opener archive; decision timestamp = kickoff; minimum revision-to-kickoff lead 96.3 h.",
+      "plain_summary": "Games two through four after a team changes its coordinator in the middle of the season. Reported for context only; any bump is expected in game one.",
+      "probability_positive": 0.6927,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 3006,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/playcaller_change_leads.md; results at C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneR\\run1\\results.json",
+      "standard_error": 0.085771
+    },
+    "lead29_playcaller_change_v1_post_bye_new_oc_back": {
+      "category": "offfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/playcaller_change_leads.md), family lead29_playcaller_change_v1, screened before any sign was read. Grade=close, seasons 2009-2025, design one_sided_vs_everyone_else, sign=+1. Flag 145-158 (47.85%) vs complement 50.19% on 6595 team-games (6898 in population, fraction_of_slate=0.0439). Raw covered-minus-baseline gap -2.3348 pts, week-blocked 95% [-8.5340, +3.8459] (277 blocks, 20000 draws, seed 20260817, within-week correlation zero), probability_positive=0.2288; season-blocked [-8.0201, +3.5400] (16 blocks), probability_positive=0.2164. Full-slate-scaled effect -0.1026 pts, 95% [-0.3749, +0.1689]. No admissible closing ground was established; classification remains unresolved_below_power. Use probability_positive reported above for the continuous evidence (estimate=-0.1026, interval=[-0.3749, +0.1689]). No positive control was run, so bounded_by_control cannot be claimed.",
+      "closing_ground": null,
+      "description": "LEAD-28: post-bye team-games (strict >=12-day gap) where the September 1 offensive coordinator (playcaller proxy) is in season 1 or 2 with the team, vs everyone else with known OC tenure. Direction: back the post-bye team.",
+      "effect": -0.102556,
+      "effect_units": "accuracy_points",
+      "family": "lead29_playcaller_change_v1",
+      "interval": [
+        -0.374863,
+        0.168936
+      ],
+      "league": "nfl",
+      "notes": "seed=20260817; samples=20000; screen only (no rotation window, no overlay, no challenger). Secondary opener grade 2020-2025: 56-54 (50.91% vs 49.82%), raw gap +1.0852 pts, week-blocked 95% [-7.8483, +10.2501], probability_positive 0.5899. OC tenure from preseason (September 1 cutoff) observations only; names compared after stripping the parenthetical disambiguator; unknown tenure excluded (2009 entirely, 2010 year-1 only).",
+      "plain_summary": "A team coming off its bye week whose offensive coordinator is in his first or second season with the team. Back that team.",
+      "probability_positive": 0.2288,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 277,
+      "sample_games": 6898,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "docs/playcaller_change_leads.md; results at C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneR\\run1\\results.json",
+      "standard_error": 0.138861
+    },
+    "lead29_playcaller_change_v1_post_bye_oc_interaction": {
+      "category": "offfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/playcaller_change_leads.md), family lead29_playcaller_change_v1, screened before any sign was read. Grade=close, seasons 2009-2025, design within_eligible, sign=+1. Flag 145-158 (47.85%) vs complement 52.94% on 119 team-games (6898 in population, fraction_of_slate=0.0612). Raw covered-minus-baseline gap -5.0864 pts, week-blocked 95% [-17.1291, +6.7826] (132 blocks, 20000 draws, seed 20260817, within-week correlation zero), probability_positive=0.2034; season-blocked [-17.5363, +8.5900] (16 blocks), probability_positive=0.2236. Full-slate-scaled effect -0.3112 pts, 95% [-1.0479, +0.4149]. No admissible closing ground was established; classification remains unresolved_below_power. Use probability_positive reported above for the continuous evidence (estimate=-0.3112, interval=[-1.0479, +0.4149]). No positive control was run, so bounded_by_control cannot be claimed.",
+      "closing_ground": null,
+      "description": "LEAD-28 interaction: within post-bye team-games with known OC tenure, season-1/2 offensive coordinator vs season-3+. Direction: the newer staff covers more.",
+      "effect": -0.311171,
+      "effect_units": "accuracy_points",
+      "family": "lead29_playcaller_change_v1",
+      "interval": [
+        -1.047909,
+        0.414941
+      ],
+      "league": "nfl",
+      "notes": "seed=20260817; samples=20000; screen only (no rotation window, no overlay, no challenger). Secondary opener grade 2020-2025: 56-54 (50.91% vs 43.48%), raw gap +7.4308 pts, week-blocked 95% [-12.4153, +27.1590], probability_positive 0.7615. OC tenure from preseason (September 1 cutoff) observations only; names compared after stripping the parenthetical disambiguator; unknown tenure excluded (2009 entirely, 2010 year-1 only).",
+      "plain_summary": "Among teams coming off a bye, the ones with a newer offensive coordinator against the ones with a long-tenured one. Back the newer staff.",
+      "probability_positive": 0.2034,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 132,
+      "sample_games": 422,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "docs/playcaller_change_leads.md; results at C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneR\\run1\\results.json",
+      "standard_error": 0.372556
+    },
+    "lead29_playcaller_change_v1_post_bye_veteran_oc_fade": {
+      "category": "offfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/playcaller_change_leads.md), family lead29_playcaller_change_v1, screened before any sign was read. Grade=close, seasons 2009-2025, design one_sided_vs_everyone_else, sign=-1. Flag 63-56 (52.94%) vs complement 50.04% on 6779 team-games (6898 in population, fraction_of_slate=0.0173). Raw covered-minus-baseline gap -2.9043 pts, week-blocked 95% [-12.1411, +6.3480] (277 blocks, 20000 draws, seed 20260817, within-week correlation zero), probability_positive=0.2675; season-blocked [-11.5808, +6.6556] (16 blocks), probability_positive=0.2633. Full-slate-scaled effect -0.0501 pts, 95% [-0.2095, +0.1095]. No admissible closing ground was established; classification remains unresolved_below_power. Use probability_positive reported above for the continuous evidence (estimate=-0.0501, interval=[-0.2095, +0.1095]). No positive control was run, so bounded_by_control cannot be claimed.",
+      "closing_ground": null,
+      "description": "LEAD-28: post-bye team-games where the September 1 offensive coordinator (playcaller proxy) is in season 3+ with the team, vs everyone else with known OC tenure. Direction: fade the post-bye team.",
+      "effect": -0.050103,
+      "effect_units": "accuracy_points",
+      "family": "lead29_playcaller_change_v1",
+      "interval": [
+        -0.209451,
+        0.109512
+      ],
+      "league": "nfl",
+      "notes": "seed=20260817; samples=20000; screen only (no rotation window, no overlay, no challenger). Secondary opener grade 2020-2025: 20-26 (43.48% vs 49.98%), raw gap +6.5026 pts, week-blocked 95% [-10.4436, +22.7273], probability_positive 0.7735. OC tenure from preseason (September 1 cutoff) observations only; names compared after stripping the parenthetical disambiguator; unknown tenure excluded (2009 entirely, 2010 year-1 only).",
+      "plain_summary": "A team coming off its bye week whose offensive coordinator has been there three seasons or more. Fade that team.",
+      "probability_positive": 0.2675,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 277,
+      "sample_games": 6898,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "docs/playcaller_change_leads.md; results at C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneR\\run1\\results.json",
+      "standard_error": 0.081431
+    }
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "family": "mod25e-e177-context-ratios",
+  "signals": {
+    "e176-q4-trailer-penalty-void-rate-sim-v-real": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Share of Q4 trailer downs 1-3 run/pass snaps nullified by penalty (no_play), sim F3 overlay minus real 2009-17: sim 6.36 v real 6.90",
+      "effect": -0.54,
+      "effect_units": "rate_pp",
+      "family": "mod25e-e177-context-ratios",
+      "interval": [
+        -0.75,
+        -0.33
+      ],
+      "league": "nfl",
+      "notes": "game bootstrap 1000 sim seeds 11-12 v real; leaders +0.15 [-0.10,+0.38], neutral -0.08 [-0.22,+0.06]; sim under-voids trailers",
+      "plain_summary": null,
+      "probability_positive": 0.0,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "docs/lanes/mod25e-e176-neutral-yards.md",
+      "standard_error": null
+    },
+    "e178-q4-trailer-state-rate-cx-occupancy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Q4 trailer drives (trail1-8 and trail>8), sim base minus real points per drive beyond real-EP value of the drive start state: -0.139 pts/drive, stored x100 as centipoints; leader-minus-trailer gap rate part +0.156 [+0.057,+0.257] vs occupancy -0.036; CTX F same (+0.158 rate, -0.045 occupancy)",
+      "effect": -13.9,
+      "effect_units": "rate_pp",
+      "family": "mod25e-e177-context-ratios",
+      "interval": [
+        -21.9,
+        -5.3
+      ],
+      "invalidated_reason": "per-state shortfall was an artifact of real kneel rows excluded plus last-drive drop (trailer final drives dropped in real, kept in sim: clock-end plays 4.3% real v 10.8% sim) and of an un-yardline-controlled mix; aligned universe gap -0.1 centipoints [-9.8,+9.9]",
+      "league": "nfl",
+      "notes": "game bootstrap 1000, sim seeds 11-12 sim games 2 arms, real 2304 games, EP lookup 154 down x dist x 10yd cells fit on real 2009-17 pooled\n[2026-10-19T03:22:02.293998+00:00] invalidated: per-state shortfall was an artifact of real kneel rows excluded plus last-drive drop (trailer final drives dropped in real, kept in sim: clock-end plays 4.3% real v 10.8% sim) and of an un-yardline-controlled mix; aligned universe gap -0.1 centipoints [-9.8,+9.9]. Superseded by: 'e181-q4-trailer-aligned-ep-gap'. Invalidation is not closure.",
+      "plain_summary": null,
+      "probability_positive": 0.01,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "docs/lanes/mod25e-e177-context-ratios.md",
+      "standard_error": null,
+      "status": "invalidated",
+      "superseded_by": "e181-q4-trailer-aligned-ep-gap"
+    },
+    "e181-q4-trailer-aligned-ep-gap": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Q4 trailer run/pass plays down 1-3 yl>10, sim base minus real realised drive points minus real E[drive pts] of the play state, after dropping drives ending in the last 120s and plays with 120s or less left (real kneel rows removed and final drive dropped, sim keeps them); stored x100 as centipoints; single-step EP gap -1.2 centipoints [-2.5,0.0]; punt share +3.7pp offset by turnover/downs share -3.9pp",
+      "effect": -0.1,
+      "effect_units": "rate_pp",
+      "family": "mod25e-e177-context-ratios",
+      "interval": [
+        -9.8,
+        9.9
+      ],
+      "league": "nfl",
+      "notes": "game bootstrap 800, sim base seeds 11-12 v real 2009-17; unaligned gap was -11.8 centipoints [-21.3,-2.8]",
+      "plain_summary": null,
+      "probability_positive": 0.48,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "docs/lanes/mod25e-e177-context-ratios.md",
+      "standard_error": null
+    }
+  }
+}

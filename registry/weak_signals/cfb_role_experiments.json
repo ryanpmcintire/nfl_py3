@@ -1,0 +1,117 @@
+{
+  "family": "cfb_role_experiments",
+  "signals": {
+    "cfb_role_experiments__market_market_residual_market_residual_roles_market_ridge__accuracy_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: cfb_role_experiments market+market_residual+market_residual_roles|market+ridge on accuracy, 2 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": 1.2139219015280136,
+      "effect_units": "accuracy_points",
+      "family": "cfb_role_experiments",
+      "interval": [
+        0.1055880738559187,
+        2.2611609550672003
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on winners picked: ahead of the market.",
+      "probability_positive": 0.9835,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 11780,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.5498910411253269
+    },
+    "cfb_role_experiments__market_market_residual_market_residual_roles_market_ridge__brier_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: cfb_role_experiments market+market_residual+market_residual_roles|market+ridge on brier, 2 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.001079230391227179,
+      "effect_units": "brier_improvement",
+      "family": "cfb_role_experiments",
+      "interval": [
+        -0.00224826484936261,
+        -3.301622187117087e-05
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on sharpness of the weekly chances: behind the market.",
+      "probability_positive": 0.0205,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 11780,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.0005651144457886324
+    },
+    "cfb_role_experiments__market_market_residual_market_residual_roles_market_ridge__log_loss_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: cfb_role_experiments market+market_residual+market_residual_roles|market+ridge on log_loss, 2 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.0027267196751963544,
+      "effect_units": "log_loss_improvement",
+      "family": "cfb_role_experiments",
+      "interval": [
+        -0.0054841785619794,
+        -0.0002839557343961888
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on confidence calibration: behind the market.",
+      "probability_positive": 0.0115,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 11780,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.0013265874560161254
+    },
+    "cfb_role_experiments__market_market_residual_market_residual_roles_market_ridge__margin_mae_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: cfb_role_experiments market+market_residual+market_residual_roles|market+ridge on margin_mae, 2 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.053177113807853296,
+      "effect_units": "mae_improvement",
+      "family": "cfb_role_experiments",
+      "interval": [
+        -0.09981636564658646,
+        -0.012119416664035607
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks. Margin cell corrected 2026-09-16: market baseline fixed from absolute line to absolute line-minus-final-margin error.",
+      "plain_summary": "Re-reading these past forecasts on final-score closeness: behind the market.",
+      "probability_positive": 0.007,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 11989,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.022371670658813993
+    }
+  }
+}

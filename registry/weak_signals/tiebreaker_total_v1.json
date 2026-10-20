@@ -1,0 +1,61 @@
+{
+  "family": "tiebreaker_total_v1",
+  "signals": {
+    "tiebreaker_total_loso_shade_vs_market": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval spans zero; neither a resolved wrong sign nor a control bound. Closing-grade totals, LOSO by season, 18 looks.",
+      "closing_ground": null,
+      "description": "Tiebreaker combined-score guess: LOSO-chosen integer shade of the market total vs entering the market total, MAE reduction in points, all REG games",
+      "effect": 0.01,
+      "effect_units": "mae_improvement",
+      "family": "tiebreaker_total_v1",
+      "interval": [
+        -0.021,
+        0.042
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Adjusting the sportsbook total did not reliably beat simply entering it for the tiebreaker.",
+      "probability_positive": 0.73,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 3407,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "docs/tiebreaker_total_study.md",
+      "standard_error": null
+    },
+    "tiebreaker_total_served_proxy_vs_market": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval spans zero; neither a resolved wrong sign nor a control bound. Closing-grade totals, LOSO by season, 18 looks.",
+      "closing_ground": null,
+      "description": "Tiebreaker combined-score guess: served guess proxy (0.1 x totals residual minus 1) vs entering the market total, MAE reduction in points, all REG games",
+      "effect": -0.002,
+      "effect_units": "mae_improvement",
+      "family": "tiebreaker_total_v1",
+      "interval": [
+        -0.042,
+        0.038
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Adjusting the sportsbook total did not reliably beat simply entering it for the tiebreaker.",
+      "probability_positive": 0.47,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 3407,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "docs/tiebreaker_total_study.md",
+      "standard_error": null
+    }
+  }
+}

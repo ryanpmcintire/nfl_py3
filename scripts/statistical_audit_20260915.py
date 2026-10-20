@@ -8,6 +8,8 @@ from pathlib import Path
 
 import pandas as pd
 
+from nfl_ats.weak_signals import read_registry_payload
+
 REPO = Path(__file__).resolve().parents[1]
 ARTIFACTS = REPO / "artifacts"
 REGISTRY = REPO / "registry"
@@ -33,7 +35,7 @@ def rule(title: str) -> None:
 
 def section_registry_look_count() -> None:
     rule("1. LOOK COUNT AND THE SHAPE OF probability_positive")
-    payload = json.loads((REGISTRY / "weak_signals.json").read_text(encoding="utf8"))
+    payload = read_registry_payload(REGISTRY / "weak_signals") or {"signals": {}}
     signals = list(payload["signals"].values())
     print(f"recorded signals: {len(signals)}")
     classifications: dict[str, int] = {}
@@ -71,7 +73,7 @@ def section_registry_look_count() -> None:
 
 def section_effect_versus_noise() -> None:
     rule("2. MEASURED EFFECT SIZE VERSUS THE SAMPLING-NOISE SCALE")
-    payload = json.loads((REGISTRY / "weak_signals.json").read_text(encoding="utf8"))
+    payload = read_registry_payload(REGISTRY / "weak_signals") or {"signals": {}}
     rows = []
     for key, signal in payload["signals"].items():
         if signal.get("effect_units") != "accuracy_points":

@@ -1,0 +1,89 @@
+{
+  "family": "rookie_priors_cover_rate",
+  "signals": {
+    "xlg06_rookie_high_leverage_starter_early_minus_late": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval spans zero, never a closing ground per AGENTS.md. The lean is toward the early weeks being the worse ones for rookie-starting teams (probability the early rate exceeds the late rate is 0.085, so the probability it is below is 0.915), which is directional evidence that the opener does not fully discount an early-season rookie starter, not a resolved result.",
+      "closing_ground": null,
+      "description": "Weeks 1-6 minus weeks 7+ opener cover-rate gap for teams starting a rookie at a high-leverage position; week-blocked bootstrap, 20,000 resamples, seed 20260911",
+      "effect": -2.63966919,
+      "effect_units": "accuracy_points",
+      "family": "rookie_priors_cover_rate",
+      "interval": [
+        -6.4274944,
+        1.11140488
+      ],
+      "league": "nfl",
+      "notes": "Marginal read pooling all rookie starters regardless of their own prior; it is deliberately NOT the conditional rule the production screen plays, which tilts only toward rookies whose prior exceeds generic replacement. 1,611 team-games, 107 week blocks.",
+      "plain_summary": "Teams starting a rookie at a key position did about 2.6 points worse against the opening line in the first six weeks than they did later in the year.",
+      "probability_positive": 0.084875,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.41222972,
+      "sample_blocks": 107,
+      "sample_games": 1611,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg06_rookie_priors/cover_rate_results.json",
+      "standard_error": null
+    },
+    "xlg06_rookie_high_leverage_starter_weeks_1_6_cover": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval spans zero, which per AGENTS.md is the expected outcome at this resolution and is never a closing ground. No wrong sign is resolved, and the rookie-prior construct behind this population has measured split-half reliability, so no_split_half_reliability is inadmissible too.",
+      "closing_ground": null,
+      "description": "Opener-graded cover rate of the team starting a rookie at a high-leverage position (QB, OL, pass-rusher) in weeks 1-6, expressed as accuracy points against the coin flip; week-blocked bootstrap, 20,000 resamples, seed 20260911",
+      "effect": -1.60642571,
+      "effect_units": "accuracy_points",
+      "family": "rookie_priors_cover_rate",
+      "interval": [
+        -5.01797513,
+        1.77168845
+      ],
+      "league": "nfl",
+      "notes": "Restricted-population cover rate against a 50% baseline, NOT a production-arm delta: any pooling with production accuracy_points rows must respect that the population differs. 498 team-games. Starter definition frozen before scoring in docs/rookie_priors_on_production.md section 5b.",
+      "plain_summary": "Teams starting a rookie quarterback, lineman or pass rusher in the first six weeks covered the opening line 48.4% of the time - slightly worse than a coin flip.",
+      "probability_positive": 0.17305,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.41222972,
+      "sample_blocks": 107,
+      "sample_games": 498,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg06_rookie_priors/cover_rate_results.json",
+      "standard_error": null
+    },
+    "xlg06_rookie_high_leverage_starter_weeks_7plus_cover": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval spans zero, never a closing ground per AGENTS.md; no wrong sign and non-zero reliability, so neither terminal ground applies.",
+      "closing_ground": null,
+      "description": "Opener-graded cover rate of the team starting a rookie at a high-leverage position (QB, OL, pass-rusher) in weeks 7 and later, expressed as accuracy points against the coin flip; week-blocked bootstrap",
+      "effect": 1.03324349,
+      "effect_units": "accuracy_points",
+      "family": "rookie_priors_cover_rate",
+      "interval": [
+        -0.67307692,
+        2.72411449
+      ],
+      "league": "nfl",
+      "notes": "Restricted-population cover rate against a 50% baseline, not a production-arm delta. 1,113 team-games.",
+      "plain_summary": "From week seven on, teams starting a rookie quarterback, lineman or pass rusher covered 51.0% of the time - slightly better than a coin flip.",
+      "probability_positive": 0.880675,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.41222972,
+      "sample_blocks": 107,
+      "sample_games": 1113,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg06_rookie_priors/cover_rate_results.json",
+      "standard_error": null
+    }
+  }
+}

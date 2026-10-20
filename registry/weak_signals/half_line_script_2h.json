@@ -1,0 +1,89 @@
+{
+  "family": "half_line_script_2h",
+  "signals": {
+    "lead02_half_line_2h": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground established; retain the predeclared lead.",
+      "closing_ground": null,
+      "description": "Pregame corrected 2H script disagreement: fade the full-game favorite; full.",
+      "effect": 16.666666666666668,
+      "effect_units": "accuracy_points",
+      "family": "half_line_script_2h",
+      "interval": [
+        0.0,
+        25.0
+      ],
+      "league": "nfl",
+      "notes": "2026-09-05 rerun after point-in-time fix 42d78f6; supersedes artifacts/lead02_half_line_script/20260905T174147Z/results.json. Offline cached archive, future movements rejected and in-play rows excluded. Predeclared empirical 20th-percentile rule retained; current cut 0.4095238095238095. Split-half reliability not estimated by this screen, not zero. Close-graded lead; no opener card estimate. Era full.",
+      "plain_summary": "We checked whether backing the underdog helps when its opponent has an unusually short 2H line compared with the full-game line. The corrected historical check remains unresolved.",
+      "probability_positive": 0.9235160652858084,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 4,
+      "sample_games": 4,
+      "seasons": [
+        2005,
+        2016
+      ],
+      "source": "artifacts/vegasinsider/cx7_42d78f6_lead02/results.json",
+      "standard_error": null
+    },
+    "lead02_half_line_2h_era_2005_2010": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Corrected comparison unestimable; no admissible closing ground.",
+      "closing_ground": null,
+      "description": "INVALIDATED historical 2H-era screen; corrected rerun has no estimable comparison.",
+      "effect": 3.4965,
+      "effect_units": "accuracy_points",
+      "family": "half_line_script_2h",
+      "interval": null,
+      "invalidated_reason": "Historical estimate used post-cutoff inputs; point-in-time-correct CX7 rerun has n=3, n_flag=0, n_complement=3; subset/complement effect is not estimable. No replacement era estimate. Source: artifacts/vegasinsider/cx7_42d78f6_lead02/results.json; docs/lead02_half_line_script.md, 2026-09-05 rerun. Mechanism remains unresolved_below_power; invalidation is not closure.",
+      "league": "nfl",
+      "notes": "2026-09-05 INVALIDATED after point-in-time fix 42d78f6: corrected rerun has n=3, n_flag=0, n_complement=3; no subset/complement effect, interval or probability_positive can be estimated. Source of rerun: artifacts/vegasinsider/cx7_42d78f6_lead02/results.json. The numerical fields retained here are CONTAMINATED HISTORICAL VALUES ONLY, not rerun evidence; record CLI requires a finite effect and has no invalidation/removal state. Do not use this entry in pooling or decisions. Unresolved mechanism; no admissible closing ground.\n[2026-09-05T20:14:20.700045+00:00] invalidated: Historical estimate used post-cutoff inputs; point-in-time-correct CX7 rerun has n=3, n_flag=0, n_complement=3; subset/complement effect is not estimable. No replacement era estimate. Source: artifacts/vegasinsider/cx7_42d78f6_lead02/results.json; docs/lead02_half_line_script.md, 2026-09-05 rerun. Mechanism remains unresolved_below_power; invalidation is not closure.. Superseded by: None. Invalidation is not closure.",
+      "plain_summary": "This earlier second-half comparison used information from after its cutoff. After correcting that timing, one comparison group is empty, so this era has no replacement estimate.",
+      "probability_positive": null,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 3,
+      "seasons": [
+        2005,
+        2010
+      ],
+      "source": "artifacts/lead02_half_line_script/20260905T174147Z/results.json",
+      "standard_error": null,
+      "status": "invalidated",
+      "superseded_by": null
+    },
+    "lead02_half_line_2h_era_2011_2016": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Corrected comparison unestimable; no admissible closing ground.",
+      "closing_ground": null,
+      "description": "INVALIDATED historical 2H-era screen; corrected rerun has no estimable comparison.",
+      "effect": 10.0,
+      "effect_units": "accuracy_points",
+      "family": "half_line_script_2h",
+      "interval": null,
+      "invalidated_reason": "Historical estimate used post-cutoff inputs; point-in-time-correct CX7 rerun has n=1, n_flag=1, n_complement=0; subset/complement effect is not estimable. No replacement era estimate. Source: artifacts/vegasinsider/cx7_42d78f6_lead02/results.json; docs/lead02_half_line_script.md, 2026-09-05 rerun. Mechanism remains unresolved_below_power; invalidation is not closure.",
+      "league": "nfl",
+      "notes": "2026-09-05 INVALIDATED after point-in-time fix 42d78f6: corrected rerun has n=1, n_flag=1, n_complement=0; no subset/complement effect, interval or probability_positive can be estimated. Source of rerun: artifacts/vegasinsider/cx7_42d78f6_lead02/results.json. The numerical fields retained here are CONTAMINATED HISTORICAL VALUES ONLY, not rerun evidence; record CLI requires a finite effect and has no invalidation/removal state. Do not use this entry in pooling or decisions. Unresolved mechanism; no admissible closing ground.\n[2026-09-05T20:14:20.767074+00:00] invalidated: Historical estimate used post-cutoff inputs; point-in-time-correct CX7 rerun has n=1, n_flag=1, n_complement=0; subset/complement effect is not estimable. No replacement era estimate. Source: artifacts/vegasinsider/cx7_42d78f6_lead02/results.json; docs/lead02_half_line_script.md, 2026-09-05 rerun. Mechanism remains unresolved_below_power; invalidation is not closure.. Superseded by: None. Invalidation is not closure.",
+      "plain_summary": "This earlier second-half comparison used information from after its cutoff. After correcting that timing, one comparison group is empty, so this era has no replacement estimate.",
+      "probability_positive": null,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1,
+      "seasons": [
+        2011,
+        2016
+      ],
+      "source": "artifacts/lead02_half_line_script/20260905T174147Z/results.json",
+      "standard_error": null,
+      "status": "invalidated",
+      "superseded_by": null
+    }
+  }
+}

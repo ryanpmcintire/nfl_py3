@@ -1,0 +1,33 @@
+{
+  "family": "per14_unit_prior_oracle_control",
+  "signals": {
+    "unit_prior_same_season_oracle_cx20": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Diagnostic control only; this observed oracle does not establish a proven candidate-sized detection bound. Never a playable feature or evidence for closing the lagged candidate.",
+      "closing_ground": null,
+      "description": "PER-14 deliberately leaky same-season final OL and skill unit-rating oracle on identical paired opener games",
+      "effect": 0.1330671989354624,
+      "effect_units": "accuracy_points",
+      "family": "per14_unit_prior_oracle_control",
+      "interval": [
+        -1.430590945866772,
+        1.6733601070950468
+      ],
+      "league": "nfl",
+      "notes": "Deliberately leaky same-season final ratings, not realized game margin; control only, not commensurable with playable signal inputs. Oracle 803/1503 vs baseline 801/1503. Same six season-held-out folds, 20000 week-block draws seed 20260902 and 1000 within-week outcome permutations. Neither added feature measures continuity.",
+      "plain_summary": "This diagnostic gives the model end-of-season offensive unit ratings before the games happen. It cannot be used for real picks.",
+      "probability_positive": 0.5503,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/experiments/unit_prior_features/cx20_20260905/results.json",
+      "standard_error": null
+    }
+  }
+}

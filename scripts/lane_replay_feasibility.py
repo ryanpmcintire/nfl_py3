@@ -10,7 +10,9 @@ from typing import Any
 import numpy as np
 from scipy.stats import rankdata
 
-WEAK_SIGNALS_PATH = Path("registry/weak_signals.json")
+from nfl_ats.weak_signals import read_registry_payload
+
+WEAK_SIGNALS_PATH = Path("registry/weak_signals")
 ROTATION_REGISTRY_PATH = Path("registry/rotation_registry.json")
 OUT_ROOT = Path("artifacts/lane_replay")
 BOOTSTRAP_DRAWS = 1000
@@ -25,7 +27,7 @@ BASE_RATE_BUCKETS = (("1-2", 1, 2), ("3-4", 3, 4), ("5-9", 5, 9), ("10+", 10, No
 
 
 def load_weak_signals() -> dict[str, Any]:
-    payload = json.loads(WEAK_SIGNALS_PATH.read_text(encoding="utf-8"))
+    payload = read_registry_payload(WEAK_SIGNALS_PATH) or {"signals": {}}
     return dict(payload["signals"])
 
 
@@ -314,7 +316,7 @@ def run() -> dict[str, Any]:
         "resolution_definition": {
             "cell_level": (
                 "classification in {refuted_mechanism, bounded_by_control} for any "
-                "cell in the family (registry/weak_signals.json 'classification' field)"
+                "cell in the family (registry/weak_signals/ 'classification' field)"
             ),
             "rotation_level": (
                 "rotation_registry.json families[family].status == 'closed_negative', "
@@ -513,7 +515,7 @@ def render_report(results: dict[str, Any]) -> str:
         "- The rotation registry contributed exactly one additional resolved family "
         "(`road_fav_big_fade_on_production`, status closed_negative) beyond what the "
         "cell classifications already gave; almost all resolution signal in this "
-        "measurement comes from `weak_signals.json` classifications, not from "
+        "measurement comes from `registry/weak_signals/` classifications, not from "
         "rotation status/verdict fields, because only 1 of 455 rotation families "
         "carries a non-`unresolved` verdict today (measured)."
     )

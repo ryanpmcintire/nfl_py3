@@ -1,0 +1,89 @@
+{
+  "family": "xlg05_transfer_prior",
+  "signals": {
+    "xlg05_transfer_cfb_prior": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Close-graded per the predeclaration's grade discipline: no terminal classification at this grade regardless of sign, and the sign here is POSITIVE anyway (+0.134 pts, tie-aware P+ 0.652 week-blocked, 0.860 season-blocked). refuted_mechanism unavailable on both grounds -- the week-blocked interval [-0.669,+0.926] straddles zero and its point estimate favours the candidate, and no_split_half_reliability was ruled out IN THE PREDECLARATION (section 6) because this family's arms differ in the ESTIMATOR, not in a feature column, so no trait exists to split. bounded_by_control unavailable: the positive control proved the harness detects a 49-accuracy-point effect, which bounds nothing at the fractions-of-a-point scale at issue.",
+      "closing_ground": null,
+      "description": "XLG-05 arm (c), CFB-PRETRAINED: a generalized ridge whose PRIOR MEAN is theta_cfb, the CFB-only fit on the same feature space (fit on y - X*theta_cfb, then theta_cfb added back), versus arm (a) the NFL-only ridge that shrinks toward zero. Both on the IDENTICAL 14-column shared feature subset S at the frozen ridge_alpha=10.0 against market_residual -- nothing new derived or tuned. Tests a MODEL change (where the estimator shrinks its coefficients), NOT a team-quality feature. Close-graded, walk-forward weekly, min_train_games=50. Predeclared in docs/xlg05_transfer_prior.md before any outcome number.",
+      "effect": 0.13404825737265416,
+      "effect_units": "accuracy_points",
+      "family": "xlg05_transfer_prior",
+      "interval": [
+        -0.6685164914043713,
+        0.9259259259259259
+      ],
+      "league": "nfl",
+      "notes": "Paired candidate-minus-baseline on 746 non-push games, 51 weeks, 3 seasons, rotation window [2011,2013] assigned by 'nfl-ats rotation assign'. Levels: cfb_prior 51.072% vs nfl_only 50.938%. Only 7 of 746 picks differ (4 better / 3 worse) -- the effect is small because at the frozen alpha=10 the prior moves home_cover_probability by at most 0.016 (about 0.55 points of predicted margin, measured on the 2011 slice), which flips a forced pick only within about half a point of the fence. Week-blocked 95% CI [-0.669,+0.926]; RECORDED probability_positive 0.6525 is TIE-AWARE, raw mean(draws>0) is 0.596 with a 0.113 tie share (docs/xlg05_transfer_prior.md section 6a). Season-blocked 95% CI [0.000,+0.408], raw P+ 0.720 / tie-aware 0.860 (only 3 blocks; low combinatorial diversity, read as secondary). Observed delta sits at the 41.0th percentile of its own within-week permutation null (null mean +0.076 pts). Reliability field deliberately LEFT NULL: the analogue measured here is prior-vector stability -- theta_cfb fit on odd vs even CFB seasons is ANTI-correlated, r=-0.5333, cosine -0.4986 (1128/1183 pre-window 2006-2010 rows) -- which is NOT trait reliability and must not be read as a no_split_half_reliability closure. S contains three exact collinearities by construction (diff = home - away for the EPA triples), so that anti-correlation is more plausibly a design defect in S than a fact about football; removing the redundant diff_* columns is a cheap CFB-only follow-up. This measurement CONTRADICTS docs/scaling_and_transfer.md's written expectation that alpha=10 would bind harder on NFL's smaller per-window training sets than it did at Group-of-Five scale: at 512-1,264 NFL training rows the prior is if anything more inert on the pick. Correlated with xlg05_transfer_naive_pooled and xlg05_transfer_partial_pooled: same window, same baseline arm, one look.",
+      "plain_summary": "Instead of starting the NFL model from nothing, we started it from what 12,500 college games say the same inputs are worth. It changed 7 picks out of 746 and got 4 of them right -- a very small lean in the transfer's favour, on far too few changed picks to act on.",
+      "probability_positive": 0.6525,
+      "recorded_at": "2026-09-01",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/xlg05_transfer_prior/20260901T195150Z/results.json",
+      "standard_error": null
+    },
+    "xlg05_transfer_naive_pooled": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Close-graded per the predeclaration's grade discipline: no terminal classification at this grade regardless of sign. refuted_mechanism unavailable on both grounds -- the week-blocked interval [-2.957,+3.200] straddles zero (no resolved wrong sign) and no_split_half_reliability was ruled out IN THE PREDECLARATION (section 6) because this family's arms differ in the ESTIMATOR, not in a feature column, so no trait exists to split. bounded_by_control unavailable: the positive control proved the harness detects a 49-accuracy-point effect (leaked baseline, -49.062 pts, P+ 0.000, 366 of 746 picks differing), which bounds nothing at the fractions-of-a-point scale actually at issue.",
+      "closing_ground": null,
+      "description": "XLG-05 arm (b), the naive pooled CONTROL: one ridge fit on NFL+CFB rows stacked with a binary league indicator (scored at the NFL indicator value), versus arm (a) the NFL-only ridge, both on the IDENTICAL 14-column shared feature subset S at the frozen ridge_alpha=10.0 against market_residual. Tests a MODEL change (where the estimator shrinks its coefficients) and NOT a team-quality feature: no arm sees a column another does not, so a difference between arms cannot be a team-quality-measurement difference. Close-graded, walk-forward weekly, min_train_games=50. Predeclared in docs/xlg05_transfer_prior.md before any outcome number.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "xlg05_transfer_prior",
+      "interval": [
+        -2.957088742239396,
+        3.200428954423592
+      ],
+      "league": "nfl",
+      "notes": "Paired candidate-minus-baseline on 746 non-push games (765 scored), 51 weeks, 3 seasons, rotation window [2011,2013] assigned by 'nfl-ats rotation assign' (family xlg05_transfer_prior, close, no inheritance, no --acknowledge-mined). Levels: naive_pooled 50.938% vs nfl_only 50.938%, exact tie. 220 of 746 picks differ, split 110 better / 110 worse. Week-blocked 95% CI [-2.957,+3.200]; the RECORDED probability_positive 0.5225 is TIE-AWARE (P(better)+0.5*P(tie)); the raw mean(draws>0) is 0.509 with a 0.027 tie share (see docs/xlg05_transfer_prior.md section 6a, an amendment disclosed between the null check and the screen: mean(draws>0) scores a dead heat as a certain loss). Season-blocked 95% CI [-1.600,+1.195], raw P+ 0.422 / tie-aware 0.532. This arm picks home 55.6% vs the baseline's 51.8%, so its within-week permutation null is centred at -1.219 pts, not zero; the observed +0.000 sits at the 74.5th percentile of that null. Reliability field deliberately LEFT NULL: the honest analogue measured here is prior-vector stability (theta_cfb odd vs even CFB seasons, r=-0.5333, cosine -0.4986, 1128/1183 pre-window rows), which is NOT trait reliability and must not be read as a no_split_half_reliability closure -- recording it in that field would invite exactly that error. Correlated with xlg05_transfer_cfb_prior and xlg05_transfer_partial_pooled: same window, same baseline arm, three views of one look, not three independent votes.",
+      "plain_summary": "We trained one model on NFL and college games together instead of NFL games alone. It changed 220 of 746 picks and got exactly 110 of them right and 110 wrong -- a dead-even coin flip. No change to what we play.",
+      "probability_positive": 0.5225,
+      "recorded_at": "2026-09-01",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/xlg05_transfer_prior/20260901T195150Z/results.json",
+      "standard_error": null
+    },
+    "xlg05_transfer_partial_pooled": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Close-graded per the predeclaration's grade discipline: no terminal classification at this grade regardless of sign. This arm is an EXACT TIE with the baseline -- 0 of 746 picks differ -- so refuted_mechanism is unavailable for want of any sign at all, let alone a resolved wrong one; the recorded probability_positive 0.500 is the tie-aware value (P(better)+0.5*P(tie)), and the raw mean(draws>0) of 0.000 is an artifact of scoring a dead heat as a loss, not evidence against the candidate (docs/xlg05_transfer_prior.md section 6a). no_split_half_reliability was ruled out IN THE PREDECLARATION (section 6): the arms differ in the ESTIMATOR, not in a feature column, so no trait exists to split. bounded_by_control unavailable: the positive control proved the harness detects a 49-accuracy-point effect, which bounds nothing at this scale.",
+      "closing_ground": null,
+      "description": "XLG-05 arm (d), PARTIALLY POOLED: generalized ridge toward kappa*theta_cfb, with the prior STRENGTH kappa chosen by leave-one-season-out on TRAINING seasons only over the frozen grid {0,0.25,0.5,0.75,1}; kappa=0 reproduces arm (a) exactly and kappa=1 reproduces arm (c) exactly, so the arm is an interpolation containing both neighbours rather than a third mechanism. Versus arm (a), the NFL-only ridge. Both on the IDENTICAL 14-column shared feature subset S at the frozen ridge_alpha=10.0 against market_residual -- only kappa is selected, the alpha is never tuned. Tests a MODEL change, NOT a team-quality feature. Close-graded, walk-forward weekly, min_train_games=50. Predeclared in docs/xlg05_transfer_prior.md before any outcome number.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "xlg05_transfer_prior",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Paired candidate-minus-baseline on 746 non-push games, 51 weeks, 3 seasons, rotation window [2011,2013] assigned by 'nfl-ats rotation assign'. EXACT TIE: 0 of 746 picks differ, both arms 50.938%, week- and season-blocked CIs are point masses at [0,0]. The selection was genuinely exercised, not pinned: kappa = 0.00 in 34 weeks, 0.25 in 1, 0.50 in 1, 0.75 in 1, 1.00 in 14, with ZERO LOSO fallbacks (every week had 2-5 usable training seasons). The prior does move the coefficients -- theta_d - theta_a is non-zero in 17 of 51 weeks -- but at the frozen alpha=10 it shifts home_cover_probability by at most 0.016 (~0.55 points of predicted margin), too little to cross the 0.5 forced-pick threshold on any game here. TEAM-QUALITY BOUND CHECK (owner's 'team quality is already priced'): the bound cannot apply by construction since all arms share one design, and the decomposition sharpens that -- 96.2% of the prior's squared coefficient movement lands in the six team-quality (EPA) columns, while the prior_market_only diagnostic arm, which forbids the prior from touching any of them, ALSO changes zero picks. Zero gain on both sides of the partition, so there is no gain to attribute to team quality and none outside it. That diagnostic arm is deliberately NOT recorded as its own signal: it is a correlated decomposition of this same window. Reliability field deliberately LEFT NULL -- see xlg05_transfer_cfb_prior's notes for the prior-vector stability measurement (r=-0.5333) and why it must not be read as trait reliability. Correlated with the other two xlg05_transfer_* entries: same window, same baseline arm, one look.",
+      "plain_summary": "We let the model decide for itself, season by season, how much to trust the college-football starting point. On this window it ended up playing exactly the same 746 picks as the NFL-only model -- an identical card, so there is nothing here to act on either way.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-01",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/xlg05_transfer_prior/20260901T195150Z/results.json",
+      "standard_error": null
+    }
+  }
+}

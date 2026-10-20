@@ -1,0 +1,61 @@
+{
+  "family": "lane_replay_feasibility_v1",
+  "signals": {
+    "lane_replay_feasibility_effect_se_k3": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval crosses zero on the low side; permutation p 0.046 at 12 positives; split-half reliability of the predictor not measured (unit 2); no positive control run",
+      "closing_ground": null,
+      "description": "ENG-45 unit 1: does the max |effect/SE| over a family's first 3 registry cells predict that the family eventually resolves (refuted or bounded)? Somers' D = 2*AUC-1 from AUC 0.688 [0.476, 0.860]; permutation p 0.046 within cell-count buckets; 36 families, 12 resolved; 6 looks in the family (k in 1,2,3 x 2 predictors)",
+      "effect": 0.376,
+      "effect_units": "correlation",
+      "family": "lane_replay_feasibility_v1",
+      "interval": [
+        -0.048,
+        0.72
+      ],
+      "league": "nfl",
+      "notes": "Dream-RSI replay feasibility; minor look-ahead: 2 of 12 resolved families carry their closing cell inside the first 3",
+      "plain_summary": "When a research idea's first few measurements already show a large effect relative to their noise, that idea is somewhat more likely to end up decisively settled later. The sample of settled ideas is small, so this is a lead, not a rule.",
+      "probability_positive": 0.964,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/lane_replay/20260916T144228Z/results.json",
+      "standard_error": null
+    },
+    "lane_replay_feasibility_prob_dev_k3": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval crosses zero; permutation p 0.246; reliability not measured; no positive control",
+      "closing_ground": null,
+      "description": "ENG-45 unit 1: does the mean |P+ - 0.5| over a family's first 3 registry cells predict eventual resolution? Somers' D from AUC 0.586 [0.443, 0.733]; permutation p 0.246; 80 families, 18 resolved; same 6-look family",
+      "effect": 0.172,
+      "effect_units": "correlation",
+      "family": "lane_replay_feasibility_v1",
+      "interval": [
+        -0.114,
+        0.466
+      ],
+      "league": "nfl",
+      "notes": "Dream-RSI replay feasibility, weaker predictor of the pair",
+      "plain_summary": "How far an idea's first few measurements sit from a coin flip says little about whether the idea gets settled later.",
+      "probability_positive": 0.877,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 80,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/lane_replay/20260916T144228Z/results.json",
+      "standard_error": null
+    }
+  }
+}

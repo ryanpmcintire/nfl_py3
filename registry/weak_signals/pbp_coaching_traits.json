@@ -1,0 +1,117 @@
+{
+  "family": "pbp_coaching_traits",
+  "signals": {
+    "pbp_trait_fourth_down_go_rate_reliability": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Reliability-only screen (lane J); this entry does not adjudicate a closing ground. Raw within-season Pearson r=+0.3145, 95% season-blocked CI entirely positive [+0.2074,+0.3828], P+=1.0000, Spearman-Brown full-length reliability +0.4785 -- the strongest raw reliability of the four screened metrics. CAVEAT (measured, not a reason to reclassify): unlike the other three metrics (whose label-shuffle nulls sit at +0.0001 to +0.0152), this metric's within-season null centers at +0.2059 (SD 0.0348) and its season-to-season null at +0.3096 (SD 0.0304) -- both far from zero. Because the null only shuffles team labels WITHIN a season, it cannot remove a trend that runs ACROSS seasons, and fourth-down aggressiveness has a well-documented leaguewide increase over 2009-2025; the raw r above is real and positive but likely conflates team-specific persistence with a shared era trend. The excess over the null (~+0.11 within-season, ~+0.10 season-to-season) is the more conservative read of team-specific persistence. Season-to-season replicate (not the recorded effect): r=+0.4124, 95% [+0.2760,+0.5012], P+=1.0000. A real filter bug (play==1 gate silently discarding all punts/FGs, giving a degenerate constant 1.0 go rate) was found and fixed before this measurement; see docs/pbp_trait_reliability.md and the pre-fix artifact kept at artifacts/pbp_trait_reliability/20260905T040022Z/results.json for the record. Earns an ATS look per the task's own bar (non-zero reliability, P+>0.5); ROADMAP LEAD-30 stays open pending the interaction-specific ATS look (BACK aggressive underdogs, FADE aggressive favorites -- never pooled).",
+      "closing_ground": null,
+      "description": "Split-half reliability of a team's fourth-down go-for-it rate on 4th-and-<=3 outside field-goal range (yardline_100 in [30,70]), LEAD-30. Within-season odd/even-week team-season split, Spearman-Brown corrected, season-blocked bootstrap (2000 draws, seed 20260905).",
+      "effect": 0.31448237104123,
+      "effect_units": "correlation",
+      "family": "pbp_coaching_traits",
+      "interval": [
+        0.2073966663108824,
+        0.38276935011827146
+      ],
+      "league": "nfl",
+      "notes": "docs/pbp_trait_reliability.md section LEAD-30. scripts/pbp_trait_reliability_screen.py, seed 20260905, n_boot=2000, n_null=2000. Definition frozen: 4th down, 1<=ydstogo<=3, yardline_100 in [30,70], play_type in {run,pass,punt,field_goal}, go=play_type in {run,pass}.",
+      "plain_summary": "How often a team goes for it on 4th-and-short is a real, repeatable team trait -- though part of that repeatability is just every team getting more aggressive over the years together, not only individual team style (not yet tested against the betting line).",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-05",
+      "reliability": 0.4784885335390564,
+      "sample_blocks": 17,
+      "sample_games": 543,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/pbp_trait_reliability/20260905T040350Z/results.json",
+      "standard_error": null
+    },
+    "pbp_trait_opening_drive_epa_reliability": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Reliability-only screen (lane J); this entry does not adjudicate a closing ground. Raw within-season Pearson r=+0.1733, 95% season-blocked CI entirely positive [+0.0770,+0.2705], P+=1.0000, Spearman-Brown full-length reliability +0.2954. Season-to-season replicate (not the recorded effect): r=+0.1723, 95% [+0.0946,+0.2493], P+=1.0000. Label-shuffle null centers near zero (mean +0.0001, SD 0.0425). Earns an ATS look per the task's own bar (non-zero reliability, P+>0.5); ROADMAP LEAD-26 stays open pending that separate ATS look.",
+      "closing_ground": null,
+      "description": "Split-half reliability of a team's opening-drive (own first fixed_drive of the game) play-weighted EPA/play, LEAD-26. Within-season odd/even-week team-season split, Spearman-Brown corrected, season-blocked bootstrap (2000 draws, seed 20260905).",
+      "effect": 0.1733160264665965,
+      "effect_units": "correlation",
+      "family": "pbp_coaching_traits",
+      "interval": [
+        0.07700669592415517,
+        0.27054311249575963
+      ],
+      "league": "nfl",
+      "notes": "docs/pbp_trait_reliability.md section LEAD-26. scripts/pbp_trait_reliability_screen.py, seed 20260905, n_boot=2000, n_null=2000.",
+      "plain_summary": "How much a team's opening drive is worth in points-added-per-play is a repeatable team trait, not just game-to-game noise -- a real, positive, measured pattern (not yet tested against the betting line).",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-05",
+      "reliability": 0.2954294027475822,
+      "sample_blocks": 17,
+      "sample_games": 544,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/pbp_trait_reliability/20260905T040350Z/results.json",
+      "standard_error": null
+    },
+    "pbp_trait_opening_drive_td_rate_reliability": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Reliability-only screen (lane J); this entry does not adjudicate a closing ground. Raw within-season Pearson r=+0.1878, 95% season-blocked CI entirely positive [+0.1310,+0.2391], P+=1.0000, Spearman-Brown full-length reliability +0.3162. Season-to-season replicate (not the recorded effect): r=+0.1614, 95% [+0.0909,+0.2306], P+=1.0000. Label-shuffle null centers near zero (mean +0.0152, SD 0.0414), consistent with a genuine reliability signal rather than an estimator artifact. Earns an ATS look per the task's own bar (non-zero reliability, P+>0.5); ROADMAP LEAD-26 stays open pending that separate ATS look.",
+      "closing_ground": null,
+      "description": "Split-half reliability of a team's opening-drive (own first fixed_drive of the game) TD rate, LEAD-26. Within-season odd/even-week team-season split, Spearman-Brown corrected, season-blocked bootstrap (2000 draws, seed 20260905).",
+      "effect": 0.18779043948596574,
+      "effect_units": "correlation",
+      "family": "pbp_coaching_traits",
+      "interval": [
+        0.1309798342870977,
+        0.23908552579332262
+      ],
+      "league": "nfl",
+      "notes": "docs/pbp_trait_reliability.md section LEAD-26. scripts/pbp_trait_reliability_screen.py, seed 20260905, n_boot=2000, n_null=2000.",
+      "plain_summary": "Teams that run efficient scripted opening drives tend to keep doing it: this measured how consistent a team's opening-drive touchdown rate is from one half-season to the next and found a real, positive, repeatable pattern (not yet tested against the betting line).",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-05",
+      "reliability": 0.3162012982142454,
+      "sample_blocks": 17,
+      "sample_games": 544,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/pbp_trait_reliability/20260905T040350Z/results.json",
+      "standard_error": null
+    },
+    "pbp_trait_q3_point_diff_reliability": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Reliability-only screen (lane J); this entry does not adjudicate a closing ground. Raw within-season Pearson r=+0.2385, 95% season-blocked CI entirely positive [+0.1746,+0.2964], P+=1.0000, Spearman-Brown full-length reliability +0.3851 -- the strongest of the four screened metrics on this measure. Season-to-season replicate (not the recorded effect): r=+0.2281, 95% [+0.1408,+0.3172], P+=1.0000. Label-shuffle null centers near zero (mean +0.0016, SD 0.0435). Earns an ATS look per the task's own bar (non-zero reliability, P+>0.5); ROADMAP LEAD-27 stays open pending that separate ATS look.",
+      "closing_ground": null,
+      "description": "Split-half reliability of a team's own third-quarter point differential (own Q3 points minus opponent's, from score_differential state at the first play of Q3 and Q4), LEAD-27. Within-season odd/even-week team-season split, Spearman-Brown corrected, season-blocked bootstrap (2000 draws, seed 20260905).",
+      "effect": 0.23847854457899095,
+      "effect_units": "correlation",
+      "family": "pbp_coaching_traits",
+      "interval": [
+        0.1746424084535,
+        0.2964153078425508
+      ],
+      "league": "nfl",
+      "notes": "docs/pbp_trait_reliability.md section LEAD-27. scripts/pbp_trait_reliability_screen.py, seed 20260905, n_boot=2000, n_null=2000.",
+      "plain_summary": "Some teams reliably win or lose the third quarter more than others, season after season -- a real, repeatable halftime-adjustment pattern, the strongest of the three traits measured here (not yet tested against the betting line).",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-05",
+      "reliability": 0.38511534272894404,
+      "sample_blocks": 17,
+      "sample_games": 544,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/pbp_trait_reliability/20260905T040350Z/results.json",
+      "standard_error": null
+    }
+  }
+}

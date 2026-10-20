@@ -128,6 +128,7 @@ from nfl_ats.team_explorer import (
 )
 from nfl_ats.weak_signals import Registry as WeakSignalRegistry
 from nfl_ats.weak_signals import default_registry_path as _default_weak_signals_registry_path
+from nfl_ats.weak_signals import merged_registry_file
 
 DISCLAIMER_SHORT = "Research project -- simulated, paper picks only. Not betting advice."
 
@@ -1351,11 +1352,12 @@ def load_model_ledger_html(artifacts_root: Path) -> str:
     if not challengers_path.is_file():
         return ""
     try:
-        return build_and_render(
-            challengers_path,
-            _default_weak_signals_registry_path(),
-            artifacts_root / "active_ats_model.json",
-        )
+        with merged_registry_file(_default_weak_signals_registry_path()) as merged_registry:
+            return build_and_render(
+                challengers_path,
+                merged_registry,
+                artifacts_root / "active_ats_model.json",
+            )
     except (ValueError, OSError) as error:
         detail = escape(str(error)) or "unknown error"
         return _LEDGER_UNAVAILABLE_HTML.replace("{detail}", detail)
@@ -2036,7 +2038,7 @@ def _watching_lead_card(
     league_words = "NFL" if lead.league == "nfl" else lead.league.upper()
     headline_text = blurb.text if blurb is not None else lead.description
     registry_link = (
-        '<p class="fine" style="margin-top:8px;"><a href="../registry/weak_signals.json">'
+        '<p class="fine" style="margin-top:8px;"><a href="../registry/weak_signals/">'
         "details in the research registry</a></p>"
     )
     inner = (
@@ -2076,7 +2078,7 @@ def _watching_section(
     header = _section_header(
         "What we're watching",
         "The open leads, generated fresh every time this page builds",
-        "Every card below comes straight from registry/weak_signals.json at build time -- "
+        "Every card below comes straight from registry/weak_signals/ at build time -- "
         "nobody typed these in, and nobody has to update them when new evidence is recorded. "
         "Each is 'unresolved_below_power': the interval crosses zero, which at this "
         "evaluator's roughly 2-point resolution is the EXPECTED shape for a real small "

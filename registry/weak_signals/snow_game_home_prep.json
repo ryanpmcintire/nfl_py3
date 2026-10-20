@@ -1,0 +1,145 @@
+{
+  "family": "snow_game_home_prep",
+  "signals": {
+    "snow_game_home_prep_cover_gap_even_seasons": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "N=10 snow games on the even-seasons half alone; interval crosses zero. Same construct as snow_game_home_prep_cover_gap_odd_seasons, disjoint season half. Both halves lean the same (positive) direction, which is consistent with the pooled read but far from resolving it at this N.",
+      "closing_ground": null,
+      "description": "LEAD-38 split-half check (even-numbered seasons half): home cover rate gap, snow games vs population, restricted to even-numbered REG seasons 2009-2025.",
+      "effect": 0.8491508491508482,
+      "effect_units": "accuracy_points",
+      "family": "snow_game_home_prep",
+      "interval": [
+        -34.108774865270966,
+        37.63320787728055
+      ],
+      "league": "nfl",
+      "notes": "week-blocked bootstrap within the even-seasons subset only, 20000 draws, seed 20260911; script scripts/snow_game_home_prep_screen.py screen. Paired odd-seasons entry: snow_game_home_prep_cover_gap_odd_seasons.",
+      "plain_summary": "Splitting the snow-game seasons in half (even years only), the home-team edge again leans slightly positive, matching the odd-years half, but the sample is still tiny.",
+      "probability_positive": 0.5258892390814949,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 10,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/snow_game_home_prep/screen_results.json",
+      "standard_error": null
+    },
+    "snow_game_home_prep_cover_gap_odd_seasons": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "N=12 snow games on the odd-seasons half alone; interval crosses zero. snow_flag is a per-game situational condition, not a persistent per-team trait, so a formal split-half correlation coefficient does not apply the way it would to a trait; this entry and its even-seasons sibling report the same construct measured independently on disjoint season halves instead.",
+      "closing_ground": null,
+      "description": "LEAD-38 split-half check (odd-numbered seasons half): home cover rate gap, snow games vs population, restricted to odd-numbered REG seasons 2009-2025.",
+      "effect": 1.2706197057512247,
+      "effect_units": "accuracy_points",
+      "family": "snow_game_home_prep",
+      "interval": [
+        -23.98566601206274,
+        51.45948456393974
+      ],
+      "league": "nfl",
+      "notes": "week-blocked bootstrap within the odd-seasons subset only, 20000 draws, seed 20260911; script scripts/snow_game_home_prep_screen.py screen. Paired even-seasons entry: snow_game_home_prep_cover_gap_even_seasons.",
+      "plain_summary": "Splitting the snow-game seasons in half (odd years only), the home-team edge still leans slightly positive, but with only 12 games this half proves little on its own.",
+      "probability_positive": 0.5703675918979745,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 12,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/snow_game_home_prep/screen_results.json",
+      "standard_error": null
+    },
+    "snow_game_home_prep_cover_gap_vs_cold_outdoor_other": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "N=22 snow games vs 167 cold-but-not-snow outdoor games; interval crosses zero on both blockings and the point estimate leans slightly negative. Not a resolved wrong sign (interval does not sit entirely below zero on either blocking) and no positive control has been run; recorded unresolved_below_power.",
+      "closing_ground": null,
+      "description": "LEAD-38: home cover rate in forecast-snow games minus home cover rate in other outdoor games that are also forecast-freezing (temp<=32F) but do not clear the precip-probability threshold (the marginal contribution of precipitation given cold). Predeclared direction: positive.",
+      "effect": -2.6946107784431184,
+      "effect_units": "accuracy_points",
+      "family": "snow_game_home_prep",
+      "interval": [
+        -24.659344598054272,
+        26.785361943519515
+      ],
+      "league": "nfl",
+      "notes": "week-blocked primary (block=season*100+week), season-blocked secondary; 20000-draw block bootstrap, seed 20260911; script scripts/snow_game_home_prep_screen.py screen. Season-blocked CI [-24.36, 22.56], P+ 0.4254.",
+      "plain_summary": "Comparing snow games only to other freezing outdoor games (not to the whole league), the home team does not show an extra edge from the snow itself -- but there are only 22 snow games to look at.",
+      "probability_positive": 0.427725,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 74,
+      "sample_games": 189,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/snow_game_home_prep/screen_results.json",
+      "standard_error": null
+    },
+    "snow_game_home_prep_cover_gap_vs_population": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "N=22 flagged games (0.5% of the population); interval crosses zero on both week-blocked and season-blocked bootstraps. Per AGENTS.md this is the expected shape for a real small signal at this evaluator's resolution, not a negative; no refuted-mechanism or positive-control ground applies.",
+      "closing_ground": null,
+      "description": "LEAD-38: home cover rate in forecast-snow games (outdoor venue, pool_decision-cutoff forecast precip probability >= 50%, forecast temp <= 32F) minus the full REG 2009-2025 population's home cover rate. Predeclared direction: positive (backing home teams in snow games).",
+      "effect": 1.0718492343934016,
+      "effect_units": "accuracy_points",
+      "family": "snow_game_home_prep",
+      "interval": [
+        -18.938089955991934,
+        29.36677631578947
+      ],
+      "league": "nfl",
+      "notes": "week-blocked primary (block=season*100+week), season-blocked secondary; 20000-draw block bootstrap, seed 20260911; script scripts/snow_game_home_prep_screen.py screen. Season-blocked CI [-20.38, 27.03], P+ 0.5605.",
+      "plain_summary": "When the forecast calls for snow at kickoff, home teams cover about 1 point more often than the league average, but snow games are so rare that this could easily be nothing.",
+      "probability_positive": 0.549525,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 4267,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/snow_game_home_prep/screen_results.json",
+      "standard_error": null
+    },
+    "snow_game_home_prep_market_pricing_check": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "N=22 paired games (season-blocked, 17 season blocks); interval crosses zero. No refuted-mechanism or positive-control ground; the market shows no detectable shading toward home in snow games at this sample size, but this cannot rule out a small one.",
+      "closing_ground": null,
+      "description": "LEAD-38: diagnostic, not a candidate mechanism. Paired difference between a snow game's home-perspective spread_line and the same home team's other REG home games in the same season that are not snow-flagged. Unsigned/exploratory: tests whether the market already shades the opening-style line toward the home team on forecast-snow games.",
+      "effect": -0.1864177489177491,
+      "effect_units": "ats_points",
+      "family": "snow_game_home_prep",
+      "interval": [
+        -2.236795292829776,
+        2.5550382653061052
+      ],
+      "league": "nfl",
+      "notes": "diff = snow_game spread_line - mean(control spread_lines), home-perspective sign (negative = market favours home more in the snow game); probability_positive here is defined as P(diff<0), i.e. probability the market already shades toward home, via probability_positive_from_draws(-draws). season-blocked bootstrap, 20000 draws, seed 20260911. script scripts/snow_game_home_prep_screen.py screen.",
+      "plain_summary": "Checking the betting line itself: sportsbooks do not appear to move the spread specially for snow games compared to that same team's other home games, but the sample is small.",
+      "probability_positive": 0.562,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 22,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/snow_game_home_prep/screen_results.json",
+      "standard_error": null
+    }
+  }
+}

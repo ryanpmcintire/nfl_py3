@@ -1,0 +1,145 @@
+{
+  "family": "arctic_shift_battery",
+  "signals": {
+    "reddit_away_comment_ratio_elevated": {
+      "category": "attention",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground was established; classification remains unresolved_below_power. Use probability_positive reported above for the continuous evidence (estimate=+0.1860, interval=[-0.3299, +0.6959]).",
+      "closing_ground": null,
+      "description": "Away team comment-to-post ratio_z >= 2 vs not, response home_cover. Predicted sign: POSITIVE. Predeclared docs/arctic_shift_ats_battery.md; mined battery, uncorrected multiplicity; Arctic Shift subreddit post+comment volume, window ends Tuesday of game week (point-in-time safe).",
+      "effect": 0.18601754424938355,
+      "effect_units": "accuracy_points",
+      "family": "arctic_shift_battery",
+      "interval": [
+        -0.3299168240492522,
+        0.6958810178578794
+      ],
+      "league": "nfl",
+      "notes": "No admissible closing ground was established; classification remains unresolved_below_power. Use probability_positive reported above for the continuous evidence (estimate=+0.1860, interval=[-0.3299, +0.6959]). Season-blocked secondary 95% CI [-0.2605, +0.6168], P+=0.7981. n_population=3347, n_excluded_missing=970, n_flag=294. Arctic Shift subreddit fan-reaction battery (docs/arctic_shift_ats_battery.md); predeclared before any cover-rate sign was inspected; the separate ATS-battery decision docs/arctic_shift_gate.md's own shared-variance-vs-Wikipedia gate left open (construct overlap is not an admissible AGENTS.md closing ground). Reliability figure used is the ratio split-half reliability (structurally distinct trait from the other cells' reliability figure -- see docs/arctic_shift_ats_battery.md section 6). Point-in-time-safe as-of construction: Tuesday-ending 7-day window, trailing baseline reset per (team, season), reused from scripts/attention_battery_screen.py.",
+      "plain_summary": "Away fans posting unusually many comments. Back the home team.",
+      "probability_positive": 0.76065,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9920242411347565,
+      "sample_blocks": 245,
+      "sample_games": 3347,
+      "seasons": [
+        2009,
+        2026
+      ],
+      "source": "docs/arctic_shift_ats_battery.md, artifacts\\arctic_shift_battery\\20260826T112721Z\\results.json",
+      "standard_error": null
+    },
+    "reddit_away_spike_value": {
+      "category": "attention",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground was established; classification remains unresolved_below_power. Use probability_positive reported above for the continuous evidence (estimate=+0.2136, interval=[-0.2242, +0.6445]).",
+      "closing_ground": null,
+      "description": "Away team subreddit volume_z >= 2 vs not, response home_cover. Predicted sign: POSITIVE. Predeclared docs/arctic_shift_ats_battery.md; mined battery, uncorrected multiplicity; Arctic Shift subreddit post+comment volume, window ends Tuesday of game week (point-in-time safe).",
+      "effect": 0.21361877880942906,
+      "effect_units": "accuracy_points",
+      "family": "arctic_shift_battery",
+      "interval": [
+        -0.22421584845965026,
+        0.6444520654829125
+      ],
+      "league": "nfl",
+      "notes": "No admissible closing ground was established; classification remains unresolved_below_power. Use probability_positive reported above for the continuous evidence (estimate=+0.2136, interval=[-0.2242, +0.6445]). Season-blocked secondary 95% CI [-0.3029, +0.6541], P+=0.7844. n_population=3412, n_excluded_missing=905, n_flag=225. Arctic Shift subreddit fan-reaction battery (docs/arctic_shift_ats_battery.md); predeclared before any cover-rate sign was inspected; the separate ATS-battery decision docs/arctic_shift_gate.md's own shared-variance-vs-Wikipedia gate left open (construct overlap is not an admissible AGENTS.md closing ground). Reliability figure used is the volume split-half reliability (structurally distinct trait from the other cells' reliability figure -- see docs/arctic_shift_ats_battery.md section 6). Point-in-time-safe as-of construction: Tuesday-ending 7-day window, trailing baseline reset per (team, season), reused from scripts/attention_battery_screen.py.",
+      "plain_summary": "Away subreddit spikes this week. Back the home team.",
+      "probability_positive": 0.8317,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9924192331348414,
+      "sample_blocks": 245,
+      "sample_games": 3412,
+      "seasons": [
+        2009,
+        2026
+      ],
+      "source": "docs/arctic_shift_ats_battery.md, artifacts\\arctic_shift_battery\\20260826T112721Z\\results.json",
+      "standard_error": null
+    },
+    "reddit_home_comment_ratio_elevated": {
+      "category": "attention",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground was established; classification remains unresolved_below_power. Use probability_positive reported above for the continuous evidence (estimate=+0.3287, interval=[-0.2067, +0.8831]).",
+      "closing_ground": null,
+      "description": "Home team comment-to-post ratio_z >= 2 (own-baseline elevated argument/anxiety proxy) vs not, response home_cover. Predicted sign: NEGATIVE. Predeclared docs/arctic_shift_ats_battery.md; mined battery, uncorrected multiplicity; Arctic Shift subreddit post+comment volume, window ends Tuesday of game week (point-in-time safe).",
+      "effect": 0.32869258006386204,
+      "effect_units": "accuracy_points",
+      "family": "arctic_shift_battery",
+      "interval": [
+        -0.2066733018455237,
+        0.8831291292913476
+      ],
+      "league": "nfl",
+      "notes": "No admissible closing ground was established; classification remains unresolved_below_power. Use probability_positive reported above for the continuous evidence (estimate=+0.3287, interval=[-0.2067, +0.8831]). Season-blocked secondary 95% CI [+0.0784, +0.6032], P+=0.9958. n_population=3365, n_excluded_missing=952, n_flag=357. Arctic Shift subreddit fan-reaction battery (docs/arctic_shift_ats_battery.md); predeclared before any cover-rate sign was inspected; the separate ATS-battery decision docs/arctic_shift_gate.md's own shared-variance-vs-Wikipedia gate left open (construct overlap is not an admissible AGENTS.md closing ground). Reliability figure used is the ratio split-half reliability (structurally distinct trait from the other cells' reliability figure -- see docs/arctic_shift_ats_battery.md section 6). Point-in-time-safe as-of construction: Tuesday-ending 7-day window, trailing baseline reset per (team, season), reused from scripts/attention_battery_screen.py.",
+      "plain_summary": "Home fans posting unusually many comments. Fade that team.",
+      "probability_positive": 0.8848,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9920242411347565,
+      "sample_blocks": 245,
+      "sample_games": 3365,
+      "seasons": [
+        2009,
+        2026
+      ],
+      "source": "docs/arctic_shift_ats_battery.md, artifacts\\arctic_shift_battery\\20260826T112721Z\\results.json",
+      "standard_error": null
+    },
+    "reddit_home_spike_fade": {
+      "category": "attention",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground was established; classification remains unresolved_below_power. Use probability_positive reported above for the continuous evidence (estimate=-0.0577, interval=[-0.4857, +0.3673]).",
+      "closing_ground": null,
+      "description": "Home team subreddit volume_z >= 2 (own-baseline post+comment spike) vs not, response home_cover. Predicted sign: NEGATIVE. Predeclared docs/arctic_shift_ats_battery.md; mined battery, uncorrected multiplicity; Arctic Shift subreddit post+comment volume, window ends Tuesday of game week (point-in-time safe).",
+      "effect": -0.05774345552972618,
+      "effect_units": "accuracy_points",
+      "family": "arctic_shift_battery",
+      "interval": [
+        -0.48574313589002277,
+        0.3673401022736905
+      ],
+      "league": "nfl",
+      "notes": "No admissible closing ground was established; classification remains unresolved_below_power. Use probability_positive reported above for the continuous evidence (estimate=-0.0577, interval=[-0.4857, +0.3673]). Season-blocked secondary 95% CI [-0.4219, +0.3025], P+=0.3851. n_population=3428, n_excluded_missing=889, n_flag=217. Arctic Shift subreddit fan-reaction battery (docs/arctic_shift_ats_battery.md); predeclared before any cover-rate sign was inspected; the separate ATS-battery decision docs/arctic_shift_gate.md's own shared-variance-vs-Wikipedia gate left open (construct overlap is not an admissible AGENTS.md closing ground). Reliability figure used is the volume split-half reliability (structurally distinct trait from the other cells' reliability figure -- see docs/arctic_shift_ats_battery.md section 6). Point-in-time-safe as-of construction: Tuesday-ending 7-day window, trailing baseline reset per (team, season), reused from scripts/attention_battery_screen.py.",
+      "plain_summary": "Home subreddit spikes this week. Fade the home team.",
+      "probability_positive": 0.39365,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9924192331348414,
+      "sample_blocks": 245,
+      "sample_games": 3428,
+      "seasons": [
+        2009,
+        2026
+      ],
+      "source": "docs/arctic_shift_ats_battery.md, artifacts\\arctic_shift_battery\\20260826T112721Z\\results.json",
+      "standard_error": null
+    },
+    "reddit_spike_gap_home_worse": {
+      "category": "attention",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground was established; classification remains unresolved_below_power. Use probability_positive reported above for the continuous evidence (estimate=-1.3462, interval=[-6.2057, +3.4461]).",
+      "closing_ground": null,
+      "description": "Restricted to games where exactly one side spikes (volume_z >= 2, home XOR away); subset = home spikes & away not, complement = away spikes & home not, response home_cover. Own-baseline-normalized asymmetry cell (structural fanbase-size gap cancels by construction). Predicted sign: NEGATIVE. Predeclared docs/arctic_shift_ats_battery.md; mined battery, uncorrected multiplicity; Arctic Shift subreddit post+comment volume, window ends Tuesday of game week (point-in-time safe).",
+      "effect": -1.346238210133802,
+      "effect_units": "accuracy_points",
+      "family": "arctic_shift_battery",
+      "interval": [
+        -6.205717378877611,
+        3.446071746252207
+      ],
+      "league": "nfl",
+      "notes": "No admissible closing ground was established; classification remains unresolved_below_power. Use probability_positive reported above for the continuous evidence (estimate=-1.3462, interval=[-6.2057, +3.4461]). Season-blocked secondary 95% CI [-6.4308, +4.3049], P+=0.3352. n_population=376, n_excluded_missing=3941, n_flag=182. Arctic Shift subreddit fan-reaction battery (docs/arctic_shift_ats_battery.md); predeclared before any cover-rate sign was inspected; the separate ATS-battery decision docs/arctic_shift_gate.md's own shared-variance-vs-Wikipedia gate left open (construct overlap is not an admissible AGENTS.md closing ground). Reliability figure used is the volume split-half reliability (structurally distinct trait from the other cells' reliability figure -- see docs/arctic_shift_ats_battery.md section 6). Point-in-time-safe as-of construction: Tuesday-ending 7-day window, trailing baseline reset per (team, season), reused from scripts/attention_battery_screen.py.",
+      "plain_summary": "Home team alone shows a fan-activity spike. Fade them.",
+      "probability_positive": 0.29675,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9924192331348414,
+      "sample_blocks": 170,
+      "sample_games": 376,
+      "seasons": [
+        2009,
+        2026
+      ],
+      "source": "docs/arctic_shift_ats_battery.md, artifacts\\arctic_shift_battery\\20260826T112721Z\\results.json",
+      "standard_error": null
+    }
+  }
+}

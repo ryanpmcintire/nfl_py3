@@ -1,0 +1,61 @@
+{
+  "family": "rookie_priors_split_half",
+  "signals": {
+    "xlg06_rookie_prior_even_draft_classes": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval entirely above zero; no terminal ground applies.",
+      "closing_ground": null,
+      "description": "XLG-06 prior-versus-realised correlation measured on EVEN draft years only (the even half of the odd/even draft-year split-half)",
+      "effect": 0.11478445,
+      "effect_units": "correlation",
+      "family": "rookie_priors_split_half",
+      "interval": [
+        0.07255186,
+        0.16563113
+      ],
+      "league": "nfl",
+      "notes": "Half of the odd/even draft-year split; its odd-year twin is xlg06_rookie_prior_odd_draft_classes.",
+      "plain_summary": "Measured on even-numbered draft classes on their own, the college-and-draft prior lines up with rookie play the same way it does on odd ones.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.41222972,
+      "sample_blocks": 5,
+      "sample_games": 604,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "artifacts/xlg06_rookie_priors/prior_results.json",
+      "standard_error": null
+    },
+    "xlg06_rookie_prior_odd_draft_classes": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval entirely above zero; no terminal ground applies.",
+      "closing_ground": null,
+      "description": "XLG-06 prior-versus-realised correlation measured on ODD draft years only (the odd half of the odd/even draft-year split-half)",
+      "effect": 0.14877321,
+      "effect_units": "correlation",
+      "family": "rookie_priors_split_half",
+      "interval": [
+        0.09173512,
+        0.20364494
+      ],
+      "league": "nfl",
+      "notes": "Half of the odd/even draft-year split; its even-year twin is xlg06_rookie_prior_even_draft_classes. Both halves agree in sign and overlap heavily, which is the split-half evidence that the prior is not an artefact of one set of classes.",
+      "plain_summary": "Measured on odd-numbered draft classes on their own, the college-and-draft prior still lines up with rookie play.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.41222972,
+      "sample_blocks": 6,
+      "sample_games": 684,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "artifacts/xlg06_rookie_priors/prior_results.json",
+      "standard_error": null
+    }
+  }
+}

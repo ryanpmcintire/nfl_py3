@@ -1,0 +1,89 @@
+{
+  "family": "lead66_margin_pmf",
+  "signals": {
+    "lead66_model_centred_lattice_vs_market_residual": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "The whole six-season bootstrap 95 percent RPS-improvement interval is on the wrong side of zero.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Model-centred lattice vs market-centred residual PMF",
+      "effect": -0.0377183695,
+      "effect_units": "rps_improvement",
+      "family": "lead66_margin_pmf",
+      "interval": [
+        -0.0818652969,
+        -0.0109540449
+      ],
+      "league": "nfl",
+      "notes": "3 primary contrasts and 15 calibration cells; chronological LOSO PMF fits; frozen walk-forward base; no serving change.",
+      "plain_summary": "Scoring the whole spread of possible final margins, the current lattice centred on the line beats a version centred on our model; the model should not re-centre the margins.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead66_unit1.md",
+      "standard_error": null
+    },
+    "lead66_model_centred_lattice_vs_served_lattice": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "The whole six-season bootstrap 95 percent RPS-improvement interval is on the wrong side of zero.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Model-centred conditioning vs served line conditioning",
+      "effect": -0.0114091385,
+      "effect_units": "rps_improvement",
+      "family": "lead66_margin_pmf",
+      "interval": [
+        -0.019049249,
+        -0.003794314
+      ],
+      "league": "nfl",
+      "notes": "3 primary contrasts and 15 calibration cells; chronological LOSO PMF fits; frozen walk-forward base; no serving change.",
+      "plain_summary": "Scoring the whole spread of possible final margins, the current lattice centred on the line beats a version centred on our model; the model should not re-centre the margins.",
+      "probability_positive": 0.0029,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead66_unit1.md",
+      "standard_error": null
+    },
+    "lead66_served_lattice_vs_market_residual": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; retain the unresolved PMF contrast.",
+      "closing_ground": null,
+      "description": "Served lattice vs market-centred residual PMF",
+      "effect": -0.0263092311,
+      "effect_units": "rps_improvement",
+      "family": "lead66_margin_pmf",
+      "interval": [
+        -0.0706287621,
+        0.0046126176
+      ],
+      "league": "nfl",
+      "notes": "3 primary contrasts and 15 calibration cells; chronological LOSO PMF fits; frozen walk-forward base; no serving change.",
+      "plain_summary": "Scoring the whole spread of possible final margins, the current lattice centred on the line beats a version centred on our model; the model should not re-centre the margins.",
+      "probability_positive": 0.0765,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead66_unit1.md",
+      "standard_error": null
+    }
+  }
+}

@@ -1,0 +1,117 @@
+{
+  "family": "cfb_variance_experiments",
+  "signals": {
+    "cfb_variance_experiments__market_market_residual_market_residual_variance_market_ridge_ridge_variance__accuracy_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: cfb_variance_experiments market+market_residual+market_residual_variance|market+ridge+ridge_variance on accuracy, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": 1.6893039049235992,
+      "effect_units": "accuracy_points",
+      "family": "cfb_variance_experiments",
+      "interval": [
+        0.9143648020835381,
+        2.424563101301798
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on winners picked: ahead of the market.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 11780,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.3852546681679234
+    },
+    "cfb_variance_experiments__market_market_residual_market_residual_variance_market_ridge_ridge_variance__brier_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: cfb_variance_experiments market+market_residual+market_residual_variance|market+ridge+ridge_variance on brier, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.0007066581321684665,
+      "effect_units": "brier_improvement",
+      "family": "cfb_variance_experiments",
+      "interval": [
+        -0.001894422463943919,
+        0.00026126255002743246
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on sharpness of the weekly chances: behind the market.",
+      "probability_positive": 0.081,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 11780,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.0005499196464212631
+    },
+    "cfb_variance_experiments__market_market_residual_market_residual_variance_market_ridge_ridge_variance__log_loss_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: cfb_variance_experiments market+market_residual+market_residual_variance|market+ridge+ridge_variance on log_loss, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.0014936010373139625,
+      "effect_units": "log_loss_improvement",
+      "family": "cfb_variance_experiments",
+      "interval": [
+        -0.003940152473842683,
+        0.0005134467970722181
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on confidence calibration: behind the market.",
+      "probability_positive": 0.0765,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 11780,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.0011361222629884952
+    },
+    "cfb_variance_experiments__market_market_residual_market_residual_variance_market_ridge_ridge_variance__margin_mae_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: cfb_variance_experiments market+market_residual+market_residual_variance|market+ridge+ridge_variance on margin_mae, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.03040738173444651,
+      "effect_units": "mae_improvement",
+      "family": "cfb_variance_experiments",
+      "interval": [
+        -0.06789902524621025,
+        0.0038174021994929735
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks. Margin cell corrected 2026-09-16: market baseline fixed from absolute line to absolute line-minus-final-margin error.",
+      "plain_summary": "Re-reading these past forecasts on final-score closeness: behind the market.",
+      "probability_positive": 0.0385,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 11989,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.018295007001454904
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "family": "qb_expected_starter_v1",
+  "signals": {
+    "qb_expected_starter_out_pick_probability_term": {
+      "category": "health",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Corrected paired Brier improvement is wholly negative at 95%; 55 evidenced flags; closure limited to this binary fitted addition",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "MOD-22 unit 4: evidenced expected-starter absence; same single-look LOSO protocol remeasured",
+      "effect": -0.0006153808242152587,
+      "effect_units": "brier_improvement",
+      "family": "qb_expected_starter_v1",
+      "interval": [
+        -0.001312913598693687,
+        -8.336869502941536e-05
+      ],
+      "league": "nfl",
+      "notes": "Look count remains 1 (remeasurement); 18 guessed flags excluded; all 39 Minshew II matches restored; no split-half reliability estimated; broader QB injury effects remain open",
+      "plain_summary": "When the previous starting quarterback was ruled out or doubtful at least a day before kickoff, this simple adjustment made our predictions worse. Keep this adjustment out of the picks; quarterback injuries may still matter.",
+      "probability_positive": 0.008,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/codex/mod22_unit4/20260929T213636Z/summary.json",
+      "standard_error": null
+    }
+  }
+}

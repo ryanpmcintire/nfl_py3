@@ -1,0 +1,33 @@
+{
+  "family": "crew_tilt_stacked_on_production",
+  "signals": {
+    "crew_tilt_stacked_on_production": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Stacked-on-production back-test of the late-week officiating-crew tilt (challenger crew_tilt_refresh_v1), predeclared in docs/referee_assignments_capture.md section 'Late-week crew-tilt challenger predeclaration (2026-09-01, WP47)' BEFORE the module existed and before any number was computed. Incumbent = the played four-overlay production chain (overlay_union_coach_division_revenge_player_arrests_spread_gap_v1) on the frozen paired opener archive artifacts/opener_evaluation/20260819T174244Z/per_game.parquet, 1,537 REG games 2020-2025, 34 pushes, 1,503 scored, graded at the Tuesday OPENER under the production probability rule. Rule: tilt the production home-cover probability by each flagged cell's own measured per-game gap -- penalty_crew_holding_tilt_run_heavy -0.05994893289010933 (raw_gap_pct +5.994893289010933 with sign=-1, artifacts/experiment_runner/20260820T113432Z/metadata.json) when the home team is run-heavy (bottom home_pbp_off_pass_rate quartile) AND the referee's PRIOR-season Offensive Holding rate is top-quartile; penalty_crew_high_flag_heavy_underdog_opener +0.16772226131832042 (raw_gap_pct +16.772226131832042 with sign=+1, artifacts/experiment_runner/20260820T113443Z/metadata.json) when the referee's PRIOR-season mean_total rate is top-quartile AND the home team is getting >= 7 points at the frozen Tuesday line. Additive composition, NEVER measured jointly -- disclosed. Flags: 56 holding, 18 underdog, 1 both, over 1,534 of 1,537 games with a resolvable crew; the tilt crossed 0.5 on 15 games (2020:2 2022:3 2024:3 2025:7). Week-blocked (107 blocks, 20,000 resamples, seed=20260901): candidate 55.7552% vs production 55.4225%, estimate +0.3327 accuracy points, 95% [-0.1350, +0.8525], probability_positive 0.8825. Season-blocked (6 blocks): +0.3327 pts, 95% [-0.1376, +0.7890], P+ 0.8858. CONTEXT read: the historical crew from the officials/PBP join stands in for the Wednesday capture (point-in-time-EQUIVALENT for crew identity only, since assignments are public by Wednesday); MINED SEASONS -- several incumbent-chain members were screened on windows this archive re-touches; no rotation-registry window spent. Primary interval does not sit entirely on either side of zero, so neither admissible closing ground applies: no resolved wrong sign and no positive control was run. Per AGENTS.md an interval crossing zero is NEVER grounds to reject, fail, or close an experiment -- unresolved_below_power, reported with probability_positive. Reliability is the parent trait's own measured split-half (Offensive Holding +0.3226 / mean_total +0.3702, 158 referee-season pairs each): real and moderate, so no_split_half_reliability is NOT available either.",
+      "closing_ground": null,
+      "description": "Late-week officiating-crew tilt (penalty_crew_holding_tilt_run_heavy + penalty_crew_high_flag_heavy_underdog_opener, additive) applied on top of the played four-overlay production chain at the Tuesday opener grade; paired accuracy delta vs that chain. Challenger crew_tilt_refresh_v1, predeclared in docs/referee_assignments_capture.md (WP47 section).",
+      "effect": 0.3327,
+      "effect_units": "accuracy_points",
+      "family": "crew_tilt_stacked_on_production",
+      "interval": [
+        -0.135,
+        0.8525
+      ],
+      "league": "nfl",
+      "notes": "seed=20260901; samples=20000. CONTEXT for the crew_tilt_refresh_v1 registration, never a gate on it. Solo-vs-bare-baseline context arm (the same tilt on the RAW model card rather than the played chain): 26 flips, +0.0000 accuracy points, 95% [-0.5956, +0.5968], P+ 0.4561 week-blocked -- a coin flip standalone, so the stacked +0.3327 is composition, not a standalone signal, and must never be pooled with the two parent cells as an independent input (it is a CORRELATED decomposition of them). Both parent cells (penalty_crew_holding_tilt_run_heavy, penalty_crew_high_flag_heavy_underdog_opener) remain unresolved_below_power and are unchanged by this entry. artifact=artifacts/crew_tilt_refresh/20260901T195622Z/results.json",
+      "plain_summary": "Once the week's referees are announced, nudge the pick against a run-heavy home team drawing a holding-happy crew, and toward a big home underdog drawing a flag-happy one. On six past seasons that changed 15 picks and gained about a third of a point of accuracy on top of the card we actually play.",
+      "probability_positive": 0.8825,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.3226,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/crew_tilt_refresh/20260901T195622Z/results.json",
+      "standard_error": null
+    }
+  }
+}

@@ -1,0 +1,425 @@
+{
+  "family": "altitude_fourth_quarter",
+  "signals": {
+    "lead43_altitude_4q_cover_rate_opener": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Wide interval crosses zero at n=47 Denver games; unresolved per AGENTS.md, leans the predeclared direction.",
+      "closing_ground": null,
+      "description": "Denver home full-game opener cover rate minus the league opener cover rate, 2020-2025",
+      "effect": 3.5574241587746442,
+      "effect_units": "accuracy_points",
+      "family": "altitude_fourth_quarter",
+      "interval": [
+        -10.237758669441508,
+        17.240103233602373
+      ],
+      "league": "nfl",
+      "notes": "True Tuesday opener (tue_open_home_spread/margin_vs_open), not the closing line. scripts/altitude_fourth_quarter_screen.py section 2.",
+      "plain_summary": "Denver has covered the opening spread at home slightly more often than the league average, though the sample is small enough that this could be noise.",
+      "probability_positive": 0.69315,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/experiments/altitude_fourth_quarter/results.json",
+      "standard_error": null
+    },
+    "lead43_altitude_4q_denver_epa_margin": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Independent play-level EPA measure corroborates the scoring-margin contrast (same family); interval excludes zero but no admissible closing ground applies to a descriptive contrast.",
+      "closing_ground": null,
+      "description": "Denver home Q4 net EPA (home minus away) minus the league home Q4 net EPA, 2009-2025",
+      "effect": 2.567050537385744,
+      "effect_units": "ats_points",
+      "family": "altitude_fourth_quarter",
+      "interval": [
+        1.1692670581419091,
+        3.9877818577954316
+      ],
+      "league": "nfl",
+      "notes": "Effect is in net expected points added (EPA), not real scoring points; recorded under ats_points because the registry has no dedicated EPA unit. scripts/altitude_fourth_quarter_screen.py section 1.",
+      "plain_summary": "By an advanced per-play efficiency measure (EPA), not just the scoreboard, Denver's home team also gains unusually much ground specifically in the fourth quarter.",
+      "probability_positive": 0.99985,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 4427,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/experiments/altitude_fourth_quarter/results.json",
+      "standard_error": null
+    },
+    "lead43_altitude_4q_denver_epa_rate": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval excludes zero on the EPA-rate contrast; recorded unresolved, no admissible closing ground for a descriptive contrast.",
+      "closing_ground": null,
+      "description": "Denver home Q4-minus-(Q1-3/3) net EPA rate minus the league equivalent, 2009-2025",
+      "effect": 2.9085497091925134,
+      "effect_units": "ats_points",
+      "family": "altitude_fourth_quarter",
+      "interval": [
+        1.1545430544264605,
+        4.67586015707249
+      ],
+      "league": "nfl",
+      "notes": "Effect in net EPA, not real points; ats_points used for lack of a dedicated unit. scripts/altitude_fourth_quarter_screen.py section 1.",
+      "plain_summary": "The efficiency version of the fourth-quarter home surge is even larger than the raw scoring version, in the same direction.",
+      "probability_positive": 0.9996,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 4427,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/experiments/altitude_fourth_quarter/results.json",
+      "standard_error": null
+    },
+    "lead43_altitude_4q_denver_home_on_production_opener": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval crosses zero; unresolved per AGENTS.md, never grounds to reject. Reproduces CX15's -0.0665 on the current active model (d49194e04945a5e5) after a model refit; 27 of 47 Denver picks changed (CX15: 25 of 47 on the prior model).",
+      "closing_ground": null,
+      "description": "LEAD-43 fixed BACK Denver home overlay on the current active production probability-rule picks, opener graded, 2020-2025",
+      "effect": -0.0665335994677312,
+      "effect_units": "accuracy_points",
+      "family": "altitude_fourth_quarter",
+      "interval": [
+        -0.7357859531772575,
+        0.6020066889632107
+      ],
+      "league": "nfl",
+      "notes": "scripts/altitude_fourth_quarter_screen.py; docs/altitude_fourth_quarter.md section 3; family cx15_denver_home_on_production continues under this session's family name. Reliability attached is the alternating-games split-half reading (section 4), a different estimand from this fixed-overlay mean; see docs section 4 for why it is not a closing ground.",
+      "plain_summary": "Automatically picking Denver's home team every single time, on top of the existing picks, would have produced about one fewer correct pick over six seasons than the current picks -- not enough evidence either way to say if that is real or luck.",
+      "probability_positive": 0.39105,
+      "recorded_at": "2026-09-11",
+      "reliability": -0.5155991326779642,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/experiments/altitude_fourth_quarter/results.json",
+      "standard_error": null
+    },
+    "lead43_altitude_4q_denver_home_oracle_control": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Instrument-sensitivity control, not a candidate to close; interval excludes zero by construction (uses future outcomes) and is never playable.",
+      "closing_ground": null,
+      "description": "LEAD-43 deliberately leaked positive control: BACK Denver home only when it actually covered the opener",
+      "effect": 0.8649367930805056,
+      "effect_units": "accuracy_points",
+      "family": "altitude_fourth_quarter",
+      "interval": [
+        0.4614370468029005,
+        1.3342450819460394
+      ],
+      "league": "nfl",
+      "notes": "scripts/altitude_fourth_quarter_screen.py; docs/altitude_fourth_quarter.md section 3.",
+      "plain_summary": "A hindsight-only check confirms the measurement tool can detect a Denver-sized edge when one is actually there; it cannot be used to make real picks.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/experiments/altitude_fourth_quarter/results.json",
+      "standard_error": null
+    },
+    "lead43_altitude_4q_denver_scoring_margin": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval excludes zero on the raw Q4 scoring-margin contrast; still recorded unresolved per AGENTS.md (no admissible closing ground applies to a descriptive contrast).",
+      "closing_ground": null,
+      "description": "Denver home Q4 scoring margin (home minus away) minus the league home Q4 margin, 2009-2025",
+      "effect": 2.37329792818106,
+      "effect_units": "ats_points",
+      "family": "altitude_fourth_quarter",
+      "interval": [
+        1.053925942738499,
+        3.723869206462308
+      ],
+      "league": "nfl",
+      "notes": "scripts/altitude_fourth_quarter_screen.py; docs/altitude_fourth_quarter.md section 1; extends CX15 (docs/coaching_leads.md) from 2013-2025 to 2009-2025.",
+      "plain_summary": "In Denver home games, the home team outscores the visitor in the fourth quarter by about 2.4 more points than a typical home team does elsewhere.",
+      "probability_positive": 0.99985,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 4427,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/experiments/altitude_fourth_quarter/results.json",
+      "standard_error": null
+    },
+    "lead43_altitude_4q_denver_scoring_rate": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval excludes zero; recorded unresolved per AGENTS.md, no admissible closing ground for a descriptive contrast.",
+      "closing_ground": null,
+      "description": "Denver home Q4-minus-(Q1-3/3) scoring rate minus the league equivalent, 2009-2025",
+      "effect": 2.69122221987488,
+      "effect_units": "ats_points",
+      "family": "altitude_fourth_quarter",
+      "interval": [
+        1.0922526026046353,
+        4.342989872375566
+      ],
+      "league": "nfl",
+      "notes": "scripts/altitude_fourth_quarter_screen.py; docs/altitude_fourth_quarter.md section 1; reproduces CX15's 2013-2025 reading of +2.694 on the wider 2009-2025 window.",
+      "plain_summary": "Denver's home team scores much more than expected in the fourth quarter specifically, above and beyond its first-three-quarter pace, more than a typical home team does.",
+      "probability_positive": 0.99955,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 4427,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/experiments/altitude_fourth_quarter/results.json",
+      "standard_error": null
+    },
+    "lead43_altitude_4q_line_conditioned_close_2009_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval excludes zero after linear conditioning on the market line; recorded unresolved, no admissible closing ground for a descriptive/control contrast.",
+      "closing_ground": null,
+      "description": "Denver Q4 scoring-margin contrast after residualizing on schedules.parquet spread_line (closing-line proxy), 2009-2025",
+      "effect": 2.2183441091144296,
+      "effect_units": "ats_points",
+      "family": "altitude_fourth_quarter",
+      "interval": [
+        0.9251203570002091,
+        3.5409509506706294
+      ],
+      "league": "nfl",
+      "notes": "spread_line matches the CLOSING line far more closely than the opener pre-2020 (mean abs diff 0.20 vs close, 1.00 vs true opener on the 2020-2025 overlap); labeled a closing-line proxy, not the opener. OLS fit on non-Denver games only (intercept -0.115, slope 0.203). scripts/altitude_fourth_quarter_screen.py section 2.",
+      "plain_summary": "Even after accounting for how big a favorite the market makes Denver, the fourth-quarter home surge barely shrinks, so the market does not look like it has already priced this specific pattern.",
+      "probability_positive": 0.9997,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 4427,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/experiments/altitude_fourth_quarter/results.json",
+      "standard_error": null
+    },
+    "lead43_altitude_4q_line_conditioned_opener_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval excludes zero after conditioning on the true opener line; recorded unresolved, no admissible closing ground for a descriptive/control contrast.",
+      "closing_ground": null,
+      "description": "Denver Q4 scoring-margin contrast after residualizing on the true Tuesday opener spread, 2020-2025",
+      "effect": 2.9642759089883137,
+      "effect_units": "ats_points",
+      "family": "altitude_fourth_quarter",
+      "interval": [
+        0.9719703551197562,
+        5.01210551627742
+      ],
+      "league": "nfl",
+      "notes": "tue_open_home_spread from artifacts/opener_evaluation/20260910T211255Z; OLS fit on non-Denver games only (intercept 0.158, slope 0.168). scripts/altitude_fourth_quarter_screen.py section 2.",
+      "plain_summary": "Using the actual Tuesday opening line instead of a closing-line stand-in, the fourth-quarter home surge survives conditioning just as strongly, slightly larger than the raw reading.",
+      "probability_positive": 0.99835,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/experiments/altitude_fourth_quarter/results.json",
+      "standard_error": null
+    },
+    "lead43_altitude_4q_mexico_city_on_production_opener": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "n=1 Mexico City game falls inside the 2020-2025 opener-evaluation window (2022_11_SF_ARI; the other 3 played games are pre-2020, a 4th is unplayed 2026); the near-degenerate interval is a mechanical artifact of a single changed pick in one week-block, not a resolved sign, so unresolved_below_power is recorded rather than any terminal classification.",
+      "closing_ground": null,
+      "description": "Same fixed BACK-designated-home overlay construct applied to Mexico City (Estadio Azteca) games, opener graded, 2020-2025",
+      "effect": -0.0665335994677312,
+      "effect_units": "accuracy_points",
+      "family": "altitude_fourth_quarter",
+      "interval": [
+        -0.2029769959404601,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Neutral site: neither team has a true home-crowd advantage, so this is not the same construct as Denver's home-field-plus-altitude effect. scripts/altitude_fourth_quarter_screen.py; docs/altitude_fourth_quarter.md section 3. Distinct from the pre-existing mexico_city_neutral registry entry, which used a different all-slate construct on the full 2009-2025 population.",
+      "plain_summary": "There is only one Mexico City game inside the window this project can currently grade at the opener, so this check is far too thin to say anything about the altitude effect there.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/experiments/altitude_fourth_quarter/results.json",
+      "standard_error": null
+    },
+    "lead43_altitude_4q_split_half_alternating_games_2009_2025": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Whole interval below zero on this specific alternating-game-halves construction (reproduces CX15's -0.6056 on the 2013-2025 window). NOT recorded refuted_mechanism: this measures season-to-season ORDERING of a noisy per-season mean (n=8-9 games per half), a different estimand from the fixed Denver-vs-league Q4 contrast, which stays positive and mostly excludes zero on every other cut in this experiment (sections 1-2 of docs/altitude_fourth_quarter.md); both season-halves' own means are themselves mostly positive (14 of 16 season-half values positive), so this is noisy re-ordering, not a sign flip of the underlying quantity. no_split_half_reliability is not invoked as a closing ground for that reason.",
+      "closing_ground": null,
+      "description": "Split-half reliability of Denver's season-level Q4-share scoring trait: alternating-game halves within season, correlated across seasons, 2009-2025 (CX15 method extended)",
+      "effect": -0.5155991326779642,
+      "effect_units": "correlation",
+      "family": "altitude_fourth_quarter",
+      "interval": [
+        -0.7682825969260781,
+        -0.10938768228139682
+      ],
+      "league": "nfl",
+      "notes": "scripts/altitude_fourth_quarter_screen.py section 4 (alternating_games_scoring_2009_2025); matches CX15's exact split-half method (docs/coaching_leads.md), extended from 13 to 17 seasons.",
+      "plain_summary": "One specific way of splitting Denver's seasons in half finds no consistent year-to-year pattern, but the underlying fourth-quarter home advantage itself stays positive in both halves -- this checks a different, noisier question than whether the advantage is real.",
+      "probability_positive": 0.01015,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 139,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/experiments/altitude_fourth_quarter/results.json",
+      "standard_error": null
+    },
+    "lead43_altitude_4q_split_half_season_pairs_epa": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "n=8 season-pairs; wide interval crosses zero, unresolved per AGENTS.md. Same different-estimand caveat as the scoring-rate version.",
+      "closing_ground": null,
+      "description": "Split-half reliability of Denver's season-level Q4-share EPA trait: adjacent odd-season vs following even-season correlation, 2009-2024",
+      "effect": -0.24356646067087087,
+      "effect_units": "correlation",
+      "family": "altitude_fourth_quarter",
+      "interval": [
+        -0.7567608624211183,
+        0.7607455131916115
+      ],
+      "league": "nfl",
+      "notes": "scripts/altitude_fourth_quarter_screen.py section 4 (season_pairs_epa).",
+      "plain_summary": "The efficiency version of the year-to-year consistency check is equally inconclusive.",
+      "probability_positive": 0.20485,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": 16,
+      "seasons": [
+        2009,
+        2024
+      ],
+      "source": "artifacts/experiments/altitude_fourth_quarter/results.json",
+      "standard_error": null
+    },
+    "lead43_altitude_4q_split_half_season_pairs_scoring": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "n=8 season-pairs; wide interval crosses zero, unresolved per AGENTS.md. Different estimand from the fixed Denver-vs-league effect (which stays positive on every other cut), so does not bound or refute it; see docs/altitude_fourth_quarter.md section 4.",
+      "closing_ground": null,
+      "description": "Split-half reliability of Denver's season-level Q4-share scoring trait: adjacent odd-season vs following even-season correlation, 2009-2024",
+      "effect": -0.37015677951571263,
+      "effect_units": "correlation",
+      "family": "altitude_fourth_quarter",
+      "interval": [
+        -0.8793568168948623,
+        0.8818450106685884
+      ],
+      "league": "nfl",
+      "notes": "scripts/altitude_fourth_quarter_screen.py section 4 (season_pairs_scoring); pairs (2009,2010)...(2023,2024), 2025 unpaired and dropped.",
+      "plain_summary": "Whether a good fourth-quarter year for Denver at home predicts the next year's result is unclear from only eight paired seasons -- too few years to tell.",
+      "probability_positive": 0.16555,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": 16,
+      "seasons": [
+        2009,
+        2024
+      ],
+      "source": "artifacts/experiments/altitude_fourth_quarter/results.json",
+      "standard_error": null
+    },
+    "lead43_altitude_4q_visitor_next_game_epa": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero at n=124; unresolved per AGENTS.md. Effect sign flipped from the raw excess (-1.281) so positive means the predeclared carryover direction.",
+      "closing_ground": null,
+      "description": "Denver visitor's next-game Q4-share excess below the league expectation for that home/away role (fatigue carryover), EPA rate, 2009-2025",
+      "effect": 1.2807755475185476,
+      "effect_units": "ats_points",
+      "family": "altitude_fourth_quarter",
+      "interval": [
+        -0.4557647589471078,
+        2.996899175313996
+      ],
+      "league": "nfl",
+      "notes": "Raw stored quantity is excess_epa_rate=-1.2808; this entry reports the negation. Effect in net EPA, ats_points used for lack of a dedicated unit. scripts/altitude_fourth_quarter_screen.py section 1.",
+      "plain_summary": "The efficiency version of the next-game fatigue check leans the same way as the scoring version, again not yet conclusive.",
+      "probability_positive": 0.9266,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 124,
+      "sample_games": 124,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/experiments/altitude_fourth_quarter/results.json",
+      "standard_error": null
+    },
+    "lead43_altitude_4q_visitor_next_game_scoring": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero at n=124 matched next-games; unresolved per AGENTS.md, not a negative. Effect sign flipped from the raw excess (-0.906) so positive means the predeclared carryover direction.",
+      "closing_ground": null,
+      "description": "Denver visitor's next-game Q4-share excess below the league expectation for that home/away role (fatigue carryover), scoring rate, 2009-2025",
+      "effect": 0.9059018340534987,
+      "effect_units": "ats_points",
+      "family": "altitude_fourth_quarter",
+      "interval": [
+        -0.7081988336478738,
+        2.5107422591332265
+      ],
+      "league": "nfl",
+      "notes": "Raw stored quantity in results.json is excess_rate=-0.9059 (team rate minus role-expectation); this entry reports -excess_rate so probability_positive reflects support for the predeclared fatigue-carryover direction. scripts/altitude_fourth_quarter_screen.py section 1.",
+      "plain_summary": "Teams that just visited Denver tend to fade a little more than usual late in their very next game too, not just the Denver game itself, though the evidence is not yet strong enough to be sure.",
+      "probability_positive": 0.865,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 124,
+      "sample_games": 124,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/experiments/altitude_fourth_quarter/results.json",
+      "standard_error": null
+    }
+  }
+}

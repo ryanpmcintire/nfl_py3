@@ -1,0 +1,89 @@
+{
+  "family": "lookahead_fade",
+  "signals": {
+    "cfb_lead44_sandwich_fade_on_benchmark": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked and season-blocked 95% intervals both contain zero ([-2.967,+5.005] pts and [-2.562,+4.697] pts); no admissible closing ground (interval crossing zero is never one).",
+      "closing_ground": null,
+      "description": "LEAD-44 CFB sandwich/lookahead fade: AP-ranked host (proxy: trailing market-line rating in the top quintile of that season-week's field) vs unranked visitor (below that quintile), where the host's own next scheduled game is a rivalry pair (8-consecutive-season proxy) or against a top-8th-percentile-rated opponent. Rule B (fade the host in that sandwich spot) minus Rule A (always back the ranked host), scored on the XLG-03 clean-core benchmark population.",
+      "effect": 1.1120615911035072,
+      "effect_units": "accuracy_points",
+      "family": "lookahead_fade",
+      "interval": [
+        -2.9672652124815326,
+        5.004562765400851
+      ],
+      "league": "cfb",
+      "notes": "AP poll table absent from data/cfb and data/raw (measured, docs/cfb_lead_screens_wave1.md section 4 confirms this was still true as of 2026-09-05; re-measured this session, still true) -- ranked/unranked status is a LABELLED PROXY from trailing market-line strength, not a real poll; disclosed throughout docs/lookahead_fade.md. Eligible population (ranked host x unranked visitor, both ratings defined) = 1622 games; scored (clean-core seasons only) = 1185; flagged (marquee-next) = 681; matched control = 504. Raw home-cover rate: flagged 49.03% [45.55,52.42] vs control 52.81% [48.10,57.38] -- same direction as the Rule-B delta (ranked hosts cover LESS in sandwich spots), not independently bootstrapped as a joint gap (each group's own week-blocked CI reported instead). Reliability: this is a per-game situational construct (this week's schedule position), not a persistent per-team trait -- same category as the existing registry entry bias_battery_sandwich_spot_opener ('not_applicable ... per-game situational condition ... nothing to split-half', read from registry/weak_signals.json), so --reliability is left unset here. Closest analogous check, an odd/even-season split of the same Rule-B-minus-A delta: odd seasons -0.485pts [-6.616,+5.355] P+ 0.455; even seasons +2.909pts [-2.072,+7.891] P+ 0.875 -- both cross zero, directionally noisy, not a resolved disagreement. CFB is close-graded (no verified CFB opener); settles no NFL play/no-play decision by itself. Spends no rotation window (CFB is free ground per docs/rotation_registry.md rule 8) and pools with no other CFB family.",
+      "plain_summary": "When a strong team hosts a weak team right before a rivalry game or a matchup with another strong team, that favorite covers a bit less often than usual (a lean, not yet proven).",
+      "probability_positive": 0.7195,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 178,
+      "sample_games": 1169,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/lookahead_fade.md; scripts/lookahead_fade_screen.py; artifacts/lookahead_fade_screen/20260911T031611Z/results.json",
+      "standard_error": null
+    },
+    "nfl_lead44_lookahead_fade_on_production_full_archive": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval [-1.206,+0.800] pts contains zero; season-blocked [-0.969,+0.601] pts also contains zero. Leans mildly against the predeclared direction on this broader population, but neither interval is resolved on the wrong side, so no closing ground applies.",
+      "closing_ground": null,
+      "description": "LEAD-44 NFL analogue, disclosed unregistered context: the same lookahead-fade production screen (home favorite 7+ at the opener, next game a division rival or top-quartile-rated opponent, active model's opener pick forced away when flagged) scored on the FULL 2020-2025 paired opener archive rather than just the assigned [2020,2021] rotation window. No additional rotation window spent; descriptive only.",
+      "effect": -0.1996007984031936,
+      "effect_units": "accuracy_points",
+      "family": "lookahead_fade",
+      "interval": [
+        -1.2056666859832808,
+        0.8000400801603205
+      ],
+      "league": "nfl",
+      "notes": "Descriptive companion to nfl_lead44_lookahead_fade_on_production_window_2020_2021's registered rotation-window look; this reads the SAME family's flag on 2022-2025 in addition, which is NOT itself a spent rotation window (the family's one assigned/spent window is [2020,2021]; this entry is disclosed context only, per this lane's own task brief and the MOD-07/public-claim-battery precedent for reporting a broader companion read without an extra confirmatory look). Per-season: 2020 +0.909 P+0.798 (n=220); 2021 +0.000 P+0.517 (n=236); 2022 +0.403 P+0.689 (n=248); 2023 -1.504 P+0.131 (n=266); 2024 -1.504 P+0.187 (n=266); 2025 +0.749 P+0.708 (n=267) -- sign flips season to season, consistent with a small-or-absent effect rather than a stable one. 279 eligible games (135 flagged, 144 control) across the full archive; raw home-cover rate flagged 53.73% [46.76,61.07] (n=134) vs control 49.28% [41.54,56.39] (n=138) -- this direction (flagged covering MORE) again disagrees with the predeclared FADE mechanism, same tension already disclosed on the registered-window entry. Reliability (odd/even season split of the production-screen delta, full archive, since the 2-season registered window is too small for this check): odd seasons -0.260pts [-1.565,+1.151] P+0.370 (n=769); even seasons -0.136pts [-1.745,+1.383] P+0.438 (n=734) -- both cross zero, agree loosely in (negative) direction, not a resolved finding either way.",
+      "plain_summary": "Widened to six seasons, the same fade rule roughly breaks even against the model's normal pick -- not a proven edge in either direction.",
+      "probability_positive": 0.344,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lookahead_fade.md; scripts/lookahead_fade_screen.py; artifacts/lookahead_fade_screen/20260911T031622Z/results.json",
+      "standard_error": null
+    },
+    "nfl_lead44_lookahead_fade_on_production_window_2020_2021": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval [-0.673,+1.584] pts contains zero; no admissible closing ground. Season-blocked read is DEGENERATE (only 2 season blocks: [0.000,+0.909], lower bound touches exactly zero) and is not used to resolve anything, matching the project's own precedent for a boundary touch ('a lean, not a resolution').",
+      "closing_ground": null,
+      "description": "LEAD-44 NFL analogue: home favorite of 7+ points at the Tuesday opener whose next scheduled game (same paired archive) is a division game or against a top-quartile-rated opponent (trailing market-line rating). Active model's opener probability-rule pick forced to the away side in flagged games; candidate-minus-baseline forced-pick accuracy on the assigned rotation window.",
+      "effect": 0.43859649122807015,
+      "effect_units": "accuracy_points",
+      "family": "lookahead_fade",
+      "interval": [
+        -0.672645739910314,
+        1.5838001867413627
+      ],
+      "league": "nfl",
+      "notes": "Rotation family lookahead_fade_on_production declared 2026-09-11, grade=opener, acknowledges_mined_2018_2025=true, assigned window [2020,2021] (this lane's task brief preferred that window and the registry offered it). 99 eligible games (home favorite 7+) in this window, 49 flagged (marquee-next), 50 matched control; 49 picks changed by the override out of 456 forced picks. Per-season: 2020 +0.909pts [-1.310,+2.913] P+0.798 (110 weeks... n=220 games); 2021 +0.000pts [-1.255,+1.245] P+0.517 (n=236 games). Raw home-cover rate on the SAME eligible population (descriptive, not independently bootstrapped as a joint gap): flagged 56.25% [45.00,69.45] (n=48) vs control 50.00% [39.13,60.47] (n=48) -- opposite-signed from what the predeclared FADE mechanism implies (flagged covering MORE, not less), though both CIs are wide (~24-30 points) and heavily overlapping -- read as noise, not a resolved reversal; the production-screen delta above (which nets out against whatever the model's own baseline pick already was on each flagged game, not against a naive 'always pick home' rule) is the metric this family's rotation record uses. Team-power-rating proxy sanity-checked directly (KC/BUF/GB-type teams sit well above the weekly top-quartile threshold; not inverted).",
+      "plain_summary": "In this two-season test, fading a big home favorite right before it plays a division rival or another strong team beat the model's normal pick by less than half a point per 100 games -- a lean, not yet proven.",
+      "probability_positive": 0.7625,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "docs/lookahead_fade.md; scripts/lookahead_fade_screen.py; artifacts/lookahead_fade_screen/20260911T031622Z/results.json; registry/rotation_registry.json family lookahead_fade_on_production window [2020,2021]",
+      "standard_error": null
+    }
+  }
+}

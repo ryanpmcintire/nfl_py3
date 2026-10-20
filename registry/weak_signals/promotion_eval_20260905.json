@@ -1,0 +1,89 @@
+{
+  "family": "promotion_eval_20260905",
+  "signals": {
+    "deadline_drag_promotion_eval_20260905": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval [-0.872,+0.468] accuracy points crosses zero -- not the whole interval below zero, so wrong_sign_resolved is unavailable; no_split_half_reliability is inadmissible (deadline_integration_drag_flag is a deterministic confirmed-wire-report plus recorded snap-share fact, zero measurement noise, per docs/schedule_flag_battery.md Wave 6). probability_positive 0.2506 (week) / 0.28505 (season) now leans AGAINST the candidate on this wider, reused 2020-2025 archive with the ENG-39-fixed table -- a sign flip from the narrower [2020,2021] rotation-window screen (P+ 0.883), consistent with window-dependent instability, not a resolution either way. Positive control (leaking deadline_integration_drag_flag to realized ats_margin) read +42.71 accuracy points, P+ 1.0 both blockings, proving the harness sensitive to an effect of this size before this screen was read.",
+      "closing_ground": null,
+      "description": "Promotion look: weak_stack_deadline_drag (deadline_integration_drag_flag) vs base weak_stack, opener grade, full reused 2020-2025 archive on the rebuilt ENG-39 production table",
+      "effect": -0.1996007984031936,
+      "effect_units": "accuracy_points",
+      "family": "promotion_eval_20260905",
+      "interval": [
+        -0.8718980549966466,
+        0.4679144385026738
+      ],
+      "league": "nfl",
+      "notes": "docs/promotion_eval_20260905.md. REUSED population: same 2020-2025 opener archive deadline_integration_drag_on_production was screened against (as a subset, [2020,2021]) and qb_revenge_on_production was screened against; also correlated with the 'both' arm recorded alongside it -- three arms selected from the same overnight lead-generation process, disclosed as multiplicity, not independent confirmations. No rotation window spent (promotion look on the archive, matching docs/player_arrests_policy_eval.md precedent). Card impact: 0/16 2026-Week-1 picks flip vs. base or vs. the newest published card (artifacts/margin_predictions/2026-week-01-20260905T141453Z, verified identical picks to the 20260903T143253Z card this lane's own artifact used).",
+      "plain_summary": "Fading a team in its first three games after a big trade-deadline acquisition, tested on top of the full current model over six seasons, leaned against the fade -- not clearly better or worse than doing nothing.",
+      "probability_positive": 0.2506,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/promotion_eval/20260905T141121Z/results.json",
+      "standard_error": null
+    },
+    "qb_revenge_deadline_drag_stack_promotion_eval_20260905": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign or demonstrated candidate-sized positive-control bound; assignment coverage is not a mechanism refutation.",
+      "closing_ground": null,
+      "description": "CX8 decision-time rerun: Promotion look: weak_stack_qb_revenge_deadline_drag (both qb_revenge_flag and deadline_integration_drag_flag stacked) vs base weak_stack, opener grade, full reused 2020-2025 archive on the rebuilt ENG-39 production table",
+      "effect": -0.7984031936127743,
+      "effect_units": "accuracy_points",
+      "family": "promotion_eval_20260905",
+      "interval": [
+        -2.257193297035297,
+        0.5294506949040371
+      ],
+      "league": "nfl",
+      "notes": "CX8 decision-time rerun supersedes recorded-assignment read artifacts/promotion_eval/20260905T141121Z/results.json. Original effect 0.06653359946773121 accuracy points, probability_positive 0.5336. Matched-current-table oracle: oracle_both.json, promotion_2020_2025. Same chronological reused windows, no new rotation window. Untimestamped QB observations stay missing; 2020-2021 QB arms reproduce baseline picks exactly and probability_positive=0 there counts strict gains from an exact tie, not wrong-sign evidence. Odd/even exposure diagnostic: {'interpretation': 'exposure stability only; not an admissible no_split_half_reliability closing ground', 'odd_even_team_season_exposure_correlation': -4.7383506663126605e-20, 'paired_team_seasons': 32}; oracle: {'interpretation': 'exposure stability only; not an admissible no_split_half_reliability closing ground', 'odd_even_team_season_exposure_correlation': -0.0635332756100354, 'paired_team_seasons': 192}. Exposure stability is not repeated-observation reliability and is not a closing ground.",
+      "plain_summary": "This historical rule was checked again using information available before the pick deadline. The result remains unresolved.",
+      "probability_positive": 0.11105,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts\\cx8_posthoc_assignments\\20260905\\both.json",
+      "standard_error": null
+    },
+    "qb_revenge_promotion_eval_20260905": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign or demonstrated candidate-sized positive-control bound; assignment coverage is not a mechanism refutation.",
+      "closing_ground": null,
+      "description": "CX8 decision-time rerun: Promotion look: weak_stack_qb_revenge (qb_revenge_flag) vs base weak_stack, opener grade, full reused 2020-2025 archive on the rebuilt ENG-39 production table",
+      "effect": -0.665335994677312,
+      "effect_units": "accuracy_points",
+      "family": "promotion_eval_20260905",
+      "interval": [
+        -2.0208604954367666,
+        0.5222102766258795
+      ],
+      "league": "nfl",
+      "notes": "CX8 decision-time rerun supersedes recorded-assignment read artifacts/promotion_eval/20260905T141121Z/results.json. Original effect -0.06653359946773121 accuracy points, probability_positive 0.34205. Matched-current-table oracle: oracle_qb_revenge.json, promotion_2020_2025. Same chronological reused windows, no new rotation window. Untimestamped QB observations stay missing; 2020-2021 QB arms reproduce baseline picks exactly and probability_positive=0 there counts strict gains from an exact tie, not wrong-sign evidence. Odd/even exposure diagnostic: {'interpretation': 'exposure stability only; not an admissible no_split_half_reliability closing ground', 'odd_even_team_season_exposure_correlation': -4.7383506663126605e-20, 'paired_team_seasons': 32}; oracle: {'interpretation': 'exposure stability only; not an admissible no_split_half_reliability closing ground', 'odd_even_team_season_exposure_correlation': -0.0635332756100354, 'paired_team_seasons': 192}. Exposure stability is not repeated-observation reliability and is not a closing ground.",
+      "plain_summary": "This historical rule was checked again using information available before the pick deadline. The result remains unresolved.",
+      "probability_positive": 0.1282,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts\\cx8_posthoc_assignments\\20260905\\qb_revenge.json",
+      "standard_error": null
+    }
+  }
+}

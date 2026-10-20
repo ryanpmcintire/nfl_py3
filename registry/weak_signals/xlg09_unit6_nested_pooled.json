@@ -1,0 +1,117 @@
+{
+  "family": "xlg09_unit6_nested_pooled",
+  "signals": {
+    "xlg09_unit6_nested_pooled_vs_base_accuracy_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Same, 2020-2025 subset",
+      "effect": -0.9980039920159722,
+      "effect_units": "accuracy_points",
+      "family": "xlg09_unit6_nested_pooled",
+      "interval": [
+        -2.3826208829712647,
+        0.37523452157598447
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Negative point estimate on six seasons; interval reaches above zero, not resolved.",
+      "probability_positive": 0.07925,
+      "recorded_at": "2026-09-29",
+      "reliability": 0.14132263925353555,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg09_unit6/20260929T203851Z/summary.json",
+      "standard_error": null
+    },
+    "xlg09_unit6_nested_pooled_vs_base_accuracy_all_graded": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Nested pooled term as 5th fitted term, accuracy vs four-term base, 2013-2025",
+      "effect": 0.4638218923933235,
+      "effect_units": "accuracy_points",
+      "family": "xlg09_unit6_nested_pooled",
+      "interval": [
+        -0.7827359921758633,
+        1.7759792467429907
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Small positive accuracy point estimate, not resolvable at this size.",
+      "probability_positive": 0.7485,
+      "recorded_at": "2026-09-29",
+      "reliability": 0.14132263925353555,
+      "sample_blocks": 13,
+      "sample_games": 3234,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/xlg09_unit6/20260929T203851Z/summary.json",
+      "standard_error": null
+    },
+    "xlg09_unit6_nested_pooled_vs_base_linemove_2020_2025": {
+      "category": "market",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Whole season-block interval below zero; same mechanism",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Same as all-graded, 2020-2025 subset",
+      "effect": -0.0854956753160346,
+      "effect_units": "ats_points",
+      "family": "xlg09_unit6_nested_pooled",
+      "interval": [
+        -0.14940517844646606,
+        -0.031270572745227126
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "On the last six seasons the leak-free pooled term still moves the line the wrong way.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-29",
+      "reliability": 0.14132263925353555,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg09_unit6/20260929T203851Z/summary.json",
+      "standard_error": null
+    },
+    "xlg09_unit6_nested_pooled_vs_base_linemove_all_graded": {
+      "category": "market",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Whole season-block interval below zero and nested beta negative in 13 of 13 folds; leak-free replication of unit 5",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Unit 6 nested-LOSO pooled two-league term (stacking leak removed) as 3rd fitted term, line movement toward pick vs Tuesday base, 2013-2025",
+      "effect": -0.08797155225726655,
+      "effect_units": "ats_points",
+      "family": "xlg09_unit6_nested_pooled",
+      "interval": [
+        -0.1265123323864504,
+        -0.05385010217488092
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Removing a stacking artifact does not rescue the pooled college-plus-NFL term; it still moves the line away from the pick.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-29",
+      "reliability": 0.14132263925353555,
+      "sample_blocks": 13,
+      "sample_games": 3234,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/xlg09_unit6/20260929T203851Z/summary.json",
+      "standard_error": null
+    }
+  }
+}

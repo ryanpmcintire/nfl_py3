@@ -18,6 +18,7 @@ from nfl_ats.data import DataContractError
 from nfl_ats.io import atomic_json
 from nfl_ats.pick_refresh import load_pick_revisions
 from nfl_ats.snapshots import write_snapshot
+from nfl_ats.weak_signals import read_registry_payload
 
 
 def _last_json(output: str) -> dict[str, object]:
@@ -69,8 +70,8 @@ def test_weak_signals_record_stores_plain_summary_and_category(
     captured = capsys.readouterr()
     assert "warning:" not in captured.err
 
-    registry_path = tmp_path / "registry" / "weak_signals.json"
-    stored = json.loads(registry_path.read_text(encoding="utf-8"))
+    stored = read_registry_payload(tmp_path / "registry" / "weak_signals")
+    assert stored is not None
     entry = stored["signals"]["cli_plain_summary_demo"]
     assert entry["plain_summary"] == "A short sentence a fan can read on its own."
     assert entry["category"] == "onfield"
@@ -85,8 +86,8 @@ def test_weak_signals_record_without_plain_summary_or_category_warns_but_succeed
     assert "no --plain-summary" in err
     assert "no --category" in err
 
-    registry_path = tmp_path / "registry" / "weak_signals.json"
-    stored = json.loads(registry_path.read_text(encoding="utf-8"))
+    stored = read_registry_payload(tmp_path / "registry" / "weak_signals")
+    assert stored is not None
     entry = stored["signals"]["cli_no_summary_demo"]
     assert entry["plain_summary"] is None
     assert entry["category"] is None

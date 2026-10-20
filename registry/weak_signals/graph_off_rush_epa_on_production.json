@@ -1,0 +1,33 @@
+{
+  "family": "graph_off_rush_epa_on_production",
+  "signals": {
+    "graph_off_rush_epa_on_production": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Close-graded per the predeclaration's grade discipline (mirrors scripts/graph_team_stat_record.py::classify): no terminal classification is drawn at this grade regardless of sign, and the binding 'grade the decision at the opener' rule means a close-graded look settles no play/no-play decision. On the week-blocked primary reference (within-week game correlation is zero by owner mandate) the CI upper bound is POSITIVE (+0.135), so the interval is not resolved entirely below zero and refuted_mechanism is unavailable. The season-blocked secondary CI [-1.195,-0.800] does sit wholly below zero, but with only 3 season blocks it has almost no combinatorial diversity and is a low-power artifact of block count, not a resolution -- and it is a secondary read at a grade that may not close anything. The positive control proved the harness can detect a large leaked effect (+48.999 pts) but did not bound whether an effect the size of the disjoint holdout's +1.996 reading would be reliably detected at this 749-game sample (the week-blocked CI spans about 2.1 points), so bounded_by_control is unavailable. Recorded unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat off_rush_epa_per_play feature (signed-Katz opponent-adjusted, frozen CFB structure) stacked on PRODUCTION weak_stack/market_residual/ridge-alpha-10, versus production alone: does the family with the highest split-half reliability anywhere in this line of work (graph_input_screen_off_rush_epa_per_play, 0.987, opener-graded 2020-2025) add anything once measured on top of what is actually played?",
+      "effect": -0.9345794392523364,
+      "effect_units": "accuracy_points",
+      "family": "graph_off_rush_epa_on_production",
+      "interval": [
+        -1.9975371518901712,
+        0.13513513513513514
+      ],
+      "league": "nfl",
+      "notes": "Paired candidate(weak_stack_graph_off_rush_epa)-minus-baseline(weak_stack) on 749 games, 51 weeks, close-graded 2014-2016 (rotation family graph_off_rush_epa_on_production, inherits graph_ratings_v2_team_stat; ASSIGNED the [2014,2016] block by nfl-ats rotation assign, never hand-picked -- the same block both sibling families drew, since a sibling's spent window is invisible to this family's own touched-season computation, disclosed in docs/graph_team_stat_off_rush_epa_on_production.md section 5). Candidate accuracy 50.07% vs baseline 51.00%. Week-blocked 95% CI [-1.998,+0.135] pts, P+ 0.037; season-blocked 95% CI [-1.195,-0.800], P+ 0.000 (degenerate, only 3 season blocks). Home-pick rate baseline 37.63% vs candidate 36.72% (close together, so little home-tilt artifact here). Within-week permutation null (200 perms, real feature) centres at +0.196 pts, sd 0.512; observed -0.935 sits at the 0.5th percentile of its own null -- the deepest negative-tail placement of the three siblings (off_sack_rate 6.0th, def_ypp 8.0th), though with 200 draws, three uncorrected families and no multiplicity correction, one tail placement is not itself a finding. Positive control (candidate column replaced by realized ats_margin) showed +48.999 pts, P+ 1.000, week 95% CI [+45.661,+51.921], proving the full-profile ridge harness is not blind. The paired delta is numerically identical to the off_sack_rate sibling's (-7 of 749 games) -- same window, same discrete grid, coincidence on the accuracy grid, not a shared computation. NOT commensurable with graph_ratings_v2_team_stat (bare-baseline comparator), graph_input_screen (single-feature vs zero-feature market baseline), graph_off_sack_rate_on_production or graph_def_ypp_on_production (different candidate families): the comparator here is the FULL PRODUCTION CHAIN, so this entry is NOT poolable with graph_ratings_v2_team_stat and is recorded under its own family per AGENTS.md's pooling-commensurability rule. CLOSE-graded: settles no play/no-play decision. Predeclared in docs/graph_team_stat_off_rush_epa_on_production.md before any outcome was scored, including the explicit prior that the screen doc calls this cell's apparent edge 'essentially all artifact'.\n[2026-09-01T19:31:29.398506+00:00] reliability set: None -> 0.9797 95% [0.9696, 0.9870]. Method: team-season odd/even-week split-half of the underlying continuous trait, Spearman-Brown corrected, block bootstrap over team-seasons (nfl_ats.cfb_qb_dependence.split_half_reliability, seed 20260901, 4000 draws). Measured from: artifacts/reliability_sweep/graph_team_stat/20260901T193017Z/results.json. Reason: Split-half reliability of the team-week column 'off_rush_epa_per_play' (home/away pair home_off_rush_epa_per_play/away_off_rush_epa_per_play), measured on this cell's own seasons [2014, 2016]; scripts/graph_team_stat_screen.py:123-176 builds this cell's graph-rating arm from exactly that pair, so the column IS the cell's underlying construct. Measurement only: no classification, closing_ground or effect changed.. Reliability fields only; effect/interval/classification/closing_ground untouched, and this measurement does not by itself reclassify the entry.",
+      "plain_summary": "Tests whether the schedule-adjusted rushing-efficiency signal, the most reliably measured input in this family, adds anything once stacked on top of the model that is actually played, not just a bare market line.",
+      "probability_positive": 0.037,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.979697,
+      "sample_blocks": 51,
+      "sample_games": 749,
+      "seasons": [
+        2014,
+        2016
+      ],
+      "source": "artifacts/graph_team_stat_off_rush_epa_per_play_on_production/20260901T184239Z/results.json",
+      "standard_error": null
+    }
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "family": "xlg06_rookie_prior_stage1",
+  "signals": {
+    "xlg06_rookie_prior_stage1_qb": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Pearson r=-0.00175 (rating vs usage.overall, QB, cohort-blocked primary), 95% CI [-0.0920,+0.0882], probability_positive 0.4842 -- interval crosses zero, so wrong_sign_resolved is inadmissible. The outcome construct's split-half proxy (Spearman-Brown, standardDowns vs passingDowns usage facets) is reliably measured at 0.9650, stable across both this 13-cohort run and the original 2-cohort run (0.9607) and across cohort- vs player-blocked bootstraps, so no_split_half_reliability is also inadmissible -- this is a reliable trait with a near-zero correlation, not an unreliable one. No positive control was sized to this specific cell. Neither admissible closing ground is met: unresolved_below_power.",
+      "closing_ground": null,
+      "description": "XLG-06 Stage 1 (pure-CFB, no crosswalk): does recruiting rating predict a true-freshman QB's realized CFB usage.overall? Cohort-blocked (13 recruiting-class cohorts, 2013-2025), n=557, run twice (2-cohort n=125 original, 13-cohort n=557 backfilled primary).",
+      "effect": -0.0018,
+      "effect_units": "correlation",
+      "family": "xlg06_rookie_prior_stage1",
+      "interval": [
+        -0.092,
+        0.0882
+      ],
+      "league": "cfb",
+      "notes": "EFFECT-UNITS MAPPING (explicit, per instructions): the CLI has no correlation-native unit; accuracy_points is used only as a numeric container for the raw Pearson r (-0.0018), NOT scaled x100 the way this project's other accuracy_points entries are (that scaling turns a win-rate fraction into a point figure, inapplicable to a correlation coefficient). A correlation/pearson_r effect-units option (native [-1,+1] range) is what this screen actually wanted and does not yet exist in weak_signals.py's EFFECT_UNITS. Two runs exist: run 1 (2024-2025 only, 2 cohorts, n=125, player-blocked, r=+0.1121 P+0.8773, CI crossing zero) is SUPERSEDED by run 2 (2013-2025, 13 cohorts, n=557, cohort-blocked, r=-0.0018 P+0.4842) after a same-day CFB backfill -- more data moved the estimate toward zero, not away, consistent with run 1's lean being small-sample noise. Full write-up: docs/xlg06_rookie_prior_screen.md. XLG-06 Stage 1 only (no crosswalk, no NFL join, no wagering claim); RB cohort-blocked reads P+0.9971 (r=+0.0644, CI entirely positive [+0.0187,+0.1153], n=1204) and is flagged as a candidate worth its own dedicated look, not folded into this QB-scoped record.\n[2026-09-01T19:03:19.309744+00:00] effect_units retagged: 'accuracy_points' -> 'correlation'. Reason: was recorded under accuracy_points as a numeric container only (notes: 'the CLI has no correlation-native unit; accuracy_points is used only as a numeric container for the raw Pearson r, NOT scaled x100'). correlation (native [-1,+1], candidate-favouring sign = predeclared direction) is the unit built for exactly this (WP16).",
+      "plain_summary": "Does a recruit's star rating predict how much a true freshman QB actually plays in college? The rating itself is measured consistently, but it does not predict usage here -- essentially a coin flip, not a false measurement.",
+      "probability_positive": 0.4842,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.965,
+      "sample_blocks": 13,
+      "sample_games": 557,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/xlg06_rookie_prior_cfb/20260818T215305Z/results.json (primary, 13-cohort backfill); artifacts/xlg06_rookie_prior_cfb/20260818T213509Z/results.json (superseded 2-cohort run); docs/xlg06_rookie_prior_screen.md",
+      "standard_error": null
+    },
+    "xlg06_rookie_prior_stage1_rb": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Pearson r=+0.06443 (rating vs usage.overall, RB, cohort-blocked primary, n=1204, 13 blocks), 95% CI [+0.0187,+0.1153] -- entirely positive, but per this session's binding instruction a resolved POSITIVE has no terminal state either: neither admissible closing ground (wrong_sign_resolved requires a wrong-signed whole interval; this interval is right-signed and positive, so that ground is inapplicable in the other direction too; no_split_half_reliability is inapplicable since the RB construct-facet reliability is measured at 0.8017, cohort-blocked, well above zero; no positive control was sized to this cell's own effect magnitude -- the positive-control run here only sanity-checks the code path, driving r to 0.969/rho to 1.0 on a deliberately leaked monotone outcome, and is explicitly disclosed as not admissible for positive_control_bound) is met. unresolved_below_power, reported with its interval and P+, is the correct terminal state; the decision is EV, not a classification.",
+      "closing_ground": null,
+      "description": "XLG-06 Stage 1 (pure-CFB, no crosswalk): does recruiting rating predict a true-freshman RB's realized CFB usage.overall? Cohort-blocked (13 recruiting-class cohorts, 2013-2025), n=1204. Dedicated WP46 look on the secondary RB read already reported in the QB write-up.",
+      "effect": 0.0644,
+      "effect_units": "correlation",
+      "family": "xlg06_rookie_prior_stage1",
+      "interval": [
+        0.0187,
+        0.1153
+      ],
+      "league": "cfb",
+      "notes": "WP46 dedicated follow-up on the secondary RB read flagged in the QB write-up (xlg06_rookie_prior_stage1_qb's notes field). Population/predictor/outcome/statistic/reliability method identical to the QB cell, position swapped to RB, via scripts/xlg06_rb_stage1.py which imports scripts/xlg06_rookie_prior_cfb_screen.py's functions UNCHANGED. --mode screen reused the original script's own RB seeds (cohort 4000, player 4100, reliability cohort 1001, player 1101) and reproduced its already-computed RB numbers exactly (r=0.06443485228551912 to 1e-6, matched by tests/test_xlg06_rb_stage1.py). Player-blocked secondary coherence check: r=0.06443 (same point estimate), CI [+0.00438,+0.12327], P+ 0.98175 -- agrees with the cohort-blocked primary. Per-cohort trend (13 individual cohort years, player-blocked within-cohort, descriptive only): 12 of 13 cohorts read positive point estimates (only 2013 negative, r=-0.090), only 2022's own CI sits entirely positive [+0.0457,+0.3660] and every other single cohort's own CI crosses zero -- MORE consistent across cohorts than the QB cell's per-cohort trend (which ranged -0.215 to +0.259 with no consistent sign). Positive-control (leaked monotone rank-transform of rating as the outcome) drove Pearson r to 0.9690 (cohort) / 0.9690 (player) and Spearman rho to 1.0/1.0, P+ 1.0 both blockings -- confirms the bootstrap machinery correctly reports a strong effect when one is engineered, but this is a code-path sanity check only, not sized to the real ~0.06 effect, so it is never cited as this cell's closing ground. This is Stage-1 CFB-only evidence about whether an RB usage prior is worth building at Stage 2 (crosswalk + NFL join, unbuilt); it is not an NFL claim.",
+      "plain_summary": "Does a recruit's star rating predict how much a true freshman RUNNING BACK actually plays in college? Here the answer leans yes: the interval is entirely on the positive side (P+ 99.7%), though the effect is small. Worth pursuing further, not proof by itself.",
+      "probability_positive": 0.99705,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.8017,
+      "sample_blocks": 13,
+      "sample_games": 1204,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/xlg06_rookie_prior_cfb/rb_20260901T195232Z/results.json (screen, this session -- correlation, reliability, and per-cohort trend; exact reproduction of artifacts/xlg06_rookie_prior_cfb/20260818T215305Z/results.json secondary_position_correlations_cohort_blocked_primary.RB); artifacts/xlg06_rookie_prior_cfb/rb_20260901T195447Z/results.json (positive-control sanity check); docs/xlg06_rookie_prior_screen.md#rb-cell-dedicated-look-2026-09-01-wp46",
+      "standard_error": null
+    }
+  }
+}

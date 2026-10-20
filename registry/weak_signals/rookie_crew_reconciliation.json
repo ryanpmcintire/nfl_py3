@@ -1,0 +1,369 @@
+{
+  "family": "rookie_crew_reconciliation",
+  "signals": {
+    "rookie_crew_reconciled_card_2020_2021": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal and never grounds to close (AGENTS.md). Neither admissible closing ground applies: the sign is not resolved wrong (no interval sits wholly below zero) and no positive control was proven able to detect an effect this size and found it absent. The underlying crew trait has nonzero season-to-season split-half reliability (Pearson r 0.0756, probability_positive 0.9505), so no_split_half_reliability does not apply.",
+      "closing_ground": null,
+      "description": "Rookie officiating crew, underdog side, reconciled definition: head referee with at most 1 prior season on the archive-extended 2009-2025 referee table, season floor 2010 (derived from the archive's own first season, replacing the shipped constant 2016), signed +1 when the home team is the underdog and -1 when the away team is, at the Tuesday-opener consensus line with the archived nflverse spread as a close proxy before 2020; entered as ONE feature column on top of production weak_stack and graded at the Tuesday opener with the served home-side offset against artifacts/opener_evaluation/20260909T183120Z. Predeclared in docs/rookie_crew_reconciliation.md before scoring; week-blocked bootstrap, 20000 draws, seed 20260821, within-week correlation zero. Arm: marginal on top of the served three-member card (coach fade, division revenge, player arrests).",
+      "effect": 0.43859649122807015,
+      "effect_units": "accuracy_points",
+      "family": "rookie_crew_reconciliation",
+      "interval": [
+        0.0,
+        1.1111111111111112
+      ],
+      "league": "nfl",
+      "notes": "Second look at a window already read on 2026-09-05 and 2026-09-08; descriptive, not independent confirmation. Correlated with the officials_archive_battery family, which measures the same rule against a different baseline.",
+      "plain_summary": "On top of the card the rookie-referee lean is worth about four tenths of a percentage point in 2020-2021 -- every one of its six-season gain comes from these two seasons.",
+      "probability_positive": 0.93565,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.07560595296493113,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/rookie_crew_reconciliation/20260909T190000Z/results.json",
+      "standard_error": null
+    },
+    "rookie_crew_reconciled_card_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal and never grounds to close (AGENTS.md). Neither admissible closing ground applies: the sign is not resolved wrong (no interval sits wholly below zero) and no positive control was proven able to detect an effect this size and found it absent. The underlying crew trait has nonzero season-to-season split-half reliability (Pearson r 0.0756, probability_positive 0.9505), so no_split_half_reliability does not apply.",
+      "closing_ground": null,
+      "description": "Rookie officiating crew, underdog side, reconciled definition: head referee with at most 1 prior season on the archive-extended 2009-2025 referee table, season floor 2010 (derived from the archive's own first season, replacing the shipped constant 2016), signed +1 when the home team is the underdog and -1 when the away team is, at the Tuesday-opener consensus line with the archived nflverse spread as a close proxy before 2020; entered as ONE feature column on top of production weak_stack and graded at the Tuesday opener with the served home-side offset against artifacts/opener_evaluation/20260909T183120Z. Predeclared in docs/rookie_crew_reconciliation.md before scoring; week-blocked bootstrap, 20000 draws, seed 20260821, within-week correlation zero. Arm: marginal on top of the served three-member card (coach fade, division revenge, player arrests).",
+      "effect": 0.1330671989354624,
+      "effect_units": "accuracy_points",
+      "family": "rookie_crew_reconciliation",
+      "interval": [
+        -0.19775873434410018,
+        0.4666666666666667
+      ],
+      "league": "nfl",
+      "notes": "Second look at a window already read on 2026-09-05 and 2026-09-08; descriptive, not independent confirmation. Correlated with the officials_archive_battery family, which measures the same rule against a different baseline.",
+      "plain_summary": "Added on top of the three rules the card already plays, the rookie-referee lean changes six picks across six seasons and wins two more of them than it loses -- about an eighth of a percentage point of accuracy.",
+      "probability_positive": 0.790375,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.07560595296493113,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/rookie_crew_reconciliation/20260909T190000Z/results.json",
+      "standard_error": null
+    },
+    "rookie_crew_reconciled_card_2022_2023": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal and never grounds to close (AGENTS.md). Neither admissible closing ground applies: the sign is not resolved wrong (no interval sits wholly below zero) and no positive control was proven able to detect an effect this size and found it absent. The underlying crew trait has nonzero season-to-season split-half reliability (Pearson r 0.0756, probability_positive 0.9505), so no_split_half_reliability does not apply.",
+      "closing_ground": null,
+      "description": "Rookie officiating crew, underdog side, reconciled definition: head referee with at most 1 prior season on the archive-extended 2009-2025 referee table, season floor 2010 (derived from the archive's own first season, replacing the shipped constant 2016), signed +1 when the home team is the underdog and -1 when the away team is, at the Tuesday-opener consensus line with the archived nflverse spread as a close proxy before 2020; entered as ONE feature column on top of production weak_stack and graded at the Tuesday opener with the served home-side offset against artifacts/opener_evaluation/20260909T183120Z. Predeclared in docs/rookie_crew_reconciliation.md before scoring; week-blocked bootstrap, 20000 draws, seed 20260821, within-week correlation zero. Arm: marginal on top of the served three-member card (coach fade, division revenge, player arrests).",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "rookie_crew_reconciliation",
+      "interval": [
+        -0.5905511811023622,
+        0.5736137667304015
+      ],
+      "league": "nfl",
+      "notes": "Second look at a window already read on 2026-09-05 and 2026-09-08; descriptive, not independent confirmation. Correlated with the officials_archive_battery family, which measures the same rule against a different baseline.",
+      "plain_summary": "On top of the card the rookie-referee lean changed two picks in 2022-2023 and split them -- exactly level.",
+      "probability_positive": 0.502575,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.07560595296493113,
+      "sample_blocks": 36,
+      "sample_games": 514,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts/rookie_crew_reconciliation/20260909T190000Z/results.json",
+      "standard_error": null
+    },
+    "rookie_crew_reconciled_card_2024_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal and never grounds to close (AGENTS.md). Neither admissible closing ground applies: the sign is not resolved wrong (no interval sits wholly below zero) and no positive control was proven able to detect an effect this size and found it absent. The underlying crew trait has nonzero season-to-season split-half reliability (Pearson r 0.0756, probability_positive 0.9505), so no_split_half_reliability does not apply.",
+      "closing_ground": null,
+      "description": "Rookie officiating crew, underdog side, reconciled definition: head referee with at most 1 prior season on the archive-extended 2009-2025 referee table, season floor 2010 (derived from the archive's own first season, replacing the shipped constant 2016), signed +1 when the home team is the underdog and -1 when the away team is, at the Tuesday-opener consensus line with the archived nflverse spread as a close proxy before 2020; entered as ONE feature column on top of production weak_stack and graded at the Tuesday opener with the served home-side offset against artifacts/opener_evaluation/20260909T183120Z. Predeclared in docs/rookie_crew_reconciliation.md before scoring; week-blocked bootstrap, 20000 draws, seed 20260821, within-week correlation zero. Arm: marginal on top of the served three-member card (coach fade, division revenge, player arrests).",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "rookie_crew_reconciliation",
+      "interval": [
+        -0.5649717514124294,
+        0.5639097744360902
+      ],
+      "league": "nfl",
+      "notes": "Second look at a window already read on 2026-09-05 and 2026-09-08; descriptive, not independent confirmation. Correlated with the officials_archive_battery family, which measures the same rule against a different baseline.",
+      "plain_summary": "On top of the card the rookie-referee lean changed two picks in 2024-2025 and split them -- exactly level.",
+      "probability_positive": 0.492275,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.07560595296493113,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/rookie_crew_reconciliation/20260909T190000Z/results.json",
+      "standard_error": null
+    },
+    "rookie_crew_reconciled_reliability_odd_even_2009_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A within-season half-season split of a rate this noisy is the weaker instrument of the two and its interval spans zero on both sides; it neither confirms nor refutes the season-to-season persistence, and a single near-zero reliability estimate whose interval contains zero is not the zero-reliability closing ground.",
+      "closing_ground": null,
+      "description": "Companion within-season split-half of the same crew trait: a head referee's underdog-cover rate on odd weeks against even weeks of the same season (290 referee-seasons, minimum 3 games per half, Spearman-Brown corrected value -0.0377, season-blocked bootstrap, seed 20260821). Reported alongside the season-to-season pairing, which is the predeclared primary.",
+      "effect": -0.018506389077394908,
+      "effect_units": "correlation",
+      "family": "rookie_crew_reconciliation",
+      "interval": [
+        -0.1268656007592877,
+        0.09274825174200205
+      ],
+      "league": "nfl",
+      "notes": "Second look at a window already read on 2026-09-05 and 2026-09-08; descriptive, not independent confirmation. Correlated with the officials_archive_battery family, which measures the same rule against a different baseline.",
+      "plain_summary": "Splitting each referee's season in half by odd and even weeks finds no signal either way -- half a season is too few games to see a tendency this faint.",
+      "probability_positive": 0.344,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.07560595296493113,
+      "sample_blocks": 17,
+      "sample_games": 4280,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/rookie_crew_reconciliation/20260909T190000Z/results.json",
+      "standard_error": null
+    },
+    "rookie_crew_reconciled_reliability_season_pairs_2009_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Reliability is small but POSITIVE and the interval only just includes zero (probability_positive 0.9505), so the trait is not shown to be noise and no_split_half_reliability is NOT available as a closing ground for this family.",
+      "closing_ground": null,
+      "description": "Split-half reliability of the crew trait the rookie-crew rule depends on: a head referee's underdog-cover rate in a season, paired with the same referee's rate in the following season (255 referee-season pairs, 16 seasons, season-blocked bootstrap, seed 20260821, label-shuffle null mean 0.0144 sd 0.0584). This is the year-to-year persistence question; tenure itself is not measured because it increments by construction.",
+      "effect": 0.07560595296493113,
+      "effect_units": "correlation",
+      "family": "rookie_crew_reconciliation",
+      "interval": [
+        -0.02006039384309791,
+        0.14526696542230066
+      ],
+      "league": "nfl",
+      "notes": "Second look at a window already read on 2026-09-05 and 2026-09-08; descriptive, not independent confirmation. Correlated with the officials_archive_battery family, which measures the same rule against a different baseline.",
+      "plain_summary": "Referees carry a faint tendency from one season to the next in how often the underdog covers their games -- faint, but pointing the same way year after year rather than washing out.",
+      "probability_positive": 0.9505,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.07560595296493113,
+      "sample_blocks": 16,
+      "sample_games": 4280,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/rookie_crew_reconciliation/20260909T190000Z/results.json",
+      "standard_error": null
+    },
+    "rookie_crew_reconciled_shipped_feed_arm_2020_2021": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal and never grounds to close (AGENTS.md). Neither admissible closing ground applies: the sign is not resolved wrong (no interval sits wholly below zero) and no positive control was proven able to detect an effect this size and found it absent. The underlying crew trait has nonzero season-to-season split-half reliability (Pearson r 0.0756, probability_positive 0.9505), so no_split_half_reliability does not apply.",
+      "closing_ground": null,
+      "description": "Reconciliation control: the SHIPPED feed-only rookie-crew flag (2015-2025 officials feed, season floor 2016, Tuesday-opener line only) re-scored against production under the FIXED probability wiring (gaussian_median read from the active manifest, served home-side offset). Isolates the rule change from the 2026-09-08 probability-method fix: forcing the retired ecdf default reproduces the same delta to the digit, so the wiring defect is not what moved the sign.",
+      "effect": -1.3157894736842104,
+      "effect_units": "accuracy_points",
+      "family": "rookie_crew_reconciliation",
+      "interval": [
+        -2.9213483146067416,
+        0.211864406779661
+      ],
+      "league": "nfl",
+      "notes": "Second look at a window already read on 2026-09-05 and 2026-09-08; descriptive, not independent confirmation. Correlated with the officials_archive_battery family, which measures the same rule against a different baseline.",
+      "plain_summary": "The older, narrower way of spotting a rookie referee -- which could only see crews from 2016 on -- loses about six tenths of a percentage point over 2020-2025. Widening it to the full officiating archive is what turns it around.",
+      "probability_positive": 0.040075,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.07560595296493113,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/rookie_crew_reconciliation/20260909T190000Z/wiring_isolation/results.json",
+      "standard_error": null
+    },
+    "rookie_crew_reconciled_shipped_feed_arm_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal and never grounds to close (AGENTS.md). Neither admissible closing ground applies: the sign is not resolved wrong (no interval sits wholly below zero) and no positive control was proven able to detect an effect this size and found it absent. The underlying crew trait has nonzero season-to-season split-half reliability (Pearson r 0.0756, probability_positive 0.9505), so no_split_half_reliability does not apply.",
+      "closing_ground": null,
+      "description": "Reconciliation control: the SHIPPED feed-only rookie-crew flag (2015-2025 officials feed, season floor 2016, Tuesday-opener line only) re-scored against production under the FIXED probability wiring (gaussian_median read from the active manifest, served home-side offset). Isolates the rule change from the 2026-09-08 probability-method fix: forcing the retired ecdf default reproduces the same delta to the digit, so the wiring defect is not what moved the sign.",
+      "effect": -0.5988023952095809,
+      "effect_units": "accuracy_points",
+      "family": "rookie_crew_reconciliation",
+      "interval": [
+        -1.3377926421404682,
+        0.13071895424836602
+      ],
+      "league": "nfl",
+      "notes": "Second look at a window already read on 2026-09-05 and 2026-09-08; descriptive, not independent confirmation. Correlated with the officials_archive_battery family, which measures the same rule against a different baseline.",
+      "plain_summary": "The older, narrower way of spotting a rookie referee -- which could only see crews from 2016 on -- loses about six tenths of a percentage point over 2020-2025. Widening it to the full officiating archive is what turns it around.",
+      "probability_positive": 0.0494,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.07560595296493113,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/rookie_crew_reconciliation/20260909T190000Z/wiring_isolation/results.json",
+      "standard_error": null
+    },
+    "rookie_crew_reconciled_standalone_2020_2021": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal and never grounds to close (AGENTS.md). Neither admissible closing ground applies: the sign is not resolved wrong (no interval sits wholly below zero) and no positive control was proven able to detect an effect this size and found it absent. The underlying crew trait has nonzero season-to-season split-half reliability (Pearson r 0.0756, probability_positive 0.9505), so no_split_half_reliability does not apply.",
+      "closing_ground": null,
+      "description": "Rookie officiating crew, underdog side, reconciled definition: head referee with at most 1 prior season on the archive-extended 2009-2025 referee table, season floor 2010 (derived from the archive's own first season, replacing the shipped constant 2016), signed +1 when the home team is the underdog and -1 when the away team is, at the Tuesday-opener consensus line with the archived nflverse spread as a close proxy before 2020; entered as ONE feature column on top of production weak_stack and graded at the Tuesday opener with the served home-side offset against artifacts/opener_evaluation/20260909T183120Z. Predeclared in docs/rookie_crew_reconciliation.md before scoring; week-blocked bootstrap, 20000 draws, seed 20260821, within-week correlation zero. Arm: standalone against the raw model's own opener picks.",
+      "effect": 0.43859649122807015,
+      "effect_units": "accuracy_points",
+      "family": "rookie_crew_reconciliation",
+      "interval": [
+        0.0,
+        1.1111111111111112
+      ],
+      "league": "nfl",
+      "notes": "Second look at a window already read on 2026-09-05 and 2026-09-08; descriptive, not independent confirmation. Correlated with the officials_archive_battery family, which measures the same rule against a different baseline.",
+      "plain_summary": "In 2020-2021 the rookie-referee lean was worth about four tenths of a percentage point on its own. These are the two seasons with the most rookie referees on the field.",
+      "probability_positive": 0.93565,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.07560595296493113,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/rookie_crew_reconciliation/20260909T190000Z/results.json",
+      "standard_error": null
+    },
+    "rookie_crew_reconciled_standalone_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal and never grounds to close (AGENTS.md). Neither admissible closing ground applies: the sign is not resolved wrong (no interval sits wholly below zero) and no positive control was proven able to detect an effect this size and found it absent. The underlying crew trait has nonzero season-to-season split-half reliability (Pearson r 0.0756, probability_positive 0.9505), so no_split_half_reliability does not apply.",
+      "closing_ground": null,
+      "description": "Rookie officiating crew, underdog side, reconciled definition: head referee with at most 1 prior season on the archive-extended 2009-2025 referee table, season floor 2010 (derived from the archive's own first season, replacing the shipped constant 2016), signed +1 when the home team is the underdog and -1 when the away team is, at the Tuesday-opener consensus line with the archived nflverse spread as a close proxy before 2020; entered as ONE feature column on top of production weak_stack and graded at the Tuesday opener with the served home-side offset against artifacts/opener_evaluation/20260909T183120Z. Predeclared in docs/rookie_crew_reconciliation.md before scoring; week-blocked bootstrap, 20000 draws, seed 20260821, within-week correlation zero. Arm: standalone against the raw model's own opener picks.",
+      "effect": 0.19960079840319359,
+      "effect_units": "accuracy_points",
+      "family": "rookie_crew_reconciliation",
+      "interval": [
+        -0.1982815598149372,
+        0.6020066889632107
+      ],
+      "league": "nfl",
+      "notes": "Second look at a window already read on 2026-09-05 and 2026-09-08; descriptive, not independent confirmation. Correlated with the officials_archive_battery family, which measures the same rule against a different baseline.",
+      "plain_summary": "When a rookie referee has the game, the model leans a little toward the underdog. Played on its own across 2020-2025 that is worth about a fifth of a percentage point of extra accuracy -- roughly three extra right picks in fifteen hundred games -- and it changed eleven picks in six seasons.",
+      "probability_positive": 0.842775,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.07560595296493113,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/rookie_crew_reconciliation/20260909T190000Z/results.json",
+      "standard_error": null
+    },
+    "rookie_crew_reconciled_standalone_2022_2023": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal and never grounds to close (AGENTS.md). Neither admissible closing ground applies: the sign is not resolved wrong (no interval sits wholly below zero) and no positive control was proven able to detect an effect this size and found it absent. The underlying crew trait has nonzero season-to-season split-half reliability (Pearson r 0.0756, probability_positive 0.9505), so no_split_half_reliability does not apply.",
+      "closing_ground": null,
+      "description": "Rookie officiating crew, underdog side, reconciled definition: head referee with at most 1 prior season on the archive-extended 2009-2025 referee table, season floor 2010 (derived from the archive's own first season, replacing the shipped constant 2016), signed +1 when the home team is the underdog and -1 when the away team is, at the Tuesday-opener consensus line with the archived nflverse spread as a close proxy before 2020; entered as ONE feature column on top of production weak_stack and graded at the Tuesday opener with the served home-side offset against artifacts/opener_evaluation/20260909T183120Z. Predeclared in docs/rookie_crew_reconciliation.md before scoring; week-blocked bootstrap, 20000 draws, seed 20260821, within-week correlation zero. Arm: standalone against the raw model's own opener picks.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "rookie_crew_reconciliation",
+      "interval": [
+        -0.5905511811023622,
+        0.5747126436781609
+      ],
+      "league": "nfl",
+      "notes": "Second look at a window already read on 2026-09-05 and 2026-09-08; descriptive, not independent confirmation. Correlated with the officials_archive_battery family, which measures the same rule against a different baseline.",
+      "plain_summary": "In 2022-2023 the rookie-referee lean changed four picks and finished exactly level. A dead heat in one era, not an absence.",
+      "probability_positive": 0.5043,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.07560595296493113,
+      "sample_blocks": 36,
+      "sample_games": 514,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts/rookie_crew_reconciliation/20260909T190000Z/results.json",
+      "standard_error": null
+    },
+    "rookie_crew_reconciled_standalone_2024_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal and never grounds to close (AGENTS.md). Neither admissible closing ground applies: the sign is not resolved wrong (no interval sits wholly below zero) and no positive control was proven able to detect an effect this size and found it absent. The underlying crew trait has nonzero season-to-season split-half reliability (Pearson r 0.0756, probability_positive 0.9505), so no_split_half_reliability does not apply.",
+      "closing_ground": null,
+      "description": "Rookie officiating crew, underdog side, reconciled definition: head referee with at most 1 prior season on the archive-extended 2009-2025 referee table, season floor 2010 (derived from the archive's own first season, replacing the shipped constant 2016), signed +1 when the home team is the underdog and -1 when the away team is, at the Tuesday-opener consensus line with the archived nflverse spread as a close proxy before 2020; entered as ONE feature column on top of production weak_stack and graded at the Tuesday opener with the served home-side offset against artifacts/opener_evaluation/20260909T183120Z. Predeclared in docs/rookie_crew_reconciliation.md before scoring; week-blocked bootstrap, 20000 draws, seed 20260821, within-week correlation zero. Arm: standalone against the raw model's own opener picks.",
+      "effect": 0.18761726078799248,
+      "effect_units": "accuracy_points",
+      "family": "rookie_crew_reconciliation",
+      "interval": [
+        -0.5714285714285714,
+        0.9633911368015414
+      ],
+      "league": "nfl",
+      "notes": "Second look at a window already read on 2026-09-05 and 2026-09-08; descriptive, not independent confirmation. Correlated with the officials_archive_battery family, which measures the same rule against a different baseline.",
+      "plain_summary": "In 2024-2025 the rookie-referee lean was worth about two tenths of a percentage point on its own, on five changed picks.",
+      "probability_positive": 0.6663,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.07560595296493113,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/rookie_crew_reconciliation/20260909T190000Z/results.json",
+      "standard_error": null
+    },
+    "rookie_crew_served_step_flagged_games_card_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Not terminal on any admissible ground. The interval crosses zero, which is never grounds to close anything; probability_positive 0.7077 week-blocked and 0.7180 season-blocked both favour the candidate, so wrong_sign_resolved is unavailable in any case. The trait's split-half reliability is +0.0756, 95% [-0.0201, +0.1453], probability_positive 0.951 season-to-season over 255 referee pairs, so no_split_half_reliability is unavailable. No positive control was run at this effect size, so positive_control_bound is unavailable.",
+      "closing_ground": null,
+      "description": "The reconciled rookie-crew rule AS WIRED into nfl_ats.pick_refresh: a refresh-time refit on feature profile weak_stack_rookie_crew_underdog (production weak_stack plus one signed rookie_crew_underdog_flag column, archive-extended referee tenure with season floor 2010, signed by the underdog side of the frozen Tuesday line, close-proxy line before 2020), whose opener side replaces the model-only side ONLY on games whose own crew is flagged. Marginal on the served nine-member card overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3 at the OPENER grade, 1,537-game archive (1,503 non-push).",
+      "effect": 0.06653359946773248,
+      "effect_units": "accuracy_points",
+      "family": "rookie_crew_reconciliation",
+      "interval": [
+        -0.1342281879194631,
+        0.32786885245901637
+      ],
+      "league": "nfl",
+      "notes": "Measured 2026-09-09. Paired week- and season-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero, pushes excluded. Served card baseline 56.8862 percent on 487 union flips (reproduces docs/served_card_harness.md exactly); with the step 56.9528 percent, 3 changed picks. This is the SUBSET arm actually served: the predeclared arm in docs/rookie_crew_reconciliation.md also lets the refit move UNFLAGGED games (coefficient drift), and re-measured this session that reads +0.133067, week 95% [-0.197109, +0.465735], probability_positive 0.790450 on 6 changed picks, reproducing the harness lane's +0.133 / 0.7904 to the digit. The served step is narrowed to flagged games because AGENTS.md requires a pick flip to name a mechanism and a drift-only change on an unflagged game names none. Per-era, as wired: 2020-2021 +0.2193 [0.0000, +0.6667] probability_positive 0.8197 on 1 changed pick; 2022-2023 0.0000 [-0.5792, +0.5769] probability_positive 0.4971 on 2; 2024-2025 0.0000 on 0 changed picks -- magnitude statements per era, never absence. Reused 1,537-game opener archive: descriptive reused-window measurement with a stated discount, not independent confirmation. Correlated with rookie_crew_reconciled_card_2020_2025, of which it is a subset; never pool the two as independent inputs.",
+      "plain_summary": "When the referee working a game is in his first or second season, back the side the model likes once it knows that. Over 2020-25 this changed 3 of our picks and moved us from 56.9 percent to 57.0 percent right against the opening line -- about 71 percent likely to be an improvement, which is small and not settled, but better than a coin flip. This week it applies to exactly one game.",
+      "probability_positive": 0.707725,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.0756,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scratchpad/served_rookie_arm.json (2026-09-09); docs/rookie_crew_reconciliation.md; docs/served_card_harness.md",
+      "standard_error": 0.11524904030976
+    }
+  }
+}

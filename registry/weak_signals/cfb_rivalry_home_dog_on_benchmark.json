@@ -1,0 +1,33 @@
+{
+  "family": "cfb_rivalry_home_dog_on_benchmark",
+  "signals": {
+    "cfb_rivalry_home_dog_on_benchmark": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CFB rivalry home dog (LEAD-50): backs the home underdog in a deterministically-identified rivalry-pair game, on the frozen XLG-03 benchmark arm",
+      "effect": 0.011194447554013208,
+      "effect_units": "accuracy_points",
+      "family": "cfb_rivalry_home_dog_on_benchmark",
+      "interval": [
+        -0.2374074933723453,
+        0.2897503820694509
+      ],
+      "league": "cfb",
+      "notes": "Unsigned flag (1 iff a rivalry-pair game AND home is the market underdog, spread_line<0; else 0) on the frozen XLG-03 benchmark arm. No local rivalry field exists on the CFBD schedule rows (measured: only 3 of 36915 rows mention 'rival' in free-text notes, all one bowl name); rivalry pairs are the deterministic proxy declared in this lane's task -- same team pair met in >=8 consecutive seasons anywhere in the full local schedule history (521 pairs qualify). Disclosed limitation: this captures true historic rivalries (Army-Navy, Auburn-Alabama) but also long-running conference-mandated annual pairings -- no local field disambiguates the two. 4459 rivalry-pair games, 3439 home-underdog games, 1852 flagged (both) of 8933 clean-core games, 0 missing. Positive control +48.405 pts P+ 1.000. Per-era: 2012-2019 +0.037 pts P+ 0.547; 2021-2025 -0.028 pts P+ 0.429 -- both noise-scale (<0.04 pts, P+ within 0.06 of a coin flip), not recorded as separate rows. New family, distinct from the deployed NFL division-revenge overlay and from cfb_rest_bye_replication/cfb_option_prep_screen. Close-graded CFB; no NFL window spent.",
+      "plain_summary": "Backing the home underdog in a long-running CFB rivalry game is basically a coin flip, tilted very slightly toward working.",
+      "probability_positive": 0.555,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 199,
+      "sample_games": 8933,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/cfb_lead_screens_wave1/rivalry_home_dog/20260905T024348Z/results.json",
+      "standard_error": null
+    }
+  }
+}

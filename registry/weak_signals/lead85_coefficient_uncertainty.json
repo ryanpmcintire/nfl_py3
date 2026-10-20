@@ -1,0 +1,89 @@
+{
+  "family": "lead85_coefficient_uncertainty",
+  "signals": {
+    "lead85_unit1_pooled_brier": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Nominee Brier primary remains unmeasured in adapter unit; no admissible closing ground. Zero crossing closes nothing.",
+      "closing_ground": null,
+      "description": "LEAD-85 unit 1: 20-node coefficient integration minus separately calibrated four-term point fit; chronological outer 2023-2025; ordinary opener diagnostics.",
+      "effect": 5.616995073146058e-05,
+      "effect_units": "brier_improvement",
+      "family": "lead85_coefficient_uncertainty",
+      "interval": [
+        -3.1107055278461325e-05,
+        0.00017559326039240166
+      ],
+      "league": "nfl",
+      "notes": "713 predeclared study looks; two-arm ordinary-endpoint subset. 10000 paired season/week bootstrap draws; positive means candidate improvement. Previously examined archives; no served change. No split-half reliability measured.",
+      "plain_summary": "Allowing for uncertainty in the football estimates slightly improved the overall probability scores, but helped in two seasons and hurt in the third. The picks stayed the same; the weekly Best Pick comparison is still to come.",
+      "probability_positive": 0.8465,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead85_unit1.md",
+      "standard_error": null
+    },
+    "lead85_unit1_pooled_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Nominee Brier primary remains unmeasured in adapter unit; no admissible closing ground. Zero crossing closes nothing.",
+      "closing_ground": null,
+      "description": "LEAD-85 unit 1: 20-node coefficient integration minus separately calibrated four-term point fit; chronological outer 2023-2025; ordinary opener diagnostics.",
+      "effect": 0.00012859075151339106,
+      "effect_units": "log_loss_improvement",
+      "family": "lead85_coefficient_uncertainty",
+      "interval": [
+        -6.655179866669469e-05,
+        0.0004025024786123791
+      ],
+      "league": "nfl",
+      "notes": "713 predeclared study looks; two-arm ordinary-endpoint subset. 10000 paired season/week bootstrap draws; positive means candidate improvement. Previously examined archives; no served change. No split-half reliability measured.",
+      "plain_summary": "Allowing for uncertainty in the football estimates slightly improved the overall probability scores, but helped in two seasons and hurt in the third. The picks stayed the same; the weekly Best Pick comparison is still to come.",
+      "probability_positive": 0.8487,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead85_unit1.md",
+      "standard_error": null
+    },
+    "lead85_unit1_pooled_rps": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Nominee Brier primary remains unmeasured in adapter unit; no admissible closing ground. Zero crossing closes nothing.",
+      "closing_ground": null,
+      "description": "LEAD-85 unit 1: 20-node coefficient integration minus separately calibrated four-term point fit; chronological outer 2023-2025; ordinary opener diagnostics.",
+      "effect": 0.0003553369255371308,
+      "effect_units": "rps_improvement",
+      "family": "lead85_coefficient_uncertainty",
+      "interval": [
+        -0.0005252382088594798,
+        0.0016845234951484709
+      ],
+      "league": "nfl",
+      "notes": "713 predeclared study looks; two-arm ordinary-endpoint subset. 10000 paired season/week bootstrap draws; positive means candidate improvement. Previously examined archives; no served change. No split-half reliability measured.",
+      "plain_summary": "Allowing for uncertainty in the football estimates slightly improved the overall probability scores, but helped in two seasons and hurt in the third. The picks stayed the same; the weekly Best Pick comparison is still to come.",
+      "probability_positive": 0.6767,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 816,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead85_unit1.md",
+      "standard_error": null
+    }
+  }
+}

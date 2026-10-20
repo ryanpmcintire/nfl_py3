@@ -1,0 +1,33 @@
+{
+  "family": "per14_unit_prior",
+  "signals": {
+    "unit_prior_off_ol_skill_on_production_cx20": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign or proven candidate-sized positive-control bound; offensive annual team-unit split-half Pearson OL 0.062615 and skill 0.056246, with uncertainty. Same-season oracle probability_positive 0.5503.",
+      "closing_ground": null,
+      "description": "PER-14 exact previous-season snap-weighted OL and skill APM differences added to production; season-held-out opener screen",
+      "effect": -0.39920159680638717,
+      "effect_units": "accuracy_points",
+      "family": "per14_unit_prior",
+      "interval": [
+        -1.4905907969466647,
+        0.7208624438000275
+      ],
+      "league": "nfl",
+      "notes": "Exploratory reused 2020-2025 windows, selection discount; season-held-out Ridge 10 weak_stack, Gaussian production probability rule, opener grading, 20000 week-block draws seed 20260902, 1000 within-week permutations. Candidate 795/1503 vs baseline 801/1503. Annual ratings 2016-2025; no dated continuity strata; quality proxies only. Not a mechanism closure.",
+      "plain_summary": "Prior-season offensive line and skill-player ratings did not improve the average pick in this comparison. The current picks remain preferred by this estimate.",
+      "probability_positive": 0.2208,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/experiments/unit_prior_features/cx20_20260905/results.json",
+      "standard_error": null
+    }
+  }
+}

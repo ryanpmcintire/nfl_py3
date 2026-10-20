@@ -1,0 +1,89 @@
+{
+  "family": "cfb_altitude_cold_home_on_benchmark",
+  "signals": {
+    "cfb_altitude_cold_home_on_benchmark": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CFB altitude-plus-cold home (LEAD-46): backs the home team at a frozen list of Mountain-West altitude venues from October onward, on the frozen XLG-03 benchmark arm",
+      "effect": -0.08955558043210567,
+      "effect_units": "accuracy_points",
+      "family": "cfb_altitude_cold_home_on_benchmark",
+      "interval": [
+        -0.3661548512092877,
+        0.1841832953180593
+      ],
+      "league": "cfb",
+      "notes": "Unsigned flag (1 iff home_team in {Colorado State, Wyoming, Air Force, Utah} AND gameday.month>=10; else 0) on the frozen XLG-03 benchmark arm. No local elevation/venue table exists (measured: data/cfb/team_info carries only venue_name/city/state, no elevation figure), so the frozen ROADMAP-named Mountain-West altitude list stands in. No local weather/temperature column exists either, so 'cold' is calendar-proxied (October on), not a verified temperature reading -- disclosed, not assumed. 191 flagged of 8933 clean-core games (thin by construction, 4 programs' Oct-on home slates), 0 missing. Positive control +48.405 pts P+ 1.000. Per-era: 2012-2019 +0.075 pts P+ 0.657; 2021-2025 -0.335 pts P+ 0.086 (CI [-0.806,+0.144] still contains zero). New family, distinct from cfb_rest_bye_replication/cfb_option_prep_screen. Close-graded CFB; no NFL window spent.",
+      "plain_summary": "Backing the four Mountain-West altitude home teams late in the season leans slightly against the idea pooled across 2012-2025, but the sample is thin and the two eras disagree.",
+      "probability_positive": 0.23,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 199,
+      "sample_games": 8933,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/cfb_lead_screens_wave1/altitude_cold/20260905T024538Z/results.json",
+      "standard_error": null
+    },
+    "cfb_altitude_cold_home_on_benchmark_era_2012_2019": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CFB altitude-plus-cold home (LEAD-46), era 2012-2019 slice on the frozen XLG-03 benchmark arm",
+      "effect": 0.07478033277248083,
+      "effect_units": "accuracy_points",
+      "family": "cfb_altitude_cold_home_on_benchmark",
+      "interval": [
+        -0.21862703363636263,
+        0.3928727013571027
+      ],
+      "league": "cfb",
+      "notes": "Era slice of cfb_altitude_cold_home_on_benchmark (2012-2019 half), recorded because the two eras diverge materially (0.41-pt swing) despite neither resolving. Leans the predicted direction, P+ 0.657 week-blocked / 0.820 season-blocked, but the interval contains zero. 115 of 5349 games flagged. Close-graded CFB; no NFL window spent.",
+      "plain_summary": "In 2012-2019, the altitude-home lean pointed the predicted way, but the sample is thin and the band still touches zero.",
+      "probability_positive": 0.657,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 122,
+      "sample_games": 5349,
+      "seasons": [
+        2012,
+        2019
+      ],
+      "source": "artifacts/cfb_lead_screens_wave1/altitude_cold/20260905T024538Z/results.json",
+      "standard_error": null
+    },
+    "cfb_altitude_cold_home_on_benchmark_era_2021_2025": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CFB altitude-plus-cold home (LEAD-46), era 2021-2025 slice on the frozen XLG-03 benchmark arm",
+      "effect": -0.33482142857142855,
+      "effect_units": "accuracy_points",
+      "family": "cfb_altitude_cold_home_on_benchmark",
+      "interval": [
+        -0.8064733150456613,
+        0.1439608288184646
+      ],
+      "league": "cfb",
+      "notes": "Era slice of cfb_altitude_cold_home_on_benchmark (2021-2025 half). Leans AGAINST the predicted direction, P+ 0.086 week-blocked / 0.122 season-blocked -- the closest any cut in this lead comes to resolving, but the interval [-0.8065,+0.1440] (pts) still contains zero, so it stays unresolved (an interval crossing zero is never grounds to close, per AGENTS.md). 76 of 3584 games flagged. Close-graded CFB; no NFL window spent.",
+      "plain_summary": "In 2021-2025, the altitude-home lean flipped against the idea and got close to resolving, but the confidence band still just touches zero.",
+      "probability_positive": 0.086,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 3584,
+      "seasons": [
+        2021,
+        2025
+      ],
+      "source": "artifacts/cfb_lead_screens_wave1/altitude_cold/20260905T024538Z/results.json",
+      "standard_error": null
+    }
+  }
+}

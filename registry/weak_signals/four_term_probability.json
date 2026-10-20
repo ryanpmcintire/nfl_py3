@@ -1,0 +1,33 @@
+{
+  "family": "four_term_probability",
+  "signals": {
+    "audit_verify_nested_flag_screen_loso": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Same held-out delta as the fixed served set (+2.395); positive in all six held-out seasons; decisive record 286-248 on 534 games; within-week flag-shuffle null over 200 draws mean +0.09 sd 0.62 max +2.33 so observed sits above every draw. Interval crosses zero at 95% so not terminal; no closing ground applies.",
+      "closing_ground": null,
+      "description": "Nested leave-one-season-out check of the served four-term probability: flag membership re-screened on the five training seasons only (keep flags with training delta above zero among the nine candidates), one flag_sum coefficient refit per fold, scored on the held-out season; paired delta vs raw model pick (p at or above 0.5)",
+      "effect": 2.5283,
+      "effect_units": "accuracy_points",
+      "family": "four_term_probability",
+      "interval": [
+        -0.1315,
+        5.1027
+      ],
+      "league": "nfl",
+      "notes": "Answers the 2026-09-15 audit's model-selection finding for the SERVED path: selection among the nine coded candidates does not inflate the held-out number. Does not cover selection of the nine from the wider look history or in-sample tuning of flag definitions. Correlated with four_term_probability_* rows; never pool as independent.",
+      "plain_summary": "When the card's extra situational flags are chosen using only past seasons and then tested on a season they never saw, the picks still land about two and a half games per hundred ahead of the raw model. That is a fair check, not a number tuned on the games it was scored on.",
+      "probability_positive": 0.969,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/lanes/audit_verify_20260915/nested_out.txt",
+      "standard_error": null
+    }
+  }
+}

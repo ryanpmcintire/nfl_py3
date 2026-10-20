@@ -1,0 +1,33 @@
+{
+  "family": "tv_attention_fade_on_production",
+  "signals": {
+    "tv_attention_fade_on_production": {
+      "category": "attention",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked bootstrap 95% interval [-4.39,+8.64] accuracy points crosses zero (below-power, not refuted); split-half (odd/even season) reliability of the underlying trailing-attention trait is r=0.648 (Spearman-Brown 0.786, n=31 teams, 95% CI [0.38,0.82]), so no_split_half_reliability is inadmissible; no positive control was run so positive_control_bound is inadmissible; per AGENTS.md this is unresolved_below_power, not closed.",
+      "closing_ground": null,
+      "description": "MKT-14: lagged Sports Media Watch trailing team attention (mean of last N=3 nationally-timestamped audience appearances, z-scored within primetime/Sunday-late/Sunday-early broadcast slot) stacked as a public-tax fade rule on production's weak_stack opener pick: flip to the other side when the picked team's own trailing attention sits in the top tercile of the pooled decile distribution.",
+      "effect": 1.9737,
+      "effect_units": "accuracy_points",
+      "family": "tv_attention_fade_on_production",
+      "interval": [
+        -4.3862,
+        8.6396
+      ],
+      "league": "nfl",
+      "notes": "Pooled 2020-2021 (matches other lanes' shared opener window tonight): n=456 non-push graded games, 141 picks changed, base 53.29% -> flipped 55.26% (+1.97 pts), P+ 0.717. Per-season: 2020 n=220 +4.55 pts P+ 0.813 [-5.26,+14.82]; 2021 n=236 -0.42 pts P+ 0.459 [-8.79,+7.93]. Decile-table cover rate (932 team-game observations, both sides pooled) is flat across deciles (Spearman rho=0.018 vs decile), no monotone public-tax gradient detected at this resolution. SMW ingestion coverage by season (usable, both-team, point-in-time-safe rows): 2014=11, 2015=82, 2016=76, 2017=3, 2018=28, 2019=69, 2020=67, 2021=81 (417 total); opener-graded per_game population only exists 2020-2025, so 2020-2021 is the sole feasible ATS-graded window. Decision: P+ above 0.5 favours playing the fade per AGENTS.md's promotion-bar-is-not-a-decision-bar rule, but this is a single below-power confirmation look, not a promotion; docs/tv_attention_screen.md has the full write-up.",
+      "plain_summary": "When the team we are about to pick has been drawing unusually large TV audiences lately, betting against that popular team instead is a coin flip in our data so far (slightly favours the fade, not enough games yet to be sure).",
+      "probability_positive": 0.7171,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.6481,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/tv_attention_screen/20260911T031523Z/results.json",
+      "standard_error": null
+    }
+  }
+}

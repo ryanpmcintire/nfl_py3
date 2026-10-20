@@ -1,0 +1,33 @@
+{
+  "family": "opener_softness_fade_on_production",
+  "signals": {
+    "opener_softness_fade_on_production": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval [-3.132, +1.129] accuracy points crosses zero -- the expected shape for a real-but-small (or absent) effect at this evaluator's resolution, never grounds to close per AGENTS.md. A positive control (the candidate column replaced by the realized ats_margin) showed the harness DOES detect a huge planted effect (P+ 1.0) inside the full production feature set, so this is not a bounded-by-control closure either -- the construct's own sparsity (side-of-spread disagreement between a single book and the consensus fires on only 1 of 456 in-window games) is what limits power, not instrument insensitivity. No resolved wrong sign, no split-half-reliability failure of the underlying trait (the BOOK ranking itself replicates well, rho 0.590 odd/even-season split-half, P+ 0.991) -- neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "LEAD-05 step 2: opener-graded, production-rule, week-blocked accuracy delta of PRODUCTION weak_stack plus opener_softness_fade_signal vs PRODUCTION weak_stack alone, rotation window 2020-2021.",
+      "effect": -0.8771929824561403,
+      "effect_units": "accuracy_points",
+      "family": "opener_softness_fade_on_production",
+      "interval": [
+        -3.131991051454139,
+        1.1286681715575622
+      ],
+      "league": "nfl",
+      "notes": "CORRECTED 2026-09-05: effect/interval rescaled to accuracy points (raw fraction x100); the first recording mistakenly stored the raw 0-1 fraction. reliability field is the odd/even-season split-half Spearman rank reliability of the underlying book-softness ranking (nfl_ats.market_lead_features.split_half_rank_reliability), not of the sparse ATS trigger itself -- see docs/market_lead_battery.md.",
+      "plain_summary": "One sportsbook (betmgm) is consistently the furthest off from where the market ends up. When that book's opening line disagrees with everyone else's about who is favored, we tried siding with the crowd instead. It almost never comes up (1 game in the tested window), so this test could not tell us much either way.",
+      "probability_positive": 0.1816,
+      "recorded_at": "2026-09-05",
+      "reliability": 0.5898019148353892,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/market_lead_on_production/opener_softness/20260905T031800Z/results.json",
+      "standard_error": null
+    }
+  }
+}

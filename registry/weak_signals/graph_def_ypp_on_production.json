@@ -1,0 +1,33 @@
+{
+  "family": "graph_def_ypp_on_production",
+  "signals": {
+    "graph_def_ypp_on_production": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Close-graded per the predeclarations grade discipline (mirrors scripts/graph_team_stat_record.py::classify): no terminal classification is drawn at this grade regardless of sign. The week-blocked CI upper bound (+0.804) is positive, so the interval is not resolved entirely below zero (refuted_mechanism unavailable), and the positive control proved the harness can detect a large leaked effect but did not bound whether an effect the size of the screens own conservative-reference +2.145 reading would be reliably detected at this sample (bounded_by_control unavailable). Recorded unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat def_yards_per_play feature (signed-Katz opponent-adjusted, frozen CFB structure) stacked on PRODUCTION weak_stack/market_residual/ridge-alpha-10, versus production alone: does the screen-stage conservative-reference finding (95.5th percentile of its own permutation null, +2.145 pts, docs/graph_ratings_v2_screen.md section 8) survive being measured on top of what is actually played?",
+      "effect": -0.6675567423230975,
+      "effect_units": "accuracy_points",
+      "family": "graph_def_ypp_on_production",
+      "interval": [
+        -2.2429668524699014,
+        0.804289544235925
+      ],
+      "league": "nfl",
+      "notes": "Paired candidate(weak_stack_graph_def_ypp)-minus-baseline(weak_stack) on 749 games, 51 weeks, close-graded 2014-2016 (rotation family graph_def_ypp_on_production, inherits graph_ratings_v2_team_stat; assigned the SAME [2014,2016] block the sibling graph_off_sack_rate_on_production family drew, since that siblings spent window is invisible to this familys own touched-season computation -- disclosed in docs/graph_team_stat_def_ypp_on_production.md section 5). Candidate accuracy 50.33% vs baseline 51.00%. Week-blocked 95% CI [-2.243,+0.804] pts, P+ 0.189; season-blocked 95% CI [-1.210,0.000], P+ 0.000 (degenerate, only 3 season blocks). Home-pick rate baseline 37.6% vs candidate 36.7% (close together, little home-tilt artifact here). Within-week permutation null (200 perms, real feature) centres at +0.263 pts, sd 0.681; observed -0.668 sits at the 8.0th percentile of its own null. Positive control (candidate column replaced by realized ats_margin) showed +48.999 pts, P+ 1.000, proving the full-profile ridge harness is not blind. NOT commensurable with graph_ratings_v2_team_stat (bare-baseline comparator) or graph_off_sack_rate_on_production (different candidate family) -- recorded under its own family per AGENTS.md pooling-commensurability rule. CLOSE-graded: settles no play/no-play decision. Predeclared in docs/graph_team_stat_def_ypp_on_production.md before any outcome was scored. Artifact: artifacts/graph_team_stat_def_yards_per_play_on_production/20260831T173427Z/results.json.\n[2026-09-01T19:31:26.571308+00:00] reliability set: None -> 0.9846 95% [0.9769, 0.9899]. Method: team-season odd/even-week split-half of the underlying continuous trait, Spearman-Brown corrected, block bootstrap over team-seasons (nfl_ats.cfb_qb_dependence.split_half_reliability, seed 20260901, 4000 draws). Measured from: artifacts/reliability_sweep/graph_team_stat/20260901T193017Z/results.json. Reason: Split-half reliability of the team-week column 'def_yards_per_play' (home/away pair home_def_yards_per_play/away_def_yards_per_play), measured on this cell's own seasons [2014, 2016]; scripts/graph_team_stat_screen.py:123-176 builds this cell's graph-rating arm from exactly that pair, so the column IS the cell's underlying construct. Measurement only: no classification, closing_ground or effect changed.. Reliability fields only; effect/interval/classification/closing_ground untouched, and this measurement does not by itself reclassify the entry.",
+      "plain_summary": "Tests whether the graph-adjusted defensive yards-per-play signal, the least artifact-contaminated cell of the 38-family screen, adds anything once stacked on top of the model that is actually played, not just a bare market line.",
+      "probability_positive": 0.189,
+      "recorded_at": "2026-08-31",
+      "reliability": 0.984561,
+      "sample_blocks": 51,
+      "sample_games": 749,
+      "seasons": [
+        2014,
+        2016
+      ],
+      "source": "artifacts/graph_team_stat_def_yards_per_play_on_production/20260831T173427Z/results.json",
+      "standard_error": null
+    }
+  }
+}

@@ -1,0 +1,845 @@
+{
+  "family": "mod18_spread_hole_group_penalty_v1",
+  "signals": {
+    "spread_hole_g1_card_0_6p5_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-0.2664, 0.8242] accuracy points reaches or crosses zero (season-blocked [-0.1641, 0.7605]); probability_positive 0.8427. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane M arm G1: the whole 47-column team-quality block (results, elo, offense, defense) group-penalised at 3x the average ridge penalty with spread_line left unpenalised (multiplier 1e-6), average penalty held at alpha 10 over the other 89 columns; paired forced-pick accuracy through the played three-member card versus the active model c657058903f3232b at the OPENER, on lines of 0-6.5, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": 0.2717391304,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_group_penalty_v1",
+      "interval": [
+        -0.2664298401,
+        0.8241758242
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes F, H, K and L; these arms were motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked and season-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Recorded interval is the week-blocked one; season-blocked [-0.1641, 0.7605], season probability_positive 0.8938. Picks changed: 9. Card flip count for this arm: 278.",
+      "plain_summary": "Making the model lean three times less on team-strength numbers while letting it use the spread itself freely moved the card from 57.6% to 57.9% right against the opening line on lines of 0-6.5 in 2020-25, changing 9 picks; about 84% likely to help.",
+      "probability_positive": 0.842725,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1104,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_group_penalty/20260909T224706Z/arm_results.json; docs/spread_hole_group_penalty.md",
+      "standard_error": 0.2728685688
+    },
+    "spread_hole_g1_card_10p5plus_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-4.7244, 1.4706] accuracy points reaches or crosses zero (season-blocked [-3.0488, 0.0000]); probability_positive 0.1562. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane M arm G1: the whole 47-column team-quality block (results, elo, offense, defense) group-penalised at 3x the average ridge penalty with spread_line left unpenalised (multiplier 1e-6), average penalty held at alpha 10 over the other 89 columns; paired forced-pick accuracy through the played three-member card versus the active model c657058903f3232b at the OPENER, on lines of 10.5 or more, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": -1.5267175573,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_group_penalty_v1",
+      "interval": [
+        -4.7244094488,
+        1.4705882353
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes F, H, K and L; these arms were motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked and season-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Recorded interval is the week-blocked one; season-blocked [-3.0488, 0.0000], season probability_positive 0.0437. Picks changed: 4. Card flip count for this arm: 278.",
+      "plain_summary": "Making the model lean three times less on team-strength numbers while letting it use the spread itself freely moved the card from 51.1% to 49.6% right against the opening line on lines of 10.5 or more in 2020-25, changing 4 picks; about 16% likely to help.",
+      "probability_positive": 0.156175,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_group_penalty/20260909T224706Z/arm_results.json; docs/spread_hole_group_penalty.md",
+      "standard_error": 1.5328727101
+    },
+    "spread_hole_g1_card_7_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [0.0000, 0.0000] accuracy points reaches or crosses zero (season-blocked [0.0000, 0.0000]); probability_positive 0.5000. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane M arm G1: the whole 47-column team-quality block (results, elo, offense, defense) group-penalised at 3x the average ridge penalty with spread_line left unpenalised (multiplier 1e-6), average penalty held at alpha 10 over the other 89 columns; paired forced-pick accuracy through the played three-member card versus the active model c657058903f3232b at the OPENER, on lines of exactly 7, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_group_penalty_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes F, H, K and L; these arms were motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked and season-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Recorded interval is the week-blocked one; season-blocked [0.0000, 0.0000], season probability_positive 0.5000. Picks changed: 0. Card flip count for this arm: 278. Exact dead heat: 0 picks changed, every paired delta identically zero, so the block bootstrap standard error is 0 and the recorder (which rejects a non-positive standard_error) is given none; probability_positive 0.5 is the dead-heat value under the 2026-09-08 P(>0)+0.5*P(==0) convention.",
+      "plain_summary": "Making the model lean three times less on team-strength numbers while letting it use the spread itself freely moved the card from 50.0% to 50.0% right against the opening line on lines of exactly 7 in 2020-25, changing 0 picks; about 50% likely to help.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_group_penalty/20260909T224706Z/arm_results.json; docs/spread_hole_group_penalty.md",
+      "standard_error": null
+    },
+    "spread_hole_g1_card_7p5_10_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-3.5354, 0.0000] accuracy points reaches or crosses zero (season-blocked [-2.7778, -0.4902]); probability_positive 0.0237. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane M arm G1: the whole 47-column team-quality block (results, elo, offense, defense) group-penalised at 3x the average ridge penalty with spread_line left unpenalised (multiplier 1e-6), average penalty held at alpha 10 over the other 89 columns; paired forced-pick accuracy through the played three-member card versus the active model c657058903f3232b at the OPENER, on lines of 7.5-10, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": -1.5463917526,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_group_penalty_v1",
+      "interval": [
+        -3.5353535354,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes F, H, K and L; these arms were motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked and season-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Recorded interval is the week-blocked one; season-blocked [-2.7778, -0.4902], season probability_positive 0.0076. Picks changed: 3. Card flip count for this arm: 278.",
+      "plain_summary": "Making the model lean three times less on team-strength numbers while letting it use the spread itself freely moved the card from 51.5% to 50.0% right against the opening line on lines of 7.5-10 in 2020-25, changing 3 picks; about 2% likely to help.",
+      "probability_positive": 0.023675,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_group_penalty/20260909T224706Z/arm_results.json; docs/spread_hole_group_penalty.md",
+      "standard_error": 0.8860060511
+    },
+    "spread_hole_g1_card_overall_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-0.7175, 0.4032] accuracy points reaches or crosses zero (season-blocked [-0.4433, 0.1403]); probability_positive 0.3231. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane M arm G1: the whole 47-column team-quality block (results, elo, offense, defense) group-penalised at 3x the average ridge penalty with spread_line left unpenalised (multiplier 1e-6), average penalty held at alpha 10 over the other 89 columns; paired forced-pick accuracy through the played three-member card versus the active model c657058903f3232b at the OPENER, overall, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": -0.1330671989,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_group_penalty_v1",
+      "interval": [
+        -0.7175472929,
+        0.4032258065
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes F, H, K and L; these arms were motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked and season-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Recorded interval is the week-blocked one; season-blocked [-0.4433, 0.1403], season probability_positive 0.2039. Picks changed: 16. Card flip count for this arm: 278.",
+      "plain_summary": "Making the model lean three times less on team-strength numbers while letting it use the spread itself freely moved the card from 55.9% to 55.8% right against the opening line overall in 2020-25, changing 16 picks; about 32% likely to help.",
+      "probability_positive": 0.323075,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_group_penalty/20260909T224706Z/arm_results.json; docs/spread_hole_group_penalty.md",
+      "standard_error": 0.2833741523
+    },
+    "spread_hole_g1_standalone_0_6p5_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-0.6250, 0.6364] accuracy points reaches or crosses zero (season-blocked [-0.3478, 0.4049]); probability_positive 0.4964. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane M arm G1: the whole 47-column team-quality block (results, elo, offense, defense) group-penalised at 3x the average ridge penalty with spread_line left unpenalised (multiplier 1e-6), average penalty held at alpha 10 over the other 89 columns; paired forced-pick accuracy of the model's own picks before the card versus the active model c657058903f3232b at the OPENER, on lines of 0-6.5, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_group_penalty_v1",
+      "interval": [
+        -0.625,
+        0.6363781123
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes F, H, K and L; these arms were motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked and season-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Recorded interval is the week-blocked one; season-blocked [-0.3478, 0.4049], season probability_positive 0.4989. Picks changed: 12. Card flip count for this arm: 278.",
+      "plain_summary": "Making the model lean three times less on team-strength numbers while letting it use the spread itself freely moved the model from 56.2% to 56.2% right against the opening line on lines of 0-6.5 in 2020-25, changing 12 picks; about 50% likely to help.",
+      "probability_positive": 0.496425,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1104,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_group_penalty/20260909T224706Z/arm_results.json; docs/spread_hole_group_penalty.md",
+      "standard_error": 0.315559087
+    },
+    "spread_hole_g1_standalone_10p5plus_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-4.7244, 1.4706] accuracy points reaches or crosses zero (season-blocked [-3.0488, 0.0000]); probability_positive 0.1562. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane M arm G1: the whole 47-column team-quality block (results, elo, offense, defense) group-penalised at 3x the average ridge penalty with spread_line left unpenalised (multiplier 1e-6), average penalty held at alpha 10 over the other 89 columns; paired forced-pick accuracy of the model's own picks before the card versus the active model c657058903f3232b at the OPENER, on lines of 10.5 or more, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": -1.5267175573,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_group_penalty_v1",
+      "interval": [
+        -4.7244094488,
+        1.4705882353
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes F, H, K and L; these arms were motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked and season-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Recorded interval is the week-blocked one; season-blocked [-3.0488, 0.0000], season probability_positive 0.0437. Picks changed: 4. Card flip count for this arm: 278.",
+      "plain_summary": "Making the model lean three times less on team-strength numbers while letting it use the spread itself freely moved the model from 47.3% to 45.8% right against the opening line on lines of 10.5 or more in 2020-25, changing 4 picks; about 16% likely to help.",
+      "probability_positive": 0.156175,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_group_penalty/20260909T224706Z/arm_results.json; docs/spread_hole_group_penalty.md",
+      "standard_error": 1.5328727101
+    },
+    "spread_hole_g1_standalone_7_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [0.0000, 4.2857] accuracy points reaches or crosses zero (season-blocked [0.0000, 3.8961]); probability_positive 0.8194. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane M arm G1: the whole 47-column team-quality block (results, elo, offense, defense) group-penalised at 3x the average ridge penalty with spread_line left unpenalised (multiplier 1e-6), average penalty held at alpha 10 over the other 89 columns; paired forced-pick accuracy of the model's own picks before the card versus the active model c657058903f3232b at the OPENER, on lines of exactly 7, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": 1.3513513514,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_group_penalty_v1",
+      "interval": [
+        0.0,
+        4.2857142857
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes F, H, K and L; these arms were motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked and season-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Recorded interval is the week-blocked one; season-blocked [0.0000, 3.8961], season probability_positive 0.8334. Picks changed: 1. Card flip count for this arm: 278.",
+      "plain_summary": "Making the model lean three times less on team-strength numbers while letting it use the spread itself freely moved the model from 51.4% to 52.7% right against the opening line on lines of exactly 7 in 2020-25, changing 1 picks; about 82% likely to help.",
+      "probability_positive": 0.81935,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_group_penalty/20260909T224706Z/arm_results.json; docs/spread_hole_group_penalty.md",
+      "standard_error": 1.3291599402
+    },
+    "spread_hole_g1_standalone_7p5_10_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-3.5354, 0.0000] accuracy points reaches or crosses zero (season-blocked [-2.7778, -0.4902]); probability_positive 0.0237. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane M arm G1: the whole 47-column team-quality block (results, elo, offense, defense) group-penalised at 3x the average ridge penalty with spread_line left unpenalised (multiplier 1e-6), average penalty held at alpha 10 over the other 89 columns; paired forced-pick accuracy of the model's own picks before the card versus the active model c657058903f3232b at the OPENER, on lines of 7.5-10, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": -1.5463917526,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_group_penalty_v1",
+      "interval": [
+        -3.5353535354,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes F, H, K and L; these arms were motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked and season-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Recorded interval is the week-blocked one; season-blocked [-2.7778, -0.4902], season probability_positive 0.0076. Picks changed: 3. Card flip count for this arm: 278.",
+      "plain_summary": "Making the model lean three times less on team-strength numbers while letting it use the spread itself freely moved the model from 51.5% to 50.0% right against the opening line on lines of 7.5-10 in 2020-25, changing 3 picks; about 2% likely to help.",
+      "probability_positive": 0.023675,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_group_penalty/20260909T224706Z/arm_results.json; docs/spread_hole_group_penalty.md",
+      "standard_error": 0.8860060511
+    },
+    "spread_hole_g1_standalone_overall_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-0.8701, 0.3349] accuracy points reaches or crosses zero (season-blocked [-0.5799, 0.0703]); probability_positive 0.2013. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane M arm G1: the whole 47-column team-quality block (results, elo, offense, defense) group-penalised at 3x the average ridge penalty with spread_line left unpenalised (multiplier 1e-6), average penalty held at alpha 10 over the other 89 columns; paired forced-pick accuracy of the model's own picks before the card versus the active model c657058903f3232b at the OPENER, overall, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": -0.2661343979,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_group_penalty_v1",
+      "interval": [
+        -0.8701472557,
+        0.3348961822
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes F, H, K and L; these arms were motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked and season-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Recorded interval is the week-blocked one; season-blocked [-0.5799, 0.0703], season probability_positive 0.0767. Picks changed: 20. Card flip count for this arm: 278.",
+      "plain_summary": "Making the model lean three times less on team-strength numbers while letting it use the spread itself freely moved the model from 54.6% to 54.3% right against the opening line overall in 2020-25, changing 20 picks; about 20% likely to help.",
+      "probability_positive": 0.2013,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_group_penalty/20260909T224706Z/arm_results.json; docs/spread_hole_group_penalty.md",
+      "standard_error": 0.3125373723
+    },
+    "spread_hole_g2_card_0_6p5_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-1.1701, 0.3846] accuracy points reaches or crosses zero (season-blocked [-1.3474, 0.8318]); probability_positive 0.1856. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane M arm G2: the whole 47-column team-quality block (results, elo, offense, defense) group-penalised at 10x the average ridge penalty with spread_line left unpenalised (multiplier 1e-6), average penalty held at alpha 10 over the other 89 columns; paired forced-pick accuracy through the played three-member card versus the active model c657058903f3232b at the OPENER, on lines of 0-6.5, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": -0.3623188406,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_group_penalty_v1",
+      "interval": [
+        -1.1701170117,
+        0.3846246391
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes F, H, K and L; these arms were motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked and season-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Recorded interval is the week-blocked one; season-blocked [-1.3474, 0.8318], season probability_positive 0.2448. Picks changed: 20. Card flip count for this arm: 281.",
+      "plain_summary": "Making the model lean ten times less on team-strength numbers while letting it use the spread itself freely moved the card from 57.6% to 57.2% right against the opening line on lines of 0-6.5 in 2020-25, changing 20 picks; about 19% likely to help.",
+      "probability_positive": 0.185575,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1104,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_group_penalty/20260909T224706Z/arm_results.json; docs/spread_hole_group_penalty.md",
+      "standard_error": 0.4028795993
+    },
+    "spread_hole_g2_card_10p5plus_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-5.8394, 0.7812] accuracy points reaches or crosses zero (season-blocked [-4.0000, -0.7407]); probability_positive 0.0837. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane M arm G2: the whole 47-column team-quality block (results, elo, offense, defense) group-penalised at 10x the average ridge penalty with spread_line left unpenalised (multiplier 1e-6), average penalty held at alpha 10 over the other 89 columns; paired forced-pick accuracy through the played three-member card versus the active model c657058903f3232b at the OPENER, on lines of 10.5 or more, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": -2.2900763359,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_group_penalty_v1",
+      "interval": [
+        -5.8394160584,
+        0.78125
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes F, H, K and L; these arms were motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked and season-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Recorded interval is the week-blocked one; season-blocked [-4.0000, -0.7407], season probability_positive 0.0083. Picks changed: 5. Card flip count for this arm: 281.",
+      "plain_summary": "Making the model lean ten times less on team-strength numbers while letting it use the spread itself freely moved the card from 51.1% to 48.9% right against the opening line on lines of 10.5 or more in 2020-25, changing 5 picks; about 8% likely to help.",
+      "probability_positive": 0.083725,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_group_penalty/20260909T224706Z/arm_results.json; docs/spread_hole_group_penalty.md",
+      "standard_error": 1.7089783633
+    },
+    "spread_hole_g2_card_7_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-4.3478, 0.0000] accuracy points reaches or crosses zero (season-blocked [-3.8961, 0.0000]); probability_positive 0.1809. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane M arm G2: the whole 47-column team-quality block (results, elo, offense, defense) group-penalised at 10x the average ridge penalty with spread_line left unpenalised (multiplier 1e-6), average penalty held at alpha 10 over the other 89 columns; paired forced-pick accuracy through the played three-member card versus the active model c657058903f3232b at the OPENER, on lines of exactly 7, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": -1.3513513514,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_group_penalty_v1",
+      "interval": [
+        -4.347826087,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes F, H, K and L; these arms were motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked and season-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Recorded interval is the week-blocked one; season-blocked [-3.8961, 0.0000], season probability_positive 0.1666. Picks changed: 1. Card flip count for this arm: 281.",
+      "plain_summary": "Making the model lean ten times less on team-strength numbers while letting it use the spread itself freely moved the card from 50.0% to 48.6% right against the opening line on lines of exactly 7 in 2020-25, changing 1 picks; about 18% likely to help.",
+      "probability_positive": 0.180925,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_group_penalty/20260909T224706Z/arm_results.json; docs/spread_hole_group_penalty.md",
+      "standard_error": 1.3601602388
+    },
+    "spread_hole_g2_card_7p5_10_2020_2025": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Week-blocked interval [-5.0000, -0.5263] accuracy points sits entirely below zero, and the season-blocked interval [-4.3956, -0.9901] does too: a RESOLVED wrong sign for this arm against the incumbent, which is the one admissible closing ground here.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "MOD-18 lane M arm G2: the whole 47-column team-quality block (results, elo, offense, defense) group-penalised at 10x the average ridge penalty with spread_line left unpenalised (multiplier 1e-6), average penalty held at alpha 10 over the other 89 columns; paired forced-pick accuracy through the played three-member card versus the active model c657058903f3232b at the OPENER, on lines of 7.5-10, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": -2.5773195876,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_group_penalty_v1",
+      "interval": [
+        -5.0,
+        -0.5263157895
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes F, H, K and L; these arms were motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked and season-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Recorded interval is the week-blocked one; season-blocked [-4.3956, -0.9901], season probability_positive 0.0009. Picks changed: 5. Card flip count for this arm: 281.",
+      "plain_summary": "Making the model lean ten times less on team-strength numbers while letting it use the spread itself freely moved the card from 51.5% to 49.0% right against the opening line on lines of 7.5-10 in 2020-25, changing 5 picks; about 0% likely to help.",
+      "probability_positive": 0.0025,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_group_penalty/20260909T224706Z/arm_results.json; docs/spread_hole_group_penalty.md",
+      "standard_error": 1.1259857414
+    },
+    "spread_hole_g2_card_overall_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-1.6523, -0.1334] accuracy points reaches or crosses zero (season-blocked [-1.6774, 0.0680]); probability_positive 0.0095. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane M arm G2: the whole 47-column team-quality block (results, elo, offense, defense) group-penalised at 10x the average ridge penalty with spread_line left unpenalised (multiplier 1e-6), average penalty held at alpha 10 over the other 89 columns; paired forced-pick accuracy through the played three-member card versus the active model c657058903f3232b at the OPENER, overall, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": -0.8649367931,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_group_penalty_v1",
+      "interval": [
+        -1.6523463318,
+        -0.1334222815
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes F, H, K and L; these arms were motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked and season-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Recorded interval is the week-blocked one; season-blocked [-1.6774, 0.0680], season probability_positive 0.0348. Picks changed: 31. Card flip count for this arm: 281.",
+      "plain_summary": "Making the model lean ten times less on team-strength numbers while letting it use the spread itself freely moved the card from 55.9% to 55.0% right against the opening line overall in 2020-25, changing 31 picks; about 1% likely to help.",
+      "probability_positive": 0.009525,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_group_penalty/20260909T224706Z/arm_results.json; docs/spread_hole_group_penalty.md",
+      "standard_error": 0.3844992898
+    },
+    "spread_hole_g2_standalone_0_6p5_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-1.8817, 0.0000] accuracy points reaches or crosses zero (season-blocked [-1.8100, 0.1955]); probability_positive 0.0302. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane M arm G2: the whole 47-column team-quality block (results, elo, offense, defense) group-penalised at 10x the average ridge penalty with spread_line left unpenalised (multiplier 1e-6), average penalty held at alpha 10 over the other 89 columns; paired forced-pick accuracy of the model's own picks before the card versus the active model c657058903f3232b at the OPENER, on lines of 0-6.5, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": -0.9057971014,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_group_penalty_v1",
+      "interval": [
+        -1.881726179,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes F, H, K and L; these arms were motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked and season-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Recorded interval is the week-blocked one; season-blocked [-1.8100, 0.1955], season probability_positive 0.0532. Picks changed: 30. Card flip count for this arm: 281.",
+      "plain_summary": "Making the model lean ten times less on team-strength numbers while letting it use the spread itself freely moved the model from 56.2% to 55.3% right against the opening line on lines of 0-6.5 in 2020-25, changing 30 picks; about 3% likely to help.",
+      "probability_positive": 0.030175,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1104,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_group_penalty/20260909T224706Z/arm_results.json; docs/spread_hole_group_penalty.md",
+      "standard_error": 0.4874308924
+    },
+    "spread_hole_g2_standalone_10p5plus_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-6.9231, 0.0000] accuracy points reaches or crosses zero (season-blocked [-6.0883, -0.7407]); probability_positive 0.0426. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane M arm G2: the whole 47-column team-quality block (results, elo, offense, defense) group-penalised at 10x the average ridge penalty with spread_line left unpenalised (multiplier 1e-6), average penalty held at alpha 10 over the other 89 columns; paired forced-pick accuracy of the model's own picks before the card versus the active model c657058903f3232b at the OPENER, on lines of 10.5 or more, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": -3.0534351145,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_group_penalty_v1",
+      "interval": [
+        -6.9230769231,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes F, H, K and L; these arms were motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked and season-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Recorded interval is the week-blocked one; season-blocked [-6.0883, -0.7407], season probability_positive 0.0083. Picks changed: 6. Card flip count for this arm: 281.",
+      "plain_summary": "Making the model lean ten times less on team-strength numbers while letting it use the spread itself freely moved the model from 47.3% to 44.3% right against the opening line on lines of 10.5 or more in 2020-25, changing 6 picks; about 4% likely to help.",
+      "probability_positive": 0.042575,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_group_penalty/20260909T224706Z/arm_results.json; docs/spread_hole_group_penalty.md",
+      "standard_error": 1.8502019185
+    },
+    "spread_hole_g2_standalone_7_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-2.8986, 6.1728] accuracy points reaches or crosses zero (season-blocked [-3.4483, 8.5714]); probability_positive 0.7109. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane M arm G2: the whole 47-column team-quality block (results, elo, offense, defense) group-penalised at 10x the average ridge penalty with spread_line left unpenalised (multiplier 1e-6), average penalty held at alpha 10 over the other 89 columns; paired forced-pick accuracy of the model's own picks before the card versus the active model c657058903f3232b at the OPENER, on lines of exactly 7, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": 1.3513513514,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_group_penalty_v1",
+      "interval": [
+        -2.8985507246,
+        6.1728395062
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes F, H, K and L; these arms were motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked and season-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Recorded interval is the week-blocked one; season-blocked [-3.4483, 8.5714], season probability_positive 0.6434. Picks changed: 3. Card flip count for this arm: 281.",
+      "plain_summary": "Making the model lean ten times less on team-strength numbers while letting it use the spread itself freely moved the model from 51.4% to 52.7% right against the opening line on lines of exactly 7 in 2020-25, changing 3 picks; about 71% likely to help.",
+      "probability_positive": 0.710925,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_group_penalty/20260909T224706Z/arm_results.json; docs/spread_hole_group_penalty.md",
+      "standard_error": 2.3563799444
+    },
+    "spread_hole_g2_standalone_7p5_10_2020_2025": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Week-blocked interval [-5.6995, -1.0101] accuracy points sits entirely below zero, and the season-blocked interval [-5.2083, -1.0000] does too: a RESOLVED wrong sign for this arm against the incumbent, which is the one admissible closing ground here.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "MOD-18 lane M arm G2: the whole 47-column team-quality block (results, elo, offense, defense) group-penalised at 10x the average ridge penalty with spread_line left unpenalised (multiplier 1e-6), average penalty held at alpha 10 over the other 89 columns; paired forced-pick accuracy of the model's own picks before the card versus the active model c657058903f3232b at the OPENER, on lines of 7.5-10, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": -3.0927835052,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_group_penalty_v1",
+      "interval": [
+        -5.6994818653,
+        -1.0101010101
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes F, H, K and L; these arms were motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked and season-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Recorded interval is the week-blocked one; season-blocked [-5.2083, -1.0000], season probability_positive 0.0009. Picks changed: 6. Card flip count for this arm: 281.",
+      "plain_summary": "Making the model lean ten times less on team-strength numbers while letting it use the spread itself freely moved the model from 51.5% to 48.5% right against the opening line on lines of 7.5-10 in 2020-25, changing 6 picks; about 0% likely to help.",
+      "probability_positive": 0.00095,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_group_penalty/20260909T224706Z/arm_results.json; docs/spread_hole_group_penalty.md",
+      "standard_error": 1.2211572944
+    },
+    "spread_hole_g2_standalone_overall_2020_2025": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Week-blocked interval [-2.1883, -0.3916] accuracy points sits entirely below zero, and the season-blocked interval [-1.9372, -0.3425] does too: a RESOLVED wrong sign for this arm against the incumbent, which is the one admissible closing ground here.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "MOD-18 lane M arm G2: the whole 47-column team-quality block (results, elo, offense, defense) group-penalised at 10x the average ridge penalty with spread_line left unpenalised (multiplier 1e-6), average penalty held at alpha 10 over the other 89 columns; paired forced-pick accuracy of the model's own picks before the card versus the active model c657058903f3232b at the OPENER, overall, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": -1.2641383899,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_group_penalty_v1",
+      "interval": [
+        -2.1883289125,
+        -0.3916194109
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes F, H, K and L; these arms were motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked and season-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Recorded interval is the week-blocked one; season-blocked [-1.9372, -0.3425], season probability_positive 0.0047. Picks changed: 45. Card flip count for this arm: 281.",
+      "plain_summary": "Making the model lean ten times less on team-strength numbers while letting it use the spread itself freely moved the model from 54.6% to 53.3% right against the opening line overall in 2020-25, changing 45 picks; about 0% likely to help.",
+      "probability_positive": 0.003,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_group_penalty/20260909T224706Z/arm_results.json; docs/spread_hole_group_penalty.md",
+      "standard_error": 0.4604836684
+    },
+    "spread_hole_g3_card_0_6p5_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-0.4496, 0.4533] accuracy points reaches or crosses zero (season-blocked [-0.3552, 0.4980]); probability_positive 0.4909. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane M arm G3: all 47 team-quality columns (results, elo, offense, defense) replaced by their residual after a walk-forward regression on the game's own spread, removing the line's linear share from the entire collinear block rather than from the six season-form columns alone; paired forced-pick accuracy through the played three-member card versus the active model c657058903f3232b at the OPENER, on lines of 0-6.5, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_group_penalty_v1",
+      "interval": [
+        -0.4496402878,
+        0.4533091568
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes F, H, K and L; these arms were motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked and season-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Recorded interval is the week-blocked one; season-blocked [-0.3552, 0.4980], season probability_positive 0.4723. Picks changed: 8. Card flip count for this arm: 282.",
+      "plain_summary": "Taking the part of every team-strength number the spread already explains out of all 47 of them, not just the six form columns moved the card from 57.6% to 57.6% right against the opening line on lines of 0-6.5 in 2020-25, changing 8 picks; about 49% likely to help.",
+      "probability_positive": 0.4909,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1104,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_group_penalty/20260909T224706Z/arm_results.json; docs/spread_hole_group_penalty.md",
+      "standard_error": 0.2234128792
+    },
+    "spread_hole_g3_card_10p5plus_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [0.0000, 2.4590] accuracy points reaches or crosses zero (season-blocked [0.0000, 1.8987]); probability_positive 0.8174. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane M arm G3: all 47 team-quality columns (results, elo, offense, defense) replaced by their residual after a walk-forward regression on the game's own spread, removing the line's linear share from the entire collinear block rather than from the six season-form columns alone; paired forced-pick accuracy through the played three-member card versus the active model c657058903f3232b at the OPENER, on lines of 10.5 or more, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": 0.7633587786,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_group_penalty_v1",
+      "interval": [
+        0.0,
+        2.4590163934
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes F, H, K and L; these arms were motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked and season-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Recorded interval is the week-blocked one; season-blocked [0.0000, 1.8987], season probability_positive 0.8330. Picks changed: 1. Card flip count for this arm: 282.",
+      "plain_summary": "Taking the part of every team-strength number the spread already explains out of all 47 of them, not just the six form columns moved the card from 51.1% to 51.9% right against the opening line on lines of 10.5 or more in 2020-25, changing 1 picks; about 82% likely to help.",
+      "probability_positive": 0.817425,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_group_penalty/20260909T224706Z/arm_results.json; docs/spread_hole_group_penalty.md",
+      "standard_error": 0.7678302392
+    },
+    "spread_hole_g3_card_7_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [0.0000, 0.0000] accuracy points reaches or crosses zero (season-blocked [0.0000, 0.0000]); probability_positive 0.5000. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane M arm G3: all 47 team-quality columns (results, elo, offense, defense) replaced by their residual after a walk-forward regression on the game's own spread, removing the line's linear share from the entire collinear block rather than from the six season-form columns alone; paired forced-pick accuracy through the played three-member card versus the active model c657058903f3232b at the OPENER, on lines of exactly 7, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_group_penalty_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes F, H, K and L; these arms were motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked and season-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Recorded interval is the week-blocked one; season-blocked [0.0000, 0.0000], season probability_positive 0.5000. Picks changed: 0. Card flip count for this arm: 282. Exact dead heat: 0 picks changed, every paired delta identically zero, so the block bootstrap standard error is 0 and the recorder (which rejects a non-positive standard_error) is given none; probability_positive 0.5 is the dead-heat value under the 2026-09-08 P(>0)+0.5*P(==0) convention.",
+      "plain_summary": "Taking the part of every team-strength number the spread already explains out of all 47 of them, not just the six form columns moved the card from 50.0% to 50.0% right against the opening line on lines of exactly 7 in 2020-25, changing 0 picks; about 50% likely to help.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_group_penalty/20260909T224706Z/arm_results.json; docs/spread_hole_group_penalty.md",
+      "standard_error": null
+    },
+    "spread_hole_g3_card_7p5_10_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-2.6316, 0.0000] accuracy points reaches or crosses zero (season-blocked [-2.0833, 0.0000]); probability_positive 0.0667. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane M arm G3: all 47 team-quality columns (results, elo, offense, defense) replaced by their residual after a walk-forward regression on the game's own spread, removing the line's linear share from the entire collinear block rather than from the six season-form columns alone; paired forced-pick accuracy through the played three-member card versus the active model c657058903f3232b at the OPENER, on lines of 7.5-10, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": -1.0309278351,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_group_penalty_v1",
+      "interval": [
+        -2.6315789474,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes F, H, K and L; these arms were motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked and season-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Recorded interval is the week-blocked one; season-blocked [-2.0833, 0.0000], season probability_positive 0.0453. Picks changed: 2. Card flip count for this arm: 282.",
+      "plain_summary": "Taking the part of every team-strength number the spread already explains out of all 47 of them, not just the six form columns moved the card from 51.5% to 50.5% right against the opening line on lines of 7.5-10 in 2020-25, changing 2 picks; about 7% likely to help.",
+      "probability_positive": 0.066725,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_group_penalty/20260909T224706Z/arm_results.json; docs/spread_hole_group_penalty.md",
+      "standard_error": 0.7168046688
+    },
+    "spread_hole_g3_card_overall_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-0.4660, 0.3324] accuracy points reaches or crosses zero (season-blocked [-0.4087, 0.4759]); probability_positive 0.3654. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane M arm G3: all 47 team-quality columns (results, elo, offense, defense) replaced by their residual after a walk-forward regression on the game's own spread, removing the line's linear share from the entire collinear block rather than from the six season-form columns alone; paired forced-pick accuracy through the played three-member card versus the active model c657058903f3232b at the OPENER, overall, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": -0.0665335995,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_group_penalty_v1",
+      "interval": [
+        -0.466045273,
+        0.3324468085
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes F, H, K and L; these arms were motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked and season-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Recorded interval is the week-blocked one; season-blocked [-0.4087, 0.4759], season probability_positive 0.3221. Picks changed: 11. Card flip count for this arm: 282.",
+      "plain_summary": "Taking the part of every team-strength number the spread already explains out of all 47 of them, not just the six form columns moved the card from 55.9% to 55.8% right against the opening line overall in 2020-25, changing 11 picks; about 37% likely to help.",
+      "probability_positive": 0.36545,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_group_penalty/20260909T224706Z/arm_results.json; docs/spread_hole_group_penalty.md",
+      "standard_error": 0.2004444011
+    },
+    "spread_hole_g3_standalone_0_6p5_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-1.0490, 0.0927] accuracy points reaches or crosses zero (season-blocked [-0.9874, 0.0962]); probability_positive 0.0641. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane M arm G3: all 47 team-quality columns (results, elo, offense, defense) replaced by their residual after a walk-forward regression on the game's own spread, removing the line's linear share from the entire collinear block rather than from the six season-form columns alone; paired forced-pick accuracy of the model's own picks before the card versus the active model c657058903f3232b at the OPENER, on lines of 0-6.5, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": -0.4528985507,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_group_penalty_v1",
+      "interval": [
+        -1.0489677307,
+        0.0926784059
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes F, H, K and L; these arms were motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked and season-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Recorded interval is the week-blocked one; season-blocked [-0.9874, 0.0962], season probability_positive 0.0435. Picks changed: 13. Card flip count for this arm: 282.",
+      "plain_summary": "Taking the part of every team-strength number the spread already explains out of all 47 of them, not just the six form columns moved the model from 56.2% to 55.7% right against the opening line on lines of 0-6.5 in 2020-25, changing 13 picks; about 6% likely to help.",
+      "probability_positive": 0.064075,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1104,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_group_penalty/20260909T224706Z/arm_results.json; docs/spread_hole_group_penalty.md",
+      "standard_error": 0.2974497642
+    },
+    "spread_hole_g3_standalone_10p5plus_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [0.0000, 3.9683] accuracy points reaches or crosses zero (season-blocked [0.0000, 3.0534]); probability_positive 0.9321. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane M arm G3: all 47 team-quality columns (results, elo, offense, defense) replaced by their residual after a walk-forward regression on the game's own spread, removing the line's linear share from the entire collinear block rather than from the six season-form columns alone; paired forced-pick accuracy of the model's own picks before the card versus the active model c657058903f3232b at the OPENER, on lines of 10.5 or more, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": 1.5267175573,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_group_penalty_v1",
+      "interval": [
+        0.0,
+        3.9682539683
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes F, H, K and L; these arms were motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked and season-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Recorded interval is the week-blocked one; season-blocked [0.0000, 3.0534], season probability_positive 0.9559. Picks changed: 2. Card flip count for this arm: 282.",
+      "plain_summary": "Taking the part of every team-strength number the spread already explains out of all 47 of them, not just the six form columns moved the model from 47.3% to 48.9% right against the opening line on lines of 10.5 or more in 2020-25, changing 2 picks; about 93% likely to help.",
+      "probability_positive": 0.932125,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_group_penalty/20260909T224706Z/arm_results.json; docs/spread_hole_group_penalty.md",
+      "standard_error": 1.0823436655
+    },
+    "spread_hole_g3_standalone_7_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [0.0000, 0.0000] accuracy points reaches or crosses zero (season-blocked [0.0000, 0.0000]); probability_positive 0.5000. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane M arm G3: all 47 team-quality columns (results, elo, offense, defense) replaced by their residual after a walk-forward regression on the game's own spread, removing the line's linear share from the entire collinear block rather than from the six season-form columns alone; paired forced-pick accuracy of the model's own picks before the card versus the active model c657058903f3232b at the OPENER, on lines of exactly 7, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_group_penalty_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes F, H, K and L; these arms were motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked and season-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Recorded interval is the week-blocked one; season-blocked [0.0000, 0.0000], season probability_positive 0.5000. Picks changed: 0. Card flip count for this arm: 282. Exact dead heat: 0 picks changed, every paired delta identically zero, so the block bootstrap standard error is 0 and the recorder (which rejects a non-positive standard_error) is given none; probability_positive 0.5 is the dead-heat value under the 2026-09-08 P(>0)+0.5*P(==0) convention.",
+      "plain_summary": "Taking the part of every team-strength number the spread already explains out of all 47 of them, not just the six form columns moved the model from 51.4% to 51.4% right against the opening line on lines of exactly 7 in 2020-25, changing 0 picks; about 50% likely to help.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_group_penalty/20260909T224706Z/arm_results.json; docs/spread_hole_group_penalty.md",
+      "standard_error": null
+    },
+    "spread_hole_g3_standalone_7p5_10_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-3.3654, 0.0000] accuracy points reaches or crosses zero (season-blocked [-2.5773, -0.5051]); probability_positive 0.0241. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane M arm G3: all 47 team-quality columns (results, elo, offense, defense) replaced by their residual after a walk-forward regression on the game's own spread, removing the line's linear share from the entire collinear block rather than from the six season-form columns alone; paired forced-pick accuracy of the model's own picks before the card versus the active model c657058903f3232b at the OPENER, on lines of 7.5-10, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": -1.5463917526,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_group_penalty_v1",
+      "interval": [
+        -3.3653846154,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes F, H, K and L; these arms were motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked and season-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Recorded interval is the week-blocked one; season-blocked [-2.5773, -0.5051], season probability_positive 0.0078. Picks changed: 3. Card flip count for this arm: 282.",
+      "plain_summary": "Taking the part of every team-strength number the spread already explains out of all 47 of them, not just the six form columns moved the model from 51.5% to 50.0% right against the opening line on lines of 7.5-10 in 2020-25, changing 3 picks; about 2% likely to help.",
+      "probability_positive": 0.0241,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_group_penalty/20260909T224706Z/arm_results.json; docs/spread_hole_group_penalty.md",
+      "standard_error": 0.8499446153
+    },
+    "spread_hole_g3_standalone_overall_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-0.9253, 0.1325] accuracy points reaches or crosses zero (season-blocked [-0.8420, 0.1431]); probability_positive 0.0662. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane M arm G3: all 47 team-quality columns (results, elo, offense, defense) replaced by their residual after a walk-forward regression on the game's own spread, removing the line's linear share from the entire collinear block rather than from the six season-form columns alone; paired forced-pick accuracy of the model's own picks before the card versus the active model c657058903f3232b at the OPENER, overall, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": -0.3992015968,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_group_penalty_v1",
+      "interval": [
+        -0.9253292453,
+        0.1324503311
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes F, H, K and L; these arms were motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked and season-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Recorded interval is the week-blocked one; season-blocked [-0.8420, 0.1431], season probability_positive 0.0746. Picks changed: 18. Card flip count for this arm: 282.",
+      "plain_summary": "Taking the part of every team-strength number the spread already explains out of all 47 of them, not just the six form columns moved the model from 54.6% to 54.2% right against the opening line overall in 2020-25, changing 18 picks; about 7% likely to help.",
+      "probability_positive": 0.066175,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_group_penalty/20260909T224706Z/arm_results.json; docs/spread_hole_group_penalty.md",
+      "standard_error": 0.2637147888
+    }
+  }
+}

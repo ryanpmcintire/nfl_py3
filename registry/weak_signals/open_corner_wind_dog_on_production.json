@@ -1,0 +1,33 @@
+{
+  "family": "open_corner_wind_dog_on_production",
+  "signals": {
+    "open_corner_wind_dog_on_production": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% CI [-1.7316,+1.3514] crosses zero -- the EXPECTED shape for a real small signal at this evaluator's resolution, not grounds to close per AGENTS.md. Neither admissible ground applies: wrong_sign_resolved is unavailable (interval is not entirely on the wrong side of the predicted underdog-positive direction) and no_split_half_reliability is inadmissible (a deterministic pregame-adjacent flag built from observed wind/roof/venue and the opener spread, zero measurement noise in the derivation itself). Disclosed non-pregame-safety (observed wind, not forecast) is a construction caveat, not a closing ground.",
+      "closing_ground": null,
+      "description": "Open-corner venue (frozen 10-stadium judgement list) x observed wind>=15mph, outdoor roof; UNDERDOG at the Tuesday opener stacked on PRODUCTION weak_stack.",
+      "effect": -0.2193,
+      "effect_units": "accuracy_points",
+      "family": "open_corner_wind_dog_on_production",
+      "interval": [
+        -1.7316,
+        1.3514
+      ],
+      "league": "nfl",
+      "notes": "Parent venue-blind cells weather_battery_high_wind_outdoor (P+ 0.7567) and weather_battery_high_wind_road_favorite (P+ 0.2176), registry/weak_signals.json, both scripts/nfl_weather_battery_screen.py, same actual-weather-mechanism-screen disclosure. Positive control +44.298 pts P+ 1.000 both blockings. Plain sign rule on the identical population reads +1.535 pts P+ 0.902 (opposite lean of the production rule at this size); production rule is the headline per repo convention. Flag fires 227/4902 full-schedule games (10 frozen stadium_id codes); 150 of the 227 lack a resolved opener-store spread. docs/weather_venue_leads.md.",
+      "plain_summary": "Underdog in a high-wind game at an open, exposed stadium. Too small a sample to call yet, leaning slightly negative for this rule.",
+      "probability_positive": 0.32955,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/weather_venue_flags_on_production/open_corner_wind/20260905T131348Z/results.json",
+      "standard_error": null
+    }
+  }
+}

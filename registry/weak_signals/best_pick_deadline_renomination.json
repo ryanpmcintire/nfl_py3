@@ -1,0 +1,173 @@
+{
+  "family": "best_pick_deadline_renomination",
+  "signals": {
+    "best_pick_deadline_renomination_a1_deadline_rerank_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power is the only admissible classification. Neither terminal ground applies: no interval sits wholly on the wrong side of zero (wrong_sign_resolved is rejected outright otherwise), split-half reliability is not zero and is not the question here, and the positive control -- perfect-foresight renomination, +25.49 accuracy points, 95% [+13.73, +37.25], probability_positive 1.000 -- proves only that this harness detects a ~25-point renomination effect, never that it could detect a 1-2 point one, so bounded_by_control is unavailable. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Re-running the served Best Pick nominator (nfl_ats.best_pick_nomination.select_nominee, alpha=2000 market_residual probability distance, below-median cross-book dispersion pool) at the Sunday-noon pick deadline over the still-playable slate, with the pool and the dispersion tie-break rebuilt from the DEADLINE's cross-book spread_std, vs the frozen Tuesday nominee; both nominees settled on the served late-week pick side at the frozen Tuesday opener line; top-1 Best Pick hit rate per week",
+      "effect": -5.8823529412,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_deadline_renomination",
+      "interval": [
+        -17.6470588235,
+        5.8823529412
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/best_pick_deadline_renomination.md before any number was computed. Population: 816 games, 54 weeks, 2023-2025, the intersection of the frozen 1,537-game opener archive (artifacts/ridge_alpha_promotion/20260818T221459Z) with the intraday_hourly late-week archive the served MKT-15/CX18 follow rule was measured on. One nomination per week, paired against the served Tuesday v2 nominee on the 51 weeks where both nominees resolved at the frozen Tuesday opener line. Week-blocked bootstrap, blocks (season, week), 20,000 draws, seed 20260821; within-week correlation zero by owner mandate. Renomination instant is that week's Sunday 12:00 ET, the window nfl_ats.best_pick_refresh_prospective already enforces; a nominee whose own kickoff has passed is frozen (10 of 54 weeks). Declared limitation: the historical feature table is a single as-of build, so a deadline refit reproduces the Tuesday probability exactly -- only the market moves between the two instants, so these arms measure the market half of renomination, not the refreshed-probability half. This cell: nominees differ in 26 of 51 paired weeks and the outcome differs in 11; arm 30/51 vs incumbent 33/51.",
+      "plain_summary": "Should we re-choose the week's Best Pick on Sunday morning using where the sportsbooks stand then, instead of where they stood Tuesday? It picks a different game in 26 of 51 weeks and comes out -5.9 points a week, 18% likely to be the better rule. Keep choosing on Tuesday.",
+      "probability_positive": 0.182425,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 816,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "scripts/best_pick_deadline_renomination_eval.py; artifacts/best_pick_deadline_renomination/20260909T214500Z/summary.json; docs/best_pick_deadline_renomination.md",
+      "standard_error": null
+    },
+    "best_pick_deadline_renomination_a1_deadline_rerank_tuesday_side_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power is the only admissible classification. Neither terminal ground applies: no interval sits wholly on the wrong side of zero (wrong_sign_resolved is rejected outright otherwise), split-half reliability is not zero and is not the question here, and the positive control -- perfect-foresight renomination, +25.49 accuracy points, 95% [+13.73, +37.25], probability_positive 1.000 -- proves only that this harness detects a ~25-point renomination effect, never that it could detect a 1-2 point one, so bounded_by_control is unavailable. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Same deadline re-rank of the Best Pick nominator, but both nominees settled on the FROZEN Tuesday pick side (no late-week follow override), at the frozen Tuesday opener line; top-1 Best Pick hit rate per week",
+      "effect": -5.8823529412,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_deadline_renomination",
+      "interval": [
+        -17.6470588235,
+        5.8823529412
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/best_pick_deadline_renomination.md before any number was computed. Population: 816 games, 54 weeks, 2023-2025, the intersection of the frozen 1,537-game opener archive (artifacts/ridge_alpha_promotion/20260818T221459Z) with the intraday_hourly late-week archive the served MKT-15/CX18 follow rule was measured on. One nomination per week, paired against the served Tuesday v2 nominee on the 51 weeks where both nominees resolved at the frozen Tuesday opener line. Week-blocked bootstrap, blocks (season, week), 20,000 draws, seed 20260821; within-week correlation zero by owner mandate. Renomination instant is that week's Sunday 12:00 ET, the window nfl_ats.best_pick_refresh_prospective already enforces; a nominee whose own kickoff has passed is frozen (10 of 54 weeks). Declared limitation: the historical feature table is a single as-of build, so a deadline refit reproduces the Tuesday probability exactly -- only the market moves between the two instants, so these arms measure the market half of renomination, not the refreshed-probability half. This cell: nominees differ in 26 of 51 paired weeks and the outcome differs in 9; arm 29/51 vs incumbent 32/51.",
+      "plain_summary": "The same Sunday-morning re-choice of the Best Pick, graded on the pick we made Tuesday rather than the refreshed one: -5.9 points a week, 16% likely better.",
+      "probability_positive": 0.158975,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 816,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "scripts/best_pick_deadline_renomination_eval.py; artifacts/best_pick_deadline_renomination/20260909T214500Z/summary.json; docs/best_pick_deadline_renomination.md",
+      "standard_error": null
+    },
+    "best_pick_deadline_renomination_a2_flip_avoidant_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power is the only admissible classification. Neither terminal ground applies: no interval sits wholly on the wrong side of zero (wrong_sign_resolved is rejected outright otherwise), split-half reliability is not zero and is not the question here, and the positive control -- perfect-foresight renomination, +25.49 accuracy points, 95% [+13.73, +37.25], probability_positive 1.000 -- proves only that this harness detects a ~25-point renomination effect, never that it could detect a 1-2 point one, so bounded_by_control is unavailable. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Keep the Tuesday Best Pick nominee unless the served late-week follow rule (nfl_ats.sharp_book_movement_features.late_week_follow_frame, equal-book Wednesday-to-deadline net move, 0.5 threshold) has flipped that game's pick, in which case take the next-ranked still-playable pool member whose pick did not flip; both arms settled on the served late-week pick side at the frozen Tuesday opener line",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_deadline_renomination",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/best_pick_deadline_renomination.md before any number was computed. Population: 816 games, 54 weeks, 2023-2025, the intersection of the frozen 1,537-game opener archive (artifacts/ridge_alpha_promotion/20260818T221459Z) with the intraday_hourly late-week archive the served MKT-15/CX18 follow rule was measured on. One nomination per week, paired against the served Tuesday v2 nominee on the 51 weeks where both nominees resolved at the frozen Tuesday opener line. Week-blocked bootstrap, blocks (season, week), 20,000 draws, seed 20260821; within-week correlation zero by owner mandate. Renomination instant is that week's Sunday 12:00 ET, the window nfl_ats.best_pick_refresh_prospective already enforces; a nominee whose own kickoff has passed is frozen (10 of 54 weeks). Declared limitation: the historical feature table is a single as-of build, so a deadline refit reproduces the Tuesday probability exactly -- only the market moves between the two instants, so these arms measure the market half of renomination, not the refreshed-probability half. This cell: nominees differ in 1 of 51 paired weeks and the outcome differs in 0; arm 33/51 vs incumbent 33/51. The recorded interval is degenerate [0, 0] because the arm made an identical nomination in 50 of 51 weeks and the one divergent week produced an identical outcome; probability_positive 0.5 is the correct dead-heat reading under the 2026-09-08 P(>0)+0.5*P(==0) convention, not a resolved negative.",
+      "plain_summary": "If the market moves enough to flip our pick on the game we flagged as the Best Pick, should we move the flag to a steadier game? It only ever came up in 1 of 51 weeks, and that week came out the same either way: +0.0 points.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 816,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "scripts/best_pick_deadline_renomination_eval.py; artifacts/best_pick_deadline_renomination/20260909T214500Z/summary.json; docs/best_pick_deadline_renomination.md",
+      "standard_error": null
+    },
+    "best_pick_deadline_renomination_a2_flip_avoidant_tuesday_side_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power is the only admissible classification. Neither terminal ground applies: no interval sits wholly on the wrong side of zero (wrong_sign_resolved is rejected outright otherwise), split-half reliability is not zero and is not the question here, and the positive control -- perfect-foresight renomination, +25.49 accuracy points, 95% [+13.73, +37.25], probability_positive 1.000 -- proves only that this harness detects a ~25-point renomination effect, never that it could detect a 1-2 point one, so bounded_by_control is unavailable. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Same flip-avoidant Best Pick nominator, both arms settled on the FROZEN Tuesday pick side at the frozen Tuesday opener line; top-1 Best Pick hit rate per week",
+      "effect": -1.9607843137,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_deadline_renomination",
+      "interval": [
+        -5.8823529412,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/best_pick_deadline_renomination.md before any number was computed. Population: 816 games, 54 weeks, 2023-2025, the intersection of the frozen 1,537-game opener archive (artifacts/ridge_alpha_promotion/20260818T221459Z) with the intraday_hourly late-week archive the served MKT-15/CX18 follow rule was measured on. One nomination per week, paired against the served Tuesday v2 nominee on the 51 weeks where both nominees resolved at the frozen Tuesday opener line. Week-blocked bootstrap, blocks (season, week), 20,000 draws, seed 20260821; within-week correlation zero by owner mandate. Renomination instant is that week's Sunday 12:00 ET, the window nfl_ats.best_pick_refresh_prospective already enforces; a nominee whose own kickoff has passed is frozen (10 of 54 weeks). Declared limitation: the historical feature table is a single as-of build, so a deadline refit reproduces the Tuesday probability exactly -- only the market moves between the two instants, so these arms measure the market half of renomination, not the refreshed-probability half. This cell: nominees differ in 1 of 51 paired weeks and the outcome differs in 1; arm 31/51 vs incumbent 32/51.",
+      "plain_summary": "The same move-the-flag-off-a-flipped-game rule, graded on the Tuesday pick: it changes the flagged game in 1 of 51 weeks and costs -2.0 points a week there.",
+      "probability_positive": 0.1803,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 816,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "scripts/best_pick_deadline_renomination_eval.py; artifacts/best_pick_deadline_renomination/20260909T214500Z/summary.json; docs/best_pick_deadline_renomination.md",
+      "standard_error": null
+    },
+    "best_pick_deadline_renomination_a3_biggest_move_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power is the only admissible classification. Neither terminal ground applies: no interval sits wholly on the wrong side of zero (wrong_sign_resolved is rejected outright otherwise), split-half reliability is not zero and is not the question here, and the positive control -- perfect-foresight renomination, +25.49 accuracy points, 95% [+13.73, +37.25], probability_positive 1.000 -- proves only that this harness detects a ~25-point renomination effect, never that it could detect a 1-2 point one, so bounded_by_control is unavailable. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Nominate the still-playable Tuesday-pool game whose equal-book Wednesday-to-deadline net move is at least 0.5 points TOWARD our Tuesday pick, largest magnitude first, else keep the Tuesday nominee; both arms settled on the served late-week pick side at the frozen Tuesday opener line; top-1 Best Pick hit rate per week",
+      "effect": -9.8039215686,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_deadline_renomination",
+      "interval": [
+        -23.5294117647,
+        3.9215686275
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/best_pick_deadline_renomination.md before any number was computed. Population: 816 games, 54 weeks, 2023-2025, the intersection of the frozen 1,537-game opener archive (artifacts/ridge_alpha_promotion/20260818T221459Z) with the intraday_hourly late-week archive the served MKT-15/CX18 follow rule was measured on. One nomination per week, paired against the served Tuesday v2 nominee on the 51 weeks where both nominees resolved at the frozen Tuesday opener line. Week-blocked bootstrap, blocks (season, week), 20,000 draws, seed 20260821; within-week correlation zero by owner mandate. Renomination instant is that week's Sunday 12:00 ET, the window nfl_ats.best_pick_refresh_prospective already enforces; a nominee whose own kickoff has passed is frozen (10 of 54 weeks). Declared limitation: the historical feature table is a single as-of build, so a deadline refit reproduces the Tuesday probability exactly -- only the market moves between the two instants, so these arms measure the market half of renomination, not the refreshed-probability half. This cell: nominees differ in 25 of 51 paired weeks and the outcome differs in 13; arm 28/51 vs incumbent 33/51.",
+      "plain_summary": "Should the week's Best Pick be the game the market moved furthest in our favour since Tuesday? It names a different game in 25 of 51 weeks and comes out -9.8 points a week, 8% likely better. No.",
+      "probability_positive": 0.077125,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 816,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "scripts/best_pick_deadline_renomination_eval.py; artifacts/best_pick_deadline_renomination/20260909T214500Z/summary.json; docs/best_pick_deadline_renomination.md",
+      "standard_error": null
+    },
+    "best_pick_deadline_renomination_a3_biggest_move_tuesday_side_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power is the only admissible classification. Neither terminal ground applies: no interval sits wholly on the wrong side of zero (wrong_sign_resolved is rejected outright otherwise), split-half reliability is not zero and is not the question here, and the positive control -- perfect-foresight renomination, +25.49 accuracy points, 95% [+13.73, +37.25], probability_positive 1.000 -- proves only that this harness detects a ~25-point renomination effect, never that it could detect a 1-2 point one, so bounded_by_control is unavailable. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Same biggest-favourable-move Best Pick nominator, both arms settled on the FROZEN Tuesday pick side at the frozen Tuesday opener line; top-1 Best Pick hit rate per week",
+      "effect": -11.7647058824,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_deadline_renomination",
+      "interval": [
+        -25.4901960784,
+        1.9607843137
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/best_pick_deadline_renomination.md before any number was computed. Population: 816 games, 54 weeks, 2023-2025, the intersection of the frozen 1,537-game opener archive (artifacts/ridge_alpha_promotion/20260818T221459Z) with the intraday_hourly late-week archive the served MKT-15/CX18 follow rule was measured on. One nomination per week, paired against the served Tuesday v2 nominee on the 51 weeks where both nominees resolved at the frozen Tuesday opener line. Week-blocked bootstrap, blocks (season, week), 20,000 draws, seed 20260821; within-week correlation zero by owner mandate. Renomination instant is that week's Sunday 12:00 ET, the window nfl_ats.best_pick_refresh_prospective already enforces; a nominee whose own kickoff has passed is frozen (10 of 54 weeks). Declared limitation: the historical feature table is a single as-of build, so a deadline refit reproduces the Tuesday probability exactly -- only the market moves between the two instants, so these arms measure the market half of renomination, not the refreshed-probability half. This cell: nominees differ in 25 of 51 paired weeks and the outcome differs in 14; arm 26/51 vs incumbent 32/51.",
+      "plain_summary": "Flagging the game the market moved furthest our way, graded on the Tuesday pick: -11.8 points a week, 5% likely better.",
+      "probability_positive": 0.048525,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 816,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "scripts/best_pick_deadline_renomination_eval.py; artifacts/best_pick_deadline_renomination/20260909T214500Z/summary.json; docs/best_pick_deadline_renomination.md",
+      "standard_error": null
+    }
+  }
+}

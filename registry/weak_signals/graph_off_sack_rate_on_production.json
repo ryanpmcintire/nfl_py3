@@ -1,0 +1,33 @@
+{
+  "family": "graph_off_sack_rate_on_production",
+  "signals": {
+    "graph_team_stat_off_sack_rate_on_production": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Close-graded per the predeclaration's grade discipline (mirrors scripts/graph_team_stat_record.py::classify): no terminal classification is drawn at this grade regardless of sign. The week-blocked CI upper bound (+0.809) is positive, so the interval is not resolved entirely below zero (refuted_mechanism unavailable), and the positive control proved the harness can detect a large effect but did not bound whether an effect the size of the screen's own +2.949 reading would be reliably detected at this sample (bounded_by_control unavailable). Recorded unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat off_sack_rate feature (signed-Katz opponent-adjusted, frozen CFB structure) stacked on PRODUCTION weak_stack/market_residual/ridge-alpha-10, versus production alone: does the screen-stage bare-baseline finding (+2.949 pts, P+ 0.987, docs/graph_ratings_v2_screen.md section 8) survive being measured on top of what is actually played?",
+      "effect": -0.9345794392523364,
+      "effect_units": "accuracy_points",
+      "family": "graph_off_sack_rate_on_production",
+      "interval": [
+        -2.625192684247802,
+        0.8088456708064953
+      ],
+      "league": "nfl",
+      "notes": "Paired candidate(weak_stack_graph_sack)-minus-baseline(weak_stack) on 749 games, 51 weeks, close-graded 2014-2016 (rotation family graph_off_sack_rate_on_production, inherits graph_ratings_v2_team_stat so it could not re-draw the already-spent 2011-2013 block). Candidate accuracy 50.07% vs baseline 51.00%. Week-blocked 95% CI [-2.625,+0.809] pts, P+ 0.122; season-blocked 95% CI [-2.419,+1.992], P+ 0.248. Home-pick rate baseline 37.6% vs candidate 36.7% (close together, so little home-tilt artifact here, unlike the bare-baseline screen's 55-67% arms). Within-week permutation null (200 perms) centres at +0.416 pts, sd 0.940; observed -0.935 sits at the 6.0th percentile of its own null -- a mild negative lean, not a resolved wrong sign at either blocking. Positive control (candidate column replaced by realized ats_margin) showed +48.999 pts, P+ 1.000, proving the full-profile ridge harness is not blind. Null check (200 perms, real margins) produced a sane distribution (mean +0.416, sd 0.940). NOT commensurable with the graph_ratings_v2_team_stat family's own bare-market-baseline entries (different comparator: production chain vs zero-feature baseline) -- recorded under a separate family on purpose, per AGENTS.md's pooling-commensurability rule. CLOSE-graded: settles no play/no-play decision. Predeclared in docs/graph_team_stat_on_production.md before any outcome was scored. Artifact: artifacts/graph_team_stat_off_sack_rate_on_production/20260831T150339Z/results.json.\n[2026-09-01T19:32:38.265446+00:00] reliability set: None -> 0.9890 95% [0.9842, 0.9927]. Method: team-season odd/even-week split-half of the underlying continuous trait, Spearman-Brown corrected, block bootstrap over team-seasons (nfl_ats.cfb_qb_dependence.split_half_reliability, seed 20260901, 4000 draws). Measured from: artifacts/reliability_sweep/graph_team_stat/20260901T193017Z/results.json. Reason: Split-half reliability of the team-week column 'off_sack_rate' (home/away pair home_off_sack_rate/away_off_sack_rate), measured on this cell's own seasons [2014, 2016]; scripts/graph_team_stat_screen.py:123-176 builds this cell's graph-rating arm from exactly that pair, so the column IS the cell's underlying construct. Measurement only: no classification, closing_ground or effect changed.. Reliability fields only; effect/interval/classification/closing_ground untouched, and this measurement does not by itself reclassify the entry.",
+      "plain_summary": "Tests whether the graph-adjusted sack-rate signal adds anything once stacked on top of the model that is actually played, not just a bare market line.",
+      "probability_positive": 0.122,
+      "recorded_at": "2026-08-31",
+      "reliability": 0.989011,
+      "sample_blocks": 51,
+      "sample_games": 749,
+      "seasons": [
+        2014,
+        2016
+      ],
+      "source": "artifacts/graph_team_stat_off_sack_rate_on_production/20260831T150339Z/results.json",
+      "standard_error": null
+    }
+  }
+}

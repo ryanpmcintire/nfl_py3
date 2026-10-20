@@ -1,24 +1,36 @@
 from __future__ import annotations
 
 import bisect
+import contextlib
 import dataclasses
+import hashlib
 import json
 import math
 import os
 import re
 import statistics
+import tempfile
 import warnings
-from collections.abc import Iterable, Mapping, Sequence
+from collections.abc import Iterable, Iterator, Mapping, Sequence
 from dataclasses import dataclass, replace
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Literal
 
 from nfl_ats.evidence_conventions import binomial_two_sided_p
-from nfl_ats.io import atomic_json
+from nfl_ats.io import atomic_json, render_json
 
 WEAK_SIGNAL_REGISTRY_VERSION = 1
 WEAK_SIGNAL_REGISTRY_FILENAME = "weak_signals.json"
+WEAK_SIGNAL_REGISTRY_DIRNAME = "weak_signals"
+SHARD_META_FILENAME = "_registry.json"
+SHARD_NO_FAMILY_FILENAME = "_no_family.json"
+SAFE_SHARD_STEM = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,99}")
+WINDOWS_RESERVED_STEMS = frozenset(
+    {"con", "prn", "aux", "nul"}
+    | {f"com{digit}" for digit in range(1, 10)}
+    | {f"lpt{digit}" for digit in range(1, 10)}
+)
 
 CLASSIFICATIONS = (
     "unresolved_below_power",
@@ -616,44 +628,187 @@ def registry_to_payload(registry: Registry) -> dict[str, Any]:
 
 
 def default_registry_path(root: Path | None = None) -> Path:
-
     base = Path(os.environ.get("NFL_ATS_REGISTRY_DIR", "registry")) if root is None else root
-    return base / WEAK_SIGNAL_REGISTRY_FILENAME
+    return base / WEAK_SIGNAL_REGISTRY_DIRNAME
+
+
+def _storage(path: Path) -> tuple[str, Path]:
+    if path.name == WEAK_SIGNAL_REGISTRY_FILENAME:
+        legacy = path
+        shards = path.with_name(WEAK_SIGNAL_REGISTRY_DIRNAME)
+    else:
+        shards = path
+        legacy = path.with_name(path.name + ".json")
+    if shards.is_dir() and legacy.is_file():
+        raise ValueError(
+            f"both {legacy} and {shards} exist; remove one so the registry is unambiguous"
+        )
+    if shards.is_dir():
+        return "shards", shards
+    if legacy.is_file():
+        return "file", legacy
+    if path.suffix == ".json":
+        return "empty_file", path
+    return "empty_shards", path
+
+
+def _shard_stems(families: Sequence[str]) -> dict[str, str]:
+    lowered: dict[str, int] = {}
+    for family in families:
+        lowered[family.lower()] = lowered.get(family.lower(), 0) + 1
+    stems: dict[str, str] = {}
+    for family in families:
+        safe = (
+            SAFE_SHARD_STEM.fullmatch(family) is not None
+            and family.lower() not in WINDOWS_RESERVED_STEMS
+            and not family.endswith(".")
+            and lowered[family.lower()] == 1
+        )
+        digest = hashlib.sha256(family.encode("utf-8")).hexdigest()[:24]
+        stems[family] = family if safe else "x_" + digest
+    if len({stem.lower() for stem in stems.values()}) != len(stems):
+        raise ValueError("weak-signal family shard names collide")
+    return stems
+
+
+def _record_family(record: Any) -> str | None:
+    family = record.get("family") if isinstance(record, dict) else None
+    return family if isinstance(family, str) and family else None
+
+
+def render_registry_shards(payload: dict[str, Any]) -> dict[str, str]:
+    signals = payload["signals"]
+    meta = {key: value for key, value in payload.items() if key != "signals"}
+    by_family: dict[str, dict[str, Any]] = {}
+    loose: dict[str, Any] = {}
+    for name, record in sorted(signals.items()):
+        family = _record_family(record)
+        if family is None:
+            loose[name] = record
+        else:
+            by_family.setdefault(family, {})[name] = record
+    stems = _shard_stems(sorted(by_family))
+    shards = {SHARD_META_FILENAME: render_json(meta)}
+    if loose:
+        shards[SHARD_NO_FAMILY_FILENAME] = render_json({"signals": loose})
+    for family, records in by_family.items():
+        shards[stems[family] + ".json"] = render_json({"family": family, "signals": records})
+    return shards
+
+
+def read_registry_shards(directory: Path) -> dict[str, Any]:
+    meta_path = directory / SHARD_META_FILENAME
+    if not meta_path.is_file():
+        raise ValueError(f"{directory} has no {SHARD_META_FILENAME}")
+    payload: dict[str, Any] = json.loads(meta_path.read_text(encoding="utf-8"))
+    signals: dict[str, Any] = {}
+    seen_families: dict[str, str] = {}
+    for shard in sorted(directory.iterdir()):
+        if shard.name == SHARD_META_FILENAME:
+            continue
+        if not shard.is_file() or shard.suffix != ".json":
+            raise ValueError(f"unexpected entry {shard} in weak-signal registry")
+        body = json.loads(shard.read_text(encoding="utf-8"))
+        records = body.get("signals")
+        if not isinstance(records, dict):
+            raise ValueError(f"{shard} has no signals object")
+        family: str | None = None
+        if shard.name == SHARD_NO_FAMILY_FILENAME:
+            if set(body) != {"signals"}:
+                raise ValueError(f"{shard} has unexpected keys")
+        else:
+            family = body.get("family")
+            if not isinstance(family, str) or not family or set(body) != {"family", "signals"}:
+                raise ValueError(f"{shard} does not name its family")
+            if shard.name != _shard_stems([family])[family] + ".json":
+                raise ValueError(f"{shard} does not match its stored family {family!r}")
+            if seen_families.get(family.lower(), family) != family:
+                raise ValueError(f"family {family!r} collides case-insensitively")
+            seen_families[family.lower()] = family
+        for name, record in records.items():
+            if _record_family(record) != family:
+                raise ValueError(f"{shard}: signal {name!r} disagrees with the shard family")
+            if name in signals:
+                raise ValueError(f"signal {name!r} appears in more than one shard")
+            signals[name] = record
+    payload["signals"] = dict(sorted(signals.items()))
+    return payload
+
+
+def write_registry_shards(payload: dict[str, Any], directory: Path) -> None:
+    shards = render_registry_shards(payload)
+    directory.mkdir(parents=True, exist_ok=True)
+    for filename, text in shards.items():
+        target = directory / filename
+        if target.is_file() and target.read_text(encoding="utf-8") == text:
+            continue
+        atomic_json(json.loads(text), target)
+    for existing in directory.iterdir():
+        if existing.name not in shards and existing.is_file() and existing.suffix == ".json":
+            existing.unlink()
+
+
+def read_registry_payload(path: Path) -> dict[str, Any] | None:
+    kind, target = _storage(path)
+    if kind == "shards":
+        return read_registry_shards(target)
+    if kind == "file":
+        payload = json.loads(target.read_text(encoding="utf-8"))
+        if not isinstance(payload, dict):
+            raise ValueError(f"{target} does not contain a JSON object")
+        return payload
+    return None
+
+
+@contextlib.contextmanager
+def merged_registry_file(path: Path) -> Iterator[Path]:
+    payload = read_registry_payload(path)
+    if payload is None:
+        raise OSError(f"{path} does not exist")
+    with tempfile.TemporaryDirectory() as merged_root:
+        merged = Path(merged_root) / WEAK_SIGNAL_REGISTRY_FILENAME
+        atomic_json(payload, merged)
+        yield merged
+
+
+def write_registry_payload(payload: dict[str, Any], path: Path) -> None:
+    kind, target = _storage(path)
+    if kind in ("shards", "empty_shards"):
+        write_registry_shards(payload, target)
+    else:
+        atomic_json(payload, target)
 
 
 def load_registry(path: Path, *, on_unknown_field: OnUnknownField = "raise") -> Registry:
-
-    if not path.is_file():
+    payload = read_registry_payload(path)
+    if payload is None:
         return Registry(version=WEAK_SIGNAL_REGISTRY_VERSION, notes=(), signals={})
-    payload = json.loads(path.read_text(encoding="utf-8"))
     return registry_from_payload(payload, on_unknown_field=on_unknown_field)
 
 
 def load_registry_permissive(
     path: Path, *, on_unknown_field: OnUnknownField = "raise"
 ) -> tuple[Registry, dict[str, QuarantinedSignal]]:
-
-    if not path.is_file():
+    payload = read_registry_payload(path)
+    if payload is None:
         return Registry(version=WEAK_SIGNAL_REGISTRY_VERSION, notes=(), signals={}), {}
-    payload = json.loads(path.read_text(encoding="utf-8"))
     return registry_from_payload_permissive(payload, on_unknown_field=on_unknown_field)
 
 
 def save_registry(registry: Registry, path: Path) -> None:
-    atomic_json(registry_to_payload(registry), path)
+    write_registry_payload(registry_to_payload(registry), path)
 
 
 def save_registry_preserving_quarantine(
     registry: Registry, quarantined: Mapping[str, QuarantinedSignal], path: Path
 ) -> None:
-
     payload = registry_to_payload(registry)
     signals = payload["signals"]
     for name, entry in quarantined.items():
         if name not in registry.signals:
             signals[name] = entry.payload
     payload["signals"] = dict(sorted(signals.items()))
-    atomic_json(payload, path)
+    write_registry_payload(payload, path)
 
 
 def record_signal(registry: Registry, signal: WeakSignal, *, replace: bool = False) -> Registry:

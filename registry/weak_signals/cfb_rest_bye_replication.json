@@ -1,0 +1,285 @@
+{
+  "family": "cfb_rest_bye_replication",
+  "signals": {
+    "cfb_rest_away_off_bye_on_benchmark": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell frozen before scoring in docs/cfb_rest_bye_replication.md (sections 1-8 written and saved before any scoring mode ran; section 5 filled from a PREDICTOR-ONLY coverage run). Neither admissible closing ground applies: wrong_sign_resolved requires the WHOLE week-blocked interval on the wrong side of zero and this one is [-0.3754, +0.6059]; positive_control_bound requires the instrument to have been PROVEN able to detect an effect of THIS size, and the control only proved detection of a +48.4-point leak; no_split_half_reliability is unavailable both because the correctly-specified across-season split-half reads Spearman-Brown 0.8271 (far above the 0.10 ceiling the ground admits) and because a deterministic calendar fact has zero measurement error. Per AGENTS.md an interval containing zero is the EXPECTED shape for a real small signal at this evaluator's ~2-point resolution, never grounds to close.",
+      "closing_ground": null,
+      "description": "CFB replication of NFL travel_rest_away_off_bye: away_rest >= 13 days (side-specific absolute threshold, away mirror) added as ONE extra column to the frozen XLG-03 benchmark arm, which already carries rest_diff. Paired candidate-minus-baseline forced-pick accuracy delta; positive = the extra column helped. NFL predicted direction on home_cover: negative.",
+      "effect": 0.1008,
+      "effect_units": "accuracy_points",
+      "family": "cfb_rest_bye_replication",
+      "interval": [
+        -0.3754,
+        0.6059
+      ],
+      "league": "cfb",
+      "notes": "POOLED read over the frozen clean core 2012-2019 + 2021-2025 (8933 games, 199 week blocks, 13 seasons, 1001 flagged, 523 feature-missing season-opener rows). Season-blocked secondary: 95% [-0.3333, +0.5255] P+ 0.6760. Observed delta sits at the 60.5th percentile of its own within-week permutation null. PER-ERA MAGNITUDES (owner rule 'era magnitude, not presence' -- never average across a sign flip): 2012-2019 +0.093 pts P+ 0.645 95% [-0.508, +0.665] n=5349 flagged=605; 2021-2025 +0.112 pts P+ 0.588 95% [-0.731, +0.906] n=3584 flagged=396. Close-graded CFB: the CFB line archive is opener plus an unidentified-time resolved quote and no source records quote observation times (docs/cfb_data.md), so CFB can be graded at a close proxy and NEVER at a verified opener; this settles no NFL play/no-play or promotion decision. THE BASELINE ALREADY CARRIES rest_diff: nfl_ats.cfb_features.CFB_MODEL_FEATURE_COLUMNS (35 columns) includes rest_diff, so this is a MARGINAL on top of a model that already prices the linear rest difference, not a test of whether rest matters. NFL sibling entry: travel_rest_away_off_bye. The four cells of this battery are CORRELATED SUBSETS OF ONE WINDOW (the same 8,933 scored games, overlapping flags by construction) and are NOT independent votes -- do not sign-test-pool them. OVERLAP DISCLOSURE: separate pooling family cfb_rest_bye_replication, NEVER pooled with cfb_bias_battery. registry entries cfb_bias_battery_bye_week_rest_edge (rest edge >=6d) and cfb_bias_battery_short_week_rest_disadvantage (rest edge <=-4d) are SUBSET COVER RATE VS COMPLEMENT measurements on an overlapping CFB population -- a different quantity from this harness's paired accuracy delta of the XLG-03 estimator with exactly one extra column; AGENTS.md's commensurability rule forbids pooling non-commensurable comparators. Reliability recorded is the ACROSS-SEASON odd/even-YEAR split-half of the team's own propensity (own_off_bye_13): Pearson r +0.7052, Spearman-Brown 0.8271, P+ 1.0000, n_team_units 135. The repo-standard WITHIN-season odd/even-WEEK instrument reads r -0.3368 on the same panel; that is a structural artifact of a compositionally constrained calendar quantity (a team-season holds a fixed number of days and games, so extra rest in one part is arithmetically less rest elsewhere), not evidence about the trait -- docs/cfb_rest_bye_replication.md section 5. Seed 20260901, 1,000 bootstrap draws. Within-week permutation null (200 draws, standalone run artifacts/cfb_rest_bye_replication/20260901T193006Z): mean +0.044 pts, sd 0.233, 95% [-0.403, +0.505] -- the harness manufactures no effect. Positive control (this column replaced by the realised ats_margin, artifacts/cfb_rest_bye_replication/20260901T193332Z): +48.405 pts, P+ 1.000, 95% [+47.374, +49.464] -- the full 36-column ridge fit detects a large effect, which bounds NOTHING at the sub-1-point scale in question. XLG-03 baseline forced-pick accuracy on this population: 51.595%.",
+      "plain_summary": "College visiting team coming off 13-plus days of rest. Telling the model about it, on top of the rest gap it already knew, helped its picks a little.",
+      "probability_positive": 0.646,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.8271,
+      "sample_blocks": 199,
+      "sample_games": 8933,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "scripts/cfb_rest_bye_replication.py; artifacts/cfb_rest_bye_replication/20260901T193759Z/results.json; docs/cfb_rest_bye_replication.md",
+      "standard_error": null
+    },
+    "cfb_rest_bye_edge_home_on_benchmark": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell frozen before scoring in docs/cfb_rest_bye_replication.md (sections 1-8 written and saved before any scoring mode ran; section 5 filled from a PREDICTOR-ONLY coverage run). Neither admissible closing ground applies: wrong_sign_resolved requires the WHOLE week-blocked interval on the wrong side of zero and this one is [-0.3769, +0.2146]; positive_control_bound requires the instrument to have been PROVEN able to detect an effect of THIS size, and the control only proved detection of a +48.4-point leak; no_split_half_reliability is unavailable both because the correctly-specified across-season split-half reads Spearman-Brown 0.6355 (far above the 0.10 ceiling the ground admits) and because a deterministic calendar fact has zero measurement error. Per AGENTS.md an interval containing zero is the EXPECTED shape for a real small signal at this evaluator's ~2-point resolution, never grounds to close.",
+      "closing_ground": null,
+      "description": "CFB replication of NFL bye_overval_home_edge_post2011: HOME team off a strict bye (>=12-day gap) AND opponent NOT off bye, added as ONE extra column to the frozen XLG-03 benchmark arm, which already carries rest_diff. Paired candidate-minus-baseline forced-pick accuracy delta; positive = the extra column helped. NFL market-overprices-bye mechanism predicted a negative home cover edge.",
+      "effect": -0.0784,
+      "effect_units": "accuracy_points",
+      "family": "cfb_rest_bye_replication",
+      "interval": [
+        -0.3769,
+        0.2146
+      ],
+      "league": "cfb",
+      "notes": "POOLED read over the frozen clean core 2012-2019 + 2021-2025 (8933 games, 199 week blocks, 13 seasons, 785 flagged, 548 feature-missing season-opener rows). Season-blocked secondary: 95% [-0.4238, +0.2533] P+ 0.3430. Observed delta sits at the 22.0th percentile of its own within-week permutation null. PER-ERA MAGNITUDES (owner rule 'era magnitude, not presence' -- never average across a sign flip): 2012-2019 +0.093 pts P+ 0.743 95% [-0.164, +0.354] n=5349 flagged=485; 2021-2025 -0.335 pts P+ 0.125 95% [-0.954, +0.245] n=3584 flagged=300. Close-graded CFB: the CFB line archive is opener plus an unidentified-time resolved quote and no source records quote observation times (docs/cfb_data.md), so CFB can be graded at a close proxy and NEVER at a verified opener; this settles no NFL play/no-play or promotion decision. THE BASELINE ALREADY CARRIES rest_diff: nfl_ats.cfb_features.CFB_MODEL_FEATURE_COLUMNS (35 columns) includes rest_diff, so this is a MARGINAL on top of a model that already prices the linear rest difference, not a test of whether rest matters. NFL sibling entry: bye_overval_home_edge_post2011. The four cells of this battery are CORRELATED SUBSETS OF ONE WINDOW (the same 8,933 scored games, overlapping flags by construction) and are NOT independent votes -- do not sign-test-pool them. OVERLAP DISCLOSURE: separate pooling family cfb_rest_bye_replication, NEVER pooled with cfb_bias_battery. registry entries cfb_bias_battery_bye_week_rest_edge (rest edge >=6d) and cfb_bias_battery_short_week_rest_disadvantage (rest edge <=-4d) are SUBSET COVER RATE VS COMPLEMENT measurements on an overlapping CFB population -- a different quantity from this harness's paired accuracy delta of the XLG-03 estimator with exactly one extra column; AGENTS.md's commensurability rule forbids pooling non-commensurable comparators. Reliability recorded is the ACROSS-SEASON odd/even-YEAR split-half of the team's own propensity (own_strict_bye_edge): Pearson r +0.4658, Spearman-Brown 0.6355, P+ 1.0000, n_team_units 135. The repo-standard WITHIN-season odd/even-WEEK instrument reads r -0.2375 on the same panel; that is a structural artifact of a compositionally constrained calendar quantity (a team-season holds a fixed number of days and games, so extra rest in one part is arithmetically less rest elsewhere), not evidence about the trait -- docs/cfb_rest_bye_replication.md section 5. Seed 20260901, 1,000 bootstrap draws. Within-week permutation null (200 draws, standalone run artifacts/cfb_rest_bye_replication/20260901T193047Z): mean +0.011 pts, sd 0.139, 95% [-0.280, +0.291] -- the harness manufactures no effect. Positive control (this column replaced by the realised ats_margin, artifacts/cfb_rest_bye_replication/20260901T193432Z): +48.405 pts, P+ 1.000, 95% [+47.374, +49.464] -- the full 36-column ridge fit detects a large effect, which bounds NOTHING at the sub-1-point scale in question. XLG-03 baseline forced-pick accuracy on this population: 51.595%.",
+      "plain_summary": "College home team off a 12-plus day break while the visitor is not. Flagging that rest edge separately did not improve a model that already knew the rest gap.",
+      "probability_positive": 0.296,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.6355,
+      "sample_blocks": 199,
+      "sample_games": 8933,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "scripts/cfb_rest_bye_replication.py; artifacts/cfb_rest_bye_replication/20260901T193908Z/results.json; docs/cfb_rest_bye_replication.md",
+      "standard_error": null
+    },
+    "cfb_rest_bye_edge_home_on_benchmark_era_2012_2019": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell frozen before scoring in docs/cfb_rest_bye_replication.md (sections 1-8 written and saved before any scoring mode ran; section 5 filled from a PREDICTOR-ONLY coverage run). Neither admissible closing ground applies: wrong_sign_resolved requires the WHOLE week-blocked interval on the wrong side of zero and this one is [-0.3769, +0.2146]; positive_control_bound requires the instrument to have been PROVEN able to detect an effect of THIS size, and the control only proved detection of a +48.4-point leak; no_split_half_reliability is unavailable both because the correctly-specified across-season split-half reads Spearman-Brown 0.6355 (far above the 0.10 ceiling the ground admits) and because a deterministic calendar fact has zero measurement error. Per AGENTS.md an interval containing zero is the EXPECTED shape for a real small signal at this evaluator's ~2-point resolution, never grounds to close.",
+      "closing_ground": null,
+      "description": "CFB replication of NFL bye_overval_home_edge_post2011: HOME team off a strict bye (>=12-day gap) AND opponent NOT off bye, added as ONE extra column to the frozen XLG-03 benchmark arm, which already carries rest_diff. Paired candidate-minus-baseline forced-pick accuracy delta; positive = the extra column helped. NFL market-overprices-bye mechanism predicted a negative home cover edge. ERA SLICE 2012-2019 only.",
+      "effect": 0.0935,
+      "effect_units": "accuracy_points",
+      "family": "cfb_rest_bye_replication",
+      "interval": [
+        -0.1636,
+        0.3542
+      ],
+      "league": "cfb",
+      "notes": "ERA SLICE 2012-2019 of cfb_rest_bye_edge_home_on_benchmark, recorded because this cell's two eras carry OPPOSITE SIGNS, so the pooled figure is an average across a sign flip and must not be read as either era's magnitude (owner rule 'era magnitude, not presence'). Sibling era slice: 2021-2025 -0.335 pts P+ 0.125. Pooled over both eras: -0.078 pts P+ 0.296. Season-blocked secondary for this era: 95% [-0.1297, +0.3185] P+ 0.7870. 485 flagged games in this era. NOT an independent vote against its own pooled entry or the other era slice -- same window, same games, decomposed. Close-graded CFB: the CFB line archive is opener plus an unidentified-time resolved quote and no source records quote observation times (docs/cfb_data.md), so CFB can be graded at a close proxy and NEVER at a verified opener; this settles no NFL play/no-play or promotion decision. THE BASELINE ALREADY CARRIES rest_diff: nfl_ats.cfb_features.CFB_MODEL_FEATURE_COLUMNS (35 columns) includes rest_diff, so this is a MARGINAL on top of a model that already prices the linear rest difference, not a test of whether rest matters. NFL sibling entry: bye_overval_home_edge_post2011. The four cells of this battery are CORRELATED SUBSETS OF ONE WINDOW (the same 8,933 scored games, overlapping flags by construction) and are NOT independent votes -- do not sign-test-pool them. OVERLAP DISCLOSURE: separate pooling family cfb_rest_bye_replication, NEVER pooled with cfb_bias_battery. registry entries cfb_bias_battery_bye_week_rest_edge (rest edge >=6d) and cfb_bias_battery_short_week_rest_disadvantage (rest edge <=-4d) are SUBSET COVER RATE VS COMPLEMENT measurements on an overlapping CFB population -- a different quantity from this harness's paired accuracy delta of the XLG-03 estimator with exactly one extra column; AGENTS.md's commensurability rule forbids pooling non-commensurable comparators. Reliability recorded is the ACROSS-SEASON odd/even-YEAR split-half of the team's own propensity (own_strict_bye_edge): Pearson r +0.4658, Spearman-Brown 0.6355, P+ 1.0000, n_team_units 135. The repo-standard WITHIN-season odd/even-WEEK instrument reads r -0.2375 on the same panel; that is a structural artifact of a compositionally constrained calendar quantity (a team-season holds a fixed number of days and games, so extra rest in one part is arithmetically less rest elsewhere), not evidence about the trait -- docs/cfb_rest_bye_replication.md section 5. Seed 20260901, 1,000 bootstrap draws. Within-week permutation null (200 draws, standalone run artifacts/cfb_rest_bye_replication/20260901T193047Z): mean +0.011 pts, sd 0.139, 95% [-0.280, +0.291] -- the harness manufactures no effect. Positive control (this column replaced by the realised ats_margin, artifacts/cfb_rest_bye_replication/20260901T193432Z): +48.405 pts, P+ 1.000, 95% [+47.374, +49.464] -- the full 36-column ridge fit detects a large effect, which bounds NOTHING at the sub-1-point scale in question. XLG-03 baseline forced-pick accuracy on this population: 51.595%.",
+      "plain_summary": "College home team off a 12-plus day break while the visitor is not. Flagging that rest edge separately did not improve a model that already knew the rest gap. This row is the 2012-2019 seasons on their own, which lean the opposite way from the other era.",
+      "probability_positive": 0.743,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.6355,
+      "sample_blocks": 122,
+      "sample_games": 5349,
+      "seasons": [
+        2012,
+        2019
+      ],
+      "source": "scripts/cfb_rest_bye_replication.py; artifacts/cfb_rest_bye_replication/20260901T193908Z/results.json; docs/cfb_rest_bye_replication.md",
+      "standard_error": null
+    },
+    "cfb_rest_bye_edge_home_on_benchmark_era_2021_2025": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell frozen before scoring in docs/cfb_rest_bye_replication.md (sections 1-8 written and saved before any scoring mode ran; section 5 filled from a PREDICTOR-ONLY coverage run). Neither admissible closing ground applies: wrong_sign_resolved requires the WHOLE week-blocked interval on the wrong side of zero and this one is [-0.3769, +0.2146]; positive_control_bound requires the instrument to have been PROVEN able to detect an effect of THIS size, and the control only proved detection of a +48.4-point leak; no_split_half_reliability is unavailable both because the correctly-specified across-season split-half reads Spearman-Brown 0.6355 (far above the 0.10 ceiling the ground admits) and because a deterministic calendar fact has zero measurement error. Per AGENTS.md an interval containing zero is the EXPECTED shape for a real small signal at this evaluator's ~2-point resolution, never grounds to close.",
+      "closing_ground": null,
+      "description": "CFB replication of NFL bye_overval_home_edge_post2011: HOME team off a strict bye (>=12-day gap) AND opponent NOT off bye, added as ONE extra column to the frozen XLG-03 benchmark arm, which already carries rest_diff. Paired candidate-minus-baseline forced-pick accuracy delta; positive = the extra column helped. NFL market-overprices-bye mechanism predicted a negative home cover edge. ERA SLICE 2021-2025 only.",
+      "effect": -0.3348,
+      "effect_units": "accuracy_points",
+      "family": "cfb_rest_bye_replication",
+      "interval": [
+        -0.9544,
+        0.2451
+      ],
+      "league": "cfb",
+      "notes": "ERA SLICE 2021-2025 of cfb_rest_bye_edge_home_on_benchmark, recorded because this cell's two eras carry OPPOSITE SIGNS, so the pooled figure is an average across a sign flip and must not be read as either era's magnitude (owner rule 'era magnitude, not presence'). Sibling era slice: 2012-2019 +0.093 pts P+ 0.743. Pooled over both eras: -0.078 pts P+ 0.296. Season-blocked secondary for this era: 95% [-1.1268, +0.4684] P+ 0.1580. 300 flagged games in this era. NOT an independent vote against its own pooled entry or the other era slice -- same window, same games, decomposed. Close-graded CFB: the CFB line archive is opener plus an unidentified-time resolved quote and no source records quote observation times (docs/cfb_data.md), so CFB can be graded at a close proxy and NEVER at a verified opener; this settles no NFL play/no-play or promotion decision. THE BASELINE ALREADY CARRIES rest_diff: nfl_ats.cfb_features.CFB_MODEL_FEATURE_COLUMNS (35 columns) includes rest_diff, so this is a MARGINAL on top of a model that already prices the linear rest difference, not a test of whether rest matters. NFL sibling entry: bye_overval_home_edge_post2011. The four cells of this battery are CORRELATED SUBSETS OF ONE WINDOW (the same 8,933 scored games, overlapping flags by construction) and are NOT independent votes -- do not sign-test-pool them. OVERLAP DISCLOSURE: separate pooling family cfb_rest_bye_replication, NEVER pooled with cfb_bias_battery. registry entries cfb_bias_battery_bye_week_rest_edge (rest edge >=6d) and cfb_bias_battery_short_week_rest_disadvantage (rest edge <=-4d) are SUBSET COVER RATE VS COMPLEMENT measurements on an overlapping CFB population -- a different quantity from this harness's paired accuracy delta of the XLG-03 estimator with exactly one extra column; AGENTS.md's commensurability rule forbids pooling non-commensurable comparators. Reliability recorded is the ACROSS-SEASON odd/even-YEAR split-half of the team's own propensity (own_strict_bye_edge): Pearson r +0.4658, Spearman-Brown 0.6355, P+ 1.0000, n_team_units 135. The repo-standard WITHIN-season odd/even-WEEK instrument reads r -0.2375 on the same panel; that is a structural artifact of a compositionally constrained calendar quantity (a team-season holds a fixed number of days and games, so extra rest in one part is arithmetically less rest elsewhere), not evidence about the trait -- docs/cfb_rest_bye_replication.md section 5. Seed 20260901, 1,000 bootstrap draws. Within-week permutation null (200 draws, standalone run artifacts/cfb_rest_bye_replication/20260901T193047Z): mean +0.011 pts, sd 0.139, 95% [-0.280, +0.291] -- the harness manufactures no effect. Positive control (this column replaced by the realised ats_margin, artifacts/cfb_rest_bye_replication/20260901T193432Z): +48.405 pts, P+ 1.000, 95% [+47.374, +49.464] -- the full 36-column ridge fit detects a large effect, which bounds NOTHING at the sub-1-point scale in question. XLG-03 baseline forced-pick accuracy on this population: 51.595%.",
+      "plain_summary": "College home team off a 12-plus day break while the visitor is not. Flagging that rest edge separately did not improve a model that already knew the rest gap. This row is the 2021-2025 seasons on their own, which lean the opposite way from the other era.",
+      "probability_positive": 0.125,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.6355,
+      "sample_blocks": 77,
+      "sample_games": 3584,
+      "seasons": [
+        2021,
+        2025
+      ],
+      "source": "scripts/cfb_rest_bye_replication.py; artifacts/cfb_rest_bye_replication/20260901T193908Z/results.json; docs/cfb_rest_bye_replication.md",
+      "standard_error": null
+    },
+    "cfb_rest_home_off_bye_on_benchmark": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell frozen before scoring in docs/cfb_rest_bye_replication.md (sections 1-8 written and saved before any scoring mode ran; section 5 filled from a PREDICTOR-ONLY coverage run). Neither admissible closing ground applies: wrong_sign_resolved requires the WHOLE week-blocked interval on the wrong side of zero and this one is [-0.6148, +0.3009]; positive_control_bound requires the instrument to have been PROVEN able to detect an effect of THIS size, and the control only proved detection of a +48.4-point leak; no_split_half_reliability is unavailable both because the correctly-specified across-season split-half reads Spearman-Brown 0.8271 (far above the 0.10 ceiling the ground admits) and because a deterministic calendar fact has zero measurement error. Per AGENTS.md an interval containing zero is the EXPECTED shape for a real small signal at this evaluator's ~2-point resolution, never grounds to close.",
+      "closing_ground": null,
+      "description": "CFB replication of NFL travel_rest_home_off_bye: home_rest >= 13 days (side-specific absolute threshold) added as ONE extra column to the frozen XLG-03 benchmark arm, which already carries rest_diff. Paired candidate-minus-baseline forced-pick accuracy delta; positive = the extra column helped. NFL predicted direction on home_cover: positive.",
+      "effect": -0.1455,
+      "effect_units": "accuracy_points",
+      "family": "cfb_rest_bye_replication",
+      "interval": [
+        -0.6148,
+        0.3009
+      ],
+      "league": "cfb",
+      "notes": "POOLED read over the frozen clean core 2012-2019 + 2021-2025 (8933 games, 199 week blocks, 13 seasons, 1063 flagged, 522 feature-missing season-opener rows). Season-blocked secondary: 95% [-0.5365, +0.2903] P+ 0.2330. Observed delta sits at the 21.0th percentile of its own within-week permutation null. PER-ERA MAGNITUDES (owner rule 'era magnitude, not presence' -- never average across a sign flip): 2012-2019 +0.093 pts P+ 0.632 95% [-0.431, +0.606] n=5349 flagged=633; 2021-2025 -0.502 pts P+ 0.105 95% [-1.341, +0.333] n=3584 flagged=430. Close-graded CFB: the CFB line archive is opener plus an unidentified-time resolved quote and no source records quote observation times (docs/cfb_data.md), so CFB can be graded at a close proxy and NEVER at a verified opener; this settles no NFL play/no-play or promotion decision. THE BASELINE ALREADY CARRIES rest_diff: nfl_ats.cfb_features.CFB_MODEL_FEATURE_COLUMNS (35 columns) includes rest_diff, so this is a MARGINAL on top of a model that already prices the linear rest difference, not a test of whether rest matters. NFL sibling entry: travel_rest_home_off_bye. The four cells of this battery are CORRELATED SUBSETS OF ONE WINDOW (the same 8,933 scored games, overlapping flags by construction) and are NOT independent votes -- do not sign-test-pool them. OVERLAP DISCLOSURE: separate pooling family cfb_rest_bye_replication, NEVER pooled with cfb_bias_battery. registry entries cfb_bias_battery_bye_week_rest_edge (rest edge >=6d) and cfb_bias_battery_short_week_rest_disadvantage (rest edge <=-4d) are SUBSET COVER RATE VS COMPLEMENT measurements on an overlapping CFB population -- a different quantity from this harness's paired accuracy delta of the XLG-03 estimator with exactly one extra column; AGENTS.md's commensurability rule forbids pooling non-commensurable comparators. Reliability recorded is the ACROSS-SEASON odd/even-YEAR split-half of the team's own propensity (own_off_bye_13): Pearson r +0.7052, Spearman-Brown 0.8271, P+ 1.0000, n_team_units 135. The repo-standard WITHIN-season odd/even-WEEK instrument reads r -0.3368 on the same panel; that is a structural artifact of a compositionally constrained calendar quantity (a team-season holds a fixed number of days and games, so extra rest in one part is arithmetically less rest elsewhere), not evidence about the trait -- docs/cfb_rest_bye_replication.md section 5. Seed 20260901, 1,000 bootstrap draws. Within-week permutation null (200 draws, standalone run artifacts/cfb_rest_bye_replication/20260901T192914Z): mean +0.015 pts, sd 0.204, 95% [-0.414, +0.403] -- the harness manufactures no effect. Positive control (this column replaced by the realised ats_margin, artifacts/cfb_rest_bye_replication/20260901T193234Z): +48.405 pts, P+ 1.000, 95% [+47.374, +49.464] -- the full 36-column ridge fit detects a large effect, which bounds NOTHING at the sub-1-point scale in question. XLG-03 baseline forced-pick accuracy on this population: 51.595%.",
+      "plain_summary": "College home team coming off 13-plus days of rest. Telling the model about it, on top of the rest gap it already knew, did not improve its picks.",
+      "probability_positive": 0.273,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.8271,
+      "sample_blocks": 199,
+      "sample_games": 8933,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "scripts/cfb_rest_bye_replication.py; artifacts/cfb_rest_bye_replication/20260901T193647Z/results.json; docs/cfb_rest_bye_replication.md",
+      "standard_error": null
+    },
+    "cfb_rest_home_off_bye_on_benchmark_era_2012_2019": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell frozen before scoring in docs/cfb_rest_bye_replication.md (sections 1-8 written and saved before any scoring mode ran; section 5 filled from a PREDICTOR-ONLY coverage run). Neither admissible closing ground applies: wrong_sign_resolved requires the WHOLE week-blocked interval on the wrong side of zero and this one is [-0.6148, +0.3009]; positive_control_bound requires the instrument to have been PROVEN able to detect an effect of THIS size, and the control only proved detection of a +48.4-point leak; no_split_half_reliability is unavailable both because the correctly-specified across-season split-half reads Spearman-Brown 0.8271 (far above the 0.10 ceiling the ground admits) and because a deterministic calendar fact has zero measurement error. Per AGENTS.md an interval containing zero is the EXPECTED shape for a real small signal at this evaluator's ~2-point resolution, never grounds to close.",
+      "closing_ground": null,
+      "description": "CFB replication of NFL travel_rest_home_off_bye: home_rest >= 13 days (side-specific absolute threshold) added as ONE extra column to the frozen XLG-03 benchmark arm, which already carries rest_diff. Paired candidate-minus-baseline forced-pick accuracy delta; positive = the extra column helped. NFL predicted direction on home_cover: positive. ERA SLICE 2012-2019 only.",
+      "effect": 0.0935,
+      "effect_units": "accuracy_points",
+      "family": "cfb_rest_bye_replication",
+      "interval": [
+        -0.431,
+        0.6062
+      ],
+      "league": "cfb",
+      "notes": "ERA SLICE 2012-2019 of cfb_rest_home_off_bye_on_benchmark, recorded because this cell's two eras carry OPPOSITE SIGNS, so the pooled figure is an average across a sign flip and must not be read as either era's magnitude (owner rule 'era magnitude, not presence'). Sibling era slice: 2021-2025 -0.502 pts P+ 0.105. Pooled over both eras: -0.145 pts P+ 0.273. Season-blocked secondary for this era: 95% [-0.2777, +0.5012] P+ 0.6530. 633 flagged games in this era. NOT an independent vote against its own pooled entry or the other era slice -- same window, same games, decomposed. Close-graded CFB: the CFB line archive is opener plus an unidentified-time resolved quote and no source records quote observation times (docs/cfb_data.md), so CFB can be graded at a close proxy and NEVER at a verified opener; this settles no NFL play/no-play or promotion decision. THE BASELINE ALREADY CARRIES rest_diff: nfl_ats.cfb_features.CFB_MODEL_FEATURE_COLUMNS (35 columns) includes rest_diff, so this is a MARGINAL on top of a model that already prices the linear rest difference, not a test of whether rest matters. NFL sibling entry: travel_rest_home_off_bye. The four cells of this battery are CORRELATED SUBSETS OF ONE WINDOW (the same 8,933 scored games, overlapping flags by construction) and are NOT independent votes -- do not sign-test-pool them. OVERLAP DISCLOSURE: separate pooling family cfb_rest_bye_replication, NEVER pooled with cfb_bias_battery. registry entries cfb_bias_battery_bye_week_rest_edge (rest edge >=6d) and cfb_bias_battery_short_week_rest_disadvantage (rest edge <=-4d) are SUBSET COVER RATE VS COMPLEMENT measurements on an overlapping CFB population -- a different quantity from this harness's paired accuracy delta of the XLG-03 estimator with exactly one extra column; AGENTS.md's commensurability rule forbids pooling non-commensurable comparators. Reliability recorded is the ACROSS-SEASON odd/even-YEAR split-half of the team's own propensity (own_off_bye_13): Pearson r +0.7052, Spearman-Brown 0.8271, P+ 1.0000, n_team_units 135. The repo-standard WITHIN-season odd/even-WEEK instrument reads r -0.3368 on the same panel; that is a structural artifact of a compositionally constrained calendar quantity (a team-season holds a fixed number of days and games, so extra rest in one part is arithmetically less rest elsewhere), not evidence about the trait -- docs/cfb_rest_bye_replication.md section 5. Seed 20260901, 1,000 bootstrap draws. Within-week permutation null (200 draws, standalone run artifacts/cfb_rest_bye_replication/20260901T192914Z): mean +0.015 pts, sd 0.204, 95% [-0.414, +0.403] -- the harness manufactures no effect. Positive control (this column replaced by the realised ats_margin, artifacts/cfb_rest_bye_replication/20260901T193234Z): +48.405 pts, P+ 1.000, 95% [+47.374, +49.464] -- the full 36-column ridge fit detects a large effect, which bounds NOTHING at the sub-1-point scale in question. XLG-03 baseline forced-pick accuracy on this population: 51.595%.",
+      "plain_summary": "College home team coming off 13-plus days of rest. Telling the model about it, on top of the rest gap it already knew, did not improve its picks. This row is the 2012-2019 seasons on their own, which lean the opposite way from the other era.",
+      "probability_positive": 0.632,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.8271,
+      "sample_blocks": 122,
+      "sample_games": 5349,
+      "seasons": [
+        2012,
+        2019
+      ],
+      "source": "scripts/cfb_rest_bye_replication.py; artifacts/cfb_rest_bye_replication/20260901T193647Z/results.json; docs/cfb_rest_bye_replication.md",
+      "standard_error": null
+    },
+    "cfb_rest_home_off_bye_on_benchmark_era_2021_2025": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell frozen before scoring in docs/cfb_rest_bye_replication.md (sections 1-8 written and saved before any scoring mode ran; section 5 filled from a PREDICTOR-ONLY coverage run). Neither admissible closing ground applies: wrong_sign_resolved requires the WHOLE week-blocked interval on the wrong side of zero and this one is [-0.6148, +0.3009]; positive_control_bound requires the instrument to have been PROVEN able to detect an effect of THIS size, and the control only proved detection of a +48.4-point leak; no_split_half_reliability is unavailable both because the correctly-specified across-season split-half reads Spearman-Brown 0.8271 (far above the 0.10 ceiling the ground admits) and because a deterministic calendar fact has zero measurement error. Per AGENTS.md an interval containing zero is the EXPECTED shape for a real small signal at this evaluator's ~2-point resolution, never grounds to close.",
+      "closing_ground": null,
+      "description": "CFB replication of NFL travel_rest_home_off_bye: home_rest >= 13 days (side-specific absolute threshold) added as ONE extra column to the frozen XLG-03 benchmark arm, which already carries rest_diff. Paired candidate-minus-baseline forced-pick accuracy delta; positive = the extra column helped. NFL predicted direction on home_cover: positive. ERA SLICE 2021-2025 only.",
+      "effect": -0.5022,
+      "effect_units": "accuracy_points",
+      "family": "cfb_rest_bye_replication",
+      "interval": [
+        -1.3411,
+        0.3327
+      ],
+      "league": "cfb",
+      "notes": "ERA SLICE 2021-2025 of cfb_rest_home_off_bye_on_benchmark, recorded because this cell's two eras carry OPPOSITE SIGNS, so the pooled figure is an average across a sign flip and must not be read as either era's magnitude (owner rule 'era magnitude, not presence'). Sibling era slice: 2012-2019 +0.093 pts P+ 0.632. Pooled over both eras: -0.145 pts P+ 0.273. Season-blocked secondary for this era: 95% [-1.3133, +0.3296] P+ 0.0680. 430 flagged games in this era. NOT an independent vote against its own pooled entry or the other era slice -- same window, same games, decomposed. Close-graded CFB: the CFB line archive is opener plus an unidentified-time resolved quote and no source records quote observation times (docs/cfb_data.md), so CFB can be graded at a close proxy and NEVER at a verified opener; this settles no NFL play/no-play or promotion decision. THE BASELINE ALREADY CARRIES rest_diff: nfl_ats.cfb_features.CFB_MODEL_FEATURE_COLUMNS (35 columns) includes rest_diff, so this is a MARGINAL on top of a model that already prices the linear rest difference, not a test of whether rest matters. NFL sibling entry: travel_rest_home_off_bye. The four cells of this battery are CORRELATED SUBSETS OF ONE WINDOW (the same 8,933 scored games, overlapping flags by construction) and are NOT independent votes -- do not sign-test-pool them. OVERLAP DISCLOSURE: separate pooling family cfb_rest_bye_replication, NEVER pooled with cfb_bias_battery. registry entries cfb_bias_battery_bye_week_rest_edge (rest edge >=6d) and cfb_bias_battery_short_week_rest_disadvantage (rest edge <=-4d) are SUBSET COVER RATE VS COMPLEMENT measurements on an overlapping CFB population -- a different quantity from this harness's paired accuracy delta of the XLG-03 estimator with exactly one extra column; AGENTS.md's commensurability rule forbids pooling non-commensurable comparators. Reliability recorded is the ACROSS-SEASON odd/even-YEAR split-half of the team's own propensity (own_off_bye_13): Pearson r +0.7052, Spearman-Brown 0.8271, P+ 1.0000, n_team_units 135. The repo-standard WITHIN-season odd/even-WEEK instrument reads r -0.3368 on the same panel; that is a structural artifact of a compositionally constrained calendar quantity (a team-season holds a fixed number of days and games, so extra rest in one part is arithmetically less rest elsewhere), not evidence about the trait -- docs/cfb_rest_bye_replication.md section 5. Seed 20260901, 1,000 bootstrap draws. Within-week permutation null (200 draws, standalone run artifacts/cfb_rest_bye_replication/20260901T192914Z): mean +0.015 pts, sd 0.204, 95% [-0.414, +0.403] -- the harness manufactures no effect. Positive control (this column replaced by the realised ats_margin, artifacts/cfb_rest_bye_replication/20260901T193234Z): +48.405 pts, P+ 1.000, 95% [+47.374, +49.464] -- the full 36-column ridge fit detects a large effect, which bounds NOTHING at the sub-1-point scale in question. XLG-03 baseline forced-pick accuracy on this population: 51.595%.",
+      "plain_summary": "College home team coming off 13-plus days of rest. Telling the model about it, on top of the rest gap it already knew, did not improve its picks. This row is the 2021-2025 seasons on their own, which lean the opposite way from the other era.",
+      "probability_positive": 0.105,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.8271,
+      "sample_blocks": 77,
+      "sample_games": 3584,
+      "seasons": [
+        2021,
+        2025
+      ],
+      "source": "scripts/cfb_rest_bye_replication.py; artifacts/cfb_rest_bye_replication/20260901T193647Z/results.json; docs/cfb_rest_bye_replication.md",
+      "standard_error": null
+    },
+    "cfb_rest_short_week_road_on_benchmark": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell frozen before scoring in docs/cfb_rest_bye_replication.md (sections 1-8 written and saved before any scoring mode ran; section 5 filled from a PREDICTOR-ONLY coverage run). Neither admissible closing ground applies: wrong_sign_resolved requires the WHOLE week-blocked interval on the wrong side of zero and this one is [-0.2998, +0.2801]; positive_control_bound requires the instrument to have been PROVEN able to detect an effect of THIS size, and the control only proved detection of a +48.4-point leak; no_split_half_reliability is unavailable both because the correctly-specified across-season split-half reads Spearman-Brown 0.6494 (far above the 0.10 ceiling the ground admits) and because a deterministic calendar fact has zero measurement error. Per AGENTS.md an interval containing zero is the EXPECTED shape for a real small signal at this evaluator's ~2-point resolution, never grounds to close.",
+      "closing_ground": null,
+      "description": "CFB replication of NFL travel_rest_short_week_road: away_rest <= 5 days (game-level, side-specific) added as ONE extra column to the frozen XLG-03 benchmark arm, which already carries rest_diff. Paired candidate-minus-baseline forced-pick accuracy delta; positive = the extra column helped. NFL predicted direction on home_cover: positive.",
+      "effect": -0.0112,
+      "effect_units": "accuracy_points",
+      "family": "cfb_rest_bye_replication",
+      "interval": [
+        -0.2998,
+        0.2801
+      ],
+      "league": "cfb",
+      "notes": "POOLED read over the frozen clean core 2012-2019 + 2021-2025 (8933 games, 199 week blocks, 13 seasons, 136 flagged, 523 feature-missing season-opener rows). Season-blocked secondary: 95% [-0.3159, +0.2682] P+ 0.4840. Observed delta sits at the 44.0th percentile of its own within-week permutation null. PER-ERA MAGNITUDES (owner rule 'era magnitude, not presence' -- never average across a sign flip): 2012-2019 +0.187 pts P+ 0.909 95% [-0.075, +0.451] n=5349 flagged=85; 2021-2025 -0.307 pts P+ 0.125 95% [-0.846, +0.222] n=3584 flagged=51. Close-graded CFB: the CFB line archive is opener plus an unidentified-time resolved quote and no source records quote observation times (docs/cfb_data.md), so CFB can be graded at a close proxy and NEVER at a verified opener; this settles no NFL play/no-play or promotion decision. THE BASELINE ALREADY CARRIES rest_diff: nfl_ats.cfb_features.CFB_MODEL_FEATURE_COLUMNS (35 columns) includes rest_diff, so this is a MARGINAL on top of a model that already prices the linear rest difference, not a test of whether rest matters. NFL sibling entry: travel_rest_short_week_road. The four cells of this battery are CORRELATED SUBSETS OF ONE WINDOW (the same 8,933 scored games, overlapping flags by construction) and are NOT independent votes -- do not sign-test-pool them. OVERLAP DISCLOSURE: separate pooling family cfb_rest_bye_replication, NEVER pooled with cfb_bias_battery. registry entries cfb_bias_battery_bye_week_rest_edge (rest edge >=6d) and cfb_bias_battery_short_week_rest_disadvantage (rest edge <=-4d) are SUBSET COVER RATE VS COMPLEMENT measurements on an overlapping CFB population -- a different quantity from this harness's paired accuracy delta of the XLG-03 estimator with exactly one extra column; AGENTS.md's commensurability rule forbids pooling non-commensurable comparators. Reliability recorded is the ACROSS-SEASON odd/even-YEAR split-half of the team's own propensity (own_short_week_5): Pearson r +0.4808, Spearman-Brown 0.6494, P+ 1.0000, n_team_units 135. The repo-standard WITHIN-season odd/even-WEEK instrument reads r -0.0509 on the same panel; that is a structural artifact of a compositionally constrained calendar quantity (a team-season holds a fixed number of days and games, so extra rest in one part is arithmetically less rest elsewhere), not evidence about the trait -- docs/cfb_rest_bye_replication.md section 5. Seed 20260901, 1,000 bootstrap draws. Within-week permutation null (200 draws, standalone run artifacts/cfb_rest_bye_replication/20260901T193127Z): mean -0.001 pts, sd 0.138, 95% [-0.235, +0.269] -- the harness manufactures no effect. Positive control (this column replaced by the realised ats_margin, artifacts/cfb_rest_bye_replication/20260901T193536Z): +48.405 pts, P+ 1.000, 95% [+47.374, +49.464] -- the full 36-column ridge fit detects a large effect, which bounds NOTHING at the sub-1-point scale in question. XLG-03 baseline forced-pick accuracy on this population: 51.595%.",
+      "plain_summary": "College visiting team playing on five days rest or less. Flagging it separately left the model's picks essentially where they were.",
+      "probability_positive": 0.442,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.6494,
+      "sample_blocks": 199,
+      "sample_games": 8933,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "scripts/cfb_rest_bye_replication.py; artifacts/cfb_rest_bye_replication/20260901T194017Z/results.json; docs/cfb_rest_bye_replication.md",
+      "standard_error": null
+    },
+    "cfb_rest_short_week_road_on_benchmark_era_2012_2019": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell frozen before scoring in docs/cfb_rest_bye_replication.md (sections 1-8 written and saved before any scoring mode ran; section 5 filled from a PREDICTOR-ONLY coverage run). Neither admissible closing ground applies: wrong_sign_resolved requires the WHOLE week-blocked interval on the wrong side of zero and this one is [-0.2998, +0.2801]; positive_control_bound requires the instrument to have been PROVEN able to detect an effect of THIS size, and the control only proved detection of a +48.4-point leak; no_split_half_reliability is unavailable both because the correctly-specified across-season split-half reads Spearman-Brown 0.6494 (far above the 0.10 ceiling the ground admits) and because a deterministic calendar fact has zero measurement error. Per AGENTS.md an interval containing zero is the EXPECTED shape for a real small signal at this evaluator's ~2-point resolution, never grounds to close.",
+      "closing_ground": null,
+      "description": "CFB replication of NFL travel_rest_short_week_road: away_rest <= 5 days (game-level, side-specific) added as ONE extra column to the frozen XLG-03 benchmark arm, which already carries rest_diff. Paired candidate-minus-baseline forced-pick accuracy delta; positive = the extra column helped. NFL predicted direction on home_cover: positive. ERA SLICE 2012-2019 only.",
+      "effect": 0.187,
+      "effect_units": "accuracy_points",
+      "family": "cfb_rest_bye_replication",
+      "interval": [
+        -0.0755,
+        0.4508
+      ],
+      "league": "cfb",
+      "notes": "ERA SLICE 2012-2019 of cfb_rest_short_week_road_on_benchmark, recorded because this cell's two eras carry OPPOSITE SIGNS, so the pooled figure is an average across a sign flip and must not be read as either era's magnitude (owner rule 'era magnitude, not presence'). Sibling era slice: 2021-2025 -0.307 pts P+ 0.125. Pooled over both eras: -0.011 pts P+ 0.442. Season-blocked secondary for this era: 95% [-0.0189, +0.3473] P+ 0.9520. 85 flagged games in this era. NOT an independent vote against its own pooled entry or the other era slice -- same window, same games, decomposed. Close-graded CFB: the CFB line archive is opener plus an unidentified-time resolved quote and no source records quote observation times (docs/cfb_data.md), so CFB can be graded at a close proxy and NEVER at a verified opener; this settles no NFL play/no-play or promotion decision. THE BASELINE ALREADY CARRIES rest_diff: nfl_ats.cfb_features.CFB_MODEL_FEATURE_COLUMNS (35 columns) includes rest_diff, so this is a MARGINAL on top of a model that already prices the linear rest difference, not a test of whether rest matters. NFL sibling entry: travel_rest_short_week_road. The four cells of this battery are CORRELATED SUBSETS OF ONE WINDOW (the same 8,933 scored games, overlapping flags by construction) and are NOT independent votes -- do not sign-test-pool them. OVERLAP DISCLOSURE: separate pooling family cfb_rest_bye_replication, NEVER pooled with cfb_bias_battery. registry entries cfb_bias_battery_bye_week_rest_edge (rest edge >=6d) and cfb_bias_battery_short_week_rest_disadvantage (rest edge <=-4d) are SUBSET COVER RATE VS COMPLEMENT measurements on an overlapping CFB population -- a different quantity from this harness's paired accuracy delta of the XLG-03 estimator with exactly one extra column; AGENTS.md's commensurability rule forbids pooling non-commensurable comparators. Reliability recorded is the ACROSS-SEASON odd/even-YEAR split-half of the team's own propensity (own_short_week_5): Pearson r +0.4808, Spearman-Brown 0.6494, P+ 1.0000, n_team_units 135. The repo-standard WITHIN-season odd/even-WEEK instrument reads r -0.0509 on the same panel; that is a structural artifact of a compositionally constrained calendar quantity (a team-season holds a fixed number of days and games, so extra rest in one part is arithmetically less rest elsewhere), not evidence about the trait -- docs/cfb_rest_bye_replication.md section 5. Seed 20260901, 1,000 bootstrap draws. Within-week permutation null (200 draws, standalone run artifacts/cfb_rest_bye_replication/20260901T193127Z): mean -0.001 pts, sd 0.138, 95% [-0.235, +0.269] -- the harness manufactures no effect. Positive control (this column replaced by the realised ats_margin, artifacts/cfb_rest_bye_replication/20260901T193536Z): +48.405 pts, P+ 1.000, 95% [+47.374, +49.464] -- the full 36-column ridge fit detects a large effect, which bounds NOTHING at the sub-1-point scale in question. XLG-03 baseline forced-pick accuracy on this population: 51.595%.",
+      "plain_summary": "College visiting team playing on five days rest or less. Flagging it separately left the model's picks essentially where they were. This row is the 2012-2019 seasons on their own, which lean the opposite way from the other era.",
+      "probability_positive": 0.909,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.6494,
+      "sample_blocks": 122,
+      "sample_games": 5349,
+      "seasons": [
+        2012,
+        2019
+      ],
+      "source": "scripts/cfb_rest_bye_replication.py; artifacts/cfb_rest_bye_replication/20260901T194017Z/results.json; docs/cfb_rest_bye_replication.md",
+      "standard_error": null
+    },
+    "cfb_rest_short_week_road_on_benchmark_era_2021_2025": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell frozen before scoring in docs/cfb_rest_bye_replication.md (sections 1-8 written and saved before any scoring mode ran; section 5 filled from a PREDICTOR-ONLY coverage run). Neither admissible closing ground applies: wrong_sign_resolved requires the WHOLE week-blocked interval on the wrong side of zero and this one is [-0.2998, +0.2801]; positive_control_bound requires the instrument to have been PROVEN able to detect an effect of THIS size, and the control only proved detection of a +48.4-point leak; no_split_half_reliability is unavailable both because the correctly-specified across-season split-half reads Spearman-Brown 0.6494 (far above the 0.10 ceiling the ground admits) and because a deterministic calendar fact has zero measurement error. Per AGENTS.md an interval containing zero is the EXPECTED shape for a real small signal at this evaluator's ~2-point resolution, never grounds to close.",
+      "closing_ground": null,
+      "description": "CFB replication of NFL travel_rest_short_week_road: away_rest <= 5 days (game-level, side-specific) added as ONE extra column to the frozen XLG-03 benchmark arm, which already carries rest_diff. Paired candidate-minus-baseline forced-pick accuracy delta; positive = the extra column helped. NFL predicted direction on home_cover: positive. ERA SLICE 2021-2025 only.",
+      "effect": -0.3069,
+      "effect_units": "accuracy_points",
+      "family": "cfb_rest_bye_replication",
+      "interval": [
+        -0.846,
+        0.2222
+      ],
+      "league": "cfb",
+      "notes": "ERA SLICE 2021-2025 of cfb_rest_short_week_road_on_benchmark, recorded because this cell's two eras carry OPPOSITE SIGNS, so the pooled figure is an average across a sign flip and must not be read as either era's magnitude (owner rule 'era magnitude, not presence'). Sibling era slice: 2012-2019 +0.187 pts P+ 0.909. Pooled over both eras: -0.011 pts P+ 0.442. Season-blocked secondary for this era: 95% [-0.9017, +0.2796] P+ 0.1460. 51 flagged games in this era. NOT an independent vote against its own pooled entry or the other era slice -- same window, same games, decomposed. Close-graded CFB: the CFB line archive is opener plus an unidentified-time resolved quote and no source records quote observation times (docs/cfb_data.md), so CFB can be graded at a close proxy and NEVER at a verified opener; this settles no NFL play/no-play or promotion decision. THE BASELINE ALREADY CARRIES rest_diff: nfl_ats.cfb_features.CFB_MODEL_FEATURE_COLUMNS (35 columns) includes rest_diff, so this is a MARGINAL on top of a model that already prices the linear rest difference, not a test of whether rest matters. NFL sibling entry: travel_rest_short_week_road. The four cells of this battery are CORRELATED SUBSETS OF ONE WINDOW (the same 8,933 scored games, overlapping flags by construction) and are NOT independent votes -- do not sign-test-pool them. OVERLAP DISCLOSURE: separate pooling family cfb_rest_bye_replication, NEVER pooled with cfb_bias_battery. registry entries cfb_bias_battery_bye_week_rest_edge (rest edge >=6d) and cfb_bias_battery_short_week_rest_disadvantage (rest edge <=-4d) are SUBSET COVER RATE VS COMPLEMENT measurements on an overlapping CFB population -- a different quantity from this harness's paired accuracy delta of the XLG-03 estimator with exactly one extra column; AGENTS.md's commensurability rule forbids pooling non-commensurable comparators. Reliability recorded is the ACROSS-SEASON odd/even-YEAR split-half of the team's own propensity (own_short_week_5): Pearson r +0.4808, Spearman-Brown 0.6494, P+ 1.0000, n_team_units 135. The repo-standard WITHIN-season odd/even-WEEK instrument reads r -0.0509 on the same panel; that is a structural artifact of a compositionally constrained calendar quantity (a team-season holds a fixed number of days and games, so extra rest in one part is arithmetically less rest elsewhere), not evidence about the trait -- docs/cfb_rest_bye_replication.md section 5. Seed 20260901, 1,000 bootstrap draws. Within-week permutation null (200 draws, standalone run artifacts/cfb_rest_bye_replication/20260901T193127Z): mean -0.001 pts, sd 0.138, 95% [-0.235, +0.269] -- the harness manufactures no effect. Positive control (this column replaced by the realised ats_margin, artifacts/cfb_rest_bye_replication/20260901T193536Z): +48.405 pts, P+ 1.000, 95% [+47.374, +49.464] -- the full 36-column ridge fit detects a large effect, which bounds NOTHING at the sub-1-point scale in question. XLG-03 baseline forced-pick accuracy on this population: 51.595%.",
+      "plain_summary": "College visiting team playing on five days rest or less. Flagging it separately left the model's picks essentially where they were. This row is the 2021-2025 seasons on their own, which lean the opposite way from the other era.",
+      "probability_positive": 0.125,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.6494,
+      "sample_blocks": 77,
+      "sample_games": 3584,
+      "seasons": [
+        2021,
+        2025
+      ],
+      "source": "scripts/cfb_rest_bye_replication.py; artifacts/cfb_rest_bye_replication/20260901T194017Z/results.json; docs/cfb_rest_bye_replication.md",
+      "standard_error": null
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "family": "missingness_availability_flags",
+  "signals": {
+    "mod13_source_availability_on_production_opener": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "The real candidate was pick-identical to production on the assigned opener window (0.000 accuracy points, probability_positive=0.000), but no admissible closure was established. The implemented target-leak control was selected at implementation time before any MOD-13 score was visible, not specified by the predeclaration's literal 2026 source-availability oracle, and its +43.8596-point effect proves only gross sensitivity rather than sensitivity at the candidate-sized effect. Therefore positive_control_bound is inadmissible and the result remains unresolved_below_power.",
+      "closing_ground": null,
+      "description": "MOD-13 replaces seven source-era lineup-continuity missing indicators with one explicit shared roster-continuity source-availability flag, marginal to the unchanged production weak_stack model.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "missingness_availability_flags",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "CORRECTION 2026-09-02: previous bounded_by_control classification was inadmissible. Predeclared candidate and comparator: docs/missingness_audit.md:211-243. Primary opener: 456 games/35 weeks, baseline=candidate 53.7281%, delta 0.0000 points, week/season intervals [0,0], P+=0.000. Close secondary: 524 games/35 weeks, baseline=candidate 53.4351%, delta 0.0000. Null was exactly zero. The target-leak control (realized ATS margin in availability flag) was chosen at implementation time before scoring and detected +43.8596 opener points, week CI [+38.4607,+49.6615], P+=1.000, but is not the literal predeclared 2026-availability control and does not demonstrate candidate-sized sensitivity. No closing ground. Per-game outputs remain beside source results.",
+      "plain_summary": "Using one explicit flag for whether lineup-continuity data exists made the same opener picks as the current model on this window.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-02",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/mod13_source_availability/20260902T155452Z/results.json",
+      "standard_error": null
+    }
+  }
+}

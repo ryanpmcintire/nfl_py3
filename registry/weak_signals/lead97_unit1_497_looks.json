@@ -1,0 +1,453 @@
+{
+  "family": "lead97_unit1_497_looks",
+  "signals": {
+    "lead97_unit1_2023_accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no held-out game had an unavailable move, so the mechanism was not exercised. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Averaging over unavailable late line moves versus the usual four-term calculation: 2023",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "lead97_unit1_497_looks",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When a late line move is missing, this averages over the moves that usually happen instead of assuming none. Every recent game had its move, so it made no difference; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead97_unit1.md",
+      "standard_error": null
+    },
+    "lead97_unit1_2023_brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no held-out game had an unavailable move, so the mechanism was not exercised. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Averaging over unavailable late line moves versus the usual four-term calculation: 2023",
+      "effect": -5.37391837944e-09,
+      "effect_units": "brier_improvement",
+      "family": "lead97_unit1_497_looks",
+      "interval": [
+        -1.08203237604e-08,
+        5.67421943769e-11
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When a late line move is missing, this averages over the moves that usually happen instead of assuming none. Every recent game had its move, so it made no difference; pool picks have not changed.",
+      "probability_positive": 0.0259,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead97_unit1.md",
+      "standard_error": null
+    },
+    "lead97_unit1_2023_log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no held-out game had an unavailable move, so the mechanism was not exercised. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Averaging over unavailable late line moves versus the usual four-term calculation: 2023",
+      "effect": -1.0747112821e-08,
+      "effect_units": "log_loss_improvement",
+      "family": "lead97_unit1_497_looks",
+      "interval": [
+        -2.16425116152e-08,
+        1.16453722946e-10
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When a late line move is missing, this averages over the moves that usually happen instead of assuming none. Every recent game had its move, so it made no difference; pool picks have not changed.",
+      "probability_positive": 0.02595,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead97_unit1.md",
+      "standard_error": null
+    },
+    "lead97_unit1_2023_rps_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no held-out game had an unavailable move, so the mechanism was not exercised. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Averaging over unavailable late line moves versus the usual four-term calculation: 2023",
+      "effect": -7.68269325239e-08,
+      "effect_units": "rps_improvement",
+      "family": "lead97_unit1_497_looks",
+      "interval": [
+        -1.65345197449e-07,
+        9.24983599102e-09
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When a late line move is missing, this averages over the moves that usually happen instead of assuming none. Every recent game had its move, so it made no difference; pool picks have not changed.",
+      "probability_positive": 0.0395,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead97_unit1.md",
+      "standard_error": null
+    },
+    "lead97_unit1_2024_accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no held-out game had an unavailable move, so the mechanism was not exercised. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Averaging over unavailable late line moves versus the usual four-term calculation: 2024",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "lead97_unit1_497_looks",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When a late line move is missing, this averages over the moves that usually happen instead of assuming none. Every recent game had its move, so it made no difference; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead97_unit1.md",
+      "standard_error": null
+    },
+    "lead97_unit1_2024_brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no held-out game had an unavailable move, so the mechanism was not exercised. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Averaging over unavailable late line moves versus the usual four-term calculation: 2024",
+      "effect": 0.0,
+      "effect_units": "brier_improvement",
+      "family": "lead97_unit1_497_looks",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When a late line move is missing, this averages over the moves that usually happen instead of assuming none. Every recent game had its move, so it made no difference; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead97_unit1.md",
+      "standard_error": null
+    },
+    "lead97_unit1_2024_log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no held-out game had an unavailable move, so the mechanism was not exercised. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Averaging over unavailable late line moves versus the usual four-term calculation: 2024",
+      "effect": 0.0,
+      "effect_units": "log_loss_improvement",
+      "family": "lead97_unit1_497_looks",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When a late line move is missing, this averages over the moves that usually happen instead of assuming none. Every recent game had its move, so it made no difference; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead97_unit1.md",
+      "standard_error": null
+    },
+    "lead97_unit1_2024_rps_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no held-out game had an unavailable move, so the mechanism was not exercised. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Averaging over unavailable late line moves versus the usual four-term calculation: 2024",
+      "effect": 0.0,
+      "effect_units": "rps_improvement",
+      "family": "lead97_unit1_497_looks",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When a late line move is missing, this averages over the moves that usually happen instead of assuming none. Every recent game had its move, so it made no difference; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead97_unit1.md",
+      "standard_error": null
+    },
+    "lead97_unit1_2025_accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no held-out game had an unavailable move, so the mechanism was not exercised. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Averaging over unavailable late line moves versus the usual four-term calculation: 2025",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "lead97_unit1_497_looks",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When a late line move is missing, this averages over the moves that usually happen instead of assuming none. Every recent game had its move, so it made no difference; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead97_unit1.md",
+      "standard_error": null
+    },
+    "lead97_unit1_2025_brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no held-out game had an unavailable move, so the mechanism was not exercised. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Averaging over unavailable late line moves versus the usual four-term calculation: 2025",
+      "effect": -2.62090662361e-08,
+      "effect_units": "brier_improvement",
+      "family": "lead97_unit1_497_looks",
+      "interval": [
+        -1.12816718945e-07,
+        4.65791382444e-08
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When a late line move is missing, this averages over the moves that usually happen instead of assuming none. Every recent game had its move, so it made no difference; pool picks have not changed.",
+      "probability_positive": 0.2678,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead97_unit1.md",
+      "standard_error": null
+    },
+    "lead97_unit1_2025_log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no held-out game had an unavailable move, so the mechanism was not exercised. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Averaging over unavailable late line moves versus the usual four-term calculation: 2025",
+      "effect": -5.27801271567e-08,
+      "effect_units": "log_loss_improvement",
+      "family": "lead97_unit1_497_looks",
+      "interval": [
+        -2.3024303317e-07,
+        9.60966856811e-08
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When a late line move is missing, this averages over the moves that usually happen instead of assuming none. Every recent game had its move, so it made no difference; pool picks have not changed.",
+      "probability_positive": 0.2719,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead97_unit1.md",
+      "standard_error": null
+    },
+    "lead97_unit1_2025_rps_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no held-out game had an unavailable move, so the mechanism was not exercised. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Averaging over unavailable late line moves versus the usual four-term calculation: 2025",
+      "effect": -4.04872262632e-08,
+      "effect_units": "rps_improvement",
+      "family": "lead97_unit1_497_looks",
+      "interval": [
+        -1.15890388602e-06,
+        8.38208501567e-07
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When a late line move is missing, this averages over the moves that usually happen instead of assuming none. Every recent game had its move, so it made no difference; pool picks have not changed.",
+      "probability_positive": 0.497,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead97_unit1.md",
+      "standard_error": null
+    },
+    "lead97_unit1_pooled_accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no held-out game had an unavailable move, so the mechanism was not exercised. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Averaging over unavailable late line moves versus the usual four-term calculation: pooled",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "lead97_unit1_497_looks",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When a late line move is missing, this averages over the moves that usually happen instead of assuming none. Every recent game had its move, so it made no difference; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead97_unit1.md",
+      "standard_error": null
+    },
+    "lead97_unit1_pooled_brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no held-out game had an unavailable move, so the mechanism was not exercised. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Averaging over unavailable late line moves versus the usual four-term calculation: pooled",
+      "effect": -1.0520267359e-08,
+      "effect_units": "brier_improvement",
+      "family": "lead97_unit1_497_looks",
+      "interval": [
+        -4.78423476892e-08,
+        1.29122157103e-08
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When a late line move is missing, this averages over the moves that usually happen instead of assuming none. Every recent game had its move, so it made no difference; pool picks have not changed.",
+      "probability_positive": 0.16025,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead97_unit1.md",
+      "standard_error": null
+    },
+    "lead97_unit1_pooled_log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no held-out game had an unavailable move, so the mechanism was not exercised. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Averaging over unavailable late line moves versus the usual four-term calculation: pooled",
+      "effect": -2.11607844873e-08,
+      "effect_units": "log_loss_improvement",
+      "family": "lead97_unit1_497_looks",
+      "interval": [
+        -9.7283615599e-08,
+        2.68080531549e-08
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When a late line move is missing, this averages over the moves that usually happen instead of assuming none. Every recent game had its move, so it made no difference; pool picks have not changed.",
+      "probability_positive": 0.16335,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead97_unit1.md",
+      "standard_error": null
+    },
+    "lead97_unit1_pooled_rps_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no held-out game had an unavailable move, so the mechanism was not exercised. All 497 declared looks reported.",
+      "closing_ground": null,
+      "description": "Averaging over unavailable late line moves versus the usual four-term calculation: pooled",
+      "effect": -3.91588404177e-08,
+      "effect_units": "rps_improvement",
+      "family": "lead97_unit1_497_looks",
+      "interval": [
+        -4.46271670163e-07,
+        2.91289536541e-07
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When a late line move is missing, this averages over the moves that usually happen instead of assuming none. Every recent game had its move, so it made no difference; pool picks have not changed.",
+      "probability_positive": 0.33205,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead97_unit1.md",
+      "standard_error": null
+    }
+  }
+}

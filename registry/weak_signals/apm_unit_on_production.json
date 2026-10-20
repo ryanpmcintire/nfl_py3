@@ -1,0 +1,89 @@
+{
+  "family": "apm_unit_on_production",
+  "signals": {
+    "apm_unit_on_production_2020_2021": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Hierarchical team-unit APM versus active opener picks",
+      "effect": -1.9736842105263157,
+      "effect_units": "accuracy_points",
+      "family": "apm_unit_on_production",
+      "interval": [
+        -4.424778761061947,
+        0.4424778761061947
+      ],
+      "league": "nfl",
+      "notes": "Predeclared hierarchical APM; mined-era and prior APM/EPA selection discount. No admissible closing ground established. Covered games only; full policy in artifact.",
+      "plain_summary": "Adding each side's offensive and defensive unit strength from play-level ratings to the model, checked against the opening line in 2020-21: it leaned against the idea (about 5% likely to help) but the range crosses zero, so it isn't settled.",
+      "probability_positive": 0.0461,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts\\apm_unit_opener_eval\\20260907T144504Z\\window_2020_2021.json",
+      "standard_error": null
+    },
+    "apm_unit_on_production_2022_2023": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Hierarchical team-unit APM versus active opener picks",
+      "effect": 0.19455252918287938,
+      "effect_units": "accuracy_points",
+      "family": "apm_unit_on_production",
+      "interval": [
+        -2.514506769825919,
+        2.9296875
+      ],
+      "league": "nfl",
+      "notes": "Predeclared hierarchical APM; mined-era and prior APM/EPA selection discount. No admissible closing ground established. Covered games only; full policy in artifact.",
+      "plain_summary": "The same unit-strength check against the opening line in 2022-23: essentially a coin flip (about 53% likely to help); nothing changes on the card.",
+      "probability_positive": 0.52745,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 514,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts\\apm_unit_opener_eval\\20260907T144504Z\\window_2022_2023.json",
+      "standard_error": null
+    },
+    "apm_unit_on_production_2024_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Hierarchical team-unit APM versus active opener picks",
+      "effect": 0.37523452157598497,
+      "effect_units": "accuracy_points",
+      "family": "apm_unit_on_production",
+      "interval": [
+        -1.8691588785046729,
+        2.6365348399246704
+      ],
+      "league": "nfl",
+      "notes": "Predeclared hierarchical APM; mined-era and prior APM/EPA selection discount. No admissible closing ground established. Covered games only; full policy in artifact.",
+      "plain_summary": "The same unit-strength check against the opening line in 2024-25: a slight lean in its favour (about 60% likely to help), still inside a range that crosses zero.",
+      "probability_positive": 0.60335,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\apm_unit_opener_eval\\20260907T144504Z\\window_2024_2025.json",
+      "standard_error": null
+    }
+  }
+}

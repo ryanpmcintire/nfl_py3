@@ -1,0 +1,33 @@
+{
+  "family": "kicker_change_underdog",
+  "signals": {
+    "kicker_change_underdog_on_production": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% CI [-1.3423, +0.8753] crosses zero -- the expected shape for a real small signal at this window size, not a resolved wrong sign. no_split_half_reliability is inadmissible: the construct is a deterministic text-pattern match over an already-captured point-in-time wire archive plus a published roster position fact, the same class of trait every prior wave's own reliability argument already covers for a text/schedule construct with no measurement-noise component. Positive control (candidate replaced by realized ats_margin) reads +44.298 accuracy points, week-blocked P+ 1.0 -- the harness is proven sensitive to an effect of that size before this screen result is read. Rare by construction (only 89/4902 full-schedule games ever flag) but recorded regardless, per the task's own instruction.",
+      "closing_ground": null,
+      "description": "LEAD-16: kicker_change_underdog_flag stacked on production weak_stack, opener-graded, rotation window [2020,2021]. Signed +1 when the HOME team is the opener underdog and either team changed its kicker (confirmed signing/waiver-claim/PS-elevation/IR-activation of a kicker on the PFR transaction wire, wire-only, never post-hoc snap-count comparison), -1 when the AWAY team is the underdog, 0 otherwise. Population: 217 wire-resolved kicker-change events across the full local history (2016-2025), of which 89/4902 full-schedule games flag nonzero (all 2020+, since the Tuesday-opener spread store only covers 2020-2025).",
+      "effect": -0.2193,
+      "effect_units": "accuracy_points",
+      "family": "kicker_change_underdog",
+      "interval": [
+        -1.3423,
+        0.8753
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Backing the underdog whenever either team just changed its placekicker, stacked on top of the production model, read essentially flat (-0.2 accuracy points, interval crossing zero) on a two-season opener test with only 27 games flagged in-window -- too rare and too close to zero to say anything yet.",
+      "probability_positive": 0.2845,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/rookie_kicker_flags_on_production/kicker_change/20260905T164558Z/results.json",
+      "standard_error": null
+    }
+  }
+}

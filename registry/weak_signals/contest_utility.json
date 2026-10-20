@@ -1,0 +1,369 @@
+{
+  "family": "contest_utility",
+  "signals": {
+    "contest_utility_accuracy_point_beats_star_lever": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Monte Carlo interval conditional on ASSUMED field parameters, not a sampling interval over graded outcomes, so a grid assumption cannot refute a mechanism; unresolved_below_power regardless of where the interval sits. Positive control (perfect card) resolves at P(first) 1.000, so the instrument is not blind; it was never shown able to resolve an effect of this size, so positive_control_bound is inadmissible. Split-half reliability is undefined for a simulated payout delta; --reliability omitted.",
+      "closing_ground": null,
+      "description": "The decision comparison POL-05 exists to produce: one extra point of ordinary forced-pick accuracy (+5.80 pp of P(first) at 285 assumed entries, 95% [+4.67, +6.37], probability_positive 1.000) minus the best star-position deviation found (the contrarian star, +0.20 pp of P(first)). Simulated payout effect +5.60 percentage points of P(first): one accuracy point is worth about 29x the entire star-position lever.",
+      "effect": 5.599552,
+      "effect_units": "payout_first_pp",
+      "family": "contest_utility",
+      "interval": [
+        5.197293,
+        6.091392
+      ],
+      "league": "nfl",
+      "notes": "POL-05 contest utility optimizer. DERIVED comparison, not a direct simulator output: cell 4's measured exchange rate for one accuracy point at 285 assumed entries (+5.80 pp of P(first), artifacts/contest_utility_optimizer/20260911T034605Z/results.json cell_four_payout_units.one_point) minus contest_utility_star_contrarian_winner_take_all's raw simulated payout effect (+0.20 pp of P(first)); the interval applies the same subtraction to the star lever's own 95% interval, holding the accuracy-point exchange rate fixed (the same construction as the original accuracy-point-equivalent recording, which was 1.0 minus the star lever's accuracy-point equivalent). SIMULATED PAYOUT QUANTITY under ASSUMED field parameters (285 entries, public lean 0.65, double-points Best Pick) -- NOT a graded-outcome measurement. nfl_ats.pool simulator, 20 paired replicates with common random numbers, each redrawing a week-blocked bootstrap of the 1503-game opener archive. Field size and prize structure are ASSUMED (uncaptured, LEAD-52). Re-recorded 2026-09-11 in effect_units=payout_first_pp (percentage points of a simulated pool-finish probability); previously stored as an accuracy-point-equivalent conversion under effect_units=accuracy_points, which wrongly pooled it with measured game-level accuracy signals -- see docs/weak_signal_pooling.md's commensurability rule and docs/contest_utility_optimizer.md's 2026-09-11 note.",
+      "plain_summary": "In a simulated pool, one extra point of pick accuracy is worth about thirty times more simulated chance of finishing first than any clever choice of which game to star.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 20,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/contest_utility_optimizer.md; artifacts/contest_utility_optimizer/20260911T034605Z/",
+      "standard_error": null
+    },
+    "contest_utility_best_pick_sunday_nominator_payout": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Monte Carlo interval conditional on ASSUMED field parameters, not a sampling interval over graded outcomes, so a grid assumption cannot refute a mechanism; unresolved_below_power regardless of where the interval sits. Positive control (perfect card) resolves at P(first) 1.000, so the instrument is not blind; it was never shown able to resolve an effect of this size, so positive_control_bound is inadmissible. Split-half reliability is undefined for a simulated payout delta; --reliability omitted.",
+      "closing_ground": null,
+      "description": "What LEAD-53's served Sunday Best Pick re-nomination is worth in payout units: hold the 285 sides and the star POSITION fixed and move only the starred pick's true hit rate from the card average 52.96% to the measured Sunday re-nomination rate 56.73%. Simulated payout effect +2.08 percentage points of P(first) at 285 assumed entries, winner-take-all. Ten times the star-POSITION lever and the largest contest-format lever measured in POL-05. Conditional on the 56.73% being real: LEAD-53 measures it unresolved at probability_positive 0.814 over 104 weeks.",
+      "effect": 2.084857,
+      "effect_units": "payout_first_pp",
+      "family": "contest_utility",
+      "interval": [
+        0.834025,
+        3.309783
+      ],
+      "league": "nfl",
+      "notes": "POL-05 contest utility optimizer. SIMULATED PAYOUT QUANTITY under ASSUMED field parameters (285 entries, public lean 0.65, double-points Best Pick) -- NOT a graded-outcome measurement. nfl_ats.pool simulator, 20 paired replicates with common random numbers, each redrawing a week-blocked bootstrap of the 1503-game opener archive. Field size and prize structure are ASSUMED (uncaptured, LEAD-52). Re-recorded 2026-09-11 in effect_units=payout_first_pp (percentage points of a simulated pool-finish probability); previously stored as an accuracy-point-equivalent conversion under effect_units=accuracy_points, which wrongly pooled it with measured game-level accuracy signals -- see docs/weak_signal_pooling.md's commensurability rule and docs/contest_utility_optimizer.md's 2026-09-11 note. For reference, cell 4's exchange rate is +5.80 pp of P(first) per accuracy point at 285 entries (accuracy-point-equivalent +0.359).",
+      "plain_summary": "Moving the weekly star to the Sunday-morning re-pick, which is already what the site does, raises the simulated chance of finishing first by about two percentage points across a season.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 20,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/contest_utility_optimizer.md; artifacts/contest_utility_optimizer/20260911T034605Z/best_pick_value.json",
+      "standard_error": null
+    },
+    "contest_utility_best_pick_tuesday_nominator_payout": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Monte Carlo interval conditional on ASSUMED field parameters, not a sampling interval over graded outcomes, so a grid assumption cannot refute a mechanism; unresolved_below_power regardless of where the interval sits. Positive control (perfect card) resolves at P(first) 1.000, so the instrument is not blind; it was never shown able to resolve an effect of this size, so positive_control_bound is inadmissible. Split-half reliability is undefined for a simulated payout delta; --reliability omitted.",
+      "closing_ground": null,
+      "description": "The same pricing for the RETIRED Tuesday Best Pick nominator: starred pick's true hit rate moved from the card average 52.96% to the Tuesday nominator's measured 52.88%. Simulated payout effect +0.11 percentage points of P(first) at 285 assumed entries: essentially nothing, which is LEAD-53's own finding that the Tuesday instant adds no edge over an arbitrary star, arriving through a second route.",
+      "effect": 0.107674,
+      "effect_units": "payout_first_pp",
+      "family": "contest_utility",
+      "interval": [
+        -0.346032,
+        0.80675
+      ],
+      "league": "nfl",
+      "notes": "POL-05 contest utility optimizer. SIMULATED PAYOUT QUANTITY under ASSUMED field parameters (285 entries, public lean 0.65, double-points Best Pick) -- NOT a graded-outcome measurement. nfl_ats.pool simulator, 20 paired replicates with common random numbers, each redrawing a week-blocked bootstrap of the 1503-game opener archive. Field size and prize structure are ASSUMED (uncaptured, LEAD-52). Re-recorded 2026-09-11 in effect_units=payout_first_pp (percentage points of a simulated pool-finish probability); previously stored as an accuracy-point-equivalent conversion under effect_units=accuracy_points, which wrongly pooled it with measured game-level accuracy signals -- see docs/weak_signal_pooling.md's commensurability rule and docs/contest_utility_optimizer.md's 2026-09-11 note. For reference, cell 4's exchange rate is +5.80 pp of P(first) per accuracy point at 285 entries (accuracy-point-equivalent +0.019).",
+      "plain_summary": "The old Tuesday way of picking the weekly star raised the simulated chance of finishing first by almost nothing, about the same as picking one at random.",
+      "probability_positive": 0.6,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 20,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/contest_utility_optimizer.md; artifacts/contest_utility_optimizer/20260911T034605Z/best_pick_value.json",
+      "standard_error": null
+    },
+    "contest_utility_side_flip_25_winner_take_all": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Monte Carlo interval conditional on ASSUMED field parameters, not a sampling interval over graded outcomes, so a grid assumption cannot refute a mechanism; unresolved_below_power regardless of where the interval sits. Positive control (perfect card) resolves at P(first) 1.000, so the instrument is not blind; it was never shown able to resolve an effect of this size, so positive_control_bound is inadmissible. Split-half reliability is undefined for a simulated payout delta; --reliability omitted.",
+      "closing_ground": null,
+      "description": "Deviate on the SIDES: flip the 25 popular-side picks of the season whose cover probability is closest to 0.5, paying each flip's measured cost. Simulated payout effect -0.10 percentage points of P(first) at 285 assumed entries, winner-take-all. The same 25 flips read -2.31 pp of P(top 15%), probability_positive 0.05, so the flip is a dead heat only in the narrowest payout (that top-15% reading is not itself a separate registry entry).",
+      "effect": -0.099593,
+      "effect_units": "payout_first_pp",
+      "family": "contest_utility",
+      "interval": [
+        -2.612267,
+        0.956458
+      ],
+      "league": "nfl",
+      "notes": "POL-05 contest utility optimizer. SIMULATED PAYOUT QUANTITY under ASSUMED field parameters (285 entries, public lean 0.65, double-points Best Pick) -- NOT a graded-outcome measurement. nfl_ats.pool simulator, 20 paired replicates with common random numbers, each redrawing a week-blocked bootstrap of the 1503-game opener archive. Field size and prize structure are ASSUMED (uncaptured, LEAD-52). Re-recorded 2026-09-11 in effect_units=payout_first_pp (percentage points of a simulated pool-finish probability); previously stored as an accuracy-point-equivalent conversion under effect_units=accuracy_points, which wrongly pooled it with measured game-level accuracy signals -- see docs/weak_signal_pooling.md's commensurability rule and docs/contest_utility_optimizer.md's 2026-09-11 note. For reference, cell 4's exchange rate is +5.80 pp of P(first) per accuracy point at 285 entries (accuracy-point-equivalent -0.017).",
+      "plain_summary": "In a simulated pool, deliberately taking the other side of twenty-five near-coin-flip games to look different from the field does not help even when only first place pays.",
+      "probability_positive": 0.55,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 20,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/contest_utility_optimizer.md; artifacts/contest_utility_optimizer/20260911T034605Z/",
+      "standard_error": null
+    },
+    "contest_utility_side_flip_50_winner_take_all": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Monte Carlo interval conditional on ASSUMED field parameters, not a sampling interval over graded outcomes, so a grid assumption cannot refute a mechanism; unresolved_below_power regardless of where the interval sits. Positive control (perfect card) resolves at P(first) 1.000, so the instrument is not blind; it was never shown able to resolve an effect of this size, so positive_control_bound is inadmissible. Split-half reliability is undefined for a simulated payout delta; --reliability omitted.",
+      "closing_ground": null,
+      "description": "Same side deviation at 50 flips instead of 25: simulated payout effect -1.25 percentage points of P(first) at 285 assumed entries, winner-take-all; -6.56 pp of P(top 15%), probability_positive 0.00 (not itself a separate registry entry). The cost is monotone in the number of flips.",
+      "effect": -1.246936,
+      "effect_units": "payout_first_pp",
+      "family": "contest_utility",
+      "interval": [
+        -6.448767,
+        0.885133
+      ],
+      "league": "nfl",
+      "notes": "POL-05 contest utility optimizer. SIMULATED PAYOUT QUANTITY under ASSUMED field parameters (285 entries, public lean 0.65, double-points Best Pick) -- NOT a graded-outcome measurement. nfl_ats.pool simulator, 20 paired replicates with common random numbers, each redrawing a week-blocked bootstrap of the 1503-game opener archive. Field size and prize structure are ASSUMED (uncaptured, LEAD-52). Re-recorded 2026-09-11 in effect_units=payout_first_pp (percentage points of a simulated pool-finish probability); previously stored as an accuracy-point-equivalent conversion under effect_units=accuracy_points, which wrongly pooled it with measured game-level accuracy signals -- see docs/weak_signal_pooling.md's commensurability rule and docs/contest_utility_optimizer.md's 2026-09-11 note. For reference, cell 4's exchange rate is +5.80 pp of P(first) per accuracy point at 285 entries (accuracy-point-equivalent -0.215).",
+      "plain_summary": "In a simulated pool, flipping fifty picks away from the model to be contrarian costs more than a percentage point of simulated chance of finishing first, even in the best case.",
+      "probability_positive": 0.3,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 20,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/contest_utility_optimizer.md; artifacts/contest_utility_optimizer/20260911T034605Z/",
+      "standard_error": null
+    },
+    "contest_utility_spread_accuracy_gradient": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval reaches -0.80 at the low end, the expected shape at this evaluator's resolution; no admissible closing ground. wrong_sign_resolved inadmissible (interval is mostly above zero). Split-half by season parity is positive in both halves independently (odd 2021/23/25 +8.59 points, even 2020/22/24 +2.56), so no_split_half_reliability is inadmissible; a Pearson split-half is not defined for a population gap statistic, so --reliability is omitted and the two halves are reported instead.",
+      "closing_ground": null,
+      "description": "MEASURED ACCURACY (the only non-simulated cell in this family). Forced-pick accuracy at the frozen Tuesday opener on picks whose spread is 4.5 or less (53.92%, 829 games) minus picks whose spread is 7.5 or more (48.31%, 325 games), active weak_stack model, 2020-2025 opener evaluation. This gradient is the mechanism POL-05's star-choice cells rest on: the max-probability game in a week is the small-spread game, and a big-spread star is a pick measured below a coin flip.",
+      "effect": 5.612694,
+      "effect_units": "accuracy_points",
+      "family": "contest_utility",
+      "interval": [
+        -0.801082,
+        12.137606
+      ],
+      "league": "nfl",
+      "notes": "POL-05 contest utility optimizer. Week-blocked bootstrap, 20000 samples, seed 20260911, via nfl_ats.clv.week_blocked_bootstrap. Command: scripts/contest_utility_optimizer.py --gradient-only.",
+      "plain_summary": "Our picks do much better on close games than on blowout-spread games: about 54 percent right when the line is inside a field goal, about 48 percent when it is a touchdown or more.",
+      "probability_positive": 0.956575,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1154,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/contest_utility_optimizer.md; artifacts/contest_utility_optimizer/20260911T034605Z/",
+      "standard_error": null
+    },
+    "contest_utility_star_big_spread_vs_max_probability": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Monte Carlo interval conditional on ASSUMED field parameters, not a sampling interval over graded outcomes, so a grid assumption cannot refute a mechanism; unresolved_below_power regardless of where the interval sits. Positive control (perfect card) resolves at P(first) 1.000, so the instrument is not blind; it was never shown able to resolve an effect of this size, so positive_control_bound is inadmissible. Split-half reliability is undefined for a simulated payout delta; --reliability omitted.",
+      "closing_ground": null,
+      "description": "Star the biggest-spread game of the week instead of the max-probability game, holding all 285 sides fixed. Simulated payout effect -1.69 percentage points of P(first) at 285 assumed entries, winner-take-all.",
+      "effect": -1.690269,
+      "effect_units": "payout_first_pp",
+      "family": "contest_utility",
+      "interval": [
+        -4.502275,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "POL-05 contest utility optimizer. SIMULATED PAYOUT QUANTITY under ASSUMED field parameters (285 entries, public lean 0.65, double-points Best Pick) -- NOT a graded-outcome measurement. nfl_ats.pool simulator, 20 paired replicates with common random numbers, each redrawing a week-blocked bootstrap of the 1503-game opener archive. Field size and prize structure are ASSUMED (uncaptured, LEAD-52). Re-recorded 2026-09-11 in effect_units=payout_first_pp (percentage points of a simulated pool-finish probability); previously stored as an accuracy-point-equivalent conversion under effect_units=accuracy_points, which wrongly pooled it with measured game-level accuracy signals -- see docs/weak_signal_pooling.md's commensurability rule and docs/contest_utility_optimizer.md's 2026-09-11 note. For reference, cell 4's exchange rate is +5.80 pp of P(first) per accuracy point at 285 entries (accuracy-point-equivalent -0.291).",
+      "plain_summary": "In a simulated pool, putting the weekly star pick on the biggest blowout line instead of the safest pick lowers the simulated chance of finishing first by about 1.7 percentage points.",
+      "probability_positive": 0.05,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 20,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/contest_utility_optimizer.md; artifacts/contest_utility_optimizer/20260911T034605Z/derived.json",
+      "standard_error": null
+    },
+    "contest_utility_star_chooser_vs_arbitrary": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Monte Carlo interval conditional on ASSUMED field parameters, not a sampling interval over graded outcomes, so a grid assumption cannot refute a mechanism; unresolved_below_power regardless of where the interval sits. Positive control (perfect card) resolves at P(first) 1.000, so the instrument is not blind; it was never shown able to resolve an effect of this size, so positive_control_bound is inadmissible. Split-half reliability is undefined for a simulated payout delta; --reliability omitted.",
+      "closing_ground": null,
+      "description": "Having ANY star chooser at all: star the max-probability game versus star a uniformly random eligible game of the week, holding all 285 sides fixed. Simulated payout effect +0.66 percentage points of P(first) at 285 assumed entries, winner-take-all. Direction reported as chooser minus arbitrary; the raw simulated arm is arbitrary minus chooser at -0.66 pp with the arbitrary arm worse in all 20 paired replicates.",
+      "effect": 0.659776,
+      "effect_units": "payout_first_pp",
+      "family": "contest_utility",
+      "interval": [
+        0.063199,
+        2.026883
+      ],
+      "league": "nfl",
+      "notes": "POL-05 contest utility optimizer. SIMULATED PAYOUT QUANTITY under ASSUMED field parameters (285 entries, public lean 0.65, double-points Best Pick) -- NOT a graded-outcome measurement. nfl_ats.pool simulator, 20 paired replicates with common random numbers, each redrawing a week-blocked bootstrap of the 1503-game opener archive. Field size and prize structure are ASSUMED (uncaptured, LEAD-52). Re-recorded 2026-09-11 in effect_units=payout_first_pp (percentage points of a simulated pool-finish probability); previously stored as an accuracy-point-equivalent conversion under effect_units=accuracy_points, which wrongly pooled it with measured game-level accuracy signals -- see docs/weak_signal_pooling.md's commensurability rule and docs/contest_utility_optimizer.md's 2026-09-11 note. For reference, cell 4's exchange rate is +5.80 pp of P(first) per accuracy point at 285 entries (accuracy-point-equivalent +0.114).",
+      "plain_summary": "In a simulated pool, choosing the weekly star pick deliberately instead of at random raises the simulated chance of finishing first by about two-thirds of a percentage point.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 20,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/contest_utility_optimizer.md; artifacts/contest_utility_optimizer/20260911T034605Z/derived.json",
+      "standard_error": null
+    },
+    "contest_utility_star_contrarian_big_vs_max_probability": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Monte Carlo interval conditional on ASSUMED field parameters, not a sampling interval over graded outcomes, so a grid assumption cannot refute a mechanism; unresolved_below_power regardless of where the interval sits. Positive control (perfect card) resolves at P(first) 1.000, so the instrument is not blind; it was never shown able to resolve an effect of this size, so positive_control_bound is inadmissible. Split-half reliability is undefined for a simulated payout delta; --reliability omitted.",
+      "closing_ground": null,
+      "description": "Star the BIGGEST-SPREAD game among the games where our pick is the underdog: maximum contrarianism plus maximum variance. Simulated payout effect -1.29 percentage points of P(first) at 285 assumed entries, winner-take-all. The contrarian bonus does not survive paying for it with pick quality.",
+      "effect": -1.290025,
+      "effect_units": "payout_first_pp",
+      "family": "contest_utility",
+      "interval": [
+        -3.862042,
+        0.280825
+      ],
+      "league": "nfl",
+      "notes": "POL-05 contest utility optimizer. SIMULATED PAYOUT QUANTITY under ASSUMED field parameters (285 entries, public lean 0.65, double-points Best Pick) -- NOT a graded-outcome measurement. nfl_ats.pool simulator, 20 paired replicates with common random numbers, each redrawing a week-blocked bootstrap of the 1503-game opener archive. Field size and prize structure are ASSUMED (uncaptured, LEAD-52). Re-recorded 2026-09-11 in effect_units=payout_first_pp (percentage points of a simulated pool-finish probability); previously stored as an accuracy-point-equivalent conversion under effect_units=accuracy_points, which wrongly pooled it with measured game-level accuracy signals -- see docs/weak_signal_pooling.md's commensurability rule and docs/contest_utility_optimizer.md's 2026-09-11 note. For reference, cell 4's exchange rate is +5.80 pp of P(first) per accuracy point at 285 entries (accuracy-point-equivalent -0.222).",
+      "plain_summary": "In a simulated pool, starring the week's biggest underdog pick lowers the simulated chance of finishing first: being different from the field does not make up for how much worse that pick is.",
+      "probability_positive": 0.15,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 20,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/contest_utility_optimizer.md; artifacts/contest_utility_optimizer/20260911T034605Z/derived.json",
+      "standard_error": null
+    },
+    "contest_utility_star_contrarian_top15_payout": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Monte Carlo interval conditional on ASSUMED field parameters, not a sampling interval over graded outcomes, so a grid assumption cannot refute a mechanism; unresolved_below_power regardless of where the interval sits. Positive control (perfect card) resolves at P(first) 1.000, so the instrument is not blind; it was never shown able to resolve an effect of this size, so positive_control_bound is inadmissible. Split-half reliability is undefined for a simulated payout delta; --reliability omitted.",
+      "closing_ground": null,
+      "description": "The same contrarian star rule as contest_utility_star_contrarian_winner_take_all, scored under a TOP-15% payout (43 of 285 assumed entries paid) instead of winner-take-all. Simulated payout effect -0.32 percentage points of P(paid). The sign reverses versus winner-take-all: differentiation buys the top tail by selling the middle, and a wide prize pays for the middle.",
+      "effect": -0.32,
+      "effect_units": "payout_first_pp",
+      "family": "contest_utility",
+      "interval": [
+        -1.0375,
+        0.381
+      ],
+      "league": "nfl",
+      "notes": "POL-05 contest utility optimizer. SIMULATED PAYOUT QUANTITY under ASSUMED field parameters (285 entries, public lean 0.65, double-points Best Pick) -- NOT a graded-outcome measurement. nfl_ats.pool simulator, 20 paired replicates with common random numbers, each redrawing a week-blocked bootstrap of the 1503-game opener archive. Field size and prize structure are ASSUMED (uncaptured, LEAD-52). Re-recorded 2026-09-11 in effect_units=payout_first_pp (percentage points of a simulated pool-finish probability); previously stored as an accuracy-point-equivalent conversion under effect_units=accuracy_points, which wrongly pooled it with measured game-level accuracy signals -- see docs/weak_signal_pooling.md's commensurability rule and docs/contest_utility_optimizer.md's 2026-09-11 note. For reference, cell 4's exchange rate is +11.85 pp of P(top 15%) per accuracy point at 285 entries (accuracy-point-equivalent -0.027).",
+      "plain_summary": "If the simulated pool pays the top fifteen percent instead of only first place, starring our best underdog pick instead of our best pick becomes a small loss in simulated chance of getting paid.",
+      "probability_positive": 0.2,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 20,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/contest_utility_optimizer.md; artifacts/contest_utility_optimizer/20260911T034605Z/derived.json",
+      "standard_error": null
+    },
+    "contest_utility_star_contrarian_winner_take_all": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Monte Carlo interval conditional on ASSUMED field parameters, not a sampling interval over graded outcomes, so a grid assumption cannot refute a mechanism; unresolved_below_power regardless of where the interval sits. Positive control (perfect card) resolves at P(first) 1.000, so the instrument is not blind; it was never shown able to resolve an effect of this size, so positive_control_bound is inadmissible. Split-half reliability is undefined for a simulated payout delta; --reliability omitted.",
+      "closing_ground": null,
+      "description": "Star the highest-probability game AMONG the games where our pick is the underdog (off the popular side), instead of the highest-probability game overall, under a WINNER-TAKE-ALL payout. The only deviation from max-probability-everything that raises simulated expected payout. Simulated payout effect +0.20 percentage points of P(first) at 285 assumed entries; it costs only 0.07 expected points a season. Rises with the field lean: probability_positive 0.40 / 0.60 / 0.85 / 0.90 / 0.95 at assumed leans 0.50 / 0.55 / 0.65 / 0.75 / 0.85.",
+      "effect": 0.200824,
+      "effect_units": "payout_first_pp",
+      "family": "contest_utility",
+      "interval": [
+        -0.291015,
+        0.603083
+      ],
+      "league": "nfl",
+      "notes": "POL-05 contest utility optimizer. SIMULATED PAYOUT QUANTITY under ASSUMED field parameters (285 entries, public lean 0.65, double-points Best Pick) -- NOT a graded-outcome measurement. nfl_ats.pool simulator, 20 paired replicates with common random numbers, each redrawing a week-blocked bootstrap of the 1503-game opener archive. Field size and prize structure are ASSUMED (uncaptured, LEAD-52). Re-recorded 2026-09-11 in effect_units=payout_first_pp (percentage points of a simulated pool-finish probability); previously stored as an accuracy-point-equivalent conversion under effect_units=accuracy_points, which wrongly pooled it with measured game-level accuracy signals -- see docs/weak_signal_pooling.md's commensurability rule and docs/contest_utility_optimizer.md's 2026-09-11 note. For reference, cell 4's exchange rate is +5.80 pp of P(first) per accuracy point at 285 entries (accuracy-point-equivalent +0.035).",
+      "plain_summary": "In a simulated pool where only first place pays, putting the weekly star on our best underdog pick rather than our best pick overall raises the simulated chance of finishing first a little, because the rest of the field mostly backs favourites.",
+      "probability_positive": 0.85,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 20,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/contest_utility_optimizer.md; artifacts/contest_utility_optimizer/20260911T034605Z/derived.json",
+      "standard_error": null
+    },
+    "contest_utility_star_max_variance_vs_max_probability": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Monte Carlo interval conditional on ASSUMED field parameters, not a sampling interval over graded outcomes, so a grid assumption cannot refute a mechanism; unresolved_below_power regardless of where the interval sits. Positive control (perfect card) resolves at P(first) 1.000, so the instrument is not blind; it was never shown able to resolve an effect of this size, so positive_control_bound is inadmissible. Split-half reliability is undefined for a simulated payout delta; --reliability omitted.",
+      "closing_ground": null,
+      "description": "Star the game whose cover probability is closest to a coin flip (maximum per-pick variance) instead of the max-probability game. Simulated payout effect -1.39 percentage points of P(first) at 285 assumed entries.",
+      "effect": -1.390925,
+      "effect_units": "payout_first_pp",
+      "family": "contest_utility",
+      "interval": [
+        -3.224133,
+        -0.154817
+      ],
+      "league": "nfl",
+      "notes": "POL-05 contest utility optimizer. SIMULATED PAYOUT QUANTITY under ASSUMED field parameters (285 entries, public lean 0.65, double-points Best Pick) -- NOT a graded-outcome measurement. nfl_ats.pool simulator, 20 paired replicates with common random numbers, each redrawing a week-blocked bootstrap of the 1503-game opener archive. Field size and prize structure are ASSUMED (uncaptured, LEAD-52). Re-recorded 2026-09-11 in effect_units=payout_first_pp (percentage points of a simulated pool-finish probability); previously stored as an accuracy-point-equivalent conversion under effect_units=accuracy_points, which wrongly pooled it with measured game-level accuracy signals -- see docs/weak_signal_pooling.md's commensurability rule and docs/contest_utility_optimizer.md's 2026-09-11 note. For reference, cell 4's exchange rate is +5.80 pp of P(first) per accuracy point at 285 entries (accuracy-point-equivalent -0.240).",
+      "plain_summary": "In a simulated pool, deliberately starring the week's most uncertain game lowers the simulated chance of finishing first by more than a percentage point.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 20,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/contest_utility_optimizer.md; artifacts/contest_utility_optimizer/20260911T034605Z/derived.json",
+      "standard_error": null
+    },
+    "contest_utility_tiebreaker_shade_payout": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Monte Carlo interval conditional on ASSUMED field parameters, not a sampling interval over graded outcomes, so a grid assumption cannot refute a mechanism; unresolved_below_power regardless of where the interval sits. Positive control (perfect card) resolves at P(first) 1.000, so the instrument is not blind; it was never shown able to resolve an effect of this size, so positive_control_bound is inadmissible. Split-half reliability is undefined for a simulated payout delta; --reliability omitted.",
+      "closing_ground": null,
+      "description": "The served -1 tiebreaker shade's effect on expected season payout, decomposed as P(a tiebreak decides whether we are paid) x LEAD-54's measured change in the tiebreak win rate. The simulator puts the first factor at 3.87% of seasons (285 assumed entries, top-15% payout) and LEAD-54 puts the second at -0.137 pp, 95% [-0.935, +0.661]. Simulated payout effect -0.0051 percentage points of P(paid) over a season. IMMATERIAL either way; the shade is decided on LEAD-54's own absolute-error metric (probability_positive 0.816 full-sample, 0.843 out-of-sample), not on contest utility.",
+      "effect": -0.005139,
+      "effect_units": "payout_first_pp",
+      "family": "contest_utility",
+      "interval": [
+        -0.035484,
+        0.024756
+      ],
+      "league": "nfl",
+      "notes": "POL-05 contest utility optimizer. SIMULATED PAYOUT QUANTITY under ASSUMED field parameters (285 entries, public lean 0.65, double-points Best Pick) -- NOT a graded-outcome measurement. nfl_ats.pool simulator, 20 paired replicates with common random numbers, each redrawing a week-blocked bootstrap of the 1503-game opener archive. Field size and prize structure are ASSUMED (uncaptured, LEAD-52). Re-recorded 2026-09-11 in effect_units=payout_first_pp (percentage points of a simulated pool-finish probability); previously stored as an accuracy-point-equivalent conversion under effect_units=accuracy_points, which wrongly pooled it with measured game-level accuracy signals -- see docs/weak_signal_pooling.md's commensurability rule and docs/contest_utility_optimizer.md's 2026-09-11 note. For reference, cell 4's exchange rate is +11.85 pp of P(top 15%) per accuracy point at 285 entries (accuracy-point-equivalent -0.000434). The doc's own inline prose figure (-0.0000051) is a rounding artifact roughly 10x too small versus this artifact value; this record uses the artifact's tiebreaker_value.csv row (entries=285, prize_places=43), not the doc's rounding, per this session's instruction.",
+      "plain_summary": "The one-point shade on the tiebreaker score changes the simulated chance of getting paid by far too little to matter; the tiebreak only decides anything in about four seasons in a hundred.",
+      "probability_positive": 0.367485,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 20,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/contest_utility_optimizer.md; artifacts/contest_utility_optimizer/20260911T034605Z/",
+      "standard_error": null
+    }
+  }
+}

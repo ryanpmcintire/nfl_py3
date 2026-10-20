@@ -1,0 +1,33 @@
+{
+  "family": "mod25e-toh-smoke",
+  "signals": {
+    "mod25e-toh-smoke-s31-final-drive-reach": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "TOH (with GSTOP2) minus matched base, final-drive reach tie/trail 1-3, 1 world x 2 scored seasons, game bootstrap",
+      "effect": -8.6,
+      "effect_units": "rate_pp",
+      "family": "mod25e-toh-smoke",
+      "interval": [
+        -20.4,
+        3.5
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Timeout hook did not raise offense timeout use or final-drive reach in one smoke world; below power.",
+      "probability_positive": 0.12,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 544,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "docs/lanes/mod25e-hook-review-2026-10-18.md",
+      "standard_error": 7.4
+    }
+  }
+}

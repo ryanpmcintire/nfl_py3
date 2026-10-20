@@ -1,0 +1,33 @@
+{
+  "family": "e179-decide-declog",
+  "signals": {
+    "e179-decide-q4-trailer-ep-effect": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "DECIDE idx_out v idx_in EP of resulting state per call, Q4 trailers 1-8 (centipoints/call, positive = DECIDE raises trailer EP)",
+      "effect": 3.22,
+      "effect_units": "rate_pp",
+      "family": "e179-decide-declog",
+      "interval": [
+        -0.21,
+        6.92
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "DECIDE re-picks raise, not lower, trailer outcomes; not the carrier of the Q4 trailer shortfall",
+      "probability_positive": 0.97,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1088,
+      "seasons": [
+        2018,
+        2021
+      ],
+      "source": "docs/lanes/mod25e-e177-context-ratios.md",
+      "standard_error": 1.8
+    }
+  }
+}

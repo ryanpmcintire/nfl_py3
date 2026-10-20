@@ -1,0 +1,145 @@
+{
+  "family": "tiebreaker_total_closest_share",
+  "signals": {
+    "tiebreaker_total_a1_closest_share_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No wrong sign is resolved on the predeclared metric and the positive control (perfect foresight) detects at 100-1000x the tested scale, so it bounds nothing: bounded_by_control is unavailable and this stays unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Tiebreaker total arm A1 (market total as quoted) vs A0, expected share of the tiebreak against 284 rivals drawn from a DECLARED field (normal around the market total, sigma 13.299 from 2009-2019 actual-minus-market, rounded to integers; no capture holds real rival guesses). UNITS PLACEHOLDER: the effect is a closest-share PROBABILITY difference, not a correlation. EFFECT_UNITS has no probability unit and labelling a 0.35%-scale tiebreak-win share accuracy_points would put a non-commensurable quantity into the NFL ATS pool. Never pool this row with anything but its own family. Predeclared in docs/tiebreaker_total.md; 107 last-games-of-week 2020-2025; paired week-blocked bootstrap 20000 draws seed 20260821; baseline is A0, the tiebreaker chain served today (joint-residual total blended at 0.1, then the pick-side-consistent score lattice).",
+      "effect": 7e-06,
+      "effect_units": "correlation",
+      "family": "tiebreaker_total_closest_share",
+      "interval": [
+        -0.003275,
+        0.003287
+      ],
+      "league": "nfl",
+      "notes": "Realized-hit estimator: over 107 weeks this arm hit the exact total twice, so the mean is a 2-count statistic and the interval is wide by construction.",
+      "plain_summary": "How often each guess would win the weekly tiebreaker against 284 other entries. Submitting the raw betting total was no better than what we publish.",
+      "probability_positive": 0.653,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 107,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/tiebreaker_total/20260910T043514Z/results.json",
+      "standard_error": 0.023740751537757544
+    },
+    "tiebreaker_total_a2_closest_share_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No wrong sign is resolved on the predeclared metric and the positive control (perfect foresight) detects at 100-1000x the tested scale, so it bounds nothing: bounded_by_control is unavailable and this stays unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Tiebreaker total arm A2 (market total snapped to the nearest plausible combined score) vs A0, expected tiebreak share against 284 declared rivals. UNITS PLACEHOLDER: the effect is a closest-share PROBABILITY difference, not a correlation. EFFECT_UNITS has no probability unit and labelling a 0.35%-scale tiebreak-win share accuracy_points would put a non-commensurable quantity into the NFL ATS pool. Never pool this row with anything but its own family. Predeclared in docs/tiebreaker_total.md; 107 last-games-of-week 2020-2025; paired week-blocked bootstrap 20000 draws seed 20260821; baseline is A0, the tiebreaker chain served today (joint-residual total blended at 0.1, then the pick-side-consistent score lattice).",
+      "effect": 0.001094,
+      "effect_units": "correlation",
+      "family": "tiebreaker_total_closest_share",
+      "interval": [
+        -1e-06,
+        0.003283
+      ],
+      "league": "nfl",
+      "notes": "Realized-hit estimator: 3 exact hits vs the served arm's 2 over 107 weeks.",
+      "plain_summary": "Snapping the betting total to a combined score football actually produces won the weekly tiebreaker slightly more often than the guess we publish.",
+      "probability_positive": 0.646,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 107,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/tiebreaker_total/20260910T043514Z/results.json",
+      "standard_error": 0.019979616700262107
+    },
+    "tiebreaker_total_a3_closest_share_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No wrong sign is resolved on the predeclared metric and the positive control (perfect foresight) detects at 100-1000x the tested scale, so it bounds nothing: bounded_by_control is unavailable and this stays unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Tiebreaker total arm A3 (served total snapped to the nearest plausible combined score -- served arm with the pick-side shade removed) vs A0, expected tiebreak share against 284 declared rivals. UNITS PLACEHOLDER: the effect is a closest-share PROBABILITY difference, not a correlation. EFFECT_UNITS has no probability unit and labelling a 0.35%-scale tiebreak-win share accuracy_points would put a non-commensurable quantity into the NFL ATS pool. Never pool this row with anything but its own family. Predeclared in docs/tiebreaker_total.md; 107 last-games-of-week 2020-2025; paired week-blocked bootstrap 20000 draws seed 20260821; baseline is A0, the tiebreaker chain served today (joint-residual total blended at 0.1, then the pick-side-consistent score lattice).",
+      "effect": 0.001094,
+      "effect_units": "correlation",
+      "family": "tiebreaker_total_closest_share",
+      "interval": [
+        -1e-06,
+        0.003283
+      ],
+      "league": "nfl",
+      "notes": "Realized-hit estimator: 3 exact hits vs 2. The variance-reduced post-hoc read of the same estimand is recorded separately as tiebreaker_total_a3_expected_share_posthoc_2020_2025.",
+      "plain_summary": "Our own total, snapped to a combined score football actually produces, won the weekly tiebreaker slightly more often than the guess we publish.",
+      "probability_positive": 0.641,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 107,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/tiebreaker_total/20260910T043514Z/results.json",
+      "standard_error": 0.02157672502202707
+    },
+    "tiebreaker_total_a4_closest_share_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No wrong sign is resolved on the predeclared metric and the positive control (perfect foresight) detects at 100-1000x the tested scale, so it bounds nothing: bounded_by_control is unavailable and this stays unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Tiebreaker total control A4 (median of the week's other actual combined scores, not playable) vs A0, expected tiebreak share against 284 declared rivals. UNITS PLACEHOLDER: the effect is a closest-share PROBABILITY difference, not a correlation. EFFECT_UNITS has no probability unit and labelling a 0.35%-scale tiebreak-win share accuracy_points would put a non-commensurable quantity into the NFL ATS pool. Never pool this row with anything but its own family. Predeclared in docs/tiebreaker_total.md; 107 last-games-of-week 2020-2025; paired week-blocked bootstrap 20000 draws seed 20260821; baseline is A0, the tiebreaker chain served today (joint-residual total blended at 0.1, then the pick-side-consistent score lattice).",
+      "effect": 0.003706,
+      "effect_units": "correlation",
+      "family": "tiebreaker_total_closest_share",
+      "interval": [
+        -0.002159,
+        0.009937
+      ],
+      "league": "nfl",
+      "notes": "NOT a playable arm.",
+      "plain_summary": "Knowing the rest of the week's scoring would have won the tiebreaker roughly three times as often as our published guess. Nobody can do that; it shows what is missing.",
+      "probability_positive": 0.912,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 107,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/tiebreaker_total/20260910T043514Z/results.json",
+      "standard_error": 0.021996085086015024
+    },
+    "tiebreaker_total_pc_closest_share_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No wrong sign is resolved on the predeclared metric and the positive control (perfect foresight) detects at 100-1000x the tested scale, so it bounds nothing: bounded_by_control is unavailable and this stays unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Tiebreaker total POSITIVE CONTROL (actual combined score) vs A0, expected tiebreak share against 284 declared rivals. UNITS PLACEHOLDER: the effect is a closest-share PROBABILITY difference, not a correlation. EFFECT_UNITS has no probability unit and labelling a 0.35%-scale tiebreak-win share accuracy_points would put a non-commensurable quantity into the NFL ATS pool. Never pool this row with anything but its own family. Predeclared in docs/tiebreaker_total.md; 107 last-games-of-week 2020-2025; paired week-blocked bootstrap 20000 draws seed 20260821; baseline is A0, the tiebreaker chain served today (joint-residual total blended at 0.1, then the pick-side-consistent score lattice).",
+      "effect": 0.198946,
+      "effect_units": "correlation",
+      "family": "tiebreaker_total_closest_share",
+      "interval": [
+        0.173326,
+        0.228698
+      ],
+      "league": "nfl",
+      "notes": "Detects at ~1000x the scale separating the playable arms: the instrument works and bounds nothing, so bounded_by_control is unavailable for this family.",
+      "plain_summary": "Knowing the final score would win the weekly tiebreaker about 20% of the time even against 284 rivals -- ties are shared, so even a perfect guess is not a certainty.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 107,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/tiebreaker_total/20260910T043514Z/results.json",
+      "standard_error": 0.01416411
+    }
+  }
+}

@@ -1,0 +1,285 @@
+{
+  "family": "mod18_displayed_confidence_v1",
+  "signals": {
+    "displayed_confidence_brier_0_6p5_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither a resolved wrong sign nor a positive-control bound; the walk-forward paired difference is reported with its probability_positive and the line stays open.",
+      "closing_ground": null,
+      "description": "Brier score of the DISPLAYED pick probability, stated minus walk-forward reliability-calibrated, on lines of six and a half or less; positive favours the calibrated display. Opener-graded, sides unchanged.",
+      "effect": 0.00037711634613670766,
+      "effect_units": "brier",
+      "family": "mod18_displayed_confidence_v1",
+      "interval": [
+        -0.002009538017776643,
+        0.0027718322043641147
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/displayed_confidence.md before scoring. Week-blocked paired bootstrap, 20,000 samples, seed 20260821, within-week correlation zero.",
+      "plain_summary": "On lines of six and a half or less, showing the model's cover chance adjusted for how it has actually done at that line size moved the Brier score of the printed number by +0.000377 against showing the raw number. No pick changed.",
+      "probability_positive": 0.6234,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1104,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/displayed_confidence/20260910T010759Z/metrics.csv",
+      "standard_error": null
+    },
+    "displayed_confidence_brier_10p5_plus_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither a resolved wrong sign nor a positive-control bound; the walk-forward paired difference is reported with its probability_positive and the line stays open.",
+      "closing_ground": null,
+      "description": "Brier score of the DISPLAYED pick probability, stated minus walk-forward reliability-calibrated, on lines of ten and a half or more; positive favours the calibrated display. Opener-graded, sides unchanged.",
+      "effect": 0.00048806684749517484,
+      "effect_units": "brier",
+      "family": "mod18_displayed_confidence_v1",
+      "interval": [
+        -0.010269628752485641,
+        0.011747180111705786
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/displayed_confidence.md before scoring. Week-blocked paired bootstrap, 20,000 samples, seed 20260821, within-week correlation zero.",
+      "plain_summary": "On lines of ten and a half or more, showing the model's cover chance adjusted for how it has actually done at that line size moved the Brier score of the printed number by +0.000488 against showing the raw number. No pick changed.",
+      "probability_positive": 0.5316,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/displayed_confidence/20260910T010759Z/metrics.csv",
+      "standard_error": null
+    },
+    "displayed_confidence_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither a resolved wrong sign nor a positive-control bound; the walk-forward paired difference is reported with its probability_positive and the line stays open.",
+      "closing_ground": null,
+      "description": "Brier score of the DISPLAYED pick probability, stated minus walk-forward reliability-calibrated, on every line size; positive favours the calibrated display. Opener-graded, sides unchanged.",
+      "effect": 0.0011127516341461106,
+      "effect_units": "brier",
+      "family": "mod18_displayed_confidence_v1",
+      "interval": [
+        -0.0012331046481122354,
+        0.0035155005380858623
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/displayed_confidence.md before scoring. Week-blocked paired bootstrap, 20,000 samples, seed 20260821, within-week correlation zero.",
+      "plain_summary": "On every line size, showing the model's cover chance adjusted for how it has actually done at that line size moved the Brier score of the printed number by +0.001113 against showing the raw number. No pick changed.",
+      "probability_positive": 0.82235,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/displayed_confidence/20260910T010759Z/metrics.csv",
+      "standard_error": null
+    },
+    "displayed_confidence_brier_7_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither a resolved wrong sign nor a positive-control bound; the walk-forward paired difference is reported with its probability_positive and the line stays open.",
+      "closing_ground": null,
+      "description": "Brier score of the DISPLAYED pick probability, stated minus walk-forward reliability-calibrated, on lines of exactly seven; positive favours the calibrated display. Opener-graded, sides unchanged.",
+      "effect": -0.0033938750379376393,
+      "effect_units": "brier",
+      "family": "mod18_displayed_confidence_v1",
+      "interval": [
+        -0.011805979018373335,
+        0.004916487432953688
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/displayed_confidence.md before scoring. Week-blocked paired bootstrap, 20,000 samples, seed 20260821, within-week correlation zero.",
+      "plain_summary": "On lines of exactly seven, showing the model's cover chance adjusted for how it has actually done at that line size moved the Brier score of the printed number by -0.003394 against showing the raw number. No pick changed.",
+      "probability_positive": 0.21015,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/displayed_confidence/20260910T010759Z/metrics.csv",
+      "standard_error": null
+    },
+    "displayed_confidence_brier_7p5_10_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither a resolved wrong sign nor a positive-control bound; the walk-forward paired difference is reported with its probability_positive and the line stays open.",
+      "closing_ground": null,
+      "description": "Brier score of the DISPLAYED pick probability, stated minus walk-forward reliability-calibrated, on lines of seven and a half to ten; positive favours the calibrated display. Opener-graded, sides unchanged.",
+      "effect": 0.0074398930709907015,
+      "effect_units": "brier",
+      "family": "mod18_displayed_confidence_v1",
+      "interval": [
+        -0.0026819803479511462,
+        0.01756286733914505
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/displayed_confidence.md before scoring. Week-blocked paired bootstrap, 20,000 samples, seed 20260821, within-week correlation zero.",
+      "plain_summary": "On lines of seven and a half to ten, showing the model's cover chance adjusted for how it has actually done at that line size moved the Brier score of the printed number by +0.007440 against showing the raw number. No pick changed.",
+      "probability_positive": 0.9253,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/displayed_confidence/20260910T010759Z/metrics.csv",
+      "standard_error": null
+    },
+    "displayed_confidence_log_loss_0_6p5_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither a resolved wrong sign nor a positive-control bound; the walk-forward paired difference is reported with its probability_positive and the line stays open.",
+      "closing_ground": null,
+      "description": "log loss of the DISPLAYED pick probability, stated minus walk-forward reliability-calibrated, on lines of six and a half or less; positive favours the calibrated display. Opener-graded, sides unchanged.",
+      "effect": 0.0009098622111120471,
+      "effect_units": "log_loss",
+      "family": "mod18_displayed_confidence_v1",
+      "interval": [
+        -0.004007638985046833,
+        0.005867506326228736
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/displayed_confidence.md before scoring. Week-blocked paired bootstrap, 20,000 samples, seed 20260821, within-week correlation zero.",
+      "plain_summary": "On lines of six and a half or less, showing the model's cover chance adjusted for how it has actually done at that line size moved the log loss of the printed number by +0.000910 against showing the raw number. No pick changed.",
+      "probability_positive": 0.6442,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1104,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/displayed_confidence/20260910T010759Z/metrics.csv",
+      "standard_error": null
+    },
+    "displayed_confidence_log_loss_10p5_plus_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither a resolved wrong sign nor a positive-control bound; the walk-forward paired difference is reported with its probability_positive and the line stays open.",
+      "closing_ground": null,
+      "description": "log loss of the DISPLAYED pick probability, stated minus walk-forward reliability-calibrated, on lines of ten and a half or more; positive favours the calibrated display. Opener-graded, sides unchanged.",
+      "effect": 0.001227521940597225,
+      "effect_units": "log_loss",
+      "family": "mod18_displayed_confidence_v1",
+      "interval": [
+        -0.020682263595726356,
+        0.02426393591386853
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/displayed_confidence.md before scoring. Week-blocked paired bootstrap, 20,000 samples, seed 20260821, within-week correlation zero.",
+      "plain_summary": "On lines of ten and a half or more, showing the model's cover chance adjusted for how it has actually done at that line size moved the log loss of the printed number by +0.001228 against showing the raw number. No pick changed.",
+      "probability_positive": 0.5391,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/displayed_confidence/20260910T010759Z/metrics.csv",
+      "standard_error": null
+    },
+    "displayed_confidence_log_loss_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither a resolved wrong sign nor a positive-control bound; the walk-forward paired difference is reported with its probability_positive and the line stays open.",
+      "closing_ground": null,
+      "description": "log loss of the DISPLAYED pick probability, stated minus walk-forward reliability-calibrated, on every line size; positive favours the calibrated display. Opener-graded, sides unchanged.",
+      "effect": 0.0023882074787916446,
+      "effect_units": "log_loss",
+      "family": "mod18_displayed_confidence_v1",
+      "interval": [
+        -0.002454243862670671,
+        0.007348202296558229
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/displayed_confidence.md before scoring. Week-blocked paired bootstrap, 20,000 samples, seed 20260821, within-week correlation zero.",
+      "plain_summary": "On every line size, showing the model's cover chance adjusted for how it has actually done at that line size moved the log loss of the printed number by +0.002388 against showing the raw number. No pick changed.",
+      "probability_positive": 0.83325,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/displayed_confidence/20260910T010759Z/metrics.csv",
+      "standard_error": null
+    },
+    "displayed_confidence_log_loss_7_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither a resolved wrong sign nor a positive-control bound; the walk-forward paired difference is reported with its probability_positive and the line stays open.",
+      "closing_ground": null,
+      "description": "log loss of the DISPLAYED pick probability, stated minus walk-forward reliability-calibrated, on lines of exactly seven; positive favours the calibrated display. Opener-graded, sides unchanged.",
+      "effect": -0.007154150032489451,
+      "effect_units": "log_loss",
+      "family": "mod18_displayed_confidence_v1",
+      "interval": [
+        -0.024484705082590676,
+        0.009865231284224542
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/displayed_confidence.md before scoring. Week-blocked paired bootstrap, 20,000 samples, seed 20260821, within-week correlation zero.",
+      "plain_summary": "On lines of exactly seven, showing the model's cover chance adjusted for how it has actually done at that line size moved the log loss of the printed number by -0.007154 against showing the raw number. No pick changed.",
+      "probability_positive": 0.20385,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/displayed_confidence/20260910T010759Z/metrics.csv",
+      "standard_error": null
+    },
+    "displayed_confidence_log_loss_7p5_10_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither a resolved wrong sign nor a positive-control bound; the walk-forward paired difference is reported with its probability_positive and the line stays open.",
+      "closing_ground": null,
+      "description": "log loss of the DISPLAYED pick probability, stated minus walk-forward reliability-calibrated, on lines of seven and a half to ten; positive favours the calibrated display. Opener-graded, sides unchanged.",
+      "effect": 0.015224689112072809,
+      "effect_units": "log_loss",
+      "family": "mod18_displayed_confidence_v1",
+      "interval": [
+        -0.005393632811356073,
+        0.03588635251461627
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/displayed_confidence.md before scoring. Week-blocked paired bootstrap, 20,000 samples, seed 20260821, within-week correlation zero.",
+      "plain_summary": "On lines of seven and a half to ten, showing the model's cover chance adjusted for how it has actually done at that line size moved the log loss of the printed number by +0.015225 against showing the raw number. No pick changed.",
+      "probability_positive": 0.92625,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/displayed_confidence/20260910T010759Z/metrics.csv",
+      "standard_error": null
+    }
+  }
+}

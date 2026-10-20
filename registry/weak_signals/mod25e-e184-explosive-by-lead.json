@@ -1,0 +1,521 @@
+{
+  "family": "mod25e-e184-explosive-by-lead",
+  "signals": {
+    "e184 sim-real leading Q4 all EPplay": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "simulator gap row; zero crossing closes nothing; no terminal ground",
+      "closing_ground": null,
+      "description": "FD5 base s11-13 v real 2009-17, non-turnover run/pass plays, leading Q4 all EPplay sim minus real (EP*100, EP/play in pts*100)",
+      "effect": -0.0116,
+      "effect_units": "rate_pp",
+      "family": "mod25e-e184-explosive-by-lead",
+      "interval": [
+        -1.0736,
+        1.1587
+      ],
+      "invalidated_reason": "EP built from sim play-log yards, which are pool-row yards attached by position (mod25e_scorestate.py:336-343) and differ from engine field movement on 3.4% of runs (goal-line -70s); net-from-yl run SD 6.0 v real 6.3, trailing Q4 run mean gap -0.46 not -1.03 (tests/scratch/e184/sd5.py)",
+      "league": "nfl",
+      "notes": "game bootstrap 500, 90pct; EPplay rows are points*100 per play\n[2026-10-19T07:17:42.414367+00:00] invalidated: EP built from sim play-log yards, which are pool-row yards attached by position (mod25e_scorestate.py:336-343) and differ from engine field movement on 3.4% of runs (goal-line -70s); net-from-yl run SD 6.0 v real 6.3, trailing Q4 run mean gap -0.46 not -1.03 (tests/scratch/e184/sd5.py). Superseded by: None. Invalidation is not closure.",
+      "plain_summary": null,
+      "probability_positive": 0.496,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e184/expl.log",
+      "standard_error": null,
+      "status": "invalidated",
+      "superseded_by": null
+    },
+    "e184 sim-real leading Q4 all P20pp": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "simulator gap row; zero crossing closes nothing; no terminal ground",
+      "closing_ground": null,
+      "description": "FD5 base s11-13 v real 2009-17, non-turnover run/pass plays, leading Q4 all P20pp sim minus real (pp, EP/play in pts*100)",
+      "effect": -0.4616,
+      "effect_units": "rate_pp",
+      "family": "mod25e-e184-explosive-by-lead",
+      "interval": [
+        -0.6975,
+        -0.2315
+      ],
+      "league": "nfl",
+      "notes": "game bootstrap 500, 90pct; EPplay rows are points*100 per play",
+      "plain_summary": null,
+      "probability_positive": 0.0,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e184/expl.log",
+      "standard_error": null
+    },
+    "e184 sim-real leading Q4 all P40pp": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "simulator gap row; zero crossing closes nothing; no terminal ground",
+      "closing_ground": null,
+      "description": "FD5 base s11-13 v real 2009-17, non-turnover run/pass plays, leading Q4 all P40pp sim minus real (pp, EP/play in pts*100)",
+      "effect": -0.1766,
+      "effect_units": "rate_pp",
+      "family": "mod25e-e184-explosive-by-lead",
+      "interval": [
+        -0.2702,
+        -0.0679
+      ],
+      "league": "nfl",
+      "notes": "game bootstrap 500, 90pct; EPplay rows are points*100 per play",
+      "plain_summary": null,
+      "probability_positive": 0.004,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e184/expl.log",
+      "standard_error": null
+    },
+    "e184 sim-real leading Q4 pass EPplay": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "simulator gap row; zero crossing closes nothing; no terminal ground",
+      "closing_ground": null,
+      "description": "FD5 base s11-13 v real 2009-17, non-turnover run/pass plays, leading Q4 pass EPplay sim minus real (EP*100, EP/play in pts*100)",
+      "effect": 0.5259,
+      "effect_units": "rate_pp",
+      "family": "mod25e-e184-explosive-by-lead",
+      "interval": [
+        -1.921,
+        2.8088
+      ],
+      "league": "nfl",
+      "notes": "game bootstrap 500, 90pct; EPplay rows are points*100 per play",
+      "plain_summary": null,
+      "probability_positive": 0.658,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e184/expl.log",
+      "standard_error": null
+    },
+    "e184 sim-real leading Q4 pass P20pp": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "simulator gap row; zero crossing closes nothing; no terminal ground",
+      "closing_ground": null,
+      "description": "FD5 base s11-13 v real 2009-17, non-turnover run/pass plays, leading Q4 pass P20pp sim minus real (pp, EP/play in pts*100)",
+      "effect": -0.4592,
+      "effect_units": "rate_pp",
+      "family": "mod25e-e184-explosive-by-lead",
+      "interval": [
+        -0.9097,
+        0.0322
+      ],
+      "league": "nfl",
+      "notes": "game bootstrap 500, 90pct; EPplay rows are points*100 per play",
+      "plain_summary": null,
+      "probability_positive": 0.066,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e184/expl.log",
+      "standard_error": null
+    },
+    "e184 sim-real leading Q4 pass P40pp": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "simulator gap row; zero crossing closes nothing; no terminal ground",
+      "closing_ground": null,
+      "description": "FD5 base s11-13 v real 2009-17, non-turnover run/pass plays, leading Q4 pass P40pp sim minus real (pp, EP/play in pts*100)",
+      "effect": -0.2811,
+      "effect_units": "rate_pp",
+      "family": "mod25e-e184-explosive-by-lead",
+      "interval": [
+        -0.5107,
+        -0.0306
+      ],
+      "league": "nfl",
+      "notes": "game bootstrap 500, 90pct; EPplay rows are points*100 per play",
+      "plain_summary": null,
+      "probability_positive": 0.028,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e184/expl.log",
+      "standard_error": null
+    },
+    "e184 sim-real leading Q4 run EPplay": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "simulator gap row; zero crossing closes nothing; no terminal ground",
+      "closing_ground": null,
+      "description": "FD5 base s11-13 v real 2009-17, non-turnover run/pass plays, leading Q4 run EPplay sim minus real (EP*100, EP/play in pts*100)",
+      "effect": 0.1896,
+      "effect_units": "rate_pp",
+      "family": "mod25e-e184-explosive-by-lead",
+      "interval": [
+        -0.9526,
+        1.2268
+      ],
+      "invalidated_reason": "EP built from sim play-log yards, which are pool-row yards attached by position (mod25e_scorestate.py:336-343) and differ from engine field movement on 3.4% of runs (goal-line -70s); net-from-yl run SD 6.0 v real 6.3, trailing Q4 run mean gap -0.46 not -1.03 (tests/scratch/e184/sd5.py)",
+      "league": "nfl",
+      "notes": "game bootstrap 500, 90pct; EPplay rows are points*100 per play\n[2026-10-19T07:17:36.819948+00:00] invalidated: EP built from sim play-log yards, which are pool-row yards attached by position (mod25e_scorestate.py:336-343) and differ from engine field movement on 3.4% of runs (goal-line -70s); net-from-yl run SD 6.0 v real 6.3, trailing Q4 run mean gap -0.46 not -1.03 (tests/scratch/e184/sd5.py). Superseded by: None. Invalidation is not closure.",
+      "plain_summary": null,
+      "probability_positive": 0.61,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e184/expl.log",
+      "standard_error": null,
+      "status": "invalidated",
+      "superseded_by": null
+    },
+    "e184 sim-real leading Q4 run P20pp": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "simulator gap row; zero crossing closes nothing; no terminal ground",
+      "closing_ground": null,
+      "description": "FD5 base s11-13 v real 2009-17, non-turnover run/pass plays, leading Q4 run P20pp sim minus real (pp, EP/play in pts*100)",
+      "effect": -0.3403,
+      "effect_units": "rate_pp",
+      "family": "mod25e-e184-explosive-by-lead",
+      "interval": [
+        -0.5653,
+        -0.1481
+      ],
+      "league": "nfl",
+      "notes": "game bootstrap 500, 90pct; EPplay rows are points*100 per play",
+      "plain_summary": null,
+      "probability_positive": 0.004,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e184/expl.log",
+      "standard_error": null
+    },
+    "e184 sim-real leading Q4 run P40pp": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "simulator gap row; zero crossing closes nothing; no terminal ground",
+      "closing_ground": null,
+      "description": "FD5 base s11-13 v real 2009-17, non-turnover run/pass plays, leading Q4 run P40pp sim minus real (pp, EP/play in pts*100)",
+      "effect": -0.0932,
+      "effect_units": "rate_pp",
+      "family": "mod25e-e184-explosive-by-lead",
+      "interval": [
+        -0.1907,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "game bootstrap 500, 90pct; EPplay rows are points*100 per play",
+      "plain_summary": null,
+      "probability_positive": 0.05,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e184/expl.log",
+      "standard_error": null
+    },
+    "e184 sim-real trailing Q4 all EPplay": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "simulator gap row; zero crossing closes nothing; no terminal ground",
+      "closing_ground": null,
+      "description": "FD5 base s11-13 v real 2009-17, non-turnover run/pass plays, trailing Q4 all EPplay sim minus real (EP*100, EP/play in pts*100)",
+      "effect": -4.2931,
+      "effect_units": "rate_pp",
+      "family": "mod25e-e184-explosive-by-lead",
+      "interval": [
+        -5.1153,
+        -3.4209
+      ],
+      "invalidated_reason": "EP built from sim play-log yards, which are pool-row yards attached by position (mod25e_scorestate.py:336-343) and differ from engine field movement on 3.4% of runs (goal-line -70s); net-from-yl run SD 6.0 v real 6.3, trailing Q4 run mean gap -0.46 not -1.03 (tests/scratch/e184/sd5.py)",
+      "league": "nfl",
+      "notes": "game bootstrap 500, 90pct; EPplay rows are points*100 per play\n[2026-10-19T07:17:45.228860+00:00] invalidated: EP built from sim play-log yards, which are pool-row yards attached by position (mod25e_scorestate.py:336-343) and differ from engine field movement on 3.4% of runs (goal-line -70s); net-from-yl run SD 6.0 v real 6.3, trailing Q4 run mean gap -0.46 not -1.03 (tests/scratch/e184/sd5.py). Superseded by: None. Invalidation is not closure.",
+      "plain_summary": null,
+      "probability_positive": 0.0,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e184/expl.log",
+      "standard_error": null,
+      "status": "invalidated",
+      "superseded_by": null
+    },
+    "e184 sim-real trailing Q4 all P20pp": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "simulator gap row; zero crossing closes nothing; no terminal ground",
+      "closing_ground": null,
+      "description": "FD5 base s11-13 v real 2009-17, non-turnover run/pass plays, trailing Q4 all P20pp sim minus real (pp, EP/play in pts*100)",
+      "effect": -0.1506,
+      "effect_units": "rate_pp",
+      "family": "mod25e-e184-explosive-by-lead",
+      "interval": [
+        -0.3605,
+        0.0594
+      ],
+      "league": "nfl",
+      "notes": "game bootstrap 500, 90pct; EPplay rows are points*100 per play",
+      "plain_summary": null,
+      "probability_positive": 0.12,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e184/expl.log",
+      "standard_error": null
+    },
+    "e184 sim-real trailing Q4 all P40pp": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "simulator gap row; zero crossing closes nothing; no terminal ground",
+      "closing_ground": null,
+      "description": "FD5 base s11-13 v real 2009-17, non-turnover run/pass plays, trailing Q4 all P40pp sim minus real (pp, EP/play in pts*100)",
+      "effect": 0.1458,
+      "effect_units": "rate_pp",
+      "family": "mod25e-e184-explosive-by-lead",
+      "interval": [
+        0.0644,
+        0.232
+      ],
+      "league": "nfl",
+      "notes": "game bootstrap 500, 90pct; EPplay rows are points*100 per play",
+      "plain_summary": null,
+      "probability_positive": 0.996,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e184/expl.log",
+      "standard_error": null
+    },
+    "e184 sim-real trailing Q4 pass EPplay": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "simulator gap row; zero crossing closes nothing; no terminal ground",
+      "closing_ground": null,
+      "description": "FD5 base s11-13 v real 2009-17, non-turnover run/pass plays, trailing Q4 pass EPplay sim minus real (EP*100, EP/play in pts*100)",
+      "effect": -2.268,
+      "effect_units": "rate_pp",
+      "family": "mod25e-e184-explosive-by-lead",
+      "interval": [
+        -3.2991,
+        -1.1943
+      ],
+      "league": "nfl",
+      "notes": "game bootstrap 500, 90pct; EPplay rows are points*100 per play",
+      "plain_summary": null,
+      "probability_positive": 0.0,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e184/expl.log",
+      "standard_error": null
+    },
+    "e184 sim-real trailing Q4 pass P20pp": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "simulator gap row; zero crossing closes nothing; no terminal ground",
+      "closing_ground": null,
+      "description": "FD5 base s11-13 v real 2009-17, non-turnover run/pass plays, trailing Q4 pass P20pp sim minus real (pp, EP/play in pts*100)",
+      "effect": -0.0858,
+      "effect_units": "rate_pp",
+      "family": "mod25e-e184-explosive-by-lead",
+      "interval": [
+        -0.3276,
+        0.1747
+      ],
+      "league": "nfl",
+      "notes": "game bootstrap 500, 90pct; EPplay rows are points*100 per play",
+      "plain_summary": null,
+      "probability_positive": 0.302,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e184/expl.log",
+      "standard_error": null
+    },
+    "e184 sim-real trailing Q4 pass P40pp": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "simulator gap row; zero crossing closes nothing; no terminal ground",
+      "closing_ground": null,
+      "description": "FD5 base s11-13 v real 2009-17, non-turnover run/pass plays, trailing Q4 pass P40pp sim minus real (pp, EP/play in pts*100)",
+      "effect": 0.1685,
+      "effect_units": "rate_pp",
+      "family": "mod25e-e184-explosive-by-lead",
+      "interval": [
+        0.0636,
+        0.2758
+      ],
+      "league": "nfl",
+      "notes": "game bootstrap 500, 90pct; EPplay rows are points*100 per play",
+      "plain_summary": null,
+      "probability_positive": 0.996,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e184/expl.log",
+      "standard_error": null
+    },
+    "e184 sim-real trailing Q4 run EPplay": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "simulator gap row; zero crossing closes nothing; no terminal ground",
+      "closing_ground": null,
+      "description": "FD5 base s11-13 v real 2009-17, non-turnover run/pass plays, trailing Q4 run EPplay sim minus real (EP*100, EP/play in pts*100)",
+      "effect": -10.6626,
+      "effect_units": "rate_pp",
+      "family": "mod25e-e184-explosive-by-lead",
+      "interval": [
+        -12.076,
+        -9.2266
+      ],
+      "invalidated_reason": "EP built from sim play-log yards, which are pool-row yards attached by position (mod25e_scorestate.py:336-343) and differ from engine field movement on 3.4% of runs (goal-line -70s); net-from-yl run SD 6.0 v real 6.3, trailing Q4 run mean gap -0.46 not -1.03 (tests/scratch/e184/sd5.py)",
+      "league": "nfl",
+      "notes": "game bootstrap 500, 90pct; EPplay rows are points*100 per play\n[2026-10-19T07:17:39.637536+00:00] invalidated: EP built from sim play-log yards, which are pool-row yards attached by position (mod25e_scorestate.py:336-343) and differ from engine field movement on 3.4% of runs (goal-line -70s); net-from-yl run SD 6.0 v real 6.3, trailing Q4 run mean gap -0.46 not -1.03 (tests/scratch/e184/sd5.py). Superseded by: None. Invalidation is not closure.",
+      "plain_summary": null,
+      "probability_positive": 0.0,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e184/expl.log",
+      "standard_error": null,
+      "status": "invalidated",
+      "superseded_by": null
+    },
+    "e184 sim-real trailing Q4 run P20pp": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "simulator gap row; zero crossing closes nothing; no terminal ground",
+      "closing_ground": null,
+      "description": "FD5 base s11-13 v real 2009-17, non-turnover run/pass plays, trailing Q4 run P20pp sim minus real (pp, EP/play in pts*100)",
+      "effect": -0.3235,
+      "effect_units": "rate_pp",
+      "family": "mod25e-e184-explosive-by-lead",
+      "interval": [
+        -0.6136,
+        -0.0473
+      ],
+      "league": "nfl",
+      "notes": "game bootstrap 500, 90pct; EPplay rows are points*100 per play",
+      "plain_summary": null,
+      "probability_positive": 0.026,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e184/expl.log",
+      "standard_error": null
+    },
+    "e184 sim-real trailing Q4 run P40pp": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "simulator gap row; zero crossing closes nothing; no terminal ground",
+      "closing_ground": null,
+      "description": "FD5 base s11-13 v real 2009-17, non-turnover run/pass plays, trailing Q4 run P40pp sim minus real (pp, EP/play in pts*100)",
+      "effect": 0.0787,
+      "effect_units": "rate_pp",
+      "family": "mod25e-e184-explosive-by-lead",
+      "interval": [
+        -0.0305,
+        0.1803
+      ],
+      "league": "nfl",
+      "notes": "game bootstrap 500, 90pct; EPplay rows are points*100 per play",
+      "plain_summary": null,
+      "probability_positive": 0.886,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e184/expl.log",
+      "standard_error": null
+    }
+  }
+}

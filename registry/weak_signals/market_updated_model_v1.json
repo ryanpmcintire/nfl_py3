@@ -1,0 +1,201 @@
+{
+  "family": "market_updated_model_v1",
+  "signals": {
+    "market_updated_model__c1_vs_c0": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval [-0.999, +6.980] touches zero; not a resolved wrong sign and no positive-control bound established for effects this size",
+      "closing_ground": null,
+      "description": "Hard flip rule (flat 0.5 leader-median follow, s1 arm) vs the card, 799 opener-graded games 2023-2025, week-blocked",
+      "effect": 3.0038,
+      "effect_units": "accuracy_points",
+      "family": "market_updated_model_v1",
+      "interval": [
+        -0.999,
+        6.98
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The old hard rule that flips a pick whenever the sharp books moved the line at least half a point still beats just using the model, by about 3 points of accuracy across three seasons -- but the sample is too small to call that settled.",
+      "probability_positive": 0.9323,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/market_updated_model/20260914T210317Z/summary.json",
+      "standard_error": 2.0356
+    },
+    "market_updated_model__c2_oos_vs_c0": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval [-2.101, +6.045] crosses zero; not a resolved wrong sign and no positive-control bound established at this effect size",
+      "closing_ground": null,
+      "description": "Combined model+market logistic blend (LOSO, out-of-sample) vs the card, 799 opener-graded games 2023-2025, week-blocked",
+      "effect": 2.0025,
+      "effect_units": "accuracy_points",
+      "family": "market_updated_model_v1",
+      "interval": [
+        -2.1014,
+        6.0453
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "A blended number that combines the model's own probability with how much the sharp books moved the line, tested honestly on seasons it was not tuned on, beats just using the model by about 2 points of accuracy -- promising, but not yet certain at this sample size.",
+      "probability_positive": 0.8381,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/market_updated_model/20260914T210317Z/summary.json",
+      "standard_error": 2.0783
+    },
+    "market_updated_model__c2_oos_vs_c1": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval [-2.390, +0.373] touches the positive side at its extreme, so this is not a resolved wrong sign despite P+ 0.075; unresolved_below_power per the binding rule",
+      "closing_ground": null,
+      "description": "Combined model+market logistic blend (LOSO, out-of-sample) vs the hard flip rule it replaces (s1 arm), 799 opener-graded games 2023-2025, week-blocked",
+      "effect": -1.0013,
+      "effect_units": "accuracy_points",
+      "family": "market_updated_model_v1",
+      "interval": [
+        -2.3899,
+        0.3731
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The new blended pick, which mixes the model's own confidence with how much the sharp books moved the line, does not show it beats the old hard rule that flips a pick whenever the line moved enough -- if anything the evidence leans toward the old rule, though the sample is still too small to call it settled.",
+      "probability_positive": 0.075,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/market_updated_model/20260914T210317Z/summary.json",
+      "standard_error": 0.7049
+    },
+    "market_updated_model__c3_oos_vs_c0": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Bit-identical to market_updated_model__c2_oos_vs_c0: leader_median_net never takes a value strictly between 0 and 0.5 in magnitude on this population, so the 0.5 gate changes zero rows; same interval crosses zero",
+      "closing_ground": null,
+      "description": "Combined model+market blend with the move entered only when the leaders moved at least 0.5 (LOSO, out-of-sample) vs the card, 799 opener-graded games 2023-2025, week-blocked",
+      "effect": 2.0025,
+      "effect_units": "accuracy_points",
+      "family": "market_updated_model_v1",
+      "interval": [
+        -2.1014,
+        6.0453
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "A version of the blended pick that ignores sharp-book line moves smaller than half a point beats just using the model by about 2 points of accuracy -- the same result as not filtering at all, because the sharp books' line moves in this data never actually come in smaller than half a point.",
+      "probability_positive": 0.8381,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/market_updated_model/20260914T210317Z/summary.json",
+      "standard_error": 2.0783
+    },
+    "market_updated_model__c3_oos_vs_c1": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Bit-identical to market_updated_model__c2_oos_vs_c1 for the same structural reason (the 0.5 gate is a no-op on this population's move variable); interval [-2.390, +0.373] touches the positive side, not a resolved wrong sign",
+      "closing_ground": null,
+      "description": "Combined model+market blend with the move entered only when the leaders moved at least 0.5 (LOSO, out-of-sample) vs the hard flip rule it replaces (s1 arm), 799 opener-graded games 2023-2025, week-blocked",
+      "effect": -1.0013,
+      "effect_units": "accuracy_points",
+      "family": "market_updated_model_v1",
+      "interval": [
+        -2.3899,
+        0.3731
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Filtering out small sharp-book line moves before blending them with the model does not change whether the blend beats the old hard flip rule -- it still does not show that it does, for the same reason as the unfiltered version.",
+      "probability_positive": 0.075,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/market_updated_model/20260914T210317Z/summary.json",
+      "standard_error": 0.7049
+    },
+    "market_updated_model__c3_oos_vs_c2_oos": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Exact zero on every bootstrap draw: leader_median_net is quantized to a 0.5-point grid with no nonzero values below 0.5 in magnitude, so gating at 0.5 changes zero rows -- a structural identity, not a resolved effect in either direction, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Does gating the move at 0.5 add anything once the model logit is already in the equation -- C3 out-of-sample vs C2 out-of-sample, 799 opener-graded games 2023-2025, week-blocked",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "market_updated_model_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Filtering out small line moves before blending them with the model made no difference at all -- the filtered and unfiltered versions picked the exact same side in every one of 799 games, because the sharp books' smallest line move in this data is already half a point.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/market_updated_model/20260914T210317Z/summary.json",
+      "standard_error": null
+    },
+    "market_updated_model__positive_control_c2_diff_foresight": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "This is the instrument's ceiling on the 220-game C2 disagreement set (whole interval above zero by construction, forced-correct), not a candidate signal; it does not itself prove the instrument can detect the 0-3 point effects the other six cells in this family sit at, so positive_control_bound is inadmissible for those cells and this cell is recorded as the ceiling reading, unresolved_below_power",
+      "closing_ground": null,
+      "description": "Positive control: perfect foresight restricted to the 220 games where C2's out-of-sample pick differs from the card, vs the card, 799 opener-graded games 2023-2025, week-blocked",
+      "effect": 14.7685,
+      "effect_units": "accuracy_points",
+      "family": "market_updated_model_v1",
+      "interval": [
+        12.2194,
+        17.3697
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "If a coach knew in advance exactly which 220 games a market-aware blended pick would want to change from the plain model's pick, and always got those right, that would be worth about 15 points of accuracy -- this is the ceiling on what any market-based adjustment touching those same games could ever be worth, not a real, usable rule.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/market_updated_model/20260914T210317Z/summary.json",
+      "standard_error": 1.3139
+    }
+  }
+}

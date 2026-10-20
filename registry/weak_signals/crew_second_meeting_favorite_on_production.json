@@ -1,0 +1,33 @@
+{
+  "family": "crew_second_meeting_favorite_on_production",
+  "signals": {
+    "crew_second_meeting_favorite_on_production": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval [-4.2129, +3.2967] accuracy points crosses zero -- the expected outcome for a real small signal at this evaluator's resolution, per AGENTS.md, not a rejection ground. Neither admissible closing ground applies: not a RESOLVED wrong sign (interval is not entirely below zero) and no positive control was run against THIS candidate's own effect size (the harness positive-control leak, +44.3pp P+ 1.0, proves the harness is sensitive, not that this specific small effect is bounded). Descriptive: 1,010/2,892 (34.9%) matched games are a crew second meeting; mean penalties_total is 0.80 lower in second meetings (12.08 vs 12.87), directionally consistent with the predeclared 'cleaner games' mechanism but reliability not_applicable (deterministic flag).",
+      "closing_ground": null,
+      "description": "LEAD-34: BACK the favorite when the assigned officiating crew already worked a game involving one of these two teams earlier this season, stacked on production weak_stack, opener-graded window [2020,2021].",
+      "effect": -0.6579,
+      "effect_units": "accuracy_points",
+      "family": "crew_second_meeting_favorite_on_production",
+      "interval": [
+        -4.2129,
+        3.2967
+      ],
+      "league": "nfl",
+      "notes": "docs/officials_crew_leads.md, LEAD-34 Stage 2. Late-week refresh-channel candidate (referee assignments publish Wednesday-Thursday, after the Tuesday lock); nfl_ats.crew_tilt_refresh_overlay is the existing live vehicle for this pattern, not wired here this session.",
+      "plain_summary": "When the same officiating crew already worked one of these two teams earlier this season, backing the market favorite comes out close to a coin flip in this sample -- not clearly better, not clearly worse.",
+      "probability_positive": 0.32515,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/officials_flags_on_production/second_meeting/20260905T103918Z/results.json",
+      "standard_error": null
+    }
+  }
+}

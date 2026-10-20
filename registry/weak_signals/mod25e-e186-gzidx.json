@@ -1,0 +1,33 @@
+{
+  "family": "mod25e-e186-gzidx",
+  "signals": {
+    "e186-gzidx-gtg-td-rate": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "GZIDX minus base TD per goal-to-go run/pass play, 1 world x 4 seasons seed 31 FD5 base",
+      "effect": -3.12,
+      "effect_units": "rate_pp",
+      "family": "mod25e-e186-gzidx",
+      "interval": [
+        -4.24,
+        -1.87
+      ],
+      "league": "nfl",
+      "notes": "unpaired game bootstrap 300, 90%; down1 -5.17 [-7.02,-3.23]; 5 cells; reader scorestate.py:297 (inferred)",
+      "plain_summary": null,
+      "probability_positive": 0.0,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1088,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "docs/lanes/mod25e-gap-table.md",
+      "standard_error": null
+    }
+  }
+}

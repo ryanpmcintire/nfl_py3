@@ -1,0 +1,33 @@
+{
+  "family": "injury_timing_audit",
+  "signals": {
+    "injury_timing_availability_repair": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "One declared repair comparison; interval straddles zero; log loss also unresolved; no refuted mechanism or powered control",
+      "closing_ground": null,
+      "description": "Served pick model with every injury-report input removed, minus the same model with them; 2020-2025 opener; 1 declared repair comparison",
+      "effect": -0.1996007984,
+      "effect_units": "accuracy_points",
+      "family": "injury_timing_audit",
+      "interval": [
+        -1.2743553328,
+        0.81083824014
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Injury news that only shows up late in the week is worth about 0.2 points of picks at most in the past, far too small to tell apart from luck. Taking it out leaves the record at 862-641 instead of 865-638, so the past record does not depend on knowing injuries too early.",
+      "probability_positive": 0.34075,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/injury_timing_audit.md",
+      "standard_error": 0.53171
+    }
+  }
+}

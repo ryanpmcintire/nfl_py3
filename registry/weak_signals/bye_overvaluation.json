@@ -1,0 +1,33 @@
+{
+  "family": "bye_overvaluation",
+  "signals": {
+    "bye_overval_install_need_moderator": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No terminal ground is met: the week-blocked 95% interval does not sit entirely below zero, so wrong_sign_resolved is inadmissible against the frozen one-sided positive direction; no positive control has been shown able to detect an effect of this size, so positive_control_bound is inadmissible. Category 3 by AGENTS.md.",
+      "closing_ground": null,
+      "description": "Difference-in-differences inside the post-2011-CBA bye population (REG 2012-2025, non-push home_cover): the bye-overvaluation home-edge effect for install-need home teams minus the same effect for continuity home teams. Base flag imported verbatim from scripts/bye_overvaluation_screen.py (home off strict >=12-day bye AND opponent not off bye). Moderator = the home team season-opener starting QB differs from the prior season opener starting QB. Predeclared one-sided direction: contrast > 0.",
+      "effect": 0.18545246244072747,
+      "effect_units": "accuracy_points",
+      "family": "bye_overvaluation",
+      "interval": [
+        -0.7664056694129503,
+        1.1249553234064884
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/era_mechanism_screens_20260901.md section 2.1 BEFORE any effect was computed; proposed unrun in docs/era_magnitude_report.md section 2.1. Season-blocked secondary +0.1855 [-1.0284, +1.3405] P+=0.6298 on 14 blocks. Within-week permutation null (200 draws, NOT zero-centred by design): null mean +0.1235, [-0.7002, +1.0221]; 44 percent of null draws sit at or above the observed +0.1855. Arm magnitudes: install-need -0.2289, no-need -0.4143 (post-2011); pre-2011 control arms -0.3404 and +0.8915 on 35 flagged games - four magnitudes, never averaged across the parent construct era sign flip. DISCLOSED: the predeclared moderator was new QB OR new offensive coordinator; no offensive-coordinator source exists in this repo (measured), so only the QB leg is built - a strictly NARROWER subset that dilutes the contrast toward zero. DISCLOSED OVERLAP: same rows as bye_overval_home_edge_post2011 and a subset of venue_milestone_post_bye_home; correlated, never an independent vote, never sign-test-pooled with them. Mined-window discount: runs on the full history including the mined 2018-2025 seasons. n_flag 87 install-need / 151 no-need. Battery multiplicity uncorrected (3 cells + 1 companion arm).",
+      "plain_summary": "Teams coming off a bye have gotten a bit worse against the spread since the 2011 labour deal cut practice time. This checks whether that penalty is smaller for teams with a new starting quarterback, who have more to install and more to gain from the extra week. It leans that way, but nowhere near enough to act on.",
+      "probability_positive": 0.65125,
+      "recorded_at": "2026-09-01",
+      "reliability": null,
+      "sample_blocks": 243,
+      "sample_games": 3573,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "scripts/era_mechanism_screens.py; artifacts/era_mechanism_screens/20260901T195546Z_screen/results.json; docs/era_mechanism_screens_20260901.md",
+      "standard_error": null
+    }
+  }
+}

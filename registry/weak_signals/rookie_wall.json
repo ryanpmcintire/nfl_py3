@@ -1,0 +1,33 @@
+{
+  "family": "rookie_wall",
+  "signals": {
+    "rookie_wall_dependence_reliability": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Both split-half schemes' full bootstrap interval sits entirely positive and both clear their team-label shuffle null (percentile 1.000 and 0.993), but reliability alone is never one of AGENTS.md's two admissible closing grounds (wrong-sign-resolved or positive-control-bound) -- this records the metric's measured reliability for a later ATS lane to build on, not a closed effect.",
+      "closing_ground": null,
+      "description": "LEAD-24 Stage 1: split-half reliability of the team-week top-50-pick-rookie snap-dependence metric (share of a team's offense+defense snaps taken by top-50-pick rookies). Odd/even-week within-season correlation across 416 team-seasons (2013-2025), Spearman-Brown corrected. A second, independent season-to-season scheme (team-level year-over-year persistence, n=384 team-season pairs, block=earlier season) reads Pearson r=0.129, 95% CI [0.044, 0.225], P+ 1.0, shuffle-null percentile 0.993 -- also fully positive and outside its own team-label shuffle null.",
+      "effect": 0.988167,
+      "effect_units": "correlation",
+      "family": "rookie_wall",
+      "interval": [
+        0.984942,
+        0.991246
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Which teams lean hardest on high-draft-pick rookies is a real, stable team trait, not week-to-week noise: a team's rookie-dependence in the first half of its games nearly matches the second half of the same season (correlation 0.99), and even carries over, more modestly but still measurably, into the following season.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-05",
+      "reliability": 0.994048,
+      "sample_blocks": 13,
+      "sample_games": 416,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/rookie_wall/20260905T052927Z/dependence_reliability.parquet",
+      "standard_error": null
+    }
+  }
+}

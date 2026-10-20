@@ -177,11 +177,7 @@ def _challenger_entry(entry: Mapping[str, Any]) -> RegistryEntry:
 
 def load_weak_signal_registry(registry_root: Path | None = None) -> weak_signals.Registry:
 
-    path = (
-        registry_root / weak_signals.WEAK_SIGNAL_REGISTRY_FILENAME
-        if registry_root is not None
-        else weak_signals.default_registry_path()
-    )
+    path = weak_signals.default_registry_path(registry_root)
     return weak_signals.load_registry(path, on_unknown_field="warn")
 
 
@@ -252,7 +248,7 @@ def validate_curation(findings: Sequence[Any], entries: Mapping[str, RegistryEnt
             if entry is None:
                 raise CurationError(
                     f"finding {question!r} names registry key {key!r}, which "
-                    "does not exist in any evidence store (weak_signals.json, "
+                    "does not exist in any evidence store (registry/weak_signals/, "
                     "rotation_registry.json, or challengers.json). Fix the "
                     "key, or remove it if the entry was retired."
                 )

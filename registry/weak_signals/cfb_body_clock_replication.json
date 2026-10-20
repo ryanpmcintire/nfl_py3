@@ -1,0 +1,285 @@
+{
+  "family": "cfb_body_clock_replication",
+  "signals": {
+    "cfb_body_clock_east_host_west_visitor_early": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cross-league CFB replication (docs/cfb_body_clock_replication.md), frozen before scoring. The week-blocked 95% interval [-0.1208, +0.1013] crosses zero at this evaluator's resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. None of the three admissible grounds applies: (1) no resolved wrong sign, since the interval is not wholly on either side of zero; (2) no split-half reliability failure, since the underlying body-clock timezone trait reads Spearman-Brown 0.9928 and the near-zero per-cell exposure figure is arithmetic about how rare the schedule situation is rather than a trait measurement; (3) no positive-control bound, since the control PROVED detection only of a +48.4-point leak, which says nothing about a sub-0.3-point effect.",
+      "closing_ground": null,
+      "description": "CFB replication of NFL body_clock_east_host_west_visitor_early: Eastern-clock host receiving a Pacific/Arizona-body-clock visitor, kickoff before 14:00 ET, neutral sites excluded as NaN. Eastern host is tested on the venue UTC offset at kickoff rather than a literal America/New_York string, which keeps the Michigan and Indiana hosts a string test would drop (8 of the 24 flagged games).",
+      "effect": -0.011194,
+      "effect_units": "accuracy_points",
+      "family": "cfb_body_clock_replication",
+      "interval": [
+        -0.120848,
+        0.101279
+      ],
+      "league": "cfb",
+      "notes": "CLOSE-GRADED CFB: the CFB archive carries no verified opener (docs/cfb_data.md:42), so this is graded on the median-book close-proxy spread_line. A CFB result is replication evidence about a mechanism and never by itself changes an NFL card. No NFL evaluation window and no rotation window was spent. The four cells in family cfb_body_clock_replication are CORRELATED SUBSETS of one window and are NOT independent votes: east_host_west_visitor_early is a strict subset of west_road_early (24 of its 50 flagged games), night_west_road shares the identical body-clock definition at the opposite end of the kickoff distribution, and eastbound_multizone overlaps all three through the same timezone map. Never sign-test-pool them, and never pool them with the NFL siblings (different league, different grade, different baseline). Registered effect is the PRIMARY estimator: paired candidate-minus-baseline forced-pick accuracy delta, frozen XLG-03 benchmark arm (35 columns, ridge alpha 10, market-residual target, 500-game training floor, weekly refits trained strictly before each scored week) versus the identical estimator plus exactly this one column. Scored population 8,933 games / 199 week blocks / 13 seasons, with 271 neutral-site rows carrying NaN. Replicates NFL sibling body_clock_east_host_west_visitor_early (registry effect -0.2690, 95% [-0.6232, +0.0917], P+ 0.0714). Season-blocked secondary: 95% [-0.1340, +0.1141], P+ 0.381. SECONDARY NFL-COMMENSURABLE estimator (subset-vs-complement full-slate-scaled home_cover gap, scripts/_common.summarize, 20,000 draws): +0.0017 pts, week 95% [-0.0524, +0.0551], P+ 0.5348, season P+ 0.5382, n_flag 24, subset cover 50.00% vs complement 49.37%, raw gap +0.634 pts -- the OPPOSITE side of zero from the NFL sibling, so the NFL direction did not replicate. Per-era primary magnitudes carry OPPOSITE SIGNS (2012-2019 +0.0561, P+ 0.738; 2021-2025 -0.1116, P+ 0.034), so this pooled number is an average across a sign flip and must not be read as either era's magnitude -- both era slices are recorded separately as cfb_body_clock_east_host_west_visitor_early_era_2012_2019 and _era_2021_2025. Headroom note: 24 flagged games are 0.27% of the scored slate. Instrument checks: within-week permutation null (200 draws) mean +0.021/-0.004/+0.030/+0.007 pts across the four cells, all centred within 0.03 points of zero; positive control (candidate column replaced by realised ats_margin) +48.405 accuracy points, P+ 1.000, 95% [+47.374, +49.464] on n=8,933 -- so the full 36-column ridge fit is not blind to a real effect of meaningful size. RELIABILITY FIELD carries the underlying body-clock UTC-offset trait: Pearson r 0.9858 95% [0.9843, 0.9871], Spearman-Brown 0.9928, n=2,420 team-seasons (odd/even-week split-half). The per-cell EXPOSURE propensities are, for the record: west_road_early SB 0.0990 (r 0.0521, 95% [-0.0121, +0.1966], P+ 0.6245); east_host_west_visitor_early SB -0.0075 (r -0.0037, 95% [-0.0060, -0.0019], P+ 0.0000); eastbound_multizone SB 0.5608 (r 0.3897, P+ 1.0000); night_west_road SB 0.7434 (r 0.5916, P+ 1.0000). For a per-team-season event that happens at most once, a positive in the odd half nearly always implies a zero in the even half, which forces a small negative odd/even correlation by construction, so the two thin cells' exposure figures measure RARITY, not the reliability of a trait. The AGENTS.md rationale for the no_split_half_reliability ground (no sample size rescues it) is false for a rare schedule fact, so that ground is NOT admissible for any cell in this family. Predeclaration: docs/cfb_body_clock_replication.md.",
+      "plain_summary": "An Eastern-time college host receiving a West Coast or Arizona visitor at a noon or 1pm Eastern kickoff. Only 24 such games since 2012, and the home team covered exactly 50% of them -- flat, not the fade the NFL version of this situation showed.",
+      "probability_positive": 0.376,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.9928,
+      "sample_blocks": 199,
+      "sample_games": 8933,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "scripts/cfb_body_clock_replication.py; artifacts/cfb_body_clock_replication/20260901T193659Z/results.json; docs/cfb_body_clock_replication.md",
+      "standard_error": null
+    },
+    "cfb_body_clock_east_host_west_visitor_early_era_2012_2019": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cross-league CFB replication (docs/cfb_body_clock_replication.md), frozen before scoring. The week-blocked 95% interval [-0.0930, +0.2107] crosses zero at this evaluator's resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. None of the three admissible grounds applies: (1) no resolved wrong sign, since the interval is not wholly on either side of zero; (2) no split-half reliability failure, since the underlying body-clock timezone trait reads Spearman-Brown 0.9928 and the near-zero per-cell exposure figure is arithmetic about how rare the schedule situation is rather than a trait measurement; (3) no positive-control bound, since the control PROVED detection only of a +48.4-point leak, which says nothing about a sub-0.3-point effect.",
+      "closing_ground": null,
+      "description": "Era slice 2012-2019 of cfb_body_clock_east_host_west_visitor_early. Recorded separately because the two eras carry OPPOSITE SIGNS, so the pooled number is an average across a sign flip and must not be read as either era's magnitude (owner rule 'era magnitude, not presence').",
+      "effect": 0.056085,
+      "effect_units": "accuracy_points",
+      "family": "cfb_body_clock_replication",
+      "interval": [
+        -0.092969,
+        0.210676
+      ],
+      "league": "cfb",
+      "notes": "CLOSE-GRADED CFB: the CFB archive carries no verified opener (docs/cfb_data.md:42), so this is graded on the median-book close-proxy spread_line. A CFB result is replication evidence about a mechanism and never by itself changes an NFL card. No NFL evaluation window and no rotation window was spent. The four cells in family cfb_body_clock_replication are CORRELATED SUBSETS of one window and are NOT independent votes: east_host_west_visitor_early is a strict subset of west_road_early (24 of its 50 flagged games), night_west_road shares the identical body-clock definition at the opposite end of the kickoff distribution, and eastbound_multizone overlaps all three through the same timezone map. Never sign-test-pool them, and never pool them with the NFL siblings (different league, different grade, different baseline). Registered effect is the PRIMARY estimator: paired candidate-minus-baseline forced-pick accuracy delta, frozen XLG-03 benchmark arm (35 columns, ridge alpha 10, market-residual target, 500-game training floor, weekly refits trained strictly before each scored week) versus the identical estimator plus exactly this one column. Scored population 8,933 games / 199 week blocks / 13 seasons, with 271 neutral-site rows carrying NaN. Era slice of cfb_body_clock_east_host_west_visitor_early; 11 flagged games. Season-blocked secondary 95% [-0.1150, +0.2260], P+ 0.698. NFL-commensurable subset-vs-complement gap for this era: +0.0308 pts, 95% [-0.0324, +0.0877], P+ 0.8548, n_flag 11. Fully correlated with its parent entry and with the other era slice -- never count them as separate votes. Instrument checks: within-week permutation null (200 draws) mean +0.021/-0.004/+0.030/+0.007 pts across the four cells, all centred within 0.03 points of zero; positive control (candidate column replaced by realised ats_margin) +48.405 accuracy points, P+ 1.000, 95% [+47.374, +49.464] on n=8,933 -- so the full 36-column ridge fit is not blind to a real effect of meaningful size. RELIABILITY FIELD carries the underlying body-clock UTC-offset trait: Pearson r 0.9858 95% [0.9843, 0.9871], Spearman-Brown 0.9928, n=2,420 team-seasons (odd/even-week split-half). The per-cell EXPOSURE propensities are, for the record: west_road_early SB 0.0990 (r 0.0521, 95% [-0.0121, +0.1966], P+ 0.6245); east_host_west_visitor_early SB -0.0075 (r -0.0037, 95% [-0.0060, -0.0019], P+ 0.0000); eastbound_multizone SB 0.5608 (r 0.3897, P+ 1.0000); night_west_road SB 0.7434 (r 0.5916, P+ 1.0000). For a per-team-season event that happens at most once, a positive in the odd half nearly always implies a zero in the even half, which forces a small negative odd/even correlation by construction, so the two thin cells' exposure figures measure RARITY, not the reliability of a trait. The AGENTS.md rationale for the no_split_half_reliability ground (no sample size rescues it) is false for a rare schedule fact, so that ground is NOT admissible for any cell in this family. Predeclaration: docs/cfb_body_clock_replication.md.",
+      "plain_summary": "The 2012-2019 half of the Eastern-host/West-visitor early-kickoff situation, kept separate because the two halves point opposite ways. In this half the extra column helped the model slightly, on only 11 flagged games.",
+      "probability_positive": 0.738,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.9928,
+      "sample_blocks": 122,
+      "sample_games": 5349,
+      "seasons": [
+        2012,
+        2019
+      ],
+      "source": "scripts/cfb_body_clock_replication.py; artifacts/cfb_body_clock_replication/20260901T193659Z/results.json; docs/cfb_body_clock_replication.md",
+      "standard_error": null
+    },
+    "cfb_body_clock_east_host_west_visitor_early_era_2021_2025": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cross-league CFB replication (docs/cfb_body_clock_replication.md), frozen before scoring. The week-blocked 95% interval [-0.2484, +0.0282] crosses zero at this evaluator's resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. None of the three admissible grounds applies: (1) no resolved wrong sign, since the interval is not wholly on either side of zero; (2) no split-half reliability failure, since the underlying body-clock timezone trait reads Spearman-Brown 0.9928 and the near-zero per-cell exposure figure is arithmetic about how rare the schedule situation is rather than a trait measurement; (3) no positive-control bound, since the control PROVED detection only of a +48.4-point leak, which says nothing about a sub-0.3-point effect.",
+      "closing_ground": null,
+      "description": "Era slice 2021-2025 of cfb_body_clock_east_host_west_visitor_early. Recorded separately because the two eras carry OPPOSITE SIGNS, so the pooled number is an average across a sign flip and must not be read as either era's magnitude.",
+      "effect": -0.111607,
+      "effect_units": "accuracy_points",
+      "family": "cfb_body_clock_replication",
+      "interval": [
+        -0.248416,
+        0.028249
+      ],
+      "league": "cfb",
+      "notes": "CLOSE-GRADED CFB: the CFB archive carries no verified opener (docs/cfb_data.md:42), so this is graded on the median-book close-proxy spread_line. A CFB result is replication evidence about a mechanism and never by itself changes an NFL card. No NFL evaluation window and no rotation window was spent. The four cells in family cfb_body_clock_replication are CORRELATED SUBSETS of one window and are NOT independent votes: east_host_west_visitor_early is a strict subset of west_road_early (24 of its 50 flagged games), night_west_road shares the identical body-clock definition at the opposite end of the kickoff distribution, and eastbound_multizone overlaps all three through the same timezone map. Never sign-test-pool them, and never pool them with the NFL siblings (different league, different grade, different baseline). Registered effect is the PRIMARY estimator: paired candidate-minus-baseline forced-pick accuracy delta, frozen XLG-03 benchmark arm (35 columns, ridge alpha 10, market-residual target, 500-game training floor, weekly refits trained strictly before each scored week) versus the identical estimator plus exactly this one column. Scored population 8,933 games / 199 week blocks / 13 seasons, with 271 neutral-site rows carrying NaN. Era slice of cfb_body_clock_east_host_west_visitor_early; 13 flagged games. This is the NARROWEST interval recorded in this family and it still crosses zero, so it is not a resolved wrong sign. Season-blocked secondary 95% [-0.2204, 0.0000], P+ 0.000 -- reported for completeness; the registered interval is the week-blocked primary, and a season-blocked endpoint landing exactly on zero across 5 season blocks is a discreteness artefact, not a resolved sign. NFL-commensurable subset-vs-complement gap for this era: -0.0433 pts, 95% [-0.1360, +0.0503], P+ 0.1672, n_flag 13. Fully correlated with its parent entry and with the other era slice -- never count them as separate votes. Instrument checks: within-week permutation null (200 draws) mean +0.021/-0.004/+0.030/+0.007 pts across the four cells, all centred within 0.03 points of zero; positive control (candidate column replaced by realised ats_margin) +48.405 accuracy points, P+ 1.000, 95% [+47.374, +49.464] on n=8,933 -- so the full 36-column ridge fit is not blind to a real effect of meaningful size. RELIABILITY FIELD carries the underlying body-clock UTC-offset trait: Pearson r 0.9858 95% [0.9843, 0.9871], Spearman-Brown 0.9928, n=2,420 team-seasons (odd/even-week split-half). The per-cell EXPOSURE propensities are, for the record: west_road_early SB 0.0990 (r 0.0521, 95% [-0.0121, +0.1966], P+ 0.6245); east_host_west_visitor_early SB -0.0075 (r -0.0037, 95% [-0.0060, -0.0019], P+ 0.0000); eastbound_multizone SB 0.5608 (r 0.3897, P+ 1.0000); night_west_road SB 0.7434 (r 0.5916, P+ 1.0000). For a per-team-season event that happens at most once, a positive in the odd half nearly always implies a zero in the even half, which forces a small negative odd/even correlation by construction, so the two thin cells' exposure figures measure RARITY, not the reliability of a trait. The AGENTS.md rationale for the no_split_half_reliability ground (no sample size rescues it) is false for a rare schedule fact, so that ground is NOT admissible for any cell in this family. Predeclaration: docs/cfb_body_clock_replication.md.",
+      "plain_summary": "The 2021-2025 half of the Eastern-host/West-visitor early-kickoff situation, kept separate because the two halves point opposite ways. In this half the extra column hurt the model slightly, on only 13 flagged games.",
+      "probability_positive": 0.034,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.9928,
+      "sample_blocks": 77,
+      "sample_games": 3584,
+      "seasons": [
+        2021,
+        2025
+      ],
+      "source": "scripts/cfb_body_clock_replication.py; artifacts/cfb_body_clock_replication/20260901T193659Z/results.json; docs/cfb_body_clock_replication.md",
+      "standard_error": null
+    },
+    "cfb_body_clock_night_west_road_ge2000et": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cross-league CFB replication (docs/cfb_body_clock_replication.md), frozen before scoring. The week-blocked 95% interval [-0.2366, +0.0983] crosses zero at this evaluator's resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. None of the three admissible grounds applies: (1) no resolved wrong sign, since the interval is not wholly on either side of zero; (2) no split-half reliability failure, since the underlying body-clock timezone trait reads Spearman-Brown 0.9928 and the near-zero per-cell exposure figure is arithmetic about how rare the schedule situation is rather than a trait measurement; (3) no positive-control bound, since the control PROVED detection only of a +48.4-point leak, which says nothing about a sub-0.3-point effect.",
+      "closing_ground": null,
+      "description": "CFB replication of NFL body_clock_night_west_road_ge2000et: Pacific/Arizona-body-clock road team, kickoff at or after 20:00 ET, neutral sites excluded as NaN. Post-midnight-ET kickoffs are carried forward (+1440 minutes) so a late Pacific or Hawaii start reads as the previous evening's late window rather than as an early kickoff.",
+      "effect": -0.067167,
+      "effect_units": "accuracy_points",
+      "family": "cfb_body_clock_replication",
+      "interval": [
+        -0.236621,
+        0.098323
+      ],
+      "league": "cfb",
+      "notes": "CLOSE-GRADED CFB: the CFB archive carries no verified opener (docs/cfb_data.md:42), so this is graded on the median-book close-proxy spread_line. A CFB result is replication evidence about a mechanism and never by itself changes an NFL card. No NFL evaluation window and no rotation window was spent. The four cells in family cfb_body_clock_replication are CORRELATED SUBSETS of one window and are NOT independent votes: east_host_west_visitor_early is a strict subset of west_road_early (24 of its 50 flagged games), night_west_road shares the identical body-clock definition at the opposite end of the kickoff distribution, and eastbound_multizone overlaps all three through the same timezone map. Never sign-test-pool them, and never pool them with the NFL siblings (different league, different grade, different baseline). Registered effect is the PRIMARY estimator: paired candidate-minus-baseline forced-pick accuracy delta, frozen XLG-03 benchmark arm (35 columns, ridge alpha 10, market-residual target, 500-game training floor, weekly refits trained strictly before each scored week) versus the identical estimator plus exactly this one column. Scored population 8,933 games / 199 week blocks / 13 seasons, with 271 neutral-site rows carrying NaN. Replicates NFL sibling body_clock_night_west_road_ge2000et (registry effect -0.1713, 95% [-0.4137, +0.0738], P+ 0.0843). Season-blocked secondary: 95% [-0.2045, +0.0668], P+ 0.125. SECONDARY NFL-COMMENSURABLE estimator (subset-vs-complement full-slate-scaled home_cover gap, scripts/_common.summarize, 20,000 draws): +0.0003 pts, week 95% [-0.2525, +0.2464], P+ 0.5020, season P+ 0.5036, n_flag 478, subset cover 49.37% vs complement 49.37%, raw gap +0.005 pts -- flat, and on the opposite side of zero from the NFL sibling, so the NFL direction did not replicate. LARGEST CAVEAT IN THIS FAMILY: this cell measures a materially different thing in CFB than in the NFL. Of its 487 flagged clean-core games, 346 are at a Pacific or Arizona venue (America/Los_Angeles 295, America/Phoenix 51) and 109 more at a Mountain venue (America/Denver 92, America/Boise 17), so 455 of 487 are West-or-Mountain road trips where the visitor's body clock barely shifts. In the NFL a 20:00-ET kickoff is a national night game; in CFB it is mostly the Pacific schools' ordinary evening home window seen from the road. Treat the flat CFB reading as weak evidence about the NFL construct, not as a refutation of it. Per-era primary magnitudes carry OPPOSITE SIGNS (2012-2019 -0.1309, P+ 0.129; 2021-2025 +0.0279, P+ 0.558), so both era slices are recorded separately. Instrument checks: within-week permutation null (200 draws) mean +0.021/-0.004/+0.030/+0.007 pts across the four cells, all centred within 0.03 points of zero; positive control (candidate column replaced by realised ats_margin) +48.405 accuracy points, P+ 1.000, 95% [+47.374, +49.464] on n=8,933 -- so the full 36-column ridge fit is not blind to a real effect of meaningful size. RELIABILITY FIELD carries the underlying body-clock UTC-offset trait: Pearson r 0.9858 95% [0.9843, 0.9871], Spearman-Brown 0.9928, n=2,420 team-seasons (odd/even-week split-half). The per-cell EXPOSURE propensities are, for the record: west_road_early SB 0.0990 (r 0.0521, 95% [-0.0121, +0.1966], P+ 0.6245); east_host_west_visitor_early SB -0.0075 (r -0.0037, 95% [-0.0060, -0.0019], P+ 0.0000); eastbound_multizone SB 0.5608 (r 0.3897, P+ 1.0000); night_west_road SB 0.7434 (r 0.5916, P+ 1.0000). For a per-team-season event that happens at most once, a positive in the odd half nearly always implies a zero in the even half, which forces a small negative odd/even correlation by construction, so the two thin cells' exposure figures measure RARITY, not the reliability of a trait. The AGENTS.md rationale for the no_split_half_reliability ground (no sample size rescues it) is false for a rare schedule fact, so that ground is NOT admissible for any cell in this family. Predeclaration: docs/cfb_body_clock_replication.md.",
+      "plain_summary": "A West Coast or Arizona college team playing a road game that kicks off at 8pm Eastern or later. Dead flat: the home team covered 49.4% of those games and 49.4% of everything else. Most of them are West Coast teams visiting other West Coast teams, so there is barely any body-clock shift left to measure.",
+      "probability_positive": 0.203,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.9928,
+      "sample_blocks": 199,
+      "sample_games": 8933,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "scripts/cfb_body_clock_replication.py; artifacts/cfb_body_clock_replication/20260901T193912Z/results.json; docs/cfb_body_clock_replication.md",
+      "standard_error": null
+    },
+    "cfb_body_clock_night_west_road_ge2000et_era_2012_2019": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cross-league CFB replication (docs/cfb_body_clock_replication.md), frozen before scoring. The week-blocked 95% interval [-0.4043, +0.1085] crosses zero at this evaluator's resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. None of the three admissible grounds applies: (1) no resolved wrong sign, since the interval is not wholly on either side of zero; (2) no split-half reliability failure, since the underlying body-clock timezone trait reads Spearman-Brown 0.9928 and the near-zero per-cell exposure figure is arithmetic about how rare the schedule situation is rather than a trait measurement; (3) no positive-control bound, since the control PROVED detection only of a +48.4-point leak, which says nothing about a sub-0.3-point effect.",
+      "closing_ground": null,
+      "description": "Era slice 2012-2019 of cfb_body_clock_night_west_road_ge2000et. Recorded separately because the two eras carry OPPOSITE SIGNS, so the pooled number is an average across a sign flip and must not be read as either era's magnitude.",
+      "effect": -0.130866,
+      "effect_units": "accuracy_points",
+      "family": "cfb_body_clock_replication",
+      "interval": [
+        -0.404263,
+        0.10854
+      ],
+      "league": "cfb",
+      "notes": "CLOSE-GRADED CFB: the CFB archive carries no verified opener (docs/cfb_data.md:42), so this is graded on the median-book close-proxy spread_line. A CFB result is replication evidence about a mechanism and never by itself changes an NFL card. No NFL evaluation window and no rotation window was spent. The four cells in family cfb_body_clock_replication are CORRELATED SUBSETS of one window and are NOT independent votes: east_host_west_visitor_early is a strict subset of west_road_early (24 of its 50 flagged games), night_west_road shares the identical body-clock definition at the opposite end of the kickoff distribution, and eastbound_multizone overlaps all three through the same timezone map. Never sign-test-pool them, and never pool them with the NFL siblings (different league, different grade, different baseline). Registered effect is the PRIMARY estimator: paired candidate-minus-baseline forced-pick accuracy delta, frozen XLG-03 benchmark arm (35 columns, ridge alpha 10, market-residual target, 500-game training floor, weekly refits trained strictly before each scored week) versus the identical estimator plus exactly this one column. Scored population 8,933 games / 199 week blocks / 13 seasons, with 271 neutral-site rows carrying NaN. Era slice of cfb_body_clock_night_west_road_ge2000et; 326 flagged games. Season-blocked secondary 95% [-0.3054, +0.0730], P+ 0.082. NFL-commensurable subset-vs-complement gap for this era: -0.0167 pts, 95% [-0.3691, +0.3191], P+ 0.4550, n_flag 320. Carries the parent entry's largest caveat: 455 of the parent cell's 487 flagged games are at a West or Mountain venue, where the visitor's body clock barely shifts, so this measures a different thing than the NFL sibling does. Fully correlated with its parent entry and with the other era slice. Instrument checks: within-week permutation null (200 draws) mean +0.021/-0.004/+0.030/+0.007 pts across the four cells, all centred within 0.03 points of zero; positive control (candidate column replaced by realised ats_margin) +48.405 accuracy points, P+ 1.000, 95% [+47.374, +49.464] on n=8,933 -- so the full 36-column ridge fit is not blind to a real effect of meaningful size. RELIABILITY FIELD carries the underlying body-clock UTC-offset trait: Pearson r 0.9858 95% [0.9843, 0.9871], Spearman-Brown 0.9928, n=2,420 team-seasons (odd/even-week split-half). The per-cell EXPOSURE propensities are, for the record: west_road_early SB 0.0990 (r 0.0521, 95% [-0.0121, +0.1966], P+ 0.6245); east_host_west_visitor_early SB -0.0075 (r -0.0037, 95% [-0.0060, -0.0019], P+ 0.0000); eastbound_multizone SB 0.5608 (r 0.3897, P+ 1.0000); night_west_road SB 0.7434 (r 0.5916, P+ 1.0000). For a per-team-season event that happens at most once, a positive in the odd half nearly always implies a zero in the even half, which forces a small negative odd/even correlation by construction, so the two thin cells' exposure figures measure RARITY, not the reliability of a trait. The AGENTS.md rationale for the no_split_half_reliability ground (no sample size rescues it) is false for a rare schedule fact, so that ground is NOT admissible for any cell in this family. Predeclaration: docs/cfb_body_clock_replication.md.",
+      "plain_summary": "The 2012-2019 half of the West-Coast-road-team-at-8pm-Eastern situation, kept separate because the two halves point opposite ways. In this half the extra column hurt the model, on 326 flagged games.",
+      "probability_positive": 0.129,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.9928,
+      "sample_blocks": 122,
+      "sample_games": 5349,
+      "seasons": [
+        2012,
+        2019
+      ],
+      "source": "scripts/cfb_body_clock_replication.py; artifacts/cfb_body_clock_replication/20260901T193912Z/results.json; docs/cfb_body_clock_replication.md",
+      "standard_error": null
+    },
+    "cfb_body_clock_night_west_road_ge2000et_era_2021_2025": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cross-league CFB replication (docs/cfb_body_clock_replication.md), frozen before scoring. The week-blocked 95% interval [-0.1628, +0.2218] crosses zero at this evaluator's resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. None of the three admissible grounds applies: (1) no resolved wrong sign, since the interval is not wholly on either side of zero; (2) no split-half reliability failure, since the underlying body-clock timezone trait reads Spearman-Brown 0.9928 and the near-zero per-cell exposure figure is arithmetic about how rare the schedule situation is rather than a trait measurement; (3) no positive-control bound, since the control PROVED detection only of a +48.4-point leak, which says nothing about a sub-0.3-point effect.",
+      "closing_ground": null,
+      "description": "Era slice 2021-2025 of cfb_body_clock_night_west_road_ge2000et. Recorded separately because the two eras carry OPPOSITE SIGNS, so the pooled number is an average across a sign flip and must not be read as either era's magnitude.",
+      "effect": 0.027902,
+      "effect_units": "accuracy_points",
+      "family": "cfb_body_clock_replication",
+      "interval": [
+        -0.162847,
+        0.221802
+      ],
+      "league": "cfb",
+      "notes": "CLOSE-GRADED CFB: the CFB archive carries no verified opener (docs/cfb_data.md:42), so this is graded on the median-book close-proxy spread_line. A CFB result is replication evidence about a mechanism and never by itself changes an NFL card. No NFL evaluation window and no rotation window was spent. The four cells in family cfb_body_clock_replication are CORRELATED SUBSETS of one window and are NOT independent votes: east_host_west_visitor_early is a strict subset of west_road_early (24 of its 50 flagged games), night_west_road shares the identical body-clock definition at the opposite end of the kickoff distribution, and eastbound_multizone overlaps all three through the same timezone map. Never sign-test-pool them, and never pool them with the NFL siblings (different league, different grade, different baseline). Registered effect is the PRIMARY estimator: paired candidate-minus-baseline forced-pick accuracy delta, frozen XLG-03 benchmark arm (35 columns, ridge alpha 10, market-residual target, 500-game training floor, weekly refits trained strictly before each scored week) versus the identical estimator plus exactly this one column. Scored population 8,933 games / 199 week blocks / 13 seasons, with 271 neutral-site rows carrying NaN. Era slice of cfb_body_clock_night_west_road_ge2000et; 161 flagged games. Season-blocked secondary 95% [-0.0571, +0.1112], P+ 0.599. NFL-commensurable subset-vs-complement gap for this era: +0.0416 pts, 95% [-0.3135, +0.3908], P+ 0.5908, n_flag 158. Carries the parent entry's largest caveat: 455 of the parent cell's 487 flagged games are at a West or Mountain venue, where the visitor's body clock barely shifts. Fully correlated with its parent entry and with the other era slice. Instrument checks: within-week permutation null (200 draws) mean +0.021/-0.004/+0.030/+0.007 pts across the four cells, all centred within 0.03 points of zero; positive control (candidate column replaced by realised ats_margin) +48.405 accuracy points, P+ 1.000, 95% [+47.374, +49.464] on n=8,933 -- so the full 36-column ridge fit is not blind to a real effect of meaningful size. RELIABILITY FIELD carries the underlying body-clock UTC-offset trait: Pearson r 0.9858 95% [0.9843, 0.9871], Spearman-Brown 0.9928, n=2,420 team-seasons (odd/even-week split-half). The per-cell EXPOSURE propensities are, for the record: west_road_early SB 0.0990 (r 0.0521, 95% [-0.0121, +0.1966], P+ 0.6245); east_host_west_visitor_early SB -0.0075 (r -0.0037, 95% [-0.0060, -0.0019], P+ 0.0000); eastbound_multizone SB 0.5608 (r 0.3897, P+ 1.0000); night_west_road SB 0.7434 (r 0.5916, P+ 1.0000). For a per-team-season event that happens at most once, a positive in the odd half nearly always implies a zero in the even half, which forces a small negative odd/even correlation by construction, so the two thin cells' exposure figures measure RARITY, not the reliability of a trait. The AGENTS.md rationale for the no_split_half_reliability ground (no sample size rescues it) is false for a rare schedule fact, so that ground is NOT admissible for any cell in this family. Predeclaration: docs/cfb_body_clock_replication.md.",
+      "plain_summary": "The 2021-2025 half of the West-Coast-road-team-at-8pm-Eastern situation, kept separate because the two halves point opposite ways. In this half the extra column helped the model slightly, on 161 flagged games.",
+      "probability_positive": 0.558,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.9928,
+      "sample_blocks": 77,
+      "sample_games": 3584,
+      "seasons": [
+        2021,
+        2025
+      ],
+      "source": "scripts/cfb_body_clock_replication.py; artifacts/cfb_body_clock_replication/20260901T193912Z/results.json; docs/cfb_body_clock_replication.md",
+      "standard_error": null
+    },
+    "cfb_body_clock_west_road_early": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cross-league CFB replication (docs/cfb_body_clock_replication.md), frozen before scoring. The week-blocked 95% interval [-0.2050, +0.0671] crosses zero at this evaluator's resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. None of the three admissible grounds applies: (1) no resolved wrong sign, since the interval is not wholly on either side of zero; (2) no split-half reliability failure, since the underlying body-clock timezone trait reads Spearman-Brown 0.9928 and the near-zero per-cell exposure figure is arithmetic about how rare the schedule situation is rather than a trait measurement; (3) no positive-control bound, since the control PROVED detection only of a +48.4-point leak, which says nothing about a sub-0.3-point effect.",
+      "closing_ground": null,
+      "description": "CFB replication of NFL body_clock_west_road_early: Pacific/Arizona-body-clock road team (away school's own venue timezone that season), kickoff before 14:00 ET, neutral sites excluded as NaN. Marginal value of that one column on top of the frozen XLG-03 CFB benchmark arm, clean core 2012-2019 + 2021-2025.",
+      "effect": -0.067167,
+      "effect_units": "accuracy_points",
+      "family": "cfb_body_clock_replication",
+      "interval": [
+        -0.205,
+        0.06712
+      ],
+      "league": "cfb",
+      "notes": "CLOSE-GRADED CFB: the CFB archive carries no verified opener (docs/cfb_data.md:42), so this is graded on the median-book close-proxy spread_line. A CFB result is replication evidence about a mechanism and never by itself changes an NFL card. No NFL evaluation window and no rotation window was spent. The four cells in family cfb_body_clock_replication are CORRELATED SUBSETS of one window and are NOT independent votes: east_host_west_visitor_early is a strict subset of west_road_early (24 of its 50 flagged games), night_west_road shares the identical body-clock definition at the opposite end of the kickoff distribution, and eastbound_multizone overlaps all three through the same timezone map. Never sign-test-pool them, and never pool them with the NFL siblings (different league, different grade, different baseline). Registered effect is the PRIMARY estimator: paired candidate-minus-baseline forced-pick accuracy delta, frozen XLG-03 benchmark arm (35 columns, ridge alpha 10, market-residual target, 500-game training floor, weekly refits trained strictly before each scored week) versus the identical estimator plus exactly this one column. Scored population 8,933 games / 199 week blocks / 13 seasons, with 271 neutral-site rows carrying NaN. Replicates NFL sibling body_clock_west_road_early (registry effect -0.1545, 95% [-0.6272, +0.3106], P+ 0.2588). Season-blocked secondary: 95% [-0.1587, +0.0435], P+ 0.085. SECONDARY NFL-COMMENSURABLE estimator -- the one the NFL entries are actually signed with, subset-vs-complement full-slate-scaled home_cover gap via scripts/_common.summarize, 20,000 draws, missing flags forced False into the complement -- reads +0.0261 pts, week 95% [-0.0501, +0.1003], P+ 0.7476, season P+ 0.8140, n_flag 50, subset cover 54.00% vs complement 49.34%, raw gap +4.659 pts. That is the OPPOSITE side of zero from the NFL sibling, so the NFL direction did not replicate. Per-era primary magnitudes: 2012-2019 -0.0748, P+ 0.166, 95% [-0.2521, +0.0934], 26 flagged; 2021-2025 -0.0558, P+ 0.292, 95% [-0.2775, +0.1442], 24 flagged -- same sign in both eras, which is why this cell has no era slices recorded. Headroom note: 50 flagged games are 0.56% of the scored slate, so the primary estimator could not exceed +/-0.56 points even if every flagged game flipped. Instrument checks: within-week permutation null (200 draws) mean +0.021/-0.004/+0.030/+0.007 pts across the four cells, all centred within 0.03 points of zero; positive control (candidate column replaced by realised ats_margin) +48.405 accuracy points, P+ 1.000, 95% [+47.374, +49.464] on n=8,933 -- so the full 36-column ridge fit is not blind to a real effect of meaningful size. RELIABILITY FIELD carries the underlying body-clock UTC-offset trait: Pearson r 0.9858 95% [0.9843, 0.9871], Spearman-Brown 0.9928, n=2,420 team-seasons (odd/even-week split-half). The per-cell EXPOSURE propensities are, for the record: west_road_early SB 0.0990 (r 0.0521, 95% [-0.0121, +0.1966], P+ 0.6245); east_host_west_visitor_early SB -0.0075 (r -0.0037, 95% [-0.0060, -0.0019], P+ 0.0000); eastbound_multizone SB 0.5608 (r 0.3897, P+ 1.0000); night_west_road SB 0.7434 (r 0.5916, P+ 1.0000). For a per-team-season event that happens at most once, a positive in the odd half nearly always implies a zero in the even half, which forces a small negative odd/even correlation by construction, so the two thin cells' exposure figures measure RARITY, not the reliability of a trait. The AGENTS.md rationale for the no_split_half_reliability ground (no sample size rescues it) is false for a rare schedule fact, so that ground is NOT admissible for any cell in this family. Predeclaration: docs/cfb_body_clock_replication.md.",
+      "plain_summary": "A West Coast or Arizona college team playing a road game at a noon or 1pm Eastern kickoff. Across 50 such games since 2012 the home team covered 54.0% against 49.3% on the rest of the slate, a small lean toward backing the home side -- the opposite direction from what the same situation showed in the NFL.",
+      "probability_positive": 0.147,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.9928,
+      "sample_blocks": 199,
+      "sample_games": 8933,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "scripts/cfb_body_clock_replication.py; artifacts/cfb_body_clock_replication/20260901T193559Z/results.json; docs/cfb_body_clock_replication.md",
+      "standard_error": null
+    },
+    "cfb_travel_rest_eastbound_multizone": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cross-league CFB replication (docs/cfb_body_clock_replication.md), frozen before scoring. The week-blocked 95% interval [-0.1949, +0.2233] crosses zero at this evaluator's resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. None of the three admissible grounds applies: (1) no resolved wrong sign, since the interval is not wholly on either side of zero; (2) no split-half reliability failure, since the underlying body-clock timezone trait reads Spearman-Brown 0.9928 and the near-zero per-cell exposure figure is arithmetic about how rare the schedule situation is rather than a trait measurement; (3) no positive-control bound, since the control PROVED detection only of a +48.4-point leak, which says nothing about a sub-0.3-point effect.",
+      "closing_ground": null,
+      "description": "CFB replication of NFL travel_rest_eastbound_multizone: this game's venue UTC offset minus the away school's own home-venue UTC offset >= 2 hours, both evaluated DST-aware at the game's own kickoff instant (the CFB table carries a UTC kickoff; the NFL version had to use gameday). Neutral sites excluded as NaN because no CFB venue-location field exists for them.",
+      "effect": 0.022389,
+      "effect_units": "accuracy_points",
+      "family": "cfb_body_clock_replication",
+      "interval": [
+        -0.194926,
+        0.223292
+      ],
+      "league": "cfb",
+      "notes": "CLOSE-GRADED CFB: the CFB archive carries no verified opener (docs/cfb_data.md:42), so this is graded on the median-book close-proxy spread_line. A CFB result is replication evidence about a mechanism and never by itself changes an NFL card. No NFL evaluation window and no rotation window was spent. The four cells in family cfb_body_clock_replication are CORRELATED SUBSETS of one window and are NOT independent votes: east_host_west_visitor_early is a strict subset of west_road_early (24 of its 50 flagged games), night_west_road shares the identical body-clock definition at the opposite end of the kickoff distribution, and eastbound_multizone overlaps all three through the same timezone map. Never sign-test-pool them, and never pool them with the NFL siblings (different league, different grade, different baseline). Registered effect is the PRIMARY estimator: paired candidate-minus-baseline forced-pick accuracy delta, frozen XLG-03 benchmark arm (35 columns, ridge alpha 10, market-residual target, 500-game training floor, weekly refits trained strictly before each scored week) versus the identical estimator plus exactly this one column. Scored population 8,933 games / 199 week blocks / 13 seasons, with 271 neutral-site rows carrying NaN. Replicates NFL sibling travel_rest_eastbound_multizone (registry effect -0.1382, 95% [-0.7550, +0.4887], P+ 0.3239). Season-blocked secondary: 95% [-0.1448, +0.1682], P+ 0.612. SECONDARY NFL-COMMENSURABLE estimator (subset-vs-complement full-slate-scaled home_cover gap, scripts/_common.summarize, 20,000 draws): +0.0650 pts, week 95% [-0.1137, +0.2519], P+ 0.7599, season P+ 0.7593, n_flag 331, subset cover 51.06% vs complement 49.30%, raw gap +1.755 pts -- the OPPOSITE side of zero from the NFL sibling, so the NFL direction did not replicate. This is the only cell favoured on BOTH estimators. Flagged eastbound deltas: 213 games at 2 hours, 115 at 3, 7 at 4, 2 at 5, 1 at 6. Per-era primary magnitudes carry OPPOSITE SIGNS (2012-2019 +0.1122, P+ 0.780; 2021-2025 -0.1116, P+ 0.230), so the pooled number is an average across a sign flip -- both era slices are recorded separately. Instrument checks: within-week permutation null (200 draws) mean +0.021/-0.004/+0.030/+0.007 pts across the four cells, all centred within 0.03 points of zero; positive control (candidate column replaced by realised ats_margin) +48.405 accuracy points, P+ 1.000, 95% [+47.374, +49.464] on n=8,933 -- so the full 36-column ridge fit is not blind to a real effect of meaningful size. RELIABILITY FIELD carries the underlying body-clock UTC-offset trait: Pearson r 0.9858 95% [0.9843, 0.9871], Spearman-Brown 0.9928, n=2,420 team-seasons (odd/even-week split-half). The per-cell EXPOSURE propensities are, for the record: west_road_early SB 0.0990 (r 0.0521, 95% [-0.0121, +0.1966], P+ 0.6245); east_host_west_visitor_early SB -0.0075 (r -0.0037, 95% [-0.0060, -0.0019], P+ 0.0000); eastbound_multizone SB 0.5608 (r 0.3897, P+ 1.0000); night_west_road SB 0.7434 (r 0.5916, P+ 1.0000). For a per-team-season event that happens at most once, a positive in the odd half nearly always implies a zero in the even half, which forces a small negative odd/even correlation by construction, so the two thin cells' exposure figures measure RARITY, not the reliability of a trait. The AGENTS.md rationale for the no_split_half_reliability ground (no sample size rescues it) is false for a rare schedule fact, so that ground is NOT admissible for any cell in this family. Predeclaration: docs/cfb_body_clock_replication.md.",
+      "plain_summary": "A college visitor whose own home clock is two or more hours behind the host's -- an eastbound trip across at least two time zones. The home team covered 51.1% of those 331 games against 49.3% on the rest of the slate, a small lean toward the home side, and the opposite direction from the NFL version.",
+      "probability_positive": 0.581,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.9928,
+      "sample_blocks": 199,
+      "sample_games": 8933,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "scripts/cfb_body_clock_replication.py; artifacts/cfb_body_clock_replication/20260901T193809Z/results.json; docs/cfb_body_clock_replication.md",
+      "standard_error": null
+    },
+    "cfb_travel_rest_eastbound_multizone_era_2012_2019": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cross-league CFB replication (docs/cfb_body_clock_replication.md), frozen before scoring. The week-blocked 95% interval [-0.1656, +0.3879] crosses zero at this evaluator's resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. None of the three admissible grounds applies: (1) no resolved wrong sign, since the interval is not wholly on either side of zero; (2) no split-half reliability failure, since the underlying body-clock timezone trait reads Spearman-Brown 0.9928 and the near-zero per-cell exposure figure is arithmetic about how rare the schedule situation is rather than a trait measurement; (3) no positive-control bound, since the control PROVED detection only of a +48.4-point leak, which says nothing about a sub-0.3-point effect.",
+      "closing_ground": null,
+      "description": "Era slice 2012-2019 of cfb_travel_rest_eastbound_multizone. Recorded separately because the two eras carry OPPOSITE SIGNS, so the pooled number is an average across a sign flip and must not be read as either era's magnitude.",
+      "effect": 0.11217,
+      "effect_units": "accuracy_points",
+      "family": "cfb_body_clock_replication",
+      "interval": [
+        -0.165567,
+        0.38788
+      ],
+      "league": "cfb",
+      "notes": "CLOSE-GRADED CFB: the CFB archive carries no verified opener (docs/cfb_data.md:42), so this is graded on the median-book close-proxy spread_line. A CFB result is replication evidence about a mechanism and never by itself changes an NFL card. No NFL evaluation window and no rotation window was spent. The four cells in family cfb_body_clock_replication are CORRELATED SUBSETS of one window and are NOT independent votes: east_host_west_visitor_early is a strict subset of west_road_early (24 of its 50 flagged games), night_west_road shares the identical body-clock definition at the opposite end of the kickoff distribution, and eastbound_multizone overlaps all three through the same timezone map. Never sign-test-pool them, and never pool them with the NFL siblings (different league, different grade, different baseline). Registered effect is the PRIMARY estimator: paired candidate-minus-baseline forced-pick accuracy delta, frozen XLG-03 benchmark arm (35 columns, ridge alpha 10, market-residual target, 500-game training floor, weekly refits trained strictly before each scored week) versus the identical estimator plus exactly this one column. Scored population 8,933 games / 199 week blocks / 13 seasons, with 271 neutral-site rows carrying NaN. Era slice of cfb_travel_rest_eastbound_multizone; 168 flagged games. Season-blocked secondary 95% [0.0000, +0.2121], P+ 0.974 -- reported for completeness; the registered interval is the week-blocked primary, and a season-blocked endpoint landing exactly on zero across 8 season blocks is a discreteness artefact, not a resolved sign. NFL-commensurable subset-vs-complement gap for this era: +0.0984 pts, 95% [-0.1110, +0.3044], P+ 0.8224, n_flag 162. Fully correlated with its parent entry and with the other era slice -- never count them as separate votes. Instrument checks: within-week permutation null (200 draws) mean +0.021/-0.004/+0.030/+0.007 pts across the four cells, all centred within 0.03 points of zero; positive control (candidate column replaced by realised ats_margin) +48.405 accuracy points, P+ 1.000, 95% [+47.374, +49.464] on n=8,933 -- so the full 36-column ridge fit is not blind to a real effect of meaningful size. RELIABILITY FIELD carries the underlying body-clock UTC-offset trait: Pearson r 0.9858 95% [0.9843, 0.9871], Spearman-Brown 0.9928, n=2,420 team-seasons (odd/even-week split-half). The per-cell EXPOSURE propensities are, for the record: west_road_early SB 0.0990 (r 0.0521, 95% [-0.0121, +0.1966], P+ 0.6245); east_host_west_visitor_early SB -0.0075 (r -0.0037, 95% [-0.0060, -0.0019], P+ 0.0000); eastbound_multizone SB 0.5608 (r 0.3897, P+ 1.0000); night_west_road SB 0.7434 (r 0.5916, P+ 1.0000). For a per-team-season event that happens at most once, a positive in the odd half nearly always implies a zero in the even half, which forces a small negative odd/even correlation by construction, so the two thin cells' exposure figures measure RARITY, not the reliability of a trait. The AGENTS.md rationale for the no_split_half_reliability ground (no sample size rescues it) is false for a rare schedule fact, so that ground is NOT admissible for any cell in this family. Predeclaration: docs/cfb_body_clock_replication.md.",
+      "plain_summary": "The 2012-2019 half of the two-or-more-timezone eastbound trip, kept separate because the two halves point opposite ways. In this half the extra column helped the model, on 168 flagged games.",
+      "probability_positive": 0.78,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.9928,
+      "sample_blocks": 122,
+      "sample_games": 5349,
+      "seasons": [
+        2012,
+        2019
+      ],
+      "source": "scripts/cfb_body_clock_replication.py; artifacts/cfb_body_clock_replication/20260901T193809Z/results.json; docs/cfb_body_clock_replication.md",
+      "standard_error": null
+    },
+    "cfb_travel_rest_eastbound_multizone_era_2021_2025": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cross-league CFB replication (docs/cfb_body_clock_replication.md), frozen before scoring. The week-blocked 95% interval [-0.4274, +0.2223] crosses zero at this evaluator's resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. None of the three admissible grounds applies: (1) no resolved wrong sign, since the interval is not wholly on either side of zero; (2) no split-half reliability failure, since the underlying body-clock timezone trait reads Spearman-Brown 0.9928 and the near-zero per-cell exposure figure is arithmetic about how rare the schedule situation is rather than a trait measurement; (3) no positive-control bound, since the control PROVED detection only of a +48.4-point leak, which says nothing about a sub-0.3-point effect.",
+      "closing_ground": null,
+      "description": "Era slice 2021-2025 of cfb_travel_rest_eastbound_multizone. Recorded separately because the two eras carry OPPOSITE SIGNS, so the pooled number is an average across a sign flip and must not be read as either era's magnitude.",
+      "effect": -0.111607,
+      "effect_units": "accuracy_points",
+      "family": "cfb_body_clock_replication",
+      "interval": [
+        -0.427369,
+        0.222309
+      ],
+      "league": "cfb",
+      "notes": "CLOSE-GRADED CFB: the CFB archive carries no verified opener (docs/cfb_data.md:42), so this is graded on the median-book close-proxy spread_line. A CFB result is replication evidence about a mechanism and never by itself changes an NFL card. No NFL evaluation window and no rotation window was spent. The four cells in family cfb_body_clock_replication are CORRELATED SUBSETS of one window and are NOT independent votes: east_host_west_visitor_early is a strict subset of west_road_early (24 of its 50 flagged games), night_west_road shares the identical body-clock definition at the opposite end of the kickoff distribution, and eastbound_multizone overlaps all three through the same timezone map. Never sign-test-pool them, and never pool them with the NFL siblings (different league, different grade, different baseline). Registered effect is the PRIMARY estimator: paired candidate-minus-baseline forced-pick accuracy delta, frozen XLG-03 benchmark arm (35 columns, ridge alpha 10, market-residual target, 500-game training floor, weekly refits trained strictly before each scored week) versus the identical estimator plus exactly this one column. Scored population 8,933 games / 199 week blocks / 13 seasons, with 271 neutral-site rows carrying NaN. Era slice of cfb_travel_rest_eastbound_multizone; 170 flagged games. Season-blocked secondary 95% [-0.4739, +0.2244], P+ 0.263. NFL-commensurable subset-vs-complement gap for this era: -0.0033 pts, 95% [-0.3263, +0.3348], P+ 0.4945, n_flag 169. Fully correlated with its parent entry and with the other era slice -- never count them as separate votes. Instrument checks: within-week permutation null (200 draws) mean +0.021/-0.004/+0.030/+0.007 pts across the four cells, all centred within 0.03 points of zero; positive control (candidate column replaced by realised ats_margin) +48.405 accuracy points, P+ 1.000, 95% [+47.374, +49.464] on n=8,933 -- so the full 36-column ridge fit is not blind to a real effect of meaningful size. RELIABILITY FIELD carries the underlying body-clock UTC-offset trait: Pearson r 0.9858 95% [0.9843, 0.9871], Spearman-Brown 0.9928, n=2,420 team-seasons (odd/even-week split-half). The per-cell EXPOSURE propensities are, for the record: west_road_early SB 0.0990 (r 0.0521, 95% [-0.0121, +0.1966], P+ 0.6245); east_host_west_visitor_early SB -0.0075 (r -0.0037, 95% [-0.0060, -0.0019], P+ 0.0000); eastbound_multizone SB 0.5608 (r 0.3897, P+ 1.0000); night_west_road SB 0.7434 (r 0.5916, P+ 1.0000). For a per-team-season event that happens at most once, a positive in the odd half nearly always implies a zero in the even half, which forces a small negative odd/even correlation by construction, so the two thin cells' exposure figures measure RARITY, not the reliability of a trait. The AGENTS.md rationale for the no_split_half_reliability ground (no sample size rescues it) is false for a rare schedule fact, so that ground is NOT admissible for any cell in this family. Predeclaration: docs/cfb_body_clock_replication.md.",
+      "plain_summary": "The 2021-2025 half of the two-or-more-timezone eastbound trip, kept separate because the two halves point opposite ways. In this half the extra column hurt the model, on 170 flagged games.",
+      "probability_positive": 0.23,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.9928,
+      "sample_blocks": 77,
+      "sample_games": 3584,
+      "seasons": [
+        2021,
+        2025
+      ],
+      "source": "scripts/cfb_body_clock_replication.py; artifacts/cfb_body_clock_replication/20260901T193809Z/results.json; docs/cfb_body_clock_replication.md",
+      "standard_error": null
+    }
+  }
+}

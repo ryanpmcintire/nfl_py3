@@ -1,0 +1,61 @@
+{
+  "family": "mod25e-e175",
+  "signals": {
+    "mod25e-e175-leader17-3rd-conv-gap": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "positive sim excess is a model defect not a signal; mechanism candidates (strength, backup QB, pool share, tilt, score-first rerank) each unresolved; real-only leader dummy -1.1pp P+ 0.25; no closing ground met",
+      "closing_ground": null,
+      "description": "Sim minus real 3rd-down conversion for offence leading by 17+ in Q4 gsr 300-900, play level, base XFA+LDR+RG s11-13 v real 2009-17; carrier not strength, personnel, pool, yard shift, tilt (+0.6 of +3.9) or re-ranking; rating kernel x candidate state",
+      "effect": 5.0,
+      "effect_units": "rate_pp",
+      "family": "mod25e-e175",
+      "interval": [
+        2.3,
+        7.5
+      ],
+      "league": "nfl",
+      "notes": "interval is 90 pct game bootstrap; E175b-e looks 17+17+336; not installed\n[2026-10-18T22:48:29.317575+00:00] effect_units retagged: 'accuracy_points' -> 'rate_pp'. Reason: units corrected on 2026-10-18: effect is a simulator-minus-real (or real-minus-served) gap in percentage points of an event rate, not pick accuracy",
+      "plain_summary": "Simulated big-lead offences convert third downs about 5 points more often than real ones and no tested mechanism yet explains it",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "docs/lanes/mod25e-e175-leader-q4.md",
+      "standard_error": 1.58
+    },
+    "mod25e-e175f-enlarged-pool-leader-conv": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "gap 3.02 to 2.11 pp (absgap reduction 0.9), but all-state guard moves away (-0.76 to -1.25) and nonleader -1.86 to -2.23; generic pool lowering, not leader-specific; no wrong-sign or positive-control closing ground",
+      "closing_ground": null,
+      "description": "E175f offline replay: exact-distance filter dropped, 5 LOSO-fitted class weights (distance gap, lead class); remaining sim minus real 3rd-down conv for 17+ Q4 leaders after reweight; guard all-state conv gap worsened -0.76 to -1.25",
+      "effect": 2.11,
+      "effect_units": "rate_pp",
+      "family": "mod25e-e175",
+      "interval": [
+        0.19,
+        4.08
+      ],
+      "league": "nfl",
+      "notes": "90 pct game bootstrap; 1 family 5 params 9 LOSO folds 3 eval sets; not installed; tests/scratch/e175/f1.py\n[2026-10-18T22:48:32.503805+00:00] effect_units retagged: 'accuracy_points' -> 'rate_pp'. Reason: units corrected on 2026-10-18: effect is a simulator-minus-real (or real-minus-served) gap in percentage points of an event rate, not pick accuracy",
+      "plain_summary": "Widening the pool of comparable third downs trims the simulated big-lead conversion excess by under a point but also lowers every other situation, so it does not explain the excess",
+      "probability_positive": 0.961,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "docs/lanes/mod25e-e175-leader-q4.md",
+      "standard_error": 1.2
+    }
+  }
+}

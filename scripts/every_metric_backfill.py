@@ -3,14 +3,17 @@ import math
 import os
 import re
 from datetime import UTC, datetime
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import pyarrow.parquet as pq
 
+from nfl_ats.weak_signals import read_registry_payload
+
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ARTIFACTS_ROOT = os.path.join(REPO_ROOT, "artifacts")
-REGISTRY_PATH = os.path.join(REPO_ROOT, "registry", "weak_signals.json")
+REGISTRY_PATH = os.path.join(REPO_ROOT, "registry", "weak_signals")
 ACTIVE_MODEL_PATH = os.path.join(REPO_ROOT, "artifacts", "active_ats_model.json")
 OUTPUT_ROOT = os.path.join(REPO_ROOT, "artifacts", "every_metric")
 
@@ -462,8 +465,7 @@ def main():
                 "bootstrap": bootstrap,
             }
 
-    with open(REGISTRY_PATH, encoding="utf-8") as fh:
-        registry = json.load(fh)
+    registry = read_registry_payload(Path(REGISTRY_PATH)) or {}
     signals = registry.get("signals", {})
     family_units = {fam: set() for fam in known_families}
     family_signal_count = dict.fromkeys(known_families, 0)

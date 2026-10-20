@@ -1,0 +1,33 @@
+{
+  "family": "mod25e_e182_pace",
+  "signals": {
+    "e182_pace2_q3_q4mid_elapsed_ll": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "PACE2 nested-LOSO held-out log likelihood of per-snap elapsed v served CLQ/CLK parent cell, Q3 inc/term/run/pass plus Q4 hs420-900 inc/term; n-weighted over 6 class groups, interval from independent group bootstraps; distance tercile cuts fold-local",
+      "effect": 0.012294,
+      "effect_units": "log_loss_improvement",
+      "family": "mod25e_e182_pace",
+      "interval": [
+        0.01127,
+        0.01332
+      ],
+      "league": "nfl",
+      "notes": "186 looks; fold-local distance cuts (8,10 in every fold, identical to all-season cuts) reproduce prior numbers; per-group P+ .644 to 1.0; gain is down and distance not lead band",
+      "plain_summary": null,
+      "probability_positive": 1.0,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/mod25e3/pace2/fit.json",
+      "standard_error": null
+    }
+  }
+}

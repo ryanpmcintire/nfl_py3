@@ -1,0 +1,565 @@
+{
+  "family": "lead93_unit1_609_looks",
+  "signals": {
+    "lead93_unit1_2023_accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "College-shaped uncertainty around the pool line versus the usual four-term calculation: 2023 accuracy_points",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "lead93_unit1_609_looks",
+      "interval": [
+        -2.18340611354,
+        2.5641025641
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This borrows how spread misses are shaped in college football to set how wide the pick calculation's uncertainty is, without using any college picks. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.48105,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead93_unit1.md",
+      "standard_error": null
+    },
+    "lead93_unit1_2023_brier": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "College-shaped uncertainty around the pool line versus the usual four-term calculation: 2023 brier",
+      "effect": 6.2848734384e-06,
+      "effect_units": "brier_improvement",
+      "family": "lead93_unit1_609_looks",
+      "interval": [
+        -5.01990686502e-05,
+        5.99600630813e-05
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This borrows how spread misses are shaped in college football to set how wide the pick calculation's uncertainty is, without using any college picks. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.6021,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead93_unit1.md",
+      "standard_error": null
+    },
+    "lead93_unit1_2023_log_loss": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "College-shaped uncertainty around the pool line versus the usual four-term calculation: 2023 log_loss",
+      "effect": 1.25088237711e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "lead93_unit1_609_looks",
+      "interval": [
+        -0.000100658551201,
+        0.000119998207559
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This borrows how spread misses are shaped in college football to set how wide the pick calculation's uncertainty is, without using any college picks. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.6022,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead93_unit1.md",
+      "standard_error": null
+    },
+    "lead93_unit1_2023_rps": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "College-shaped uncertainty around the pool line versus the usual four-term calculation: 2023 rps",
+      "effect": 0.000311899245983,
+      "effect_units": "rps_improvement",
+      "family": "lead93_unit1_609_looks",
+      "interval": [
+        -0.0366535048257,
+        0.0344576739283
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This borrows how spread misses are shaped in college football to set how wide the pick calculation's uncertainty is, without using any college picks. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.5149,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead93_unit1.md",
+      "standard_error": null
+    },
+    "lead93_unit1_2023_tail_rps": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "College-shaped uncertainty around the pool line versus the usual four-term calculation: 2023 tail_rps",
+      "effect": -0.0180107419325,
+      "effect_units": "rps_improvement",
+      "family": "lead93_unit1_609_looks",
+      "interval": [
+        -0.0274062264658,
+        -0.00957888669759
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This borrows how spread misses are shaped in college football to set how wide the pick calculation's uncertainty is, without using any college picks. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead93_unit1.md",
+      "standard_error": null
+    },
+    "lead93_unit1_2024_accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "College-shaped uncertainty around the pool line versus the usual four-term calculation: 2024 accuracy_points",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "lead93_unit1_609_looks",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This borrows how spread misses are shaped in college football to set how wide the pick calculation's uncertainty is, without using any college picks. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead93_unit1.md",
+      "standard_error": null
+    },
+    "lead93_unit1_2024_brier": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "College-shaped uncertainty around the pool line versus the usual four-term calculation: 2024 brier",
+      "effect": -0.0,
+      "effect_units": "brier_improvement",
+      "family": "lead93_unit1_609_looks",
+      "interval": [
+        -0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This borrows how spread misses are shaped in college football to set how wide the pick calculation's uncertainty is, without using any college picks. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead93_unit1.md",
+      "standard_error": null
+    },
+    "lead93_unit1_2024_log_loss": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "College-shaped uncertainty around the pool line versus the usual four-term calculation: 2024 log_loss",
+      "effect": -0.0,
+      "effect_units": "log_loss_improvement",
+      "family": "lead93_unit1_609_looks",
+      "interval": [
+        -0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This borrows how spread misses are shaped in college football to set how wide the pick calculation's uncertainty is, without using any college picks. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead93_unit1.md",
+      "standard_error": null
+    },
+    "lead93_unit1_2024_rps": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "College-shaped uncertainty around the pool line versus the usual four-term calculation: 2024 rps",
+      "effect": -0.0518580143351,
+      "effect_units": "rps_improvement",
+      "family": "lead93_unit1_609_looks",
+      "interval": [
+        -0.0724216477946,
+        -0.0315266232768
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This borrows how spread misses are shaped in college football to set how wide the pick calculation's uncertainty is, without using any college picks. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead93_unit1.md",
+      "standard_error": null
+    },
+    "lead93_unit1_2024_tail_rps": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "College-shaped uncertainty around the pool line versus the usual four-term calculation: 2024 tail_rps",
+      "effect": -0.0201382926025,
+      "effect_units": "rps_improvement",
+      "family": "lead93_unit1_609_looks",
+      "interval": [
+        -0.0266861692555,
+        -0.0138418043201
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This borrows how spread misses are shaped in college football to set how wide the pick calculation's uncertainty is, without using any college picks. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead93_unit1.md",
+      "standard_error": null
+    },
+    "lead93_unit1_2025_accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "College-shaped uncertainty around the pool line versus the usual four-term calculation: 2025 accuracy_points",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "lead93_unit1_609_looks",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This borrows how spread misses are shaped in college football to set how wide the pick calculation's uncertainty is, without using any college picks. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead93_unit1.md",
+      "standard_error": null
+    },
+    "lead93_unit1_2025_brier": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "College-shaped uncertainty around the pool line versus the usual four-term calculation: 2025 brier",
+      "effect": -6.21744941012e-05,
+      "effect_units": "brier_improvement",
+      "family": "lead93_unit1_609_looks",
+      "interval": [
+        -0.000284331944708,
+        0.00014886240329
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This borrows how spread misses are shaped in college football to set how wide the pick calculation's uncertainty is, without using any college picks. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.2881,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead93_unit1.md",
+      "standard_error": null
+    },
+    "lead93_unit1_2025_log_loss": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "College-shaped uncertainty around the pool line versus the usual four-term calculation: 2025 log_loss",
+      "effect": -0.000126231935562,
+      "effect_units": "log_loss_improvement",
+      "family": "lead93_unit1_609_looks",
+      "interval": [
+        -0.000583410491739,
+        0.000310174587247
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This borrows how spread misses are shaped in college football to set how wide the pick calculation's uncertainty is, without using any college picks. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.2919,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead93_unit1.md",
+      "standard_error": null
+    },
+    "lead93_unit1_2025_rps": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "College-shaped uncertainty around the pool line versus the usual four-term calculation: 2025 rps",
+      "effect": -0.00659611635152,
+      "effect_units": "rps_improvement",
+      "family": "lead93_unit1_609_looks",
+      "interval": [
+        -0.0159148892526,
+        0.00245553552247
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This borrows how spread misses are shaped in college football to set how wide the pick calculation's uncertainty is, without using any college picks. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.076,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead93_unit1.md",
+      "standard_error": null
+    },
+    "lead93_unit1_2025_tail_rps": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "College-shaped uncertainty around the pool line versus the usual four-term calculation: 2025 tail_rps",
+      "effect": -0.00263275807028,
+      "effect_units": "rps_improvement",
+      "family": "lead93_unit1_609_looks",
+      "interval": [
+        -0.00355395352714,
+        -0.00180577478676
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This borrows how spread misses are shaped in college football to set how wide the pick calculation's uncertainty is, without using any college picks. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead93_unit1.md",
+      "standard_error": null
+    },
+    "lead93_unit1_pooled_accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "College-shaped uncertainty around the pool line versus the usual four-term calculation: pooled accuracy_points",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "lead93_unit1_609_looks",
+      "interval": [
+        -0.860832137733,
+        0.870827285922
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This borrows how spread misses are shaped in college football to set how wide the pick calculation's uncertainty is, without using any college picks. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.48375,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead93_unit1.md",
+      "standard_error": null
+    },
+    "lead93_unit1_pooled_brier": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "College-shaped uncertainty around the pool line versus the usual four-term calculation: pooled brier",
+      "effect": -1.85941278628e-05,
+      "effect_units": "brier_improvement",
+      "family": "lead93_unit1_609_looks",
+      "interval": [
+        -0.000118759484509,
+        5.13063434604e-05
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This borrows how spread misses are shaped in college football to set how wide the pick calculation's uncertainty is, without using any college picks. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.37045,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead93_unit1.md",
+      "standard_error": null
+    },
+    "lead93_unit1_pooled_log_loss": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "College-shaped uncertainty around the pool line versus the usual four-term calculation: pooled log_loss",
+      "effect": -3.78353703181e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "lead93_unit1_609_looks",
+      "interval": [
+        -0.00024467226811,
+        0.000105296489169
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This borrows how spread misses are shaped in college football to set how wide the pick calculation's uncertainty is, without using any college picks. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.37175,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead93_unit1.md",
+      "standard_error": null
+    },
+    "lead93_unit1_pooled_rps": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "College-shaped uncertainty around the pool line versus the usual four-term calculation: pooled rps",
+      "effect": -0.0193524903802,
+      "effect_units": "rps_improvement",
+      "family": "lead93_unit1_609_looks",
+      "interval": [
+        -0.0498506825355,
+        0.00843051206064
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This borrows how spread misses are shaped in college football to set how wide the pick calculation's uncertainty is, without using any college picks. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.1016,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead93_unit1.md",
+      "standard_error": null
+    },
+    "lead93_unit1_pooled_tail_rps": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "College-shaped uncertainty around the pool line versus the usual four-term calculation: pooled tail_rps",
+      "effect": -0.0136002677566,
+      "effect_units": "rps_improvement",
+      "family": "lead93_unit1_609_looks",
+      "interval": [
+        -0.0222369162414,
+        -0.00274756342712
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This borrows how spread misses are shaped in college football to set how wide the pick calculation's uncertainty is, without using any college picks. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead93_unit1.md",
+      "standard_error": null
+    }
+  }
+}

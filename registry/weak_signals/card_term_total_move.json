@@ -1,0 +1,61 @@
+{
+  "family": "card_term_total_move",
+  "signals": {
+    "card_term_total_move_margin_shift_full_accuracy_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Fifth LOSO card term: leader-median Wednesday-to-deadline total move times minus opener spread over opener total, full view, vs four-term",
+      "effect": -0.13106,
+      "effect_units": "accuracy_points",
+      "family": "card_term_total_move",
+      "interval": [
+        -0.99471,
+        0.7218
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Adding how far the over/under moved, scaled to the spread, to the card changed 50 picks, 24 right and 26 wrong, with no accuracy or Brier gain; too few games to settle a small effect.",
+      "probability_positive": 0.3592,
+      "recorded_at": "2026-10-16",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/card-term-next-2026-10-16.md",
+      "standard_error": null
+    },
+    "card_term_total_move_margin_shift_full_brier_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Fifth LOSO card term: leader-median Wednesday-to-deadline total move times minus opener spread over opener total, full view, vs four-term",
+      "effect": -3.839e-05,
+      "effect_units": "brier_improvement",
+      "family": "card_term_total_move",
+      "interval": [
+        -0.00070123,
+        0.0005711
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Adding how far the over/under moved, scaled to the spread, to the card changed 50 picks, 24 right and 26 wrong, with no accuracy or Brier gain; too few games to settle a small effect.",
+      "probability_positive": 0.4656,
+      "recorded_at": "2026-10-16",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/card-term-next-2026-10-16.md",
+      "standard_error": null
+    }
+  }
+}

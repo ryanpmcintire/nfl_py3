@@ -1,0 +1,537 @@
+{
+  "family": "leader_median_model_confidence_v1",
+  "signals": {
+    "leader_median_follow_conf_0_52_to_0_55": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); no interval here sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; split-half reliability was not separately computed for this family, so no_split_half_reliability cannot be claimed either way; and the foresight positive control resolves an effect of roughly 15 accuracy points, which does not prove the instrument can detect the 0.3-to-3-point effects these cells sit at, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Follow only on flips where model confidence is between 0.52 and 0.55 (67 of 220 flips), full 799-game policy against the card.",
+      "effect": 0.626,
+      "effect_units": "accuracy_points",
+      "family": "leader_median_model_confidence_v1",
+      "interval": [
+        -1.018,
+        2.369
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Restricting the follow rule to a middle confidence band.",
+      "probability_positive": 0.764,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_median_model_confidence/20260914T202723Z/summary.json (docs/leader_median_model_confidence.md)",
+      "standard_error": null
+    },
+    "leader_median_follow_conf_0_55_to_0_58": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); no interval here sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; split-half reliability was not separately computed for this family, so no_split_half_reliability cannot be claimed either way; and the foresight positive control resolves an effect of roughly 15 accuracy points, which does not prove the instrument can detect the 0.3-to-3-point effects these cells sit at, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Follow only on flips where model confidence is between 0.55 and 0.58 (52 of 220 flips), full 799-game policy against the card.",
+      "effect": 1.502,
+      "effect_units": "accuracy_points",
+      "family": "leader_median_model_confidence_v1",
+      "interval": [
+        -0.5,
+        3.589
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Restricting the follow rule to a firmer confidence band.",
+      "probability_positive": 0.926,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_median_model_confidence/20260914T202723Z/summary.json (docs/leader_median_model_confidence.md)",
+      "standard_error": null
+    },
+    "leader_median_follow_conf_gate_loso_recommended": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); no interval here sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; split-half reliability was not separately computed for this family, so no_split_half_reliability cannot be claimed either way; and the foresight positive control resolves an effect of roughly 15 accuracy points, which does not prove the instrument can detect the 0.3-to-3-point effects these cells sit at, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "A confidence-cut gate chosen by leave-one-season-out selection (candidates: deciles of confidence among flips, plus no gate; criterion: training-season accuracy-point effect vs card, minimum 15 training flips), scored on the held-out season and pooled across all three seasons, against the card.",
+      "effect": 3.254067584480602,
+      "effect_units": "accuracy_points",
+      "family": "leader_median_model_confidence_v1",
+      "interval": [
+        -0.5050664674558508,
+        7.0719602977667435
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The best confidence cutoff chosen honestly on two seasons and tested on the third, pooled across all three seasons.",
+      "probability_positive": 0.953925,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_median_model_confidence/20260914T202723Z/summary.json (docs/leader_median_model_confidence.md)",
+      "standard_error": null
+    },
+    "leader_median_follow_conf_gate_loso_recommended_vs_full_rule": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); no interval here sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; split-half reliability was not separately computed for this family, so no_split_half_reliability cannot be claimed either way; and the foresight positive control resolves an effect of roughly 15 accuracy points, which does not prove the instrument can detect the 0.3-to-3-point effects these cells sit at, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Head-to-head: the leave-one-season-out confidence-gated policy above against the full ungated rule (follow every flip), same games, same blocks.",
+      "effect": 0.25031289111389077,
+      "effect_units": "accuracy_points",
+      "family": "leader_median_model_confidence_v1",
+      "interval": [
+        -0.6321112515802807,
+        1.1306532663316493
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the honestly-chosen confidence gate beats simply following every flip: a small, unresolved edge.",
+      "probability_positive": 0.6985,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_median_model_confidence/20260914T202723Z/summary.json (docs/leader_median_model_confidence.md)",
+      "standard_error": null
+    },
+    "leader_median_follow_conf_gt_0_58": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); no interval here sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; split-half reliability was not separately computed for this family, so no_split_half_reliability cannot be claimed either way; and the foresight positive control resolves an effect of roughly 15 accuracy points, which does not prove the instrument can detect the 0.3-to-3-point effects these cells sit at, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Follow only on flips where model confidence is above 0.58, the most confident quarter of flips (42 of 220 flips), full 799-game policy against the card.",
+      "effect": -0.25,
+      "effect_units": "accuracy_points",
+      "family": "leader_median_model_confidence_v1",
+      "interval": [
+        -1.533,
+        1.128
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Restricting the follow rule to the flips where the model was firmest on its own pick reads a small negative point estimate, not resolved either way.",
+      "probability_positive": 0.358,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_median_model_confidence/20260914T202723Z/summary.json (docs/leader_median_model_confidence.md)",
+      "standard_error": null
+    },
+    "leader_median_follow_conf_le_0_52": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); no interval here sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; split-half reliability was not separately computed for this family, so no_split_half_reliability cannot be claimed either way; and the foresight positive control resolves an effect of roughly 15 accuracy points, which does not prove the instrument can detect the 0.3-to-3-point effects these cells sit at, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Follow only on flips where the model's confidence in its own pick is at or below 0.52 (59 of 220 flips), full 799-game policy against the card.",
+      "effect": 1.126,
+      "effect_units": "accuracy_points",
+      "family": "leader_median_model_confidence_v1",
+      "interval": [
+        -0.752,
+        3.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Restricting the follow rule to the flips where the model was closest to a coin flip.",
+      "probability_positive": 0.879,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_median_model_confidence/20260914T202723Z/summary.json (docs/leader_median_model_confidence.md)",
+      "standard_error": null
+    },
+    "leader_median_follow_conf_tercile_high": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); no interval here sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; split-half reliability was not separately computed for this family, so no_split_half_reliability cannot be claimed either way; and the foresight positive control resolves an effect of roughly 15 accuracy points, which does not prove the instrument can detect the 0.3-to-3-point effects these cells sit at, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Follow only on the highest-confidence tercile of flips (card most sure of its own pick, 73 of 220 flips), scored as a full 799-game policy against the card.",
+      "effect": 1.126,
+      "effect_units": "accuracy_points",
+      "family": "leader_median_model_confidence_v1",
+      "interval": [
+        -1.118,
+        3.509
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Restricting the follow rule to the third of flips where the model was firmest on its own pick.",
+      "probability_positive": 0.831,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_median_model_confidence/20260914T202723Z/summary.json (docs/leader_median_model_confidence.md)",
+      "standard_error": null
+    },
+    "leader_median_follow_conf_tercile_low": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); no interval here sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; split-half reliability was not separately computed for this family, so no_split_half_reliability cannot be claimed either way; and the foresight positive control resolves an effect of roughly 15 accuracy points, which does not prove the instrument can detect the 0.3-to-3-point effects these cells sit at, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Follow only on the lowest-confidence tercile of flips (card least sure of its own pick, 74 of 220 flips), scored as a full 799-game policy against the card.",
+      "effect": 1.252,
+      "effect_units": "accuracy_points",
+      "family": "leader_median_model_confidence_v1",
+      "interval": [
+        -0.876,
+        3.383
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Restricting the follow rule to the third of flips where the model was closest to a coin flip on its own pick.",
+      "probability_positive": 0.876,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_median_model_confidence/20260914T202723Z/summary.json (docs/leader_median_model_confidence.md)",
+      "standard_error": null
+    },
+    "leader_median_follow_conf_tercile_mid": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); no interval here sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; split-half reliability was not separately computed for this family, so no_split_half_reliability cannot be claimed either way; and the foresight positive control resolves an effect of roughly 15 accuracy points, which does not prove the instrument can detect the 0.3-to-3-point effects these cells sit at, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Follow only on the middle-confidence tercile of flips (73 of 220 flips), scored as a full 799-game policy against the card.",
+      "effect": 0.626,
+      "effect_units": "accuracy_points",
+      "family": "leader_median_model_confidence_v1",
+      "interval": [
+        -1.613,
+        2.803
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Restricting the follow rule to the middle third of flips by the model's own confidence.",
+      "probability_positive": 0.714,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_median_model_confidence/20260914T202723Z/summary.json (docs/leader_median_model_confidence.md)",
+      "standard_error": null
+    },
+    "leader_median_follow_correlation_confidence": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); no interval here sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; split-half reliability was not separately computed for this family, so no_split_half_reliability cannot be claimed either way; and the foresight positive control resolves an effect of roughly 15 accuracy points, which does not prove the instrument can detect the 0.3-to-3-point effects these cells sit at, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Correlation between model confidence in its own pick and whether following the flip wins, among the 220 flips, week-blocked.",
+      "effect": -0.022360273879201836,
+      "effect_units": "correlation",
+      "family": "leader_median_model_confidence_v1",
+      "interval": [
+        -0.14793820641482625,
+        0.09716801536898868
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How much the model's own certainty predicts whether following the late-week move pays off: essentially not at all in this sample.",
+      "probability_positive": 0.35345,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 53,
+      "sample_games": 220,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_median_model_confidence/20260914T202723Z/summary.json (docs/leader_median_model_confidence.md)",
+      "standard_error": null
+    },
+    "leader_median_follow_correlation_move": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); no interval here sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; split-half reliability was not separately computed for this family, so no_split_half_reliability cannot be claimed either way; and the foresight positive control resolves an effect of roughly 15 accuracy points, which does not prove the instrument can detect the 0.3-to-3-point effects these cells sit at, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Correlation between the size of the leader-median move and whether following the flip wins, among the 220 flips, week-blocked.",
+      "effect": 0.02151255240969637,
+      "effect_units": "correlation",
+      "family": "leader_median_model_confidence_v1",
+      "interval": [
+        -0.10842110065156804,
+        0.14711355471296625
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How much the size of the sportsbook move predicts whether following it pays off: essentially not at all in this sample.",
+      "probability_positive": 0.624325,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 53,
+      "sample_games": 220,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_median_model_confidence/20260914T202723Z/summary.json (docs/leader_median_model_confidence.md)",
+      "standard_error": null
+    },
+    "leader_median_follow_foresight_control": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); no interval here sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; split-half reliability was not separately computed for this family, so no_split_half_reliability cannot be claimed either way; and the foresight positive control resolves an effect of roughly 15 accuracy points, which does not prove the instrument can detect the 0.3-to-3-point effects these cells sit at, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Positive control: perfect foresight on exactly the 220 flips, forcing correct only the ones the card got wrong, as a full 799-game policy against the card. Proves the harness resolves an effect at this flip count.",
+      "effect": 15.269086357947437,
+      "effect_units": "accuracy_points",
+      "family": "leader_median_model_confidence_v1",
+      "interval": [
+        12.484237074401017,
+        18.090452261306535
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "A cheating benchmark that already knows the outcome, included only to prove the measuring stick can see a real difference at this sample size.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_median_model_confidence/20260914T202723Z/summary.json (docs/leader_median_model_confidence.md)",
+      "standard_error": null
+    },
+    "leader_median_follow_headline_vs_card": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); no interval here sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; split-half reliability was not separately computed for this family, so no_split_half_reliability cannot be claimed either way; and the foresight positive control resolves an effect of roughly 15 accuracy points, which does not prove the instrument can detect the 0.3-to-3-point effects these cells sit at, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Full leader-median late-week follow rule (flat 0.5-point threshold, the S1 arm in the frozen sharp_weighted_follow population) against the raw opener card, reproduced from scratch with an independent implementation.",
+      "effect": 3.0037546933667114,
+      "effect_units": "accuracy_points",
+      "family": "leader_median_model_confidence_v1",
+      "interval": [
+        -0.9987515605493049,
+        6.979695431472077
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When the three lead sportsbooks move the number half a point or more against our pick between Wednesday and the deadline, switching to their side scores about 55.8% against the card's 52.8% on the same 799 games.",
+      "probability_positive": 0.93225,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_median_model_confidence/20260914T202723Z/summary.json (docs/leader_median_model_confidence.md)",
+      "standard_error": null
+    },
+    "leader_median_follow_median_split_deep": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); no interval here sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; split-half reliability was not separately computed for this family, so no_split_half_reliability cannot be claimed either way; and the foresight positive control resolves an effect of roughly 15 accuracy points, which does not prove the instrument can detect the 0.3-to-3-point effects these cells sit at, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "The deeper (firmer-model) half of flips by model confidence, split at the median (110 of 220 flips), full 799-game policy against the card. Reproduces the prior session's deep-half record independently; the point estimate is numerically identical to the shallow half, which this cell's writeup explains as a mathematical identity between this confidence metric and the prior session's override-distance metric plus the near-zero measured correlation, not a defect.",
+      "effect": 1.5018773466833557,
+      "effect_units": "accuracy_points",
+      "family": "leader_median_model_confidence_v1",
+      "interval": [
+        -1.4906832298136607,
+        4.601990049751247
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The half of flips where the model was firmer on its own pick.",
+      "probability_positive": 0.8331,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_median_model_confidence/20260914T202723Z/summary.json (docs/leader_median_model_confidence.md)",
+      "standard_error": null
+    },
+    "leader_median_follow_median_split_shallow": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); no interval here sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; split-half reliability was not separately computed for this family, so no_split_half_reliability cannot be claimed either way; and the foresight positive control resolves an effect of roughly 15 accuracy points, which does not prove the instrument can detect the 0.3-to-3-point effects these cells sit at, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "The shallower (more coin-flip) half of flips by model confidence, split at the median (110 of 220 flips), full 799-game policy against the card. Reproduces the prior session's shallow-half record independently.",
+      "effect": 1.5018773466833557,
+      "effect_units": "accuracy_points",
+      "family": "leader_median_model_confidence_v1",
+      "interval": [
+        -1.104328394205688,
+        4.125000000000001
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The half of flips where the model was closer to undecided on its own pick.",
+      "probability_positive": 0.8745,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_median_model_confidence/20260914T202723Z/summary.json (docs/leader_median_model_confidence.md)",
+      "standard_error": null
+    },
+    "leader_median_follow_nested_loso_threshold_only_in_sample": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); no interval here sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; split-half reliability was not separately computed for this family, so no_split_half_reliability cannot be claimed either way; and the foresight positive control resolves an effect of roughly 15 accuracy points, which does not prove the instrument can detect the 0.3-to-3-point effects these cells sit at, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "The same move-threshold-only candidate search (flat 0.5, flat 1.0, the served mechanism rule, no confidence gate) selected and scored on all 799 games at once, for side-by-side comparison against the out-of-sample read.",
+      "effect": 3.0037546933667114,
+      "effect_units": "accuracy_points",
+      "family": "leader_median_model_confidence_v1",
+      "interval": [
+        -0.9987515605493049,
+        6.979695431472077
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Picking the best version of the move-size rule using the same games it is graded on reads more favorably than doing it honestly.",
+      "probability_positive": 0.93225,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_median_model_confidence/20260914T202723Z/summary.json (docs/leader_median_model_confidence.md)",
+      "standard_error": null
+    },
+    "leader_median_follow_nested_loso_threshold_only_out_of_sample": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); no interval here sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; split-half reliability was not separately computed for this family, so no_split_half_reliability cannot be claimed either way; and the foresight positive control resolves an effect of roughly 15 accuracy points, which does not prove the instrument can detect the 0.3-to-3-point effects these cells sit at, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Nested leave-one-season-out selecting only the move-size threshold (candidates: flat 0.5, flat 1.0, the served 1.0/0.5-big-spread mechanism rule), no confidence gate, chosen on training seasons and scored on the held-out season, pooled, against the card. The honest out-of-sample read of the served rule's own shape.",
+      "effect": 2.127659574468088,
+      "effect_units": "accuracy_points",
+      "family": "leader_median_model_confidence_v1",
+      "interval": [
+        -0.5050505050504972,
+        4.804045512010113
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "If you pick the best version of the move-size rule using only two seasons and test it on the third, it still beats the card, but by less than the in-sample number suggested.",
+      "probability_positive": 0.940975,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_median_model_confidence/20260914T202723Z/summary.json (docs/leader_median_model_confidence.md)",
+      "standard_error": null
+    },
+    "leader_median_follow_nested_loso_with_gate_in_sample": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); no interval here sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; split-half reliability was not separately computed for this family, so no_split_half_reliability cannot be claimed either way; and the foresight positive control resolves an effect of roughly 15 accuracy points, which does not prove the instrument can detect the 0.3-to-3-point effects these cells sit at, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "The same joint move-threshold-and-confidence-gate candidate search selected and scored on all 799 games at once, for side-by-side comparison against the out-of-sample read.",
+      "effect": 3.254067584480602,
+      "effect_units": "accuracy_points",
+      "family": "leader_median_model_confidence_v1",
+      "interval": [
+        -0.24968789013732895,
+        6.766917293233076
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Picking the best combination of move-size rule and confidence gate using the same games it is graded on reads more favorably than doing it honestly.",
+      "probability_positive": 0.9651,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_median_model_confidence/20260914T202723Z/summary.json (docs/leader_median_model_confidence.md)",
+      "standard_error": null
+    },
+    "leader_median_follow_nested_loso_with_gate_out_of_sample": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); no interval here sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; split-half reliability was not separately computed for this family, so no_split_half_reliability cannot be claimed either way; and the foresight positive control resolves an effect of roughly 15 accuracy points, which does not prove the instrument can detect the 0.3-to-3-point effects these cells sit at, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Nested leave-one-season-out jointly selecting the move-size threshold AND a confidence gate (candidates: 3 thresholds x {0.52, 0.55, 0.58, no gate}), chosen on training seasons and scored on the held-out season, pooled, against the card.",
+      "effect": 1.8773466833541974,
+      "effect_units": "accuracy_points",
+      "family": "leader_median_model_confidence_v1",
+      "interval": [
+        -0.7318195421218002,
+        4.477611940298509
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Adding a confidence gate on top of an honestly-chosen move-size rule does not improve the honest out-of-sample result; it reads slightly worse than the rule alone.",
+      "probability_positive": 0.9258,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_median_model_confidence/20260914T202723Z/summary.json (docs/leader_median_model_confidence.md)",
+      "standard_error": null
+    }
+  }
+}

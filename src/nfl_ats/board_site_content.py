@@ -74,7 +74,7 @@ from nfl_ats.published_picks import FrozenPick, frozen_picks
 from nfl_ats.reporting import artifact_directories, read_json
 from nfl_ats.signal_atlas import load_signal_atlas
 from nfl_ats.signal_ledger import build_ledger_rows
-from nfl_ats.weak_signals import default_registry_path
+from nfl_ats.weak_signals import default_registry_path, merged_registry_file
 
 
 def _default_data_root() -> Path:
@@ -883,10 +883,9 @@ def _load_model_page_content(
     ledger_error: str | None = None
     if challengers_path.is_file():
         try:
-            ledger = build_model_ledger(
-                challengers_path, default_registry_path(registry_root), active_manifest_path
-            )
-            validate_ledger(ledger)
+            with merged_registry_file(default_registry_path(registry_root)) as merged_registry:
+                ledger = build_model_ledger(challengers_path, merged_registry, active_manifest_path)
+                validate_ledger(ledger)
         except (ValueError, OSError) as error:
             ledger_error = str(error) or "unknown error"
         else:

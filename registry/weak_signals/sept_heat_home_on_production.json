@@ -1,0 +1,33 @@
+{
+  "family": "sept_heat_home_on_production",
+  "signals": {
+    "sept_heat_home_on_production": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign or demonstrated candidate-sized positive-control bound; assignment coverage is not a mechanism refutation.",
+      "closing_ground": null,
+      "description": "CX8 decision-time rerun: LEAD-35 September heat-humidity home edge: BACK heat-acclimated home teams vs a frozen cold-climate visitor list, REG weeks 1-3, 1 PM local kickoff, stacked on PRODUCTION weak_stack, opener-graded",
+      "effect": -0.43859649122807015,
+      "effect_units": "accuracy_points",
+      "family": "sept_heat_home_on_production",
+      "interval": [
+        -1.9867549668874174,
+        0.9029345372460496
+      ],
+      "league": "nfl",
+      "notes": "CX8 decision-time rerun supersedes recorded-assignment read artifacts/schedule_flag_on_production/sept_heat/20260905T032315Z/results.json. Original effect -0.8772 accuracy points, probability_positive 0.0841. Matched-current-table oracle: oracle_sept_heat.json, rotation_2020_2021. Same chronological reused windows, no new rotation window. Untimestamped QB observations stay missing; 2020-2021 QB arms reproduce baseline picks exactly and probability_positive=0 there counts strict gains from an exact tie, not wrong-sign evidence. Odd/even exposure diagnostic: {'interpretation': 'exposure stability only; not an admissible no_split_half_reliability closing ground', 'odd_even_team_season_exposure_correlation': None, 'paired_team_seasons': 64}; oracle: {'interpretation': 'exposure stability only; not an admissible no_split_half_reliability closing ground', 'odd_even_team_season_exposure_correlation': -0.00021078613173079538, 'paired_team_seasons': 64}. Exposure stability is not repeated-observation reliability and is not a closing ground.",
+      "plain_summary": "Backing the heat-acclimated home team against a cold-weather visitor in September leans slightly against it under the rule we actually play (about 8% likely to help), but leans for it under the simpler sign-only rule (about 78% likely) -- the two disagree, so neither is proven nor ruled out.",
+      "probability_positive": 0.23435,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts\\cx8_posthoc_assignments\\20260905\\sept_heat.json",
+      "standard_error": null
+    }
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "family": "market_derived_ratings_v1",
+  "signals": {
+    "ratings_residual_vs_served_accuracy_loso": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "whole season-block interval sits on the wrong side of zero for the accuracy claim",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "MOD-21 unit 1: rating-implied line from closing spreads (walk-forward, decay 0.9, ridge 3.0, HFA 2.5); opener-minus-implied residual added to served logit (R2) vs served alone, LOSO 2020-2025, paired on 1,503 games; -1.9295 accuracy points [-3.3206, -0.2894], P+ 0.0093, decisive 309 (served 169-140), positive in 0 of 6 seasons outright (2021 tie)",
+      "effect": -1.9295,
+      "effect_units": "accuracy_points",
+      "family": "market_derived_ratings_v1",
+      "interval": [
+        -3.3206,
+        -0.2894
+      ],
+      "league": "nfl",
+      "notes": "16 looks, all reported; IS -1.2641 vs OOS -1.9295 (gap +0.6653); variance ratio close/margin 0.18, not 1/70",
+      "plain_summary": "Team ratings built from closing lines sounded smarter than scores, but adding their leftover gap to our picks lost about two games per hundred across six seasons, so it stays out of the model.",
+      "probability_positive": 0.0093,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/market_derived_ratings/20260916T192813Z",
+      "standard_error": 0.7732
+    },
+    "ratings_residual_vs_served_brier_loso": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "positive but tiny; accuracy axis refuted on the same run",
+      "closing_ground": null,
+      "description": "MOD-21 unit 1 companion: same R2 vs served LOSO on Brier; +0.00175 [+0.00001, +0.00411], P+ 0.9760; opposite sign from the accuracy axis, far too small to serve",
+      "effect": 0.00175,
+      "effect_units": "brier_improvement",
+      "family": "market_derived_ratings_v1",
+      "interval": [
+        1e-05,
+        0.00411
+      ],
+      "league": "nfl",
+      "notes": "companion cell to the refuted accuracy read; conflicting axes kept on the record",
+      "plain_summary": "The same ratings gap barely sharpened our weekly win chances, far too small to matter.",
+      "probability_positive": 0.976,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/market_derived_ratings/20260916T192813Z",
+      "standard_error": 0.00105
+    }
+  }
+}

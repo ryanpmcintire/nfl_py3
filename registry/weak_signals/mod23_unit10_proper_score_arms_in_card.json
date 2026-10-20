@@ -1,0 +1,173 @@
+{
+  "family": "mod23_unit10_proper_score_arms_in_card",
+  "signals": {
+    "mod23_unit10_a_u1_full_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval spans zero; no positive control; no closing ground.",
+      "closing_ground": null,
+      "description": "Four-term card with model logit input replaced (a_u1), LOSO 2020-2025, full view, paired Brier vs served card; positive = arm better.",
+      "effect": 6.572749592737137e-05,
+      "effect_units": "brier_improvement",
+      "family": "mod23_unit10_proper_score_arms_in_card",
+      "interval": [
+        -0.0006343538145559485,
+        0.0008162507715980768
+      ],
+      "league": "nfl",
+      "notes": "3 arms x 2 views x 2 paired deltas = 12 looks; unit 9 arm B four looks prior in adjacent family.",
+      "plain_summary": "Tests whether a better-calibrated model-alone forecast adds usable information to the combined pick probability.",
+      "probability_positive": 0.5691,
+      "recorded_at": "2026-10-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/unit10_results.json; docs/lanes/mod23-unit10-proper-score-arms-in-card.md",
+      "standard_error": null
+    },
+    "mod23_unit10_a_u1_tuesday_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval spans zero; no positive control; no closing ground.",
+      "closing_ground": null,
+      "description": "Four-term card with model logit input replaced (a_u1), LOSO 2020-2025, tuesday view, paired Brier vs served card; positive = arm better.",
+      "effect": 0.00018177638076652254,
+      "effect_units": "brier_improvement",
+      "family": "mod23_unit10_proper_score_arms_in_card",
+      "interval": [
+        -0.0006471109986623871,
+        0.0010791502949601725
+      ],
+      "league": "nfl",
+      "notes": "3 arms x 2 views x 2 paired deltas = 12 looks; unit 9 arm B four looks prior in adjacent family.",
+      "plain_summary": "Tests whether a better-calibrated model-alone forecast adds usable information to the combined pick probability.",
+      "probability_positive": 0.664,
+      "recorded_at": "2026-10-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/unit10_results.json; docs/lanes/mod23-unit10-proper-score-arms-in-card.md",
+      "standard_error": null
+    },
+    "mod23_unit10_b_u3_full_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval spans zero; no positive control; no closing ground.",
+      "closing_ground": null,
+      "description": "Four-term card with model logit input replaced (b_u3), LOSO 2020-2025, full view, paired Brier vs served card; positive = arm better.",
+      "effect": 0.0001948395772738857,
+      "effect_units": "brier_improvement",
+      "family": "mod23_unit10_proper_score_arms_in_card",
+      "interval": [
+        -0.00027288793154794624,
+        0.0006048962084169668
+      ],
+      "league": "nfl",
+      "notes": "3 arms x 2 views x 2 paired deltas = 12 looks; unit 9 arm B four looks prior in adjacent family.",
+      "plain_summary": "Tests whether a better-calibrated model-alone forecast adds usable information to the combined pick probability.",
+      "probability_positive": 0.7985,
+      "recorded_at": "2026-10-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/unit10_results.json; docs/lanes/mod23-unit10-proper-score-arms-in-card.md",
+      "standard_error": null
+    },
+    "mod23_unit10_b_u3_tuesday_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval spans zero; no positive control; no closing ground.",
+      "closing_ground": null,
+      "description": "Four-term card with model logit input replaced (b_u3), LOSO 2020-2025, tuesday view, paired Brier vs served card; positive = arm better.",
+      "effect": 0.00029743840492325066,
+      "effect_units": "brier_improvement",
+      "family": "mod23_unit10_proper_score_arms_in_card",
+      "interval": [
+        -0.00024965025850243536,
+        0.0008027656975439673
+      ],
+      "league": "nfl",
+      "notes": "3 arms x 2 views x 2 paired deltas = 12 looks; unit 9 arm B four looks prior in adjacent family.",
+      "plain_summary": "Tests whether a better-calibrated model-alone forecast adds usable information to the combined pick probability.",
+      "probability_positive": 0.8622,
+      "recorded_at": "2026-10-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/unit10_results.json; docs/lanes/mod23-unit10-proper-score-arms-in-card.md",
+      "standard_error": null
+    },
+    "mod23_unit10_c_served_and_u3_full_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval spans zero; no positive control; no closing ground.",
+      "closing_ground": null,
+      "description": "Four-term card with model logit input replaced (c_served_and_u3), LOSO 2020-2025, full view, paired Brier vs served card; positive = arm better.",
+      "effect": -6.628431542390126e-05,
+      "effect_units": "brier_improvement",
+      "family": "mod23_unit10_proper_score_arms_in_card",
+      "interval": [
+        -0.0010035854716079764,
+        0.0006861197557557833
+      ],
+      "league": "nfl",
+      "notes": "3 arms x 2 views x 2 paired deltas = 12 looks; unit 9 arm B four looks prior in adjacent family.",
+      "plain_summary": "Tests whether a better-calibrated model-alone forecast adds usable information to the combined pick probability.",
+      "probability_positive": 0.4738,
+      "recorded_at": "2026-10-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/unit10_results.json; docs/lanes/mod23-unit10-proper-score-arms-in-card.md",
+      "standard_error": null
+    },
+    "mod23_unit10_c_served_and_u3_tuesday_brier_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval spans zero; no positive control; no closing ground.",
+      "closing_ground": null,
+      "description": "Four-term card with model logit input replaced (c_served_and_u3), LOSO 2020-2025, tuesday view, paired Brier vs served card; positive = arm better.",
+      "effect": 9.786808534646147e-05,
+      "effect_units": "brier_improvement",
+      "family": "mod23_unit10_proper_score_arms_in_card",
+      "interval": [
+        -0.0008185876899992678,
+        0.0008898482849674068
+      ],
+      "league": "nfl",
+      "notes": "3 arms x 2 views x 2 paired deltas = 12 looks; unit 9 arm B four looks prior in adjacent family.",
+      "plain_summary": "Tests whether a better-calibrated model-alone forecast adds usable information to the combined pick probability.",
+      "probability_positive": 0.5861,
+      "recorded_at": "2026-10-16",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/unit10_results.json; docs/lanes/mod23-unit10-proper-score-arms-in-card.md",
+      "standard_error": null
+    }
+  }
+}

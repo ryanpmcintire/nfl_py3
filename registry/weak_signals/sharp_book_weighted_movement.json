@@ -1,0 +1,677 @@
+{
+  "family": "sharp_book_weighted_movement",
+  "signals": {
+    "sharp_book_weighted_movement_card_b1_vs_b0": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Not wrong_sign_resolved: the week-blocked interval [-0.7519, 4.0661] does not sit entirely below zero. Not no_split_half_reliability: the leadership score's odd/even-week split-half reliability is 0.9635. Not bounded_by_control: the positive control resolves about +42 accuracy points on this population and was never shown able to detect an effect this size.",
+      "closing_ground": null,
+      "description": "MKT-15 late-week follow on the played nine-member card, 2023-2025 intraday archive, opener-graded: the served three-book leader-median follow at its per-game gate (1.0 point, 0.5 at or above a 10.5-point line) against no late-week follow at all. Leadership scores are estimated only on seasons strictly before the season scored (2023 from 2020-2022, 2024 from 2020-2023, 2025 from 2020-2024) and measure how often a book already quotes a displaced line one capture before the leave-one-out consensus moves that way. Picks changed against the baseline: 109 of 799. Season-blocked interval [0.0000, 2.6217], probability_positive 0.9822. Per-season deltas {\"2023\": 0.0, \"2024\": 2.2556390977443606, \"2025\": 2.6217228464419478}.",
+      "effect": 1.627034,
+      "effect_units": "accuracy_points",
+      "family": "sharp_book_weighted_movement",
+      "interval": [
+        -0.75188,
+        4.066148
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/sharp_book_weighted_movement.md sections 1-7 before any leadership score or arm was computed; window [2020, 2021] declared and assigned to rotation family sharp_book_weighted_movement and spent by the leadership estimation, with the follow replay disclosed as 2023-2025 because no hourly capture exists before 2023.",
+      "plain_summary": "Some sportsbooks change their line before the rest of the market does. This asks whether the served three-book leader-median follow at its per-game gate (1.0 point, 0.5 at or above a 10.5-point line) picks more winners than no late-week follow at all on the played nine-member card, using only seasons that had already been played to decide which books count as early.",
+      "probability_positive": 0.90855,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.963488,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_book_weighted_movement/20260911T024752Z/results.json",
+      "standard_error": 1.22891
+    },
+    "sharp_book_weighted_movement_card_b1f_vs_b0": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Not wrong_sign_resolved: the week-blocked interval [-1.1222, 3.7133] does not sit entirely below zero. Not no_split_half_reliability: the leadership score's odd/even-week split-half reliability is 0.9635. Not bounded_by_control: the positive control resolves about +42 accuracy points on this population and was never shown able to detect an effect this size.",
+      "closing_ground": null,
+      "description": "MKT-15 late-week follow on the played nine-member card, 2023-2025 intraday archive, opener-graded: the served three-book leader median at a flat 1.0-point gate against no late-week follow at all. Leadership scores are estimated only on seasons strictly before the season scored (2023 from 2020-2022, 2024 from 2020-2023, 2025 from 2020-2024) and measure how often a book already quotes a displaced line one capture before the leave-one-out consensus moves that way. Picks changed against the baseline: 100 of 799. Season-blocked interval [-0.7519, 2.6217], probability_positive 0.9645. Per-season deltas {\"2023\": -0.7518796992481203, \"2024\": 1.8796992481203008, \"2025\": 2.6217228464419478}.",
+      "effect": 1.251564,
+      "effect_units": "accuracy_points",
+      "family": "sharp_book_weighted_movement",
+      "interval": [
+        -1.122195,
+        3.713295
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/sharp_book_weighted_movement.md sections 1-7 before any leadership score or arm was computed; window [2020, 2021] declared and assigned to rotation family sharp_book_weighted_movement and spent by the leadership estimation, with the follow replay disclosed as 2023-2025 because no hourly capture exists before 2023.",
+      "plain_summary": "Some sportsbooks change their line before the rest of the market does. This asks whether the served three-book leader median at a flat 1.0-point gate picks more winners than no late-week follow at all on the played nine-member card, using only seasons that had already been played to decide which books count as early.",
+      "probability_positive": 0.846175,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.963488,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_book_weighted_movement/20260911T024752Z/results.json",
+      "standard_error": 1.218514
+    },
+    "sharp_book_weighted_movement_card_b1f_vs_b1": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Not wrong_sign_resolved: the week-blocked interval [-1.1250, 0.3727] does not sit entirely below zero. Not no_split_half_reliability: the leadership score's odd/even-week split-half reliability is 0.9635. Not bounded_by_control: the positive control resolves about +42 accuracy points on this population and was never shown able to detect an effect this size.",
+      "closing_ground": null,
+      "description": "MKT-15 late-week follow on the played nine-member card, 2023-2025 intraday archive, opener-graded: the served three-book leader median at a flat 1.0-point gate against the served three-book leader-median follow at its per-game gate (1.0 point, 0.5 at or above a 10.5-point line). Leadership scores are estimated only on seasons strictly before the season scored (2023 from 2020-2022, 2024 from 2020-2023, 2025 from 2020-2024) and measure how often a book already quotes a displaced line one capture before the leave-one-out consensus moves that way. Picks changed against the baseline: 9 of 799. Season-blocked interval [-0.7519, 0.0000], probability_positive 0.0183. Per-season deltas {\"2023\": -0.7518796992481203, \"2024\": -0.37593984962406013, \"2025\": 0.0}.",
+      "effect": -0.375469,
+      "effect_units": "accuracy_points",
+      "family": "sharp_book_weighted_movement",
+      "interval": [
+        -1.125,
+        0.372671
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/sharp_book_weighted_movement.md sections 1-7 before any leadership score or arm was computed; window [2020, 2021] declared and assigned to rotation family sharp_book_weighted_movement and spent by the leadership estimation, with the follow replay disclosed as 2023-2025 because no hourly capture exists before 2023.",
+      "plain_summary": "Some sportsbooks change their line before the rest of the market does. This asks whether the served three-book leader median at a flat 1.0-point gate picks more winners than the served three-book leader-median follow at its per-game gate (1.0 point, 0.5 at or above a 10.5-point line) on the played nine-member card, using only seasons that had already been played to decide which books count as early.",
+      "probability_positive": 0.1565,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.963488,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_book_weighted_movement/20260911T024752Z/results.json",
+      "standard_error": 0.369754
+    },
+    "sharp_book_weighted_movement_card_pc_vs_b0": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Not wrong_sign_resolved: the week-blocked interval [40.5109, 47.4749] does not sit entirely below zero. Not no_split_half_reliability: the leadership score's odd/even-week split-half reliability is 0.9635. Not bounded_by_control: the positive control resolves about +42 accuracy points on this population and was never shown able to detect an effect this size.",
+      "closing_ground": null,
+      "description": "MKT-15 late-week follow on the played nine-member card, 2023-2025 intraday archive, opener-graded: perfect foresight on every game a follow rule could reach (positive control) against no late-week follow at all. Leadership scores are estimated only on seasons strictly before the season scored (2023 from 2020-2022, 2024 from 2020-2023, 2025 from 2020-2024) and measure how often a book already quotes a displaced line one capture before the leave-one-out consensus moves that way. Picks changed against the baseline: 359 of 799. Season-blocked interval [40.6015, 45.8647], probability_positive 1.0000. Per-season deltas {\"2023\": 40.6015037593985, \"2024\": 45.86466165413533, \"2025\": 45.31835205992509}.",
+      "effect": 43.929912,
+      "effect_units": "accuracy_points",
+      "family": "sharp_book_weighted_movement",
+      "interval": [
+        40.510914,
+        47.474906
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/sharp_book_weighted_movement.md sections 1-7 before any leadership score or arm was computed; window [2020, 2021] declared and assigned to rotation family sharp_book_weighted_movement and spent by the leadership estimation, with the follow replay disclosed as 2023-2025 because no hourly capture exists before 2023.",
+      "plain_summary": "Some sportsbooks change their line before the rest of the market does. This asks whether perfect foresight on every game a follow rule could reach (positive control) picks more winners than no late-week follow at all on the played nine-member card, using only seasons that had already been played to decide which books count as early.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.963488,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_book_weighted_movement/20260911T024752Z/results.json",
+      "standard_error": 1.767011
+    },
+    "sharp_book_weighted_movement_card_pc_vs_b1": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Not wrong_sign_resolved: the week-blocked interval [39.1304, 45.5120] does not sit entirely below zero. Not no_split_half_reliability: the leadership score's odd/even-week split-half reliability is 0.9635. Not bounded_by_control: the positive control resolves about +42 accuracy points on this population and was never shown able to detect an effect this size.",
+      "closing_ground": null,
+      "description": "MKT-15 late-week follow on the played nine-member card, 2023-2025 intraday archive, opener-graded: perfect foresight on every game a follow rule could reach (positive control) against the served three-book leader-median follow at its per-game gate (1.0 point, 0.5 at or above a 10.5-point line). Leadership scores are estimated only on seasons strictly before the season scored (2023 from 2020-2022, 2024 from 2020-2023, 2025 from 2020-2024) and measure how often a book already quotes a displaced line one capture before the leave-one-out consensus moves that way. Picks changed against the baseline: 346 of 799. Season-blocked interval [40.6015, 43.6090], probability_positive 1.0000. Per-season deltas {\"2023\": 40.6015037593985, \"2024\": 43.609022556390975, \"2025\": 42.69662921348314}.",
+      "effect": 42.302879,
+      "effect_units": "accuracy_points",
+      "family": "sharp_book_weighted_movement",
+      "interval": [
+        39.130435,
+        45.51201
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/sharp_book_weighted_movement.md sections 1-7 before any leadership score or arm was computed; window [2020, 2021] declared and assigned to rotation family sharp_book_weighted_movement and spent by the leadership estimation, with the follow replay disclosed as 2023-2025 because no hourly capture exists before 2023.",
+      "plain_summary": "Some sportsbooks change their line before the rest of the market does. This asks whether perfect foresight on every game a follow rule could reach (positive control) picks more winners than the served three-book leader-median follow at its per-game gate (1.0 point, 0.5 at or above a 10.5-point line) on the played nine-member card, using only seasons that had already been played to decide which books count as early.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.963488,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_book_weighted_movement/20260911T024752Z/results.json",
+      "standard_error": 1.625192
+    },
+    "sharp_book_weighted_movement_card_w1f_vs_b0": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Not wrong_sign_resolved: the week-blocked interval [-1.8496, 1.6209] does not sit entirely below zero. Not no_split_half_reliability: the leadership score's odd/even-week split-half reliability is 0.9635. Not bounded_by_control: the positive control resolves about +42 accuracy points on this population and was never shown able to detect an effect this size.",
+      "closing_ground": null,
+      "description": "MKT-15 late-week follow on the played nine-member card, 2023-2025 intraday archive, opener-graded: the leadership-weighted MEAN at a flat 1.0-point gate against no late-week follow at all. Leadership scores are estimated only on seasons strictly before the season scored (2023 from 2020-2022, 2024 from 2020-2023, 2025 from 2020-2024) and measure how often a book already quotes a displaced line one capture before the leave-one-out consensus moves that way. Picks changed against the baseline: 65 of 799. Season-blocked interval [-1.5038, 1.5038], probability_positive 0.3766. Per-season deltas {\"2023\": -1.5037593984962405, \"2024\": 1.5037593984962405, \"2025\": -0.37453183520599254}.",
+      "effect": -0.125156,
+      "effect_units": "accuracy_points",
+      "family": "sharp_book_weighted_movement",
+      "interval": [
+        -1.849626,
+        1.620948
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/sharp_book_weighted_movement.md sections 1-7 before any leadership score or arm was computed; window [2020, 2021] declared and assigned to rotation family sharp_book_weighted_movement and spent by the leadership estimation, with the follow replay disclosed as 2023-2025 because no hourly capture exists before 2023.",
+      "plain_summary": "Some sportsbooks change their line before the rest of the market does. This asks whether the leadership-weighted MEAN at a flat 1.0-point gate picks more winners than no late-week follow at all on the played nine-member card, using only seasons that had already been played to decide which books count as early.",
+      "probability_positive": 0.44045,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.963488,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_book_weighted_movement/20260911T024752Z/results.json",
+      "standard_error": 0.879415
+    },
+    "sharp_book_weighted_movement_card_w1f_vs_b1": {
+      "category": "market",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Whole week-blocked interval [-3.3540, -0.2466] and whole season-blocked interval [-2.9963, -0.7519] sit below zero, so the candidate is worse than the baseline at a resolved sign, not merely a lean. Not no_split_half_reliability: the leadership score's own odd/even-week split-half reliability is 0.9635, so the trait is real and it is the WEIGHTING that is refuted, not the measurement. Not bounded_by_control: the positive control on this population resolves about +42 accuracy points and was never shown able to detect an effect of one or two, so it bounds nothing here.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "MKT-15 late-week follow on the played nine-member card, 2023-2025 intraday archive, opener-graded: the leadership-weighted MEAN at a flat 1.0-point gate against the served three-book leader-median follow at its per-game gate (1.0 point, 0.5 at or above a 10.5-point line). Leadership scores are estimated only on seasons strictly before the season scored (2023 from 2020-2022, 2024 from 2020-2023, 2025 from 2020-2024) and measure how often a book already quotes a displaced line one capture before the leave-one-out consensus moves that way. Picks changed against the baseline: 48 of 799. Season-blocked interval [-2.9963, -0.7519], probability_positive 0.0000. Per-season deltas {\"2023\": -1.5037593984962405, \"2024\": -0.7518796992481203, \"2025\": -2.9962546816479403}.",
+      "effect": -1.75219,
+      "effect_units": "accuracy_points",
+      "family": "sharp_book_weighted_movement",
+      "interval": [
+        -3.354037,
+        -0.246609
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/sharp_book_weighted_movement.md sections 1-7 before any leadership score or arm was computed; window [2020, 2021] declared and assigned to rotation family sharp_book_weighted_movement and spent by the leadership estimation, with the follow replay disclosed as 2023-2025 because no hourly capture exists before 2023.",
+      "plain_summary": "Some sportsbooks change their line before the rest of the market does. This asks whether the leadership-weighted MEAN at a flat 1.0-point gate picks more winners than the served three-book leader-median follow at its per-game gate (1.0 point, 0.5 at or above a 10.5-point line) on the played nine-member card, using only seasons that had already been played to decide which books count as early.",
+      "probability_positive": 0.013275,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.963488,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_book_weighted_movement/20260911T024752Z/results.json",
+      "standard_error": 0.798983
+    },
+    "sharp_book_weighted_movement_card_w1h_vs_b0": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Not wrong_sign_resolved: the week-blocked interval [-3.0980, 2.6153] does not sit entirely below zero. Not no_split_half_reliability: the leadership score's odd/even-week split-half reliability is 0.9635. Not bounded_by_control: the positive control resolves about +42 accuracy points on this population and was never shown able to detect an effect this size.",
+      "closing_ground": null,
+      "description": "MKT-15 late-week follow on the played nine-member card, 2023-2025 intraday archive, opener-graded: the leadership-weighted MEAN at a flat 0.5-point gate against no late-week follow at all. Leadership scores are estimated only on seasons strictly before the season scored (2023 from 2020-2022, 2024 from 2020-2023, 2025 from 2020-2024) and measure how often a book already quotes a displaced line one capture before the leave-one-out consensus moves that way. Picks changed against the baseline: 142 of 799. Season-blocked interval [-2.2556, 0.7519], probability_positive 0.3008. Per-season deltas {\"2023\": -2.2556390977443606, \"2024\": 0.7518796992481203, \"2025\": 0.7490636704119851}.",
+      "effect": -0.250313,
+      "effect_units": "accuracy_points",
+      "family": "sharp_book_weighted_movement",
+      "interval": [
+        -3.09799,
+        2.615275
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/sharp_book_weighted_movement.md sections 1-7 before any leadership score or arm was computed; window [2020, 2021] declared and assigned to rotation family sharp_book_weighted_movement and spent by the leadership estimation, with the follow replay disclosed as 2023-2025 because no hourly capture exists before 2023.",
+      "plain_summary": "Some sportsbooks change their line before the rest of the market does. This asks whether the leadership-weighted MEAN at a flat 0.5-point gate picks more winners than no late-week follow at all on the played nine-member card, using only seasons that had already been played to decide which books count as early.",
+      "probability_positive": 0.433525,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.963488,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_book_weighted_movement/20260911T024752Z/results.json",
+      "standard_error": 1.452349
+    },
+    "sharp_book_weighted_movement_card_w1h_vs_b1": {
+      "category": "market",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Whole week-blocked interval [-3.2338, -0.6242] and whole season-blocked interval [-2.2556, -1.5038] sit below zero, so the candidate is worse than the baseline at a resolved sign, not merely a lean. Not no_split_half_reliability: the leadership score's own odd/even-week split-half reliability is 0.9635, so the trait is real and it is the WEIGHTING that is refuted, not the measurement. Not bounded_by_control: the positive control on this population resolves about +42 accuracy points and was never shown able to detect an effect of one or two, so it bounds nothing here.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "MKT-15 late-week follow on the played nine-member card, 2023-2025 intraday archive, opener-graded: the leadership-weighted MEAN at a flat 0.5-point gate against the served three-book leader-median follow at its per-game gate (1.0 point, 0.5 at or above a 10.5-point line). Leadership scores are estimated only on seasons strictly before the season scored (2023 from 2020-2022, 2024 from 2020-2023, 2025 from 2020-2024) and measure how often a book already quotes a displaced line one capture before the leave-one-out consensus moves that way. Picks changed against the baseline: 47 of 799. Season-blocked interval [-2.2556, -1.5038], probability_positive 0.0000. Per-season deltas {\"2023\": -2.2556390977443606, \"2024\": -1.5037593984962405, \"2025\": -1.8726591760299627}.",
+      "effect": -1.877347,
+      "effect_units": "accuracy_points",
+      "family": "sharp_book_weighted_movement",
+      "interval": [
+        -3.233831,
+        -0.62422
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/sharp_book_weighted_movement.md sections 1-7 before any leadership score or arm was computed; window [2020, 2021] declared and assigned to rotation family sharp_book_weighted_movement and spent by the leadership estimation, with the follow replay disclosed as 2023-2025 because no hourly capture exists before 2023.",
+      "plain_summary": "Some sportsbooks change their line before the rest of the market does. This asks whether the leadership-weighted MEAN at a flat 0.5-point gate picks more winners than the served three-book leader-median follow at its per-game gate (1.0 point, 0.5 at or above a 10.5-point line) on the played nine-member card, using only seasons that had already been played to decide which books count as early.",
+      "probability_positive": 0.001375,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.963488,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_book_weighted_movement/20260911T024752Z/results.json",
+      "standard_error": 0.671072
+    },
+    "sharp_book_weighted_movement_card_w1s_vs_b0": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Not wrong_sign_resolved: the week-blocked interval [-1.6271, 2.2141] does not sit entirely below zero. Not no_split_half_reliability: the leadership score's odd/even-week split-half reliability is 0.9635. Not bounded_by_control: the positive control resolves about +42 accuracy points on this population and was never shown able to detect an effect this size.",
+      "closing_ground": null,
+      "description": "MKT-15 late-week follow on the played nine-member card, 2023-2025 intraday archive, opener-graded: the leadership-weighted MEAN of every contributing book's Wednesday-to-deadline net move at the served per-game gate against no late-week follow at all. Leadership scores are estimated only on seasons strictly before the season scored (2023 from 2020-2022, 2024 from 2020-2023, 2025 from 2020-2024) and measure how often a book already quotes a displaced line one capture before the leave-one-out consensus moves that way. Picks changed against the baseline: 72 of 799. Season-blocked interval [-1.5038, 1.5038], probability_positive 0.6874. Per-season deltas {\"2023\": -1.5037593984962405, \"2024\": 1.5037593984962405, \"2025\": 0.7490636704119851}.",
+      "effect": 0.250313,
+      "effect_units": "accuracy_points",
+      "family": "sharp_book_weighted_movement",
+      "interval": [
+        -1.627085,
+        2.21409
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/sharp_book_weighted_movement.md sections 1-7 before any leadership score or arm was computed; window [2020, 2021] declared and assigned to rotation family sharp_book_weighted_movement and spent by the leadership estimation, with the follow replay disclosed as 2023-2025 because no hourly capture exists before 2023.",
+      "plain_summary": "Some sportsbooks change their line before the rest of the market does. This asks whether the leadership-weighted MEAN of every contributing book's Wednesday-to-deadline net move at the served per-game gate picks more winners than no late-week follow at all on the played nine-member card, using only seasons that had already been played to decide which books count as early.",
+      "probability_positive": 0.59685,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.963488,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_book_weighted_movement/20260911T024752Z/results.json",
+      "standard_error": 0.973735
+    },
+    "sharp_book_weighted_movement_card_w1s_vs_b1": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Not wrong_sign_resolved: the week-blocked interval [-2.7500, 0.0000] does not sit entirely below zero. Not no_split_half_reliability: the leadership score's odd/even-week split-half reliability is 0.9635. Not bounded_by_control: the positive control resolves about +42 accuracy points on this population and was never shown able to detect an effect this size.",
+      "closing_ground": null,
+      "description": "MKT-15 late-week follow on the played nine-member card, 2023-2025 intraday archive, opener-graded: the leadership-weighted MEAN of every contributing book's Wednesday-to-deadline net move at the served per-game gate against the served three-book leader-median follow at its per-game gate (1.0 point, 0.5 at or above a 10.5-point line). Leadership scores are estimated only on seasons strictly before the season scored (2023 from 2020-2022, 2024 from 2020-2023, 2025 from 2020-2024) and measure how often a book already quotes a displaced line one capture before the leave-one-out consensus moves that way. Picks changed against the baseline: 41 of 799. Season-blocked interval [-1.8727, -0.7519], probability_positive 0.0000. Per-season deltas {\"2023\": -1.5037593984962405, \"2024\": -0.7518796992481203, \"2025\": -1.8726591760299627}.",
+      "effect": -1.376721,
+      "effect_units": "accuracy_points",
+      "family": "sharp_book_weighted_movement",
+      "interval": [
+        -2.75,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/sharp_book_weighted_movement.md sections 1-7 before any leadership score or arm was computed; window [2020, 2021] declared and assigned to rotation family sharp_book_weighted_movement and spent by the leadership estimation, with the follow replay disclosed as 2023-2025 because no hourly capture exists before 2023.",
+      "plain_summary": "Some sportsbooks change their line before the rest of the market does. This asks whether the leadership-weighted MEAN of every contributing book's Wednesday-to-deadline net move at the served per-game gate picks more winners than the served three-book leader-median follow at its per-game gate (1.0 point, 0.5 at or above a 10.5-point line) on the played nine-member card, using only seasons that had already been played to decide which books count as early.",
+      "probability_positive": 0.022575,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.963488,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_book_weighted_movement/20260911T024752Z/results.json",
+      "standard_error": 0.697446
+    },
+    "sharp_book_weighted_movement_card_w2f_vs_b0": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Not wrong_sign_resolved: the week-blocked interval [-1.5190, 3.3835] does not sit entirely below zero. Not no_split_half_reliability: the leadership score's odd/even-week split-half reliability is 0.9635. Not bounded_by_control: the positive control resolves about +42 accuracy points on this population and was never shown able to detect an effect this size.",
+      "closing_ground": null,
+      "description": "MKT-15 late-week follow on the played nine-member card, 2023-2025 intraday archive, opener-graded: the leadership-weighted MEDIAN at a flat 1.0-point gate against no late-week follow at all. Leadership scores are estimated only on seasons strictly before the season scored (2023 from 2020-2022, 2024 from 2020-2023, 2025 from 2020-2024) and measure how often a book already quotes a displaced line one capture before the leave-one-out consensus moves that way. Picks changed against the baseline: 101 of 799. Season-blocked interval [-0.7519, 1.8727], probability_positive 0.9100. Per-season deltas {\"2023\": -0.7518796992481203, \"2024\": 1.5037593984962405, \"2025\": 1.8726591760299627}.",
+      "effect": 0.876095,
+      "effect_units": "accuracy_points",
+      "family": "sharp_book_weighted_movement",
+      "interval": [
+        -1.518987,
+        3.383459
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/sharp_book_weighted_movement.md sections 1-7 before any leadership score or arm was computed; window [2020, 2021] declared and assigned to rotation family sharp_book_weighted_movement and spent by the leadership estimation, with the follow replay disclosed as 2023-2025 because no hourly capture exists before 2023.",
+      "plain_summary": "Some sportsbooks change their line before the rest of the market does. This asks whether the leadership-weighted MEDIAN at a flat 1.0-point gate picks more winners than no late-week follow at all on the played nine-member card, using only seasons that had already been played to decide which books count as early.",
+      "probability_positive": 0.7532,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.963488,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_book_weighted_movement/20260911T024752Z/results.json",
+      "standard_error": 1.255579
+    },
+    "sharp_book_weighted_movement_card_w2f_vs_b1": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Not wrong_sign_resolved: the week-blocked interval [-1.6393, 0.1250] does not sit entirely below zero. Not no_split_half_reliability: the leadership score's odd/even-week split-half reliability is 0.9635. Not bounded_by_control: the positive control resolves about +42 accuracy points on this population and was never shown able to detect an effect this size.",
+      "closing_ground": null,
+      "description": "MKT-15 late-week follow on the played nine-member card, 2023-2025 intraday archive, opener-graded: the leadership-weighted MEDIAN at a flat 1.0-point gate against the served three-book leader-median follow at its per-game gate (1.0 point, 0.5 at or above a 10.5-point line). Leadership scores are estimated only on seasons strictly before the season scored (2023 from 2020-2022, 2024 from 2020-2023, 2025 from 2020-2024) and measure how often a book already quotes a displaced line one capture before the leave-one-out consensus moves that way. Picks changed against the baseline: 16 of 799. Season-blocked interval [-0.7519, -0.7491], probability_positive 0.0000. Per-season deltas {\"2023\": -0.7518796992481203, \"2024\": -0.7518796992481203, \"2025\": -0.7490636704119851}.",
+      "effect": -0.750939,
+      "effect_units": "accuracy_points",
+      "family": "sharp_book_weighted_movement",
+      "interval": [
+        -1.639344,
+        0.125
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/sharp_book_weighted_movement.md sections 1-7 before any leadership score or arm was computed; window [2020, 2021] declared and assigned to rotation family sharp_book_weighted_movement and spent by the leadership estimation, with the follow replay disclosed as 2023-2025 because no hourly capture exists before 2023.",
+      "plain_summary": "Some sportsbooks change their line before the rest of the market does. This asks whether the leadership-weighted MEDIAN at a flat 1.0-point gate picks more winners than the served three-book leader-median follow at its per-game gate (1.0 point, 0.5 at or above a 10.5-point line) on the played nine-member card, using only seasons that had already been played to decide which books count as early.",
+      "probability_positive": 0.048775,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.963488,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_book_weighted_movement/20260911T024752Z/results.json",
+      "standard_error": 0.454431
+    },
+    "sharp_book_weighted_movement_card_w2h_vs_b0": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Not wrong_sign_resolved: the week-blocked interval [-4.2553, 2.2872] does not sit entirely below zero. Not no_split_half_reliability: the leadership score's odd/even-week split-half reliability is 0.9635. Not bounded_by_control: the positive control resolves about +42 accuracy points on this population and was never shown able to detect an effect this size.",
+      "closing_ground": null,
+      "description": "MKT-15 late-week follow on the played nine-member card, 2023-2025 intraday archive, opener-graded: the leadership-weighted MEDIAN at a flat 0.5-point gate against no late-week follow at all. Leadership scores are estimated only on seasons strictly before the season scored (2023 from 2020-2022, 2024 from 2020-2023, 2025 from 2020-2024) and measure how often a book already quotes a displaced line one capture before the leave-one-out consensus moves that way. Picks changed against the baseline: 230 of 799. Season-blocked interval [-3.3708, 2.2556], probability_positive 0.2659. Per-season deltas {\"2023\": -1.8796992481203008, \"2024\": 2.2556390977443606, \"2025\": -3.3707865168539324}.",
+      "effect": -1.001252,
+      "effect_units": "accuracy_points",
+      "family": "sharp_book_weighted_movement",
+      "interval": [
+        -4.255319,
+        2.287239
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/sharp_book_weighted_movement.md sections 1-7 before any leadership score or arm was computed; window [2020, 2021] declared and assigned to rotation family sharp_book_weighted_movement and spent by the leadership estimation, with the follow replay disclosed as 2023-2025 because no hourly capture exists before 2023.",
+      "plain_summary": "Some sportsbooks change their line before the rest of the market does. This asks whether the leadership-weighted MEDIAN at a flat 0.5-point gate picks more winners than no late-week follow at all on the played nine-member card, using only seasons that had already been played to decide which books count as early.",
+      "probability_positive": 0.2705,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.963488,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_book_weighted_movement/20260911T024752Z/results.json",
+      "standard_error": 1.666911
+    },
+    "sharp_book_weighted_movement_card_w2h_vs_b1": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Not wrong_sign_resolved: the week-blocked interval [-5.1122, -0.1241] does not sit entirely below zero. Not no_split_half_reliability: the leadership score's odd/even-week split-half reliability is 0.9635. Not bounded_by_control: the positive control resolves about +42 accuracy points on this population and was never shown able to detect an effect this size.",
+      "closing_ground": null,
+      "description": "MKT-15 late-week follow on the played nine-member card, 2023-2025 intraday archive, opener-graded: the leadership-weighted MEDIAN at a flat 0.5-point gate against the served three-book leader-median follow at its per-game gate (1.0 point, 0.5 at or above a 10.5-point line). Leadership scores are estimated only on seasons strictly before the season scored (2023 from 2020-2022, 2024 from 2020-2023, 2025 from 2020-2024) and measure how often a book already quotes a displaced line one capture before the leave-one-out consensus moves that way. Picks changed against the baseline: 125 of 799. Season-blocked interval [-5.9925, 0.0000], probability_positive 0.0194. Per-season deltas {\"2023\": -1.8796992481203008, \"2024\": 0.0, \"2025\": -5.992509363295881}.",
+      "effect": -2.628285,
+      "effect_units": "accuracy_points",
+      "family": "sharp_book_weighted_movement",
+      "interval": [
+        -5.112219,
+        -0.124069
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/sharp_book_weighted_movement.md sections 1-7 before any leadership score or arm was computed; window [2020, 2021] declared and assigned to rotation family sharp_book_weighted_movement and spent by the leadership estimation, with the follow replay disclosed as 2023-2025 because no hourly capture exists before 2023.",
+      "plain_summary": "Some sportsbooks change their line before the rest of the market does. This asks whether the leadership-weighted MEDIAN at a flat 0.5-point gate picks more winners than the served three-book leader-median follow at its per-game gate (1.0 point, 0.5 at or above a 10.5-point line) on the played nine-member card, using only seasons that had already been played to decide which books count as early.",
+      "probability_positive": 0.02165,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.963488,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_book_weighted_movement/20260911T024752Z/results.json",
+      "standard_error": 1.273696
+    },
+    "sharp_book_weighted_movement_card_w2s_vs_b0": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Not wrong_sign_resolved: the week-blocked interval [-0.8805, 3.9802] does not sit entirely below zero. Not no_split_half_reliability: the leadership score's odd/even-week split-half reliability is 0.9635. Not bounded_by_control: the positive control resolves about +42 accuracy points on this population and was never shown able to detect an effect this size.",
+      "closing_ground": null,
+      "description": "MKT-15 late-week follow on the played nine-member card, 2023-2025 intraday archive, opener-graded: the leadership-weighted MEDIAN of every contributing book's net move at the served per-game gate against no late-week follow at all. Leadership scores are estimated only on seasons strictly before the season scored (2023 from 2020-2022, 2024 from 2020-2023, 2025 from 2020-2024) and measure how often a book already quotes a displaced line one capture before the leave-one-out consensus moves that way. Picks changed against the baseline: 108 of 799. Season-blocked interval [0.0000, 2.6316], probability_positive 0.9822. Per-season deltas {\"2023\": 0.0, \"2024\": 2.631578947368421, \"2025\": 1.8726591760299627}.",
+      "effect": 1.501877,
+      "effect_units": "accuracy_points",
+      "family": "sharp_book_weighted_movement",
+      "interval": [
+        -0.880531,
+        3.980223
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/sharp_book_weighted_movement.md sections 1-7 before any leadership score or arm was computed; window [2020, 2021] declared and assigned to rotation family sharp_book_weighted_movement and spent by the leadership estimation, with the follow replay disclosed as 2023-2025 because no hourly capture exists before 2023.",
+      "plain_summary": "Some sportsbooks change their line before the rest of the market does. This asks whether the leadership-weighted MEDIAN of every contributing book's net move at the served per-game gate picks more winners than no late-week follow at all on the played nine-member card, using only seasons that had already been played to decide which books count as early.",
+      "probability_positive": 0.8885,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.963488,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_book_weighted_movement/20260911T024752Z/results.json",
+      "standard_error": 1.232871
+    },
+    "sharp_book_weighted_movement_card_w2s_vs_b1": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Not wrong_sign_resolved: the week-blocked interval [-0.8963, 0.6305] does not sit entirely below zero. Not no_split_half_reliability: the leadership score's odd/even-week split-half reliability is 0.9635. Not bounded_by_control: the positive control resolves about +42 accuracy points on this population and was never shown able to detect an effect this size.",
+      "closing_ground": null,
+      "description": "MKT-15 late-week follow on the played nine-member card, 2023-2025 intraday archive, opener-graded: the leadership-weighted MEDIAN of every contributing book's net move at the served per-game gate against the served three-book leader-median follow at its per-game gate (1.0 point, 0.5 at or above a 10.5-point line). Leadership scores are estimated only on seasons strictly before the season scored (2023 from 2020-2022, 2024 from 2020-2023, 2025 from 2020-2024) and measure how often a book already quotes a displaced line one capture before the leave-one-out consensus moves that way. Picks changed against the baseline: 11 of 799. Season-blocked interval [-0.7491, 0.3759], probability_positive 0.3354. Per-season deltas {\"2023\": 0.0, \"2024\": 0.37593984962406013, \"2025\": -0.7490636704119851}.",
+      "effect": -0.125156,
+      "effect_units": "accuracy_points",
+      "family": "sharp_book_weighted_movement",
+      "interval": [
+        -0.896316,
+        0.630517
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/sharp_book_weighted_movement.md sections 1-7 before any leadership score or arm was computed; window [2020, 2021] declared and assigned to rotation family sharp_book_weighted_movement and spent by the leadership estimation, with the follow replay disclosed as 2023-2025 because no hourly capture exists before 2023.",
+      "plain_summary": "Some sportsbooks change their line before the rest of the market does. This asks whether the leadership-weighted MEDIAN of every contributing book's net move at the served per-game gate picks more winners than the served three-book leader-median follow at its per-game gate (1.0 point, 0.5 at or above a 10.5-point line) on the played nine-member card, using only seasons that had already been played to decide which books count as early.",
+      "probability_positive": 0.378725,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.963488,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_book_weighted_movement/20260911T024752Z/results.json",
+      "standard_error": 0.4108
+    },
+    "sharp_book_weighted_movement_raw_b1f_vs_b1": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Not wrong_sign_resolved: the week-blocked interval [-1.0050, 0.2509] does not sit entirely below zero. Not no_split_half_reliability: the leadership score's odd/even-week split-half reliability is 0.9635. Not bounded_by_control: the positive control resolves about +42 accuracy points on this population and was never shown able to detect an effect this size.",
+      "closing_ground": null,
+      "description": "MKT-15 late-week follow on the active model's raw opener pick, 2023-2025 intraday archive, opener-graded: the served three-book leader median at a flat 1.0-point gate against the served three-book leader-median follow at its per-game gate (1.0 point, 0.5 at or above a 10.5-point line). Leadership scores are estimated only on seasons strictly before the season scored (2023 from 2020-2022, 2024 from 2020-2023, 2025 from 2020-2024) and measure how often a book already quotes a displaced line one capture before the leave-one-out consensus moves that way. Picks changed against the baseline: 7 of 799. Season-blocked interval [-1.1278, 0.7491], probability_positive 0.2595. Per-season deltas {\"2023\": -1.1278195488721803, \"2024\": -0.7518796992481203, \"2025\": 0.7490636704119851}.",
+      "effect": -0.375469,
+      "effect_units": "accuracy_points",
+      "family": "sharp_book_weighted_movement",
+      "interval": [
+        -1.005025,
+        0.250949
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/sharp_book_weighted_movement.md sections 1-7 before any leadership score or arm was computed; window [2020, 2021] declared and assigned to rotation family sharp_book_weighted_movement and spent by the leadership estimation, with the follow replay disclosed as 2023-2025 because no hourly capture exists before 2023.",
+      "plain_summary": "Some sportsbooks change their line before the rest of the market does. This asks whether the served three-book leader median at a flat 1.0-point gate picks more winners than the served three-book leader-median follow at its per-game gate (1.0 point, 0.5 at or above a 10.5-point line) on the active model's raw opener pick, using only seasons that had already been played to decide which books count as early.",
+      "probability_positive": 0.127925,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.963488,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_book_weighted_movement/20260911T024752Z/results.json",
+      "standard_error": 0.326978
+    },
+    "sharp_book_weighted_movement_raw_w1f_vs_b1": {
+      "category": "market",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Whole week-blocked interval [-3.7406, -0.5025] and whole season-blocked interval [-3.0075, -1.4981] sit below zero, so the candidate is worse than the baseline at a resolved sign, not merely a lean. Not no_split_half_reliability: the leadership score's own odd/even-week split-half reliability is 0.9635, so the trait is real and it is the WEIGHTING that is refuted, not the measurement. Not bounded_by_control: the positive control on this population resolves about +42 accuracy points and was never shown able to detect an effect of one or two, so it bounds nothing here.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "MKT-15 late-week follow on the active model's raw opener pick, 2023-2025 intraday archive, opener-graded: the leadership-weighted MEAN at a flat 1.0-point gate against the served three-book leader-median follow at its per-game gate (1.0 point, 0.5 at or above a 10.5-point line). Leadership scores are estimated only on seasons strictly before the season scored (2023 from 2020-2022, 2024 from 2020-2023, 2025 from 2020-2024) and measure how often a book already quotes a displaced line one capture before the leave-one-out consensus moves that way. Picks changed against the baseline: 45 of 799. Season-blocked interval [-3.0075, -1.4981], probability_positive 0.0000. Per-season deltas {\"2023\": -1.8796992481203008, \"2024\": -3.007518796992481, \"2025\": -1.4981273408239701}.",
+      "effect": -2.12766,
+      "effect_units": "accuracy_points",
+      "family": "sharp_book_weighted_movement",
+      "interval": [
+        -3.740648,
+        -0.502497
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/sharp_book_weighted_movement.md sections 1-7 before any leadership score or arm was computed; window [2020, 2021] declared and assigned to rotation family sharp_book_weighted_movement and spent by the leadership estimation, with the follow replay disclosed as 2023-2025 because no hourly capture exists before 2023.",
+      "plain_summary": "Some sportsbooks change their line before the rest of the market does. This asks whether the leadership-weighted MEAN at a flat 1.0-point gate picks more winners than the served three-book leader-median follow at its per-game gate (1.0 point, 0.5 at or above a 10.5-point line) on the active model's raw opener pick, using only seasons that had already been played to decide which books count as early.",
+      "probability_positive": 0.00515,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.963488,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_book_weighted_movement/20260911T024752Z/results.json",
+      "standard_error": 0.82847
+    },
+    "sharp_book_weighted_movement_raw_w1h_vs_b1": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Not wrong_sign_resolved: the week-blocked interval [-3.0113, 0.2503] does not sit entirely below zero. Not no_split_half_reliability: the leadership score's odd/even-week split-half reliability is 0.9635. Not bounded_by_control: the positive control resolves about +42 accuracy points on this population and was never shown able to detect an effect this size.",
+      "closing_ground": null,
+      "description": "MKT-15 late-week follow on the active model's raw opener pick, 2023-2025 intraday archive, opener-graded: the leadership-weighted MEAN at a flat 0.5-point gate against the served three-book leader-median follow at its per-game gate (1.0 point, 0.5 at or above a 10.5-point line). Leadership scores are estimated only on seasons strictly before the season scored (2023 from 2020-2022, 2024 from 2020-2023, 2025 from 2020-2024) and measure how often a book already quotes a displaced line one capture before the leave-one-out consensus moves that way. Picks changed against the baseline: 51 of 799. Season-blocked interval [-2.2556, 0.0000], probability_positive 0.0178. Per-season deltas {\"2023\": 0.0, \"2024\": -2.2556390977443606, \"2025\": -1.8726591760299627}.",
+      "effect": -1.376721,
+      "effect_units": "accuracy_points",
+      "family": "sharp_book_weighted_movement",
+      "interval": [
+        -3.011292,
+        0.250313
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/sharp_book_weighted_movement.md sections 1-7 before any leadership score or arm was computed; window [2020, 2021] declared and assigned to rotation family sharp_book_weighted_movement and spent by the leadership estimation, with the follow replay disclosed as 2023-2025 because no hourly capture exists before 2023.",
+      "plain_summary": "Some sportsbooks change their line before the rest of the market does. This asks whether the leadership-weighted MEAN at a flat 0.5-point gate picks more winners than the served three-book leader-median follow at its per-game gate (1.0 point, 0.5 at or above a 10.5-point line) on the active model's raw opener pick, using only seasons that had already been played to decide which books count as early.",
+      "probability_positive": 0.047825,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.963488,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_book_weighted_movement/20260911T024752Z/results.json",
+      "standard_error": 0.832345
+    },
+    "sharp_book_weighted_movement_raw_w1s_vs_b1": {
+      "category": "market",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Whole week-blocked interval [-3.4914, -0.6150] and whole season-blocked interval [-2.6316, -1.4981] sit below zero, so the candidate is worse than the baseline at a resolved sign, not merely a lean. Not no_split_half_reliability: the leadership score's own odd/even-week split-half reliability is 0.9635, so the trait is real and it is the WEIGHTING that is refuted, not the measurement. Not bounded_by_control: the positive control on this population resolves about +42 accuracy points and was never shown able to detect an effect of one or two, so it bounds nothing here.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "MKT-15 late-week follow on the active model's raw opener pick, 2023-2025 intraday archive, opener-graded: the leadership-weighted MEAN of every contributing book's Wednesday-to-deadline net move at the served per-game gate against the served three-book leader-median follow at its per-game gate (1.0 point, 0.5 at or above a 10.5-point line). Leadership scores are estimated only on seasons strictly before the season scored (2023 from 2020-2022, 2024 from 2020-2023, 2025 from 2020-2024) and measure how often a book already quotes a displaced line one capture before the leave-one-out consensus moves that way. Picks changed against the baseline: 40 of 799. Season-blocked interval [-2.6316, -1.4981], probability_positive 0.0000. Per-season deltas {\"2023\": -1.8796992481203008, \"2024\": -2.631578947368421, \"2025\": -1.4981273408239701}.",
+      "effect": -2.002503,
+      "effect_units": "accuracy_points",
+      "family": "sharp_book_weighted_movement",
+      "interval": [
+        -3.491381,
+        -0.615006
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/sharp_book_weighted_movement.md sections 1-7 before any leadership score or arm was computed; window [2020, 2021] declared and assigned to rotation family sharp_book_weighted_movement and spent by the leadership estimation, with the follow replay disclosed as 2023-2025 because no hourly capture exists before 2023.",
+      "plain_summary": "Some sportsbooks change their line before the rest of the market does. This asks whether the leadership-weighted MEAN of every contributing book's Wednesday-to-deadline net move at the served per-game gate picks more winners than the served three-book leader-median follow at its per-game gate (1.0 point, 0.5 at or above a 10.5-point line) on the active model's raw opener pick, using only seasons that had already been played to decide which books count as early.",
+      "probability_positive": 0.002725,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.963488,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_book_weighted_movement/20260911T024752Z/results.json",
+      "standard_error": 0.748562
+    },
+    "sharp_book_weighted_movement_raw_w2f_vs_b1": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Not wrong_sign_resolved: the week-blocked interval [-1.7348, 0.2478] does not sit entirely below zero. Not no_split_half_reliability: the leadership score's odd/even-week split-half reliability is 0.9635. Not bounded_by_control: the positive control resolves about +42 accuracy points on this population and was never shown able to detect an effect this size.",
+      "closing_ground": null,
+      "description": "MKT-15 late-week follow on the active model's raw opener pick, 2023-2025 intraday archive, opener-graded: the leadership-weighted MEDIAN at a flat 1.0-point gate against the served three-book leader-median follow at its per-game gate (1.0 point, 0.5 at or above a 10.5-point line). Leadership scores are estimated only on seasons strictly before the season scored (2023 from 2020-2022, 2024 from 2020-2023, 2025 from 2020-2024) and measure how often a book already quotes a displaced line one capture before the leave-one-out consensus moves that way. Picks changed against the baseline: 16 of 799. Season-blocked interval [-1.5038, 0.0000], probability_positive 0.0183. Per-season deltas {\"2023\": -0.7518796992481203, \"2024\": -1.5037593984962405, \"2025\": 0.0}.",
+      "effect": -0.750939,
+      "effect_units": "accuracy_points",
+      "family": "sharp_book_weighted_movement",
+      "interval": [
+        -1.73482,
+        0.247831
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/sharp_book_weighted_movement.md sections 1-7 before any leadership score or arm was computed; window [2020, 2021] declared and assigned to rotation family sharp_book_weighted_movement and spent by the leadership estimation, with the follow replay disclosed as 2023-2025 because no hourly capture exists before 2023.",
+      "plain_summary": "Some sportsbooks change their line before the rest of the market does. This asks whether the leadership-weighted MEDIAN at a flat 1.0-point gate picks more winners than the served three-book leader-median follow at its per-game gate (1.0 point, 0.5 at or above a 10.5-point line) on the active model's raw opener pick, using only seasons that had already been played to decide which books count as early.",
+      "probability_positive": 0.065175,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.963488,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_book_weighted_movement/20260911T024752Z/results.json",
+      "standard_error": 0.491358
+    },
+    "sharp_book_weighted_movement_raw_w2h_vs_b1": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Not wrong_sign_resolved: the week-blocked interval [-3.8366, 1.3906] does not sit entirely below zero. Not no_split_half_reliability: the leadership score's odd/even-week split-half reliability is 0.9635. Not bounded_by_control: the positive control resolves about +42 accuracy points on this population and was never shown able to detect an effect this size.",
+      "closing_ground": null,
+      "description": "MKT-15 late-week follow on the active model's raw opener pick, 2023-2025 intraday archive, opener-graded: the leadership-weighted MEDIAN at a flat 0.5-point gate against the served three-book leader-median follow at its per-game gate (1.0 point, 0.5 at or above a 10.5-point line). Leadership scores are estimated only on seasons strictly before the season scored (2023 from 2020-2022, 2024 from 2020-2023, 2025 from 2020-2024) and measure how often a book already quotes a displaced line one capture before the leave-one-out consensus moves that way. Picks changed against the baseline: 108 of 799. Season-blocked interval [-4.4944, 0.7519], probability_positive 0.2782. Per-season deltas {\"2023\": 0.0, \"2024\": 0.7518796992481203, \"2025\": -4.49438202247191}.",
+      "effect": -1.251564,
+      "effect_units": "accuracy_points",
+      "family": "sharp_book_weighted_movement",
+      "interval": [
+        -3.836634,
+        1.390645
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/sharp_book_weighted_movement.md sections 1-7 before any leadership score or arm was computed; window [2020, 2021] declared and assigned to rotation family sharp_book_weighted_movement and spent by the leadership estimation, with the follow replay disclosed as 2023-2025 because no hourly capture exists before 2023.",
+      "plain_summary": "Some sportsbooks change their line before the rest of the market does. This asks whether the leadership-weighted MEDIAN at a flat 0.5-point gate picks more winners than the served three-book leader-median follow at its per-game gate (1.0 point, 0.5 at or above a 10.5-point line) on the active model's raw opener pick, using only seasons that had already been played to decide which books count as early.",
+      "probability_positive": 0.175,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.963488,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_book_weighted_movement/20260911T024752Z/results.json",
+      "standard_error": 1.33242
+    },
+    "sharp_book_weighted_movement_raw_w2s_vs_b1": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Not wrong_sign_resolved: the week-blocked interval [-1.1524, 0.3807] does not sit entirely below zero. Not no_split_half_reliability: the leadership score's odd/even-week split-half reliability is 0.9635. Not bounded_by_control: the positive control resolves about +42 accuracy points on this population and was never shown able to detect an effect this size.",
+      "closing_ground": null,
+      "description": "MKT-15 late-week follow on the active model's raw opener pick, 2023-2025 intraday archive, opener-graded: the leadership-weighted MEDIAN of every contributing book's net move at the served per-game gate against the served three-book leader-median follow at its per-game gate (1.0 point, 0.5 at or above a 10.5-point line). Leadership scores are estimated only on seasons strictly before the season scored (2023 from 2020-2022, 2024 from 2020-2023, 2025 from 2020-2024) and measure how often a book already quotes a displaced line one capture before the leave-one-out consensus moves that way. Picks changed against the baseline: 11 of 799. Season-blocked interval [-0.7519, 0.0000], probability_positive 0.0178. Per-season deltas {\"2023\": 0.0, \"2024\": -0.7518796992481203, \"2025\": -0.37453183520599254}.",
+      "effect": -0.375469,
+      "effect_units": "accuracy_points",
+      "family": "sharp_book_weighted_movement",
+      "interval": [
+        -1.152369,
+        0.380711
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/sharp_book_weighted_movement.md sections 1-7 before any leadership score or arm was computed; window [2020, 2021] declared and assigned to rotation family sharp_book_weighted_movement and spent by the leadership estimation, with the follow replay disclosed as 2023-2025 because no hourly capture exists before 2023.",
+      "plain_summary": "Some sportsbooks change their line before the rest of the market does. This asks whether the leadership-weighted MEDIAN of every contributing book's net move at the served per-game gate picks more winners than the served three-book leader-median follow at its per-game gate (1.0 point, 0.5 at or above a 10.5-point line) on the active model's raw opener pick, using only seasons that had already been played to decide which books count as early.",
+      "probability_positive": 0.183175,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.963488,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_book_weighted_movement/20260911T024752Z/results.json",
+      "standard_error": 0.410693
+    }
+  }
+}

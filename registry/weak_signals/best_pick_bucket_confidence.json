@@ -1,0 +1,117 @@
+{
+  "family": "best_pick_bucket_confidence",
+  "signals": {
+    "best_pick_bucket_confidence_b1_bucket_reliability_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_bucket_confidence.md, written before any number was computed). Neither admissible closing ground applies: no interval sits wholly on the wrong side of zero, and the positive control resolves only a ~42-accuracy-point renomination effect on 103 weeks, so it was never shown able to detect a 1-3 point one and bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Best Pick nomination weighted by the model's own walk-forward realised accuracy in the candidate's opener spread bucket (0-6.5 / 7 / 7.5-10 / 10.5+, expanding, 20 pseudo-observations shrunk to 0.5), score = (bucket reliability - 0.5) + (probability - 0.5), inside the served v2 eligibility pool, vs the served v2 nominator (nfl_ats.best_pick_nomination.nominate_v2), Best-Pick top-1 accuracy per week at the opener",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_bucket_confidence",
+      "interval": [
+        -5.9405940594,
+        5.9405940594
+      ],
+      "league": "nfl",
+      "notes": "Best Pick nomination arms scored on the frozen 2020-2025 opener archive (artifacts/ridge_alpha_promotion/20260818T221459Z, 1,537 games / 107 REG weeks), nominees produced by production's own nfl_ats.best_pick_nomination.select_nominee on the production below-median cross-book opener spread_std pool, graded at the frozen Tuesday opener on the SERVED stream (artifacts/opener_evaluation/20260909T183120Z/per_game.parquet, active model c657058903f3232b, S3 home-side offset included). Bootstrap: week-blocked, 20,000 draws, seed 20260821, within-week correlation zero by owner mandate. B0 replay is exact: its nominee equals the deadline lane's A0 nominee in all 54 weeks that lane covers (artifacts/best_pick_deadline_renomination/20260909T214500Z/weekly.csv, where A0 scores 33/51 on the served late-week grade and 32/51 at the frozen Tuesday side). Fifth reuse of the ~107-week opener population for the Best Pick family, and the per-bucket accuracies that motivated these arms were measured on this same archive (docs/spread_hole_diagnosis.md) -- compounding look-reuse discount, stated. No rotation window assigned or spent. This lane changes a RANKING (which single game carries the week's Best Pick), never a side. Arm 58/101 (57.43%) vs the served v2 nominator's 58/101 (57.43%); the two name a different game in 19 weeks and the outcome differs in 10. Secondary ARCHIVE grade (the alpha=10 arm without the S3 home-side offset, artifacts/ridge_alpha_promotion/20260818T221459Z): -0.9901 accuracy points, 95% [-6.9307, +4.9505], probability_positive 0.3830 on 101 paired weeks.",
+      "plain_summary": "Which single game gets the week's star pick. This version leans away from big spreads, where the model has been weakest, instead of always taking the game it sounds surest about. Over six seasons it picked a different game in 19 of 101 weeks and finished dead level -- 58 weeks right either way.",
+      "probability_positive": 0.4997,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 101,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/best_pick_bucket_confidence_eval.py; artifacts/best_pick_bucket_confidence/20260909T233823Z/summary.json; docs/best_pick_bucket_confidence.md",
+      "standard_error": null
+    },
+    "best_pick_bucket_confidence_b2_small_spread_only_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_bucket_confidence.md, written before any number was computed). Neither admissible closing ground applies: no interval sits wholly on the wrong side of zero, and the positive control resolves only a ~42-accuracy-point renomination effect on 103 weeks, so it was never shown able to detect a 1-3 point one and bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Best Pick nomination restricted to games with an opener line of 6.5 or less (fallback to the unrestricted nominee when no eligible game exists) vs the served v2 nominator (nfl_ats.best_pick_nomination.nominate_v2), Best-Pick top-1 accuracy per week at the opener",
+      "effect": 1.9607843137,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_bucket_confidence",
+      "interval": [
+        -5.8823529412,
+        9.8039215686
+      ],
+      "league": "nfl",
+      "notes": "Best Pick nomination arms scored on the frozen 2020-2025 opener archive (artifacts/ridge_alpha_promotion/20260818T221459Z, 1,537 games / 107 REG weeks), nominees produced by production's own nfl_ats.best_pick_nomination.select_nominee on the production below-median cross-book opener spread_std pool, graded at the frozen Tuesday opener on the SERVED stream (artifacts/opener_evaluation/20260909T183120Z/per_game.parquet, active model c657058903f3232b, S3 home-side offset included). Bootstrap: week-blocked, 20,000 draws, seed 20260821, within-week correlation zero by owner mandate. B0 replay is exact: its nominee equals the deadline lane's A0 nominee in all 54 weeks that lane covers (artifacts/best_pick_deadline_renomination/20260909T214500Z/weekly.csv, where A0 scores 33/51 on the served late-week grade and 32/51 at the frozen Tuesday side). Fifth reuse of the ~107-week opener population for the Best Pick family, and the per-bucket accuracies that motivated these arms were measured on this same archive (docs/spread_hole_diagnosis.md) -- compounding look-reuse discount, stated. No rotation window assigned or spent. This lane changes a RANKING (which single game carries the week's Best Pick), never a side. Arm 60/102 (58.82%) vs the served v2 nominator's 58/102 (56.86%); the two name a different game in 26 weeks and the outcome differs in 16. Secondary ARCHIVE grade (the alpha=10 arm without the S3 home-side offset, artifacts/ridge_alpha_promotion/20260818T221459Z): +1.9608 accuracy points, 95% [-5.8824, +9.8039], probability_positive 0.6885 on 102 paired weeks.",
+      "plain_summary": "Which single game gets the week's star pick. This version never stars a game with a spread bigger than a touchdown, because that is where the model misses most. It picked a different game in 26 of 102 weeks and won 60 of them against 58, about two points a week better and 69% likely to be the better rule.",
+      "probability_positive": 0.688475,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 102,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/best_pick_bucket_confidence_eval.py; artifacts/best_pick_bucket_confidence/20260909T233823Z/summary.json; docs/best_pick_bucket_confidence.md",
+      "standard_error": null
+    },
+    "best_pick_bucket_confidence_b3_pick_side_reliability_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_bucket_confidence.md, written before any number was computed). Neither admissible closing ground applies: no interval sits wholly on the wrong side of zero, and the positive control resolves only a ~42-accuracy-point renomination effect on 103 weeks, so it was never shown able to detect a 1-3 point one and bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Best Pick nomination weighted by the model's own walk-forward realised accuracy in the candidate's (opener spread bucket, favourite/underdog/pickem) cell, same 20 pseudo-observation shrinkage to 0.5, inside the served v2 eligibility pool, vs the served v2 nominator, Best-Pick top-1 accuracy per week at the opener",
+      "effect": -4.9019607843,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_bucket_confidence",
+      "interval": [
+        -15.6862745098,
+        4.9019607843
+      ],
+      "league": "nfl",
+      "notes": "Best Pick nomination arms scored on the frozen 2020-2025 opener archive (artifacts/ridge_alpha_promotion/20260818T221459Z, 1,537 games / 107 REG weeks), nominees produced by production's own nfl_ats.best_pick_nomination.select_nominee on the production below-median cross-book opener spread_std pool, graded at the frozen Tuesday opener on the SERVED stream (artifacts/opener_evaluation/20260909T183120Z/per_game.parquet, active model c657058903f3232b, S3 home-side offset included). Bootstrap: week-blocked, 20,000 draws, seed 20260821, within-week correlation zero by owner mandate. B0 replay is exact: its nominee equals the deadline lane's A0 nominee in all 54 weeks that lane covers (artifacts/best_pick_deadline_renomination/20260909T214500Z/weekly.csv, where A0 scores 33/51 on the served late-week grade and 32/51 at the frozen Tuesday side). Fifth reuse of the ~107-week opener population for the Best Pick family, and the per-bucket accuracies that motivated these arms were measured on this same archive (docs/spread_hole_diagnosis.md) -- compounding look-reuse discount, stated. No rotation window assigned or spent. This lane changes a RANKING (which single game carries the week's Best Pick), never a side. Arm 53/102 (51.96%) vs the served v2 nominator's 58/102 (56.86%); the two name a different game in 52 weeks and the outcome differs in 29. Secondary ARCHIVE grade (the alpha=10 arm without the S3 home-side offset, artifacts/ridge_alpha_promotion/20260818T221459Z): -4.9020 accuracy points, 95% [-15.6863, +4.9020], probability_positive 0.1792 on 102 paired weeks.",
+      "plain_summary": "Which single game gets the week's star pick. This version also asks whether the model has been better backing favourites or underdogs at that line size. Splitting the record that finely moved the star in half the weeks and cost about five points a week; it is 18% likely to be the better rule.",
+      "probability_positive": 0.17925,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 102,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/best_pick_bucket_confidence_eval.py; artifacts/best_pick_bucket_confidence/20260909T233823Z/summary.json; docs/best_pick_bucket_confidence.md",
+      "standard_error": null
+    },
+    "best_pick_bucket_confidence_control_perfect_foresight_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_bucket_confidence.md, written before any number was computed). Neither admissible closing ground applies: no interval sits wholly on the wrong side of zero, and the positive control resolves only a ~42-accuracy-point renomination effect on 103 weeks, so it was never shown able to detect a 1-3 point one and bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL: perfect-foresight Best Pick nomination within the served v2 eligibility pool (any game whose graded pick is correct) vs the served v2 nominator, Best-Pick top-1 accuracy per week at the opener -- the instrument's ceiling on this population, not a playable rule",
+      "effect": 41.7475728155,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_bucket_confidence",
+      "interval": [
+        32.0388349515,
+        51.4563106796
+      ],
+      "league": "nfl",
+      "notes": "Best Pick nomination arms scored on the frozen 2020-2025 opener archive (artifacts/ridge_alpha_promotion/20260818T221459Z, 1,537 games / 107 REG weeks), nominees produced by production's own nfl_ats.best_pick_nomination.select_nominee on the production below-median cross-book opener spread_std pool, graded at the frozen Tuesday opener on the SERVED stream (artifacts/opener_evaluation/20260909T183120Z/per_game.parquet, active model c657058903f3232b, S3 home-side offset included). Bootstrap: week-blocked, 20,000 draws, seed 20260821, within-week correlation zero by owner mandate. B0 replay is exact: its nominee equals the deadline lane's A0 nominee in all 54 weeks that lane covers (artifacts/best_pick_deadline_renomination/20260909T214500Z/weekly.csv, where A0 scores 33/51 on the served late-week grade and 32/51 at the frozen Tuesday side). Fifth reuse of the ~107-week opener population for the Best Pick family, and the per-bucket accuracies that motivated these arms were measured on this same archive (docs/spread_hole_diagnosis.md) -- compounding look-reuse discount, stated. No rotation window assigned or spent. This lane changes a RANKING (which single game carries the week's Best Pick), never a side. Arm 101/103 (98.06%) vs the served v2 nominator's 58/103 (56.31%); the two name a different game in 43 weeks and the outcome differs in 43. Secondary ARCHIVE grade (the alpha=10 arm without the S3 home-side offset, artifacts/ridge_alpha_promotion/20260818T221459Z): +41.7476 accuracy points, 95% [+32.0388, +51.4563], probability_positive 1.0000 on 103 paired weeks.",
+      "plain_summary": "A cheating check: if we could see the results first and star any game we already knew was right, we would be right 98% of the time instead of 56%. It is there to prove the measurement can see a big change in which game gets starred -- roughly 42 points a week -- so we know what it cannot see is genuinely small.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 103,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/best_pick_bucket_confidence_eval.py; artifacts/best_pick_bucket_confidence/20260909T233823Z/summary.json; docs/best_pick_bucket_confidence.md",
+      "standard_error": null
+    }
+  }
+}

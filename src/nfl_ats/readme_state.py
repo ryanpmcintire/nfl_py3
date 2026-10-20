@@ -103,7 +103,7 @@ def _weak_signal_summary_line(registry_root: Path) -> str:
     except (OSError, ValueError):
         return (
             "- **Weak-signal registry:** not available in this clone "
-            "(`registry/weak_signals.json` missing or unreadable)."
+            "(`registry/weak_signals/` missing or unreadable)."
         )
     total = len(registry.signals)
     if total == 0:

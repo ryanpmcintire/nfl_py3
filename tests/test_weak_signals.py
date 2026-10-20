@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 import math
 from pathlib import Path
 from typing import Any
@@ -21,6 +20,7 @@ from nfl_ats.weak_signals import (
     overlap_warnings,
     poolable_signals,
     pooled_effect,
+    read_registry_payload,
     record_signal,
     registry_from_payload,
     retag_effect_units,
@@ -545,8 +545,8 @@ def test_pooling_refuses_to_mix_leagues_when_none_is_chosen() -> None:
 
 def test_live_ledger_validates_if_present() -> None:
 
-    path = Path(__file__).resolve().parents[1] / "registry" / "weak_signals.json"
-    if not path.is_file():
+    path = Path(__file__).resolve().parents[1] / "registry" / "weak_signals"
+    if not path.is_dir():
         pytest.skip("no weak-signal ledger committed yet")
     registry = load_registry(path)
     for name, signal in registry.signals.items():
@@ -557,7 +557,8 @@ def test_live_ledger_validates_if_present() -> None:
         }, name
         assert signal.source, name
         assert math.isfinite(signal.effect), name
-    payload = json.loads(path.read_text(encoding="utf-8"))
+    payload = read_registry_payload(path)
+    assert payload is not None
     assert payload["version"] == WEAK_SIGNAL_REGISTRY_VERSION
 
 

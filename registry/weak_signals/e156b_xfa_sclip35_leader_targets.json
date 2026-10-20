@@ -1,0 +1,145 @@
+{
+  "family": "e156b_xfa_sclip35_leader_targets",
+  "signals": {
+    "e156b_xsc_lead24_pts_per_drive_gap": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; game-bootstrap 90% interval vs real, 3 seeds; XFA comparison in lane section E156b 3-seed verdict.",
+      "closing_ground": null,
+      "description": "E156b XFA+SCLIP35 sim-minus-real 24+ lead Q3+Q4 points per drive (XFA +0.170 [0.029,0.300])",
+      "effect": 0.1501,
+      "effect_units": "mae",
+      "family": "e156b_xfa_sclip35_leader_targets",
+      "interval": [
+        0.0125,
+        0.2728
+      ],
+      "league": "nfl",
+      "notes": "Simulator diagnostic, sim-minus-real gap, units are the metric's own (points, yards, rate), not mae; no matching unit. Look family of 5 declared targets, counted in lane.",
+      "plain_summary": "Adding the clip trims the big-lead scoring excess slightly but it stays above real.",
+      "probability_positive": 0.97,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 200,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "docs/lanes/mod25e-generator-fidelity.md",
+      "standard_error": null
+    },
+    "e156b_xsc_leader_q4_ppd_gap": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; game-bootstrap 90% interval vs real, 3 seeds; XFA comparison in lane section E156b 3-seed verdict.",
+      "closing_ground": null,
+      "description": "E156b sim-minus-real leader Q4 points per drive, lead>=17 (real 1.127; XFA +0.265 [0.175,0.357])",
+      "effect": 0.243,
+      "effect_units": "mae",
+      "family": "e156b_xfa_sclip35_leader_targets",
+      "interval": [
+        0.143,
+        0.339
+      ],
+      "league": "nfl",
+      "notes": "Simulator diagnostic, sim-minus-real gap, units are the metric's own (points, yards, rate), not mae; no matching unit. Look family of 5 declared targets, counted in lane.",
+      "plain_summary": "Per-drive scoring for big leaders in Q4 moves only a hair toward real.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 200,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "docs/lanes/mod25e-generator-fidelity.md",
+      "standard_error": null
+    },
+    "e156b_xsc_leader_q4_pts_gap": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; game-bootstrap 90% interval vs real, 3 seeds; XFA comparison in lane section E156b 3-seed verdict.",
+      "closing_ground": null,
+      "description": "E156b sim-minus-real leader Q4 points, lead>=17 (real 3.162; XFA +0.567 [0.289,0.808])",
+      "effect": 0.488,
+      "effect_units": "mae",
+      "family": "e156b_xfa_sclip35_leader_targets",
+      "interval": [
+        0.199,
+        0.769
+      ],
+      "league": "nfl",
+      "notes": "Simulator diagnostic, sim-minus-real gap, units are the metric's own (points, yards, rate), not mae; no matching unit. Look family of 5 declared targets, counted in lane.",
+      "plain_summary": "Big-lead teams still score more in the fourth quarter than real, a bit less than without the clip.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 200,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "docs/lanes/mod25e-generator-fidelity.md",
+      "standard_error": null
+    },
+    "e156b_xsc_run_ypp_level_gap": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; game-bootstrap 90% interval vs real, 3 seeds; XFA comparison in lane section E156b 3-seed verdict.",
+      "closing_ground": null,
+      "description": "E156b sim-minus-real 24+ lead run yds/play level (XFA +0.257 [0.044,0.467])",
+      "effect": 0.2963,
+      "effect_units": "mae",
+      "family": "e156b_xfa_sclip35_leader_targets",
+      "interval": [
+        0.1002,
+        0.491
+      ],
+      "league": "nfl",
+      "notes": "Simulator diagnostic, sim-minus-real gap, units are the metric's own (points, yards, rate), not mae; no matching unit. Look family of 5 declared targets, counted in lane.",
+      "plain_summary": "Running plays by big leaders gain slightly more than real, a little worse with the clip.",
+      "probability_positive": 0.99,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 200,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "docs/lanes/mod25e-generator-fidelity.md",
+      "standard_error": null
+    },
+    "e156b_xsc_success_gradient_gap": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; game-bootstrap 90% interval vs real, 3 seeds; XFA comparison in lane section E156b 3-seed verdict.",
+      "closing_ground": null,
+      "description": "E156b sim-minus-real success-rate gradient 24+ minus 0-8 (XFA +0.0325 [0.0186,0.0450])",
+      "effect": 0.0279,
+      "effect_units": "mae",
+      "family": "e156b_xfa_sclip35_leader_targets",
+      "interval": [
+        0.0147,
+        0.0412
+      ],
+      "league": "nfl",
+      "notes": "Simulator diagnostic, sim-minus-real gap, units are the metric's own (points, yards, rate), not mae; no matching unit. Look family of 5 declared targets, counted in lane.",
+      "plain_summary": "The success-rate slope with lead is still too positive, a bit less than without the clip.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 200,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "docs/lanes/mod25e-generator-fidelity.md",
+      "standard_error": null
+    }
+  }
+}

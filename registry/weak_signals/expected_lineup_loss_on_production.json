@@ -1,0 +1,33 @@
+{
+  "family": "expected_lineup_loss_on_production",
+  "signals": {
+    "expected_lineup_loss_on_production": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Expected value favors the candidate; no admissible terminal ground. Reliable trait; the large oracle positive control does not bound a candidate-sized effect.",
+      "closing_ground": null,
+      "description": "LEAD-62: production weak_stack plus frozen expected starter loss in offense, defense and QB; opener probability-rule accuracy",
+      "effect": 0.6578947368421052,
+      "effect_units": "accuracy_points",
+      "family": "expected_lineup_loss_on_production",
+      "interval": [
+        -1.569506726457399,
+        3.11804008908686
+      ],
+      "league": "nfl",
+      "notes": "Measured: 246/456 vs 243/456 correct; 28 pick disagreements; 2020 n=220 effect=-1.363636 accuracy points probability_positive=0.109; 2021 n=236 effect=2.542373 probability_positive=0.89465. Coverage: 256 games each 2014-2020, 272 in 2021, 271 in 2022, 272 each 2023-2024, zero in 2025. Reliability 0.8262005 across 352 team-seasons. 20000 week bootstraps seed 20260902. Legacy depth uses pregame week proxy, actual observation times unverified. Pool-cutoff features are opener-graded, not Tuesday-time inputs. Initial training-restricted null retained for audit; final production controls preserve all baseline training rows.",
+      "plain_summary": "Estimate the starter value each team may miss from playing chances and recent workload, and add that information to the existing picks.",
+      "probability_positive": 0.66505,
+      "recorded_at": "2026-09-05",
+      "reliability": 0.8262005125941361,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/experiments/expected_lineup_loss_cx5/production/screen/results.json",
+      "standard_error": null
+    }
+  }
+}

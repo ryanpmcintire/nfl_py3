@@ -1,0 +1,201 @@
+{
+  "family": "qb_exit_mixture",
+  "signals": {
+    "qb_exit_mixture_on_production_opener": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-0.90703, +0.44944] does not sit entirely below zero, so wrong_sign_resolved is unavailable. Split-half reliability of the exit flag is 0.4868 (starting QB, odd vs even seasons, Spearman-Brown, 93 QBs) and 0.6873 at team level, far above the 0.10 floor, so no_split_half_reliability is unavailable. The only control that moved the card (oracle exit flag at d=-0.50, 11 flips) is itself unresolved at probability_positive 0.63103, so it does not prove the instrument can detect a candidate-sized effect and positive_control_bound is unavailable.",
+      "closing_ground": null,
+      "description": "LEAD-63 QB early-exit mixture on production, opener-graded: served home cover probability shifted by d*(home starter exit probability - away starter exit probability), d = -0.029095 read from bias_battery_backup_qb_start_opener's raw_gap. Forced-pick accuracy against production on the rotation-assigned 2020-2021 opener window.",
+      "effect": -0.21978021978021978,
+      "effect_units": "accuracy_points",
+      "family": "qb_exit_mixture",
+      "interval": [
+        -0.9070294784580499,
+        0.44943820224719105
+      ],
+      "league": "nfl",
+      "notes": "Screen arm. 3 of 455 non-push picks changed; mean absolute probability shift 0.000554, maximum 0.003546, against production probabilities with standard deviation 0.0683. Season-blocked [-0.45455, 0.00000], probability_positive 0.12363. Per season, week-blocked: 2020 n=220 effect=-0.45455 pts ci=[-1.43541, 0.00000] P+=0.17883; 2021 n=235 effect=0.00000 pts ci=[-1.25000, +1.31579] P+=0.50203. Permutation null (200 within-week margin permutations): mean -0.03077, sd 0.38292, central 95% [-0.65934, +0.65934], observed at the 15th percentile. Production baseline 53.1868% on 455; the re-run reproduces artifacts/opener_evaluation/20260910T211255Z/per_game.parquet to 5.6e-17. Reused-window discount: d was read from bias_battery_backup_qb_start_opener, measured 2020-2025, which contains this window; d was imported as a constant, not tuned here. Artifact artifacts/experiments/qb_exit_mixture/results.json, bootstrap 20000 resamples, seed 20260910.",
+      "plain_summary": "Some starting quarterbacks leave the game early. Working out how likely that is before kickoff and shading the pick toward the healthier starter changed only three picks in two seasons, and those three went slightly the wrong way.",
+      "probability_positive": 0.2924,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.4867599858483819,
+      "sample_blocks": 35,
+      "sample_games": 455,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "docs/qb_exit_mixture.md",
+      "standard_error": null
+    },
+    "qb_exit_mixture_on_production_opener_asymmetric_cell": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Exactly zero: the mixture changed no pick inside this cell, so candidate and production settle identically on all 129 games and every bootstrap draw is an exact tie. This is a dead heat by construction, not a measured null, and no closing ground applies. probability_positive is 0.5 by the zero-atom convention in nfl_ats.evidence_conventions.probability_positive_from_draws, not 0.0.",
+      "closing_ground": null,
+      "description": "LEAD-63 asymmetric cell: the same QB early-exit mixture restricted to games where exactly one of the two starting quarterbacks was on that week's injury report and started anyway. Opener-graded forced-pick accuracy against production.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "qb_exit_mixture",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "ROADMAP LEAD-63 predeclared this cell as the place value would be if anywhere. 129 of 455 graded games. Production scores 55.8140% in the cell against 53.1868% over the whole window. 0 picks changed at d=-0.029095; the oracle-exit control at the same d changed 2 picks in the cell and also scored 0.00000 accuracy points. Degenerate [0,0] interval is a consequence of zero pick changes, not of a narrow bootstrap. Artifact artifacts/experiments/qb_exit_mixture/results.json.",
+      "plain_summary": "When exactly one team's starting quarterback was on the injury report but played, shading the pick toward the other side never actually changed a pick.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.4867599858483819,
+      "sample_blocks": 34,
+      "sample_games": 129,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "docs/qb_exit_mixture.md",
+      "standard_error": null
+    },
+    "qb_exit_mixture_on_production_opener_brier": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-0.000104, +0.0000325] spans zero, so no resolved wrong sign. Exit-flag split-half reliability 0.4868 rules out no_split_half_reliability. No control bounds a candidate-sized effect. unresolved_below_power.",
+      "closing_ground": null,
+      "description": "LEAD-63 secondary endpoint: Brier improvement of the QB early-exit mixture probability over production's served opener cover probability, on the same 2020-2021 opener window. Recorded because a probability nudge this small can move the probability without moving a pick.",
+      "effect": -3.840787970210702e-05,
+      "effect_units": "brier_improvement",
+      "family": "qb_exit_mixture",
+      "interval": [
+        -0.00010429817958529375,
+        3.250616117944012e-05
+      ],
+      "league": "nfl",
+      "notes": "Season-blocked [-0.0000993, +0.0000186], probability_positive 0.24725. The same endpoint under the oracle-exit control at the same d is +0.000335 with probability_positive 0.86500, recorded separately as qb_exit_mixture_positive_control_oracle_exit_brier. Artifact artifacts/experiments/qb_exit_mixture/results.json.",
+      "plain_summary": "Scored on how confident the numbers were rather than which side was picked, the early-exit adjustment was a wash.",
+      "probability_positive": 0.1359,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.4867599858483819,
+      "sample_blocks": 35,
+      "sample_games": 455,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "docs/qb_exit_mixture.md",
+      "standard_error": null
+    },
+    "qb_exit_mixture_on_production_opener_snap_share_scaled": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-0.66225, +0.66372] spans zero and the point estimate is exactly zero on a net basis; no resolved sign, the flag's split-half reliability is 0.4868, and no control bounds a candidate-sized effect. unresolved_below_power.",
+      "closing_ground": null,
+      "description": "LEAD-63 secondary arm: the QB early-exit mixture with the backup-QB cover penalty scaled by the measured mean relief dropback share on exit games (0.5969), giving d = -0.017367. Opener-graded forced-pick accuracy against production.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "qb_exit_mixture",
+      "interval": [
+        -0.6622516556291391,
+        0.6637168141592921
+      ],
+      "league": "nfl",
+      "notes": "2 of 455 picks changed. Per season, week-blocked: 2020 n=220 effect=-0.45455 P+=0.17883; 2021 n=235 effect=+0.42553 P+=0.82300 -- the net zero is two opposite-signed seasons, not an inert arm. Season-blocked [-0.45455, +0.42553], probability_positive 0.49893. Mean absolute probability shift 0.000331, maximum 0.002116. Artifact artifacts/experiments/qb_exit_mixture/results.json.",
+      "plain_summary": "A relief quarterback only plays part of the game, so this arm shrinks the penalty to the share he actually plays. It changed two picks and they cancelled.",
+      "probability_positive": 0.50605,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.4867599858483819,
+      "sample_blocks": 35,
+      "sample_games": 455,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "docs/qb_exit_mixture.md",
+      "standard_error": null
+    },
+    "qb_exit_mixture_positive_control_oracle_exit": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Control arm, not a candidate. It is recorded unresolved_below_power because it did not resolve: with perfect foreknowledge of which starter leaves, the registry's own backup-QB penalty changes only 2 of 455 picks and scores exactly zero accuracy points. Crucially this control therefore does NOT establish that the instrument can detect an effect of the candidate's size, so it supplies no positive_control_bound for anything.",
+      "closing_ground": null,
+      "description": "LEAD-63 positive control: the realised in-game early-exit flag substituted for the fitted pregame probability, at the same d = -0.029095. Opener-graded forced-pick accuracy against production, 2020-2021.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "qb_exit_mixture",
+      "interval": [
+        -0.6535947712418301,
+        0.6666666666666667
+      ],
+      "league": "nfl",
+      "notes": "2 of 455 picks changed; mean absolute probability shift 0.001564, maximum 0.029095. The same arm's Brier endpoint is +0.000335 at probability_positive 0.86500, i.e. the mechanism's direction is right while its magnitude cannot reach the pick threshold. Artifact artifacts/experiments/qb_exit_mixture/results.json.",
+      "plain_summary": "A check on the method: even knowing in advance exactly which quarterbacks would leave early, the adjustment was too small to change more than two picks.",
+      "probability_positive": 0.4997,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 455,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "docs/qb_exit_mixture.md",
+      "standard_error": null
+    },
+    "qb_exit_mixture_positive_control_oracle_exit_brier": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Control arm using realised exit knowledge, so it cannot be a finding about a pregame rule. Recorded unresolved_below_power: week-blocked interval [-0.000266, +0.000941] spans zero at probability_positive 0.865 (season-blocked probability_positive 1.0). Its value is directional -- it shows the sign of the adjustment is right when the exit is known -- not a closure of anything.",
+      "closing_ground": null,
+      "description": "LEAD-63 positive control, probability endpoint: Brier improvement when the realised in-game early-exit flag replaces the fitted pregame probability at the same d = -0.029095. This is the mechanism's direction check.",
+      "effect": 0.0003346877434179385,
+      "effect_units": "brier_improvement",
+      "family": "qb_exit_mixture",
+      "interval": [
+        -0.00026577506094823246,
+        0.0009406234194054348
+      ],
+      "league": "nfl",
+      "notes": "Season-blocked [+0.000101, +0.000553], probability_positive 1.00000. Paired with qb_exit_mixture_positive_control_oracle_exit, whose accuracy effect on the same rows is exactly 0.0: the direction is right and the magnitude cannot reach the 0.5 pick threshold. Artifact artifacts/experiments/qb_exit_mixture/results.json.",
+      "plain_summary": "Knowing which quarterbacks actually left early, moving the numbers toward the other team made the numbers better, which says the idea points the right way even though it never changed a pick.",
+      "probability_positive": 0.865,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 455,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "docs/qb_exit_mixture.md",
+      "standard_error": null
+    },
+    "qb_exit_mixture_positive_control_oracle_exit_large_delta": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Leaky control, not a candidate. It changes 11 of 455 picks and still fails to resolve: week-blocked [-1.29032, +1.56951] at probability_positive 0.63103. It therefore establishes only that the harness can move the card, never that it can DETECT a candidate-sized effect, and per AGENTS.md it supplies no positive_control_bound closing ground for the screen.",
+      "closing_ground": null,
+      "description": "LEAD-63 deliberately leaky sensitivity control: realised in-game early-exit flag at d = -0.50, which forces a pick flip on essentially every one-sided exit game. Opener-graded forced-pick accuracy against production, 2020-2021.",
+      "effect": 0.21978021978021978,
+      "effect_units": "accuracy_points",
+      "family": "qb_exit_mixture",
+      "interval": [
+        -1.2903225806451613,
+        1.5695067264573992
+      ],
+      "league": "nfl",
+      "notes": "11 of 455 picks changed (12 of 465 including pushes); mean absolute probability shift 0.026882. Season-blocked [-0.90909, +1.27660], probability_positive 0.75060. Per season, week-blocked: 2020 n=220 effect=-0.90909 P+=0.21568; 2021 n=235 effect=+1.27660 P+=0.91787. Its Brier endpoint is -0.006668 at probability_positive 0.10345, which is expected -- d=-0.50 is a wildly overconfident probability shift, useful only as a flip generator. Asymmetric cell under this arm: 4 picks changed, -1.55039 accuracy points, week-blocked [-5.00000, +1.40845], probability_positive 0.15840. Artifact artifacts/experiments/qb_exit_mixture/results.json.",
+      "plain_summary": "A deliberately exaggerated version of the same idea: even swinging the numbers as hard as possible on the games where a quarterback really did leave, only eleven picks moved and the result was still a coin flip.",
+      "probability_positive": 0.631025,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 455,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "docs/qb_exit_mixture.md",
+      "standard_error": null
+    }
+  }
+}

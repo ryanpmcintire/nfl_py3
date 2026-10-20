@@ -1,0 +1,291 @@
+{
+ "coverage": {
+  "games": 533,
+  "covered_all": 355,
+  "covered_lead": 306,
+  "nonzero_all": 326,
+  "nonzero_lead": 261
+ },
+ "coefficients": [
+  {
+   "arm": "base",
+   "fold": 2020,
+   "model_logit": 0.3412456703687922,
+   "composition_flag_sum": 0.24478887702905658,
+   "market_move_toward_home": 0.22072989283668484,
+   "market_move_available": 0.028112585704693643
+  },
+  {
+   "arm": "beat",
+   "fold": 2020,
+   "model_logit": 0.36952408721825775,
+   "composition_flag_sum": 0.2435479523577423,
+   "market_move_toward_home": 0.22720210341783012,
+   "market_move_available": 0.025111816199223046,
+   "beat_all": -7.437314818884894
+  },
+  {
+   "arm": "beat_lead",
+   "fold": 2020,
+   "model_logit": 0.3543115977702273,
+   "composition_flag_sum": 0.24521501138563495,
+   "market_move_toward_home": 0.2209388960969708,
+   "market_move_available": 0.02411101565551946,
+   "beat_lead": -4.263117013565249
+  },
+  {
+   "arm": "base",
+   "fold": 2021,
+   "model_logit": 0.17791560301041812,
+   "composition_flag_sum": 0.27186704531662753,
+   "market_move_toward_home": 0.22371590148167314,
+   "market_move_available": 0.04418263349160242
+  },
+  {
+   "arm": "beat",
+   "fold": 2021,
+   "model_logit": 0.20451593161342294,
+   "composition_flag_sum": 0.27060389892488257,
+   "market_move_toward_home": 0.2299521547198715,
+   "market_move_available": 0.041719050119089475,
+   "beat_all": -7.237395950874006
+  },
+  {
+   "arm": "beat_lead",
+   "fold": 2021,
+   "model_logit": 0.18993868150705243,
+   "composition_flag_sum": 0.27228138071066704,
+   "market_move_toward_home": 0.223913365267004,
+   "market_move_available": 0.04064825039696263,
+   "beat_lead": -4.0008565654406665
+  },
+  {
+   "arm": "base",
+   "fold": 2022,
+   "model_logit": 0.2496469803073289,
+   "composition_flag_sum": 0.238476202553265,
+   "market_move_toward_home": 0.22290342562990204,
+   "market_move_available": 0.039674193639925644
+  },
+  {
+   "arm": "beat",
+   "fold": 2022,
+   "model_logit": 0.2774914805114597,
+   "composition_flag_sum": 0.23750212145802468,
+   "market_move_toward_home": 0.22923729167625176,
+   "market_move_available": 0.034930075192626656,
+   "beat_all": -7.32880268401244
+  },
+  {
+   "arm": "beat_lead",
+   "fold": 2022,
+   "model_logit": 0.2624361500226993,
+   "composition_flag_sum": 0.23908557385706206,
+   "market_move_toward_home": 0.22308914088504686,
+   "market_move_available": 0.03500904774117874,
+   "beat_lead": -4.099971353592559
+  },
+  {
+   "arm": "base",
+   "fold": 2023,
+   "model_logit": 0.3414796906751107,
+   "composition_flag_sum": 0.24611377376594748,
+   "market_move_toward_home": 0.2302718201078854,
+   "market_move_available": 0.0022855785533567397
+  },
+  {
+   "arm": "beat",
+   "fold": 2023,
+   "model_logit": 0.3686796930104278,
+   "composition_flag_sum": 0.24478782617640266,
+   "market_move_toward_home": 0.2415334815254496,
+   "market_move_available": -0.0013906925542593867,
+   "beat_all": -7.464983185236495
+  },
+  {
+   "arm": "beat_lead",
+   "fold": 2023,
+   "model_logit": 0.3546354390889446,
+   "composition_flag_sum": 0.246576880170877,
+   "market_move_toward_home": 0.23098788783447774,
+   "market_move_available": -0.003170655821696983,
+   "beat_lead": -4.305417453046802
+  },
+  {
+   "arm": "base",
+   "fold": 2024,
+   "model_logit": 0.25611555405185643,
+   "composition_flag_sum": 0.2622620067958425,
+   "market_move_toward_home": 0.24606597868683966,
+   "market_move_available": 0.03914584427035065
+  },
+  {
+   "arm": "beat",
+   "fold": 2024,
+   "model_logit": 0.29702502475181203,
+   "composition_flag_sum": 0.2558015482547112,
+   "market_move_toward_home": 0.25311338741381095,
+   "market_move_available": 0.034846842824935984,
+   "beat_all": -11.339178565314615
+  },
+  {
+   "arm": "beat_lead",
+   "fold": 2024,
+   "model_logit": 0.2717878309451004,
+   "composition_flag_sum": 0.26117925152533145,
+   "market_move_toward_home": 0.24541664727852303,
+   "market_move_available": 0.034394306470505266,
+   "beat_lead": -5.107457448082747
+  },
+  {
+   "arm": "base",
+   "fold": 2025,
+   "model_logit": 0.29232816352840957,
+   "composition_flag_sum": 0.2959966396899594,
+   "market_move_toward_home": 0.18873924875223655,
+   "market_move_available": 0.04746241582596322
+  },
+  {
+   "arm": "beat",
+   "fold": 2025,
+   "model_logit": 0.29248378680373566,
+   "composition_flag_sum": 0.2955750156195222,
+   "market_move_toward_home": 0.1878387490236043,
+   "market_move_available": 0.04731310631905085,
+   "beat_all": 1.1808781294530528
+  },
+  {
+   "arm": "beat_lead",
+   "fold": 2025,
+   "model_logit": 0.29224735268052543,
+   "composition_flag_sum": 0.29616944984696925,
+   "market_move_toward_home": 0.18886329407917923,
+   "market_move_available": 0.047352946688914155,
+   "beat_lead": -0.533536195670269
+  }
+ ],
+ "levels": {
+  "base": {
+   "is": {
+    "acc": 0.5797373358348968,
+    "brier": 0.24482374750759808,
+    "ll": 0.682519289982838
+   },
+   "oos": {
+    "acc": 0.5778611632270169,
+    "brier": 0.24535283237763109,
+    "ll": 0.6837075601828855
+   }
+  },
+  "beat": {
+   "is": {
+    "acc": 0.5928705440900562,
+    "brier": 0.24270648982936785,
+    "ll": 0.6785570081644967
+   },
+   "oos": {
+    "acc": 0.5647279549718575,
+    "brier": 0.24756344205760003,
+    "ll": 0.6884726908286467
+   }
+  },
+  "beat_lead": {
+   "is": {
+    "acc": 0.5947467166979362,
+    "brier": 0.2444419790380602,
+    "ll": 0.6818383555020152
+   },
+   "oos": {
+    "acc": 0.5853658536585366,
+    "brier": 0.24530826719647383,
+    "ll": 0.6836925791775403
+   }
+  },
+  "model": {
+   "is": {
+    "acc": 0.5290806754221389,
+    "brier": 0.25089840771891614,
+    "ll": 0.6950157677492951
+   },
+   "oos": {
+    "acc": 0.5290806754221389,
+    "brier": 0.25089840771891614,
+    "ll": 0.6950157677492951
+   }
+  },
+  "market": {
+   "is": {
+    "acc": 0.5084427767354597,
+    "brier": 0.25,
+    "ll": 0.6931471805599453
+   },
+   "oos": {
+    "acc": 0.5084427767354597,
+    "brier": 0.25,
+    "ll": 0.6931471805599453
+   }
+  }
+ },
+ "cells": {
+  "beat": {
+   "decisive_up": 14,
+   "decisive_down": 21,
+   "accuracy": {
+    "effect": -0.013133208255159476,
+    "low": -0.038817005545286505,
+    "high": 0.016917293233082706,
+    "probability_positive": 0.1751,
+    "se": 0.014319766542646653,
+    "blocks": 36
+   },
+   "brier_improvement": {
+    "effect": -0.0022106096799688977,
+    "low": -0.00638934597579196,
+    "high": 0.0014149369501748259,
+    "probability_positive": 0.1269,
+    "se": 0.0019694318443701075,
+    "blocks": 36
+   },
+   "ll_improvement": {
+    "effect": -0.0047651306457612876,
+    "low": -0.013780798215009443,
+    "high": 0.003011826337437033,
+    "probability_positive": 0.1227,
+    "se": 0.004290659659641046,
+    "blocks": 36
+   },
+   "is_accuracy_gain": 0.013133208255159476,
+   "is_oos_gap": 0.02626641651031895
+  },
+  "beat_lead": {
+   "decisive_up": 5,
+   "decisive_down": 1,
+   "accuracy": {
+    "effect": 0.0075046904315197,
+    "low": 0.001851851851851852,
+    "high": 0.01509433962264151,
+    "probability_positive": 0.9924499999999999,
+    "se": 0.003581776557155176,
+    "blocks": 36
+   },
+   "brier_improvement": {
+    "effect": 4.4565181157251924e-05,
+    "low": -0.0009346809910758859,
+    "high": 0.0008101031716077168,
+    "probability_positive": 0.5794,
+    "se": 0.000446220837295847,
+    "blocks": 36
+   },
+   "ll_improvement": {
+    "effect": 1.4981005345016338e-05,
+    "low": -0.00207264226980008,
+    "high": 0.001618432162994882,
+    "probability_positive": 0.5304,
+    "se": 0.0009465207599577564,
+    "blocks": 36
+   },
+   "is_accuracy_gain": 0.0150093808630394,
+   "is_oos_gap": 0.0075046904315197
+  }
+ }
+}

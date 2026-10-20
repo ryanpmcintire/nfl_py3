@@ -1,0 +1,117 @@
+{
+  "family": "e178-ctxscr",
+  "signals": {
+    "e178-ctxscr-joint-class-scramble-vs-ctxF": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "joint pair gain positive; class-only -0.000061 is the marginal of this",
+      "closing_ground": null,
+      "description": "CTXSCR v CTX F held-out LOSO log likelihood of the (class, scramble) pair on affected run plays; n=102817; folds+ 8/9; in-sample +0.001894 gap +0.000821",
+      "effect": 0.001073,
+      "effect_units": "log_loss_improvement",
+      "family": "e178-ctxscr",
+      "interval": [
+        0.000469,
+        0.001675
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Scored on class and scramble together the mechanism beats the base context model",
+      "probability_positive": 0.999,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e178/scr_target_agg.py",
+      "standard_error": null
+    },
+    "e178-ctxscr-scrflag-vs-marginal": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "positive on own target in 9/9 folds; no closure",
+      "closing_ground": null,
+      "description": "CTXSCR held-out LOSO log likelihood of the real scramble flag on affected run plays v training marginal P(scr); n=102817 queries; also v run-to-go-only +0.034911 [0.033242,0.036589], v CTX F implied +0.004143 [0.003557,0.004714] 8/9 folds",
+      "effect": 0.035463,
+      "effect_units": "log_loss_improvement",
+      "family": "e178-ctxscr",
+      "interval": [
+        0.033769,
+        0.037179
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The fitted scramble mechanism predicts which run plays were scrambles far better than a flat rate in every held-out season",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e178/scr_target_agg.py",
+      "standard_error": null
+    },
+    "e178-ctxscr-vs-ctxF-all-affected": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CTXSCR v CTX F held-out dLL per query, all queries (102817 affected run queries); 2/9 folds positive; in-sample -0.000045; class likelihood does not see scramble status so it cannot reward the mix",
+      "effect": -6.1e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "e178-ctxscr",
+      "interval": [
+        -0.000116,
+        -3e-06
+      ],
+      "league": "nfl",
+      "notes": "one declared look, lam 5 parent run-to-go bucket from CTX F; log tests/scratch/e178/ctx_an_SCR.log",
+      "plain_summary": null,
+      "probability_positive": 0.044,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "docs/lanes/mod25e-e176-neutral-yards.md",
+      "standard_error": null
+    },
+    "e178-ctxscr-vs-ctxF-neutral-3rd7plus-run": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CTXSCR v CTX F held-out dLL on neutral 3rd&7+ run queries n=872; rate 28.45 v real 29.01 (CTX F 25.75); E161 bucket bar 0 IN->OUT of 20",
+      "effect": 0.004394,
+      "effect_units": "log_loss_improvement",
+      "family": "e178-ctxscr",
+      "interval": [
+        -0.001954,
+        0.011059
+      ],
+      "league": "nfl",
+      "notes": "one declared look, lam 5 parent run-to-go bucket from CTX F; log tests/scratch/e178/ctx_an_SCR.log",
+      "plain_summary": null,
+      "probability_positive": 0.878,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "docs/lanes/mod25e-e176-neutral-yards.md",
+      "standard_error": null
+    }
+  }
+}

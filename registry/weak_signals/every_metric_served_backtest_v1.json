@@ -1,0 +1,61 @@
+{
+  "family": "every_metric_served_backtest_v1",
+  "signals": {
+    "served_cover_accuracy_vs_market_2018_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval above zero but no positive control and no reliability measured; recorded as the accuracy axis beside the margin-MAE axis of the same model",
+      "closing_ground": null,
+      "description": "ENG-46 unit 1 companion cell: the same served model's cover accuracy against a 50% market baseline, read from artifacts/active_ats_model.json historical_evaluation (1,093 of 2,091, season interval 0.508-0.536)",
+      "effect": 2.27,
+      "effect_units": "accuracy_points",
+      "family": "every_metric_served_backtest_v1",
+      "interval": [
+        0.83,
+        3.57
+      ],
+      "league": "nfl",
+      "notes": "Same model as served_margin_mae_vs_spread_2018_2025; opposite signs on the two axes",
+      "plain_summary": "Over eight seasons the model picked the covering side about 52 times in 100, a little better than a coin flip.",
+      "probability_positive": 0.998,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": 2091,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/active_ats_model.json",
+      "standard_error": null
+    },
+    "served_margin_mae_vs_spread_2018_2025": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "whole season-block interval on the wrong side of zero and every one of 8 seasons worse than the spread; the claim that the served margin beats the spread as a margin forecast is resolved wrong",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "ENG-46 unit 1: the served ridge market-residual model's predicted margin against the final margin, paired per game with the spread used as the margin; MAE model 9.952 vs market 9.844 over 2,127 games 2018-2025; worse than the spread in all 8 seasons; season-block bootstrap 2,000 draws",
+      "effect": -0.108,
+      "effect_units": "mae_improvement",
+      "family": "every_metric_served_backtest_v1",
+      "interval": [
+        -0.14,
+        -0.071
+      ],
+      "league": "nfl",
+      "notes": "Would not have been seen grading on cover accuracy alone; motivates ENG-46 units 2-3",
+      "plain_summary": "As a forecast of the final score margin, the model's number is slightly worse than the betting line itself, and it has been every season since 2018. The model still picks the covering side a little better than a coin flip, so its value is in the side it leans to, not the number it predicts.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": 2127,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z/results.json",
+      "standard_error": null
+    }
+  }
+}

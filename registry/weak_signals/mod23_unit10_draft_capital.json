@@ -1,0 +1,117 @@
+{
+  "family": "mod23_unit10_draft_capital",
+  "signals": {
+    "mod23_unit10_draft_capital_A_sbr_2013_2019_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Starter draft capital arm A paired vs base, 2013-2019; 885-846 vs 897-834.",
+      "effect": -0.6932409012131716,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit10_draft_capital",
+      "interval": [
+        -1.7991874637260592,
+        0.28968713789107764
+      ],
+      "league": "nfl",
+      "notes": "Base fit plus starter draft-capital inputs, arm A (offence/defence draft pick and years in league); four looks (two arms, two eras).",
+      "plain_summary": "Adding the draft pedigree and experience of last week's starters to the base inputs moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.08535,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 7,
+      "sample_games": 1731,
+      "seasons": [
+        2013,
+        2019
+      ],
+      "source": "artifacts/mod23_unit10b/report_all.json",
+      "standard_error": null
+    },
+    "mod23_unit10_draft_capital_A_tuesday_2020_2025_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Starter draft capital arm A paired vs base, 2020-2025; 797-706 vs 802-701.",
+      "effect": -0.33266799733865604,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit10_draft_capital",
+      "interval": [
+        -1.196808510638298,
+        0.5383580080753702
+      ],
+      "league": "nfl",
+      "notes": "Base fit plus starter draft-capital inputs, arm A (offence/defence draft pick and years in league); four looks (two arms, two eras).",
+      "plain_summary": "Adding the draft pedigree and experience of last week's starters to the base inputs moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.2168,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit10b/report_all.json",
+      "standard_error": null
+    },
+    "mod23_unit10_draft_capital_B_sbr_2013_2019_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Starter draft capital arm B paired vs base, 2013-2019; 902-829 vs 897-834.",
+      "effect": 0.28885037550548814,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit10_draft_capital",
+      "interval": [
+        -0.4034582132564842,
+        0.9883720930232558
+      ],
+      "league": "nfl",
+      "notes": "Base fit plus starter draft-capital inputs, arm B (offence/defence draft pick only); four looks (two arms, two eras).",
+      "plain_summary": "Adding the draft pedigree and experience of last week's starters to the base inputs moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.75465,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 7,
+      "sample_games": 1731,
+      "seasons": [
+        2013,
+        2019
+      ],
+      "source": "artifacts/mod23_unit10b/report_all.json",
+      "standard_error": null
+    },
+    "mod23_unit10_draft_capital_B_tuesday_2020_2025_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Starter draft capital arm B paired vs base, 2020-2025; 810-693 vs 802-701.",
+      "effect": 0.5322687957418496,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit10_draft_capital",
+      "interval": [
+        0.1384083044982699,
+        1.1096605744125327
+      ],
+      "league": "nfl",
+      "notes": "Base fit plus starter draft-capital inputs, arm B (offence/defence draft pick only); four looks (two arms, two eras).",
+      "plain_summary": "Adding the draft pedigree and experience of last week's starters to the base inputs moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.99905,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit10b/report_all.json",
+      "standard_error": null
+    }
+  }
+}

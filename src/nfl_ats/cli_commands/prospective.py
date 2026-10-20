@@ -508,8 +508,8 @@ def register(
     study_choice = argparse.ArgumentParser(add_help=False)
     study_choice.add_argument(
         "--study",
-        default="independent_validation_v3",
-        help="study directory under artifacts/prospective; earlier: independent_validation(_v2)",
+        default="independent_validation_v4",
+        help="study directory under artifacts/prospective; earlier: independent_validation_v3",
     )
     study_enroll = study_actions.add_parser(
         "enroll", help="freeze the declared future cohort and model", parents=[study_choice]

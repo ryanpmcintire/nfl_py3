@@ -1,0 +1,117 @@
+{
+  "family": "players_on_field_rating_v1",
+  "signals": {
+    "players_on_field_rating_diff_divergence_pick_probability_term": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval spans zero; 35 decisive games 17-18; coefficient sign flips twice",
+      "closing_ground": null,
+      "description": "diff_divergence (availability part) as a fifth fitted term in the served pick probability, LOSO by season, MOD-22 unit 1",
+      "effect": -0.0665335994677312,
+      "effect_units": "accuracy_points",
+      "family": "players_on_field_rating_v1",
+      "interval": [
+        -0.9139580463669194,
+        0.9097749286714685
+      ],
+      "league": "nfl",
+      "notes": "reliability inherited from PER-09 split-half of the season-lagged ratings, not remeasured",
+      "plain_summary": null,
+      "probability_positive": 0.425,
+      "recorded_at": "2026-09-23",
+      "reliability": 0.154,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/players_on_field_rating/20260923T191937Z/summary.json",
+      "standard_error": null
+    },
+    "players_on_field_rating_diff_lineup_total_pick_probability_term": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval touches but is not wholly below zero; 4 decisive games 0-4; coefficient sign flips once across folds",
+      "closing_ground": null,
+      "description": "diff_lineup_total as a fifth fitted term in the served pick probability, LOSO by season, MOD-22 unit 1",
+      "effect": -0.2661343978709248,
+      "effect_units": "accuracy_points",
+      "family": "players_on_field_rating_v1",
+      "interval": [
+        -0.6766014385668202,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "reliability inherited from PER-09 split-half of the season-lagged ratings, not remeasured",
+      "plain_summary": null,
+      "probability_positive": 0.04025,
+      "recorded_at": "2026-09-23",
+      "reliability": 0.154,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/players_on_field_rating/20260923T191937Z/summary.json",
+      "standard_error": null
+    },
+    "players_on_field_rating_residual_unpriced_pick_probability_term": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval crosses zero; only 54 decisive games (23-31, exact-null p 0.341); per-fold coefficient sign-flips once, 2022 near-zero -0.033, other 5 folds positive 0.085 to 0.800, magnitude unstable",
+      "closing_ground": null,
+      "description": "diff_lineup_total residualised on tue_open_home_spread (OLS fit on LOSO training seasons only, applied to held-out season) added as 5th fitted term to the served pick-probability model, LOSO by season, MOD-22 unit 2 look a",
+      "effect": -0.5322687957418496,
+      "effect_units": "accuracy_points",
+      "family": "players_on_field_rating_v1",
+      "interval": [
+        -2.0412909349786417,
+        0.840472818925878
+      ],
+      "league": "nfl",
+      "notes": "reliability inherited from PER-09 split-half of the underlying season-lagged RAPM ratings (min 0.154 defense), not remeasured this session",
+      "plain_summary": null,
+      "probability_positive": 0.25875,
+      "recorded_at": "2026-09-23",
+      "reliability": 0.154,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/players_on_field_rating_unit2/20260923T202320Z/summary.json",
+      "standard_error": null
+    },
+    "players_on_field_rating_unseen_interaction_pick_probability_term": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval crosses zero; only 23 decisive games (9-14, exact-null p 0.405); per-fold coefficient sign-flips once, 2021 -0.415, other 5 folds positive 0.098 to 0.637",
+      "closing_ground": null,
+      "description": "diff_lineup_total x (1 - market_move_available) interaction added as 5th fitted term to the served pick-probability model, LOSO by season, MOD-22 unit 2 look b",
+      "effect": -0.33266799733865604,
+      "effect_units": "accuracy_points",
+      "family": "players_on_field_rating_v1",
+      "interval": [
+        -1.1414123645757024,
+        0.2793639125747327
+      ],
+      "league": "nfl",
+      "notes": "reliability inherited from PER-09 split-half of the underlying season-lagged RAPM ratings (min 0.154 defense), not remeasured this session",
+      "plain_summary": null,
+      "probability_positive": 0.1505,
+      "recorded_at": "2026-09-23",
+      "reliability": 0.154,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/players_on_field_rating_unit2/20260923T202320Z/summary.json",
+      "standard_error": null
+    }
+  }
+}

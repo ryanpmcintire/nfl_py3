@@ -47,6 +47,7 @@ from nfl_ats.public_board import (
 )
 from nfl_ats.snapshots import write_snapshot
 from nfl_ats.spread_explorer import SpreadExplorerGameParams
+from nfl_ats.weak_signals import read_registry_payload
 
 FORBIDDEN_BOOKS = ("DraftKings", "FanDuel", "BetMGM", "Caesars", "PointsBet", "Bovada")
 
@@ -2254,7 +2255,7 @@ def test_deep_dive_overlay_notes_are_plain_english_without_doc_refs() -> None:
 
 
 def test_findings_page_does_not_leak_internal_audit_prose() -> None:
-    if not Path(_default_weak_signals_registry_path()).is_file():
+    if read_registry_payload(_default_weak_signals_registry_path()) is None:
         pytest.skip("live weak-signals registry absent")
 
     page = render_findings_page()

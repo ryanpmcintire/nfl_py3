@@ -7,7 +7,7 @@ from typing import Any
 from nfl_ats import registry_explorer, rotation, weak_signals
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-LIVE_WEAK_SIGNALS = REPO_ROOT / "registry" / "weak_signals.json"
+LIVE_WEAK_SIGNALS = REPO_ROOT / "registry" / "weak_signals"
 LIVE_ROTATION = REPO_ROOT / "registry" / "rotation_registry.json"
 
 
@@ -363,7 +363,7 @@ def test_next_shots_orders_by_probability_then_rotation_capacity(tmp_path: Path)
 
 
 def test_views_run_against_live_registries_and_write_nothing() -> None:
-    weak_before = LIVE_WEAK_SIGNALS.read_bytes()
+    weak_before = {path.name: path.read_bytes() for path in LIVE_WEAK_SIGNALS.glob("*.json")}
     rotation_before = LIVE_ROTATION.read_bytes()
 
     weak_registry = weak_signals.load_registry(LIVE_WEAK_SIGNALS)
@@ -415,7 +415,9 @@ def test_views_run_against_live_registries_and_write_nothing() -> None:
     ]
     assert ranked_probabilities == sorted(ranked_probabilities, reverse=True)
 
-    assert LIVE_WEAK_SIGNALS.read_bytes() == weak_before
+    assert {
+        path.name: path.read_bytes() for path in LIVE_WEAK_SIGNALS.glob("*.json")
+    } == weak_before
     assert LIVE_ROTATION.read_bytes() == rotation_before
 
 

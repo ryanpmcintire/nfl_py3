@@ -1,0 +1,89 @@
+{
+  "family": "graph_team_stat_cfb_replication",
+  "signals": {
+    "graph_team_stat_cfb_def_epa_per_play": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CFB cross-league replication of the NFL graph team_stat arm, cell def_epa_per_play (stands in for the NFL def_yards_per_play cell; CFB has no yards-per-play column). Primary comparison: the frozen XLG-03 CFB market-residual benchmark arm (CFB_MODEL_FEATURE_COLUMNS, ridge alpha 10, 500-game training floor) versus the same arm plus one column, the signed-Katz differential of def_epa_per_play propagated over the CFB schedule graph at the NFL-frozen structure (alpha 0.85, half_life 8.0, max_row_l1 1.0, prior_weight 1.0, min_games 16, signed_katz, injury_beta 0.0). Graded at the benchmark own spread_line, XLG-03 clean core 2012-2019+2021-2025, walk-forward weekly refit. The raw diff_def_epa_per_play is ALREADY in the reference arm, so the graph is never credited for what the raw statistic earned. Benchmark accuracy 51.5952 pct, candidate 51.5840 pct.",
+      "effect": -0.0112,
+      "effect_units": "accuracy_points",
+      "family": "graph_team_stat_cfb_replication",
+      "interval": [
+        -0.287,
+        0.2797
+      ],
+      "league": "cfb",
+      "notes": "Instrument checks ran first and both passed. Null (200 within-week permutations, close grade): mean -0.005 pts, sd 0.140, 95% [-0.269,+0.280] -- centred on zero. Positive control (graph column replaced by realised ats_margin): +48.405 pts, week-blocked P+ 1.000, 95% [+47.374,+49.464], 100th percentile of its own null -- the instrument is not blind, though it is NOT proven able to resolve a 0.2-point effect, so positive_control_bound is inadmissible and this stays unresolved_below_power. Season-blocked secondary: -0.178 to +0.158, P+ 0.425. Opener-graded secondary (spread_open, n=8925): +0.056 pts, P+ 0.667, 95% [-0.210,+0.316]. Observed delta sits at the 47.5th percentile of its own permutation null. Era magnitudes (report only, close grade): 2012-2019 +0.075 pts P+ 0.632 n=5349; 2021-2025 -0.140 pts P+ 0.168 n=3584. Power: the two arms disagree on only 175 of 9093 picks (1.92 pct), which is why the interval is +-0.29 pts rather than the +-2.6 pts of the NFL on-production reading. Secondary comparisons on the same rows: graph_only minus raw_only +0.369 pts P+ 0.798 (this is the NFL bare-baseline direction, and it replicates); graph_only minus market +1.052 pts P+ 0.896 -- but note the CFB market arm picks home on 92.5 pct of games because CFB spread odds are flat -110/-110, so that comparator is near-always-home and is the weakest of the three. Not pooled with its two sibling cells: they share the same window and overlapping football.\n[2026-09-01T19:35:05.918969+00:00] reliability set: None -> 0.9929 95% [0.9920, 0.9936]. Method: odd/even-week team-season split-half via nfl_ats.cfb_qb_dependence.split_half_reliability, the same call scripts/reliability_map.py makes; Spearman-Brown full-length corrected; block bootstrap over team-seasons; seed 20260901, 4000 draws, 1672 team-seasons, population CFB_CLEAN_CORE_SEASONS (2012-2019 + 2021-2025); interval = Spearman-Brown-transformed bootstrap CI on the Katz-propagated trait graph_def_epa_per_play_katz. Measured from: artifacts/graph_team_stat_cfb_replacement/reliability/20260901T191734Z/results.json. Reason: WP24 measured this trait's split-half reliability this session on the CFB clean-core population (1672 team-seasons, probability_positive 1.000); this WP8 cell adds exactly that Katz-propagated def_epa_per_play signal, so the trait's reliability is the cell's. Measurement only: no classification, closing_ground or effect changed.. Reliability fields only; effect/interval/classification/closing_ground untouched, and this measurement does not by itself reclassify the entry.",
+      "plain_summary": "Rates college defences by who they played, not just how they played, then asks whether that helps a model that already knows the raw defensive number. It does not move the needle either way.",
+      "probability_positive": 0.467,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.992853,
+      "sample_blocks": 199,
+      "sample_games": 8933,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/graph_team_stat_cfb_replication/def_epa_per_play_screen/20260901T185750Z/results.json; predeclared in docs/graph_team_stat_cfb_replication.md",
+      "standard_error": null
+    },
+    "graph_team_stat_cfb_off_epa_per_play": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CFB cross-league replication of the NFL graph team_stat arm, cell off_epa_per_play (stands in for the NFL off_rush_epa_per_play cell; CFB has no rush/pass split, so this is all plays). Primary comparison: the frozen XLG-03 CFB market-residual benchmark arm (CFB_MODEL_FEATURE_COLUMNS, ridge alpha 10, 500-game training floor) versus the same arm plus one column, the signed-Katz differential of off_epa_per_play propagated over the CFB schedule graph at the NFL-frozen structure (alpha 0.85, half_life 8.0, max_row_l1 1.0, prior_weight 1.0, min_games 16, signed_katz, injury_beta 0.0). Graded at the benchmark own spread_line, XLG-03 clean core 2012-2019+2021-2025, walk-forward weekly refit. The raw diff_off_epa_per_play is ALREADY in the reference arm. Benchmark accuracy 51.5952 pct, candidate 51.6176 pct.",
+      "effect": 0.0224,
+      "effect_units": "accuracy_points",
+      "family": "graph_team_stat_cfb_replication",
+      "interval": [
+        -0.443,
+        0.4901
+      ],
+      "league": "cfb",
+      "notes": "Instrument checks ran first and both passed. Null (200 within-week permutations, close grade): mean +0.003 pts, sd 0.227, 95% [-0.448,+0.392] -- centred on zero. Positive control (graph column replaced by realised ats_margin): +48.405 pts, week-blocked P+ 1.000, 95% [+47.374,+49.464], 100th percentile of its own null -- the instrument is not blind, though it is NOT proven able to resolve a 0.2-point effect, so positive_control_bound is inadmissible and this stays unresolved_below_power. Season-blocked secondary: -0.316 to +0.369, P+ 0.520. Opener-graded secondary (spread_open, n=8925): +0.000 pts, P+ 0.474, 95% [-0.411,+0.437]. Observed delta sits at the 50.5th percentile of its own permutation null. Era magnitudes (report only, close grade): 2012-2019 +0.094 pts P+ 0.638 n=5349; 2021-2025 -0.084 pts P+ 0.379 n=3584. Power: the two arms disagree on 415 of 9093 picks (4.56 pct). Secondary comparisons on the same rows: graph_only minus raw_only +0.291 pts P+ 0.765 (the NFL bare-baseline direction, and it replicates); graph_only minus market +0.918 pts P+ 0.879 -- but the CFB market arm picks home on 92.5 pct of games because CFB spread odds are flat -110/-110, so that comparator is near-always-home and is the weakest of the three. Not pooled with its two sibling cells: they share the same window and overlapping football.\n[2026-09-01T19:35:09.291175+00:00] reliability set: None -> 0.9925 95% [0.9915, 0.9933]. Method: odd/even-week team-season split-half via nfl_ats.cfb_qb_dependence.split_half_reliability, the same call scripts/reliability_map.py makes; Spearman-Brown full-length corrected; block bootstrap over team-seasons; seed 20260901, 4000 draws, 1672 team-seasons, population CFB_CLEAN_CORE_SEASONS (2012-2019 + 2021-2025); interval = Spearman-Brown-transformed bootstrap CI on the Katz-propagated trait graph_off_epa_per_play_katz. Measured from: artifacts/graph_team_stat_cfb_replacement/reliability/20260901T191734Z/results.json. Reason: WP24 measured this trait's split-half reliability this session on the CFB clean-core population (1672 team-seasons, probability_positive 1.000); this WP8 cell adds exactly that Katz-propagated off_epa_per_play signal, so the trait's reliability is the cell's. Measurement only: no classification, closing_ground or effect changed.. Reliability fields only; effect/interval/classification/closing_ground untouched, and this measurement does not by itself reclassify the entry.",
+      "plain_summary": "Rates college offences by the quality of who they scored on, then asks whether that helps a model that already knows the raw offensive number. Essentially a wash.",
+      "probability_positive": 0.535,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.992462,
+      "sample_blocks": 199,
+      "sample_games": 8933,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/graph_team_stat_cfb_replication/off_epa_per_play_screen/20260901T185902Z/results.json; predeclared in docs/graph_team_stat_cfb_replication.md",
+      "standard_error": null
+    },
+    "graph_team_stat_cfb_off_success_rate": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CFB cross-league replication of the NFL graph team_stat arm, cell off_success_rate. NOT a counterpart to the NFL off_sack_rate cell -- the CFB feature table carries no sack or pressure column at all, so off_sack_rate has no CFB analogue; off_success_rate was predeclared as the third-best available team-stat column (nearest NFL sibling pbp_off_success_rate). Primary comparison: the frozen XLG-03 CFB market-residual benchmark arm (CFB_MODEL_FEATURE_COLUMNS, ridge alpha 10, 500-game training floor) versus the same arm plus one column, the signed-Katz differential of off_success_rate propagated over the CFB schedule graph at the NFL-frozen structure (alpha 0.85, half_life 8.0, max_row_l1 1.0, prior_weight 1.0, min_games 16, signed_katz, injury_beta 0.0). Graded at the benchmark own spread_line, XLG-03 clean core 2012-2019+2021-2025. The raw diff_off_success_rate is ALREADY in the reference arm. Benchmark accuracy 51.5952 pct, candidate 51.4161 pct.",
+      "effect": -0.1791,
+      "effect_units": "accuracy_points",
+      "family": "graph_team_stat_cfb_replication",
+      "interval": [
+        -0.6847,
+        0.3413
+      ],
+      "league": "cfb",
+      "notes": "Instrument checks ran first and both passed. Null (200 within-week permutations, close grade): mean -0.017 pts, sd 0.228, 95% [-0.381,+0.459] -- centred on zero. Positive control (graph column replaced by realised ats_margin): +48.405 pts, week-blocked P+ 1.000, 95% [+47.374,+49.464], 100th percentile of its own null -- the instrument is not blind, though it is NOT proven able to resolve a 0.2-point effect, so positive_control_bound is inadmissible. The week-blocked interval [-0.685,+0.341] straddles zero, so wrong_sign_resolved is inadmissible too; this stays unresolved_below_power at P+ 0.266. Season-blocked secondary: -0.521 to +0.160, P+ 0.147. Opener-graded secondary (spread_open, n=8925): -0.101 pts, P+ 0.333, 95% [-0.568,+0.377]. Observed delta sits at the 24.5th percentile of its own permutation null -- a mild negative lean, not a tail value. Era magnitudes (report only, close grade): 2012-2019 +0.094 pts P+ 0.662 n=5349; 2021-2025 -0.586 pts P+ 0.148 n=3584, so the negative lean is concentrated in the recent era. Power: the two arms disagree on 464 of 9093 picks (5.10 pct). Secondary comparisons on the same rows: graph_only minus raw_only +0.694 pts P+ 0.897, season-blocked 95% [+0.067,+1.279] P+ 0.983 (the NFL bare-baseline direction, and it replicates -- this cell is the strongest of the three on that read); graph_only minus market +0.996 pts P+ 0.895 -- but the CFB market arm picks home on 92.5 pct of games because CFB spread odds are flat -110/-110, so that comparator is near-always-home and is the weakest of the three. Not pooled with its two sibling cells: they share the same window and overlapping football.\n[2026-09-01T19:35:12.935098+00:00] reliability set: None -> 0.9938 95% [0.9930, 0.9945]. Method: odd/even-week team-season split-half via nfl_ats.cfb_qb_dependence.split_half_reliability, the same call scripts/reliability_map.py makes; Spearman-Brown full-length corrected; block bootstrap over team-seasons; seed 20260901, 4000 draws, 1672 team-seasons, population CFB_CLEAN_CORE_SEASONS (2012-2019 + 2021-2025); interval = Spearman-Brown-transformed bootstrap CI on the Katz-propagated trait graph_off_success_rate_katz. Measured from: artifacts/graph_team_stat_cfb_replacement/reliability/20260901T191734Z/results.json. Reason: WP24 measured this trait's split-half reliability this session on the CFB clean-core population (1672 team-seasons, probability_positive 1.000); this WP8 cell adds exactly that Katz-propagated off_success_rate signal, so the trait's reliability is the cell's. Measurement only: no classification, closing_ground or effect changed.. Reliability fields only; effect/interval/classification/closing_ground untouched, and this measurement does not by itself reclassify the entry.",
+      "plain_summary": "Rates college offences on how often they stay on schedule against the defences they actually faced, then asks whether that helps a model that already knows the raw rate. It leans slightly the wrong way.",
+      "probability_positive": 0.266,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.993816,
+      "sample_blocks": 199,
+      "sample_games": 8933,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/graph_team_stat_cfb_replication/off_success_rate_screen/20260901T190016Z/results.json; predeclared in docs/graph_team_stat_cfb_replication.md",
+      "standard_error": null
+    }
+  }
+}

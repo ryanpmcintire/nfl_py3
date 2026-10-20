@@ -1,0 +1,61 @@
+{
+  "family": "mod23_unit7_target_line",
+  "signals": {
+    "mod23_unit7_A_open_trained": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Base model trained on A_open_trained, graded at the opener vs base 802-701",
+      "effect": -0.0665,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit7_target_line",
+      "interval": [
+        -1.0417,
+        0.813
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Training the base on the opener instead of the close did not change accuracy",
+      "probability_positive": 0.42915,
+      "recorded_at": "2026-10-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit7/report.json",
+      "standard_error": null
+    },
+    "mod23_unit7_C_close_trained_same_rows": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Base model trained on C_close_trained_same_rows, graded at the opener vs base 802-701",
+      "effect": -0.0665,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit7_target_line",
+      "interval": [
+        -1.388,
+        1.0281
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Training the base on the opener instead of the close did not change accuracy",
+      "probability_positive": 0.44805,
+      "recorded_at": "2026-10-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit7/report.json",
+      "standard_error": null
+    }
+  }
+}

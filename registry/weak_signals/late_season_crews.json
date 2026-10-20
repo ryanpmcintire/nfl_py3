@@ -1,0 +1,89 @@
+{
+  "family": "late_season_crews",
+  "signals": {
+    "all_star_crew_underdog_on_production": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "LEAD-33: on-production opener screen, BACK the favorite when all_star_crew AND physical_underdog, rotation-assigned window 2020-2021",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "late_season_crews",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Full 2020-2025 archive read (not itself a rotation spend): -0.266 pts [-0.853, +0.267], P+ 0.169, 80 triggers/26 flips of 1,537 games. Positive control (tautological oracle) confirms harness sensitivity: +45.4 to +46.7 pts, P+ 1.000, both populations.",
+      "plain_summary": "Backing the favorite when a run-heavy underdog draws a playoff-tested crew was too rare an event in the current test window (14 games, 2 actual pick changes) to move the needle either way.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 466,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "docs/late_season_crews.md",
+      "standard_error": null
+    },
+    "late_season_crew_tightness_reliability": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "LEAD-33: odd-vs-even-season split-half reliability of a referee's penalty rate per play (2015-2025 REG games, officials.parquet crosswalked to game_penalties.parquet/PBP play counts)",
+      "effect": 0.6414,
+      "effect_units": "correlation",
+      "family": "late_season_crews",
+      "interval": [
+        0.3452,
+        0.8174
+      ],
+      "league": "nfl",
+      "notes": "Not a closing ground either way -- reliability is strongly positive but the registry has no confirmed-positive bucket, only unresolved_below_power / refuted_mechanism / bounded_by_control.",
+      "plain_summary": "Some referees really do call a tighter or looser game than others, and that tendency holds up from one set of seasons to another.",
+      "probability_positive": 0.99985,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 27,
+      "sample_games": 2892,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "docs/late_season_crews.md",
+      "standard_error": null
+    },
+    "physical_underdog_cover_under_all_star_crew": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "LEAD-33: physical (run-heavy) underdog cover rate under all-star (prior-season-playoff-referee) crews vs. other crews, weeks 15-18, 2020-2025 opener-graded population, framed as the favorite-side edge",
+      "effect": 12.4505,
+      "effect_units": "accuracy_points",
+      "family": "late_season_crews",
+      "interval": [
+        0.1205,
+        24.7806
+      ],
+      "league": "nfl",
+      "notes": "Whole interval on the predeclared side of zero, but the calls-tighter mechanism in (2) is wrong-signed for the same crews, so this is reported as an open, unresolved directional finding, not a confirmed mechanism.",
+      "plain_summary": "When a run-heavy underdog draws a crew that worked the playoffs last year, that underdog covers less often than it does under any other crew.",
+      "probability_positive": 0.9755,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 105,
+      "sample_games": 376,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/late_season_crews.md",
+      "standard_error": null
+    }
+  }
+}

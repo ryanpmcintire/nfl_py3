@@ -1,0 +1,33 @@
+{
+  "family": "week1_dog_on_production",
+  "signals": {
+    "week1_dog_on_production": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval upper bound touches exactly 0.0 -- NOT strictly below zero, so wrong_sign_resolved is inadmissible (AGENTS.md requires the WHOLE interval on the wrong side; a boundary at exactly zero is a lean, not a resolution). Thin in-window population (only 3/456 forced picks disagree) plausibly explains the boundary-exact bound. no_split_half_reliability is inadmissible (week==1 and the Tuesday-opener spread are deterministic/observed facts with zero measurement noise).",
+      "closing_ground": null,
+      "description": "Opener-grade confirmation: symmetric on-production week1_dog flag (signed +1 home Week 1 underdog at Tuesday opener, -1 away Week 1 underdog, 0 otherwise) on top of production weak_stack versus production unmodified, paired forced-pick probability-rule accuracy.",
+      "effect": -0.6579,
+      "effect_units": "accuracy_points",
+      "family": "week1_dog_on_production",
+      "interval": [
+        -1.7505,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Rotation family week1_dog_on_production, window [2020,2021] spent 2026-09-05, verdict unresolved. Flag fires 92/4902 games (1.9%) across full 2009-2026 schedule, 38 positive/54 negative. Symmetric extension of docs/public_claim_battery.md's public_claim_week1_dog (+0.1076pts close-graded, P+ 0.9219, full 2009-2025 population).",
+      "plain_summary": "Backing the underdog in Week 1 games, stacked onto the production model and graded the way real picks are made, barely moved anything across two full seasons -- only 3 forced picks changed at all.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-05",
+      "reliability": 1.0,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/schedule_flag_on_production/week1_dog/20260905T040525Z/results.json",
+      "standard_error": null
+    }
+  }
+}

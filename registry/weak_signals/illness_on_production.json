@@ -1,0 +1,61 @@
+{
+  "family": "illness_on_production",
+  "signals": {
+    "illness_away_active_ge1_on_production": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Close-graded look; per AGENTS.md's binding 'grade the decision at the opener' rule a close grade settles no play/no-play or terminal call regardless of sign, so unresolved_below_power is the only admissible classification here. Neither closing ground applies: no resolved wrong sign (the point estimate and both blockings favour the candidate) and no positive-control bound (the control detected +50.13 pts, proving the harness is not blind, but did not bound an effect of this size as absent).",
+      "closing_ground": null,
+      "description": "Away team active_illness_count >= 1 (injury-report illness designations excluding Out/Doubtful, resolved as of that game's own pick deadline) added as ONE feature column on top of the FULL production weak_stack/market_residual/ridge/alpha-10 chain, versus production unmodified. Paired candidate-minus-baseline forced-pick accuracy delta on the rotation-assigned [2011, 2013] block, close-graded. Predeclared docs/illness_on_production.md; ranked #1 of four in docs/on_production_sweep_20260901.md.",
+      "effect": 0.804289544235925,
+      "effect_units": "accuracy_points",
+      "family": "illness_on_production",
+      "interval": [
+        -0.2681235769776177,
+        1.9135822233606548
+      ],
+      "league": "nfl",
+      "notes": "Window [2011, 2013], 746 paired games, 51 weeks, close-graded, mode=screen. Production weak_stack accuracy 49.866% vs weak_stack_illness_away 50.670%; paired delta +0.804 accuracy points. Week-blocked (primary, within-week correlation zero by owner mandate) 95% [-0.268, +1.914], P+ 0.908. Season-blocked secondary 95% [+0.398, +1.633], P+ 1.000 -- reported beside the week-blocked primary, never averaged with it, and read with the same caution docs/graph_team_stat_def_ypp_on_production.md gives its own: with only 3 season blocks the season bootstrap has very little combinatorial diversity, so its tight interval is a low-power artifact of block count, not a sharper answer. Within-week permutation null (200 draws, real feature, unleaked) centres +0.153 pts, sd 0.627; observed sits at the 82.5th percentile of its own null. Positive control (candidate column leaked to realized ats_margin) +50.134 pts, P+ 1.000, 95% [+46.428, +53.652] -- harness is not blind. Home-pick rate baseline 53.6% vs candidate 54.9%, close together, so little home-tilt artifact. Column coverage inside the window 100.0%, fires on 19.66% of games (151 of 768). NOT POOLABLE with the bare-baseline illness battery (illness_away_active_ge1, comparator is a bare market baseline, not the production chain) nor with fluview_elevated_on_production (CDC regional influenza-like-illness activity, a different underlying data source); AGENTS.md's commensurability rule forbids pooling across differing comparators and populations.",
+      "plain_summary": "At least one visiting player is on the injury report with an illness but still expected to play. Telling the model about it made its picks slightly better.",
+      "probability_positive": 0.908,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.702,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/illness_on_production/20260901T192918Z/results.json",
+      "standard_error": null
+    },
+    "illness_home_ge2_on_production": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Close-graded look; per AGENTS.md's binding 'grade the decision at the opener' rule a close grade settles no play/no-play or terminal call regardless of sign, so unresolved_below_power is the only admissible classification here. Neither closing ground applies: no resolved wrong sign (the point estimate and both blockings favour the candidate) and no positive-control bound (the control detected +50.13 pts, proving the harness is not blind, but did not bound an effect of this size as absent).",
+      "closing_ground": null,
+      "description": "Home team illness_count >= 2 (injury-report illness designations, resolved as of that game's own pick deadline) added as ONE feature column on top of the FULL production weak_stack/market_residual/ridge/alpha-10 chain, versus production unmodified. Paired candidate-minus-baseline forced-pick accuracy delta on the rotation-assigned [2011, 2013] block, close-graded. Predeclared docs/illness_on_production.md; ranked #1 of four in docs/on_production_sweep_20260901.md.",
+      "effect": 0.2680965147453083,
+      "effect_units": "accuracy_points",
+      "family": "illness_on_production",
+      "interval": [
+        -0.6702863299605062,
+        1.2297195977179967
+      ],
+      "league": "nfl",
+      "notes": "Window [2011, 2013], 746 paired games, 51 weeks, close-graded, mode=screen. Production weak_stack accuracy 49.866% vs weak_stack_illness_home 50.134%; paired delta +0.268 accuracy points. Week-blocked (primary) 95% [-0.670, +1.230], P+ 0.662. Season-blocked secondary 95% [-0.398, +1.224], P+ 0.720 -- reported beside the primary, never averaged, and low-power with only 3 season blocks. Within-week permutation null (200 draws, real feature, unleaked) centres +0.082 pts, sd 0.621; observed sits at the 55.5th percentile of its own null -- essentially indistinguishable from its own null. Positive control (candidate column leaked to realized ats_margin) +50.134 pts, P+ 1.000 -- harness is not blind. Home-pick rate baseline 53.6% vs candidate 55.6%. This is the SPARSE arm as disclosed in the predeclaration before scoring: inside the window the column is non-missing on 99.87% of games but fires on only 4.30% (33 of 768), against 7.47% pooled over 2010-2024, so the ridge coefficient rests on ~33 firings. NOT POOLABLE with the bare-baseline illness battery (illness_home_ge2, comparator is a bare market baseline) nor with fluview_elevated_on_production (CDC regional ILI, different data source); AGENTS.md's commensurability rule forbids pooling across differing comparators and populations.",
+      "plain_summary": "Two or more home players are on the injury report with an illness. Telling the model about it barely moved its picks.",
+      "probability_positive": 0.662,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.702,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/illness_on_production/20260901T192918Z/results.json",
+      "standard_error": null
+    }
+  }
+}

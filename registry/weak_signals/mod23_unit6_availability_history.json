@@ -1,0 +1,117 @@
+{
+  "family": "mod23_unit6_availability_history",
+  "signals": {
+    "mod23_unit6_availability_A_proxy_2011_2019_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model with rolling team inputs adjusted for own and opponent starting-QB availability in each past game, paired vs base, 2011-2019; 1138-1093 vs 1142-1089.",
+      "effect": -0.17929179740026893,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit6_availability_history",
+      "interval": [
+        -0.9417040358744395,
+        0.6297795771479981
+      ],
+      "league": "nfl",
+      "notes": "Two arms, two eras (four accuracy looks); starter-QB availability flags from snap counts of completed games; coefficients fit on earlier seasons only.",
+      "plain_summary": "Adjusting a team's recent stats for games the starting quarterback missed did not reliably change picks against the opener.",
+      "probability_positive": 0.304,
+      "recorded_at": "2026-10-16",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod23_unit6/report.json",
+      "standard_error": null
+    },
+    "mod23_unit6_availability_A_true_2020_2025_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model with rolling team inputs adjusted for own and opponent starting-QB availability in each past game, paired vs base, 2020-2025; 794-709 vs 802-701.",
+      "effect": -0.5322687957418496,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit6_availability_history",
+      "interval": [
+        -2.0103761348897535,
+        0.9478672985781991
+      ],
+      "league": "nfl",
+      "notes": "Two arms, two eras (four accuracy looks); starter-QB availability flags from snap counts of completed games; coefficients fit on earlier seasons only.",
+      "plain_summary": "Adjusting a team's recent stats for games the starting quarterback missed did not reliably change picks against the opener.",
+      "probability_positive": 0.2212,
+      "recorded_at": "2026-10-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit6/report.json",
+      "standard_error": null
+    },
+    "mod23_unit6_availability_B_proxy_2011_2019_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model with rolling team inputs adjusted for own starting-QB availability in each past game, paired vs base, 2011-2019; 1151-1080 vs 1142-1089.",
+      "effect": 0.4034065441506051,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit6_availability_history",
+      "interval": [
+        -0.17953321364452424,
+        1.299283154121864
+      ],
+      "league": "nfl",
+      "notes": "Two arms, two eras (four accuracy looks); starter-QB availability flags from snap counts of completed games; coefficients fit on earlier seasons only.",
+      "plain_summary": "Adjusting a team's recent stats for games the starting quarterback missed did not reliably change picks against the opener.",
+      "probability_positive": 0.7816,
+      "recorded_at": "2026-10-16",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod23_unit6/report.json",
+      "standard_error": null
+    },
+    "mod23_unit6_availability_B_true_2020_2025_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model with rolling team inputs adjusted for own starting-QB availability in each past game, paired vs base, 2020-2025; 808-695 vs 802-701.",
+      "effect": 0.3992015968063872,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit6_availability_history",
+      "interval": [
+        -0.2503128911138924,
+        1.272984441301273
+      ],
+      "league": "nfl",
+      "notes": "Two arms, two eras (four accuracy looks); starter-QB availability flags from snap counts of completed games; coefficients fit on earlier seasons only.",
+      "plain_summary": "Adjusting a team's recent stats for games the starting quarterback missed did not reliably change picks against the opener.",
+      "probability_positive": 0.8471,
+      "recorded_at": "2026-10-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit6/report.json",
+      "standard_error": null
+    }
+  }
+}

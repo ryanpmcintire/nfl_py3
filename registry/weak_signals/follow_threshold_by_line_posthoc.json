@@ -1,0 +1,229 @@
+{
+  "family": "follow_threshold_by_line_posthoc",
+  "signals": {
+    "follow_threshold_by_line_t1f_plus_t3_posthoc_2023": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-1.8382, 1.9084] accuracy points on 18 week blocks (season-blocked [0.0000, 0.0000] on 1 season blocks); probability_positive 0.499775. The positive control on this same population and surface resolves at +26.658 accuracy points over the served rule (perfect foresight on every game a leading book moved; week-blocked [+23.515, +29.834]), and at +29.310 [+17.544, +42.105] inside the 10.5+ band, so the instrument is PROVEN able to see an effect of roughly twenty-seven to twenty-nine points and is NOT proven able to see the sub-four-point effects every threshold arm sits at; no positive control bounds this cell. The season-blocked interval here collapses onto the point estimate because a single-season window has ONE season block, so it carries no information and is explicitly refused as a closing ground. No trait here has zero split-half reliability and neither predeclared closing ground applies, so this is unresolved, not closed; an interval containing zero is not a rejection ground.",
+      "closing_ground": null,
+      "description": "POST-HOC, composed after the predeclared signs were seen and NOT a member of the declared family: the per-band walk-forward threshold with a floor of 50, with 10.5+ forced to 0.5, scored against T0 -- the SERVED late-week follow, a fixed 1.0-point gate on the three leading books' median Wednesday-to-deadline net move with the injury-news veto applied -- through the served nine-member Tuesday card overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3, the card that is actually played (56.070% on this population, reproducing docs/served_card_harness.md to the digit); paired forced-pick accuracy at the frozen Tuesday OPENER on the 2023-2025 intraday_hourly archive, over the 2023 season alone.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "follow_threshold_by_line_posthoc",
+      "interval": [
+        -1.8382352941,
+        1.9083969466
+      ],
+      "league": "nfl",
+      "notes": "Lane AV, the late-week follow's threshold as a function of the line, re-measured against the SERVED 1.0 gate with the injury-news veto on (docs/line_size_shrinkage.md's AK-2 was measured against the retired 0.5 gate). Predeclared in docs/follow_threshold_by_line.md, sha256 4e100ce97974126c8f555ba128228fe01066097b92aa8726f3b44ffd37d34c51, frozen before any arm was scored. Historical-backfill replay (capture_kind=historical, intraday_hourly), which is evidence about the rule's shape, not a re-grade of a promotion. Week-blocked and season-blocked paired bootstraps, 20,000 samples, seed 20260821; within-week correlation is zero by owner mandate. POST-HOC ARM: composed after the predeclared signs were seen, recorded under a separate family so it can never be mistaken for a predeclared member.",
+      "plain_summary": "On the picks that actually get published across the 2023 season alone, compared combining the per-spread-size bar with the half-point bar on blowout spreads, a mix chosen after the results were seen against the rule now in use (chase the line only when the three leading books have moved it a full point, unless the injury report disagrees): 59.0% to 59.0% right against the opening line on 266 games, changing 6 picks; about 50% likely to be the better choice.",
+      "probability_positive": 0.499775,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "artifacts/follow_threshold_by_line/20260910T032331Z/results.json; artifacts/follow_threshold_by_line/20260910T032331Z/stage1_checks.json; docs/follow_threshold_by_line.md",
+      "standard_error": 0.9236155145
+    },
+    "follow_threshold_by_line_t1f_plus_t3_posthoc_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-1.1208, 2.3991] accuracy points on 54 week blocks (season-blocked [-0.7491, 2.6316] on 3 season blocks); probability_positive 0.753900. The positive control on this same population and surface resolves at +26.658 accuracy points over the served rule (perfect foresight on every game a leading book moved; week-blocked [+23.515, +29.834]), and at +29.310 [+17.544, +42.105] inside the 10.5+ band, so the instrument is PROVEN able to see an effect of roughly twenty-seven to twenty-nine points and is NOT proven able to see the sub-four-point effects every threshold arm sits at; no positive control bounds this cell. No trait here has zero split-half reliability and neither predeclared closing ground applies, so this is unresolved, not closed; an interval containing zero is not a rejection ground.",
+      "closing_ground": null,
+      "description": "POST-HOC, composed after the predeclared signs were seen and NOT a member of the declared family: the per-band walk-forward threshold with a floor of 50, with 10.5+ forced to 0.5, scored against T0 -- the SERVED late-week follow, a fixed 1.0-point gate on the three leading books' median Wednesday-to-deadline net move with the injury-news veto applied -- through the served nine-member Tuesday card overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3, the card that is actually played (56.070% on this population, reproducing docs/served_card_harness.md to the digit); paired forced-pick accuracy at the frozen Tuesday OPENER on the 2023-2025 intraday_hourly archive, over 2023-2025.",
+      "effect": 0.6257822278,
+      "effect_units": "accuracy_points",
+      "family": "follow_threshold_by_line_posthoc",
+      "interval": [
+        -1.1207970112,
+        2.3990657204
+      ],
+      "league": "nfl",
+      "notes": "Lane AV, the late-week follow's threshold as a function of the line, re-measured against the SERVED 1.0 gate with the injury-news veto on (docs/line_size_shrinkage.md's AK-2 was measured against the retired 0.5 gate). Predeclared in docs/follow_threshold_by_line.md, sha256 4e100ce97974126c8f555ba128228fe01066097b92aa8726f3b44ffd37d34c51, frozen before any arm was scored. Historical-backfill replay (capture_kind=historical, intraday_hourly), which is evidence about the rule's shape, not a re-grade of a promotion. Week-blocked and season-blocked paired bootstraps, 20,000 samples, seed 20260821; within-week correlation is zero by owner mandate. POST-HOC ARM: composed after the predeclared signs were seen, recorded under a separate family so it can never be mistaken for a predeclared member.",
+      "plain_summary": "On the picks that actually get published across 2023-2025, compared combining the per-spread-size bar with the half-point bar on blowout spreads, a mix chosen after the results were seen against the rule now in use (chase the line only when the three leading books have moved it a full point, unless the injury report disagrees): 58.2% to 57.6% right against the opening line on 799 games, changing 41 picks; about 75% likely to be the better choice.",
+      "probability_positive": 0.7539,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/follow_threshold_by_line/20260910T032331Z/results.json; artifacts/follow_threshold_by_line/20260910T032331Z/stage1_checks.json; docs/follow_threshold_by_line.md",
+      "standard_error": 0.9019646214
+    },
+    "follow_threshold_by_line_t1f_plus_t3_posthoc_2024": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-0.3847, 6.0377] accuracy points on 18 week blocks (season-blocked [2.6316, 2.6316] on 1 season blocks); probability_positive 0.946750. The positive control on this same population and surface resolves at +26.658 accuracy points over the served rule (perfect foresight on every game a leading book moved; week-blocked [+23.515, +29.834]), and at +29.310 [+17.544, +42.105] inside the 10.5+ band, so the instrument is PROVEN able to see an effect of roughly twenty-seven to twenty-nine points and is NOT proven able to see the sub-four-point effects every threshold arm sits at; no positive control bounds this cell. The season-blocked interval here collapses onto the point estimate because a single-season window has ONE season block, so it carries no information and is explicitly refused as a closing ground. No trait here has zero split-half reliability and neither predeclared closing ground applies, so this is unresolved, not closed; an interval containing zero is not a rejection ground.",
+      "closing_ground": null,
+      "description": "POST-HOC, composed after the predeclared signs were seen and NOT a member of the declared family: the per-band walk-forward threshold with a floor of 50, with 10.5+ forced to 0.5, scored against T0 -- the SERVED late-week follow, a fixed 1.0-point gate on the three leading books' median Wednesday-to-deadline net move with the injury-news veto applied -- through the served nine-member Tuesday card overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3, the card that is actually played (56.070% on this population, reproducing docs/served_card_harness.md to the digit); paired forced-pick accuracy at the frozen Tuesday OPENER on the 2023-2025 intraday_hourly archive, over the 2024 season alone.",
+      "effect": 2.6315789474,
+      "effect_units": "accuracy_points",
+      "family": "follow_threshold_by_line_posthoc",
+      "interval": [
+        -0.3846525097,
+        6.0377358491
+      ],
+      "league": "nfl",
+      "notes": "Lane AV, the late-week follow's threshold as a function of the line, re-measured against the SERVED 1.0 gate with the injury-news veto on (docs/line_size_shrinkage.md's AK-2 was measured against the retired 0.5 gate). Predeclared in docs/follow_threshold_by_line.md, sha256 4e100ce97974126c8f555ba128228fe01066097b92aa8726f3b44ffd37d34c51, frozen before any arm was scored. Historical-backfill replay (capture_kind=historical, intraday_hourly), which is evidence about the rule's shape, not a re-grade of a promotion. Week-blocked and season-blocked paired bootstraps, 20,000 samples, seed 20260821; within-week correlation is zero by owner mandate. POST-HOC ARM: composed after the predeclared signs were seen, recorded under a separate family so it can never be mistaken for a predeclared member.",
+      "plain_summary": "On the picks that actually get published across the 2024 season alone, compared combining the per-spread-size bar with the half-point bar on blowout spreads, a mix chosen after the results were seen against the rule now in use (chase the line only when the three leading books have moved it a full point, unless the injury report disagrees): 58.3% to 55.6% right against the opening line on 266 games, changing 17 picks; about 95% likely to be the better choice.",
+      "probability_positive": 0.94675,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "artifacts/follow_threshold_by_line/20260910T032331Z/results.json; artifacts/follow_threshold_by_line/20260910T032331Z/stage1_checks.json; docs/follow_threshold_by_line.md",
+      "standard_error": 1.675899554
+    },
+    "follow_threshold_by_line_t1f_plus_t3_posthoc_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-4.0892, 2.6718] accuracy points on 18 week blocks (season-blocked [-0.7491, -0.7491] on 1 season blocks); probability_positive 0.334375. The positive control on this same population and surface resolves at +26.658 accuracy points over the served rule (perfect foresight on every game a leading book moved; week-blocked [+23.515, +29.834]), and at +29.310 [+17.544, +42.105] inside the 10.5+ band, so the instrument is PROVEN able to see an effect of roughly twenty-seven to twenty-nine points and is NOT proven able to see the sub-four-point effects every threshold arm sits at; no positive control bounds this cell. The season-blocked interval here collapses onto the point estimate because a single-season window has ONE season block, so it carries no information and is explicitly refused as a closing ground. No trait here has zero split-half reliability and neither predeclared closing ground applies, so this is unresolved, not closed; an interval containing zero is not a rejection ground.",
+      "closing_ground": null,
+      "description": "POST-HOC, composed after the predeclared signs were seen and NOT a member of the declared family: the per-band walk-forward threshold with a floor of 50, with 10.5+ forced to 0.5, scored against T0 -- the SERVED late-week follow, a fixed 1.0-point gate on the three leading books' median Wednesday-to-deadline net move with the injury-news veto applied -- through the served nine-member Tuesday card overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3, the card that is actually played (56.070% on this population, reproducing docs/served_card_harness.md to the digit); paired forced-pick accuracy at the frozen Tuesday OPENER on the 2023-2025 intraday_hourly archive, over the 2025 season alone.",
+      "effect": -0.7490636704,
+      "effect_units": "accuracy_points",
+      "family": "follow_threshold_by_line_posthoc",
+      "interval": [
+        -4.0892193309,
+        2.6717557252
+      ],
+      "league": "nfl",
+      "notes": "Lane AV, the late-week follow's threshold as a function of the line, re-measured against the SERVED 1.0 gate with the injury-news veto on (docs/line_size_shrinkage.md's AK-2 was measured against the retired 0.5 gate). Predeclared in docs/follow_threshold_by_line.md, sha256 4e100ce97974126c8f555ba128228fe01066097b92aa8726f3b44ffd37d34c51, frozen before any arm was scored. Historical-backfill replay (capture_kind=historical, intraday_hourly), which is evidence about the rule's shape, not a re-grade of a promotion. Week-blocked and season-blocked paired bootstraps, 20,000 samples, seed 20260821; within-week correlation is zero by owner mandate. POST-HOC ARM: composed after the predeclared signs were seen, recorded under a separate family so it can never be mistaken for a predeclared member.",
+      "plain_summary": "On the picks that actually get published across the 2025 season alone, compared combining the per-spread-size bar with the half-point bar on blowout spreads, a mix chosen after the results were seen against the rule now in use (chase the line only when the three leading books have moved it a full point, unless the injury report disagrees): 57.3% to 58.1% right against the opening line on 267 games, changing 18 picks; about 33% likely to be the better choice.",
+      "probability_positive": 0.334375,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "artifacts/follow_threshold_by_line/20260910T032331Z/results.json; artifacts/follow_threshold_by_line/20260910T032331Z/stage1_checks.json; docs/follow_threshold_by_line.md",
+      "standard_error": 1.7405534981
+    },
+    "follow_threshold_by_line_t1f_plus_t3_posthoc_band_0_3_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-0.9741, 2.5000] accuracy points on 54 week blocks (season-blocked [0.0000, 1.9048] on 3 season blocks); probability_positive 0.751650. The positive control on this same population and surface resolves at +26.658 accuracy points over the served rule (perfect foresight on every game a leading book moved; week-blocked [+23.515, +29.834]), and at +29.310 [+17.544, +42.105] inside the 10.5+ band, so the instrument is PROVEN able to see an effect of roughly twenty-seven to twenty-nine points and is NOT proven able to see the sub-four-point effects every threshold arm sits at; no positive control bounds this cell. No trait here has zero split-half reliability and neither predeclared closing ground applies, so this is unresolved, not closed; an interval containing zero is not a rejection ground.",
+      "closing_ground": null,
+      "description": "POST-HOC, composed after the predeclared signs were seen and NOT a member of the declared family: the per-band walk-forward threshold with a floor of 50, with 10.5+ forced to 0.5, scored against T0 -- the SERVED late-week follow, a fixed 1.0-point gate on the three leading books' median Wednesday-to-deadline net move with the injury-news veto applied -- through the served nine-member Tuesday card overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3, the card that is actually played (56.070% on this population, reproducing docs/served_card_harness.md to the digit); paired forced-pick accuracy at the frozen Tuesday OPENER on the 2023-2025 intraday_hourly archive, over 2023-2025 restricted to spreads of 3 points or less.",
+      "effect": 0.6309148265,
+      "effect_units": "accuracy_points",
+      "family": "follow_threshold_by_line_posthoc",
+      "interval": [
+        -0.9741052921,
+        2.5
+      ],
+      "league": "nfl",
+      "notes": "Lane AV, the late-week follow's threshold as a function of the line, re-measured against the SERVED 1.0 gate with the injury-news veto on (docs/line_size_shrinkage.md's AK-2 was measured against the retired 0.5 gate). Predeclared in docs/follow_threshold_by_line.md, sha256 4e100ce97974126c8f555ba128228fe01066097b92aa8726f3b44ffd37d34c51, frozen before any arm was scored. Historical-backfill replay (capture_kind=historical, intraday_hourly), which is evidence about the rule's shape, not a re-grade of a promotion. Week-blocked and season-blocked paired bootstraps, 20,000 samples, seed 20260821; within-week correlation is zero by owner mandate. POST-HOC ARM: composed after the predeclared signs were seen, recorded under a separate family so it can never be mistaken for a predeclared member.",
+      "plain_summary": "On the picks that actually get published across 2023-2025 restricted to spreads of 3 points or less, compared combining the per-spread-size bar with the half-point bar on blowout spreads, a mix chosen after the results were seen against the rule now in use (chase the line only when the three leading books have moved it a full point, unless the injury report disagrees): 57.7% to 57.1% right against the opening line on 317 games, changing 6 picks; about 75% likely to be the better choice.",
+      "probability_positive": 0.75165,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 317,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/follow_threshold_by_line/20260910T032331Z/results.json; artifacts/follow_threshold_by_line/20260910T032331Z/stage1_checks.json; docs/follow_threshold_by_line.md",
+      "standard_error": 0.8855585218
+    },
+    "follow_threshold_by_line_t1f_plus_t3_posthoc_band_10p5plus_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-5.0847, 11.6667] accuracy points on 34 week blocks (season-blocked [0.0000, 7.6923] on 3 season blocks); probability_positive 0.793750. The positive control on this same population and surface resolves at +26.658 accuracy points over the served rule (perfect foresight on every game a leading book moved; week-blocked [+23.515, +29.834]), and at +29.310 [+17.544, +42.105] inside the 10.5+ band, so the instrument is PROVEN able to see an effect of roughly twenty-seven to twenty-nine points and is NOT proven able to see the sub-four-point effects every threshold arm sits at; no positive control bounds this cell. No trait here has zero split-half reliability and neither predeclared closing ground applies, so this is unresolved, not closed; an interval containing zero is not a rejection ground.",
+      "closing_ground": null,
+      "description": "POST-HOC, composed after the predeclared signs were seen and NOT a member of the declared family: the per-band walk-forward threshold with a floor of 50, with 10.5+ forced to 0.5, scored against T0 -- the SERVED late-week follow, a fixed 1.0-point gate on the three leading books' median Wednesday-to-deadline net move with the injury-news veto applied -- through the served nine-member Tuesday card overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3, the card that is actually played (56.070% on this population, reproducing docs/served_card_harness.md to the digit); paired forced-pick accuracy at the frozen Tuesday OPENER on the 2023-2025 intraday_hourly archive, over 2023-2025 restricted to spreads of 10.5 points or more.",
+      "effect": 3.4482758621,
+      "effect_units": "accuracy_points",
+      "family": "follow_threshold_by_line_posthoc",
+      "interval": [
+        -5.0847457627,
+        11.6666666667
+      ],
+      "league": "nfl",
+      "notes": "Lane AV, the late-week follow's threshold as a function of the line, re-measured against the SERVED 1.0 gate with the injury-news veto on (docs/line_size_shrinkage.md's AK-2 was measured against the retired 0.5 gate). Predeclared in docs/follow_threshold_by_line.md, sha256 4e100ce97974126c8f555ba128228fe01066097b92aa8726f3b44ffd37d34c51, frozen before any arm was scored. Historical-backfill replay (capture_kind=historical, intraday_hourly), which is evidence about the rule's shape, not a re-grade of a promotion. Week-blocked and season-blocked paired bootstraps, 20,000 samples, seed 20260821; within-week correlation is zero by owner mandate. POST-HOC ARM: composed after the predeclared signs were seen, recorded under a separate family so it can never be mistaken for a predeclared member.",
+      "plain_summary": "On the picks that actually get published across 2023-2025 restricted to spreads of 10.5 points or more, compared combining the per-spread-size bar with the half-point bar on blowout spreads, a mix chosen after the results were seen against the rule now in use (chase the line only when the three leading books have moved it a full point, unless the injury report disagrees): 55.2% to 51.7% right against the opening line on 58 games, changing 6 picks; about 79% likely to be the better choice.",
+      "probability_positive": 0.79375,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 34,
+      "sample_games": 58,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/follow_threshold_by_line/20260910T032331Z/results.json; artifacts/follow_threshold_by_line/20260910T032331Z/stage1_checks.json; docs/follow_threshold_by_line.md",
+      "standard_error": 4.1631035852
+    },
+    "follow_threshold_by_line_t1f_plus_t3_posthoc_band_3p5_6p5_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-3.7543, 4.4728] accuracy points on 54 week blocks (season-blocked [-2.0408, 3.8462] on 3 season blocks); probability_positive 0.554850. The positive control on this same population and surface resolves at +26.658 accuracy points over the served rule (perfect foresight on every game a leading book moved; week-blocked [+23.515, +29.834]), and at +29.310 [+17.544, +42.105] inside the 10.5+ band, so the instrument is PROVEN able to see an effect of roughly twenty-seven to twenty-nine points and is NOT proven able to see the sub-four-point effects every threshold arm sits at; no positive control bounds this cell. No trait here has zero split-half reliability and neither predeclared closing ground applies, so this is unresolved, not closed; an interval containing zero is not a rejection ground.",
+      "closing_ground": null,
+      "description": "POST-HOC, composed after the predeclared signs were seen and NOT a member of the declared family: the per-band walk-forward threshold with a floor of 50, with 10.5+ forced to 0.5, scored against T0 -- the SERVED late-week follow, a fixed 1.0-point gate on the three leading books' median Wednesday-to-deadline net move with the injury-news veto applied -- through the served nine-member Tuesday card overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3, the card that is actually played (56.070% on this population, reproducing docs/served_card_harness.md to the digit); paired forced-pick accuracy at the frozen Tuesday OPENER on the 2023-2025 intraday_hourly archive, over 2023-2025 restricted to spreads between 3.5 and 6.5 points.",
+      "effect": 0.3448275862,
+      "effect_units": "accuracy_points",
+      "family": "follow_threshold_by_line_posthoc",
+      "interval": [
+        -3.7542662116,
+        4.4728434505
+      ],
+      "league": "nfl",
+      "notes": "Lane AV, the late-week follow's threshold as a function of the line, re-measured against the SERVED 1.0 gate with the injury-news veto on (docs/line_size_shrinkage.md's AK-2 was measured against the retired 0.5 gate). Predeclared in docs/follow_threshold_by_line.md, sha256 4e100ce97974126c8f555ba128228fe01066097b92aa8726f3b44ffd37d34c51, frozen before any arm was scored. Historical-backfill replay (capture_kind=historical, intraday_hourly), which is evidence about the rule's shape, not a re-grade of a promotion. Week-blocked and season-blocked paired bootstraps, 20,000 samples, seed 20260821; within-week correlation is zero by owner mandate. POST-HOC ARM: composed after the predeclared signs were seen, recorded under a separate family so it can never be mistaken for a predeclared member.",
+      "plain_summary": "On the picks that actually get published across 2023-2025 restricted to spreads between 3.5 and 6.5 points, compared combining the per-spread-size bar with the half-point bar on blowout spreads, a mix chosen after the results were seen against the rule now in use (chase the line only when the three leading books have moved it a full point, unless the injury report disagrees): 60.7% to 60.3% right against the opening line on 290 games, changing 29 picks; about 55% likely to be the better choice.",
+      "probability_positive": 0.55485,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 290,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/follow_threshold_by_line/20260910T032331Z/results.json; artifacts/follow_threshold_by_line/20260910T032331Z/stage1_checks.json; docs/follow_threshold_by_line.md",
+      "standard_error": 2.1078232398
+    },
+    "follow_threshold_by_line_t1f_plus_t3_posthoc_band_7_10_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [0.0000, 0.0000] accuracy points on 51 week blocks (season-blocked [0.0000, 0.0000] on 3 season blocks); probability_positive 0.500000. The positive control on this same population and surface resolves at +26.658 accuracy points over the served rule (perfect foresight on every game a leading book moved; week-blocked [+23.515, +29.834]), and at +29.310 [+17.544, +42.105] inside the 10.5+ band, so the instrument is PROVEN able to see an effect of roughly twenty-seven to twenty-nine points and is NOT proven able to see the sub-four-point effects every threshold arm sits at; no positive control bounds this cell. This arm made IDENTICAL picks to the served rule on every game in this cell, so the paired effect is exactly zero with no dispersion, the interval is degenerate by construction and probability_positive is 0.5 (a dead heat, per AGENTS.md's P(>0) + 0.5*P(==0) convention); no standard error is recorded because there is none to record, and a dead heat closes nothing. No trait here has zero split-half reliability and neither predeclared closing ground applies, so this is unresolved, not closed; an interval containing zero is not a rejection ground.",
+      "closing_ground": null,
+      "description": "POST-HOC, composed after the predeclared signs were seen and NOT a member of the declared family: the per-band walk-forward threshold with a floor of 50, with 10.5+ forced to 0.5, scored against T0 -- the SERVED late-week follow, a fixed 1.0-point gate on the three leading books' median Wednesday-to-deadline net move with the injury-news veto applied -- through the served nine-member Tuesday card overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3, the card that is actually played (56.070% on this population, reproducing docs/served_card_harness.md to the digit); paired forced-pick accuracy at the frozen Tuesday OPENER on the 2023-2025 intraday_hourly archive, over 2023-2025 restricted to spreads between 7 and 10 points.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "follow_threshold_by_line_posthoc",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Lane AV, the late-week follow's threshold as a function of the line, re-measured against the SERVED 1.0 gate with the injury-news veto on (docs/line_size_shrinkage.md's AK-2 was measured against the retired 0.5 gate). Predeclared in docs/follow_threshold_by_line.md, sha256 4e100ce97974126c8f555ba128228fe01066097b92aa8726f3b44ffd37d34c51, frozen before any arm was scored. Historical-backfill replay (capture_kind=historical, intraday_hourly), which is evidence about the rule's shape, not a re-grade of a promotion. Week-blocked and season-blocked paired bootstraps, 20,000 samples, seed 20260821; within-week correlation is zero by owner mandate. POST-HOC ARM: composed after the predeclared signs were seen, recorded under a separate family so it can never be mistaken for a predeclared member.",
+      "plain_summary": "On the picks that actually get published across 2023-2025 restricted to spreads between 7 and 10 points, compared combining the per-spread-size bar with the half-point bar on blowout spreads, a mix chosen after the results were seen against the rule now in use (chase the line only when the three leading books have moved it a full point, unless the injury report disagrees): 55.2% to 55.2% right against the opening line on 134 games, changing 0 picks; about 50% likely to be the better choice.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 134,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/follow_threshold_by_line/20260910T032331Z/results.json; artifacts/follow_threshold_by_line/20260910T032331Z/stage1_checks.json; docs/follow_threshold_by_line.md",
+      "standard_error": null
+    }
+  }
+}

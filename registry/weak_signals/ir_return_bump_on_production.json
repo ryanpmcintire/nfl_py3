@@ -1,0 +1,33 @@
+{
+  "family": "ir_return_bump_on_production",
+  "signals": {
+    "ir_return_bump_on_production": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval sits exactly AT zero (both bounds 0.0 accuracy points, 0/456 forced picks flip under the production rule despite 5 flagged in-window games), not below it -- wrong_sign_resolved is inadmissible per the AND-rule (whole interval strictly below zero required). no_split_half_reliability is inadmissible: the flag is a deterministic function of a resolved wire report plus a snap-share-confirmed starter gate, not a repeated psychological measurement. No positive-control bound applies (control read +44.298 points, P+ 1.0, proving the harness sensitive, not bounding this candidate's own magnitude).",
+      "closing_ground": null,
+      "description": "BACK teams getting a confirmed high-snap starter back from IR in weeks 5-8, stacked on production weak_stack, opener grade",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "ir_return_bump_on_production",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "docs/schedule_flag_battery.md Wave 7 section 20; sign-rule secondary read +0.219 accuracy points, P+ 0.63965/0.74865 leans positive but is not the decision quantity. Corrected 2026-09-05 (via --replace): effect/interval were originally recorded as raw fractions, not this registry's accuracy_points (percentage-point) convention; re-recorded at the correct scale, values unchanged in substance (0.0).",
+      "plain_summary": "When a team's starting long-term-injured player comes back in weeks 5-8, this checks whether the market is slow to notice. Too few real cases exist yet to tell.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/roster_availability_flags_on_production/ir_return_bump/20260905T152026Z/results.json",
+      "standard_error": null
+    }
+  }
+}

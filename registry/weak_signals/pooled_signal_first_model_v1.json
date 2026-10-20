@@ -1,0 +1,313 @@
+{
+  "family": "pooled_signal_first_model_v1",
+  "signals": {
+    "pooled_signal_calibrated_vs_model_only_loso": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "single whole-model LOSO read, no admissible closing ground; MOD-20 resolves no cell alone",
+      "closing_ground": null,
+      "description": "MOD-20 unit 1 close-out: first pooled model (model logit plus 7-flag sum plus market move, ridge 0.001, LOSO 2020-2025) versus model-only picks on the same 1,503 games; +1.464 accuracy points, season-block interval [+0.130, +2.660], P+ 0.9815, decisive 274-252 on 526, positive in 5 of 6 seasons (2023 -0.75)",
+      "effect": 1.4637,
+      "effect_units": "accuracy_points",
+      "family": "pooled_signal_first_model_v1",
+      "interval": [
+        0.1302,
+        2.6603
+      ],
+      "league": "nfl",
+      "notes": "1 look; thresholds and flag set fixed before scoring; SE from season-block bootstrap width",
+      "plain_summary": "Combining the model with the seven situational flags and the line move beat the model alone by about one and a half games per hundred, holding up in five of six past seasons.",
+      "probability_positive": 0.9815,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_signal/20260916T191645Z",
+      "standard_error": 0.6454
+    },
+    "pooled_signal_fifth_fit_vs_four_term": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block interval [-1.0366,+0.2505] and week-block interval [-1.1494,+0.3336] both cross zero; not a resolved wrong sign; no positive control run; unresolved_below_power is the only admissible classification",
+      "closing_ground": null,
+      "description": "MOD-20 unit 5: four-term base plus two predeclared interaction terms (flag_sum x move_toward_home, model_logit x move_available), LOSO 2020-2025, vs the four-term base on the same 1,503 games; -0.399 accuracy points, decisive 24-30 on 54. OOS Brier 0.2457 vs 0.2454, logloss 0.6845 vs 0.6840; IS-OOS gap smaller for interaction (+0.13pt) than base (+0.20pt). model_logit x move_available stable negative across folds; flag_sum x move_toward_home small and sign-unstable. Line-move-toward-pick cell 0.001 pts, P+ 0.496, indistinguishable from zero.",
+      "effect": -0.39920159680638717,
+      "effect_units": "accuracy_points",
+      "family": "pooled_signal_first_model_v1",
+      "interval": [
+        -1.0365922024972396,
+        0.2505450254080643
+      ],
+      "league": "nfl",
+      "notes": "Unit 5, predeclared before fitting: not a reparameterisation of the 7 composition flags. 2 looks this unit. Season-block bootstrap primary per predeclaration; week-block secondary agrees.",
+      "plain_summary": null,
+      "probability_positive": 0.0645,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/pooled_signal_fifth_fit_interactions.py; artifacts/pooled_signal_fifth_fit/20260923T202505Z/results.json; docs/lanes/pooled-signal-model.md",
+      "standard_error": null
+    },
+    "pooled_signal_fifth_fit_vs_model_only": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Companion vs-model-only read, not decision-relevant (that is vs the four-term base, which crossed zero); per unit 1-4 convention recorded unresolved_below_power regardless of this cell's own P+",
+      "closing_ground": null,
+      "description": "MOD-20 unit 5 companion: interaction fit vs model-only picks, LOSO 2020-2025, same 1,503 games; +3.393 accuracy points, week-block [+0.664,+6.206], P+ 0.993, decisive 272-221 on 493.",
+      "effect": 3.3932135728542914,
+      "effect_units": "accuracy_points",
+      "family": "pooled_signal_first_model_v1",
+      "interval": [
+        0.6639776216538749,
+        6.205825573472631
+      ],
+      "league": "nfl",
+      "notes": "Companion, not decision-relevant alone; see pooled_signal_fifth_fit_vs_four_term.",
+      "plain_summary": null,
+      "probability_positive": 0.993,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/pooled_signal_fifth_fit_interactions.py; artifacts/pooled_signal_fifth_fit/20260923T202505Z/results.json; docs/lanes/pooled-signal-model.md",
+      "standard_error": null
+    },
+    "pooled_signal_fourth_fit_vs_four_term": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Interval [-2.58,-0.60] accuracy points sits entirely below zero (P+ 0.0005) against the four-term base; per AGENTS.md a resolved wrong sign with the whole interval on the wrong side of zero is an admissible closing ground for this one structural variant; the pooled family stays open for other structural variants, only this hierarchical fit is refuted",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "MOD-20 unit 4: hierarchical/partial-pooling logistic (shared composition weight mu plus 7 per-flag deviations, shrinkage kappa selected by nested LOSO inner CV minimizing log loss) versus the four-term base, LOSO 2020-2025 opener grade, paired accuracy points",
+      "effect": -1.5303,
+      "effect_units": "accuracy_points",
+      "family": "pooled_signal_first_model_v1",
+      "interval": [
+        -2.5849,
+        -0.5984
+      ],
+      "league": "nfl",
+      "notes": "kappa (shrinkage strength on per-flag deviations) saturated the predeclared grid maximum (10000 of 1-10000) in all 6 outer LOSO folds and in the in-sample fit, meaning the nested inner-LOSO CV wanted more shrinkage than the grid offered, yet residual deviations still hurt OOS; decisive 29-52 on 81 of 1503 games; OOS accuracy hier 55.62% vs base 57.15% (model-only 53.36%); OOS Brier hier 0.2466 vs base 0.2454; OOS logloss hier 0.6865 vs base 0.6840; IS-OOS accuracy gap hier +0.86pt vs base +0.20pt; shared mu stable 0.23-0.29 across folds (matches base composition_flag_sum coefficient); per-flag deviations nonzero but modest (largest |mean| ~0.12 cold_visitor, ~0.09 division, ~0.08 bye); reliability table (5 quintile bins) shows hier OOS probabilities reasonably calibrated (predicted 0.397/0.460/0.488/0.529/0.603 vs observed 0.432/0.460/0.449/0.510/0.631); SE from 95pct bootstrap interval width / (2*1.96); grid not extended post-hoc after seeing the boundary hit, per no-in-sample-gate policy; 2 looks total for this unit",
+      "plain_summary": "Letting each situational flag drift from the group's average weight, with the drift shrunk by cross-validation, still did worse out of season than treating the flags as one simple sum -- the extra flexibility hurt, not helped.",
+      "probability_positive": 0.0005,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/pooled_signal_fourth_fit_hierarchical.py; tests/scratch/pooled_signal_fourth_fit.json",
+      "standard_error": 0.5068
+    },
+    "pooled_signal_fourth_fit_vs_model_only": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero (low -0.27); companion to the vs-four-term cell, which is the decision-relevant comparison and is resolved negative; no admissible closing ground applies here",
+      "closing_ground": null,
+      "description": "MOD-20 unit 4: hierarchical/partial-pooling logistic (shared composition weight mu plus 7 per-flag deviations, shrinkage kappa selected by nested LOSO inner CV) versus model-only, LOSO 2020-2025 opener grade, paired accuracy points",
+      "effect": 2.2621,
+      "effect_units": "accuracy_points",
+      "family": "pooled_signal_first_model_v1",
+      "interval": [
+        -0.2741,
+        4.9798
+      ],
+      "league": "nfl",
+      "notes": "Decisive first: hier wins 271, model wins 237 on 508 decisive games of 1503. OOS accuracy hier 55.62% vs model-only 53.36%; OOS Brier hier 0.2466 vs model 0.2517; OOS logloss hier 0.6865 vs model 0.6969. SE from 95pct bootstrap interval width / (2*1.96). 2 looks total for this unit (shared with the vs-four-term cell).",
+      "plain_summary": "The hierarchical combined model still beats the model alone out of season, by about two games per hundred, but the four-term base beats it -- so this variant does not replace the simpler served fit.",
+      "probability_positive": 0.9545,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/pooled_signal_fourth_fit_hierarchical.py; tests/scratch/pooled_signal_fourth_fit.json",
+      "standard_error": 1.3403
+    },
+    "pooled_signal_second_fit_vs_four_term": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval [-1.99, +1.74] crosses zero with decisive 101-103 on 204 (exact p near 1); no admissible closing ground applies; unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Second pooled fit (4 base terms + 8 easy columns) versus the four-term unit-1 fit, LOSO 2020-2025 opener grade, paired accuracy points",
+      "effect": -0.1331,
+      "effect_units": "accuracy_points",
+      "family": "pooled_signal_first_model_v1",
+      "interval": [
+        -1.9921,
+        1.7439
+      ],
+      "league": "nfl",
+      "notes": "Decisive first: full wins 101, base wins 103 on 204 decisive games. Full OOS 55.82% vs base 55.95% (in-sample 57.88% vs 56.75%, gaps +2.06 vs +0.80); OOS Brier 0.2471 vs 0.2456 and log loss 0.6879 vs 0.6844 both favor base. Stable: flag_sum +0.260, move +0.220; tiny-population terms (low_total_div_home_dog 56 games, sept_heat 12 games) unstable. SE approximated from 90pct interval width. 8 of 9 easy candidates assembled; roof_state dropped (needs new snapshot history). 9 looks.",
+      "plain_summary": "Growing the combined model from 4 terms to 12 changed nothing out of season: it sits a tenth of a point below the smaller fit, with the range running either side.",
+      "probability_positive": 0.4285,
+      "recorded_at": "2026-09-18",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/pooled_signal_second_fit.py; tests/scratch/pooled_signal_second_fit.json",
+      "standard_error": 1.1354
+    },
+    "pooled_signal_second_fit_vs_model_only": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval [-2.00, +4.54] crosses zero with decisive 300-280 on 580; no admissible closing ground applies; unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Second pooled fit (4 base terms + 8 easy columns) versus model-only, LOSO 2020-2025 opener grade, paired accuracy points",
+      "effect": 1.3307,
+      "effect_units": "accuracy_points",
+      "family": "pooled_signal_first_model_v1",
+      "interval": [
+        -2.0029,
+        4.5394
+      ],
+      "league": "nfl",
+      "notes": "Decisive first: full wins 300, model wins 280 on 580 decisive games. Companion to the vs-four-term cell, which is the decision-relevant comparison. SE approximated from 90pct interval width.",
+      "plain_summary": "The 12-term combined model beats the model alone by about 1.3 games per hundred out of season, with a wide range that runs either side.",
+      "probability_positive": 0.788,
+      "recorded_at": "2026-09-18",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/pooled_signal_second_fit.py; tests/scratch/pooled_signal_second_fit.json",
+      "standard_error": 1.9883
+    },
+    "pooled_signal_sixth_fit_vs_four_term": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-block interval [-0.336,+0.284] crosses zero; only 9 decisive games (4-5); no positive control",
+      "closing_ground": null,
+      "description": "MOD-20 unit 6: reddit_home_comment_ratio_elevated as a fifth fitted term on the served four-term base, LOSO 2020-2025, 1,503 games; -0.067 pts; OOS Brier 0.24544 vs 0.24539, logloss 0.68405 vs 0.68395; IS-OOS gap 0.07pt vs base 0.20pt",
+      "effect": -0.0665335994677312,
+      "effect_units": "accuracy_points",
+      "family": "pooled_signal_first_model_v1",
+      "interval": [
+        -0.33579583613163194,
+        0.28374370751144407
+      ],
+      "league": "nfl",
+      "notes": "Family chosen from prior evidence before fitting; 180 games without trailing coverage filled to 0",
+      "plain_summary": "Adding how busy a home team's fan forum was that week to the pick model changed almost nothing.",
+      "probability_positive": 0.2665,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_signal_sixth_fit/20260923T204014Z",
+      "standard_error": null
+    },
+    "pooled_signal_sixth_fit_vs_model_only": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Companion vs-model-only read, not the decision-relevant comparison (that is vs the served four-term base, which is unresolved_below_power per pooled_signal_sixth_fit_vs_four_term); per lane convention (units 1-5) recorded unresolved_below_power regardless of this cell's own P+, since MOD-20 resolves no cell alone and the family stays open",
+      "closing_ground": null,
+      "description": "MOD-20 unit 6 companion: interaction fit (four-term base + reddit_home_comment_ratio_elevated) vs model-only picks, LOSO 2020-2025, same 1,503 games; +3.726 accuracy points, week-block interval [1.175,6.324], P+ 0.9985, decisive 285-229 on 514.",
+      "effect": 3.7258815701929473,
+      "effect_units": "accuracy_points",
+      "family": "pooled_signal_first_model_v1",
+      "interval": [
+        1.1748582327023498,
+        6.324278837745554
+      ],
+      "league": "nfl",
+      "notes": "Companion, not decision-relevant alone; see pooled_signal_sixth_fit_vs_four_term for the decision-relevant unit 6 read.",
+      "plain_summary": null,
+      "probability_positive": 0.9985,
+      "recorded_at": "2026-09-25",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/pooled_signal_sixth_fit_new_family.py; artifacts/pooled_signal_sixth_fit/20260923T204014Z/results.json; docs/lanes/pooled-signal-model.md",
+      "standard_error": null
+    },
+    "pooled_signal_third_fit_vs_four_term": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval [-0.74, +0.07] reaches above zero, so wrong_sign_resolved does not apply despite P+ 0.039; decisive 4-9 on 13 (exact p near 0.27 two-sided against either side mattering); unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Third pooled fit (4 base terms + Tuesday wind-dog flag) versus the four-term unit-1 fit, LOSO 2020-2025 opener grade, paired accuracy points",
+      "effect": -0.3327,
+      "effect_units": "accuracy_points",
+      "family": "pooled_signal_first_model_v1",
+      "interval": [
+        -0.7423,
+        0.0667
+      ],
+      "league": "nfl",
+      "notes": "Decisive first: full wins 4, base wins 9 on 13 decisive games. Tue-flag per-fold coefficients -0.039/-0.030/+0.113/-0.043/+0.214/-0.028 (mean +0.031, sd 0.098); full in-sample/OOS gap +1.00 vs base +0.80; OOS Brier 0.2461 vs 0.2456, logloss 0.6854 vs 0.6844 both favor base. Only 1 of 5 medium candidates was faithfully buildable (snow needs Tuesday precip that does not exist; rookie/backup depth ungateable pre-Tuesday; continuity has no pick direction). SE approximated from 90pct interval width. 5 looks.",
+      "plain_summary": "Adding a windy-day underdog flag to the combined model cost about a third of a point, with the range just touching the positive side.",
+      "probability_positive": 0.039,
+      "recorded_at": "2026-09-18",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/pooled_signal_third_fit.py; tests/scratch/pooled_signal_third_fit.json",
+      "standard_error": 0.2459
+    },
+    "pooled_signal_third_fit_vs_model_only": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval [-1.57, +3.68] crosses zero with decisive 272-255 on 527; no admissible closing ground applies; unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Third pooled fit (4 base terms + Tuesday wind-dog flag) versus model-only, LOSO 2020-2025 opener grade, paired accuracy points",
+      "effect": 1.1311,
+      "effect_units": "accuracy_points",
+      "family": "pooled_signal_first_model_v1",
+      "interval": [
+        -1.5702,
+        3.6795
+      ],
+      "league": "nfl",
+      "notes": "Decisive first: full wins 272, model wins 255 on 527 decisive games. Companion to the vs-four-term cell, which is the decision-relevant comparison. SE approximated from 90pct interval width.",
+      "plain_summary": "The wind-augmented combined model beats the model alone by about 1.1 games per hundred out of season, with a wide range running either side.",
+      "probability_positive": 0.7995,
+      "recorded_at": "2026-09-18",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/pooled_signal_third_fit.py; tests/scratch/pooled_signal_third_fit.json",
+      "standard_error": 1.5955
+    }
+  }
+}

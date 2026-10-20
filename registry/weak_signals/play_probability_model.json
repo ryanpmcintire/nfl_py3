@@ -1,0 +1,33 @@
+{
+  "family": "play_probability_model",
+  "signals": {
+    "play_probability_model_brier_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Positive on every one of 12 season blocks (sign test 12/12); interval excludes zero decisively, but this is a single predeclared measurement against one baseline family, not a positive-control-bounded or wrong-sign-refuted closure, so it stays open per the AGENTS.md taxonomy rather than being treated as terminally resolved.",
+      "closing_ground": null,
+      "description": "Walk-forward, isotonic-calibrated HistGradientBoostingClassifier P(player plays) vs the current lineup-panel base-rate approach (nfl_ats.lineup_availability's no-designation rate by position group + recent role, plus the fixed injury-status prior for listed players), evaluated on 361,176 depth-chart-row-weeks across 12 walk-forward test seasons (2014-2025), each scored by a model trained only on strictly earlier seasons. Effect is the serving-realistic ablation (roster_status forced to ACT in both training and testing, matching the deployed default when the current week's live roster/inactive designation is not yet published) -- the conservative, deployment-representative number, not the full-information training-time Brier (0.181 improvement) which leans partly on the historical INA/roster-status column not normally available at serve time.",
+      "effect": 0.1236,
+      "effect_units": "brier_improvement",
+      "family": "play_probability_model",
+      "interval": [
+        0.1019,
+        0.1464
+      ],
+      "league": "nfl",
+      "notes": "Full-information (true historical roster_status available) Brier improvement vs the same current-approach baseline: 0.181 [0.175, 0.188]. Vs the depth-rank-only baseline (position_group + depth_rank_bucket, season-lagged shrinkage), serving-realistic improvement: 0.077 [0.068, 0.085]; full-information: 0.135 [0.118, 0.148]. Model overall Brier 0.040 (full-information) / 0.099 (serving-realistic) vs depth-only baseline 0.176 and current-approach baseline 0.221. Calibration table (mean predicted vs observed by slot, full-information run): QB1 0.830/0.820, QB2 0.270/0.249, QB3+ 0.080/0.088, RB1 0.821/0.820, WR1 0.817/0.821, OL 0.718/0.721, DL 0.764/0.773, LB 0.790/0.790, CB 0.750/0.748, S 0.799/0.800, K/P 0.878/0.879 -- all gaps under 0.02 except WR4+ (+0.038) and 'other' (+0.023, small-n K/P-adjacent bucket). Secondary 'started' label (snap share >= 50% of a player's own specific-position bucket that game, or being the depth-chart QB1 who actually played) is far coarser: measured started rates by rank-1 position range from ~0.4% (CB, 2-3 simultaneous corners) to ~82% (QB); documented in docs/play_probability_model.md as a known limitation of the literal task-specified proxy, not a code defect.",
+      "plain_summary": "A real per-player forecast model that looks at depth-chart rank, this week's injury report, and recent playing time beats the lineup panel's old flat position-based guess by about 12 Brier points (0.124, 95% season-blocked interval 0.102 to 0.146) at predicting whether a listed player takes a snap, even after removing the one input (this week's official inactive list) that usually is not available yet when the panel is built.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 12,
+      "sample_games": 361176,
+      "seasons": [
+        2014,
+        2025
+      ],
+      "source": "docs/play_probability_model.md",
+      "standard_error": null
+    }
+  }
+}

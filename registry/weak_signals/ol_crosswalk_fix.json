@@ -1,0 +1,61 @@
+{
+  "family": "ol_crosswalk_fix",
+  "signals": {
+    "ol_crosswalk_fix_opener_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Not wrong_sign_resolved: the per-season sign is positive in 2021 (+0.85) and 2022 (+0.40), exactly zero in 2023 and 2024, negative in 2020 (-0.45) and 2025 (-1.12), so no whole interval sits on one side. Not no_split_half_reliability: this is a paired model-arm comparison with no per-entity trait to split. Not positive_control_bound: no control has been shown able to detect a 0.07-point crosswalk effect on this instrument. All 13 changed picks had a baseline probability between 0.4968 and 0.5052, so the grade is 13 coin flips that split 7-6.",
+      "closing_ground": null,
+      "description": "Resolving snap-count pfr_player_id through players.parquet before weekly_rosters, then refitting the active model configuration (weak_stack, ridge alpha 10, gaussian_median, served home-side offset) and grading forced picks at the Tuesday opener 2020-2025: 13 of 1503 picks changed, 54.558 pct baseline vs 54.491 pct candidate.",
+      "effect": -0.066534,
+      "effect_units": "accuracy_points",
+      "family": "ol_crosswalk_fix",
+      "interval": [
+        -0.534402,
+        0.4
+      ],
+      "league": "nfl",
+      "notes": "Both arms rebuilt from identical pinned snapshots; the disabled-crosswalk arm reproduces the served feature table exactly (0 of 273 numeric columns differ). Week-blocked paired bootstrap, 20000 resamples, seed 20260812. Season-blocked: -0.066534, 95% [-0.586319, +0.401606], probability_positive 0.4162.",
+      "plain_summary": "Ten-plus full-time starting offensive linemen, mostly players with Jr. in their name, were invisible to the injury model because the snap sheet and the roster spell their names differently; one starting left tackle's snaps were credited to another team's defensive lineman. Fixing the name lookup changed 13 picks out of 1503 and those 13 were all games the model already saw as a coin flip.",
+      "probability_positive": 0.3866,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/ol_crosswalk_defect.md",
+      "standard_error": null
+    },
+    "ol_crosswalk_fix_opener_brier": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Not wrong_sign_resolved: the week-blocked interval spans both signs. Not no_split_half_reliability: a paired model-arm comparison has no per-entity trait to split. Not positive_control_bound: nothing has been shown able to detect a 3.4e-5 Brier change on this instrument. The season-blocked interval on only 6 blocks is below the measured block-count floor and is not read as a resolution.",
+      "closing_ground": null,
+      "description": "Same paired arms as ol_crosswalk_fix_opener_accuracy: Brier of the served opener probability on 1503 graded games 2020-2025, baseline 0.251581 vs candidate 0.251615.",
+      "effect": -3.4e-05,
+      "effect_units": "brier_improvement",
+      "family": "ol_crosswalk_fix",
+      "interval": [
+        -0.000124,
+        5.4e-05
+      ],
+      "league": "nfl",
+      "notes": "Week-blocked paired bootstrap, 20000 resamples, seed 20260812, 107 blocks. Season-blocked (6 blocks, degenerate territory): -0.000034, 95% [-0.000094, +0.000030], probability_positive 0.1368.",
+      "plain_summary": "Correcting the snap-sheet name lookup left the model's confidence numbers essentially where they were: the average squared error moved by three hundredths of a thousandth.",
+      "probability_positive": 0.2255,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/ol_crosswalk_defect.md",
+      "standard_error": null
+    }
+  }
+}

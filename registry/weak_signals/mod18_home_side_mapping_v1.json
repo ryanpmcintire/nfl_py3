@@ -1,0 +1,2525 @@
+{
+  "family": "mod18_home_side_mapping_v1",
+  "signals": {
+    "mod18_home_side_mapping_v1_T1_2020_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Frozen home-side mapping T1 paired opener accuracy",
+      "effect": -0.8771929824561403,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -3.982521633341836,
+        2.227295776328338
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "When the home team is an underdog or a favourite of a given size, the model has missed the final margin by a few points on average. This nudges how confident we are in each side by that past average, without moving the projected margin itself.",
+      "probability_positive": 0.27255,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\window_2020_2021.json",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T1_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Frozen home-side mapping T1 paired opener accuracy",
+      "effect": -1.4637391882900865,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -3.274419407877457,
+        0.33288948069241014
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "When the home team is an underdog or a favourite of a given size, the model has missed the final margin by a few points on average. This nudges how confident we are in each side by that past average, without moving the projected margin itself.",
+      "probability_positive": 0.05285,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\window_2020_2025.json",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T1_2022_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Frozen home-side mapping T1 paired opener accuracy",
+      "effect": -1.9455252918287937,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -5.179282868525896,
+        1.2
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "When the home team is an underdog or a favourite of a given size, the model has missed the final margin by a few points on average. This nudges how confident we are in each side by that past average, without moving the projected margin itself.",
+      "probability_positive": 0.1078,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 514,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\window_2022_2023.json",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T1_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Frozen home-side mapping T1 paired opener accuracy",
+      "effect": -1.5009380863039399,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -4.528301886792453,
+        1.4571948998178506
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "When the home team is an underdog or a favourite of a given size, the model has missed the final margin by a few points on average. This nudges how confident we are in each side by that past average, without moving the projected margin itself.",
+      "probability_positive": 0.1459,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\window_2024_2025.json",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T1_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T1_brier, positive favors candidate",
+      "effect": -0.0009036045294151308,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -0.0023013581791143543,
+        0.0004749414900542217
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "When the home team is an underdog or a favourite of a given size, the model has missed the final margin by a few points on average. This nudges how confident we are in each side by that past average, without moving the projected margin itself.",
+      "probability_positive": 0.09865,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\losses.json",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T1_home_0-3_all_accuracy_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T1_home_0-3_all_accuracy, positive favors candidate",
+      "effect": -3.0797101449275366,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -6.871609403254973,
+        0.7299603677657799
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "When the home team is an underdog or a favourite of a given size, the model has missed the final margin by a few points on average. This nudges how confident we are in each side by that past average, without moving the projected margin itself.",
+      "probability_positive": 0.056275,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T1_home_0-3_all_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T1_home_0-3_all_brier, positive favors candidate",
+      "effect": -0.0016175046105113384,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -0.0045035245856019385,
+        0.0012512139779122737
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "When the home team is an underdog or a favourite of a given size, the model has missed the final margin by a few points on average. This nudges how confident we are in each side by that past average, without moving the projected margin itself.",
+      "probability_positive": 0.13585,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T1_home_0-3_home_favourite_accuracy_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T1_home_0-3_home_favourite_accuracy, positive favors candidate",
+      "effect": -2.0408163265306123,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -4.761904761904762,
+        0.6431386785603108
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "When the home team is an underdog or a favourite of a given size, the model has missed the final margin by a few points on average. This nudges how confident we are in each side by that past average, without moving the projected margin itself.",
+      "probability_positive": 0.062075,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 102,
+      "sample_games": 294,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T1_home_0-3_home_favourite_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T1_home_0-3_home_favourite_brier, positive favors candidate",
+      "effect": -0.0008943341174948627,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -0.0019706115678535356,
+        0.00015957850410448172
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "When the home team is an underdog or a favourite of a given size, the model has missed the final margin by a few points on average. This nudges how confident we are in each side by that past average, without moving the projected margin itself.",
+      "probability_positive": 0.05085,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 102,
+      "sample_games": 294,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T1_home_0-3_home_underdog_accuracy_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T1_home_0-3_home_underdog_accuracy, positive favors candidate",
+      "effect": -4.0650406504065035,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -11.39240506329114,
+        3.278688524590164
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "When the home team is an underdog or a favourite of a given size, the model has missed the final margin by a few points on average. This nudges how confident we are in each side by that past average, without moving the projected margin itself.",
+      "probability_positive": 0.141375,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 98,
+      "sample_games": 246,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T1_home_0-3_home_underdog_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T1_home_0-3_home_underdog_brier, positive favors candidate",
+      "effect": -0.0023485891968326174,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -0.008243995854508152,
+        0.003647648900143577
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "When the home team is an underdog or a favourite of a given size, the model has missed the final margin by a few points on average. This nudges how confident we are in each side by that past average, without moving the projected margin itself.",
+      "probability_positive": 0.21625,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 98,
+      "sample_games": 246,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T1_home_0-3_pickem_accuracy_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T1_home_0-3_pickem_accuracy, positive favors candidate",
+      "effect": -8.333333333333332,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -25.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "When the home team is an underdog or a favourite of a given size, the model has missed the final margin by a few points on average. This nudges how confident we are in each side by that past average, without moving the projected margin itself.",
+      "probability_positive": 0.17605,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 12,
+      "sample_games": 12,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T1_home_0-3_pickem_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T1_home_0-3_pickem_brier, positive favors candidate",
+      "effect": -0.004347947669828774,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -0.010474736154611348,
+        0.0021858732286881323
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "When the home team is an underdog or a favourite of a given size, the model has missed the final margin by a few points on average. This nudges how confident we are in each side by that past average, without moving the projected margin itself.",
+      "probability_positive": 0.0935,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 12,
+      "sample_games": 12,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T1_home_10p5plus_all_accuracy_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T1_home_10p5plus_all_accuracy, positive favors candidate",
+      "effect": -0.7633587786259541,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -6.993620414673046,
+        5.46875
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "When the home team is an underdog or a favourite of a given size, the model has missed the final margin by a few points on average. This nudges how confident we are in each side by that past average, without moving the projected margin itself.",
+      "probability_positive": 0.403325,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T1_home_10p5plus_all_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T1_home_10p5plus_all_brier, positive favors candidate",
+      "effect": 0.00020383819753772746,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -0.004922974511687781,
+        0.005262890429646084
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "When the home team is an underdog or a favourite of a given size, the model has missed the final margin by a few points on average. This nudges how confident we are in each side by that past average, without moving the projected margin itself.",
+      "probability_positive": 0.53015,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T1_home_10p5plus_home_favourite_accuracy_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T1_home_10p5plus_home_favourite_accuracy, positive favors candidate",
+      "effect": 3.0303030303030303,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -4.545454545454546,
+        10.869565217391305
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "When the home team is an underdog or a favourite of a given size, the model has missed the final margin by a few points on average. This nudges how confident we are in each side by that past average, without moving the projected margin itself.",
+      "probability_positive": 0.777775,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 67,
+      "sample_games": 99,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T1_home_10p5plus_home_favourite_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T1_home_10p5plus_home_favourite_brier, positive favors candidate",
+      "effect": -0.00039894531205024745,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -0.007071866446509153,
+        0.006061925181077046
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "When the home team is an underdog or a favourite of a given size, the model has missed the final margin by a few points on average. This nudges how confident we are in each side by that past average, without moving the projected margin itself.",
+      "probability_positive": 0.4535,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 67,
+      "sample_games": 99,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T1_home_10p5plus_home_underdog_accuracy_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T1_home_10p5plus_home_underdog_accuracy, positive favors candidate",
+      "effect": -12.5,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -25.806451612903224,
+        -2.9411764705882355
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "When the home team is an underdog or a favourite of a given size, the model has missed the final margin by a few points on average. This nudges how confident we are in each side by that past average, without moving the projected margin itself.",
+      "probability_positive": 0.00625,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 28,
+      "sample_games": 32,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T1_home_10p5plus_home_underdog_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T1_home_10p5plus_home_underdog_brier, positive favors candidate",
+      "effect": 0.002068699680325523,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -0.005516568810291427,
+        0.009622523191132808
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "When the home team is an underdog or a favourite of a given size, the model has missed the final margin by a few points on average. This nudges how confident we are in each side by that past average, without moving the projected margin itself.",
+      "probability_positive": 0.70065,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 28,
+      "sample_games": 32,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T1_home_3p5-6p5_all_accuracy_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T1_home_3p5-6p5_all_accuracy, positive favors candidate",
+      "effect": -1.0869565217391304,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -3.1634446397188047,
+        0.929368029739777
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "When the home team is an underdog or a favourite of a given size, the model has missed the final margin by a few points on average. This nudges how confident we are in each side by that past average, without moving the projected margin itself.",
+      "probability_positive": 0.148725,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T1_home_3p5-6p5_all_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T1_home_3p5-6p5_all_brier, positive favors candidate",
+      "effect": -0.0005479497915321798,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -0.0017657308521338748,
+        0.0006653685700465175
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "When the home team is an underdog or a favourite of a given size, the model has missed the final margin by a few points on average. This nudges how confident we are in each side by that past average, without moving the projected margin itself.",
+      "probability_positive": 0.18585,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T1_home_3p5-6p5_home_favourite_accuracy_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T1_home_3p5-6p5_home_favourite_accuracy, positive favors candidate",
+      "effect": -0.31545741324921134,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -2.359882005899705,
+        1.7064846416382253
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "When the home team is an underdog or a favourite of a given size, the model has missed the final margin by a few points on average. This nudges how confident we are in each side by that past average, without moving the projected margin itself.",
+      "probability_positive": 0.380625,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 102,
+      "sample_games": 317,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T1_home_3p5-6p5_home_favourite_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T1_home_3p5-6p5_home_favourite_brier, positive favors candidate",
+      "effect": 2.585364190519581e-05,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -0.0014697364122826864,
+        0.0014777006793699717
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "When the home team is an underdog or a favourite of a given size, the model has missed the final margin by a few points on average. This nudges how confident we are in each side by that past average, without moving the projected margin itself.",
+      "probability_positive": 0.52335,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 102,
+      "sample_games": 317,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T1_home_3p5-6p5_home_underdog_accuracy_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T1_home_3p5-6p5_home_underdog_accuracy, positive favors candidate",
+      "effect": -2.127659574468085,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -5.833333333333333,
+        1.7391304347826086
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "When the home team is an underdog or a favourite of a given size, the model has missed the final margin by a few points on average. This nudges how confident we are in each side by that past average, without moving the projected margin itself.",
+      "probability_positive": 0.142325,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 97,
+      "sample_games": 235,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T1_home_3p5-6p5_home_underdog_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T1_home_3p5-6p5_home_underdog_brier, positive favors candidate",
+      "effect": -0.0013219739974881294,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -0.00350167049241135,
+        0.0007702012921932255
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "When the home team is an underdog or a favourite of a given size, the model has missed the final margin by a few points on average. This nudges how confident we are in each side by that past average, without moving the projected margin itself.",
+      "probability_positive": 0.1135,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 97,
+      "sample_games": 235,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T1_home_7_all_accuracy_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T1_home_7_all_accuracy, positive favors candidate",
+      "effect": -1.3513513513513513,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -7.352941176470588,
+        4.225352112676056
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "When the home team is an underdog or a favourite of a given size, the model has missed the final margin by a few points on average. This nudges how confident we are in each side by that past average, without moving the projected margin itself.",
+      "probability_positive": 0.32805,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T1_home_7_all_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T1_home_7_all_brier, positive favors candidate",
+      "effect": -0.0017920403992939323,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -0.005188292533502826,
+        0.0015117937070529548
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "When the home team is an underdog or a favourite of a given size, the model has missed the final margin by a few points on average. This nudges how confident we are in each side by that past average, without moving the projected margin itself.",
+      "probability_positive": 0.1424,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T1_home_7_home_favourite_accuracy_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T1_home_7_home_favourite_accuracy, positive favors candidate",
+      "effect": -2.0408163265306123,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -9.090909090909092,
+        4.3478260869565215
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "When the home team is an underdog or a favourite of a given size, the model has missed the final margin by a few points on average. This nudges how confident we are in each side by that past average, without moving the projected margin itself.",
+      "probability_positive": 0.287575,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 38,
+      "sample_games": 49,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T1_home_7_home_favourite_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T1_home_7_home_favourite_brier, positive favors candidate",
+      "effect": -0.0016009632916229902,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -0.006160117282884561,
+        0.0028845879589454774
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "When the home team is an underdog or a favourite of a given size, the model has missed the final margin by a few points on average. This nudges how confident we are in each side by that past average, without moving the projected margin itself.",
+      "probability_positive": 0.23975,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 38,
+      "sample_games": 49,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T1_home_7_home_underdog_accuracy_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T1_home_7_home_underdog_accuracy, positive favors candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -12.0,
+        12.0
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "When the home team is an underdog or a favourite of a given size, the model has missed the final margin by a few points on average. This nudges how confident we are in each side by that past average, without moving the projected margin itself.",
+      "probability_positive": 0.4962,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 24,
+      "sample_games": 25,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T1_home_7_home_underdog_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T1_home_7_home_underdog_brier, positive favors candidate",
+      "effect": -0.0021665515303289783,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -0.006149666005598248,
+        0.0017151019046209024
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "When the home team is an underdog or a favourite of a given size, the model has missed the final margin by a few points on average. This nudges how confident we are in each side by that past average, without moving the projected margin itself.",
+      "probability_positive": 0.1422,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 24,
+      "sample_games": 25,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T1_home_7p5-10_all_accuracy_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T1_home_7p5-10_all_accuracy, positive favors candidate",
+      "effect": 1.5463917525773196,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -2.7472527472527473,
+        6.0606060606060606
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "When the home team is an underdog or a favourite of a given size, the model has missed the final margin by a few points on average. This nudges how confident we are in each side by that past average, without moving the projected margin itself.",
+      "probability_positive": 0.751975,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T1_home_7p5-10_all_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T1_home_7p5-10_all_brier, positive favors candidate",
+      "effect": -0.0002931886191371698,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -0.003519150175247227,
+        0.0028811550394554734
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "When the home team is an underdog or a favourite of a given size, the model has missed the final margin by a few points on average. This nudges how confident we are in each side by that past average, without moving the projected margin itself.",
+      "probability_positive": 0.43145,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T1_home_7p5-10_home_favourite_accuracy_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T1_home_7p5-10_home_favourite_accuracy, positive favors candidate",
+      "effect": 1.6,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -3.3057851239669422,
+        6.451612903225806
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "When the home team is an underdog or a favourite of a given size, the model has missed the final margin by a few points on average. This nudges how confident we are in each side by that past average, without moving the projected margin itself.",
+      "probability_positive": 0.73765,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 78,
+      "sample_games": 125,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T1_home_7p5-10_home_favourite_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T1_home_7p5-10_home_favourite_brier, positive favors candidate",
+      "effect": -0.0020321363045115682,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -0.005534721740608978,
+        0.0014217708484317733
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "When the home team is an underdog or a favourite of a given size, the model has missed the final margin by a few points on average. This nudges how confident we are in each side by that past average, without moving the projected margin itself.",
+      "probability_positive": 0.1271,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 78,
+      "sample_games": 125,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T1_home_7p5-10_home_underdog_accuracy_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T1_home_7p5-10_home_underdog_accuracy, positive favors candidate",
+      "effect": 1.4492753623188406,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -6.0606060606060606,
+        8.955223880597014
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "When the home team is an underdog or a favourite of a given size, the model has missed the final margin by a few points on average. This nudges how confident we are in each side by that past average, without moving the projected margin itself.",
+      "probability_positive": 0.642725,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 69,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T1_home_7p5-10_home_underdog_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T1_home_7p5-10_home_underdog_brier, positive favors candidate",
+      "effect": 0.0028570789268309435,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -0.0018300563460277154,
+        0.007617160749762573
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "When the home team is an underdog or a favourite of a given size, the model has missed the final margin by a few points on average. This nudges how confident we are in each side by that past average, without moving the projected margin itself.",
+      "probability_positive": 0.88245,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 69,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T1_log_loss_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T1_log_loss, positive favors candidate",
+      "effect": -0.0018102984409519571,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -0.004660645919010803,
+        0.0010125568463232328
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "When the home team is an underdog or a favourite of a given size, the model has missed the final margin by a few points on average. This nudges how confident we are in each side by that past average, without moving the projected margin itself.",
+      "probability_positive": 0.10415,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\losses.json",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T1_season_2020_2020": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T1_season, positive favors candidate",
+      "effect": -0.9090909090909091,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -6.726457399103139,
+        4.608294930875576
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "When the home team is an underdog or a favourite of a given size, the model has missed the final margin by a few points on average. This nudges how confident we are in each side by that past average, without moving the projected margin itself.",
+      "probability_positive": 0.3543,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 220,
+      "seasons": [
+        2020,
+        2020
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\paired.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T1_season_2021_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T1_season, positive favors candidate",
+      "effect": -0.847457627118644,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -3.4188034188034186,
+        2.127659574468085
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "When the home team is an underdog or a favourite of a given size, the model has missed the final margin by a few points on average. This nudges how confident we are in each side by that past average, without moving the projected margin itself.",
+      "probability_positive": 0.2235,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 236,
+      "seasons": [
+        2021,
+        2021
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\paired.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T1_season_2022_2022": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T1_season, positive favors candidate",
+      "effect": -1.6129032258064515,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -6.614785992217898,
+        2.9048668741355197
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "When the home team is an underdog or a favourite of a given size, the model has missed the final margin by a few points on average. This nudges how confident we are in each side by that past average, without moving the projected margin itself.",
+      "probability_positive": 0.2316,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 248,
+      "seasons": [
+        2022,
+        2022
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\paired.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T1_season_2023_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T1_season, positive favors candidate",
+      "effect": -2.2556390977443606,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -6.4393939393939394,
+        2.2058823529411766
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "When the home team is an underdog or a favourite of a given size, the model has missed the final margin by a few points on average. This nudges how confident we are in each side by that past average, without moving the projected margin itself.",
+      "probability_positive": 0.1342,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\paired.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T1_season_2024_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T1_season, positive favors candidate",
+      "effect": -3.3834586466165413,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -7.518796992481203,
+        0.3875968992248062
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "When the home team is an underdog or a favourite of a given size, the model has missed the final margin by a few points on average. This nudges how confident we are in each side by that past average, without moving the projected margin itself.",
+      "probability_positive": 0.03855,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\paired.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T1_season_2025_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T1_season, positive favors candidate",
+      "effect": 0.37453183520599254,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -3.8314176245210727,
+        4.363636363636363
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "When the home team is an underdog or a favourite of a given size, the model has missed the final margin by a few points on average. This nudges how confident we are in each side by that past average, without moving the projected margin itself.",
+      "probability_positive": 0.54555,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\paired.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T1_three_member_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T1_three_member_card, positive favors candidate",
+      "effect": -1.3972055888223553,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -2.8898136471535754,
+        0.066711140760507
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "When the home team is an underdog or a favourite of a given size, the model has missed the final margin by a few points on average. This nudges how confident we are in each side by that past average, without moving the projected margin itself.",
+      "probability_positive": 0.02805,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\composition.json",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T2_2020_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Frozen home-side mapping T2 paired opener accuracy",
+      "effect": -3.9473684210526314,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -9.190371991247265,
+        1.3274336283185841
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "Final margins pile up on three, seven and ten points. This reads how often the home team covers from past games with the home side in the same spot, home underdog or home favourite, so the shape near those numbers is learned for each side.",
+      "probability_positive": 0.06825,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\window_2020_2021.json",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T2_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Frozen home-side mapping T2 paired opener accuracy",
+      "effect": -2.5948103792415167,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -5.652759084791386,
+        0.5373004545672277
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "Final margins pile up on three, seven and ten points. This reads how often the home team covers from past games with the home side in the same spot, home underdog or home favourite, so the shape near those numbers is learned for each side.",
+      "probability_positive": 0.04875,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\window_2020_2025.json",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T2_2022_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Frozen home-side mapping T2 paired opener accuracy",
+      "effect": -2.3346303501945527,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -7.976857125948721,
+        3.4766111711027405
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "Final margins pile up on three, seven and ten points. This reads how often the home team covers from past games with the home side in the same spot, home underdog or home favourite, so the shape near those numbers is learned for each side.",
+      "probability_positive": 0.19975,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 514,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\window_2022_2023.json",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T2_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Frozen home-side mapping T2 paired opener accuracy",
+      "effect": -1.6885553470919326,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -6.805293005671078,
+        3.3709446212871668
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "Final margins pile up on three, seven and ten points. This reads how often the home team covers from past games with the home side in the same spot, home underdog or home favourite, so the shape near those numbers is learned for each side.",
+      "probability_positive": 0.2491,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\window_2024_2025.json",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T2_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T2_brier, positive favors candidate",
+      "effect": -0.0012735765176606587,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -0.00502429647490272,
+        0.0024380387020645246
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "Final margins pile up on three, seven and ten points. This reads how often the home team covers from past games with the home side in the same spot, home underdog or home favourite, so the shape near those numbers is learned for each side.",
+      "probability_positive": 0.256,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\losses.json",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T2_home_0-3_all_accuracy_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T2_home_0-3_all_accuracy, positive favors candidate",
+      "effect": -4.166666666666666,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -8.828956164645211,
+        0.36631716906946116
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "Final margins pile up on three, seven and ten points. This reads how often the home team covers from past games with the home side in the same spot, home underdog or home favourite, so the shape near those numbers is learned for each side.",
+      "probability_positive": 0.036625,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T2_home_0-3_all_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T2_home_0-3_all_brier, positive favors candidate",
+      "effect": -0.0025667127923511158,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -0.007921231763792589,
+        0.0027005852929387576
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "Final margins pile up on three, seven and ten points. This reads how often the home team covers from past games with the home side in the same spot, home underdog or home favourite, so the shape near those numbers is learned for each side.",
+      "probability_positive": 0.16585,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T2_home_0-3_home_favourite_accuracy_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T2_home_0-3_home_favourite_accuracy, positive favors candidate",
+      "effect": -5.442176870748299,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -12.245066900932558,
+        1.4184397163120568
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "Final margins pile up on three, seven and ten points. This reads how often the home team covers from past games with the home side in the same spot, home underdog or home favourite, so the shape near those numbers is learned for each side.",
+      "probability_positive": 0.060175,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 102,
+      "sample_games": 294,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T2_home_0-3_home_favourite_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T2_home_0-3_home_favourite_brier, positive favors candidate",
+      "effect": -0.005793601877033094,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -0.01292458257748481,
+        0.0011462008249607286
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "Final margins pile up on three, seven and ten points. This reads how often the home team covers from past games with the home side in the same spot, home underdog or home favourite, so the shape near those numbers is learned for each side.",
+      "probability_positive": 0.0497,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 102,
+      "sample_games": 294,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T2_home_0-3_home_underdog_accuracy_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T2_home_0-3_home_underdog_accuracy, positive favors candidate",
+      "effect": -2.0325203252032518,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -7.860262008733624,
+        3.7658877397963035
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "Final margins pile up on three, seven and ten points. This reads how often the home team covers from past games with the home side in the same spot, home underdog or home favourite, so the shape near those numbers is learned for each side.",
+      "probability_positive": 0.2519,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 98,
+      "sample_games": 246,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T2_home_0-3_home_underdog_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T2_home_0-3_home_underdog_brier, positive favors candidate",
+      "effect": 0.0017105094266140711,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -0.005537028414836412,
+        0.00911120271043692
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "Final margins pile up on three, seven and ten points. This reads how often the home team covers from past games with the home side in the same spot, home underdog or home favourite, so the shape near those numbers is learned for each side.",
+      "probability_positive": 0.6801,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 98,
+      "sample_games": 246,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T2_home_0-3_pickem_accuracy_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T2_home_0-3_pickem_accuracy, positive favors candidate",
+      "effect": -16.666666666666664,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -41.666666666666664,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "Final margins pile up on three, seven and ten points. This reads how often the home team covers from past games with the home side in the same spot, home underdog or home favourite, so the shape near those numbers is learned for each side.",
+      "probability_positive": 0.05685,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 12,
+      "sample_games": 12,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T2_home_0-3_pickem_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T2_home_0-3_pickem_brier, positive favors candidate",
+      "effect": -0.01119098570642895,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -0.027016369579173083,
+        0.002102628156867059
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "Final margins pile up on three, seven and ten points. This reads how often the home team covers from past games with the home side in the same spot, home underdog or home favourite, so the shape near those numbers is learned for each side.",
+      "probability_positive": 0.05815,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 12,
+      "sample_games": 12,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T2_home_10p5plus_all_accuracy_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T2_home_10p5plus_all_accuracy, positive favors candidate",
+      "effect": 2.2900763358778624,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -6.474820143884892,
+        11.290322580645162
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "Final margins pile up on three, seven and ten points. This reads how often the home team covers from past games with the home side in the same spot, home underdog or home favourite, so the shape near those numbers is learned for each side.",
+      "probability_positive": 0.6934,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T2_home_10p5plus_all_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T2_home_10p5plus_all_brier, positive favors candidate",
+      "effect": -0.012340400280249334,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -0.02789535330531742,
+        0.00317268827108542
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "Final margins pile up on three, seven and ten points. This reads how often the home team covers from past games with the home side in the same spot, home underdog or home favourite, so the shape near those numbers is learned for each side.",
+      "probability_positive": 0.05855,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T2_home_10p5plus_home_favourite_accuracy_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T2_home_10p5plus_home_favourite_accuracy, positive favors candidate",
+      "effect": 4.040404040404041,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -4.8076923076923075,
+        13.26530612244898
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "Final margins pile up on three, seven and ten points. This reads how often the home team covers from past games with the home side in the same spot, home underdog or home favourite, so the shape near those numbers is learned for each side.",
+      "probability_positive": 0.81845,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 67,
+      "sample_games": 99,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T2_home_10p5plus_home_favourite_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T2_home_10p5plus_home_favourite_brier, positive favors candidate",
+      "effect": -0.018027392550134646,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -0.03260499927380786,
+        -0.00317440183675829
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "Final margins pile up on three, seven and ten points. This reads how often the home team covers from past games with the home side in the same spot, home underdog or home favourite, so the shape near those numbers is learned for each side.",
+      "probability_positive": 0.00905,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 67,
+      "sample_games": 99,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T2_home_10p5plus_home_underdog_accuracy_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T2_home_10p5plus_home_underdog_accuracy, positive favors candidate",
+      "effect": -3.125,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -31.03448275862069,
+        22.857142857142858
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "Final margins pile up on three, seven and ten points. This reads how often the home team covers from past games with the home side in the same spot, home underdog or home favourite, so the shape near those numbers is learned for each side.",
+      "probability_positive": 0.4063,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 28,
+      "sample_games": 32,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T2_home_10p5plus_home_underdog_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T2_home_10p5plus_home_underdog_brier, positive favors candidate",
+      "effect": 0.005253732054708359,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -0.04283092166861512,
+        0.049715954024455944
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "Final margins pile up on three, seven and ten points. This reads how often the home team covers from past games with the home side in the same spot, home underdog or home favourite, so the shape near those numbers is learned for each side.",
+      "probability_positive": 0.58665,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 28,
+      "sample_games": 32,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T2_home_3p5-6p5_all_accuracy_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T2_home_3p5-6p5_all_accuracy, positive favors candidate",
+      "effect": -5.797101449275362,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -10.787763624716666,
+        -0.8709669140514232
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "Final margins pile up on three, seven and ten points. This reads how often the home team covers from past games with the home side in the same spot, home underdog or home favourite, so the shape near those numbers is learned for each side.",
+      "probability_positive": 0.01145,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T2_home_3p5-6p5_all_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T2_home_3p5-6p5_all_brier, positive favors candidate",
+      "effect": -0.00042371618688361436,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -0.00548476649763516,
+        0.004571292582016699
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "Final margins pile up on three, seven and ten points. This reads how often the home team covers from past games with the home side in the same spot, home underdog or home favourite, so the shape near those numbers is learned for each side.",
+      "probability_positive": 0.43435,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T2_home_3p5-6p5_home_favourite_accuracy_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T2_home_3p5-6p5_home_favourite_accuracy, positive favors candidate",
+      "effect": -3.1545741324921135,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -6.907894736842105,
+        0.6349206349206349
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "Final margins pile up on three, seven and ten points. This reads how often the home team covers from past games with the home side in the same spot, home underdog or home favourite, so the shape near those numbers is learned for each side.",
+      "probability_positive": 0.052575,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 102,
+      "sample_games": 317,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T2_home_3p5-6p5_home_favourite_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T2_home_3p5-6p5_home_favourite_brier, positive favors candidate",
+      "effect": -0.0011976867217483357,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -0.004340206438341777,
+        0.001898327176228409
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "Final margins pile up on three, seven and ten points. This reads how often the home team covers from past games with the home side in the same spot, home underdog or home favourite, so the shape near those numbers is learned for each side.",
+      "probability_positive": 0.2178,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 102,
+      "sample_games": 317,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T2_home_3p5-6p5_home_underdog_accuracy_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T2_home_3p5-6p5_home_underdog_accuracy, positive favors candidate",
+      "effect": -9.361702127659575,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -18.939477372847414,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "Final margins pile up on three, seven and ten points. This reads how often the home team covers from past games with the home side in the same spot, home underdog or home favourite, so the shape near those numbers is learned for each side.",
+      "probability_positive": 0.0279,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 97,
+      "sample_games": 235,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T2_home_3p5-6p5_home_underdog_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T2_home_3p5-6p5_home_underdog_brier, positive favors candidate",
+      "effect": 0.0006203206622743294,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -0.01002583529650406,
+        0.011380554817196669
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "Final margins pile up on three, seven and ten points. This reads how often the home team covers from past games with the home side in the same spot, home underdog or home favourite, so the shape near those numbers is learned for each side.",
+      "probability_positive": 0.54925,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 97,
+      "sample_games": 235,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T2_home_7_all_accuracy_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T2_home_7_all_accuracy, positive favors candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -11.428571428571429,
+        12.162162162162161
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "Final margins pile up on three, seven and ten points. This reads how often the home team covers from past games with the home side in the same spot, home underdog or home favourite, so the shape near those numbers is learned for each side.",
+      "probability_positive": 0.499775,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T2_home_7_all_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T2_home_7_all_brier, positive favors candidate",
+      "effect": 0.0012502336998488747,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -0.01606379277144004,
+        0.01925471979587795
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "Final margins pile up on three, seven and ten points. This reads how often the home team covers from past games with the home side in the same spot, home underdog or home favourite, so the shape near those numbers is learned for each side.",
+      "probability_positive": 0.5519,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T2_home_7_home_favourite_accuracy_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T2_home_7_home_favourite_accuracy, positive favors candidate",
+      "effect": 6.122448979591836,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -5.769230769230769,
+        18.75
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "Final margins pile up on three, seven and ten points. This reads how often the home team covers from past games with the home side in the same spot, home underdog or home favourite, so the shape near those numbers is learned for each side.",
+      "probability_positive": 0.844325,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 38,
+      "sample_games": 49,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T2_home_7_home_favourite_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T2_home_7_home_favourite_brier, positive favors candidate",
+      "effect": 0.003867450008738763,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -0.00619175505753427,
+        0.01464930114612453
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "Final margins pile up on three, seven and ten points. This reads how often the home team covers from past games with the home side in the same spot, home underdog or home favourite, so the shape near those numbers is learned for each side.",
+      "probability_positive": 0.7671,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 38,
+      "sample_games": 49,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T2_home_7_home_underdog_accuracy_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T2_home_7_home_underdog_accuracy, positive favors candidate",
+      "effect": -12.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -36.0,
+        12.5
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "Final margins pile up on three, seven and ten points. This reads how often the home team covers from past games with the home side in the same spot, home underdog or home favourite, so the shape near those numbers is learned for each side.",
+      "probability_positive": 0.17905,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 24,
+      "sample_games": 25,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T2_home_7_home_underdog_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T2_home_7_home_underdog_brier, positive favors candidate",
+      "effect": -0.0038795102655753057,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -0.05066477259146024,
+        0.04480246177010296
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "Final margins pile up on three, seven and ten points. This reads how often the home team covers from past games with the home side in the same spot, home underdog or home favourite, so the shape near those numbers is learned for each side.",
+      "probability_positive": 0.4353,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 24,
+      "sample_games": 25,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T2_home_7p5-10_all_accuracy_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T2_home_7p5-10_all_accuracy, positive favors candidate",
+      "effect": 6.701030927835052,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -2.2099447513812156,
+        16.0
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "Final margins pile up on three, seven and ten points. This reads how often the home team covers from past games with the home side in the same spot, home underdog or home favourite, so the shape near those numbers is learned for each side.",
+      "probability_positive": 0.928175,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T2_home_7p5-10_all_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T2_home_7p5-10_all_brier, positive favors candidate",
+      "effect": 0.006497971306275501,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -0.007699505154400461,
+        0.02106140130422797
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "Final margins pile up on three, seven and ten points. This reads how often the home team covers from past games with the home side in the same spot, home underdog or home favourite, so the shape near those numbers is learned for each side.",
+      "probability_positive": 0.81305,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T2_home_7p5-10_home_favourite_accuracy_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T2_home_7p5-10_home_favourite_accuracy, positive favors candidate",
+      "effect": 4.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -3.10077519379845,
+        11.504424778761061
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "Final margins pile up on three, seven and ten points. This reads how often the home team covers from past games with the home side in the same spot, home underdog or home favourite, so the shape near those numbers is learned for each side.",
+      "probability_positive": 0.866575,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 78,
+      "sample_games": 125,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T2_home_7p5-10_home_favourite_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T2_home_7p5-10_home_favourite_brier, positive favors candidate",
+      "effect": -0.0009391677637196538,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -0.01318986859554444,
+        0.011771698143620741
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "Final margins pile up on three, seven and ten points. This reads how often the home team covers from past games with the home side in the same spot, home underdog or home favourite, so the shape near those numbers is learned for each side.",
+      "probability_positive": 0.4473,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 78,
+      "sample_games": 125,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T2_home_7p5-10_home_underdog_accuracy_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T2_home_7p5-10_home_underdog_accuracy, positive favors candidate",
+      "effect": 11.594202898550725,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -10.0,
+        33.333333333333336
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "Final margins pile up on three, seven and ten points. This reads how often the home team covers from past games with the home side in the same spot, home underdog or home favourite, so the shape near those numbers is learned for each side.",
+      "probability_positive": 0.857175,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 69,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T2_home_7p5-10_home_underdog_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T2_home_7p5-10_home_underdog_brier, positive favors candidate",
+      "effect": 0.01997104933162904,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -0.014754865425512074,
+        0.05519400458474267
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "Final margins pile up on three, seven and ten points. This reads how often the home team covers from past games with the home side in the same spot, home underdog or home favourite, so the shape near those numbers is learned for each side.",
+      "probability_positive": 0.87355,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 69,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\home_split.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T2_log_loss_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T2_log_loss, positive favors candidate",
+      "effect": -0.00261675338852815,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -0.010272894737477794,
+        0.004952875982218993
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "Final margins pile up on three, seven and ten points. This reads how often the home team covers from past games with the home side in the same spot, home underdog or home favourite, so the shape near those numbers is learned for each side.",
+      "probability_positive": 0.25445,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\losses.json",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T2_season_2020_2020": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T2_season, positive favors candidate",
+      "effect": -5.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -13.514103623273929,
+        4.225850385330809
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "Final margins pile up on three, seven and ten points. This reads how often the home team covers from past games with the home side in the same spot, home underdog or home favourite, so the shape near those numbers is learned for each side.",
+      "probability_positive": 0.1297,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 220,
+      "seasons": [
+        2020,
+        2020
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\paired.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T2_season_2021_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T2_season, positive favors candidate",
+      "effect": -2.9661016949152543,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -9.051724137931034,
+        2.9535864978902953
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "Final margins pile up on three, seven and ten points. This reads how often the home team covers from past games with the home side in the same spot, home underdog or home favourite, so the shape near those numbers is learned for each side.",
+      "probability_positive": 0.15035,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 236,
+      "seasons": [
+        2021,
+        2021
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\paired.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T2_season_2022_2022": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T2_season, positive favors candidate",
+      "effect": 3.225806451612903,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -5.179282868525896,
+        11.475409836065573
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "Final margins pile up on three, seven and ten points. This reads how often the home team covers from past games with the home side in the same spot, home underdog or home favourite, so the shape near those numbers is learned for each side.",
+      "probability_positive": 0.76095,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 248,
+      "seasons": [
+        2022,
+        2022
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\paired.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T2_season_2023_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T2_season, positive favors candidate",
+      "effect": -7.518796992481203,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -14.074074074074074,
+        -0.7518796992481203
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "Final margins pile up on three, seven and ten points. This reads how often the home team covers from past games with the home side in the same spot, home underdog or home favourite, so the shape near those numbers is learned for each side.",
+      "probability_positive": 0.01435,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\paired.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T2_season_2024_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T2_season, positive favors candidate",
+      "effect": -2.2556390977443606,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -9.66542750929368,
+        4.868913857677903
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "Final margins pile up on three, seven and ten points. This reads how often the home team covers from past games with the home side in the same spot, home underdog or home favourite, so the shape near those numbers is learned for each side.",
+      "probability_positive": 0.25795,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\paired.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T2_season_2025_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T2_season, positive favors candidate",
+      "effect": -1.1235955056179776,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -8.179201575764301,
+        5.947955390334572
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "Final margins pile up on three, seven and ten points. This reads how often the home team covers from past games with the home side in the same spot, home underdog or home favourite, so the shape near those numbers is learned for each side.",
+      "probability_positive": 0.36445,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\paired.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_mapping_v1_T2_three_member_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Home-side mapping T2_three_member_card, positive favors candidate",
+      "effect": -1.2641383898868928,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_mapping_v1",
+      "interval": [
+        -3.6449188083179753,
+        1.1424923259648117
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+      "plain_summary": "Final margins pile up on three, seven and ten points. This reads how often the home team covers from past games with the home side in the same spot, home underdog or home favourite, so the shape near those numbers is learned for each side.",
+      "probability_positive": 0.14775,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\composition.json",
+      "standard_error": null
+    }
+  }
+}

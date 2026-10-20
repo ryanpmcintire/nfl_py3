@@ -1,0 +1,117 @@
+{
+  "family": "LEAD-84-unit2",
+  "signals": {
+    "LEAD-84-unit2-accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground for this endpoint; no power-matched control",
+      "closing_ground": null,
+      "description": "LEAD-84 candidate versus served four-term recipe; accuracy_points",
+      "effect": -0.860832137733,
+      "effect_units": "accuracy_points",
+      "family": "LEAD-84-unit2",
+      "interval": [
+        -3.55113636364,
+        1.17651390453
+      ],
+      "league": "nfl",
+      "notes": "505 looks; opener; season/week bootstrap; unadjusted intervals",
+      "plain_summary": "Combining book prices this way has not yet shown a clear improvement. This question remains open and pool picks stay unchanged.",
+      "probability_positive": 0.22955,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead84_unit2.md",
+      "standard_error": 1.20096008226
+    },
+    "LEAD-84-unit2-brier": {
+      "category": "market",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Fixed fifth-term extension has a wholly negative improvement interval on brier; this does not close the separate primary RPS mixture question",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "LEAD-84 candidate versus served four-term recipe; brier",
+      "effect": -0.00117551685789,
+      "effect_units": "brier_improvement",
+      "family": "LEAD-84-unit2",
+      "interval": [
+        -0.00233034204847,
+        -8.30993338884e-05
+      ],
+      "league": "nfl",
+      "notes": "505 looks; opener; season/week bootstrap; unadjusted intervals",
+      "plain_summary": "Adding this book information made the stated opener chances less accurate. This concerns this version of the formula; pool picks stay unchanged.",
+      "probability_positive": 0.016,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead84_unit2.md",
+      "standard_error": 0.000573305261894
+    },
+    "LEAD-84-unit2-log_loss": {
+      "category": "market",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Fixed fifth-term extension has a wholly negative improvement interval on log_loss; this does not close the separate primary RPS mixture question",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "LEAD-84 candidate versus served four-term recipe; log_loss",
+      "effect": -0.00247633567504,
+      "effect_units": "log_loss_improvement",
+      "family": "LEAD-84-unit2",
+      "interval": [
+        -0.00487561659388,
+        -0.000194787186053
+      ],
+      "league": "nfl",
+      "notes": "505 looks; opener; season/week bootstrap; unadjusted intervals",
+      "plain_summary": "Adding this book information made the stated opener chances less accurate. This concerns this version of the formula; pool picks stay unchanged.",
+      "probability_positive": 0.0157,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead84_unit2.md",
+      "standard_error": 0.00120363858404
+    },
+    "LEAD-84-unit2-rps": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground for this endpoint; no power-matched control",
+      "closing_ground": null,
+      "description": "LEAD-84 candidate versus served four-term recipe; rps",
+      "effect": -0.00938541374734,
+      "effect_units": "rps_improvement",
+      "family": "LEAD-84-unit2",
+      "interval": [
+        -0.0242296707192,
+        0.00596906494894
+      ],
+      "league": "nfl",
+      "notes": "505 looks; opener; season/week bootstrap; unadjusted intervals",
+      "plain_summary": "Combining book prices this way has not yet shown a clear improvement. This question remains open and pool picks stay unchanged.",
+      "probability_positive": 0.1048,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 714,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead84_unit2.md",
+      "standard_error": 0.00751534844707
+    }
+  }
+}

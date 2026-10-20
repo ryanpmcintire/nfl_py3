@@ -1,0 +1,92 @@
+{
+  "family": "e172_clsdraw",
+  "signals": {
+    "e172_clsdraw3_loso_class_ll_vs_window": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CLSDRAW corrected classes (returned TD = points_def>=6, other turnover = flip and points_off<6 and points_def<6, none incl offensive TDs); LOSO multinomial held-out log likelihood per query minus best-shrunk window class shares, 60000 queries, game bootstrap 90 percent",
+      "effect": 0.005811,
+      "effect_units": "log_loss_improvement",
+      "family": "e172_clsdraw",
+      "interval": [
+        0.004929,
+        0.006776
+      ],
+      "league": "nfl",
+      "notes": "vs kernel K-set shares +0.01565 [0.01431,0.01699] P+ 1.0; 9 of 9 seasons positive vs window; supersedes the wrong-class record where class 1 held offensive TDs",
+      "plain_summary": "Once offensive touchdowns are no longer counted as turnovers, a fitted class model predicts returned-touchdown turnovers better out of season than window shares and the kernel shares.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e172/cd_run2.txt",
+      "standard_error": null
+    },
+    "e172_clsdraw_loso_class_ll_vs_window": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "LOSO multinomial class model (returned TD, other turnover, none) held-out log likelihood per query minus best-shrunk window class shares, 60000 queries, game bootstrap 90 percent",
+      "effect": 0.001035,
+      "effect_units": "log_loss_improvement",
+      "family": "e172_clsdraw",
+      "interval": [
+        -3.79e-05,
+        0.0021434
+      ],
+      "invalidated_reason": "class 1 held offensive scoring plays (possession_flip is true on offensive TDs); fit and LL rested on wrong classes",
+      "league": "nfl",
+      "notes": "vs kernel K-set shares +0.01414 interval 0.01266 to 0.01560 probability_positive 1.0; 7 of 9 seasons positive vs window\n[2026-10-18T23:37:18.027543+00:00] invalidated: class 1 held offensive scoring plays (possession_flip is true on offensive TDs); fit and LL rested on wrong classes. Superseded by: 'e172_clsdraw3_loso_class_ll_vs_window'. Invalidation is not closure.",
+      "plain_summary": "A fitted class model predicts returned-touchdown turnovers slightly better out of season than window shares and much better than the nearest-neighbour kernel shares.",
+      "probability_positive": 0.943,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2300,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e172/cd_run.txt",
+      "standard_error": 0.00065,
+      "status": "invalidated",
+      "superseded_by": "e172_clsdraw3_loso_class_ll_vs_window"
+    },
+    "e172_sim_v_real_rtd_per_true_turnover": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Sim base (3 seeds s11-13, burn 2 seasons) returned-TD share per TRUE run/pass turnover (flip and points_off<6, or points_def>=6) minus real 2009-17; restates the 4.4-4.6 v 3.4 per-flip gap",
+      "effect": 2.88,
+      "effect_units": "rate_pp",
+      "family": "e172_clsdraw",
+      "interval": [
+        2.43,
+        3.3
+      ],
+      "league": "nfl",
+      "notes": "sim 9.62/9.90/10.06 (mean 9.86) v real 6.98 [6.56,7.43] game-bootstrap 90 pct; interval carries real-side noise only, sim counts 4629/4731/4854 rtd; per-flip metric counted offensive TD flips on both sides (about 54 pct of flips)",
+      "plain_summary": "The simulator turns about 9.9 percent of real turnovers into defensive touchdowns versus 7.0 percent in real games.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e172/cd_run2.txt",
+      "standard_error": null
+    }
+  }
+}

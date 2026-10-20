@@ -1,0 +1,1685 @@
+{
+  "family": "served_refresh_card",
+  "signals": {
+    "served_refresh_card_best_pick_control_vs_incumbent_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2020-2025: the weekly Best Pick nomination, best pick control vs incumbent, on 103 paired weeks. Incumbent 56.311% (58 hits), arm 98.058% (101 hits), 43 weeks the nominee differs. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +34.314 to +49.038, P+ 1.0000.",
+      "effect": 41.747573,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        32.038835,
+        51.456311
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "A yardstick, not a rule: what a perfect weekly Best Pick would be worth.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 103,
+      "sample_games": 103,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_best_pick_control_vs_incumbent_2023_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2023-2025: the weekly Best Pick nomination, best pick control vs incumbent, on 51 paired weeks. Incumbent 62.745% (32 hits), arm 100.000% (51 hits), 19 weeks the nominee differs. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +29.412 to +52.941, P+ 1.0000.",
+      "effect": 37.254902,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        23.529412,
+        50.980392
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "A yardstick, not a rule: what a perfect weekly Best Pick would be worth.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 51,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_best_pick_small_spread_vs_incumbent_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2020-2025: the weekly Best Pick nomination, best pick small spread vs incumbent, on 102 paired weeks. Incumbent 56.863% (58 hits), arm 58.824% (60 hits), 26 weeks the nominee differs. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -5.882 to +9.804, P+ 0.6763.",
+      "effect": 1.960784,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        -5.882353,
+        9.803922
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "The starred Best Pick of the week, restricted to games with a spread of 6.5 or less, against the nominator that ignores the spread size.",
+      "probability_positive": 0.688475,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 102,
+      "sample_games": 102,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_best_pick_small_spread_vs_incumbent_2023_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2023-2025: the weekly Best Pick nomination, best pick small spread vs incumbent, on 50 paired weeks. Incumbent 64.000% (32 hits), arm 60.000% (30 hits), 14 weeks the nominee differs. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -11.765 to +0.000, P+ 0.1480.",
+      "effect": -4.0,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        -16.0,
+        6.0
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "The starred Best Pick of the week, restricted to games with a spread of 6.5 or less, against the nominator that ignores the spread size.",
+      "probability_positive": 0.2393,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 50,
+      "sample_games": 50,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_chain_without_consensus_vs_served_chain_2023": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2023: chain without consensus vs served chain on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 266 non-push games. Baseline 54.887%, candidate 59.023%, 39 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +4.135 to +4.135, P+ 1.0000.",
+      "effect": 4.135338,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        -0.389105,
+        8.541157
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "What dropping the market-wide line-move rule from the through-the-week chain is worth.",
+      "probability_positive": 0.96025,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_chain_without_consensus_vs_served_chain_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2023-2025: chain without consensus vs served chain on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 799 non-push games. Baseline 56.070%, candidate 58.073%, 70 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +0.752 to +4.135, P+ 1.0000.",
+      "effect": 2.002503,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        0.125628,
+        3.865337
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "What dropping the market-wide line-move rule from the through-the-week chain is worth.",
+      "probability_positive": 0.981575,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_chain_without_consensus_vs_served_chain_2024": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2024: chain without consensus vs served chain on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 266 non-push games. Baseline 56.391%, candidate 57.143%, 16 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +0.752 to +0.752, P+ 1.0000.",
+      "effect": 0.75188,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        -1.526718,
+        2.996255
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "What dropping the market-wide line-move rule from the through-the-week chain is worth.",
+      "probability_positive": 0.73655,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_chain_without_consensus_vs_served_chain_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2025: chain without consensus vs served chain on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 267 non-push games. Baseline 56.929%, candidate 58.052%, 15 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +1.124 to +1.124, P+ 1.0000.",
+      "effect": 1.123596,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        -1.123596,
+        3.308824
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "What dropping the market-wide line-move rule from the through-the-week chain is worth.",
+      "probability_positive": 0.84395,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_chain_without_consensus_vs_tuesday_2023": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2023: chain without consensus vs tuesday on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 266 non-push games. Baseline 59.398%, candidate 59.023%, 33 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -0.376 to -0.376, P+ 0.0000.",
+      "effect": -0.37594,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        -3.831418,
+        3.422053
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "Every through-the-week rule except the market-wide line-move rule, against keeping Tuesday's card.",
+      "probability_positive": 0.42385,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_chain_without_consensus_vs_tuesday_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2023-2025: chain without consensus vs tuesday on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 799 non-push games. Baseline 55.945%, candidate 58.073%, 95 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -0.376 to +3.745, P+ 0.9645.",
+      "effect": 2.12766,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        0.0,
+        4.47205
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "Every through-the-week rule except the market-wide line-move rule, against keeping Tuesday's card.",
+      "probability_positive": 0.9713,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_chain_without_consensus_vs_tuesday_2024": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2024: chain without consensus vs tuesday on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 266 non-push games. Baseline 54.135%, candidate 57.143%, 40 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +3.008 to +3.008, P+ 1.0000.",
+      "effect": 3.007519,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        -0.763359,
+        7.272901
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "Every through-the-week rule except the market-wide line-move rule, against keeping Tuesday's card.",
+      "probability_positive": 0.928725,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_chain_without_consensus_vs_tuesday_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2025: chain without consensus vs tuesday on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 267 non-push games. Baseline 54.307%, candidate 58.052%, 22 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +3.745 to +3.745, P+ 1.0000.",
+      "effect": 3.745318,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        0.369004,
+        7.692308
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "Every through-the-week rule except the market-wide line-move rule, against keeping Tuesday's card.",
+      "probability_positive": 0.98195,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_control_pc_chain_2023": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2023: control pc chain on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 266 non-push games. Baseline 59.398%, candidate 69.549%, 27 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +10.150 to +10.150, P+ 1.0000.",
+      "effect": 10.150376,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        6.741573,
+        13.962264
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "A yardstick, not a rule: what perfect hindsight would be worth on exactly the games the through-the-week rules move.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_control_pc_chain_2023_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2023-2025: control pc chain on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 799 non-push games. Baseline 55.945%, candidate 65.957%, 80 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +8.240 to +11.654, P+ 1.0000.",
+      "effect": 10.012516,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        8.219178,
+        11.925466
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "A yardstick, not a rule: what perfect hindsight would be worth on exactly the games the through-the-week rules move.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_control_pc_chain_2024": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2024: control pc chain on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 266 non-push games. Baseline 54.135%, candidate 65.789%, 31 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +11.654 to +11.654, P+ 1.0000.",
+      "effect": 11.654135,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        8.494208,
+        14.942529
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "A yardstick, not a rule: what perfect hindsight would be worth on exactly the games the through-the-week rules move.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_control_pc_chain_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2025: control pc chain on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 267 non-push games. Baseline 54.307%, candidate 62.547%, 22 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +8.240 to +8.240, P+ 1.0000.",
+      "effect": 8.2397,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        5.970149,
+        10.984848
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "A yardstick, not a rule: what perfect hindsight would be worth on exactly the games the through-the-week rules move.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_control_pc_reach_2023": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2023: control pc reach on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 266 non-push games. Baseline 59.398%, candidate 100.000%, 108 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +40.602 to +40.602, P+ 1.0000.",
+      "effect": 40.601504,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        34.615019,
+        46.768061
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "A yardstick, not a rule: what perfect hindsight would be worth on every game these rules can reach.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_control_pc_reach_2023_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2023-2025: control pc reach on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 799 non-push games. Baseline 55.945%, candidate 100.000%, 352 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +40.602 to +45.865, P+ 1.0000.",
+      "effect": 44.055069,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        40.621022,
+        47.613364
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "A yardstick, not a rule: what perfect hindsight would be worth on every game these rules can reach.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_control_pc_reach_2024": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2024: control pc reach on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 266 non-push games. Baseline 54.135%, candidate 100.000%, 122 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +45.865 to +45.865, P+ 1.0000.",
+      "effect": 45.864662,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        39.552239,
+        52.61194
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "A yardstick, not a rule: what perfect hindsight would be worth on every game these rules can reach.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_control_pc_reach_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2025: control pc reach on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 267 non-push games. Baseline 54.307%, candidate 100.000%, 122 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +45.693 to +45.693, P+ 1.0000.",
+      "effect": 45.692884,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        40.82397,
+        50.95057
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "A yardstick, not a rule: what perfect hindsight would be worth on every game these rules can reach.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_headline_chain_where_inputs_exist_vs_tuesday_2020_2022": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2020-2022: headline chain where inputs exist vs tuesday on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 704 non-push games. Baseline 57.670%, candidate 57.955%, 2 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +0.000 to +0.455, P+ 0.9806.",
+      "effect": 0.284091,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        0.0,
+        0.71736
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "The headline pair: six seasons of picks with the through-the-week rules applied wherever the hour-by-hour lines, injury news and money splits exist, against the same picks left alone after Tuesday.",
+      "probability_positive": 0.936075,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 53,
+      "sample_games": 704,
+      "seasons": [
+        2020,
+        2022
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_headline_chain_where_inputs_exist_vs_tuesday_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2020-2025: headline chain where inputs exist vs tuesday on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 1503 non-push games. Baseline 56.753%, candidate 56.953%, 161 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -1.887 to +1.838, P+ 0.6034.",
+      "effect": 0.199601,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        -1.199201,
+        1.616189
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "The headline pair: six seasons of picks with the through-the-week rules applied wherever the hour-by-hour lines, injury news and money splits exist, against the same picks left alone after Tuesday.",
+      "probability_positive": 0.611275,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_headline_tuesday_vs_raw_2020_2022": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2020-2022: headline tuesday vs raw on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 704 non-push games. Baseline 54.261%, candidate 57.670%, 220 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +1.271 to +6.364, P+ 1.0000.",
+      "effect": 3.409091,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        -0.285725,
+        7.080956
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "What Tuesday's nine situational adjustments are worth across six seasons against the bare model.",
+      "probability_positive": 0.963775,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 53,
+      "sample_games": 704,
+      "seasons": [
+        2020,
+        2022
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_headline_tuesday_vs_raw_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2020-2025: headline tuesday vs raw on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 1503 non-push games. Baseline 54.491%, candidate 56.753%, 474 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +0.886 to +3.986, P+ 0.9998.",
+      "effect": 2.262142,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        -0.530161,
+        5.036448
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "What Tuesday's nine situational adjustments are worth across six seasons against the bare model.",
+      "probability_positive": 0.944225,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_reference_follow_at_0_5_2023": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2023: reference follow at 0 5 on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 266 non-push games. Baseline 59.398%, candidate 57.895%, 58 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -1.504 to -1.504, P+ 0.0000.",
+      "effect": -1.503759,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        -6.273063,
+        3.787879
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "The same follow-the-books rule at the half-point trigger the code uses today, instead of a full point.",
+      "probability_positive": 0.277625,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_reference_follow_at_0_5_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2023-2025: reference follow at 0 5 on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 799 non-push games. Baseline 55.945%, candidate 56.320%, 161 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -1.504 to +3.383, P+ 0.7037.",
+      "effect": 0.375469,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        -2.70936,
+        3.544416
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "The same follow-the-books rule at the half-point trigger the code uses today, instead of a full point.",
+      "probability_positive": 0.594475,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_reference_follow_at_0_5_2024": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2024: reference follow at 0 5 on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 266 non-push games. Baseline 54.135%, candidate 57.519%, 47 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +3.383 to +3.383, P+ 1.0000.",
+      "effect": 3.383459,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        -1.503759,
+        8.614232
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "The same follow-the-books rule at the half-point trigger the code uses today, instead of a full point.",
+      "probability_positive": 0.9011,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_reference_follow_at_0_5_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2025: reference follow at 0 5 on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 267 non-push games. Baseline 54.307%, candidate 53.558%, 56 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -0.749 to -0.749, P+ 0.0000.",
+      "effect": -0.749064,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        -6.390977,
+        4.924242
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "The same follow-the-books rule at the half-point trigger the code uses today, instead of a full point.",
+      "probability_positive": 0.40345,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_reference_follow_no_veto_2023": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2023: reference follow no veto on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 266 non-push games. Baseline 59.398%, candidate 58.647%, 38 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -0.752 to -0.752, P+ 0.0000.",
+      "effect": -0.75188,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        -4.395604,
+        2.996255
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "The same follow-the-books rule at a full point, with no injury check to stop it.",
+      "probability_positive": 0.346125,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_reference_follow_no_veto_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2023-2025: reference follow no veto on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 799 non-push games. Baseline 55.945%, candidate 57.071%, 101 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -0.752 to +2.622, P+ 0.9100.",
+      "effect": 1.126408,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        -1.24533,
+        3.554019
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "The same follow-the-books rule at a full point, with no injury check to stop it.",
+      "probability_positive": 0.820025,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_reference_follow_no_veto_2024": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2024: reference follow no veto on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 266 non-push games. Baseline 54.135%, candidate 55.639%, 38 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +1.504 to +1.504, P+ 1.0000.",
+      "effect": 1.503759,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        -2.68225,
+        5.639098
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "The same follow-the-books rule at a full point, with no injury check to stop it.",
+      "probability_positive": 0.75775,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_reference_follow_no_veto_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2025: reference follow no veto on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 267 non-push games. Baseline 54.307%, candidate 56.929%, 25 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +2.622 to +2.622, P+ 1.0000.",
+      "effect": 2.621723,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        -1.515152,
+        7.01107
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "The same follow-the-books rule at a full point, with no injury check to stop it.",
+      "probability_positive": 0.8864,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_step1_tuesday_card_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2023: step1 tuesday card on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 266 non-push games. Baseline 56.391%, candidate 59.398%, 82 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +3.008 to +3.008, P+ 1.0000.",
+      "effect": 3.007519,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        -2.661597,
+        9.302326
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "This is what the Tuesday adjustments are worth: nine situational rules that flip the model's pick when a coach, a bye, the weather or a revenge angle says to.",
+      "probability_positive": 0.83365,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_step1_tuesday_card_2023_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2023-2025: step1 tuesday card on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 799 non-push games. Baseline 54.693%, candidate 55.945%, 254 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -0.375 to +3.008, P+ 0.9634.",
+      "effect": 1.251564,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        -2.973978,
+        5.296343
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "This is what the Tuesday adjustments are worth: nine situational rules that flip the model's pick when a coach, a bye, the weather or a revenge angle says to.",
+      "probability_positive": 0.72795,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_step1_tuesday_card_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2024: step1 tuesday card on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 266 non-push games. Baseline 53.008%, candidate 54.135%, 85 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +1.128 to +1.128, P+ 1.0000.",
+      "effect": 1.12782,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        -8.029617,
+        10.03861
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "This is what the Tuesday adjustments are worth: nine situational rules that flip the model's pick when a coach, a bye, the weather or a revenge angle says to.",
+      "probability_positive": 0.610625,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_step1_tuesday_card_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2025: step1 tuesday card on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 267 non-push games. Baseline 54.682%, candidate 54.307%, 87 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -0.375 to -0.375, P+ 0.0000.",
+      "effect": -0.374532,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        -6.130268,
+        5.166052
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "This is what the Tuesday adjustments are worth: nine situational rules that flip the model's pick when a coach, a bye, the weather or a revenge angle says to.",
+      "probability_positive": 0.454575,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_step2_late_week_follow_2023": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2023: step2 late week follow on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 266 non-push games. Baseline 59.398%, candidate 59.023%, 23 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -0.376 to -0.376, P+ 0.0000.",
+      "effect": -0.37594,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        -3.065134,
+        2.621723
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "When the three leading sportsbooks move a line at least a full point after Wednesday, the pick switches to the side they moved toward, unless an injury filed since Tuesday points the other way.",
+      "probability_positive": 0.403975,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_step2_late_week_follow_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2023-2025: step2 late week follow on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 799 non-push games. Baseline 55.945%, candidate 57.447%, 64 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -0.376 to +3.371, P+ 0.9645.",
+      "effect": 1.501877,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        -0.371747,
+        3.45679
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "When the three leading sportsbooks move a line at least a full point after Wednesday, the pick switches to the side they moved toward, unless an injury filed since Tuesday points the other way.",
+      "probability_positive": 0.9429,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_step2_late_week_follow_2024": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2024: step2 late week follow on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 266 non-push games. Baseline 54.135%, candidate 55.639%, 24 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +1.504 to +1.504, P+ 1.0000.",
+      "effect": 1.503759,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        -1.509434,
+        4.545455
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "When the three leading sportsbooks move a line at least a full point after Wednesday, the pick switches to the side they moved toward, unless an injury filed since Tuesday points the other way.",
+      "probability_positive": 0.82905,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_step2_late_week_follow_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2025: step2 late week follow on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 267 non-push games. Baseline 54.307%, candidate 57.678%, 17 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +3.371 to +3.371, P+ 1.0000.",
+      "effect": 3.370787,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        0.0,
+        7.194245
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "When the three leading sportsbooks move a line at least a full point after Wednesday, the pick switches to the side they moved toward, unless an injury filed since Tuesday points the other way.",
+      "probability_positive": 0.9751,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_step3_consensus_2023": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2023: step3 consensus on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 266 non-push games. Baseline 59.023%, candidate 55.639%, 39 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -3.383 to -3.383, P+ 0.0000.",
+      "effect": -3.383459,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        -7.518797,
+        1.132075
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "When the whole market has moved the line at least a point since Tuesday, the pick switches to the side the market moved toward.",
+      "probability_positive": 0.065,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_step3_consensus_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2023-2025: step3 consensus on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 799 non-push games. Baseline 57.447%, candidate 55.820%, 73 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -3.383 to -0.376, P+ 0.0000.",
+      "effect": -1.627034,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        -3.409199,
+        0.249688
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "When the whole market has moved the line at least a point since Tuesday, the pick switches to the side the market moved toward.",
+      "probability_positive": 0.0413,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_step3_consensus_2024": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2024: step3 consensus on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 266 non-push games. Baseline 55.639%, candidate 55.263%, 17 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -0.376 to -0.376, P+ 0.0000.",
+      "effect": -0.37594,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        -2.681992,
+        1.968504
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "When the whole market has moved the line at least a point since Tuesday, the pick switches to the side the market moved toward.",
+      "probability_positive": 0.379425,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_step3_consensus_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2025: step3 consensus on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 267 non-push games. Baseline 57.678%, candidate 56.554%, 17 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -1.124 to -1.124, P+ 0.0000.",
+      "effect": -1.123596,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        -3.308824,
+        1.123596
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "When the whole market has moved the line at least a point since Tuesday, the pick switches to the side the market moved toward.",
+      "probability_positive": 0.15605,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_step4_rookie_crew_2023": {
+      "category": "offfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2023: step4 rookie crew on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 266 non-push games. Baseline 55.639%, candidate 55.263%, 1 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -0.376 to -0.376, P+ 0.0000.",
+      "effect": -0.37594,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        -1.132075,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "When a first- or second-season officiating crew is assigned, the game is re-read with a model that knows about the new crew.",
+      "probability_positive": 0.180425,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_step4_rookie_crew_2023_2025": {
+      "category": "offfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2023-2025: step4 rookie crew on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 799 non-push games. Baseline 55.820%, candidate 55.945%, 3 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -0.376 to +0.752, P+ 0.6676.",
+      "effect": 0.125156,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        -0.251889,
+        0.514801
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "When a first- or second-season officiating crew is assigned, the game is re-read with a model that knows about the new crew.",
+      "probability_positive": 0.71145,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_step4_rookie_crew_2024": {
+      "category": "offfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2024: step4 rookie crew on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 266 non-push games. Baseline 55.263%, candidate 56.015%, 2 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +0.752 to +0.752, P+ 1.0000.",
+      "effect": 0.75188,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        0.0,
+        1.901141
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "When a first- or second-season officiating crew is assigned, the game is re-read with a model that knows about the new crew.",
+      "probability_positive": 0.939675,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_step4_rookie_crew_2025": {
+      "category": "offfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2025: step4 rookie crew on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 267 non-push games. Baseline 56.554%, candidate 56.554%, 0 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +0.000 to +0.000, P+ 0.5000.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "When a first- or second-season officiating crew is assigned, the game is re-read with a model that knows about the new crew.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_step5_handle_follow_2023": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2023: step5 handle follow on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 266 non-push games. Baseline 55.263%, candidate 54.887%, 3 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -0.376 to -0.376, P+ 0.0000.",
+      "effect": -0.37594,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        -1.526718,
+        0.772201
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "On the weekend, when at least 70 percent of the money on a game is on the other side, the pick switches to the money's side.",
+      "probability_positive": 0.28675,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_step5_handle_follow_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2023-2025: step5 handle follow on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 799 non-push games. Baseline 55.945%, candidate 56.070%, 19 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -0.376 to +0.376, P+ 0.7435.",
+      "effect": 0.125156,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        -0.992556,
+        1.38191
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "On the weekend, when at least 70 percent of the money on a game is on the other side, the pick switches to the money's side.",
+      "probability_positive": 0.56355,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_step5_handle_follow_2024": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2024: step5 handle follow on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 266 non-push games. Baseline 56.015%, candidate 56.391%, 13 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +0.376 to +0.376, P+ 1.0000.",
+      "effect": 0.37594,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        -2.272727,
+        3.704048
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "On the weekend, when at least 70 percent of the money on a game is on the other side, the pick switches to the money's side.",
+      "probability_positive": 0.560725,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_step5_handle_follow_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2025: step5 handle follow on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 267 non-push games. Baseline 56.554%, candidate 56.929%, 3 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +0.375 to +0.375, P+ 1.0000.",
+      "effect": 0.374532,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        -0.760456,
+        1.526718
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "On the weekend, when at least 70 percent of the money on a game is on the other side, the pick switches to the money's side.",
+      "probability_positive": 0.71145,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_total_refresh_chain_2023": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2023: total refresh chain on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 266 non-push games. Baseline 59.398%, candidate 54.887%, 66 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -4.511 to -4.511, P+ 0.0000.",
+      "effect": -4.511278,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        -9.886036,
+        1.167315
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "This is every through-the-week rule together, measured against simply keeping Tuesday's card and never touching it again.",
+      "probability_positive": 0.061475,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_total_refresh_chain_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2023-2025: total refresh chain on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 799 non-push games. Baseline 55.945%, candidate 56.070%, 159 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -4.511 to +2.622, P+ 0.6872.",
+      "effect": 0.125156,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        -2.49066,
+        2.791878
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "This is every through-the-week rule together, measured against simply keeping Tuesday's card and never touching it again.",
+      "probability_positive": 0.536375,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_total_refresh_chain_2024": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2024: total refresh chain on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 266 non-push games. Baseline 54.135%, candidate 56.391%, 56 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +2.256 to +2.256, P+ 1.0000.",
+      "effect": 2.255639,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        -1.486989,
+        6.51341
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "This is every through-the-week rule together, measured against simply keeping Tuesday's card and never touching it again.",
+      "probability_positive": 0.861225,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_total_refresh_chain_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2025: total refresh chain on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 267 non-push games. Baseline 54.307%, candidate 56.929%, 37 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +2.622 to +2.622, P+ 1.0000.",
+      "effect": 2.621723,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        -0.37594,
+        5.882353
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "This is every through-the-week rule together, measured against simply keeping Tuesday's card and never touching it again.",
+      "probability_positive": 0.9543,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_total_whole_card_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2023: total whole card on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 266 non-push games. Baseline 56.391%, candidate 54.887%, 106 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -1.504 to -1.504, P+ 0.0000.",
+      "effect": -1.503759,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        -9.090909,
+        5.813953
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "This is the whole card -- Tuesday's adjustments plus every through-the-week rule -- against the bare model's own pick.",
+      "probability_positive": 0.3564,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_total_whole_card_2023_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2023-2025: total whole card on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 799 non-push games. Baseline 54.693%, candidate 56.070%, 297 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -1.504 to +3.383, P+ 0.8525.",
+      "effect": 1.376721,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        -3.209964,
+        5.949367
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "This is the whole card -- Tuesday's adjustments plus every through-the-week rule -- against the bare model's own pick.",
+      "probability_positive": 0.723725,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_total_whole_card_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2024: total whole card on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 266 non-push games. Baseline 53.008%, candidate 56.391%, 101 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +3.383 to +3.383, P+ 1.0000.",
+      "effect": 3.383459,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        -5.904059,
+        12.648221
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "This is the whole card -- Tuesday's adjustments plus every through-the-week rule -- against the bare model's own pick.",
+      "probability_positive": 0.761875,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    },
+    "served_refresh_card_total_whole_card_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +9.8 to +43.9 accuracy points on this exact population while every chain step sits between -1.6 and +1.5, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Served refresh chain, 2025: total whole card on the played card, replayed in the precedence src/nfl_ats/pick_refresh.py serves, graded at the frozen Tuesday opener on 267 non-push games. Baseline 54.682%, candidate 56.929%, 90 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +2.247 to +2.247, P+ 1.0000.",
+      "effect": 2.247191,
+      "effect_units": "accuracy_points",
+      "family": "served_refresh_card",
+      "interval": [
+        -4.166667,
+        9.225092
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive and the leader-median follow with sharp_weighted_follow_*, follow_news_gate_* and follow_threshold_live_card_*; the nine-member card with served_card_harness_*; the rookie-crew refit with rookie_crew_reconciliation_*; and the split population with handle_follow_on_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill; the handle step reaches only 133 of 816 games, and 2025's official injury rows carry no readable timestamp so the veto falls back to the headline reader.",
+      "plain_summary": "This is the whole card -- Tuesday's adjustments plus every through-the-week rule -- against the bare model's own pick.",
+      "probability_positive": 0.739475,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "artifacts/served_refresh_card/20260911T164740Z/results.json (docs/served_refresh_card.md)",
+      "standard_error": null
+    }
+  }
+}

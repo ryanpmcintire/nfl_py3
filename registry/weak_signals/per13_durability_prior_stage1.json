@@ -1,0 +1,33 @@
+{
+  "family": "per13_durability_prior_stage1",
+  "signals": {
+    "per13_durability_prior_availability_brier": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Positive result with a live positive control, so neither admissible closing ground applies: refuted_mechanism is out (sign is positive in 10/10 seasons and 5/5 position groups, and the residual trait's split-half reliability is 0.793, not zero) and bounded_by_control is out (the control DETECTED its planted effect: leaking the outcome drove Brier from 0.09087 to 5.28e-07, P+ 1.000). The taxonomy has no 'confirmed' state, so unresolved_below_power is the only admissible record. It means keep this open and spend the next window.",
+      "closing_ground": null,
+      "description": "PER-13 Stage 1: six per-player durability-prior columns (empirical-Bayes shrunken residual-vs-designation-cell rate, played-despite-listed rate, raw unavailability rate offset, history depth, roster-absence rate, reserve-list/suspension rate) added to a RE-FIT learned-availability baseline. Out-of-season player-game availability Brier, expanding chronological folds (fit season<S, evaluate season==S), 52,382 rows, seasons 2015-2024. Intermediate target only; no ATS window spent.",
+      "effect": 0.0075514,
+      "effect_units": "brier",
+      "family": "per13_durability_prior_stage1",
+      "interval": [
+        0.0067549,
+        0.0083081
+      ],
+      "league": "nfl",
+      "notes": "SIGN MAPPING: effect is the Brier IMPROVEMENT (baseline minus candidate), stored positive-favours-candidate per src/nfl_ats/weak_signals.py:112, the same mapping the recurrence_hazard rows use; raw Brier is 0.09087474 baseline vs 0.08332335 candidate. NOT AN ATS NUMBER and NOT COMMENSURABLE with accuracy_points entries: this is a player-game availability metric on 52,382 rows, not a team-game ATS metric, and must not be pooled with ats/accuracy rows. Week-blocked bootstrap, 2000 resamples, seed 20260901, 174 week blocks; season-blocked agrees ([+0.0063044,+0.0090510], P+ 1.000). Log-loss agrees: +0.0281243 [+0.0254796,+0.0306238], P+ 1.000. Conservative secondary vs the UNFITTED incumbent is +0.0070508 [+0.0062901,+0.0078139], P+ 1.000 -- unlike the recurrence sibling, refitting made the baseline slightly worse here, so vs-refit is the flattering side by 0.0005. POST-HOC DIAGNOSTICS (artifacts/per13_durability_stage1/20260901T191113Z/diagnostics.json, not part of the frozen comparison): a placebo that permutes each player's history to a random other player destroys the effect entirely (improvement -0.0000871), so the gain is row-level player information, not extra columns; prior-seasons-only history (no same-season rows) still yields +0.0038151, 51% of the effect, so about half is the multi-season trait PER-13 names and half is within-season recency; single-column gains run +0.0061778 (residual-vs-cell) down to +0.0004401 (reserve rate) with heavy redundancy, and only roster-absence (+0.00063) and history-depth (+0.00064) are uniquely irreplaceable. GATE: predeclared EV gate was P+>0.5, so Stage 2 (ATS on a rotation-assigned window, measured on top of PRODUCTION) is warranted; it was NOT run. Reliability 0.793 is the Spearman-Brown split-half of the residual-vs-designation trait at >=10 appearances per half (n=919); the raw-rate trait reads 0.855. CAUTION: PER-11's parent improvement was 0.00444 on this same metric and bought only +0.10 ATS points [-0.63,+0.78], so this is not evidence of an ATS edge.",
+      "plain_summary": "Some players miss more games than their injury-report status suggests, and some play through it. Giving the availability model each player's own history of missing games, plus his roster-status history, predicts who actually suits up better than the injury designation alone.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.793,
+      "sample_blocks": 174,
+      "sample_games": 52382,
+      "seasons": [
+        2015,
+        2024
+      ],
+      "source": "docs/per13_durability_prior.md; artifacts/per13_durability_stage1/20260901T190609Z/",
+      "standard_error": null
+    }
+  }
+}

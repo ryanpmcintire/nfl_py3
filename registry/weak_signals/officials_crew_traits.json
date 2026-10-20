@@ -1,0 +1,33 @@
+{
+  "family": "officials_crew_traits",
+  "signals": {
+    "officials_home_bias_reliability": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-blocked bootstrap (2000 draws, seed 20260905) interval [-0.2126, +0.1108] crosses zero -- the expected outcome for a real small signal at this evaluator's resolution, per AGENTS.md, not a rejection ground. Neither admissible closing ground applies: not a RESOLVED wrong sign (the whole interval is not on one side of zero) and not a zero split-half reliability (the point estimate -0.0518 with this width of interval is not a tight resolved zero); no positive control was run against this specific reliability construct. Season-to-season by-referee reading (-0.1015, 158 pairs, P+ 0.085) reproduces docs/referee_battery.md's own mean_diff figure (-0.101) up to a documented sign-convention flip, corroborating the loader rather than adding new evidence.",
+      "closing_ground": null,
+      "description": "Directional home-cooking reliability: within-season odd/even-week split-half of referee-crew home-minus-away penalty COUNT differential (2015-2025, 2892 REG games, 29 referees, 187 official-season units); gates whether LEAD-32 proceeds to an on-production ATS screen.",
+      "effect": -0.0518,
+      "effect_units": "correlation",
+      "family": "officials_crew_traits",
+      "interval": [
+        -0.2126,
+        0.1108
+      ],
+      "league": "nfl",
+      "notes": "Stage 1 of docs/officials_crew_leads.md (LEAD-32). Gates the Stage-2 on-production screen (crew_home_bias_on_production), which this doc's own predeclared rule (P+ > 0.5) skips this session since 0.325 does not clear it -- an internal resource-allocation gate, not a taxonomy closing ground.",
+      "plain_summary": "Referee crews that penalize the road team more than the home team in one part of a season do not reliably keep doing it later that same season -- the persistence reads as close to a coin flip, leaning slightly negative but far from certain.",
+      "probability_positive": 0.325,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 11,
+      "sample_games": 2892,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "docs/officials_crew_leads.md#lead-32-stage-1-reliability-measured-nfl_atsofficials_flag_featuresofficials_home_bias_reliability",
+      "standard_error": null
+    }
+  }
+}

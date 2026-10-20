@@ -1,0 +1,565 @@
+{
+  "family": "lead91_unit1_601_looks",
+  "signals": {
+    "lead91_unit1_2023-accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 601 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fit for the hardest season versus the usual four-term calculation: 2023",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "lead91_unit1_601_looks",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This gives the hardest training season more say in the pick calculation. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead91_unit1.md",
+      "standard_error": null
+    },
+    "lead91_unit1_2023-brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 601 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fit for the hardest season versus the usual four-term calculation: 2023",
+      "effect": -2.36919095453e-11,
+      "effect_units": "brier_improvement",
+      "family": "lead91_unit1_601_looks",
+      "interval": [
+        -4.18835537086e-10,
+        3.50934095672e-10
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This gives the hardest training season more say in the pick calculation. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.44875,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead91_unit1.md",
+      "standard_error": null
+    },
+    "lead91_unit1_2023-log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 601 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fit for the hardest season versus the usual four-term calculation: 2023",
+      "effect": -4.72426542331e-11,
+      "effect_units": "log_loss_improvement",
+      "family": "lead91_unit1_601_looks",
+      "interval": [
+        -8.37916394603e-10,
+        7.02703029098e-10
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This gives the hardest training season more say in the pick calculation. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.449,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead91_unit1.md",
+      "standard_error": null
+    },
+    "lead91_unit1_2023-rps_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 601 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fit for the hardest season versus the usual four-term calculation: 2023",
+      "effect": 7.49254169818e-09,
+      "effect_units": "rps_improvement",
+      "family": "lead91_unit1_601_looks",
+      "interval": [
+        2.20031737275e-09,
+        1.3111652053e-08
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This gives the hardest training season more say in the pick calculation. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.9975,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead91_unit1.md",
+      "standard_error": null
+    },
+    "lead91_unit1_2023-worst_season_log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 601 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fit for the hardest season versus the usual four-term calculation: 2023",
+      "effect": -4.72425432108e-11,
+      "effect_units": "log_loss_improvement",
+      "family": "lead91_unit1_601_looks",
+      "interval": [
+        -8.37916394603e-10,
+        7.02703029098e-10
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This gives the hardest training season more say in the pick calculation. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.449,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead91_unit1.md",
+      "standard_error": null
+    },
+    "lead91_unit1_2024-accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 601 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fit for the hardest season versus the usual four-term calculation: 2024",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "lead91_unit1_601_looks",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This gives the hardest training season more say in the pick calculation. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead91_unit1.md",
+      "standard_error": null
+    },
+    "lead91_unit1_2024-brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 601 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fit for the hardest season versus the usual four-term calculation: 2024",
+      "effect": -0.0,
+      "effect_units": "brier_improvement",
+      "family": "lead91_unit1_601_looks",
+      "interval": [
+        -0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This gives the hardest training season more say in the pick calculation. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead91_unit1.md",
+      "standard_error": null
+    },
+    "lead91_unit1_2024-log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 601 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fit for the hardest season versus the usual four-term calculation: 2024",
+      "effect": -0.0,
+      "effect_units": "log_loss_improvement",
+      "family": "lead91_unit1_601_looks",
+      "interval": [
+        -0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This gives the hardest training season more say in the pick calculation. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead91_unit1.md",
+      "standard_error": null
+    },
+    "lead91_unit1_2024-rps_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 601 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fit for the hardest season versus the usual four-term calculation: 2024",
+      "effect": -0.0,
+      "effect_units": "rps_improvement",
+      "family": "lead91_unit1_601_looks",
+      "interval": [
+        -0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This gives the hardest training season more say in the pick calculation. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead91_unit1.md",
+      "standard_error": null
+    },
+    "lead91_unit1_2024-worst_season_log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 601 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fit for the hardest season versus the usual four-term calculation: 2024",
+      "effect": -0.0,
+      "effect_units": "log_loss_improvement",
+      "family": "lead91_unit1_601_looks",
+      "interval": [
+        -0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This gives the hardest training season more say in the pick calculation. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead91_unit1.md",
+      "standard_error": null
+    },
+    "lead91_unit1_2025-accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 601 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fit for the hardest season versus the usual four-term calculation: 2025",
+      "effect": -4.31034482759,
+      "effect_units": "accuracy_points",
+      "family": "lead91_unit1_601_looks",
+      "interval": [
+        -8.62068965517,
+        -0.420168067227
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This gives the hardest training season more say in the pick calculation. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.0166,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead91_unit1.md",
+      "standard_error": null
+    },
+    "lead91_unit1_2025-brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 601 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fit for the hardest season versus the usual four-term calculation: 2025",
+      "effect": 0.0014138669508,
+      "effect_units": "brier_improvement",
+      "family": "lead91_unit1_601_looks",
+      "interval": [
+        -0.00345650356064,
+        0.00689891148475
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This gives the hardest training season more say in the pick calculation. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.6942,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead91_unit1.md",
+      "standard_error": null
+    },
+    "lead91_unit1_2025-log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 601 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fit for the hardest season versus the usual four-term calculation: 2025",
+      "effect": 0.00342529073766,
+      "effect_units": "log_loss_improvement",
+      "family": "lead91_unit1_601_looks",
+      "interval": [
+        -0.00716005824717,
+        0.0157739375672
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This gives the hardest training season more say in the pick calculation. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.713,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead91_unit1.md",
+      "standard_error": null
+    },
+    "lead91_unit1_2025-rps_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 601 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fit for the hardest season versus the usual four-term calculation: 2025",
+      "effect": 0.0418007460124,
+      "effect_units": "rps_improvement",
+      "family": "lead91_unit1_601_looks",
+      "interval": [
+        -0.0150022092958,
+        0.105158141516
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This gives the hardest training season more say in the pick calculation. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.9202,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead91_unit1.md",
+      "standard_error": null
+    },
+    "lead91_unit1_2025-worst_season_log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 601 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fit for the hardest season versus the usual four-term calculation: 2025",
+      "effect": 0.00342529073766,
+      "effect_units": "log_loss_improvement",
+      "family": "lead91_unit1_601_looks",
+      "interval": [
+        -0.00716005824717,
+        0.0157739375672
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This gives the hardest training season more say in the pick calculation. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.713,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead91_unit1.md",
+      "standard_error": null
+    },
+    "lead91_unit1_pooled-accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 601 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fit for the hardest season versus the usual four-term calculation: pooled",
+      "effect": -1.43472022956,
+      "effect_units": "accuracy_points",
+      "family": "lead91_unit1_601_looks",
+      "interval": [
+        -4.55882352941,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This gives the hardest training season more say in the pick calculation. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.152,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead91_unit1.md",
+      "standard_error": null
+    },
+    "lead91_unit1_pooled-brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 601 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fit for the hardest season versus the usual four-term calculation: pooled",
+      "effect": 0.000470612807843,
+      "effect_units": "brier_improvement",
+      "family": "lead91_unit1_601_looks",
+      "interval": [
+        -0.00108703142412,
+        0.00282260689032
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This gives the hardest training season more say in the pick calculation. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.6393,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead91_unit1.md",
+      "standard_error": null
+    },
+    "lead91_unit1_pooled-log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 601 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fit for the hardest season versus the usual four-term calculation: pooled",
+      "effect": 0.00114012545212,
+      "effect_units": "log_loss_improvement",
+      "family": "lead91_unit1_601_looks",
+      "interval": [
+        -0.00220455627288,
+        0.00644580034753
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This gives the hardest training season more say in the pick calculation. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.6537,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead91_unit1.md",
+      "standard_error": null
+    },
+    "lead91_unit1_pooled-rps_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 601 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fit for the hardest season versus the usual four-term calculation: pooled",
+      "effect": 0.0139135937168,
+      "effect_units": "rps_improvement",
+      "family": "lead91_unit1_601_looks",
+      "interval": [
+        -0.00250124484781,
+        0.0506974388317
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This gives the hardest training season more say in the pick calculation. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.93985,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead91_unit1.md",
+      "standard_error": null
+    },
+    "lead91_unit1_pooled-worst_season_log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 601 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fit for the hardest season versus the usual four-term calculation: pooled",
+      "effect": -0.0,
+      "effect_units": "log_loss_improvement",
+      "family": "lead91_unit1_601_looks",
+      "interval": [
+        -0.00640725893792,
+        0.00358508040566
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This gives the hardest training season more say in the pick calculation. The held-out comparison remains a research result; pool picks have not changed.",
+      "probability_positive": 0.48215,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead91_unit1.md",
+      "standard_error": null
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "family": "qb_revenge_on_production",
+  "signals": {
+    "qb_revenge_on_production": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign or demonstrated candidate-sized positive-control bound; assignment coverage is not a mechanism refutation.",
+      "closing_ground": null,
+      "description": "CX8 decision-time rerun: LEAD-25: back a quarterback facing the franchise that drafted him, stacked on PRODUCTION weak_stack, opener grade",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "qb_revenge_on_production",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "CX8 decision-time rerun supersedes recorded-assignment read artifacts\\qb_identity_on_production\\qb_revenge\\20260905T051318Z\\results.json. Original effect 0.657895 accuracy points, probability_positive 0.83395. Matched-current-table oracle: oracle_qb_revenge.json, rotation_2020_2021. Same chronological reused windows, no new rotation window. Untimestamped QB observations stay missing; 2020-2021 QB arms reproduce baseline picks exactly and probability_positive=0 there counts strict gains from an exact tie, not wrong-sign evidence. Odd/even exposure diagnostic: {'interpretation': 'exposure stability only; not an admissible no_split_half_reliability closing ground', 'odd_even_team_season_exposure_correlation': None, 'paired_team_seasons': 0}; oracle: {'interpretation': 'exposure stability only; not an admissible no_split_half_reliability closing ground', 'odd_even_team_season_exposure_correlation': -0.10704122411977358, 'paired_team_seasons': 64}. Exposure stability is not repeated-observation reliability and is not a closing ground.",
+      "plain_summary": "This historical rule was checked again using information available before the pick deadline. The result remains unresolved.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts\\cx8_posthoc_assignments\\20260905\\qb_revenge.json",
+      "standard_error": null
+    }
+  }
+}

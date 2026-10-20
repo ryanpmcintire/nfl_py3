@@ -1,0 +1,117 @@
+{
+  "family": "lead98_price_skew",
+  "signals": {
+    "lead98_price_skew_full_accuracy_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval spans zero; price_skew coefficient positive in only 2 of 6 folds; not a resolved wrong sign, no positive control",
+      "closing_ground": null,
+      "description": "LEAD-98 fifth term: equal-book median no-vig home-cover logit at the pool line from Tuesday opener quotes, fitted LOSO jointly with the four terms; full view, delta = five-term minus four-term out of season",
+      "effect": -0.197,
+      "effect_units": "accuracy_points",
+      "family": "lead98_price_skew",
+      "interval": [
+        -0.926,
+        0.532
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "With the line move included the price skew moved 33 picks, 15-18; no accuracy gain.",
+      "probability_positive": 0.2687,
+      "recorded_at": "2026-10-16",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/lead98_price_skew/results.json",
+      "standard_error": 0.37
+    },
+    "lead98_price_skew_full_brier_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval spans zero; price_skew coefficient positive in only 2 of 6 folds; not a resolved wrong sign, no positive control",
+      "closing_ground": null,
+      "description": "LEAD-98 fifth term: equal-book median no-vig home-cover logit at the pool line from Tuesday opener quotes, fitted LOSO jointly with the four terms; full view, delta = five-term minus four-term out of season",
+      "effect": -0.000307,
+      "effect_units": "brier_improvement",
+      "family": "lead98_price_skew",
+      "interval": [
+        -0.000639,
+        1.14e-05
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The price skew made the full probability slightly worse calibrated out of season.",
+      "probability_positive": 0.031,
+      "recorded_at": "2026-10-16",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/lead98_price_skew/results.json",
+      "standard_error": 0.00017
+    },
+    "lead98_price_skew_tuesday_accuracy_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval spans zero; price_skew coefficient positive in only 2 of 6 folds; not a resolved wrong sign, no positive control",
+      "closing_ground": null,
+      "description": "LEAD-98 fifth term: equal-book median no-vig home-cover logit at the pool line from Tuesday opener quotes, fitted LOSO jointly with the four terms; tuesday view, delta = five-term minus four-term out of season",
+      "effect": 0.406,
+      "effect_units": "accuracy_points",
+      "family": "lead98_price_skew",
+      "interval": [
+        -0.133,
+        0.97
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "On Tuesday information the price skew moved 24 picks, 15-9 for the five-term card; accuracy up 0.4 points but unresolved.",
+      "probability_positive": 0.9137,
+      "recorded_at": "2026-10-16",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/lead98_price_skew/results.json",
+      "standard_error": 0.3
+    },
+    "lead98_price_skew_tuesday_brier_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval spans zero; price_skew coefficient positive in only 2 of 6 folds; not a resolved wrong sign, no positive control",
+      "closing_ground": null,
+      "description": "LEAD-98 fifth term: equal-book median no-vig home-cover logit at the pool line from Tuesday opener quotes, fitted LOSO jointly with the four terms; tuesday view, delta = five-term minus four-term out of season",
+      "effect": -0.000269,
+      "effect_units": "brier_improvement",
+      "family": "lead98_price_skew",
+      "interval": [
+        -0.00057,
+        2.88e-05
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The price skew made the Tuesday probability slightly worse calibrated out of season.",
+      "probability_positive": 0.0386,
+      "recorded_at": "2026-10-16",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/lead98_price_skew/results.json",
+      "standard_error": 0.00015
+    }
+  }
+}

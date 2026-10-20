@@ -1,0 +1,341 @@
+{
+  "family": "public_claim_battery",
+  "signals": {
+    "public_claim_ats_streak_regress": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared lead-gen cell (LEAD-57 public-claim battery), close-graded, week-blocked 95% interval crosses zero -- per AGENTS.md the EXPECTED shape for a real small signal even at P+ 0.9193, never grounds to close. No admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Claim 12: entering this game on a 3+ game ATS losing streak (strictly prior, season-bounded) -- BACK teams on an ATS losing streak.",
+      "effect": 0.243965,
+      "effect_units": "accuracy_points",
+      "family": "public_claim_battery",
+      "interval": [
+        -0.088284,
+        0.574567
+      ],
+      "league": "nfl",
+      "notes": "New pregame-safe feature built for this battery (ats_streak_len, strictly prior, resets at season boundary). Era split (read from the artifact): 2009-2017 full_slate_effect +0.3084pts P+0.9122 (n_flag=431); 2018-2025 full_slate_effect +0.1740pts P+0.7437 (n_flag=415) -- consistent sign, somewhat weaker recently, magnitude reported per AGENTS.md.",
+      "plain_summary": "Backing a team on a 3-or-more-game losing streak against the spread, betting on regression to the mean, shows a positive lean in both eras, but is not resolved yet.",
+      "probability_positive": 0.9193,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/public_claim_battery_screen.py; artifacts/public_claim_battery/20260905T031633Z/results.json; docs/public_claim_battery.md",
+      "standard_error": null
+    },
+    "public_claim_blowout_loss_bounce_21": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared lead-gen cell (LEAD-57 public-claim battery), close-graded, week-blocked 95% interval crosses zero -- per AGENTS.md the EXPECTED shape for a real small signal, never grounds to close. No admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Claim 8: immediately preceding game (this season) was a loss by >=21 raw points -- BACK post-blowout losers.",
+      "effect": 0.139205,
+      "effect_units": "accuracy_points",
+      "family": "public_claim_battery",
+      "interval": [
+        -0.170311,
+        0.451908
+      ],
+      "league": "nfl",
+      "notes": "Era split (read from the artifact): 2009-2017 full_slate_effect +0.1471pts P+0.7391 (n_flag=404); 2018-2025 full_slate_effect +0.1308pts P+0.7070 (n_flag=328) -- consistent sign and magnitude across eras, reported per AGENTS.md. Related, not identical, to already-recorded bias_battery_post_blowout_loss_bounce (>=17-point threshold, effect +0.0729, same direction at a looser threshold).",
+      "plain_summary": "Backing a team the week after it lost by 21 or more points shows a positive lean in both eras, but is not resolved yet.",
+      "probability_positive": 0.8036,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/public_claim_battery_screen.py; artifacts/public_claim_battery/20260905T031633Z/results.json; docs/public_claim_battery.md",
+      "standard_error": null
+    },
+    "public_claim_division_dog": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared lead-gen cell (LEAD-57 public-claim battery), close-graded, week-blocked 95% interval crosses zero -- per AGENTS.md the EXPECTED shape for a real small signal, never grounds to close even at P+ 0.9119. No admissible closing ground applies: interval is not RESOLVED wrong-sign (it is same-signed, just not excluding zero) and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Claim 4: divisional game AND this team is the underdog -- BACK division dogs.",
+      "effect": 0.369213,
+      "effect_units": "accuracy_points",
+      "family": "public_claim_battery",
+      "interval": [
+        -0.157378,
+        0.894816
+      ],
+      "league": "nfl",
+      "notes": "Era split (read from the artifact): 2009-2017 full_slate_effect +0.0823pts P+0.5832 (n_flag=838); 2018-2025 full_slate_effect +0.6773pts P+0.9658 (n_flag=754) -- much stronger in the recent era, magnitude reported per AGENTS.md rather than averaged away. Related, not identical, to already-recorded pt_divisional_favorite (primetime-only divisional favorite fade, a narrower disjoint population).",
+      "plain_summary": "Backing the underdog in divisional games (familiar rivals, tighter margins) shows a small positive lean, stronger in the recent era, but is not resolved yet.",
+      "probability_positive": 0.9119,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/public_claim_battery_screen.py; artifacts/public_claim_battery/20260905T031633Z/results.json; docs/public_claim_battery.md",
+      "standard_error": null
+    },
+    "public_claim_dome_cold_fade": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Duplicate of already-recorded weather_battery_dome_team_outdoors_cold (cited as primary, matches this claim's plain <40F actual-weather description over the full 2009-2025 population); week-blocked 95% interval crosses zero -- per AGENTS.md the EXPECTED shape for a real small signal, never grounds to close. No admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Claim 1: away team's modal home roof this season is dome/closed AND this game is outdoor/open AND temp<=40F -- FADE dome visitors outdoors cold. DUPLICATE CITATION, not re-scored: this exact subset and direction is already recorded twice in this registry.",
+      "effect": 0.1052,
+      "effect_units": "accuracy_points",
+      "family": "public_claim_battery",
+      "interval": [
+        -0.118,
+        0.3264
+      ],
+      "league": "nfl",
+      "notes": "DUPLICATE CITATION per docs/public_claim_battery.md, not independently re-scored: numbers copied verbatim from weather_battery_dome_team_outdoors_cold (actual game-time temp, REG 2009-2025, effect +0.1052, 95% [-0.118,+0.3264], P+0.8249). The forecast-based sibling forecast_weather_dome_team_outdoors_cold (Tuesday-noon forecast, genuinely pregame-available, narrower window 2020-2025) reads the OPPOSITE sign: effect -0.1130, 95% [-0.6163,+0.3424], P+0.3165, n=1582. The two together show this claim is genuinely unresolved, not a clean positive; reported per AGENTS.md rather than cherry-picking the actual-weather read.",
+      "plain_summary": "Fading a dome team that has to play outdoors in the cold shows a real lean in the direction the folklore predicts using actual game-time weather, but the same test using only forecast data available before kickoff reads the opposite way, so this is not settled.",
+      "probability_positive": 0.8249,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 4317,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/nfl_weather_battery_screen.py; artifacts/nfl_weather_battery/20260819T155124Z/results.json; scripts/nfl_forecast_weather_screen.py; artifacts/forecast_weather_screen/20260819T235541Z/results.json; docs/public_claim_battery.md",
+      "standard_error": null
+    },
+    "public_claim_eliminated_fade_wk17_18": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared lead-gen cell (LEAD-57 public-claim battery), close-graded, week-blocked 95% interval crosses zero (widely, thin population of 92 flagged team-games out of 678 weeks-17-18 rows) -- per AGENTS.md the EXPECTED shape for a real small signal at this sample size, never grounds to close. No admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Claim 10: weeks 17-18, this team has a losing record (<=.400) AND the opponent is still >=.600 -- FADE the proxy-eliminated team. Elimination proxied by record (no tiebreaker-aware standings reconstruction), per this task's stated fallback.",
+      "effect": 0.511945,
+      "effect_units": "accuracy_points",
+      "family": "public_claim_battery",
+      "interval": [
+        -1.321017,
+        2.334535
+      ],
+      "league": "nfl",
+      "notes": "Largest full-slate point estimate in this battery (+0.51pts) but also its thinnest population (only weeks 17-18 qualify at all, n_total=678, n_flag=92) -- widest interval accordingly, reported per AGENTS.md rather than treated as a headline. Era split (read from the artifact): 2009-2017 full_slate_effect +0.4167pts P+0.5691 (n_flag=38); 2018-2025 full_slate_effect +0.5780pts P+0.6746 (n_flag=54). Elimination is a record-based PROXY, not a tiebreaker-aware standings reconstruction (scripts/motivation_ladder_screen.py has one for a different lead but was judged out of scope here); disclosed, not hidden. Related, not identical, to bad_team_late/great_team_late (bias battery, weeks 11-18 or 15-18, different thresholds) and motivation_ladder_tank_zone_wk14_18 (different weeks/construction).",
+      "plain_summary": "Fading a bad team (record .400 or worse) in weeks 17-18 against a good team (record .600 or better) shows the largest lean of this whole batch of claims, but the sample is thin and it is not resolved yet.",
+      "probability_positive": 0.6903,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 34,
+      "sample_games": 678,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/public_claim_battery_screen.py; artifacts/public_claim_battery/20260905T031633Z/results.json; docs/public_claim_battery.md",
+      "standard_error": null
+    },
+    "public_claim_home_dog_3plus": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared lead-gen cell (LEAD-57 public-claim battery), close-graded, week-blocked 95% interval crosses zero -- per AGENTS.md the EXPECTED shape for a real small signal, never grounds to close. No admissible closing ground applies: not RESOLVED wrong-sign, no positive-control bound run.",
+      "closing_ground": null,
+      "description": "Claim 6: home team getting 3+ points -- BACK home dogs of 3+.",
+      "effect": 0.08684,
+      "effect_units": "accuracy_points",
+      "family": "public_claim_battery",
+      "interval": [
+        -0.363737,
+        0.53503
+      ],
+      "league": "nfl",
+      "notes": "Era split (read from the artifact): 2009-2017 full_slate_effect -0.0891pts P+0.3739 (n_flag=555); 2018-2025 full_slate_effect +0.2812pts P+0.7780 (n_flag=594) -- sign flips between eras, magnitude reported per AGENTS.md. Related, not identical, to already-recorded bias_battery_home_underdog (any home dog, unthresholded, effect 0.0 flat).",
+      "plain_summary": "Backing home underdogs of 3 or more points does not show a real edge overall, though the recent era leans slightly positive.",
+      "probability_positive": 0.6409,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/public_claim_battery_screen.py; artifacts/public_claim_battery/20260905T031633Z/results.json; docs/public_claim_battery.md",
+      "standard_error": null
+    },
+    "public_claim_post_bye_back": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared lead-gen cell (LEAD-57 public-claim battery), close-graded, week-blocked 95% interval crosses zero -- per AGENTS.md the EXPECTED shape for a real small signal, never grounds to close. No admissible closing ground applies: interval is not RESOLVED wrong-sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Claim 3: team (home or road) off a strict >=12-day rest gap -- BACK post-bye teams.",
+      "effect": -0.049346,
+      "effect_units": "accuracy_points",
+      "family": "public_claim_battery",
+      "interval": [
+        -0.301637,
+        0.19824
+      ],
+      "league": "nfl",
+      "notes": "Predeclared sign is the OPPOSITE of this project's own established bye-fade family: bye_overval_home_edge_post2011 (home off strict bye only, effect -0.3304), bye_overval_fade_full_slate_post2011 (fade whichever side holds the edge, effect +0.5508 for the FADE direction), venue_milestone_post_bye_road (road off bye only, effect -0.0010). This cell's own read (any side, own_rest>=12, BACK direction) points the same way as the established fade family (i.e. against the public BACK claim): full period P+0.3449, and 2018-2025 leans further negative (full_slate_effect -0.1795pts, P+0.1401, n_flag=250) than 2009-2017 (+0.0713pts, P+0.6371, n_flag=278) -- era magnitudes reported, neither closes this per AGENTS.md.",
+      "plain_summary": "Backing any team coming off a bye week does not show a real edge, and if anything leans the other way in the recent era.",
+      "probability_positive": 0.3449,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/public_claim_battery_screen.py; artifacts/public_claim_battery/20260905T031633Z/results.json; docs/public_claim_battery.md",
+      "standard_error": null
+    },
+    "public_claim_primetime_dog": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared lead-gen cell (LEAD-57 public-claim battery), close-graded, week-blocked 95% interval crosses zero -- per AGENTS.md the EXPECTED shape for a real small signal, never grounds to close. No admissible closing ground applies: point estimate is on the wrong side of the predicted direction but the interval is not RESOLVED wrong-sign (crosses zero), and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Claim 2: Thu/Mon or Sunday-night underdog (Saturday excluded) -- BACK primetime dogs.",
+      "effect": -0.02572,
+      "effect_units": "accuracy_points",
+      "family": "public_claim_battery",
+      "interval": [
+        -0.378052,
+        0.328349
+      ],
+      "league": "nfl",
+      "notes": "Era split (read from artifacts/public_claim_battery/20260905T031633Z/results.json): 2009-2017 full_slate_effect -0.2836pts P+0.1056 (n_flag=429); 2018-2025 full_slate_effect +0.2553pts P+0.8256 (n_flag=429) -- sign flips between eras, era magnitude reported per AGENTS.md, neither era alone is a closing ground. Related, not identical, to already-recorded bias_battery_primetime_favorite (favorites-in-primetime fade, a disjoint population).",
+      "plain_summary": "Betting on the underdog in primetime games (Thursday/Monday night or Sunday night) does not show a real edge in this data.",
+      "probability_positive": 0.4365,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/public_claim_battery_screen.py; artifacts/public_claim_battery/20260905T031633Z/results.json; docs/public_claim_battery.md",
+      "standard_error": null
+    },
+    "public_claim_road_fav_big_fade": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared lead-gen cell (LEAD-57 public-claim battery), close-graded, week-blocked 95% interval touches but does not clear zero (lower bound -0.000000) -- per AGENTS.md this is still the EXPECTED unresolved shape, not a resolved wrong sign, and P+ 0.9736 alone is not an admissible closing ground (a promotion bar is not a decision bar, and the taxonomy has only two closing grounds, neither met here: no resolved wrong sign, no positive-control bound run).",
+      "closing_ground": null,
+      "description": "Claim 5: road team favored by >=7 points -- FADE big road favorites.",
+      "effect": 0.216972,
+      "effect_units": "accuracy_points",
+      "family": "public_claim_battery",
+      "interval": [
+        -0.0,
+        0.428985
+      ],
+      "league": "nfl",
+      "notes": "Strongest fresh cell in this battery by P+. Era split (read from the artifact): 2009-2017 full_slate_effect +0.1384pts P+0.8220 (n_flag=150); 2018-2025 full_slate_effect +0.3029pts P+0.9579 (n_flag=188) -- consistent sign both eras, stronger recently. Worth a follow-up screen with a positive control before any closing verdict.",
+      "plain_summary": "Fading road favorites laying 7 or more points shows a real lean toward the public claim, close to (but not quite) statistically resolved.",
+      "probability_positive": 0.9736,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/public_claim_battery_screen.py; artifacts/public_claim_battery/20260905T031633Z/results.json; docs/public_claim_battery.md",
+      "standard_error": null
+    },
+    "public_claim_thursday_road_fade": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Duplicate/proxy citation of already-recorded travel_rest_short_week_road (cited as primary: it isolates the traveling side specifically, which is what the claim is actually about); week-blocked 95% interval crosses zero, point estimate barely above zero -- per AGENTS.md the EXPECTED shape for a real small signal, never grounds to close. No admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Claim 11: short-week road team (proxied by the traveling side's own_rest<=5, closest existing screened proxy for a Thursday road team) -- FADE Thursday road teams. DUPLICATE CITATION, not re-scored: no exact Thursday x road-team cell exists, but two already-screened cells jointly bracket it, per this task's explicit instruction to cite rather than build a new intersection cell.",
+      "effect": 0.0441733912,
+      "effect_units": "accuracy_points",
+      "family": "public_claim_battery",
+      "interval": [
+        -0.3116357012,
+        0.4041244469
+      ],
+      "league": "nfl",
+      "notes": "DUPLICATE CITATION per docs/public_claim_battery.md, not independently re-scored (no exact Thursday x road intersection cell exists in the registry; per this task's instruction, cited rather than built fresh). Numbers copied verbatim from travel_rest_short_week_road (away_rest<=5, REG 2009-2025, effect +0.0442, 95% [-0.3116,+0.4041], P+0.5933). The plain-calendar sibling travel_rest_thursday_pure (any Thursday game regardless of side) reads a stronger same-signed effect: +0.1349, 95% [-0.2342,+0.5015], P+0.7592 -- both point the same direction (home covers more / fade the disadvantaged side) but neither is resolved.",
+      "plain_summary": "Fading the traveling team on short rest (the situation a Thursday road game creates) shows only a weak lean toward the folklore, barely better than a coin flip.",
+      "probability_positive": 0.59325,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 4317,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/nfl_travel_rest_battery_screen.py; artifacts/travel_rest_battery/20260819T232521Z/results.json; docs/public_claim_battery.md",
+      "standard_error": null
+    },
+    "public_claim_upset_letdown_fade": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared lead-gen cell (LEAD-57 public-claim battery), close-graded, week-blocked 95% interval crosses zero and the point estimate is essentially flat -- per AGENTS.md the EXPECTED shape for a real small signal (or a genuinely null one), never grounds to close. No admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Claim 7: immediately preceding game (this season) this team was the underdog by any margin and won straight-up -- FADE last week's upset winner.",
+      "effect": 0.034535,
+      "effect_units": "accuracy_points",
+      "family": "public_claim_battery",
+      "interval": [
+        -0.459463,
+        0.518907
+      ],
+      "league": "nfl",
+      "notes": "Point estimate lands on the OPPOSITE side of the predicted FADE direction from the raw sign but the interval is nowhere near resolved (crosses zero by a wide margin both eras): 2009-2017 full_slate_effect +0.1727pts P+0.6736 (n_flag=721); 2018-2025 full_slate_effect -0.1151pts P+0.3598 (n_flag=674). Distinct from bias_battery_post_blowout_win_letdown (margin-threshold letdown, not a straight-up-upset trigger) and from the CFB-only cfb_bias_battery_letdown_after_upset_win (different league).",
+      "plain_summary": "Fading a team the week after it pulled a straight-up upset as an underdog does not show a real edge either way.",
+      "probability_positive": 0.5497,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/public_claim_battery_screen.py; artifacts/public_claim_battery/20260905T031633Z/results.json; docs/public_claim_battery.md",
+      "standard_error": null
+    },
+    "public_claim_week1_dog": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared lead-gen cell (LEAD-57 public-claim battery), close-graded, week-blocked 95% interval crosses zero (though narrowly, lower bound -0.0337) -- per AGENTS.md this is still the EXPECTED unresolved shape, not a resolved wrong sign; P+ 0.9219 alone is not an admissible closing ground.",
+      "closing_ground": null,
+      "description": "Claim 9: Week 1 AND this team is the underdog -- BACK Week 1 dogs.",
+      "effect": 0.107553,
+      "effect_units": "accuracy_points",
+      "family": "public_claim_battery",
+      "interval": [
+        -0.033687,
+        0.262325
+      ],
+      "league": "nfl",
+      "notes": "Small n_flag=266 (one game per team per season, so this is inherently thin every year). Era split (read from the artifact): 2009-2017 full_slate_effect +0.1151pts P+0.8761 (n_flag=140); 2018-2025 full_slate_effect +0.0994pts P+0.7601 (n_flag=126) -- consistent sign both eras.",
+      "plain_summary": "Backing underdogs in Week 1 games, on the theory that the market overreacts to last year's results, shows a positive lean in both eras, but is not resolved yet.",
+      "probability_positive": 0.9219,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/public_claim_battery_screen.py; artifacts/public_claim_battery/20260905T031633Z/results.json; docs/public_claim_battery.md",
+      "standard_error": null
+    }
+  }
+}

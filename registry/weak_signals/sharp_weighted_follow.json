@@ -1,0 +1,621 @@
+{
+  "family": "sharp_weighted_follow",
+  "signals": {
+    "sharp_weighted_follow_pc_oracle_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); the fire-flag split-half reliability is non-zero, so no_split_half_reliability is inadmissible; no interval sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; and the perfect-foresight positive control resolves a ~45-47 point effect, which does not prove the instrument can detect a 0.1-3 point one, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "positive control: perfect-foresight switch on every game the archive can reach, bounding what any follow rule on this archive could buy; paired against the raw production opener card.",
+      "effect": 47.18397997496871,
+      "effect_units": "accuracy_points",
+      "family": "sharp_weighted_follow",
+      "interval": [
+        43.47826086956522,
+        50.80356087186849
+      ],
+      "league": "nfl",
+      "notes": "Week-blocked, 20000 samples, seed 20260821. Fires 816 of 816 archive games, switches 388 picks, 373 served sides differ from the served equal-book rule. Season-blocked [46.2406, 48.3146] probability_positive 1.0000. Per-season {'2023': 46.2406015037594, '2024': 46.99248120300752, '2025': 48.31460674157304}. Baseline card is the frozen 2026-09-05 opener evaluation (model ab29832a4e099766).",
+      "plain_summary": "A cheating benchmark that already knows the result, included only to prove the measuring stick can see a real difference when one exists.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_weighted_follow/20260909T233606Z/metadata.json (docs/sharp_weighted_follow.md)",
+      "standard_error": null
+    },
+    "sharp_weighted_follow_pc_oracle_current_model_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); the fire-flag split-half reliability is non-zero, so no_split_half_reliability is inadmissible; no interval sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; and the perfect-foresight positive control resolves a ~45-47 point effect, which does not prove the instrument can detect a 0.1-3 point one, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "positive control: perfect-foresight switch on every game the archive can reach, bounding what any follow rule on this archive could buy; replicated against the currently active card (model c657058903f3232b, gaussian_median, served home-side offset).",
+      "effect": 44.93116395494368,
+      "effect_units": "accuracy_points",
+      "family": "sharp_weighted_follow",
+      "interval": [
+        41.417910447761194,
+        48.4472049689441
+      ],
+      "league": "nfl",
+      "notes": "Week-blocked, 20000 samples, seed 20260821. Same 816-game archive population, baseline is artifacts/opener_evaluation/20260909T183120Z. Fires 816, switches 369, 361 served sides differ from the served equal-book rule. Season-blocked [43.6090, 46.9925] probability_positive 1.0000.",
+      "plain_summary": "A cheating benchmark that already knows the result, included only to prove the measuring stick can see a real difference when one exists.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_weighted_follow/20260909T233611Z/metadata.json (docs/sharp_weighted_follow.md)",
+      "standard_error": null
+    },
+    "sharp_weighted_follow_pc_oracle_minus_s4_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); the fire-flag split-half reliability is non-zero, so no_split_half_reliability is inadmissible; no interval sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; and the perfect-foresight positive control resolves a ~45-47 point effect, which does not prove the instrument can detect a 0.1-3 point one, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Head-to-head: pc_oracle minus the served equal-book follow, same games, same blocks. Positive favours the challenger aggregation.",
+      "effect": 45.431789737171464,
+      "effect_units": "accuracy_points",
+      "family": "sharp_weighted_follow",
+      "interval": [
+        42.15809284818068,
+        48.6284289276808
+      ],
+      "league": "nfl",
+      "notes": "Week-blocked, 20000 samples, seed 20260821. 373 of 816 served sides differ. Season-blocked [45.1128, 45.8647] probability_positive 1.0000. Per-season {'2023': 45.11278195488722, '2024': 45.86466165413534, '2025': 45.3183520599251}.",
+      "plain_summary": "Head-to-head between this way of reading the late-week line move and the one the picks already use, on the same games.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_weighted_follow/20260909T233606Z/metadata.json (docs/sharp_weighted_follow.md)",
+      "standard_error": null
+    },
+    "sharp_weighted_follow_pc_oracle_minus_s4_current_model_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); the fire-flag split-half reliability is non-zero, so no_split_half_reliability is inadmissible; no interval sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; and the perfect-foresight positive control resolves a ~45-47 point effect, which does not prove the instrument can detect a 0.1-3 point one, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Head-to-head on the currently active card: pc_oracle minus the served equal-book follow, same games, same blocks.",
+      "effect": 44.05506883604506,
+      "effect_units": "accuracy_points",
+      "family": "sharp_weighted_follow",
+      "interval": [
+        41.25,
+        46.918238993710695
+      ],
+      "league": "nfl",
+      "notes": "Week-blocked, 20000 samples, seed 20260821. Season-blocked [43.8202, 44.3609] probability_positive 1.0000. Per-season {'2023': 44.3609022556391, '2024': 43.984962406015036, '2025': 43.82022471910113}.",
+      "plain_summary": "Head-to-head between this way of reading the late-week line move and the one the picks already use, on today's model.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_weighted_follow/20260909T233611Z/metadata.json (docs/sharp_weighted_follow.md)",
+      "standard_error": null
+    },
+    "sharp_weighted_follow_s1_gate_matched_minus_s4_served_equal_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); the fire-flag split-half reliability is non-zero, so no_split_half_reliability is inadmissible; no interval sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; and the perfect-foresight positive control resolves a ~45-47 point effect, which does not prove the instrument can detect a 0.1-3 point one, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Post-hoc gate-matched diagnostic (not predeclared): s1_gate_matched at threshold 0.55 fires 228 times against its peer's 329, isolating leadership content from gate looseness.",
+      "effect": 0.5006257822277848,
+      "effect_units": "accuracy_points",
+      "family": "sharp_weighted_follow",
+      "interval": [
+        -1.2610340479192939,
+        2.357320099255583
+      ],
+      "league": "nfl",
+      "notes": "Week-blocked, 20000 samples, seed 20260821. Threshold 0.55 chosen post hoc to match the peer's fire count; season-blocked [-0.7519, 1.8727] probability_positive 0.7992.",
+      "plain_summary": "A fairness check: the two ways of reading the line move are compared after being tuned to change the same number of picks, so any difference is about which books are listened to rather than how often the rule fires.",
+      "probability_positive": 0.708025,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_weighted_follow/20260909T233606Z/metadata.json (docs/sharp_weighted_follow.md)",
+      "standard_error": null
+    },
+    "sharp_weighted_follow_s1_gate_matched_minus_s4_served_equal_current_model_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); the fire-flag split-half reliability is non-zero, so no_split_half_reliability is inadmissible; no interval sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; and the perfect-foresight positive control resolves a ~45-47 point effect, which does not prove the instrument can detect a 0.1-3 point one, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Post-hoc gate-matched diagnostic on the currently active card: s1_gate_matched at threshold 0.55 against its peer at matched fire count.",
+      "effect": 0.8760951188986232,
+      "effect_units": "accuracy_points",
+      "family": "sharp_weighted_follow",
+      "interval": [
+        -0.8816120906801007,
+        2.675271728589484
+      ],
+      "league": "nfl",
+      "notes": "Week-blocked, 20000 samples, seed 20260821. Threshold 0.55 chosen post hoc; season-blocked [-0.7519, 2.9963] probability_positive 0.7992.",
+      "plain_summary": "The same fairness check on today's model: both ways of reading the line move tuned to change the same number of picks.",
+      "probability_positive": 0.83605,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_weighted_follow/20260909T233611Z/metadata.json (docs/sharp_weighted_follow.md)",
+      "standard_error": null
+    },
+    "sharp_weighted_follow_s1_leader_only_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); the fire-flag split-half reliability is non-zero, so no_split_half_reliability is inadmissible; no interval sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; and the perfect-foresight positive control resolves a ~45-47 point effect, which does not prove the instrument can detect a 0.1-3 point one, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "leader-only follow: median Wednesday-to-deadline net spread move across Bovada, William Hill (US) and MyBookie, followed at 0.5 points against the Tuesday pick; paired against the raw production opener card.",
+      "effect": 3.0037546933667083,
+      "effect_units": "accuracy_points",
+      "family": "sharp_weighted_follow",
+      "interval": [
+        -0.9925866559807653,
+        6.95322376738306
+      ],
+      "league": "nfl",
+      "notes": "Week-blocked, 20000 samples, seed 20260821. Fires 523 of 816 archive games, switches 223 picks, 84 served sides differ from the served equal-book rule. Season-blocked [2.6316, 3.3835] probability_positive 1.0000. Per-season {'2023': 2.6315789473684212, '2024': 3.3834586466165413, '2025': 2.9962546816479403}. Baseline card is the frozen 2026-09-05 opener evaluation (model ab29832a4e099766).",
+      "plain_summary": "Three sportsbooks move their number first and the rest copy them. This rule watches only those three between Wednesday and the pick deadline, and switches the pick to whichever side they moved toward when they moved at least half a point.",
+      "probability_positive": 0.9304,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.06951883282101043,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_weighted_follow/20260909T233606Z/metadata.json (docs/sharp_weighted_follow.md)",
+      "standard_error": null
+    },
+    "sharp_weighted_follow_s1_leader_only_current_model_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); the fire-flag split-half reliability is non-zero, so no_split_half_reliability is inadmissible; no interval sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; and the perfect-foresight positive control resolves a ~45-47 point effect, which does not prove the instrument can detect a 0.1-3 point one, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "leader-only follow: median Wednesday-to-deadline net spread move across Bovada, William Hill (US) and MyBookie, followed at 0.5 points against the Tuesday pick; replicated against the currently active card (model c657058903f3232b, gaussian_median, served home-side offset).",
+      "effect": 1.2515644555694618,
+      "effect_units": "accuracy_points",
+      "family": "sharp_weighted_follow",
+      "interval": [
+        -2.846622836075429,
+        5.415617128463476
+      ],
+      "league": "nfl",
+      "notes": "Week-blocked, 20000 samples, seed 20260821. Same 816-game archive population, baseline is artifacts/opener_evaluation/20260909T183120Z. Fires 523, switches 227, 91 served sides differ from the served equal-book rule. Season-blocked [-0.7491, 4.5113] probability_positive 0.7215.",
+      "plain_summary": "Three sportsbooks move their number first and the rest copy them. This rule watches only those three between Wednesday and the pick deadline, and switches the pick to whichever side they moved toward when they moved at least half a point.",
+      "probability_positive": 0.7243,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.06951883282101043,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_weighted_follow/20260909T233611Z/metadata.json (docs/sharp_weighted_follow.md)",
+      "standard_error": null
+    },
+    "sharp_weighted_follow_s1_leader_only_minus_s4_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); the fire-flag split-half reliability is non-zero, so no_split_half_reliability is inadmissible; no interval sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; and the perfect-foresight positive control resolves a ~45-47 point effect, which does not prove the instrument can detect a 0.1-3 point one, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Head-to-head: s1_leader_only minus the served equal-book follow, same games, same blocks. Positive favours the challenger aggregation.",
+      "effect": 1.2515644555694618,
+      "effect_units": "accuracy_points",
+      "family": "sharp_weighted_follow",
+      "interval": [
+        -0.9901296821131927,
+        3.5220125786163523
+      ],
+      "league": "nfl",
+      "notes": "Week-blocked, 20000 samples, seed 20260821. 84 of 816 served sides differ. Season-blocked [0.0000, 2.2556] probability_positive 0.9817. Per-season {'2023': 1.5037593984962405, '2024': 2.255639097744361, '2025': 0.0}.",
+      "plain_summary": "Head-to-head between this way of reading the late-week line move and the one the picks already use, on the same games.",
+      "probability_positive": 0.86425,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.06951883282101043,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_weighted_follow/20260909T233606Z/metadata.json (docs/sharp_weighted_follow.md)",
+      "standard_error": null
+    },
+    "sharp_weighted_follow_s1_leader_only_minus_s4_current_model_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); the fire-flag split-half reliability is non-zero, so no_split_half_reliability is inadmissible; no interval sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; and the perfect-foresight positive control resolves a ~45-47 point effect, which does not prove the instrument can detect a 0.1-3 point one, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Head-to-head on the currently active card: s1_leader_only minus the served equal-book follow, same games, same blocks.",
+      "effect": 0.37546933667083854,
+      "effect_units": "accuracy_points",
+      "family": "sharp_weighted_follow",
+      "interval": [
+        -1.8726591760299625,
+        2.695850424544016
+      ],
+      "league": "nfl",
+      "notes": "Week-blocked, 20000 samples, seed 20260821. Season-blocked [-1.1236, 1.5038] probability_positive 0.7406. Per-season {'2023': 0.7518796992481203, '2024': 1.5037593984962405, '2025': -1.1235955056179776}.",
+      "plain_summary": "Head-to-head between this way of reading the late-week line move and the one the picks already use, on today's model.",
+      "probability_positive": 0.62775,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.06951883282101043,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_weighted_follow/20260909T233611Z/metadata.json (docs/sharp_weighted_follow.md)",
+      "standard_error": null
+    },
+    "sharp_weighted_follow_s2_leader_weighted_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); the fire-flag split-half reliability is non-zero, so no_split_half_reliability is inadmissible; no interval sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; and the perfect-foresight positive control resolves a ~45-47 point effect, which does not prove the instrument can detect a 0.1-3 point one, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "leader-weighted follow: the twelve-book Wednesday-to-deadline net move with the three leading books weighted 2 and the other nine weighted 1, followed at 0.5 points; paired against the raw production opener card.",
+      "effect": 1.8773466833541927,
+      "effect_units": "accuracy_points",
+      "family": "sharp_weighted_follow",
+      "interval": [
+        -0.7471980074719801,
+        4.458657921530551
+      ],
+      "league": "nfl",
+      "notes": "Week-blocked, 20000 samples, seed 20260821. Fires 328 of 816 archive games, switches 142 picks, 3 served sides differ from the served equal-book rule. Season-blocked [1.1278, 2.9963] probability_positive 1.0000. Per-season {'2023': 1.1278195488721805, '2024': 1.5037593984962405, '2025': 2.9962546816479403}. Baseline card is the frozen 2026-09-05 opener evaluation (model ab29832a4e099766).",
+      "plain_summary": "Same late-week line-move rule the picks already use, but the three books that move first count double and the other nine count once.",
+      "probability_positive": 0.920625,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.07990099453704012,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_weighted_follow/20260909T233606Z/metadata.json (docs/sharp_weighted_follow.md)",
+      "standard_error": null
+    },
+    "sharp_weighted_follow_s2_leader_weighted_current_model_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); the fire-flag split-half reliability is non-zero, so no_split_half_reliability is inadmissible; no interval sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; and the perfect-foresight positive control resolves a ~45-47 point effect, which does not prove the instrument can detect a 0.1-3 point one, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "leader-weighted follow: the twelve-book Wednesday-to-deadline net move with the three leading books weighted 2 and the other nine weighted 1, followed at 0.5 points; replicated against the currently active card (model c657058903f3232b, gaussian_median, served home-side offset).",
+      "effect": 1.0012515644555695,
+      "effect_units": "accuracy_points",
+      "family": "sharp_weighted_follow",
+      "interval": [
+        -1.7587939698492463,
+        3.7879985059188495
+      ],
+      "league": "nfl",
+      "notes": "Week-blocked, 20000 samples, seed 20260821. Same 816-game archive population, baseline is artifacts/opener_evaluation/20260909T183120Z. Fires 328, switches 139, 3 served sides differ from the served equal-book rule. Season-blocked [-0.7519, 3.3835] probability_positive 0.7964.",
+      "plain_summary": "Same late-week line-move rule the picks already use, but the three books that move first count double and the other nine count once.",
+      "probability_positive": 0.759075,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.07990099453704012,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_weighted_follow/20260909T233611Z/metadata.json (docs/sharp_weighted_follow.md)",
+      "standard_error": null
+    },
+    "sharp_weighted_follow_s2_leader_weighted_minus_s4_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); the fire-flag split-half reliability is non-zero, so no_split_half_reliability is inadmissible; no interval sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; and the perfect-foresight positive control resolves a ~45-47 point effect, which does not prove the instrument can detect a 0.1-3 point one, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Head-to-head: s2_leader_weighted minus the served equal-book follow, same games, same blocks. Positive favours the challenger aggregation.",
+      "effect": 0.1251564455569462,
+      "effect_units": "accuracy_points",
+      "family": "sharp_weighted_follow",
+      "interval": [
+        -0.25252525252525254,
+        0.6112843976221263
+      ],
+      "league": "nfl",
+      "notes": "Week-blocked, 20000 samples, seed 20260821. 3 of 816 served sides differ. Season-blocked [0.0000, 0.3759] probability_positive 0.8519. Per-season {'2023': 0.0, '2024': 0.37593984962406013, '2025': 0.0}.",
+      "plain_summary": "Head-to-head between this way of reading the late-week line move and the one the picks already use, on the same games.",
+      "probability_positive": 0.7094,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.07990099453704012,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_weighted_follow/20260909T233606Z/metadata.json (docs/sharp_weighted_follow.md)",
+      "standard_error": null
+    },
+    "sharp_weighted_follow_s2_leader_weighted_minus_s4_current_model_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); the fire-flag split-half reliability is non-zero, so no_split_half_reliability is inadmissible; no interval sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; and the perfect-foresight positive control resolves a ~45-47 point effect, which does not prove the instrument can detect a 0.1-3 point one, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Head-to-head on the currently active card: s2_leader_weighted minus the served equal-book follow, same games, same blocks.",
+      "effect": 0.1251564455569462,
+      "effect_units": "accuracy_points",
+      "family": "sharp_weighted_follow",
+      "interval": [
+        -0.25252525252525254,
+        0.6112843976221263
+      ],
+      "league": "nfl",
+      "notes": "Week-blocked, 20000 samples, seed 20260821. Season-blocked [0.0000, 0.3759] probability_positive 0.8519. Per-season {'2023': 0.0, '2024': 0.37593984962406013, '2025': 0.0}.",
+      "plain_summary": "Head-to-head between this way of reading the late-week line move and the one the picks already use, on today's model.",
+      "probability_positive": 0.7094,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.07990099453704012,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_weighted_follow/20260909T233611Z/metadata.json (docs/sharp_weighted_follow.md)",
+      "standard_error": null
+    },
+    "sharp_weighted_follow_s3_leader_first_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); the fire-flag split-half reliability is non-zero, so no_split_half_reliability is inadmissible; no interval sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; and the perfect-foresight positive control resolves a ~45-47 point effect, which does not prove the instrument can detect a 0.1-3 point one, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "leader-first follow: follow the three leading books when they have moved 0.5 or more, otherwise follow the equal-book move at 0.5; paired against the raw production opener card.",
+      "effect": 2.753441802252816,
+      "effect_units": "accuracy_points",
+      "family": "sharp_weighted_follow",
+      "interval": [
+        -1.2285390052917726,
+        6.734467479969185
+      ],
+      "league": "nfl",
+      "notes": "Week-blocked, 20000 samples, seed 20260821. Fires 527 of 816 archive games, switches 225 picks, 82 served sides differ from the served equal-book rule. Season-blocked [2.6316, 2.9963] probability_positive 1.0000. Per-season {'2023': 2.6315789473684212, '2024': 2.6315789473684212, '2025': 2.9962546816479403}. Baseline card is the frozen 2026-09-05 opener evaluation (model ab29832a4e099766).",
+      "plain_summary": "Listen to the three books that move first; if they have not moved enough, fall back to what all twelve books did on average.",
+      "probability_positive": 0.9147,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.0738314292823449,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_weighted_follow/20260909T233606Z/metadata.json (docs/sharp_weighted_follow.md)",
+      "standard_error": null
+    },
+    "sharp_weighted_follow_s3_leader_first_current_model_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); the fire-flag split-half reliability is non-zero, so no_split_half_reliability is inadmissible; no interval sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; and the perfect-foresight positive control resolves a ~45-47 point effect, which does not prove the instrument can detect a 0.1-3 point one, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "leader-first follow: follow the three leading books when they have moved 0.5 or more, otherwise follow the equal-book move at 0.5; replicated against the currently active card (model c657058903f3232b, gaussian_median, served home-side offset).",
+      "effect": 1.0012515644555695,
+      "effect_units": "accuracy_points",
+      "family": "sharp_weighted_follow",
+      "interval": [
+        -3.1133250311332503,
+        5.183312262958281
+      ],
+      "league": "nfl",
+      "notes": "Week-blocked, 20000 samples, seed 20260821. Same 816-game archive population, baseline is artifacts/opener_evaluation/20260909T183120Z. Fires 527, switches 229, 89 served sides differ from the served equal-book rule. Season-blocked [-0.7491, 3.7594] probability_positive 0.7215.",
+      "plain_summary": "Listen to the three books that move first; if they have not moved enough, fall back to what all twelve books did on average.",
+      "probability_positive": 0.68415,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.0738314292823449,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_weighted_follow/20260909T233611Z/metadata.json (docs/sharp_weighted_follow.md)",
+      "standard_error": null
+    },
+    "sharp_weighted_follow_s3_leader_first_minus_s4_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); the fire-flag split-half reliability is non-zero, so no_split_half_reliability is inadmissible; no interval sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; and the perfect-foresight positive control resolves a ~45-47 point effect, which does not prove the instrument can detect a 0.1-3 point one, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Head-to-head: s3_leader_first minus the served equal-book follow, same games, same blocks. Positive favours the challenger aggregation.",
+      "effect": 1.0012515644555695,
+      "effect_units": "accuracy_points",
+      "family": "sharp_weighted_follow",
+      "interval": [
+        -1.2240277077783377,
+        3.262233375156838
+      ],
+      "league": "nfl",
+      "notes": "Week-blocked, 20000 samples, seed 20260821. 82 of 816 served sides differ. Season-blocked [0.0000, 1.5038] probability_positive 0.9817. Per-season {'2023': 1.5037593984962405, '2024': 1.5037593984962405, '2025': 0.0}.",
+      "plain_summary": "Head-to-head between this way of reading the late-week line move and the one the picks already use, on the same games.",
+      "probability_positive": 0.812575,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.0738314292823449,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_weighted_follow/20260909T233606Z/metadata.json (docs/sharp_weighted_follow.md)",
+      "standard_error": null
+    },
+    "sharp_weighted_follow_s3_leader_first_minus_s4_current_model_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); the fire-flag split-half reliability is non-zero, so no_split_half_reliability is inadmissible; no interval sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; and the perfect-foresight positive control resolves a ~45-47 point effect, which does not prove the instrument can detect a 0.1-3 point one, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Head-to-head on the currently active card: s3_leader_first minus the served equal-book follow, same games, same blocks.",
+      "effect": 0.1251564455569462,
+      "effect_units": "accuracy_points",
+      "family": "sharp_weighted_follow",
+      "interval": [
+        -2.125066489361702,
+        2.493765586034913
+      ],
+      "league": "nfl",
+      "notes": "Week-blocked, 20000 samples, seed 20260821. Season-blocked [-1.1236, 0.7519] probability_positive 0.7406. Per-season {'2023': 0.7518796992481203, '2024': 0.7518796992481203, '2025': -1.1235955056179776}.",
+      "plain_summary": "Head-to-head between this way of reading the late-week line move and the one the picks already use, on today's model.",
+      "probability_positive": 0.544075,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.0738314292823449,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_weighted_follow/20260909T233611Z/metadata.json (docs/sharp_weighted_follow.md)",
+      "standard_error": null
+    },
+    "sharp_weighted_follow_s4_gate_matched_minus_s1_leader_only_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); the fire-flag split-half reliability is non-zero, so no_split_half_reliability is inadmissible; no interval sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; and the perfect-foresight positive control resolves a ~45-47 point effect, which does not prove the instrument can detect a 0.1-3 point one, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Post-hoc gate-matched diagnostic (not predeclared): s4_gate_matched at threshold 0.25 fires 514 times against its peer's 523, isolating leadership content from gate looseness.",
+      "effect": -1.376720901126408,
+      "effect_units": "accuracy_points",
+      "family": "sharp_weighted_follow",
+      "interval": [
+        -2.907711757269279,
+        0.125
+      ],
+      "league": "nfl",
+      "notes": "Week-blocked, 20000 samples, seed 20260821. Threshold 0.25 chosen post hoc to match the peer's fire count; season-blocked [-2.9963, 0.0000] probability_positive 0.0178.",
+      "plain_summary": "A fairness check: the two ways of reading the line move are compared after being tuned to change the same number of picks, so any difference is about which books are listened to rather than how often the rule fires.",
+      "probability_positive": 0.038525,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_weighted_follow/20260909T233606Z/metadata.json (docs/sharp_weighted_follow.md)",
+      "standard_error": null
+    },
+    "sharp_weighted_follow_s4_gate_matched_minus_s1_leader_only_current_model_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); the fire-flag split-half reliability is non-zero, so no_split_half_reliability is inadmissible; no interval sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; and the perfect-foresight positive control resolves a ~45-47 point effect, which does not prove the instrument can detect a 0.1-3 point one, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Post-hoc gate-matched diagnostic on the currently active card: s4_gate_matched at threshold 0.25 against its peer at matched fire count.",
+      "effect": -1.1264080100125156,
+      "effect_units": "accuracy_points",
+      "family": "sharp_weighted_follow",
+      "interval": [
+        -2.8395061728395063,
+        0.5037942195723906
+      ],
+      "league": "nfl",
+      "notes": "Week-blocked, 20000 samples, seed 20260821. Threshold 0.25 chosen post hoc; season-blocked [-2.2472, 0.3759] probability_positive 0.0355.",
+      "plain_summary": "The same fairness check on today's model: both ways of reading the line move tuned to change the same number of picks.",
+      "probability_positive": 0.09435,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_weighted_follow/20260909T233611Z/metadata.json (docs/sharp_weighted_follow.md)",
+      "standard_error": null
+    },
+    "sharp_weighted_follow_s4_served_equal_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); the fire-flag split-half reliability is non-zero, so no_split_half_reliability is inadmissible; no interval sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; and the perfect-foresight positive control resolves a ~45-47 point effect, which does not prove the instrument can detect a 0.1-3 point one, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "served rule replay: equal-book mean Wednesday-to-deadline net move followed at 0.5 points, the rule production has served since 2026-09-06; paired against the raw production opener card.",
+      "effect": 1.7521902377972465,
+      "effect_units": "accuracy_points",
+      "family": "sharp_weighted_follow",
+      "interval": [
+        -0.8695652173913043,
+        4.326450835741213
+      ],
+      "league": "nfl",
+      "notes": "Week-blocked, 20000 samples, seed 20260821. Fires 329 of 816 archive games, switches 143 picks, 0 served sides differ from the served equal-book rule. Season-blocked [1.1278, 2.9963] probability_positive 1.0000. Per-season {'2023': 1.1278195488721805, '2024': 1.1278195488721805, '2025': 2.9962546816479403}. Baseline card is the frozen 2026-09-05 opener evaluation (model ab29832a4e099766).",
+      "plain_summary": "The rule the picks already use: average what all twelve sportsbooks did to the line between Wednesday and the deadline, and switch the pick when that average moved at least half a point.",
+      "probability_positive": 0.906675,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.1008828675834187,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_weighted_follow/20260909T233606Z/metadata.json (docs/sharp_weighted_follow.md)",
+      "standard_error": null
+    },
+    "sharp_weighted_follow_s4_served_equal_current_model_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); the fire-flag split-half reliability is non-zero, so no_split_half_reliability is inadmissible; no interval sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; and the perfect-foresight positive control resolves a ~45-47 point effect, which does not prove the instrument can detect a 0.1-3 point one, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "served rule replay: equal-book mean Wednesday-to-deadline net move followed at 0.5 points, the rule production has served since 2026-09-06; replicated against the currently active card (model c657058903f3232b, gaussian_median, served home-side offset).",
+      "effect": 0.8760951188986232,
+      "effect_units": "accuracy_points",
+      "family": "sharp_weighted_follow",
+      "interval": [
+        -1.879758209828209,
+        3.670886075949367
+      ],
+      "league": "nfl",
+      "notes": "Week-blocked, 20000 samples, seed 20260821. Same 816-game archive population, baseline is artifacts/opener_evaluation/20260909T183120Z. Fires 329, switches 140, 0 served sides differ from the served equal-book rule. Season-blocked [-0.7519, 3.0075] probability_positive 0.7964.",
+      "plain_summary": "The rule the picks already use: average what all twelve sportsbooks did to the line between Wednesday and the deadline, and switch the pick when that average moved at least half a point.",
+      "probability_positive": 0.730525,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.1008828675834187,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_weighted_follow/20260909T233611Z/metadata.json (docs/sharp_weighted_follow.md)",
+      "standard_error": null
+    }
+  }
+}

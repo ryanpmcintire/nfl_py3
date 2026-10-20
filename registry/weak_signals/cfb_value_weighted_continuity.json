@@ -1,0 +1,117 @@
+{
+  "family": "cfb_value_weighted_continuity",
+  "signals": {
+    "cfb_value_weighted_continuity__market_market_residual_market_residual_value_roles_market_ridge__accuracy_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: cfb_value_weighted_continuity market+market_residual+market_residual_value_roles|market+ridge on accuracy, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": 1.595925297113752,
+      "effect_units": "accuracy_points",
+      "family": "cfb_value_weighted_continuity",
+      "interval": [
+        0.797027601040156,
+        2.306305996351354
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on winners picked: ahead of the market.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 11780,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.38501999880387705
+    },
+    "cfb_value_weighted_continuity__market_market_residual_market_residual_value_roles_market_ridge__brier_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: cfb_value_weighted_continuity market+market_residual+market_residual_value_roles|market+ridge on brier, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.0008622046065984746,
+      "effect_units": "brier_improvement",
+      "family": "cfb_value_weighted_continuity",
+      "interval": [
+        -0.001967814056322952,
+        7.91879624703764e-05
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on sharpness of the weekly chances: behind the market.",
+      "probability_positive": 0.039,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 11780,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.0005221943925493185
+    },
+    "cfb_value_weighted_continuity__market_market_residual_market_residual_value_roles_market_ridge__log_loss_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: cfb_value_weighted_continuity market+market_residual+market_residual_value_roles|market+ridge on log_loss, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.0026851323701485574,
+      "effect_units": "log_loss_improvement",
+      "family": "cfb_value_weighted_continuity",
+      "interval": [
+        -0.005273869616729193,
+        -0.0004632741018588621
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on confidence calibration: behind the market.",
+      "probability_positive": 0.008,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 11780,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.0012271927333852887
+    },
+    "cfb_value_weighted_continuity__market_market_residual_market_residual_value_roles_market_ridge__margin_mae_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: cfb_value_weighted_continuity market+market_residual+market_residual_value_roles|market+ridge on margin_mae, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.06528298952118267,
+      "effect_units": "mae_improvement",
+      "family": "cfb_value_weighted_continuity",
+      "interval": [
+        -0.11119277732744647,
+        -0.02351655087898657
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks. Margin cell corrected 2026-09-16: market baseline fixed from absolute line to absolute line-minus-final-margin error.",
+      "plain_summary": "Re-reading these past forecasts on final-score closeness: behind the market.",
+      "probability_positive": 0.0015,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 11989,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.022366384298076504
+    }
+  }
+}

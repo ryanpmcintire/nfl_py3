@@ -1,0 +1,33 @@
+{
+  "family": "specialist_absence_fade_on_production",
+  "signals": {
+    "specialist_absence_fade_on_production": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval crosses zero at the low end (-0.4357 to +2.2422 accuracy points), the expected shape for a real small signal; wrong_sign_resolved is inadmissible since the whole interval is not below zero. no_split_half_reliability is inadmissible: the flag is a deterministic function of a weekly report_status field plus a resolved wire IR-placement bracket, not a repeated psychological measurement. No positive-control bound applies (control read +44.298 points, P+ 1.0, proving the harness sensitive, not bounding this candidate's own magnitude).",
+      "closing_ground": null,
+      "description": "FADE teams missing their long snapper or punter (weekly Out report or a confirmed wire IR-placement window), stacked on production weak_stack, opener grade, REFRESH-channel candidate",
+      "effect": 0.8771929824561403,
+      "effect_units": "accuracy_points",
+      "family": "specialist_absence_fade_on_production",
+      "interval": [
+        -0.4357298474945534,
+        2.242152466367713
+      ],
+      "league": "nfl",
+      "notes": "docs/schedule_flag_battery.md Wave 7 section 21; late-week REFRESH-channel candidate (weekly injury report postdates Tuesday lock), not wired to a live overlay this session; 111/4,902 full-schedule flagged games, 47 weekly-Out team-weeks plus 13 resolved wire placement events. Corrected 2026-09-05 (via --replace): effect/interval were originally recorded as raw fractions, not this registry's accuracy_points (percentage-point) convention; re-recorded at the correct scale (x100).",
+      "plain_summary": "When a team is missing its long snapper or punter, this checks whether betting against that team pays off. The lean is positive (about 88% of resamples favour it) but the sample is still small.",
+      "probability_positive": 0.87905,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/roster_availability_flags_on_production/specialist_absence_fade/20260905T152740Z/results.json",
+      "standard_error": null
+    }
+  }
+}

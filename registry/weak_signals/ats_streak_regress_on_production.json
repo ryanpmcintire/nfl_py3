@@ -1,0 +1,33 @@
+{
+  "family": "ats_streak_regress_on_production",
+  "signals": {
+    "ats_streak_regress_on_production": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero (upper bound +0.8850), the expected shape at this window size per AGENTS.md; neither admissible ground applies -- wrong_sign_resolved unavailable and no_split_half_reliability is inadmissible (the streak is a deterministic function of already-completed, close-graded results, zero measurement noise).",
+      "closing_ground": null,
+      "description": "Opener-grade confirmation: on-production ats_streak_regress flag (signed +1 home team enters on a 3+ game ATS losing streak and away does not, -1 reverse, 0 otherwise; streak history graded at the close, matching docs/public_claim_battery.md's own convention) on top of production weak_stack versus production unmodified, paired forced-pick probability-rule accuracy.",
+      "effect": -0.6579,
+      "effect_units": "accuracy_points",
+      "family": "ats_streak_regress_on_production",
+      "interval": [
+        -2.2026,
+        0.885
+      ],
+      "league": "nfl",
+      "notes": "Rotation family ats_streak_regress_on_production, window [2020,2021] spent 2026-09-05, verdict unresolved. Flag fires 758/4902 games (15.5%) across full 2009-2026 schedule, 399 positive/359 negative. On-production stack of docs/public_claim_battery.md's public_claim_ats_streak_regress (+0.2440pts close-graded, P+ 0.9193, full 2009-2025 population). Streak reset each season, a push neither extends nor resets it (docs/schedule_flag_battery.md Wave 3, frozen before scoring). Note (corrected): a process the coordinator flagged as alive ~85 minutes with ~77s CPU, initially reported as this candidate's --mode positive-control run, was per the provenance record actually the subsequent --mode screen call (positive-control completed normally in 183.9s, registry/experiments/schedule-flag-on-production/20260905T040850Z.json). Killed and re-run cleanly in isolation; attach_ats_streak_regress_features itself measured at 64ms standalone -- not a flag-builder defect.",
+      "plain_summary": "Backing a team on a 3+ game losing-against-the-spread streak, stacked onto the production model and graded the way real picks are made, was not clearly better or worse across two full seasons.",
+      "probability_positive": 0.1609,
+      "recorded_at": "2026-09-05",
+      "reliability": 1.0,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/schedule_flag_on_production/ats_streak_regress/20260905T041624Z/results.json",
+      "standard_error": null
+    }
+  }
+}

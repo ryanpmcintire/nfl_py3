@@ -1,0 +1,61 @@
+{
+  "family": "friday_designation_momentum",
+  "signals": {
+    "friday_designation_momentum_on_production_2020_2021": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval [-1.766,+0.889] crosses zero (not a resolved wrong sign: 2020 alone reads +0.4545 P+0.712, 2022 reads +1.613 P+0.822); reliability of the class-to-absence gap is 0.365 (n=32 teams, not zero), so no admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Friday designation momentum (LEAD-08): revision-timing proxy (date_modified weekday static vs revised-late; the closest available substitute for the unmeasurable per-player Wed/Thu/Fri practice trajectory, since the canonical injury source stores exactly one row per player-week) stacked on PRODUCTION weak_stack via a discrete asymmetric fade rule, opener-graded on the rotation-assigned [2020,2021] window (matches LEAD-62's window).",
+      "effect": -0.43859649122807015,
+      "effect_units": "accuracy_points",
+      "family": "friday_designation_momentum",
+      "interval": [
+        -1.7660044150110374,
+        0.8888888888888888
+      ],
+      "league": "nfl",
+      "notes": "Base rates (76,554 covered player-weeks, 2010-2024): revised-late class inactive rate 46.89% (n=70,123) vs static class 45.68% (n=6,431); conditional on final practice level the revised-late gap is positive in all three levels (DNP +14.3pp, LP +5.1pp, FP +2.5pp). Team-game feature = trailing snap share (role_share, reused from the injury-value construct) x season-lagged walk-forward P(inactive|class). Positive control (candidate replaced by realized margin) on the same window: +46.71 points, P+ 1.0 -- harness proven sensitive.",
+      "plain_summary": "Flagging a team when a starter's injury report got revised late in the week (versus settling early) and fading that team does not clearly beat today's picks; the 2020-2021 test leans slightly against it but is too small to be sure either way.",
+      "probability_positive": 0.2679,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.36518092358206733,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/experiments/friday_designation_momentum/20260911T015641Z/results.json",
+      "standard_error": 0.6900442519844749
+    },
+    "friday_designation_momentum_on_production_full_population_2020_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Point estimate is an exact wash (50 of 1503 games flip; 25 gained, 25 lost), interval [-0.798,+0.801] straddles zero almost symmetrically, and 2025 contributes no signal at all (date_modified is null for every 2025 row, so the construct has zero coverage that season). Not a resolved wrong sign and reliability is not zero, so no admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Friday designation momentum (LEAD-08) revision-timing proxy stacked on PRODUCTION weak_stack, descriptive full-population read across every opener-evaluation season available for the active model (2020-2025, 1503 games; not a rotation-assigned confirmation window).",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "friday_designation_momentum",
+      "interval": [
+        -0.7984031936127745,
+        0.800533689126084
+      ],
+      "league": "nfl",
+      "notes": "2025 rows in the canonical injury source never carry a resolved date_modified (per the ingest manifest and re-measured here), so this season contributes zero flags; the 2020-2025 read is therefore effectively a 2020-2024 read diluted by a no-signal season. Per-season sign is mixed: 2020 +0.4545 P+0.712, 2021 -1.2712 P+0.123, 2022 +1.6129 P+0.822, 2023 0.0 (tie), 2024 -0.7519 P+0.153, 2025 0.0 (no coverage).",
+      "plain_summary": "Across every season the site currently grades, this flag flips about as many right picks to wrong as wrong picks to right, so on its own it neither clearly helps nor clearly hurts.",
+      "probability_positive": 0.502975,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.36518092358206733,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/experiments/friday_designation_momentum/20260911T015641Z/results.json",
+      "standard_error": 0.4107232120897022
+    }
+  }
+}

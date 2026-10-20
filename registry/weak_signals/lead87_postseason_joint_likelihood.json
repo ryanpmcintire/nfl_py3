@@ -1,0 +1,89 @@
+{
+  "family": "lead87_postseason_joint_likelihood",
+  "signals": {
+    "lead87_unit2_postseason_accuracy_points": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground established; fixed 497-look family.",
+      "closing_ground": null,
+      "description": "Playoff training added to the regular-season four-term recipe: accuracy_points",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "lead87_postseason_joint_likelihood",
+      "interval": [
+        -0.43165467625898674,
+        0.4341534008683041
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Use playoff games to help judge how a moving line should change a regular-season pick. The added games left the score nearly unchanged; keep this idea under study.",
+      "probability_positive": 0.4936,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 686,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead87_unit2.md",
+      "standard_error": 0.19884527856331308
+    },
+    "lead87_unit2_postseason_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground established; fixed 497-look family.",
+      "closing_ground": null,
+      "description": "Playoff training added to the regular-season four-term recipe: brier",
+      "effect": -3.5700307536579157e-06,
+      "effect_units": "brier_improvement",
+      "family": "lead87_postseason_joint_likelihood",
+      "interval": [
+        -0.00012558885904129236,
+        0.00011852125055055381
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Use playoff games to help judge how a moving line should change a regular-season pick. The added games left the score nearly unchanged; keep this idea under study.",
+      "probability_positive": 0.4865,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 686,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead87_unit2.md",
+      "standard_error": 6.238661257911377e-05
+    },
+    "lead87_unit2_postseason_log_loss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground established; fixed 497-look family.",
+      "closing_ground": null,
+      "description": "Playoff training added to the regular-season four-term recipe: log_loss",
+      "effect": -1.2695663796913337e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "lead87_postseason_joint_likelihood",
+      "interval": [
+        -0.00027160633303257296,
+        0.0002480422463890741
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Use playoff games to help judge how a moving line should change a regular-season pick. The added games left the score nearly unchanged; keep this idea under study.",
+      "probability_positive": 0.4705,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 686,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead87_unit2.md",
+      "standard_error": 0.00013249659747407836
+    }
+  }
+}

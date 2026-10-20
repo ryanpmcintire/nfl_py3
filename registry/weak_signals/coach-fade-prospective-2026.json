@@ -1,0 +1,33 @@
+{
+  "family": "coach-fade-prospective-2026",
+  "signals": {
+    "coach-fade-2026-live-fired-vs-expected": {
+      "category": "offfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "31 fired games; held-out 2020-25 LOSO log-loss gain +.00188 (se .00132), positive in 5 of 6 seasons, but flag members were selected on those seasons; one prospective season cannot refute the mechanism and no positive control bounds it",
+      "closing_ground": null,
+      "description": "2026 W1-6 live: served picks in games where the first-year-coach flag fired, hit rate minus the served probability's expectation",
+      "effect": -17.4,
+      "effect_units": "accuracy_points",
+      "family": "coach-fade-prospective-2026",
+      "interval": [
+        -32.2,
+        -2.6
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Picks touched by the new-coach adjustment are 12-19 this season, about 5 wins worse than their stated chances",
+      "probability_positive": 0.03,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 31,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "docs/lanes/served-probability-calibration-2026.md",
+      "standard_error": 9.0
+    }
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "family": "cx15_denver_home_on_production",
+  "signals": {
+    "cx15_denver_home_on_production_opener": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Fixed-home mean and season-varying trait reliability are distinct estimands; oracle response does not bound a candidate-sized effect. No terminal ground claimed.",
+      "closing_ground": null,
+      "description": "LEAD-43 fixed BACK Denver home override on active production probability-rule picks, opener graded",
+      "effect": -0.0665335994677312,
+      "effect_units": "accuracy_points",
+      "family": "cx15_denver_home_on_production",
+      "interval": [
+        -0.7289595758780649,
+        0.592895146182526
+      ],
+      "league": "nfl",
+      "notes": "Predeclared docs/coaching_leads.md; 20000 week-blocked draws seed 20260905; active model ab29832a4e099766. 47 eligible Denver home games, all other picks production. Split-half trait correlation -0.605557, 95% [-0.885533,-0.123608], concerns season variation, not the fixed home flag. Historical reuse screen, not independent confirmation. Oracle is instrument only, not deployable.",
+      "plain_summary": "Backing Denver in every home game produced one fewer correct pick than the existing picks. Keep the existing picks while retaining this lead for research.",
+      "probability_positive": 0.38295,
+      "recorded_at": "2026-09-05",
+      "reliability": -0.6055568990783111,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/experiments/coaching_altitude_leads/results.json",
+      "standard_error": 0.33254331931065556
+    },
+    "cx15_denver_home_oracle_control": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Fixed-home mean and season-varying trait reliability are distinct estimands; oracle response does not bound a candidate-sized effect. No terminal ground claimed.",
+      "closing_ground": null,
+      "description": "LEAD-43 deliberately leaked positive control: BACK Denver only when it covered the opener",
+      "effect": 0.7984031936127745,
+      "effect_units": "accuracy_points",
+      "family": "cx15_denver_home_on_production",
+      "interval": [
+        0.397081455569212,
+        1.2582781456953642
+      ],
+      "league": "nfl",
+      "notes": "Predeclared docs/coaching_leads.md; 20000 week-blocked draws seed 20260905; active model ab29832a4e099766. 47 eligible Denver home games, all other picks production. Split-half trait correlation -0.605557, 95% [-0.885533,-0.123608], concerns season variation, not the fixed home flag. Historical reuse screen, not independent confirmation. Oracle is instrument only, not deployable.",
+      "plain_summary": "A hindsight check backed Denver only in home games where it covered the opening spread. It verifies that the experiment can register an improvement; it cannot guide future picks.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-05",
+      "reliability": -0.6055568990783111,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/experiments/coaching_altitude_leads/results.json",
+      "standard_error": 0.21857594844451286
+    }
+  }
+}

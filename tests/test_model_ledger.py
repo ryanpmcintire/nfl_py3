@@ -22,6 +22,7 @@ from nfl_ats.model_ledger import (
     render_markdown_table,
     validate_ledger,
 )
+from nfl_ats.weak_signals import merged_registry_file
 
 
 def _write_json(path: Path, payload: object) -> Path:
@@ -341,11 +342,13 @@ def test_markdown_round_trip_contains_all_arms_and_is_deterministic(
 
 def test_real_artifacts_build_a_valid_ledger() -> None:
     challengers = Path("artifacts/prospective/challengers.json")
-    weak = Path("registry/weak_signals.json")
+    shards = Path("registry/weak_signals")
     manifest = Path("artifacts/active_ats_model.json")
-    if not (challengers.is_file() and weak.is_file() and manifest.is_file()):
+    if not (challengers.is_file() and shards.is_dir() and manifest.is_file()):
         pytest.skip("live artifacts absent")
-    ledger = build_model_ledger(challengers, weak, manifest)
+    with merged_registry_file(shards) as weak:
+        ledger = build_model_ledger(challengers, weak, manifest)
+        validate_ledger(ledger)
     registered = json.loads(challengers.read_text(encoding="utf-8"))["challengers"]
     assert len(ledger.rows) == len(registered) + 1
     assert ledger.rows[0].status_badge == "PROMOTED"
@@ -356,7 +359,6 @@ def test_real_artifacts_build_a_valid_ledger() -> None:
     assert ledger.rows[0].track_record.games == manifest_games
     superseded = [r for r in ledger.rows if r.status_badge == "SUPERSEDED"]
     assert len(superseded) == 4
-    validate_ledger(ledger)
 
 
 _TOKEN_RE = re.compile(r"\d[\d,]*(?:\.\d+)?")
@@ -490,12 +492,13 @@ def test_render_ledger_html_rejects_unknown_css_mode(
 
 def test_render_ledger_html_number_audit_passes_on_live_artifacts() -> None:
     challengers = Path("artifacts/prospective/challengers.json")
-    weak = Path("registry/weak_signals.json")
+    shards = Path("registry/weak_signals")
     manifest = Path("artifacts/active_ats_model.json")
-    if not (challengers.is_file() and weak.is_file() and manifest.is_file()):
+    if not (challengers.is_file() and shards.is_dir() and manifest.is_file()):
         pytest.skip("live artifacts absent")
-    ledger = build_model_ledger(challengers, weak, manifest)
-    rendered = build_and_render(challengers, weak, manifest)
+    with merged_registry_file(shards) as weak:
+        ledger = build_model_ledger(challengers, weak, manifest)
+        rendered = build_and_render(challengers, weak, manifest)
     assert rendered.count("<tr") == len(ledger.rows) + 1
     _audit_ledger_numbers(rendered, ledger)
 

@@ -1,0 +1,89 @@
+{
+  "family": "tiebreaker_total_expected_share_posthoc",
+  "signals": {
+    "tiebreaker_total_a2_expected_share_posthoc_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No wrong sign is resolved on the predeclared metric and the positive control (perfect foresight) detects at 100-1000x the tested scale, so it bounds nothing: bounded_by_control is unavailable and this stays unresolved_below_power.",
+      "closing_ground": null,
+      "description": "POST-HOC, NOT PREDECLARED. Tiebreaker total arm A2 vs A0 on a variance-reduced estimator of the same estimand: expected tiebreak share integrated over the 2009-2019 empirical distribution of actual-minus-market total, instead of counting realized hits. Same declared 284-rival field. UNITS PLACEHOLDER: the effect is a closest-share PROBABILITY difference, not a correlation. EFFECT_UNITS has no probability unit and labelling a 0.35%-scale tiebreak-win share accuracy_points would put a non-commensurable quantity into the NFL ATS pool. Never pool this row with anything but its own family. Predeclared in docs/tiebreaker_total.md; 107 last-games-of-week 2020-2025; paired week-blocked bootstrap 20000 draws seed 20260821; baseline is A0, the tiebreaker chain served today (joint-residual total blended at 0.1, then the pick-side-consistent score lattice).",
+      "effect": 0.0001602,
+      "effect_units": "correlation",
+      "family": "tiebreaker_total_expected_share_posthoc",
+      "interval": [
+        1.92e-05,
+        0.0003003
+      ],
+      "league": "nfl",
+      "notes": "Estimator chosen AFTER seeing that the predeclared one was a 3-count statistic. Not a confirmatory look. The effect is entirely a property of the declared rival field; no real rival tiebreaker guesses have ever been captured.",
+      "plain_summary": "Snapping the betting total to a combined score football actually produces should win the weekly tiebreaker about 5% more often than the guess we publish.",
+      "probability_positive": 0.986,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 107,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/tiebreaker_total/20260910T043514Z/posthoc_expected_share.json",
+      "standard_error": 0.00039174149820206
+    },
+    "tiebreaker_total_a3_expected_share_posthoc_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No wrong sign is resolved on the predeclared metric and the positive control (perfect foresight) detects at 100-1000x the tested scale, so it bounds nothing: bounded_by_control is unavailable and this stays unresolved_below_power.",
+      "closing_ground": null,
+      "description": "POST-HOC, NOT PREDECLARED. Tiebreaker total arm A3 (served total snapped to a plausible combined score, pick-side shade removed) vs A0 on the variance-reduced expected-share estimator. Same declared 284-rival field. UNITS PLACEHOLDER: the effect is a closest-share PROBABILITY difference, not a correlation. EFFECT_UNITS has no probability unit and labelling a 0.35%-scale tiebreak-win share accuracy_points would put a non-commensurable quantity into the NFL ATS pool. Never pool this row with anything but its own family. Predeclared in docs/tiebreaker_total.md; 107 last-games-of-week 2020-2025; paired week-blocked bootstrap 20000 draws seed 20260821; baseline is A0, the tiebreaker chain served today (joint-residual total blended at 0.1, then the pick-side-consistent score lattice).",
+      "effect": 0.0001869,
+      "effect_units": "correlation",
+      "family": "tiebreaker_total_expected_share_posthoc",
+      "interval": [
+        4.33e-05,
+        0.0003325
+      ],
+      "league": "nfl",
+      "notes": "Estimator chosen AFTER seeing that the predeclared one was a 3-count statistic. The EV-favoured arm of the study. The effect is entirely a property of the declared rival field; no real rival tiebreaker guesses have ever been captured.",
+      "plain_summary": "Our own total, snapped to a combined score football actually produces, should win the weekly tiebreaker about 6% more often than the guess we publish.",
+      "probability_positive": 0.994,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 107,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/tiebreaker_total/20260910T043514Z/posthoc_expected_share.json",
+      "standard_error": 0.0003985574342878795
+    },
+    "tiebreaker_total_offset_minus35_expected_share_posthoc_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No wrong sign is resolved on the predeclared metric and the positive control (perfect foresight) detects at 100-1000x the tested scale, so it bounds nothing: bounded_by_control is unavailable and this stays unresolved_below_power.",
+      "closing_ground": null,
+      "description": "POST-HOC, NOT PREDECLARED, ARGMAX OF A 21-POINT SWEEP WITH NO SELECTION CORRECTION. Submitting round(market_total - 3.5) vs A0 on the variance-reduced expected-share estimator against 284 declared rivals. The sweep is roughly symmetric (+3.5 scores 0.3871% against -3.5's 0.3930%), so the mechanism is differentiating from a field that piles up on the market total, not a low-total bias. UNITS PLACEHOLDER: the effect is a closest-share PROBABILITY difference, not a correlation. EFFECT_UNITS has no probability unit and labelling a 0.35%-scale tiebreak-win share accuracy_points would put a non-commensurable quantity into the NFL ATS pool. Never pool this row with anything but its own family. Predeclared in docs/tiebreaker_total.md; 107 last-games-of-week 2020-2025; paired week-blocked bootstrap 20000 draws seed 20260821; baseline is A0, the tiebreaker chain served today (joint-residual total blended at 0.1, then the pick-side-consistent score lattice).",
+      "effect": 0.00078947,
+      "effect_units": "correlation",
+      "family": "tiebreaker_total_expected_share_posthoc",
+      "interval": [
+        0.00065173,
+        0.00093021
+      ],
+      "league": "nfl",
+      "notes": "Selected as the argmax of a sweep; treat the 3.5 as a direction, not a calibrated constant. Entirely conditional on the DECLARED rival field -- settle it with a Week-1 capture of the real field before serving anything. Related: the live tiebreaker_low_side_shade challenger shades -1.0, which the sweep scores at 0.3486% against -3.5's 0.3930%.",
+      "plain_summary": "In a 285-entry pool everyone guesses near the bookmakers' total, so guessing a few points away from it wins the tiebreaker more often even though it is further from the real score. Worth about a quarter more tiebreak wins.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 107,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/tiebreaker_total/20260910T043514Z/posthoc_offset35_vs_a0.json",
+      "standard_error": 0.0004054919612938307
+    }
+  }
+}

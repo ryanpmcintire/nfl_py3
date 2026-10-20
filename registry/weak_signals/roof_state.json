@@ -1,0 +1,201 @@
+{
+  "family": "roof_state",
+  "signals": {
+    "roof_state_home_cover_gap_even_seasons": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "N=30 open games on the even-seasons half; interval crosses zero. Same construct as roof_state_home_cover_gap_odd_seasons, disjoint season half. The two halves disagree in SIGN, which is the honest split-half reliability read for this construct -- inconclusive at this n, not a resolved zero-reliability refutation (both halves individually still cross zero, so neither is itself a negative).",
+      "closing_ground": null,
+      "description": "Split-half check (even-numbered seasons half): home cover rate gap open vs closed, close grade, restricted to even-numbered REG seasons 2009-2025, at the five retractable-roof venues.",
+      "effect": 10.752,
+      "effect_units": "accuracy_points",
+      "family": "roof_state",
+      "interval": [
+        -9.185,
+        30.373
+      ],
+      "league": "nfl",
+      "notes": "Paired odd-seasons entry: roof_state_home_cover_gap_odd_seasons. script scripts/roof_state_screen.py screen.",
+      "plain_summary": "Splitting the open-roof seasons in half (even years only), home teams lean toward covering BETTER when the roof is open -- the opposite lean from the odd-years half. Neither half proves much on its own.",
+      "probability_positive": 0.857225,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 130,
+      "sample_games": 287,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/roof_state_screen/screen_results.json",
+      "standard_error": null
+    },
+    "roof_state_home_cover_gap_odd_seasons": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "N=51 open games on the odd-seasons half; interval crosses zero. is_open is a per-game situational condition, not a persistent per-team trait, so a formal split-half correlation coefficient does not apply the way it would to a trait; this entry and its even-seasons sibling report the same construct measured independently on disjoint season halves instead.",
+      "closing_ground": null,
+      "description": "Split-half check (odd-numbered seasons half): home cover rate gap open vs closed, close grade, restricted to odd-numbered REG seasons 2009-2025, at the five retractable-roof venues.",
+      "effect": -10.571,
+      "effect_units": "accuracy_points",
+      "family": "roof_state",
+      "interval": [
+        -24.337,
+        3.633
+      ],
+      "league": "nfl",
+      "notes": "Paired even-seasons entry: roof_state_home_cover_gap_even_seasons. The two halves disagree in sign (odd leans negative P+0.072, even leans positive P+0.857), which is the honest split-half read of this construct: inconclusive, not a resolved zero-reliability refutation, since both halves individually still cross zero. script scripts/roof_state_screen.py screen.",
+      "plain_summary": "Splitting the open-roof seasons in half (odd years only), home teams lean toward covering WORSE when the roof is open, but the interval still crosses zero and the even-years half leans the opposite way.",
+      "probability_positive": 0.07195,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 147,
+      "sample_games": 327,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/roof_state_screen/screen_results.json",
+      "standard_error": null
+    },
+    "roof_state_home_cover_open_vs_closed_close": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real small signal, never grounds to close per AGENTS.md. No admissible closing ground: no resolved wrong sign (the opener-grade sibling entry disagrees in sign) and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Home cover rate at the five retractable-roof venues (ARI, ATL, DAL, HOU, IND) when the roof is realized open vs closed, close grade, REG 2009-2025 (n=626 games, 84 open/542 closed before push drop). Positive = home covers MORE when open.",
+      "effect": -2.4599,
+      "effect_units": "accuracy_points",
+      "family": "roof_state",
+      "interval": [
+        -14.138,
+        9.422
+      ],
+      "league": "nfl",
+      "notes": "Within-venue comparison (open vs closed AT these five franchises only, not vs the whole league). Open cover 44.44%, closed cover 46.90%. Season-blocked secondary CI [-13.254,10.224], P+ 0.348425. script scripts/roof_state_screen.py screen.",
+      "plain_summary": "At the five NFL stadiums with a retractable roof, the home team's cover rate looks about the same whether the roof is open or closed across the full 2009-2025 history; if anything it leans slightly worse when open, but the sample is small and a different way of grading it points the other way.",
+      "probability_positive": 0.338975,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 277,
+      "sample_games": 614,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/roof_state_screen/screen_results.json",
+      "standard_error": null
+    },
+    "roof_state_home_cover_open_vs_closed_opener": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval crosses zero -- unresolved_below_power per AGENTS.md, not a negative. Disagrees in SIGN with the close-grade sibling entry (roof_state_home_cover_open_vs_closed_close, which leans the other way): two honest gradings of the same mechanism point opposite directions at this sample size, so neither resolves the other and no admissible closing ground applies to either.",
+      "closing_ground": null,
+      "description": "Home cover rate at the five retractable-roof venues when the roof is realized open vs closed, opener grade (Tuesday line), paired 2020-2025 archive intersection (n=227 graded of 236 paired). Positive = home covers MORE when open.",
+      "effect": 10.728,
+      "effect_units": "accuracy_points",
+      "family": "roof_state",
+      "interval": [
+        -11.232,
+        32.83
+      ],
+      "league": "nfl",
+      "notes": "Open cover 55.17% vs closed 44.44% (opener grade). Season-blocked secondary CI [-20.970,36.715], P+ 0.76848 (317/20000 draws dropped, thin season-block population). script scripts/roof_state_screen.py screen.",
+      "plain_summary": "Looking only at games the pool actually settles against (the Tuesday opening line), home teams at these five stadiums have covered MORE often when the roof was open, the opposite lean from the longer close-graded history -- with only 29 open games in this window, this disagreement is not resolved.",
+      "probability_positive": 0.8377,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 100,
+      "sample_games": 227,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/roof_state_screen/screen_results.json",
+      "standard_error": null
+    },
+    "roof_state_market_pricing_check": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "N=84 paired games, 14 season blocks; interval crosses zero. No refuted-mechanism or positive-control ground; the market shows no detectable line shading for open-roof games at this sample size, but this cannot rule out a small one.",
+      "closing_ground": null,
+      "description": "Diagnostic, not a candidate mechanism: paired difference between an open-roof game's home-perspective spread_line and that same home team's other (closed-roof) REG home games in the same season, at the five retractable venues, 2009-2025. Tests whether the market already shades the line toward/away from home when the roof opens.",
+      "effect": 0.1443,
+      "effect_units": "ats_points",
+      "family": "roof_state",
+      "interval": [
+        -1.317,
+        1.428
+      ],
+      "league": "nfl",
+      "notes": "diff = open_game spread_line - mean(same-team same-season closed-game spread_lines), home-perspective sign; probability_positive here means P(market already shades toward home when open), via probability_positive_from_draws(-draws). Season-blocked bootstrap (only block available at this n), 20000 draws, seed 20260910. script scripts/roof_state_screen.py screen.",
+      "plain_summary": "Checking the betting line itself: sportsbooks do not appear to move the spread specially when one of these five stadiums opens its roof, compared to that same team's other home games, but the sample is small.",
+      "probability_positive": 0.42735,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 14,
+      "sample_games": 84,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/roof_state_screen/screen_results.json",
+      "standard_error": null
+    },
+    "roof_state_predicted_open_fade_on_production": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked (primary) 95% interval [-1.094, 0.0] touches zero at its own upper bound -- unresolved_below_power per AGENTS.md, not a negative. Only 7 games in this window were predicted open, and only 2 of those had a home baseline pick to fade (the flag never touches an away baseline pick by design); the season-blocked secondary interval is fully negative but this is a 2-flip DEGENERATE artifact (matching this repo's own precedent for other thin-flip cells), not resolved statistical power -- a 2-game cell cannot invoke wrong_sign_resolved regardless of how narrow its resampled interval looks.",
+      "closing_ground": null,
+      "description": "ENV-02 production screen: predeclared tilt fades a home pick to away when the walk-forward roof-state predictor calls the roof open at a venue that usually closes (measured: all five retractable venues have a lifetime open rate under 25%, so 'usually closes' is satisfied for all five and the flag reduces to predicted_open==True), stacked on PRODUCTION weak_stack's opener pick. Rotation family roof_state_predicted_open_fade_on_production, window [2020,2021] (456 paired opener games/35 weeks).",
+      "effect": -0.4386,
+      "effect_units": "accuracy_points",
+      "family": "roof_state",
+      "interval": [
+        -1.094,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "n_predicted_open_in_window=7, picks_changed=2, picks_changed_graded=2. candidate_accuracy 52.851 pct vs baseline 53.289 pct. active_model_id d49194e04945a5e5. script scripts/roof_state_screen.py production.",
+      "plain_summary": "When the roof-state predictor says a dome team's roof will be open on game day, backing away from that home team barely moved the card this window -- only 2 picks changed in two full seasons, too few to tell if the idea helps or hurts.",
+      "probability_positive": 0.063425,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/roof_state_screen/production_results.json",
+      "standard_error": null
+    },
+    "roof_state_prediction_skill_walk_forward": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval [0.173, 0.382] fully EXCLUDES zero (P+ 1.000) -- this is a resolved positive finding about the PREDICTOR's skill, not a candidate accuracy effect being closed; recorded unresolved_below_power only because the schema's terminal classifications (refuted_mechanism/bounded_by_control) describe closing a line of work, and this predictor is being used, not closed. Raw classification accuracy (84.66% overall, 594-game walk-forward-only subset 85.69%) sits slightly BELOW the trivial always-closed baseline (86.58%/87.71%) because of false positives under a ~13% base rate; the correlation reading is the properly-powered measure of real skill and should not be read alongside the accuracy numbers as if they measured the same thing.",
+      "closing_ground": null,
+      "description": "Deadline-visible pregame roof-state (open/closed) predictor at the five retractable-roof venues: per-season walk-forward logistic regression on pool_decision-cutoff forecast temperature and precipitation probability (each venue's own temperature interacted separately) plus venue dummy intercepts, refit every season using strictly PRIOR seasons only. Effect is the point-biserial correlation between the predicted and realized roof state (equivalent to the phi coefficient for two binary variables), NOT raw classification accuracy -- reported separately because raw accuracy is dominated by the ~87% closed base rate and understates real skill (deviates from --effect-units accuracy_points because this measures predictive skill, not a forced-pick outcome).",
+      "effect": 0.27688,
+      "effect_units": "correlation",
+      "family": "roof_state",
+      "interval": [
+        0.17257,
+        0.38222
+      ],
+      "league": "nfl",
+      "notes": "Method: nfl_ats-independent script logistic regression, chronological (train on strictly prior seasons only). By-venue recall of actual OPEN games: ARI 0%, ATL 50.0%, DAL 11.1%, HOU 33.3%, IND 38.7% (ARI's model never calls open, likely too few historical opens (11/137) for the regularized fit to trust the temperature signal). script scripts/roof_state_screen.py predict-roof.",
+      "plain_summary": "A simple rule that combines the game-day forecast with each dome stadium's own history of opening or closing correctly tracks whether the roof will actually be open or closed -- not perfectly, but clearly better than chance, and well before kickoff.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 280,
+      "sample_games": 626,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/roof_state_screen/predict_roof_results.json",
+      "standard_error": null
+    }
+  }
+}

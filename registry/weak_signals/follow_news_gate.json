@@ -1,0 +1,1601 @@
+{
+  "family": "follow_news_gate",
+  "signals": {
+    "follow_news_gate_f0_vs_tuesday_2023_2024": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2023-2024: the served leader-median late-week follow against the nine-member Tuesday card, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 160 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -1.128 to +1.128, P+ 0.5013.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -4.347826,
+        4.419969
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and follows the books. Over 532 graded games it changed accuracy by +0.00 points.",
+      "probability_positive": 0.4948,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.069519,
+      "sample_blocks": 36,
+      "sample_games": 532,
+      "seasons": [
+        2023,
+        2024
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f0_vs_tuesday_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2023-2025: the served leader-median late-week follow against the nine-member Tuesday card, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 243 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -2.247 to +1.128, P+ 0.2087.",
+      "effect": -0.750939,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -4.171779,
+        2.753442
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and follows the books. Over 799 graded games it changed accuracy by -0.75 points.",
+      "probability_positive": 0.3315,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.069519,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f1_2023": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2023: following only when post-Tuesday injury news confirms the leaders' move against the served leader-median late-week follow, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 51 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +0.376 to +0.376, P+ 1.0000.",
+      "effect": 0.37594,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -4.669261,
+        5.263158
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and only follows the books when it does. Over 266 graded games it changed accuracy by +0.38 points.",
+      "probability_positive": 0.5611,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.106257,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f1_2023_2024": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2023-2024: following only when post-Tuesday injury news confirms the leaders' move against the served leader-median late-week follow, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 91 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +0.376 to +1.504, P+ 1.0000.",
+      "effect": 0.93985,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -2.621846,
+        4.389313
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and only follows the books when it does. Over 532 graded games it changed accuracy by +0.94 points.",
+      "probability_positive": 0.70475,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.106257,
+      "sample_blocks": 36,
+      "sample_games": 532,
+      "seasons": [
+        2023,
+        2024
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f1_2023_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2023-2025: following only when post-Tuesday injury news confirms the leaders' move against the served leader-median late-week follow, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 91 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +0.000 to +1.504, P+ 0.9817.",
+      "effect": 0.625782,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -1.66672,
+        2.915175
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and only follows the books when it does. Over 799 graded games it changed accuracy by +0.63 points.",
+      "probability_positive": 0.7014,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.106257,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f1_2024": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2024: following only when post-Tuesday injury news confirms the leaders' move against the served leader-median late-week follow, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 40 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +1.504 to +1.504, P+ 1.0000.",
+      "effect": 1.503759,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -3.422053,
+        6.25
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and only follows the books when it does. Over 266 graded games it changed accuracy by +1.50 points.",
+      "probability_positive": 0.734875,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.106257,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f1_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2025: following only when post-Tuesday injury news confirms the leaders' move against the served leader-median late-week follow, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 0 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +0.000 to +0.000, P+ 0.5000.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and only follows the books when it does. Over 267 graded games it changed accuracy by +0.00 points.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.106257,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f1_vs_tuesday_2023_2024": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2023-2024: following only when post-Tuesday injury news confirms the leaders' move against the nine-member Tuesday card, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 69 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -0.752 to +2.632, P+ 0.7517.",
+      "effect": 0.93985,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -2.226449,
+        4.11985
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and only follows the books when it does. Over 532 graded games it changed accuracy by +0.94 points.",
+      "probability_positive": 0.719,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.106257,
+      "sample_blocks": 36,
+      "sample_games": 532,
+      "seasons": [
+        2023,
+        2024
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f1_vs_tuesday_2023_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2023-2025: following only when post-Tuesday injury news confirms the leaders' move against the nine-member Tuesday card, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 152 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -2.247 to +2.632, P+ 0.3749.",
+      "effect": -0.125156,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -2.981366,
+        2.654867
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and only follows the books when it does. Over 799 graded games it changed accuracy by -0.13 points.",
+      "probability_positive": 0.464875,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.106257,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f1p_2023": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2023: following only on confirmation, PFT headlines standing in where official rows carry no timestamp against the served leader-median late-week follow, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 51 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +0.376 to +0.376, P+ 1.0000.",
+      "effect": 0.37594,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -4.669261,
+        5.263158
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and only follows the books when it does. Over 266 graded games it changed accuracy by +0.38 points.",
+      "probability_positive": 0.5611,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.106257,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f1p_2023_2024": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2023-2024: following only on confirmation, PFT headlines standing in where official rows carry no timestamp against the served leader-median late-week follow, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 91 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +0.376 to +1.504, P+ 1.0000.",
+      "effect": 0.93985,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -2.621846,
+        4.389313
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and only follows the books when it does. Over 532 graded games it changed accuracy by +0.94 points.",
+      "probability_positive": 0.70475,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.106257,
+      "sample_blocks": 36,
+      "sample_games": 532,
+      "seasons": [
+        2023,
+        2024
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f1p_2023_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2023-2025: following only on confirmation, PFT headlines standing in where official rows carry no timestamp against the served leader-median late-week follow, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 137 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +0.000 to +1.504, P+ 0.9817.",
+      "effect": 0.625782,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -1.891551,
+        3.144654
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and only follows the books when it does. Over 799 graded games it changed accuracy by +0.63 points.",
+      "probability_positive": 0.68505,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.106257,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f1p_2024": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2024: following only on confirmation, PFT headlines standing in where official rows carry no timestamp against the served leader-median late-week follow, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 40 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +1.504 to +1.504, P+ 1.0000.",
+      "effect": 1.503759,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -3.422053,
+        6.25
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and only follows the books when it does. Over 266 graded games it changed accuracy by +1.50 points.",
+      "probability_positive": 0.734875,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.106257,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f1p_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2025: following only on confirmation, PFT headlines standing in where official rows carry no timestamp against the served leader-median late-week follow, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 46 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +0.000 to +0.000, P+ 0.5000.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -3.018868,
+        3.296703
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and only follows the books when it does. Over 267 graded games it changed accuracy by +0.00 points.",
+      "probability_positive": 0.49205,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.106257,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f1p_vs_tuesday_2023_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2023-2025: following only on confirmation, PFT headlines standing in where official rows carry no timestamp against the nine-member Tuesday card, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 106 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -2.247 to +2.632, P+ 0.3749.",
+      "effect": -0.125156,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -2.709443,
+        2.496879
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and only follows the books when it does. Over 799 graded games it changed accuracy by -0.13 points.",
+      "probability_positive": 0.459575,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.106257,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f1w_2023": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2023: following only on confirmation, with lane W's unrestricted news delta as the reader against the served leader-median late-week follow, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 41 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +0.376 to +0.376, P+ 1.0000.",
+      "effect": 0.37594,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -4.850746,
+        5.128205
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and only follows the books when it does. Over 266 graded games it changed accuracy by +0.38 points.",
+      "probability_positive": 0.56215,
+      "recorded_at": "2026-09-10",
+      "reliability": -0.026986,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f1w_2023_2024": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2023-2024: following only on confirmation, with lane W's unrestricted news delta as the reader against the served leader-median late-week follow, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 79 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +0.376 to +3.008, P+ 1.0000.",
+      "effect": 1.691729,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -1.544402,
+        4.924242
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and only follows the books when it does. Over 532 graded games it changed accuracy by +1.69 points.",
+      "probability_positive": 0.8465,
+      "recorded_at": "2026-09-10",
+      "reliability": -0.026986,
+      "sample_blocks": 36,
+      "sample_games": 532,
+      "seasons": [
+        2023,
+        2024
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f1w_2023_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2023-2025: following only on confirmation, with lane W's unrestricted news delta as the reader against the served leader-median late-week follow, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 79 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +0.000 to +3.008, P+ 0.9817.",
+      "effect": 1.126408,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -1.11666,
+        3.354037
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and only follows the books when it does. Over 799 graded games it changed accuracy by +1.13 points.",
+      "probability_positive": 0.8429,
+      "recorded_at": "2026-09-10",
+      "reliability": -0.026986,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f1w_2024": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2024: following only on confirmation, with lane W's unrestricted news delta as the reader against the served leader-median late-week follow, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 38 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +3.008 to +3.008, P+ 1.0000.",
+      "effect": 3.007519,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -1.149425,
+        7.336333
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and only follows the books when it does. Over 266 graded games it changed accuracy by +3.01 points.",
+      "probability_positive": 0.918325,
+      "recorded_at": "2026-09-10",
+      "reliability": -0.026986,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f1w_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2025: following only on confirmation, with lane W's unrestricted news delta as the reader against the served leader-median late-week follow, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 0 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +0.000 to +0.000, P+ 0.5000.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and only follows the books when it does. Over 267 graded games it changed accuracy by +0.00 points.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-10",
+      "reliability": -0.026986,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f1w_vs_tuesday_2023_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2023-2025: following only on confirmation, with lane W's unrestricted news delta as the reader against the nine-member Tuesday card, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 164 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -2.247 to +4.135, P+ 0.5930.",
+      "effect": 0.375469,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -2.457002,
+        3.065134
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and only follows the books when it does. Over 799 graded games it changed accuracy by +0.38 points.",
+      "probability_positive": 0.606425,
+      "recorded_at": "2026-09-10",
+      "reliability": -0.026986,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f2_2023": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2023: following a sub-threshold leaders' move when injury news confirms it against the served leader-median late-week follow, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 9 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -2.632 to -2.632, P+ 0.0000.",
+      "effect": -2.631579,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -4.494382,
+        -1.080108
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and also follows smaller book moves when the injury news backs them. Over 266 graded games it changed accuracy by -2.63 points.",
+      "probability_positive": 0.0002,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.106257,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f2_2023_2024": {
+      "category": "health",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "wrong_sign_resolved: the whole week-blocked 95% interval sits below zero on the declared primary block, on 23 (29 with the PFT reader) pick changes that were almost all losses. What is refuted is narrow and named: a sub-half-point leaders' move, confirmed by injury news, is not a follow signal. This does NOT close the news gate itself -- the confirmation arm (f1) and the veto arm (f3) share the same news reader, sit on the other side of zero, and stay unresolved_below_power. The four cells here are one correlated finding on two nested windows and two readers, not four votes.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Late-week follow news gate, 2023-2024: following a sub-threshold leaders' move when injury news confirms it against the served leader-median late-week follow, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 23 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -2.632 to -2.632, P+ 0.0000.",
+      "effect": -2.631579,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -4.38947,
+        -0.932836
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and also follows smaller book moves when the injury news backs them. Over 532 graded games it changed accuracy by -2.63 points.",
+      "probability_positive": 0.0009,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.106257,
+      "sample_blocks": 36,
+      "sample_games": 532,
+      "seasons": [
+        2023,
+        2024
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f2_2023_2025": {
+      "category": "health",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "wrong_sign_resolved: the whole week-blocked 95% interval sits below zero on the declared primary block, on 23 (29 with the PFT reader) pick changes that were almost all losses. What is refuted is narrow and named: a sub-half-point leaders' move, confirmed by injury news, is not a follow signal. This does NOT close the news gate itself -- the confirmation arm (f1) and the veto arm (f3) share the same news reader, sit on the other side of zero, and stay unresolved_below_power. The four cells here are one correlated finding on two nested windows and two readers, not four votes.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Late-week follow news gate, 2023-2025: following a sub-threshold leaders' move when injury news confirms it against the served leader-median late-week follow, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 23 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -2.632 to +0.000, P+ 0.0183.",
+      "effect": -1.75219,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -3.007519,
+        -0.620347
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and also follows smaller book moves when the injury news backs them. Over 799 graded games it changed accuracy by -1.75 points.",
+      "probability_positive": 0.0012,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.106257,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f2_2024": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2024: following a sub-threshold leaders' move when injury news confirms it against the served leader-median late-week follow, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 14 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -2.632 to -2.632, P+ 0.0000.",
+      "effect": -2.631579,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -5.703422,
+        0.363636
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and also follows smaller book moves when the injury news backs them. Over 266 graded games it changed accuracy by -2.63 points.",
+      "probability_positive": 0.039275,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.106257,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f2_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2025: following a sub-threshold leaders' move when injury news confirms it against the served leader-median late-week follow, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 0 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +0.000 to +0.000, P+ 0.5000.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and also follows smaller book moves when the injury news backs them. Over 267 graded games it changed accuracy by +0.00 points.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.106257,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f2_vs_tuesday_2023_2024": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2023-2024: following a sub-threshold leaders' move when injury news confirms it against the nine-member Tuesday card, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 183 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -3.759 to -1.504, P+ 0.0000.",
+      "effect": -2.631579,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -7.129456,
+        1.912137
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and also follows smaller book moves when the injury news backs them. Over 532 graded games it changed accuracy by -2.63 points.",
+      "probability_positive": 0.12745,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.106257,
+      "sample_blocks": 36,
+      "sample_games": 532,
+      "seasons": [
+        2023,
+        2024
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f2_vs_tuesday_2023_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2023-2025: following a sub-threshold leaders' move when injury news confirms it against the nine-member Tuesday card, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 266 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -3.759 to -1.504, P+ 0.0000.",
+      "effect": -2.503129,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -6.037736,
+        1.021711
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and also follows smaller book moves when the injury news backs them. Over 799 graded games it changed accuracy by -2.50 points.",
+      "probability_positive": 0.0831,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.106257,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f2p_2023": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2023: following a sub-threshold move on confirmation, PFT headlines standing in on timestampless seasons against the served leader-median late-week follow, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 9 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -2.632 to -2.632, P+ 0.0000.",
+      "effect": -2.631579,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -4.494382,
+        -1.080108
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and also follows smaller book moves when the injury news backs them. Over 266 graded games it changed accuracy by -2.63 points.",
+      "probability_positive": 0.0002,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.106257,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f2p_2023_2024": {
+      "category": "health",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "wrong_sign_resolved: the whole week-blocked 95% interval sits below zero on the declared primary block, on 23 (29 with the PFT reader) pick changes that were almost all losses. What is refuted is narrow and named: a sub-half-point leaders' move, confirmed by injury news, is not a follow signal. This does NOT close the news gate itself -- the confirmation arm (f1) and the veto arm (f3) share the same news reader, sit on the other side of zero, and stay unresolved_below_power. The four cells here are one correlated finding on two nested windows and two readers, not four votes.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Late-week follow news gate, 2023-2024: following a sub-threshold move on confirmation, PFT headlines standing in on timestampless seasons against the served leader-median late-week follow, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 23 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -2.632 to -2.632, P+ 0.0000.",
+      "effect": -2.631579,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -4.38947,
+        -0.932836
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and also follows smaller book moves when the injury news backs them. Over 532 graded games it changed accuracy by -2.63 points.",
+      "probability_positive": 0.0009,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.106257,
+      "sample_blocks": 36,
+      "sample_games": 532,
+      "seasons": [
+        2023,
+        2024
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f2p_2023_2025": {
+      "category": "health",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "wrong_sign_resolved: the whole week-blocked 95% interval sits below zero on the declared primary block, on 23 (29 with the PFT reader) pick changes that were almost all losses. What is refuted is narrow and named: a sub-half-point leaders' move, confirmed by injury news, is not a follow signal. This does NOT close the news gate itself -- the confirmation arm (f1) and the veto arm (f3) share the same news reader, sit on the other side of zero, and stay unresolved_below_power. The four cells here are one correlated finding on two nested windows and two readers, not four votes.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Late-week follow news gate, 2023-2025: following a sub-threshold move on confirmation, PFT headlines standing in on timestampless seasons against the served leader-median late-week follow, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 29 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -2.632 to -0.749, P+ 0.0000.",
+      "effect": -2.002503,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -3.333436,
+        -0.753769
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and also follows smaller book moves when the injury news backs them. Over 799 graded games it changed accuracy by -2.00 points.",
+      "probability_positive": 0.00055,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.106257,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f2p_2024": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2024: following a sub-threshold move on confirmation, PFT headlines standing in on timestampless seasons against the served leader-median late-week follow, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 14 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -2.632 to -2.632, P+ 0.0000.",
+      "effect": -2.631579,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -5.703422,
+        0.363636
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and also follows smaller book moves when the injury news backs them. Over 266 graded games it changed accuracy by -2.63 points.",
+      "probability_positive": 0.039275,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.106257,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f2p_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2025: following a sub-threshold move on confirmation, PFT headlines standing in on timestampless seasons against the served leader-median late-week follow, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 6 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -0.749 to -0.749, P+ 0.0000.",
+      "effect": -0.749064,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -2.238806,
+        0.749064
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and also follows smaller book moves when the injury news backs them. Over 267 graded games it changed accuracy by -0.75 points.",
+      "probability_positive": 0.15165,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.106257,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f2p_vs_tuesday_2023_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2023-2025: following a sub-threshold move on confirmation, PFT headlines standing in on timestampless seasons against the nine-member Tuesday card, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 272 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -3.759 to -1.504, P+ 0.0000.",
+      "effect": -2.753442,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -6.327543,
+        0.876123
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and also follows smaller book moves when the injury news backs them. Over 799 graded games it changed accuracy by -2.75 points.",
+      "probability_positive": 0.06675,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.106257,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f3_2023": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2023: keeping the Tuesday pick when injury news contradicts the leaders' move against the served leader-median late-week follow, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 33 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -0.376 to -0.376, P+ 0.0000.",
+      "effect": -0.37594,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -5.283019,
+        4.396008
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and keeps the Tuesday pick when the injury news points the other way. Over 266 graded games it changed accuracy by -0.38 points.",
+      "probability_positive": 0.43955,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.034573,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f3_2023_2024": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2023-2024: keeping the Tuesday pick when injury news contradicts the leaders' move against the served leader-median late-week follow, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 55 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -0.376 to +2.256, P+ 0.7517.",
+      "effect": 0.93985,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -2.218115,
+        3.962264
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and keeps the Tuesday pick when the injury news points the other way. Over 532 graded games it changed accuracy by +0.94 points.",
+      "probability_positive": 0.729275,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.034573,
+      "sample_blocks": 36,
+      "sample_games": 532,
+      "seasons": [
+        2023,
+        2024
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f3_2023_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2023-2025: keeping the Tuesday pick when injury news contradicts the leaders' move against the served leader-median late-week follow, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 55 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -0.376 to +2.256, P+ 0.7221.",
+      "effect": 0.625782,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -1.397713,
+        2.709443
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and keeps the Tuesday pick when the injury news points the other way. Over 799 graded games it changed accuracy by +0.63 points.",
+      "probability_positive": 0.728475,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.034573,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f3_2024": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2024: keeping the Tuesday pick when injury news contradicts the leaders' move against the served leader-median late-week follow, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 22 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +2.256 to +2.256, P+ 1.0000.",
+      "effect": 2.255639,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -1.526718,
+        5.791506
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and keeps the Tuesday pick when the injury news points the other way. Over 266 graded games it changed accuracy by +2.26 points.",
+      "probability_positive": 0.880875,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.034573,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f3_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2025: keeping the Tuesday pick when injury news contradicts the leaders' move against the served leader-median late-week follow, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 0 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +0.000 to +0.000, P+ 0.5000.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and keeps the Tuesday pick when the injury news points the other way. Over 267 graded games it changed accuracy by +0.00 points.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.034573,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f3_vs_tuesday_2023_2024": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2023-2024: keeping the Tuesday pick when injury news contradicts the leaders' move against the nine-member Tuesday card, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 105 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -1.504 to +3.383, P+ 0.7517.",
+      "effect": 0.93985,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -2.656673,
+        4.725898
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and keeps the Tuesday pick when the injury news points the other way. Over 532 graded games it changed accuracy by +0.94 points.",
+      "probability_positive": 0.688325,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.034573,
+      "sample_blocks": 36,
+      "sample_games": 532,
+      "seasons": [
+        2023,
+        2024
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f3_vs_tuesday_2023_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2023-2025: keeping the Tuesday pick when injury news contradicts the leaders' move against the nine-member Tuesday card, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 188 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -2.247 to +3.383, P+ 0.3749.",
+      "effect": -0.125156,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -3.20197,
+        3.007519
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and keeps the Tuesday pick when the injury news points the other way. Over 799 graded games it changed accuracy by -0.13 points.",
+      "probability_positive": 0.469,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.034573,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f3p_2023": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2023: vetoing a contradicted move, PFT headlines standing in where official rows carry no timestamp against the served leader-median late-week follow, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 33 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -0.376 to -0.376, P+ 0.0000.",
+      "effect": -0.37594,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -5.283019,
+        4.396008
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and keeps the Tuesday pick when the injury news points the other way. Over 266 graded games it changed accuracy by -0.38 points.",
+      "probability_positive": 0.43955,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.034573,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f3p_2023_2024": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2023-2024: vetoing a contradicted move, PFT headlines standing in where official rows carry no timestamp against the served leader-median late-week follow, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 55 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -0.376 to +2.256, P+ 0.7517.",
+      "effect": 0.93985,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -2.218115,
+        3.962264
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and keeps the Tuesday pick when the injury news points the other way. Over 532 graded games it changed accuracy by +0.94 points.",
+      "probability_positive": 0.729275,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.034573,
+      "sample_blocks": 36,
+      "sample_games": 532,
+      "seasons": [
+        2023,
+        2024
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f3p_2023_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2023-2025: vetoing a contradicted move, PFT headlines standing in where official rows carry no timestamp against the served leader-median late-week follow, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 79 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -0.376 to +2.256, P+ 0.9645.",
+      "effect": 1.126408,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -1.242275,
+        3.46117
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and keeps the Tuesday pick when the injury news points the other way. Over 799 graded games it changed accuracy by +1.13 points.",
+      "probability_positive": 0.8304,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.034573,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f3p_2024": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2024: vetoing a contradicted move, PFT headlines standing in where official rows carry no timestamp against the served leader-median late-week follow, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 22 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +2.256 to +2.256, P+ 1.0000.",
+      "effect": 2.255639,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -1.526718,
+        5.791506
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and keeps the Tuesday pick when the injury news points the other way. Over 266 graded games it changed accuracy by +2.26 points.",
+      "probability_positive": 0.880875,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.034573,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f3p_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2025: vetoing a contradicted move, PFT headlines standing in where official rows carry no timestamp against the served leader-median late-week follow, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 24 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +1.498 to +1.498, P+ 1.0000.",
+      "effect": 1.498127,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -1.872659,
+        4.868914
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and keeps the Tuesday pick when the injury news points the other way. Over 267 graded games it changed accuracy by +1.50 points.",
+      "probability_positive": 0.806575,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.034573,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f3p_vs_tuesday_2023_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2023-2025: vetoing a contradicted move, PFT headlines standing in where official rows carry no timestamp against the nine-member Tuesday card, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 164 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -1.504 to +3.383, P+ 0.7037.",
+      "effect": 0.375469,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -2.70936,
+        3.544416
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and keeps the Tuesday pick when the injury news points the other way. Over 799 graded games it changed accuracy by +0.38 points.",
+      "probability_positive": 0.594475,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.034573,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f3w_2023": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2023: vetoing a contradicted move, with lane W's unrestricted news delta as the reader against the served leader-median late-week follow, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 34 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +1.504 to +1.504, P+ 1.0000.",
+      "effect": 1.503759,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -3.053435,
+        5.818182
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and keeps the Tuesday pick when the injury news points the other way. Over 266 graded games it changed accuracy by +1.50 points.",
+      "probability_positive": 0.74445,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.058392,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f3w_2023_2024": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2023-2024: vetoing a contradicted move, with lane W's unrestricted news delta as the reader against the served leader-median late-week follow, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 64 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +1.504 to +3.759, P+ 1.0000.",
+      "effect": 2.631579,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -0.191939,
+        5.484461
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and keeps the Tuesday pick when the injury news points the other way. Over 532 graded games it changed accuracy by +2.63 points.",
+      "probability_positive": 0.963575,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.058392,
+      "sample_blocks": 36,
+      "sample_games": 532,
+      "seasons": [
+        2023,
+        2024
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f3w_2023_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2023-2025: vetoing a contradicted move, with lane W's unrestricted news delta as the reader against the served leader-median late-week follow, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 64 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +0.000 to +3.759, P+ 0.9817.",
+      "effect": 1.75219,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -0.126904,
+        3.740648
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and keeps the Tuesday pick when the injury news points the other way. Over 799 graded games it changed accuracy by +1.75 points.",
+      "probability_positive": 0.9639,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.058392,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f3w_2024": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2024: vetoing a contradicted move, with lane W's unrestricted news delta as the reader against the served leader-median late-week follow, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 30 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +3.759 to +3.759, P+ 1.0000.",
+      "effect": 3.759398,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        0.37594,
+        7.434944
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and keeps the Tuesday pick when the injury news points the other way. Over 266 graded games it changed accuracy by +3.76 points.",
+      "probability_positive": 0.9835,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.058392,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f3w_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2025: vetoing a contradicted move, with lane W's unrestricted news delta as the reader against the served leader-median late-week follow, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 0 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +0.000 to +0.000, P+ 0.5000.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and keeps the Tuesday pick when the injury news points the other way. Over 267 graded games it changed accuracy by +0.00 points.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.058392,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_f3w_vs_tuesday_2023_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2023-2025: vetoing a contradicted move, with lane W's unrestricted news delta as the reader against the nine-member Tuesday card, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 179 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -2.247 to +4.887, P+ 0.7393.",
+      "effect": 1.001252,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        -1.893999,
+        3.894472
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and keeps the Tuesday pick when the injury news points the other way. Over 799 graded games it changed accuracy by +1.00 points.",
+      "probability_positive": 0.75155,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.058392,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_pc_fireset_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2023-2025: perfect foresight on the games the served follow rule fires on against the served leader-median late-week follow, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 237 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +24.812 to +33.459, P+ 1.0000.",
+      "effect": 29.036295,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        26.092385,
+        32.010048
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and measures the best any such rule could possibly do. Over 799 graded games it changed accuracy by +29.04 points.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.069519,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_pc_gateable_2023_2024": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2023-2024: perfect foresight on the news-readable fires a gate can touch against the served leader-median late-week follow, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 157 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +24.812 to +33.459, P+ 1.0000.",
+      "effect": 29.135338,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        25.333333,
+        33.081285
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and measures the best any such rule could possibly do. Over 532 graded games it changed accuracy by +29.14 points.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.069519,
+      "sample_blocks": 36,
+      "sample_games": 532,
+      "seasons": [
+        2023,
+        2024
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_pc_gateable_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2023-2025: perfect foresight on the news-readable fires a gate can touch against the served leader-median late-week follow, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 157 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +0.000 to +33.459, P+ 0.9817.",
+      "effect": 19.399249,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        14.912144,
+        23.945409
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and measures the best any such rule could possibly do. Over 799 graded games it changed accuracy by +19.40 points.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.069519,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    },
+    "follow_news_gate_pc_reachable_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. Split-half reliability of the firing flag is non-zero, and the positive controls in this same battery detected +19 to +45 accuracy points on the same population, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Late-week follow news gate, 2023-2025: perfect foresight on every game the follow machinery reaches against the served leader-median late-week follow, on the 2023-2025 hourly odds archive (816 games, 799 opener-graded, 54 weeks), graded at margin_vs_open. 366 pick changes vs the baseline. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read +41.729 to +47.566, P+ 1.0000.",
+      "effect": 44.680851,
+      "effect_units": "accuracy_points",
+      "family": "follow_news_gate",
+      "interval": [
+        41.593995,
+        47.777778
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game intraday archive and the leader-median arm with sharp_weighted_follow_*, and the news construction with injury_news_vs_level_* and injury_signal_on_refresh_card_*. Never pool additively with those or with each other. Mined battery, no multiplicity correction claimed. Season 2025's official injury rows carry no readable timestamp, so official-reader arms are a no-op on that third of the window.",
+      "plain_summary": "On games where the three leading sportsbooks moved the line at least half a point after Wednesday, this checks whether an injury report filed since Tuesday points the same way, and measures the best any such rule could possibly do. Over 799 graded games it changed accuracy by +44.68 points.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.069519,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/follow_news_gate/20260910T002019Z/metadata.json (docs/follow_news_gate.md)",
+      "standard_error": null
+    }
+  }
+}

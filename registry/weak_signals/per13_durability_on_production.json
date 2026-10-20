@@ -1,0 +1,33 @@
+{
+  "family": "per13_durability_on_production",
+  "signals": {
+    "per13_durability_on_production_ats": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Close-graded, so a terminal classification is reserved for an opener-graded look per the binding grade-at-the-opener rule, and the predeclaration froze unresolved_below_power regardless of sign. Neither closing ground applies in any case: the sign is POSITIVE (P+ 0.872, 93rd percentile of its own 200-draw within-week permutation null which centres at -0.190), so wrong_sign_resolved is out; the underlying trait's split-half reliability is 0.793 (PER-13 Stage 1 sec 3), not zero; and the positive control DETECTED its planted effect (+50.134 pts, P+ 1.000, 95% [+46.428, +53.652]), so bounded_by_control is out.",
+      "closing_ground": null,
+      "description": "PER-13 Stage 2: production weak_stack with its NINE availability-derived injury columns REPLACED (not added to) by versions rebuilt through production's own aggregation code on a durability-augmented P(plays) -- production's severity updated by an odds-ratio offset that is a walk-forward-fitted linear form in Stage 1's six per-player durability columns. Close-graded rotation window [2011, 2013], forced-pick ATS accuracy, ridge alpha 10, target market_residual, both arms fit with the full production profile. Paired candidate-minus-baseline delta +0.536 accuracy points (candidate 50.402%, baseline 49.866%), week-blocked 95% [-0.264, +1.363], season-blocked [0.000, +1.600] P+ 0.672. The durability columns have no data support before 2013, so 2011 and 2012 are bit-identical arms by construction and the whole effect sits in 2013 (+1.600 pts there); picks differ on 10 of 746 games, candidate right on 7 of those 10.",
+      "effect": 0.5361930294906166,
+      "effect_units": "accuracy_points",
+      "family": "per13_durability_on_production",
+      "interval": [
+        -0.26390487284567443,
+        1.3627731363673892
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/per13_durability_stage2_on_production.md before any ATS number. Do NOT pool with per13_durability_prior_stage1: that entry is a Brier improvement on 52,382 player-games and this one is an accuracy-point delta on 746 games (AGENTS.md commensurability rule). The zero-offset rebuild reproduces production's nine columns bit-identically on all 4,902 rows, so the candidate differs from production by the durability transport and nothing else.",
+      "plain_summary": "The model already docks a team for the players on its injury report. This version also remembers whether that particular player usually suits up with a Questionable tag or usually sits. Over the three seasons it was allowed to look at, it changed ten picks and got seven of them right where the current model got three.",
+      "probability_positive": 0.872,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.793,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/per13_durability_on_production/20260901T195302Z/results.json",
+      "standard_error": null
+    }
+  }
+}

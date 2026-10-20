@@ -1,0 +1,33 @@
+{
+  "family": "lead85_weekly_weekly_reward",
+  "signals": {
+    "lead85_unit2_weekly_reward_2023_2025": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground established",
+      "closing_ground": null,
+      "description": "Uncertainty versus served weekly Best Pick",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "lead85_weekly_weekly_reward",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Both versions chose the same Best Pick in all 54 weeks: 30 wins, 22 losses and 2 ties. There were no changed picks to compare.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead85_unit2.md",
+      "standard_error": null
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "family": "cfb_portal_qb_early_on_benchmark",
+  "signals": {
+    "cfb_portal_qb_early_on_benchmark": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CFB portal-QB early starts (LEAD-49): signed column fading a team starting an early-tenure (first three games) transfer-portal QB, on the frozen XLG-03 benchmark arm",
+      "effect": -0.0025111607142857145,
+      "effect_units": "accuracy_points",
+      "family": "cfb_portal_qb_early_on_benchmark",
+      "interval": [
+        -0.006873982038111635,
+        0.0018824070099112747
+      ],
+      "league": "cfb",
+      "notes": "Signed column cfb_lead49_portal_qb_early_signed: +1 when the AWAY team's pregame-safe presumed starter (leading passer of that team's most recently completed EARLIER game, point-in-time lookup) is one of that team's matched transfer-portal QB arrivals this season AND this is within that team's first three games of the season, -1 mirror, 0 otherwise/both. Population restricted to 2021-2025 (CFBD portal data starts 2021; single era, no split). Portal identity match (name+school+season, disclosed per CFBD_PORTAL_IDENTITY_CONTRACT): 807 portal QB rows, 39 unresolved destinations, 35 ambiguous roster-name keys excluded (never guessed), 658 matched (81.5%), covering 490 distinct team-seasons. Starter-agreement diagnostic (previous known starter vs. same game's own post-hoc starter, general QB continuity, not portal-specific): 81.7% (6772 comparable games). 163 flagged of 3584 scored games / 77 weeks (95 away-side, 106 home-side, 19 games where both sides independently qualified and cancel to 0 per the signed convention). STRUCTURAL DISCLOSURE: because a portal transfer cannot have started an earlier game for their new team, the pregame-safe flag can never fire on a team's first game of the season for its incoming portal QB -- only games 2-3 of the nominal 'first three'; the coverage numbers above reflect that narrower, leak-safe population, not the full three-game window. Positive control +48.493 pts P+ 1.000. Week-blocked P+ 0.098, season-blocked P+ 0.11 -- leans strongly AGAINST the predicted FADE direction (i.e. holding the market side beats fading it here) but the week-blocked interval [-0.00687,+0.00188] pts still contains a positive tail, so this is NOT wrong_sign_resolved (the whole interval must sit below zero); stays unresolved_below_power. Null observed at the 4th percentile (mean +0.107 pts). Never pooled with XLG-06's recruiting-rating entries (no recruiting rating or star count is read anywhere in this construct, only portal transfer records and play-by-play passer identity). Close-graded CFB; no NFL window spent or earned.",
+      "plain_summary": "Fading a CFB team starting an early-tenure transfer-portal quarterback leans AGAINST the idea in 2021-2025 (the only era portal data covers), but the band still touches zero.",
+      "probability_positive": 0.098,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 3584,
+      "seasons": [
+        2021,
+        2025
+      ],
+      "source": "artifacts/cfb_lead_screens_wave2/portal_qb_early/20260905T174737Z/results.json",
+      "standard_error": null
+    }
+  }
+}

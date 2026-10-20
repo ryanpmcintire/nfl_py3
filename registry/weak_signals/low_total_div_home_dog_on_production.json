@@ -1,0 +1,33 @@
+{
+  "family": "low_total_div_home_dog_on_production",
+  "signals": {
+    "low_total_div_home_dog_on_production": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval [-0.6608,+1.7544] crosses zero -- EXPECTED at this window size per AGENTS.md, not a rejection, despite P+ 0.68955 favouring the candidate. wrong_sign_resolved unavailable. no_split_half_reliability inadmissible: div_game is a schedule-published fact and the opener total/spread are observed point-in-time market quotes.",
+      "closing_ground": null,
+      "description": "LEAD-42 low-total divisional home dog: take the HOME DOG in divisional games with Tuesday-opener total <=42, stacked on PRODUCTION weak_stack, opener-graded",
+      "effect": 0.4386,
+      "effect_units": "accuracy_points",
+      "family": "low_total_div_home_dog_on_production",
+      "interval": [
+        -0.6608,
+        1.7544
+      ],
+      "league": "nfl",
+      "notes": "Positive control read +44.298 accuracy points, week/season-blocked P+ 1.000 both. Same 1,526/1,537 tue_open opener-total coverage as LEAD-41 (both read the identical opener store).",
+      "plain_summary": "Backing the home underdog in a low-scoring division game leans positive so far (about 69% likely to help), but the range still crosses zero -- not proven, not ruled out.",
+      "probability_positive": 0.68955,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/schedule_flag_on_production/low_total_div_dog/20260905T032318Z/results.json",
+      "standard_error": null
+    }
+  }
+}

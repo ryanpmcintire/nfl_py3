@@ -1,0 +1,117 @@
+{
+  "family": "overlay_leave_one_out_2026_08_26",
+  "signals": {
+    "overlay_loo_drop_coach_fade": {
+      "category": "offfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked and season-blocked intervals both cross zero (season: [-3.38, +0.75], P+ 0.2948); per AGENTS.md an interval crossing zero is never grounds to close, only to record unresolved.",
+      "closing_ground": null,
+      "description": "Leave-one-out: drop coach_fade from the played four-member overlay policy (coach_fade+division_revenge_tilt+player_arrests_back_side_policy+spread_gap_zone_fade). Paired per-game accuracy delta (variant minus incumbent) on the predeclared 2023-2025 opener-graded holdout, 799 games, 44 changed.",
+      "effect": -0.7509386733416771,
+      "effect_units": "accuracy_points",
+      "family": "overlay_leave_one_out_2026_08_26",
+      "interval": [
+        -2.4753,
+        0.8783
+      ],
+      "league": "nfl",
+      "notes": "Selection half (2020-2022) delta -0.142pts (P+ 0.394 week). Full-archive bonus delta -0.4657pts (P+ 0.1997 week). Season-blocked interval: [-3.3835, +0.7491], P+ 0.2948. Predeclared design: docs/overlay_leave_one_out.md, motivated by reliability_map result on gap_division_revenge (unrelated member, recorded separately).\n[2026-09-01T20:03:05.699745+00:00] reliability set: None -> 0.9997 95% [0.9990, 1.0000]. Method: team-season odd/even-week split-half of the FLAG'S EXPOSURE RATE (share of the team-season's games carrying the flag), Spearman-Brown corrected, block bootstrap over team-seasons (nfl_ats.cfb_qb_dependence.split_half_reliability, seed 20260901, 4000 draws). This is flag-exposure reliability, NOT the trait reliability that NO_SPLIT_HALF_RELIABILITY_MAX was calibrated against: a low value here is NOT an admissible no_split_half_reliability ground, because a schedule quirk with no stable team structure can still move covers. Measured from: artifacts/reliability_sweep/modeling_overlay/20260901T200042Z/results.json. Reason: EXPOSURE reliability of year-one head-coach flag (this season's coach differs from the prior season's primary coach) -- categorical, no continuous parent, the parent quantity this cell is built on (src/nfl_ats/coach_fade_overlay.py:150-194 (year_one_by_game). scripts/overlay_leave_one_out.py:86-92 (VARIANTS) -- each cell drops exactly one named member from PLAYED_UNION, so the cell's parent is that member's own trigger quantity. Read 2026-09-01.). Measured on the cell's own seasons 2023-2025. This is a MEASUREMENT only: it closes nothing, reclassifies nothing, and names no closing_ground. EXPOSURE reliability is NOT the trait reliability NO_SPLIT_HALF_RELIABILITY_MAX was calibrated against and is NOT an admissible no_split_half_reliability ground.. Reliability fields only; effect/interval/classification/closing_ground untouched, and this measurement does not by itself reclassify the entry.",
+      "plain_summary": "Model setting: coach-experience fade dropped from the four-part policy.",
+      "probability_positive": 0.1672,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.999668,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/overlay_leave_one_out/20260826T142312Z/result.json (scripts/overlay_leave_one_out.py, docs/overlay_leave_one_out.md)",
+      "standard_error": null
+    },
+    "overlay_loo_drop_division_revenge_tilt": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked and season-blocked intervals both cross zero (season: [-1.87, +2.63], P+ 0.5970); an interval crossing zero is never grounds to close (AGENTS.md), and the selection-half read for this same arm was negative (-0.568), so this is not a resolved wrong sign either.",
+      "closing_ground": null,
+      "description": "Leave-one-out: drop division_revenge_tilt from the played four-member overlay policy. Paired per-game accuracy delta (variant minus incumbent) on the predeclared 2023-2025 opener-graded holdout, 799 games, 61 changed.",
+      "effect": 0.1251564455569462,
+      "effect_units": "accuracy_points",
+      "family": "overlay_leave_one_out_2026_08_26",
+      "interval": [
+        -1.7699,
+        1.99
+      ],
+      "league": "nfl",
+      "notes": "Motivated by this session's reliability_map result: gap_division_revenge split-half reliability -0.136 (Pearson r -0.0635, 95% CI [-0.1384,+0.0127], P+ 0.0505, n=576 team-seasons) -- that measurement closes NOTHING (interval crosses zero) but is a related, not identical, construct (feature reliability vs. overlay pick-flip effect). Selection half (2020-2022) delta -0.568pts (P+ 0.231 week). Full-archive bonus delta -0.1996pts (P+ 0.3626 week). Season-blocked interval: [-1.8727, +2.6316], P+ 0.5970. This is the only one of four leave-one-out arms whose primary read favours dropping.",
+      "plain_summary": "Model setting: division-rematch tilt dropped from the four-part policy.",
+      "probability_positive": 0.5288,
+      "recorded_at": "2026-08-26",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/overlay_leave_one_out/20260826T142312Z/result.json (scripts/overlay_leave_one_out.py, docs/overlay_leave_one_out.md)",
+      "standard_error": null
+    },
+    "overlay_loo_drop_player_arrests_back_side_policy": {
+      "category": "offfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval crosses zero [-1.372,+0.123], P+ 0.0267. Season-blocked interval's upper bound touches 0.0000 exactly but does not clear it (only 3 season blocks in the holdout, a coarse resample), so wrong_sign_resolved is not available; per AGENTS.md this remains unresolved_below_power, not closed.",
+      "closing_ground": null,
+      "description": "Leave-one-out: drop player_arrests_back_side_policy from the played four-member overlay policy. Paired per-game accuracy delta (variant minus incumbent) on the predeclared 2023-2025 opener-graded holdout, 799 games, 9 changed.",
+      "effect": -0.6257822277847309,
+      "effect_units": "accuracy_points",
+      "family": "overlay_leave_one_out_2026_08_26",
+      "interval": [
+        -1.3716,
+        0.1235
+      ],
+      "league": "nfl",
+      "notes": "Selection half (2020-2022) delta 0.000pts (0 net change on 8 flipped games, P+ 0.448 week). Full-archive bonus delta -0.3327pts (P+ 0.0993 week). Season-blocked interval: [-1.5038, 0.0000], P+ 0.0000 -- only 3 season blocks in the holdout, so this is a coarse resample, not a resolved result.",
+      "plain_summary": "Model setting: player-arrests flip dropped from the four-part policy.",
+      "probability_positive": 0.0267,
+      "recorded_at": "2026-08-26",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/overlay_leave_one_out/20260826T142312Z/result.json (scripts/overlay_leave_one_out.py, docs/overlay_leave_one_out.md)",
+      "standard_error": null
+    },
+    "overlay_loo_drop_spread_gap_zone_fade": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Exact-zero point estimate, both blockings' intervals wide and crossing zero (season: [-3.01,+3.01], P+ 0.3684); no resolved sign, no split-half reliability measured for this arm, no positive control run.",
+      "closing_ground": null,
+      "description": "Leave-one-out: drop spread_gap_zone_fade from the played four-member overlay policy. Paired per-game accuracy delta (variant minus incumbent) on the predeclared 2023-2025 opener-graded holdout, 799 games, 70 changed.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "overlay_leave_one_out_2026_08_26",
+      "interval": [
+        -2.4422,
+        2.2444
+      ],
+      "league": "nfl",
+      "notes": "Selection half (2020-2022) delta -1.136pts (P+ 0.140 week). Full-archive bonus delta -0.5323pts (P+ 0.2524 week). Season-blocked interval: [-3.0075,+3.0075], P+ 0.3684.\n[2026-09-01T20:03:15.085837+00:00] reliability set: None -> 0.6459 95% [0.4851, 0.7634]. Method: team-season odd/even-week split-half of the underlying continuous trait, Spearman-Brown corrected, block bootstrap over team-seasons (nfl_ats.cfb_qb_dependence.split_half_reliability, seed 20260901, 4000 draws). Measured from: artifacts/reliability_sweep/modeling_overlay/20260901T200042Z/results.json. Reason: Trait reliability of market spread magnitude (|spread_line|), the overlay's only trigger quantity, the parent quantity this cell is built on (src/nfl_ats/spread_gap_zone_fade_overlay.py:126-127,195-204 -- the overlay's only trigger is SPREAD_GAP_LOWER_BOUND <= abs(spread_line) <= SPREAD_GAP_UPPER_BOUND, so the parent quantity is |spread_line|. Read 2026-09-01. scripts/overlay_leave_one_out.py:86-92 (VARIANTS) -- each cell drops exactly one named member from PLAYED_UNION, so the cell's parent is that member's own trigger quantity. Read 2026-09-01.). Measured on the cell's own seasons 2023-2025. This is a MEASUREMENT only: it closes nothing, reclassifies nothing, and names no closing_ground.. Reliability fields only; effect/interval/classification/closing_ground untouched, and this measurement does not by itself reclassify the entry.",
+      "plain_summary": "Model setting: spread-gap fade dropped from the four-part policy.",
+      "probability_positive": 0.4924,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.645869,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/overlay_leave_one_out/20260826T142312Z/result.json (scripts/overlay_leave_one_out.py, docs/overlay_leave_one_out.md)",
+      "standard_error": null
+    }
+  }
+}

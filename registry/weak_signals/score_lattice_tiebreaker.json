@@ -1,0 +1,117 @@
+{
+  "family": "score_lattice_tiebreaker",
+  "signals": {
+    "score_lattice_closest_total": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Resolvably POSITIVE (whole interval above zero) on 3,829 paired games; no closing ground applies and none is claimed. 10.547 total points of MAE against the shipped 10.810. The lattice's MODAL total is the worse statistic (-0.420 [-0.575, -0.271]) exactly as predeclared, because the mode does not minimise absolute error and the median does -- both are recorded here so the flattering one cannot be quoted alone.",
+      "closing_ground": null,
+      "description": "MOD-05 correct-score lattice's MEDIAN total vs the shipped tiebreaker's weighted-median total: paired absolute error against the realised total, walk-forward 2012-2025, identical neighborhood and centre. Positive favours the lattice (total points of MAE saved)",
+      "effect": 0.262732,
+      "effect_units": "mae_improvement",
+      "family": "score_lattice_tiebreaker",
+      "interval": [
+        0.162107,
+        0.365805
+      ],
+      "league": "nfl",
+      "notes": "Declared as metric (c) in docs/score_lattice.md section 1.4 before the run; disclosed plainly that section 1.6 named only three registry rows and this is a fourth, added so a resolved POSITIVE result is not the one left unrecorded. Not wired into production: the pool's tiebreak metric is not recorded anywhere in this repository, and this session's frozen decision rule hung on the exact-score metric only.",
+      "plain_summary": "For the closest-total version of the tiebreak, sliding old games onto this game's exact line gives a total that lands about a quarter of a point closer, every week, than the current method. Same idea that hurt the exact-score guess helps here.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-01",
+      "reliability": null,
+      "sample_blocks": 299,
+      "sample_games": 3829,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/score_lattice/20260901T192552Z/summary.json; docs/score_lattice.md",
+      "standard_error": null
+    },
+    "score_lattice_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Resolvably POSITIVE (whole interval above zero), so no closing ground applies and none is claimed; recorded as category 3 because the enum has no 'resolved positive' state. The gain is attributable, and the attribution is disclosed rather than buried: the comparator assigns zero weight to the realised final in 55.1% of games, and on the 44.9% where it is alive the lattice is resolvably WORSE (-1.946 [-2.086, -1.807], probability_positive 0.0000). The honest reading is that a mode list is not a probability distribution, not that the lattice is sharper.",
+      "closing_ground": null,
+      "description": "MOD-05 correct-score lattice vs the shipped tiebreaker mode list: paired log loss on the realised exact final, walk-forward 2012-2025, both arms smoothed identically by one pseudo-observation spread over the same data-derived feasible support. Positive favours the lattice",
+      "effect": 0.560004,
+      "effect_units": "log_loss_improvement",
+      "family": "score_lattice_tiebreaker",
+      "interval": [
+        0.4406,
+        0.682614
+      ],
+      "league": "nfl",
+      "notes": "Predeclared docs/score_lattice.md section 1.4 including the restricted-support diagnostic that produced the attribution above. Smoothing scheme is one pseudo-observation over |S|, applied by the same formula to both arms.",
+      "plain_summary": "The lattice can put a number on any final score; the shipped list of common finals can only name three and says nothing about the rest. Scored as a probability the lattice wins easily, but only because its rival is silent more than half the time -- where both speak, the lattice is the worse of the two.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-01",
+      "reliability": null,
+      "sample_blocks": 299,
+      "sample_games": 3829,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/score_lattice/20260901T192552Z/summary.json; docs/score_lattice.md",
+      "standard_error": null
+    },
+    "score_lattice_top1_exact": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval contains zero, which is never grounds to reject. The positive control (oracle_total arm, same instrument, same 3,829 games) moved top-1 by +6.35 points [+5.55, +7.12], so the instrument is PROVEN able to detect a 6-point effect but was never proven able to detect a 0.2-point one -- bounded_by_control is therefore unavailable and this is category 3.",
+      "closing_ground": null,
+      "description": "MOD-05 correct-score lattice vs the shipped tiebreaker mode list: paired per-game top-1 exact-final hit rate, walk-forward 2012-2025, both arms sharing the identical kernel-weighted neighborhood and centre; candidate recentres each neighborhood game by its (margin, total) market residual and interpolates onto the integer score lattice",
+      "effect": -0.208932,
+      "effect_units": "accuracy_points",
+      "family": "score_lattice_tiebreaker",
+      "interval": [
+        -0.495459,
+        0.077262
+      ],
+      "league": "nfl",
+      "notes": "Predeclared docs/score_lattice.md section 1 before any outcome number. Decision rule was: switch the tiebreaker's exact-score section to the lattice if probability_positive > 0.5. It is 0.0615, so tiebreaker.py was NOT changed.",
+      "plain_summary": "Guessing the exact final score by shifting old games onto this game's line, instead of just counting the most common finals in similar games, hits the exact score 0.42% of the time against 0.63% -- a fifth of a point worse, with too much noise to call it settled.",
+      "probability_positive": 0.0615,
+      "recorded_at": "2026-09-01",
+      "reliability": null,
+      "sample_blocks": 299,
+      "sample_games": 3829,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/score_lattice/20260901T192552Z/summary.json; docs/score_lattice.md",
+      "standard_error": null
+    },
+    "score_lattice_top3_exact": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "The whole week-blocked 95% interval [-1.636, -0.689] sits below zero on 3,829 paired games across 299 week blocks, so the sign is RESOLVED wrong -- the admissible wrong_sign_resolved ground, not an interval-contains-zero rejection. Mechanism refuted as stated: recentring by the market residual smears exactly the score lumpiness the top-3 product lives on, which docs/score_lattice.md section 1.2 predicted in writing before the run. Confirmed independently by the declared secondary arm: without recentring the lattice reproduces the mode list cell for cell (delta exactly 0.000), so the entire loss is the recentring and none of it is the smoothing.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "MOD-05 correct-score lattice vs the shipped tiebreaker mode list: paired per-game any-of-top-3 exact-final hit rate, walk-forward 2012-2025, identical neighborhood and centre in both arms",
+      "effect": -1.175242,
+      "effect_units": "accuracy_points",
+      "family": "score_lattice_tiebreaker",
+      "interval": [
+        -1.636014,
+        -0.688758
+      ],
+      "league": "nfl",
+      "notes": "Predeclared docs/score_lattice.md section 1. Refutes the top-3 correct-score product of the residual-recentred lattice, NOT the lattice's other products: on the same run its median total beat the shipped closest-total answer by 0.263 total points [+0.162, +0.366] and it supplies P(push), which a mode list cannot produce at all.",
+      "plain_summary": "Listing three likely exact final scores works better the plain way -- count the most common finals among similar games -- than by sliding old scores onto this game's line first. The sliding blurs the scores football actually produces, and it costs about 1.2 hits per 100 games.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-01",
+      "reliability": null,
+      "sample_blocks": 299,
+      "sample_games": 3829,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/score_lattice/20260901T192552Z/summary.json; docs/score_lattice.md",
+      "standard_error": null
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "family": "close_game_luck_turnover_stacked_on_production",
+  "signals": {
+    "turnover_under_rebound_stacked_on_production": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval [-2.1697,+0.4617] pts crosses zero (probability_positive 0.0867), so the whole-interval-below-zero test for a resolved wrong sign fails on this blocking even though the season-blocked secondary [-1.4839,-0.1447] pts (probability_positive 0.0050) is entirely negative. AGENTS.md requires BOTH blockings' whole interval on the wrong side of zero before wrong_sign_resolved is admissible; that is not met here, so this stays unresolved_below_power and the challenger registration is NOT declined on this reading.",
+      "closing_ground": null,
+      "description": "turnover_luck_rebound_tilt_overlay (bottom-quartile prior-season centered turnover differential rebound flip) stacked on top of the six-member ACTIVE_PROSPECTIVE overlay OR-union, scored against the frozen 2020-2025 opener archive (1,537 REG games, 1,503 scored). Marginal delta of adding the flip vs. that production-proxy stack.",
+      "effect": -0.8649,
+      "effect_units": "accuracy_points",
+      "family": "close_game_luck_turnover_stacked_on_production",
+      "interval": [
+        -2.1697,
+        0.4617
+      ],
+      "league": "nfl",
+      "notes": "Mined-seasons stacked-on-production read (scripts/turnover_luck_rebound_stacked_backtest.py), not a rotation-registry window spend. 'Production' here is the six already-registered ACTIVE_PROSPECTIVE overlays OR-combined on the bare opener baseline (the same proxy scripts/overlay_stack_backtest.py already uses), not a literal replay of publishing.py's four_overlay_composition-composed card. n_flipped vs bare baseline: 303 (101 net-new beyond what the six-member stack already flips, 202 already covered); 80 games left untouched as both-flagged. See docs/turnover_luck_rebound_tilt_overlay.md.",
+      "plain_summary": "Adding the turnover-luck rebound pick-flip on top of the overlays already being tracked looks like it costs about 0.9 accuracy points on the 2020-2025 opener archive, but one of the two ways we measured the range still allows for a small gain, so this reading alone doesn't settle the question -- the challenger keeps generating its own live 2026 evidence either way.",
+      "probability_positive": 0.08665,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.1322,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/turnover_luck_rebound_stacked/20260901T195051Z/results.json",
+      "standard_error": null
+    }
+  }
+}

@@ -92,3 +92,9 @@ off before v3 enrollment, in neither cohort); Thu 19:55, Fri 12:10 snapshots.
 **Decision:** no guard change. Treating "same-method" edits as the same source
 would let unverified model code mix versions, which the protocol forbids. Batch
 pinned-source edits after Week 18 or enroll v4 explicitly.
+**Measured 2026-10-20:** v3 (Week 6-18) failed the source guard from 10-19
+after 10-18 pinned edits (inactives_refresh_overlay.py d28754e2,
+transaction_flag_features.py 2d8d25df); it stays frozen with 13 Week 6
+captures. v4 enrolled 22:48 UTC: registry/studies/combined_vs_raw_2026_v4.json,
+artifacts/prospective/independent_validation_v4/, 179 games Weeks 7-18,
+default study now v4; first capture recorded 14 Week 7 games.

@@ -1,0 +1,61 @@
+{
+  "family": "reddit_attention_on_production",
+  "signals": {
+    "reddit_away_spike_value_on_production": {
+      "category": "attention",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground applies and none is claimed: the sign is positive, split-half reliability is 0.992 (not zero), and the positive control fired at +50.13 accuracy points, so the instrument is proven able to see an effect of meaningful size and this arm is not bounded by it at the +0.27 point scale. This is a CLOSE-graded look, and per the binding grade-at-the-opener rule a close-graded look settles no play/no-play or promotion decision regardless of sign, so the classification stays unresolved_below_power. Report probability_positive 0.614 as the continuous evidence.",
+      "closing_ground": null,
+      "description": "Away team Arctic Shift subreddit post+comment volume_z >= 2 (Tuesday-ending 7-day window, trailing baseline reset per (team, season)) added as ONE feature column on top of the PRODUCTION chain (weak_stack, 90 columns, market_residual, ridge alpha 10.0), vs the same production chain unmodified. Paired forced-pick accuracy delta, pick_correct against home_cover_probability >= 0.5, close-graded on the rotation-assigned window [2011, 2013]. Predeclared docs/reddit_attention_on_production.md before any outcome number existed. NOT the bare-baseline cell reddit_away_spike_value: different comparator, different family.",
+      "effect": 0.2680965147453083,
+      "effect_units": "accuracy_points",
+      "family": "reddit_attention_on_production",
+      "interval": [
+        -1.0782399650324177,
+        1.593731598240858
+      ],
+      "league": "nfl",
+      "notes": "Rotation-ASSIGNED window [2011, 2013] (nfl-ats rotation assign, never hand-picked), --mode screen, 746 paired games over 51 weeks, 3 seasons. Baseline accuracy on this population 49.866 percent, candidate 50.134 percent. Season-blocked secondary 95 percent [-0.816, +1.200], P+ 0.605, reported beside the week-blocked primary and NEVER averaged with it: with only 3 season blocks its tightness is a block-count artifact, not a sharper answer. Within-week permutation null, 200 permutations on real (unleaked) features: centre +0.029 accuracy points, sd 0.693, 95 percent [-1.076, +1.478]; the observed +0.268 sits at the 64.0th percentile of that null, i.e. close to indistinguishable from it. Positive control run BEFORE the screen (this arm one new column replaced by the realized ats_margin): +50.134 accuracy points, week-blocked 95 percent [+46.428, +53.652], P+ 1.000, at the 100.0th percentile of its own null, so the full-profile ridge fit is demonstrably not blind. Home-pick rate 55.73 percent for this arm vs 53.65 percent for the baseline, the larger home tilt of the two arms, so read the point estimate with that in mind. Inside the window the column is non-missing on 633 of 768 REG games (82.42 percent) and fires on 85 of those (13.43 percent of covered rows, 11.07 percent of the window). CAVEAT ON RELIABILITY: 0.992 is the battery SUBREDDIT-SERIES split-half figure for window_volume and is plausibly dominated by the stability of fanbase size rather than by a game-level trait; it must NOT be read as a 0.992-reliable predictor. What it does do is rule out the no_split_half_reliability closing ground. NOT POOLABLE with family arctic_shift_battery: same underlying series, but a non-commensurable comparator (a bare market baseline scaled to the full slate vs a paired forced-pick accuracy delta on top of the full production chain), which the AGENTS.md commensurability rule forbids pooling. Two arms were measured on one window without a multiplicity correction; both were named in the predeclaration before scoring.",
+      "plain_summary": "When the away team fan forum is unusually busy in the week before kickoff, adding that one fact to the model we actually play moved its picks a small amount in the right direction on 746 games from 2011-2013, but not far enough to tell it apart from chance.",
+      "probability_positive": 0.614,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.9924192331348414,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "docs/reddit_attention_on_production.md, artifacts/reddit_attention_on_production/20260901T194738Z/results.json",
+      "standard_error": null
+    },
+    "reddit_home_comment_ratio_elevated_on_production": {
+      "category": "attention",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground applies and none is claimed: the sign is positive, split-half reliability is 0.992 (not zero), and the positive control fired at +50.13 accuracy points, so the instrument is proven able to see an effect of meaningful size. This is a CLOSE-graded look, and per the binding grade-at-the-opener rule a close-graded look settles no play/no-play or promotion decision regardless of sign, so the classification stays unresolved_below_power. Report probability_positive 0.979 as the continuous evidence.",
+      "closing_ground": null,
+      "description": "Home team Arctic Shift subreddit comment-to-post ratio_z >= 2 (Tuesday-ending 7-day window, trailing baseline reset per (team, season)) added as ONE feature column on top of the PRODUCTION chain (weak_stack, 90 columns, market_residual, ridge alpha 10.0), vs the same production chain unmodified. Paired forced-pick accuracy delta, pick_correct against home_cover_probability >= 0.5, close-graded on the rotation-assigned window [2011, 2013]. Predeclared docs/reddit_attention_on_production.md before any outcome number existed. NOT the bare-baseline cell reddit_home_comment_ratio_elevated: different comparator, different family.",
+      "effect": 1.0723860589812333,
+      "effect_units": "accuracy_points",
+      "family": "reddit_attention_on_production",
+      "interval": [
+        0.13314254733741399,
+        2.1248339973439574
+      ],
+      "league": "nfl",
+      "notes": "Rotation-ASSIGNED window [2011, 2013] (nfl-ats rotation assign, never hand-picked), --mode screen, 746 paired games over 51 weeks, 3 seasons. Baseline accuracy on this population 49.866 percent, candidate 50.938 percent. Season-blocked secondary 95 percent [+0.408, +1.600], P+ 1.000, reported beside the week-blocked primary and NEVER averaged with it: with only 3 season blocks its tightness is a block-count artifact, not a sharper answer. Within-week permutation null, 200 permutations on real (unleaked) features: centre +0.001 accuracy points, sd 0.460, 95 percent [-0.938, +0.938]; the observed +1.072 sits at the 99.0th percentile of that null. Positive control run BEFORE the screen (this arm one new column replaced by the realized ats_margin): +50.134 accuracy points, week-blocked 95 percent [+46.428, +53.652], P+ 1.000, at the 100.0th percentile of its own null, so the full-profile ridge fit is demonstrably not blind. Home-pick rate 54.04 percent for this arm vs 53.65 percent for the baseline, so this reading carries very little of the home-tilt artifact that discounts bare-baseline attention screens. Inside the window the column is non-missing on 621 of 768 REG games (80.86 percent) and fires on 84 of those (13.53 percent of covered rows, 10.94 percent of the window). CAVEAT ON RELIABILITY: 0.992 is the battery SUBREDDIT-SERIES split-half figure for comment_post_ratio and is plausibly dominated by the stability of fanbase size rather than by a game-level trait; it must NOT be read as a 0.992-reliable predictor. What it does do is rule out the no_split_half_reliability closing ground. NOT POOLABLE with family arctic_shift_battery: same underlying series, but a non-commensurable comparator (a bare market baseline scaled to the full slate vs a paired forced-pick accuracy delta on top of the full production chain), which the AGENTS.md commensurability rule forbids pooling. Two arms were measured on one window without a multiplicity correction; both were named in the predeclaration before scoring.",
+      "plain_summary": "When the home team fan forum is arguing unusually hard in the week before kickoff, adding that one fact to the model we actually play made its picks about one point per hundred more accurate on 746 games from 2011-2013.",
+      "probability_positive": 0.979,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.9920242411347565,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "docs/reddit_attention_on_production.md, artifacts/reddit_attention_on_production/20260901T194738Z/results.json",
+      "standard_error": null
+    }
+  }
+}

@@ -1,0 +1,117 @@
+{
+  "family": "e159_strength_excess",
+  "signals": {
+    "e159d_x2_minus_b_offense_slope": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-block bootstrap 90% interval reported; mechanism not refuted.",
+      "closing_ground": null,
+      "description": "Held-out offense drive-point slope, X2 minus B, like-for-like.",
+      "effect": 1.6,
+      "effect_units": "mae",
+      "family": "e159_strength_excess",
+      "interval": [
+        -0.2,
+        3.8
+      ],
+      "league": "nfl",
+      "notes": "Simulator diagnostic, units are held-out strength random-effect variance points (or rating slope points), not mae; no matching unit exists. Looks counted in the lane file.",
+      "plain_summary": "X2 raises offense rating transfer slightly over the base simulator.",
+      "probability_positive": 0.94,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 144,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "docs/lanes/mod25e-e159-strength-x2.md",
+      "standard_error": null
+    },
+    "e159d_x2_minus_b_strength_re_var": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-block bootstrap 90% interval reported; mechanism not refuted.",
+      "closing_ground": null,
+      "description": "Held-out like-for-like strength_re_var, X2 minus B, 3 seeds x 8 worlds x 6 seasons.",
+      "effect": 9.3,
+      "effect_units": "mae",
+      "family": "e159_strength_excess",
+      "interval": [
+        3.0,
+        15.6
+      ],
+      "league": "nfl",
+      "notes": "Simulator diagnostic, units are held-out strength random-effect variance points (or rating slope points), not mae; no matching unit exists. Looks counted in the lane file.",
+      "plain_summary": "The X2 simulator spreads team strength more than the base simulator and more than real games.",
+      "probability_positive": 0.988,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 144,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "docs/lanes/mod25e-e159-strength-x2.md",
+      "standard_error": null
+    },
+    "e159e_geo_step_strength_re_var": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-block bootstrap 90% interval reported; mechanism not refuted.",
+      "closing_ground": null,
+      "description": "Held-out strength_re_var step from B to g2 adding GEO=2, seed 11.",
+      "effect": -16.4,
+      "effect_units": "mae",
+      "family": "e159_strength_excess",
+      "interval": [
+        -20.4,
+        -12.4
+      ],
+      "league": "nfl",
+      "notes": "Simulator diagnostic, units are held-out strength random-effect variance points (or rating slope points), not mae; no matching unit exists. Looks counted in the lane file.",
+      "plain_summary": "Redrawing violating rows under the same kernel narrows team-strength spread.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 48,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "docs/lanes/mod25e-e159-strength-x2.md",
+      "standard_error": null
+    },
+    "e159e_gzt_cols13_step_strength_re_var": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-block bootstrap 90% interval reported; mechanism not refuted.",
+      "closing_ground": null,
+      "description": "Held-out strength_re_var step from g2rt to D1 adding GZT3 tilt cols 1 and 3, seed 11.",
+      "effect": 13.2,
+      "effect_units": "mae",
+      "family": "e159_strength_excess",
+      "interval": [
+        9.3,
+        17.0
+      ],
+      "league": "nfl",
+      "notes": "Simulator diagnostic, units are held-out strength random-effect variance points (or rating slope points), not mae; no matching unit exists. Looks counted in the lane file.",
+      "plain_summary": "The rate tilt on conversions and sacks restores the team-strength spread the kernel narrowed.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 48,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "docs/lanes/mod25e-e159-strength-x2.md",
+      "standard_error": null
+    }
+  }
+}

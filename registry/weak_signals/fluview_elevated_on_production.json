@@ -1,0 +1,117 @@
+{
+  "family": "fluview_elevated_on_production",
+  "signals": {
+    "fluview_away_market_elevated_on_production": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Close-graded per the predeclaration's grade discipline (mirrors scripts/graph_team_stat_record.py::classify): no terminal classification is drawn at this grade regardless of sign. The week-blocked CI [-1.156,+1.161] straddles zero (refuted_mechanism unavailable, since it is not resolved entirely below zero), and no positive-control bound on an effect this size was established (bounded_by_control unavailable: the control proved the harness detects a LARGE leaked effect, not that an effect this small would be reliably seen). Recorded unresolved_below_power.",
+      "closing_ground": null,
+      "description": "FluView away-market elevated-illness indicator (frozen as-of/threshold construction, docs/fluview_battery.md) stacked on PRODUCTION weak_stack/market_residual/ridge-alpha-10, versus production alone: does the screen-stage bare-baseline finding (+0.368 pts, P+ 0.883, docs/fluview_battery.md section 8) survive being measured on top of what is actually played?",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "fluview_elevated_on_production",
+      "interval": [
+        -1.1562373974996638,
+        1.160597813863524
+      ],
+      "league": "nfl",
+      "notes": "Era-stratified window (legs 2011, 2025; docs/fluview_on_production.md section 5), per-week walk-forward within each leg. Pooled paired candidate(weak_stack_fluview_away)-minus-baseline(weak_stack): delta 0.000 pts exactly, week-blocked P+ 0.403, 95% CI [-1.156,+1.161], n=516 games/35 weeks; season-blocked P+ 0.000 (degenerate at 2 season blocks, not a resolved read). Per-leg magnitudes (mandatory per docs/era_stratified_windows_proposal.md): leg 2011 (0.0% FluView coverage, predeclared) delta 0.000 pts exactly, P+ 0.000, CI [0,0] -- baseline and candidate probabilities are numerically identical for all 245 games, the expected degenerate no-coverage leg. Leg 2025 (94.0% coverage) delta 0.000 pts, week-blocked CI [-2.222,+2.476], P+ 0.456, n=271 games -- exactly 8 of 271 picks flip side between arms (verified by direct per-game inspection) and by coincidence exactly 4 flip to correct/4 to incorrect, netting to zero; the underlying probabilities do shift (home-pick rate rises from 59.8% baseline to 61.4% candidate pooled), so this is a real but currently net-neutral effect on THIS forced-pick population, not an inert feature. Permutation null (200 within-week perms, pooled): mean +0.103 pts, sd 0.489; observed 0.000 sits at the 27.5th percentile of its own null. Positive control (column replaced by realized ats_margin): pooled +52.326 pts, P+ 1.000, both legs individually >+50 pts -- harness is not blind on either leg. NOT commensurable with the original fluview_battery screen's own bare-baseline entries (different comparator) -- recorded under a separate family on purpose, per AGENTS.md's pooling-commensurability rule. CLOSE-graded: settles no play/no-play decision. Predeclared in docs/fluview_on_production.md before any outcome was scored.",
+      "plain_summary": "Tests whether the away team's elevated-illness signal adds anything once stacked on top of the model actually played, not just a bare market line; on this window it nets to a coin flip, not the screen's earlier lean.",
+      "probability_positive": 0.403,
+      "recorded_at": "2026-08-31",
+      "reliability": 0.9814,
+      "sample_blocks": 35,
+      "sample_games": 516,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/fluview_elevated_on_production/20260831T162041Z/results.json",
+      "standard_error": null
+    },
+    "fluview_home_market_elevated_on_production": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Close-graded per the predeclaration's grade discipline (mirrors scripts/graph_team_stat_record.py::classify): no terminal classification is drawn at this grade regardless of sign. The week-blocked CI [-1.150,+3.119] straddles zero (refuted_mechanism unavailable), and no positive-control bound on an effect this size was established (bounded_by_control unavailable: the control proved the harness detects a LARGE leaked effect, not that an effect this small would be reliably seen). Recorded unresolved_below_power.",
+      "closing_ground": null,
+      "description": "FluView home-market elevated-illness indicator (frozen as-of/threshold construction, docs/fluview_battery.md) stacked on PRODUCTION weak_stack/market_residual/ridge-alpha-10, versus production alone: does the screen-stage bare-baseline finding (+0.309 pts, P+ 0.818, docs/fluview_battery.md section 8) survive being measured on top of what is actually played?",
+      "effect": 0.9689922480620154,
+      "effect_units": "accuracy_points",
+      "family": "fluview_elevated_on_production",
+      "interval": [
+        -1.1496471841299425,
+        3.1189083820662766
+      ],
+      "league": "nfl",
+      "notes": "Era-stratified window (legs 2011, 2025; docs/fluview_on_production.md section 5), per-week walk-forward within each leg. Pooled paired candidate(weak_stack_fluview_home)-minus-baseline(weak_stack): delta +0.969 pts, week-blocked P+ 0.792, 95% CI [-1.150,+3.119], n=516 games/35 weeks; season-blocked P+ 0.756, 95% CI [0.000,+1.845]. Per-leg magnitudes (mandatory per docs/era_stratified_windows_proposal.md): leg 2011 (0.0% FluView coverage, predeclared) delta 0.000 pts exactly, P+ 0.000, CI [0,0] -- the expected degenerate no-coverage leg. Leg 2025 (94.0% coverage) delta +1.845 pts, week-blocked CI [-2.256,+5.993], P+ 0.789, n=271 games -- essentially all of the pooled effect comes from the one leg with real coverage, as expected. Home-pick rate rises from 59.8% baseline to 64.2% candidate pooled. Permutation null (200 within-week perms, pooled): mean +0.135 pts, sd 0.850; observed +0.969 sits at the 78.0th percentile of its own null -- a positive lean, not an extreme tail value. Positive control (column replaced by realized ats_margin): pooled +52.326 pts, P+ 1.000 (identical construction to the away cell's control, since both leak the same realized ats_margin), both legs individually >+50 pts -- harness is not blind on either leg. Directionally consistent with the original screen's own EMPIRICAL sign (docs/fluview_battery.md section 8 found F1 came out positive against its own predicted-negative sign, unresolved either way). NOT commensurable with the original fluview_battery screen's own bare-baseline entries (different comparator) -- recorded under a separate family on purpose, per AGENTS.md's pooling-commensurability rule. CLOSE-graded: settles no play/no-play decision. Predeclared in docs/fluview_on_production.md before any outcome was scored.",
+      "plain_summary": "Testing the home team's rising-illness signal on top of the model we actually play, not just a bare market line, leans positive (about 79% likely to help), but the range still crosses zero, so it isn't settled.",
+      "probability_positive": 0.792,
+      "recorded_at": "2026-08-31",
+      "reliability": 0.9814,
+      "sample_blocks": 35,
+      "sample_games": 516,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/fluview_elevated_on_production/20260831T162153Z/results.json",
+      "standard_error": null
+    },
+    "fluview_home_market_elevated_opener_confirmation": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Primary (week-blocked, production probability rule, opener grade) paired accuracy delta -0.439 pts, 95% CI [-3.091, +2.198] -- crosses zero with a positive upper bound, so wrong_sign_resolved does not apply (requires the WHOLE interval below zero). The positive control (candidate column replaced by realized ats_margin) detected +43.860 pts, P+ 1.000, week 95% CI [+38.147, +49.672] -- a real, large effect, proving the harness is not blind, but many times larger than either the close-graded reading (+0.969 pts, docs/fluview_on_production.md) or this opener reading (-0.439 pts) being tested, so it does not bound detectability at the scale that matters here; positive_control_bound does not apply either. The only admissible classification is unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Opener-graded confirmation of the home-market FluView elevated-illness cell (fluview_home_market_elevated) stacked on production weak_stack, on the paired Tuesday-opener archive (opener_pick_evaluation), scored under BOTH the production probability rule (home_cover_probability_at_open >= 0.5, primary -- what pool.py/backtest.py actually play) and the historical sign rule (residual_at_open > 0, secondary). This is the deciding opener-graded look that the close-graded reading (docs/fluview_on_production.md section 7, +0.969 accuracy points, week-blocked P+ 0.792) earned; the primary rule does not replicate that lean at the opener.",
+      "effect": -0.4385964912,
+      "effect_units": "accuracy_points",
+      "family": "fluview_elevated_on_production",
+      "interval": [
+        -3.0905077263,
+        2.1978021978
+      ],
+      "league": "nfl",
+      "notes": "seed=20260817; samples=20000; window=fluview_home_elevated_opener seasons [2020, 2021] (contiguous, opener-grade default size 2; assigned via `rotation assign`, predicted (2020,2021) in docs/fluview_opener_look.md section 4, confirmed by the real CLI call). baseline=weak_stack(alpha=10) candidate=weak_stack_fluview_home(alpha=10), both market_residual/ridge. paired_games=456 weeks=35 seasons=2020-2021. PRIMARY -- opener grade, production probability rule (what pool.py/backtest.py actually play), week-blocked: delta=-0.4386 pts, 95% [-3.0905, +2.1978] pts, P+=0.3411. Season-blocked (degenerate, 2 blocks, reported never as a gate): delta=-0.4386 pts, 95% [-0.8475, +0.0000] pts, P+=0.0000. Secondary -- opener grade, historical sign rule (residual_at_open>0), week-blocked: delta=+0.2193 pts, 95% [-3.1532, +3.4335] pts, P+=0.5224; season-blocked P+=0.7493. Close-graded reads on the SAME paired games (secondary; per AGENTS.md 'grade the decision at the OPENER... a close-graded number may never veto a play' -- reported, never a gate): production rule week-blocked delta=-0.6508 pts, P+=0.3050; sign rule week-blocked delta=+1.3015 pts, P+=0.8339. Within-week permutation null (200 draws, NOT centred on zero by design): production rule mean=+0.3575 pts, observed -0.4386 pts sits at the 20.0th percentile; sign rule mean=-0.0537 pts, observed +0.2193 pts sits at the 56.0th percentile. Positive control (fluview_home_market_elevated column replaced by realized ats_margin, run before the real screen): production rule delta=+43.8596 pts, P+=1.0000, 95% [+38.1466, +49.6718] pts; sign rule delta=+44.2982 pts, P+=1.0000 -- the harness is not blind, but the leaked effect (tens of points) is far larger than either the close-graded (+0.969 pts) or this opener-graded (-0.439 pts) reading, so it does not bound detectability at the scale that matters; positive_control_bound is unavailable. Home pick rate: baseline (production rule) 0.2124, candidate 0.1588; baseline (sign rule) 0.4206, candidate 0.3584. Picks disagreeing (production rule): 29 of 456 paired games. This is the deciding, OPENER-graded confirmation of the close-graded home-market cell in docs/fluview_on_production.md section 7 (pooled +0.969 accuracy points, week-blocked P+ 0.792, CI [-1.150,+3.119]) -- the primary rule (production probability) does NOT replicate that lean at the opener (P+ 0.341, a mild lean AGAINST the candidate), while the secondary sign rule reads close to a coin flip in the candidate's favour (P+ 0.522). Neither rule's week-blocked interval sits entirely on one side of zero, so this is unresolved_below_power, not a closure, exactly per the binding taxonomy -- 'contains zero' is the expected shape for a real small signal at this evaluator's resolution, not grounds to reject. spec/script=scripts/fluview_home_elevated_opener_look.py; screen_artifact=artifacts/fluview_home_elevated_opener_look/20260831T164546Z/results.json; positive_control_artifact=artifacts/fluview_home_elevated_opener_look/20260831T164207Z/results.json; null_artifact=artifacts/fluview_home_elevated_opener_look/20260831T164235Z/results.json\n[2026-09-01T20:00:59.427899+00:00] reliability set: None -> 0.9910 95% [0.9800, 0.9967]. Method: team-season odd/even-week split-half of the underlying continuous trait, Spearman-Brown corrected, block bootstrap over team-seasons (nfl_ats.cfb_qb_dependence.split_half_reliability, seed 20260901, 4000 draws). Measured from: F:\\Repos\\nfl_py3\\artifacts\\reliability_sweep\\health_roster\\20260901T200018Z\\results.json. Reason: ili (as-of FluView influenza-like-illness index) is the continuous per-team-week parent quantity this cell is built on, measured on the cell's own seasons 2020-2021 with n=59 team-seasons. scripts/fluview_battery_screen.py build_checkpoint_tables (159) + attach_asof_ili (262) + build_state_week_panel (303), imported; the cell thresholds this state's as-of ili at its frozen top decile. The screen-stage siblings fluview_home/away_market_elevated already carry 0.98144757 measured on the STATE-season panel over 2010-2025; measured here on this cell's own seasons at the team-season unit METHOD_TRAIT names, with the state-season number reported alongside for comparability.. Reliability fields only; effect/interval/classification/closing_ground untouched, and this measurement does not by itself reclassify the entry.",
+      "plain_summary": "The first real check of the home team's rising-illness signal against the actual opening line, back in 2020-21: it leans mildly against backing it (about 34% likely to help), but the range still crosses zero, so this alone doesn't rule it out.",
+      "probability_positive": 0.3411,
+      "recorded_at": "2026-08-31",
+      "reliability": 0.991043,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "scripts/fluview_home_elevated_opener_look.py; artifacts/fluview_home_elevated_opener_look/20260831T164546Z/results.json; docs/fluview_opener_look.md; docs/fluview_on_production.md; docs/opener_evaluation.md; docs/rotation_registry.md",
+      "standard_error": 1.3490834438
+    },
+    "fluview_home_market_elevated_opener_confirmation_2022_2023": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Primary (week-blocked, production probability rule, opener grade) paired accuracy delta -1.7510 pts, 95% CI [-4.5010, +0.9862] -- crosses zero with a positive upper bound, so wrong_sign_resolved does not apply (requires the WHOLE interval below zero). The season-blocked interval [-2.2556, -1.2097] IS entirely negative but is degenerate at only 2 season blocks and is reported, never treated as a gate, per this family's own established discipline (docs/fluview_opener_look.md section 7). The positive control (candidate column replaced by realized ats_margin) detected +42.0233 pts, P+ 1.0000, week 95% CI [+37.4517, +46.4789] -- a real, large effect, proving the harness is not blind, but roughly 24x the magnitude of this window's own observed screen effect (-1.7510 pts) and far larger than the close-graded parent reading (+0.969 pts, docs/fluview_on_production.md) or the first opener window's reading (-0.439 pts) being tested, so it does not bound detectability at the scale that matters here; positive_control_bound does not apply either. The only admissible classification is unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Opener-graded confirmation of the home-market FluView elevated-illness cell (fluview_home_market_elevated) stacked on production weak_stack, on the paired Tuesday-opener archive (opener_pick_evaluation), scored under BOTH the production probability rule (home_cover_probability_at_open >= 0.5, primary -- what pool.py/backtest.py actually play) and the historical sign rule (residual_at_open > 0, secondary). This is the SECOND opener-graded window drawn for the fluview_home_elevated_opener family (2022-2023), following the first window (2020-2021, docs/fluview_opener_look.md section 7: -0.439 pts, week-blocked P+ 0.341) -- a sequential second look on the same family with the first window's sign already known and disclosed (docs/fluview_opener_look.md section 8). The primary rule leans against the candidate more strongly at this window than the first; the secondary sign rule leans for the candidate in both windows; neither window's primary interval resolves the sign.",
+      "effect": -1.7509727626,
+      "effect_units": "accuracy_points",
+      "family": "fluview_elevated_on_production",
+      "interval": [
+        -4.5009784736,
+        0.9861932939
+      ],
+      "league": "nfl",
+      "notes": "seed=20260817; samples=20000; window=fluview_home_elevated_opener seasons [2022, 2023] (contiguous, opener-grade default size 2; SECOND window drawn for this family via `rotation assign` after the first window (2020,2021) was spent -- predicted (2022,2023) in docs/fluview_opener_look.md section 8 before the real CLI call, confirmed by the actual assign response). baseline=weak_stack(alpha=10) candidate=weak_stack_fluview_home(alpha=10), both market_residual/ridge. paired_games=514 weeks=36 seasons=2022-2023. PRIMARY -- opener grade, production probability rule (what pool.py/backtest.py actually play), week-blocked: delta=-1.7510 pts, 95% [-4.5010, +0.9862] pts, P+=0.0937. Season-blocked (degenerate, 2 blocks, reported never as a gate): delta=-1.7510 pts, 95% [-2.2556, -1.2097] pts, P+=0.0000. Secondary -- opener grade, historical sign rule (residual_at_open>0), week-blocked: delta=+0.7782 pts, 95% [-0.7937, +2.3762] pts, P+=0.8019; season-blocked P+=1.0000. Close-graded reads on the SAME paired games (secondary; per AGENTS.md 'grade the decision at the OPENER... a close-graded number may never veto a play' -- reported, never a gate): production rule week-blocked delta=+0.0000 pts, P+=0.4734; sign rule week-blocked delta=+1.7682 pts, P+=0.9469. Within-week permutation null (200 draws, NOT centred on zero by design): production rule mean=+0.1333 pts, observed -1.7510 pts sits at the 8.0th percentile; sign rule mean=-0.4270 pts, observed +0.7782 pts sits at the 92.0th percentile. Positive control (fluview_home_market_elevated column replaced by realized ats_margin, run before the real screen): production rule delta=+42.0233 pts, P+=1.0000, 95% [+37.4517, +46.4789] pts; sign rule delta=+42.9961 pts, P+=1.0000 -- the harness is not blind, but the leaked effect (tens of points) is far larger than either the close-graded (+0.969 pts) or this opener-graded reading, so it does not bound detectability at the scale that matters; positive_control_bound is unavailable. Home pick rate: baseline (production rule) 0.4080, candidate 0.5351; baseline (sign rule) 0.4858, candidate 0.4592. Picks disagreeing (production rule): 73 of 514 paired games. This is the SECOND opener-graded window for this family (first window 2020-2021, docs/fluview_opener_look.md section 7: delta -0.439 pts, week-blocked P+ 0.341, CI [-3.091,+2.198]) -- both windows lean the PRIMARY rule against the candidate (this window more strongly, P+ 0.0937 vs the first window's 0.3411), while the secondary sign rule leans FOR the candidate in both windows (this window P+ 0.8019 vs the first window's 0.5224). Neither window's primary week-blocked interval sits entirely on one side of zero, so this is unresolved_below_power, not a closure, exactly per the binding taxonomy -- 'contains zero' is the expected shape for a real small signal at this evaluator's resolution, not grounds to reject. spec/script=scripts/fluview_home_elevated_opener_look.py; screen_artifact=F:/Repos/nfl_py3/artifacts/fluview_home_elevated_opener_look/20260901T184648Z/results.json; positive_control_artifact=F:/Repos/nfl_py3/artifacts/fluview_home_elevated_opener_look/20260901T184317Z/results.json; null_artifact=F:/Repos/nfl_py3/artifacts/fluview_home_elevated_opener_look/20260901T183856Z/results.json; predeclaration_section=docs/fluview_opener_look.md#8-second-window-2026-09-01-predeclaration\n[2026-09-01T20:01:01.842399+00:00] reliability set: None -> 0.9817 95% [0.9719, 0.9896]. Method: team-season odd/even-week split-half of the underlying continuous trait, Spearman-Brown corrected, block bootstrap over team-seasons (nfl_ats.cfb_qb_dependence.split_half_reliability, seed 20260901, 4000 draws). Measured from: F:\\Repos\\nfl_py3\\artifacts\\reliability_sweep\\health_roster\\20260901T200018Z\\results.json. Reason: ili (as-of FluView influenza-like-illness index) is the continuous per-team-week parent quantity this cell is built on, measured on the cell's own seasons 2022-2023 with n=62 team-seasons. scripts/fluview_battery_screen.py build_checkpoint_tables (159) + attach_asof_ili (262) + build_state_week_panel (303), imported; the cell thresholds this state's as-of ili at its frozen top decile. The screen-stage siblings fluview_home/away_market_elevated already carry 0.98144757 measured on the STATE-season panel over 2010-2025; measured here on this cell's own seasons at the team-season unit METHOD_TRAIT names, with the state-season number reported alongside for comparability.. Reliability fields only; effect/interval/classification/closing_ground untouched, and this measurement does not by itself reclassify the entry.",
+      "plain_summary": "A second real check of the home team's rising-illness signal, this time against the actual opening line in 2022-23: it leans slightly against backing it (about 9% likely to help) but the range still crosses zero, so it isn't settled.",
+      "probability_positive": 0.0937,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.981691,
+      "sample_blocks": 36,
+      "sample_games": 514,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "scripts/fluview_home_elevated_opener_look.py; F:/Repos/nfl_py3/artifacts/fluview_home_elevated_opener_look/20260901T184648Z/results.json; docs/fluview_opener_look.md; docs/fluview_on_production.md; docs/opener_evaluation.md; docs/rotation_registry.md",
+      "standard_error": 1.3998144381
+    }
+  }
+}

@@ -1,0 +1,1685 @@
+{
+  "family": "overlay_union_line_shape_mechanism_v1",
+  "signals": {
+    "overlay_union_line_shape_mechanism_v1_ls_gap_raw_offpool_minus_half_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H0 cell off_pool_minus_half, positive favours the overlay adjustment",
+      "effect": 6.26632792034,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        2.079135055537,
+        10.452469701359
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by three rules about coaches, division rematches and player arrests. This row is the difference between how much those adjustments help on games whose opening spread was a whole number and how much they help on games whose opening spread ended in a half point, which is the only kind the pool posts. A positive number means the rules do better on spreads the pool never posts.",
+      "probability_positive": 0.9981,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 2.148142313374
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_gap_raw_whole_minus_half_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H0 cell whole_minus_half, positive favours the overlay adjustment",
+      "effect": 5.890887876136,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        1.734038449309,
+        10.021594448853
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by three rules about coaches, division rematches and player arrests. This row is the difference between how much those adjustments help on games whose opening spread was a whole number and how much they help on games whose opening spread ended in a half point, which is the only kind the pool posts. A positive number means the rules do better on spreads the pool never posts.",
+      "probability_positive": 0.99735,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1469,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 2.112704305716
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h1a_union_half_2020_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H1a cell half_season_2020, positive favours the overlay adjustment",
+      "effect": 1.315789473684,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        -3.921568627451,
+        6.206896551724
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the three rules about coaches, division rematches and player arrests. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread ended in a half point, which is the only kind the pool ever posts. Measured one season at a time.",
+      "probability_positive": 0.691925,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 152,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 2.569909024876
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h1a_union_half_2021_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H1a cell half_season_2021, positive favours the overlay adjustment",
+      "effect": -0.729927007299,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        -6.666666666667,
+        5.072463768116
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the three rules about coaches, division rematches and player arrests. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread ended in a half point, which is the only kind the pool ever posts. Measured one season at a time.",
+      "probability_positive": 0.40325,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 137,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 3.015326841589
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h1a_union_half_2022_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H1a cell half_season_2022, positive favours the overlay adjustment",
+      "effect": -5.0,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        -10.78431372549,
+        1.550387596899
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the three rules about coaches, division rematches and player arrests. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread ended in a half point, which is the only kind the pool ever posts. Measured one season at a time.",
+      "probability_positive": 0.059425,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 120,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 3.103353868052
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h1a_union_half_2023_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H1a cell half_season_2023, positive favours the overlay adjustment",
+      "effect": -1.418439716312,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        -9.271523178808,
+        7.633720313825
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the three rules about coaches, division rematches and player arrests. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread ended in a half point, which is the only kind the pool ever posts. Measured one season at a time.",
+      "probability_positive": 0.352575,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 141,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 4.340780965917
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h1a_union_half_2024_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H1a cell half_season_2024, positive favours the overlay adjustment",
+      "effect": -3.937007874016,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        -11.111111111111,
+        2.41935483871
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the three rules about coaches, division rematches and player arrests. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread ended in a half point, which is the only kind the pool ever posts. Measured one season at a time.",
+      "probability_positive": 0.126825,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 127,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 3.475631896287
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h1a_union_half_2025_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H1a cell half_season_2025, positive favours the overlay adjustment",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        -3.896103896104,
+        4.320987654321
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the three rules about coaches, division rematches and player arrests. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread ended in a half point, which is the only kind the pool ever posts. Measured one season at a time.",
+      "probability_positive": 0.48995,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 165,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 2.106796965017
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h1a_union_whole_2020_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H1a cell whole_season_2020, positive favours the overlay adjustment",
+      "effect": 6.153846153846,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        -3.921568627451,
+        16.25
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the three rules about coaches, division rematches and player arrests. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread was a whole number, which the pool never posts. Measured one season at a time.",
+      "probability_positive": 0.867275,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 65,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 5.199633465776
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h1a_union_whole_2021_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H1a cell whole_season_2021, positive favours the overlay adjustment",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        -7.079646017699,
+        8.333333333333
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the three rules about coaches, division rematches and player arrests. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread was a whole number, which the pool never posts. Measured one season at a time.",
+      "probability_positive": 0.490525,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 95,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 3.965859641715
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h1a_union_whole_2022_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H1a cell whole_season_2022, positive favours the overlay adjustment",
+      "effect": 10.236220472441,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        4.0,
+        16.8
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the three rules about coaches, division rematches and player arrests. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread was a whole number, which the pool never posts. Measured one season at a time.",
+      "probability_positive": 0.99945,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 127,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 3.24671753464
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h1a_union_whole_2023_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H1a cell whole_season_2023, positive favours the overlay adjustment",
+      "effect": 5.932203389831,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        -2.439024390244,
+        14.545454545455
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the three rules about coaches, division rematches and player arrests. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread was a whole number, which the pool never posts. Measured one season at a time.",
+      "probability_positive": 0.920225,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 118,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 4.293457018949
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h1a_union_whole_2024_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H1a cell whole_season_2024, positive favours the overlay adjustment",
+      "effect": 1.612903225806,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        -6.060606060606,
+        9.401709401709
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the three rules about coaches, division rematches and player arrests. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread was a whole number, which the pool never posts. Measured one season at a time.",
+      "probability_positive": 0.663475,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 124,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 3.937952111038
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h1a_union_whole_2025_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H1a cell whole_season_2025, positive favours the overlay adjustment",
+      "effect": 2.040816326531,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        -6.194690265487,
+        11.702127659574
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the three rules about coaches, division rematches and player arrests. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread was a whole number, which the pool never posts. Measured one season at a time.",
+      "probability_positive": 0.65955,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 98,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 4.588925210329
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h1b_union_half_books_high_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H1b cell half_books_high, positive favours the overlay adjustment",
+      "effect": -4.477611940299,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        -9.852216748768,
+        0.925925925926
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the three rules about coaches, division rematches and player arrests. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread ended in a half point, which is the only kind the pool ever posts. Measured separately for games where few and many sportsbooks were captured.",
+      "probability_positive": 0.0495,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 32,
+      "sample_games": 201,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 2.709716590162
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h1b_union_half_books_low_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H1b cell half_books_low, positive favours the overlay adjustment",
+      "effect": -0.27397260274,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        -3.899721448468,
+        3.333333333333
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the three rules about coaches, division rematches and player arrests. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread ended in a half point, which is the only kind the pool ever posts. Measured separately for games where few and many sportsbooks were captured.",
+      "probability_positive": 0.439675,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 65,
+      "sample_games": 365,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 1.84319823971
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h1b_union_half_books_mid_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H1b cell half_books_mid, positive favours the overlay adjustment",
+      "effect": -0.724637681159,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        -5.555555555556,
+        4.180092317689
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the three rules about coaches, division rematches and player arrests. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread ended in a half point, which is the only kind the pool ever posts. Measured separately for games where few and many sportsbooks were captured.",
+      "probability_positive": 0.37755,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 52,
+      "sample_games": 276,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 2.483181232962
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h1b_union_whole_books_high_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H1b cell whole_books_high, positive favours the overlay adjustment",
+      "effect": 5.027932960894,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        -0.645161290323,
+        10.989010989011
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the three rules about coaches, division rematches and player arrests. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread was a whole number, which the pool never posts. Measured separately for games where few and many sportsbooks were captured.",
+      "probability_positive": 0.9537,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 32,
+      "sample_games": 179,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 3.020640006281
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h1b_union_whole_books_low_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H1b cell whole_books_low, positive favours the overlay adjustment",
+      "effect": 3.065134099617,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        -2.479338842975,
+        8.778625954198
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the three rules about coaches, division rematches and player arrests. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread was a whole number, which the pool never posts. Measured separately for games where few and many sportsbooks were captured.",
+      "probability_positive": 0.8564,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 55,
+      "sample_games": 261,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 2.882419584023
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h1b_union_whole_books_mid_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H1b cell whole_books_mid, positive favours the overlay adjustment",
+      "effect": 5.882352941176,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        0.0,
+        11.864406779661
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the three rules about coaches, division rematches and player arrests. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread was a whole number, which the pool never posts. Measured separately for games where few and many sportsbooks were captured.",
+      "probability_positive": 0.976825,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 49,
+      "sample_games": 187,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 2.988553248209
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h1c_gap_standardised_season_books_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H1c cell whole_minus_half_standardised_by_season_and_books, positive favours the overlay adjustment",
+      "effect": 5.95600692399,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        1.336665548092,
+        10.407343537265
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by three rules about coaches, division rematches and player arrests. This row is the difference between how much those adjustments help on games whose opening spread was a whole number and how much they help on games whose opening spread ended in a half point, which is the only kind the pool posts. A positive number means the rules do better on spreads the pool never posts. The two kinds of spread are first matched on season and on how many sportsbooks were captured, so a difference in the mix of games cannot produce the answer.",
+      "probability_positive": 0.995,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1418,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 2.302545642889
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h2b_gap_decided_by_a_point_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H2b cell whole_minus_half_margin_at_least_one_point, positive favours the overlay adjustment",
+      "effect": 6.173988309682,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        1.958783547702,
+        10.387314185595
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by three rules about coaches, division rematches and player arrests. This row is the difference between how much those adjustments help on games whose opening spread was a whole number and how much they help on games whose opening spread ended in a half point, which is the only kind the pool posts. A positive number means the rules do better on spreads the pool never posts. Measured only on games decided by at least a full point, so games that landed exactly on the spread are out of both groups rather than out of one.",
+      "probability_positive": 0.998175,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1388,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 2.157777126112
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h2b_union_half_decided_by_a_point_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H2b cell half_margin_at_least_one_point, positive favours the overlay adjustment",
+      "effect": -1.708278580815,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        -4.177223452424,
+        0.809743954481
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the three rules about coaches, division rematches and player arrests. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread ended in a half point, which is the only kind the pool ever posts. Measured only on games decided by at least a full point, so games that landed exactly on the spread are out of both groups rather than out of one.",
+      "probability_positive": 0.09105,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 761,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 1.279900120647
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h2b_union_whole_decided_by_a_point_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H2b cell whole_margin_at_least_one_point, positive favours the overlay adjustment",
+      "effect": 4.465709728868,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        1.102362204724,
+        7.870428531547
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the three rules about coaches, division rematches and player arrests. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread was a whole number, which the pool never posts. Measured only on games decided by at least a full point, so games that landed exactly on the spread are out of both groups rather than out of one.",
+      "probability_positive": 0.996375,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 627,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 1.737582915897
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h2c_union_whole_pushes_away_favourable_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H2c cell whole_pushes_reinstated_away_favourable, positive favours the overlay adjustment",
+      "effect": 4.084720121029,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        0.791076847822,
+        7.384748427673
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the three rules about coaches, division rematches and player arrests. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread was a whole number, which the pool never posts. Games that landed exactly on the whole-number spread are put back in and counted as a result rather than thrown away, which is how a half-point spread already treats them.",
+      "probability_positive": 0.99415,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 661,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 1.69197685882
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h2c_union_whole_pushes_home_favourable_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H2c cell whole_pushes_reinstated_home_favourable, positive favours the overlay adjustment",
+      "effect": 4.387291981846,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        1.104100946372,
+        7.715144754149
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the three rules about coaches, division rematches and player arrests. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread was a whole number, which the pool never posts. Games that landed exactly on the whole-number spread are put back in and counted as a result rather than thrown away, which is how a half-point spread already treats them.",
+      "probability_positive": 0.99595,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 661,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 1.69316154301
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h2d_union_half_clear_of_the_hook_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H2d cell half_clear_of_the_hook, positive favours the overlay adjustment",
+      "effect": -1.708278580815,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        -4.177223452424,
+        0.809743954481
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent. This row CONDITIONS ON THE REALISED RESULT and is a diagnostic only: the final margin is not known when a card is submitted, so this row can never become a rule.",
+      "plain_summary": "The card is adjusted every week by the three rules about coaches, division rematches and player arrests. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread ended in a half point, which is the only kind the pool ever posts. Split by whether the game was decided by the half point itself. CONDITIONS ON THE REALISED RESULT and is a diagnostic only: the final margin is not known when a card is submitted, so this row can never become a rule.",
+      "probability_positive": 0.09105,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 761,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 1.279900120647
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h2d_union_half_on_the_hook_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H2d cell half_on_the_hook, positive favours the overlay adjustment",
+      "effect": 1.234567901235,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        -8.045977011494,
+        10.844028287061
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent. This row CONDITIONS ON THE REALISED RESULT and is a diagnostic only: the final margin is not known when a card is submitted, so this row can never become a rule.",
+      "plain_summary": "The card is adjusted every week by the three rules about coaches, division rematches and player arrests. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread ended in a half point, which is the only kind the pool ever posts. Split by whether the game was decided by the half point itself. CONDITIONS ON THE REALISED RESULT and is a diagnostic only: the final margin is not known when a card is submitted, so this row can never become a rule.",
+      "probability_positive": 0.6079,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 53,
+      "sample_games": 81,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 4.840531485311
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h3_coach_fade_every_line_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H3 cell coach_fade_every_line, positive favours the overlay adjustment",
+      "effect": 0.399201596806,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        -0.871898054997,
+        1.713909030982
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the coach-fade rule on its own. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured on every game in the archive, whatever the opening spread looked like. Measured for this one rule rather than all three together.",
+      "probability_positive": 0.725225,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 0.662881246448
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h3_coach_fade_half_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H3 cell coach_fade_half, positive favours the overlay adjustment",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        -1.557322551303,
+        1.674641148325
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the coach-fade rule on its own. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread ended in a half point, which is the only kind the pool ever posts. Measured for this one rule rather than all three together.",
+      "probability_positive": 0.486775,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 842,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 0.823175064264
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h3_coach_fade_whole_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H3 cell coach_fade_whole, positive favours the overlay adjustment",
+      "effect": 0.797448165869,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        -1.29659643436,
+        2.945736434109
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the coach-fade rule on its own. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread was a whole number, which the pool never posts. Measured for this one rule rather than all three together.",
+      "probability_positive": 0.768175,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 627,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 1.085549179621
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h3_division_revenge_every_line_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H3 cell division_revenge_every_line, positive favours the overlay adjustment",
+      "effect": 0.731869594145,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        -0.734815218673,
+        2.19707057257
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the division-rematch rule on its own. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured on every game in the archive, whatever the opening spread looked like. Measured for this one rule rather than all three together.",
+      "probability_positive": 0.8341,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 0.748885872566
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h3_division_revenge_half_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H3 cell division_revenge_half, positive favours the overlay adjustment",
+      "effect": -1.425178147268,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        -3.146853146853,
+        0.240673886883
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the division-rematch rule on its own. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread ended in a half point, which is the only kind the pool ever posts. Measured for this one rule rather than all three together.",
+      "probability_positive": 0.048975,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 842,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 0.867946925143
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h3_division_revenge_whole_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H3 cell division_revenge_whole, positive favours the overlay adjustment",
+      "effect": 3.189792663477,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        0.64,
+        5.775632563256
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the division-rematch rule on its own. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread was a whole number, which the pool never posts. Measured for this one rule rather than all three together.",
+      "probability_positive": 0.99355,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 627,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 1.309762459031
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h3_player_arrests_every_line_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H3 cell player_arrests_every_line, positive favours the overlay adjustment",
+      "effect": 0.465735196274,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        -0.198807157058,
+        1.137123745819
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the player-arrest rule on its own. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured on every game in the archive, whatever the opening spread looked like. Measured for this one rule rather than all three together.",
+      "probability_positive": 0.915,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 0.342042731943
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h3_player_arrests_half_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H3 cell player_arrests_half, positive favours the overlay adjustment",
+      "effect": 0.237529691211,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        -0.711743772242,
+        1.168224299065
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the player-arrest rule on its own. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread ended in a half point, which is the only kind the pool ever posts. Measured for this one rule rather than all three together.",
+      "probability_positive": 0.691875,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 842,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 0.474353336266
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h3_player_arrests_whole_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H3 cell player_arrests_whole, positive favours the overlay adjustment",
+      "effect": 0.797448165869,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        -0.146643761958,
+        1.782820097245
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the player-arrest rule on its own. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread was a whole number, which the pool never posts. Measured for this one rule rather than all three together.",
+      "probability_positive": 0.9583,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 627,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 0.4769656488
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h4b_union_half_line_0_2_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H4b cell half_line_0-2, positive favours the overlay adjustment",
+      "effect": -2.597402597403,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        -10.46511627907,
+        5.405405405405
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the three rules about coaches, division rematches and player arrests. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread ended in a half point, which is the only kind the pool ever posts. Measured one range of spread sizes at a time.",
+      "probability_positive": 0.2648,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 58,
+      "sample_games": 77,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 4.071828150474
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h4b_union_half_line_10plus_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H4b cell half_line_10+, positive favours the overlay adjustment",
+      "effect": 3.75,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        -6.172839506173,
+        14.084507042254
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the three rules about coaches, division rematches and player arrests. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread ended in a half point, which is the only kind the pool ever posts. Measured one range of spread sizes at a time.",
+      "probability_positive": 0.762,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 58,
+      "sample_games": 80,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 5.16179725784
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h4b_union_half_line_2_4_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H4b cell half_line_2-4, positive favours the overlay adjustment",
+      "effect": -3.216374269006,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        -7.242669349666,
+        0.854700854701
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the three rules about coaches, division rematches and player arrests. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread ended in a half point, which is the only kind the pool ever posts. Measured one range of spread sizes at a time.",
+      "probability_positive": 0.06015,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 106,
+      "sample_games": 342,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 2.056884109092
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h4b_union_half_line_4_7_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H4b cell half_line_4-7, positive favours the overlay adjustment",
+      "effect": 1.339285714286,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        -4.000446428571,
+        6.808752417795
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the three rules about coaches, division rematches and player arrests. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread ended in a half point, which is the only kind the pool ever posts. Measured one range of spread sizes at a time.",
+      "probability_positive": 0.6754,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 98,
+      "sample_games": 224,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 2.779949861444
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h4b_union_half_line_7_10_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H4b cell half_line_7-10, positive favours the overlay adjustment",
+      "effect": -4.201680672269,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        -11.570247933884,
+        3.279365939575
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the three rules about coaches, division rematches and player arrests. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread ended in a half point, which is the only kind the pool ever posts. Measured one range of spread sizes at a time.",
+      "probability_positive": 0.13525,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 71,
+      "sample_games": 119,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 3.746400579554
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h4b_union_whole_line_0_2_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H4b cell whole_line_0-2, positive favours the overlay adjustment",
+      "effect": 3.076923076923,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        -4.838709677419,
+        11.940298507463
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the three rules about coaches, division rematches and player arrests. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread was a whole number, which the pool never posts. Measured one range of spread sizes at a time.",
+      "probability_positive": 0.760925,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 50,
+      "sample_games": 65,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 4.37105349346
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h4b_union_whole_line_10plus_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H4b cell whole_line_10+, positive favours the overlay adjustment",
+      "effect": 6.944444444444,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        -2.631578947368,
+        16.923076923077
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the three rules about coaches, division rematches and player arrests. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread was a whole number, which the pool never posts. Measured one range of spread sizes at a time.",
+      "probability_positive": 0.9217,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 50,
+      "sample_games": 72,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 4.997403161466
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h4b_union_whole_line_2_4_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H4b cell whole_line_2-4, positive favours the overlay adjustment",
+      "effect": 5.909090909091,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        0.485436893204,
+        11.320754716981
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the three rules about coaches, division rematches and player arrests. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread was a whole number, which the pool never posts. Measured one range of spread sizes at a time.",
+      "probability_positive": 0.98595,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 95,
+      "sample_games": 220,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 2.725827777613
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h4b_union_whole_line_4_7_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H4b cell whole_line_4-7, positive favours the overlay adjustment",
+      "effect": 6.493506493506,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        0.641025641026,
+        12.354336625161
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the three rules about coaches, division rematches and player arrests. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread was a whole number, which the pool never posts. Measured one range of spread sizes at a time.",
+      "probability_positive": 0.982175,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 85,
+      "sample_games": 154,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 3.028964296511
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h4b_union_whole_line_7_10_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H4b cell whole_line_7-10, positive favours the overlay adjustment",
+      "effect": -1.724137931034,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        -11.111111111111,
+        7.476635514019
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the three rules about coaches, division rematches and player arrests. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread was a whole number, which the pool never posts. Measured one range of spread sizes at a time.",
+      "probability_positive": 0.3606,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 75,
+      "sample_games": 116,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 4.725144849617
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h4c_gap_standardised_magnitude_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H4c cell whole_minus_half_standardised_by_line_size, positive favours the overlay adjustment",
+      "effect": 6.840726191463,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        2.175417321106,
+        11.45957895263
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by three rules about coaches, division rematches and player arrests. This row is the difference between how much those adjustments help on games whose opening spread was a whole number and how much they help on games whose opening spread ended in a half point, which is the only kind the pool posts. A positive number means the rules do better on spreads the pool never posts. The two kinds of spread are first matched on how big the spread was, so the key numbers sitting on whole numbers cannot produce the answer.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1360,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 2.331471143656
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h5c_gap_even_seasons_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H5c cell whole_minus_half_even_seasons, positive favours the overlay adjustment",
+      "effect": 8.268297325592,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        2.732751285744,
+        13.894422369774
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by three rules about coaches, division rematches and player arrests. This row is the difference between how much those adjustments help on games whose opening spread was a whole number and how much they help on games whose opening spread ended in a half point, which is the only kind the pool posts. A positive number means the rules do better on spreads the pool never posts. Measured on half the seasons, to see whether the same answer comes back twice.",
+      "probability_positive": 0.998675,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 53,
+      "sample_games": 715,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 2.84558944679
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h5c_gap_odd_seasons_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H5c cell whole_minus_half_odd_seasons, positive favours the overlay adjustment",
+      "effect": 3.571091578176,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        -2.542356522971,
+        9.669783357407
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by three rules about coaches, division rematches and player arrests. This row is the difference between how much those adjustments help on games whose opening spread was a whole number and how much they help on games whose opening spread ended in a half point, which is the only kind the pool posts. A positive number means the rules do better on spreads the pool never posts. Measured on half the seasons, to see whether the same answer comes back twice.",
+      "probability_positive": 0.87745,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 754,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 3.101713758634
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h5c_union_half_even_seasons_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H5c cell half_even_seasons, positive favours the overlay adjustment",
+      "effect": -2.255639097744,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        -5.898142151399,
+        1.222493887531
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the three rules about coaches, division rematches and player arrests. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread ended in a half point, which is the only kind the pool ever posts. Measured on half the seasons, to see whether the same answer comes back twice.",
+      "probability_positive": 0.104575,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 53,
+      "sample_games": 399,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 1.821017861182
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h5c_union_half_odd_seasons_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H5c cell half_odd_seasons, positive favours the overlay adjustment",
+      "effect": -0.677200902935,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        -4.195997586484,
+        3.056768558952
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the three rules about coaches, division rematches and player arrests. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread ended in a half point, which is the only kind the pool ever posts. Measured on half the seasons, to see whether the same answer comes back twice.",
+      "probability_positive": 0.35185,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 443,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 1.847005265569
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h5c_union_whole_even_seasons_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H5c cell whole_even_seasons, positive favours the overlay adjustment",
+      "effect": 6.012658227848,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        1.282051282051,
+        10.666666666667
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the three rules about coaches, division rematches and player arrests. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread was a whole number, which the pool never posts. Measured on half the seasons, to see whether the same answer comes back twice.",
+      "probability_positive": 0.993475,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 53,
+      "sample_games": 316,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 2.397061352515
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h5c_union_whole_odd_seasons_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H5c cell whole_odd_seasons, positive favours the overlay adjustment",
+      "effect": 2.893890675241,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        -1.916932907348,
+        7.97342192691
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the three rules about coaches, division rematches and player arrests. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread was a whole number, which the pool never posts. Measured on half the seasons, to see whether the same answer comes back twice.",
+      "probability_positive": 0.878775,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 311,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 2.521928062377
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_h7_model_own_pick_whole_minus_half_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H7 cell model_own_pick_accuracy_whole_minus_half, positive favours the overlay adjustment",
+      "effect": -4.53844609364,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        -9.640972017626,
+        0.50032112138
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "This row is not about the weekly adjustments at all. It is how much more often the model's own pick is right on games whose opening spread was a whole number than on games whose opening spread ended in a half point, which is the only kind the pool posts. A negative number means the model is already harder to improve on the spreads the pool actually posts.",
+      "probability_positive": 0.039075,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1469,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 2.581954350792
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_union_every_line_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H0 cell every_line, positive favours the overlay adjustment",
+      "effect": 1.330671989355,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        -0.727032385988,
+        3.3932396304
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the three rules about coaches, division rematches and player arrests. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured on every game in the archive, whatever the opening spread looked like.",
+      "probability_positive": 0.8978,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 1.04800943848
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_union_half_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H0 cell half, positive favours the overlay adjustment",
+      "effect": -1.425178147268,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        -3.933253873659,
+        1.160126491885
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the three rules about coaches, division rematches and player arrests. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread ended in a half point, which is the only kind the pool ever posts.",
+      "probability_positive": 0.13555,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 842,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 1.301185659279
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_union_off_pool_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H0 cell off_pool, positive favours the overlay adjustment",
+      "effect": 4.841149773071,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        1.505967478938,
+        8.235417351298
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the three rules about coaches, division rematches and player arrests. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread was not a half point, which the pool never posts.",
+      "probability_positive": 0.998675,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 661,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 1.722942632831
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_union_quarter_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H0 cell quarter, positive favours the overlay adjustment",
+      "effect": 11.764705882353,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        -3.030303030303,
+        26.470588235294
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the three rules about coaches, division rematches and player arrests. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread ended in a quarter point, which no sportsbook posts and which only appears because several books were averaged together.",
+      "probability_positive": 0.940025,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 25,
+      "sample_games": 34,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 7.495235376353
+    },
+    "overlay_union_line_shape_mechanism_v1_ls_union_whole_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Line-shape mechanism H0 cell whole, positive favours the overlay adjustment",
+      "effect": 4.465709728868,
+      "effect_units": "accuracy_points",
+      "family": "overlay_union_line_shape_mechanism_v1",
+      "interval": [
+        1.102362204724,
+        7.870428531547
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a split lane P1 noticed POST-HOC on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2 and P1 were selected on. The mechanism tests are predeclared in docs/overlay_union_line_shape.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by the three rules about coaches, division rematches and player arrests. This row counts how many more games in a hundred that adjustment gets right than the model's own pick, measured only on games whose opening spread was a whole number, which the pool never posts.",
+      "probability_positive": 0.996375,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 627,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ1\\cells.json",
+      "standard_error": 1.737582915897
+    }
+  }
+}

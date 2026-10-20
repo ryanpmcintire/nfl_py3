@@ -1,0 +1,33 @@
+{
+  "family": "primetime_cells",
+  "signals": {
+    "pt_post_mnf_sunday_changepoint": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Two-sided by construction (no direction was predeclared), so wrong_sign_resolved is inadmissible under any result. No positive control has been shown able to resolve a break of this size on this construct, so positive_control_bound is inadmissible. Category 3 by AGENTS.md.",
+      "closing_ground": null,
+      "description": "Free-break single-changepoint diagnostic on the pt_post_mnf_sunday construct (team-game rows, own prior REG game this season was a Monday, current game Sunday; flag and eligible population imported verbatim from scripts/primetime_cells_screen.py; REG 2009-2025). Effect = post-break mean minus pre-break mean of the per-season full-slate-scaled effect series at the data-located break, using scripts/era_magnitude_profile.py Stage-2a changepoint machinery. Structural/diagnostic cell with NO predeclared direction.",
+      "effect": -0.4424294999669036,
+      "effect_units": "accuracy_points",
+      "family": "primetime_cells",
+      "interval": [
+        -1.0357161624152935,
+        0.15718404551455056
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/era_mechanism_screens_20260901.md section 2.2 BEFORE any effect was computed; proposed unrun in docs/era_magnitude_report.md section 2.2. Located break season 2019 (bootstrap median 2019, 95 percent spread [2012, 2023]); pre-break mean +0.2550 [-0.1324, +0.6470] P+=0.8997, post-break mean -0.1874 [-0.6335, +0.2624] P+=0.2084. The batterys FIXED 2017/2018 convention on the same series gives pre +0.2557 / post -0.1329, gap -0.3886 [-0.9786, +0.2046] P+=0.0969 - the fixed convention and the free break agree to within 0.05 points, so the fixed boundary was not in the wrong place. Within-week permutation null (200 draws): the free-break magnitude null is centred near zero (-0.0157) with spread [-1.0283, +1.0267] and 65.5 percent of null draws have |magnitude| at or above the observed |0.4424| - an optimal changepoint estimator manufactures a break this large from a shuffled label most of the time; the fixed-convention gap fares better (21.5 percent). SEASON-BLOCKED SECONDARY IS STRUCTURALLY DEGENERATE for this metric and carries no information: a season-block resample of a per-season-series statistic reproduces the same series every draw, collapsing the interval to a point - reported for completeness only. DISCLOSED OVERLAP: same rows as pt_post_mnf_sunday and its two era arms; correlated, never an independent vote. Mined-window discount applies. n_flag 586 of 8090 eligible.",
+      "plain_summary": "A team playing Sunday six days after its own Monday night game used to beat the spread slightly and now does slightly worse. This asks whether the data itself picks out a year when that changed. It picks 2019, but a shuffled version of the same data picks a break almost as big two thirds of the time, so the break is not distinguishable from noise.",
+      "probability_positive": 0.0723,
+      "recorded_at": "2026-09-01",
+      "reliability": null,
+      "sample_blocks": 277,
+      "sample_games": 8090,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/era_mechanism_screens.py; artifacts/era_mechanism_screens/20260901T195546Z_screen/results.json; docs/era_mechanism_screens_20260901.md",
+      "standard_error": null
+    }
+  }
+}

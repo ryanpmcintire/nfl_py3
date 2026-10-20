@@ -1,0 +1,61 @@
+{
+  "family": "e159f_tilt_columns",
+  "signals": {
+    "e159f_gzt_conv_col1_step_strength_re_var": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-block bootstrap 90% interval reported; mechanism not refuted.",
+      "closing_ground": null,
+      "description": "Held-out strength_re_var step from g2rt adding GZT3 col 1 (conversion) only, seed 11.",
+      "effect": 6.7,
+      "effect_units": "mae",
+      "family": "e159f_tilt_columns",
+      "interval": [
+        2.6,
+        10.6
+      ],
+      "league": "nfl",
+      "notes": "Simulator diagnostic, units are held-out strength random-effect variance points (or rating slope points), not mae; no matching unit exists. Looks counted in the lane file.",
+      "plain_summary": "The conversion tilt alone adds team-strength spread.",
+      "probability_positive": 0.995,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 48,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "docs/lanes/mod25e-e159-strength-x2.md",
+      "standard_error": null
+    },
+    "e159f_gzt_sack_col3_step_strength_re_var": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-block bootstrap 90% interval reported; mechanism not refuted.",
+      "closing_ground": null,
+      "description": "Held-out strength_re_var step from g2rt adding GZT3 col 3 (sack) only, seed 11.",
+      "effect": 10.6,
+      "effect_units": "mae",
+      "family": "e159f_tilt_columns",
+      "interval": [
+        6.4,
+        14.9
+      ],
+      "league": "nfl",
+      "notes": "Simulator diagnostic, units are held-out strength random-effect variance points (or rating slope points), not mae; no matching unit exists. Looks counted in the lane file.",
+      "plain_summary": "The sack tilt carries most of the added team-strength spread.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 48,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "docs/lanes/mod25e-e159-strength-x2.md",
+      "standard_error": null
+    }
+  }
+}

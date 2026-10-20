@@ -1,0 +1,201 @@
+{
+  "family": "best_pick_renomination",
+  "signals": {
+    "best_pick_renomination_frozen_side_functional_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A dead heat with an interval crossing zero: no resolved wrong sign, and no positive control was shown able to detect an effect at this scale. An exactly-zero effect is a tie, probability_positive 0.503, not a negative.",
+      "closing_ground": null,
+      "description": "Functional control: the Tuesday Best Pick nomination ranked by the frozen played side's cover probability at the frozen Tuesday opener line instead of by the nomination candidate's distance from 0.5, same instant and same dispersion pool. 104 paired weeks.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_renomination",
+      "interval": [
+        -2.884615,
+        2.884615
+      ],
+      "league": "nfl",
+      "notes": "LEAD-53 second historical read, docs/best_pick_sunday_renomination.md. Exists to decompose the s2 cell: this cell is the functional change alone (inert), so the whole of s2's +2.91 belongs to the move from Tuesday to Sunday. Unit is one Best Pick per week, NOT game-level accuracy points.",
+      "plain_summary": "Changing how the star is ranked - by how likely our own pick is to win, rather than by how far the model is from a coin flip - changes the star in 2 weeks out of 104 and wins exactly as often.",
+      "probability_positive": 0.502925,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 104,
+      "sample_games": 104,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/best_pick_sunday_renomination/20260911T021349Z/summary.json",
+      "standard_error": null
+    },
+    "best_pick_sunday_renomination_s1_literal_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval [-4.81, +2.88] crosses zero, so no resolved wrong sign and no admissible terminal ground. The arm is also a near-no-op by construction, which is a measured fact about its inputs, not a closure.",
+      "closing_ground": null,
+      "description": "Best Pick re-nominated at the pool-cycle Sunday 12:30 ET instant by the literal refreshed probability - the nomination candidate re-predicted with the Sunday consensus line and ranked by distance from 0.5 at that same Sunday line - versus the frozen Tuesday nomination. 104 paired weeks, one Best Pick per week.",
+      "effect": -0.961538,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_renomination",
+      "interval": [
+        -4.807692,
+        2.884615
+      ],
+      "league": "nfl",
+      "notes": "LEAD-53 second historical read, docs/best_pick_sunday_renomination.md. This is the arm the registered live challenger best_pick_sunday_renomination currently implements. Measured near-inertness, not assumed: the largest Tuesday-to-Sunday change in |p-0.5| at each arm's own line across 1,537 games is 0.0066, against 0.2768 at the frozen grading line; the refreshed margin tracks the line at a median slope of 1.0067. Unit is one Best Pick per week, NOT game-level accuracy points.",
+      "plain_summary": "Re-running the star's ranking on Sunday with the newest line barely changes anything: the model's view of a game moves with the line, so the ranking stays put. It changed the star in 6 weeks out of 104.",
+      "probability_positive": 0.334475,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 104,
+      "sample_games": 104,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/best_pick_sunday_renomination/20260911T021349Z/summary.json",
+      "standard_error": null
+    },
+    "best_pick_sunday_renomination_s2_1100et_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A dead heat on 52 weeks with an interval of plus or minus 13 points. No resolved wrong sign, and the positive control was never shown able to see an effect this size at this sample, so no admissible terminal ground applies.",
+      "closing_ground": null,
+      "description": "Instant sensitivity: the s2 Sunday re-nomination run at an 11:00 ET instant (the live challenger's pre-noon window) instead of 12:30 ET, on the 2023-2025 seasons where hourly Sunday captures exist. 52 paired weeks.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_renomination",
+      "interval": [
+        -13.461538,
+        13.461538
+      ],
+      "league": "nfl",
+      "notes": "LEAD-53 second historical read, docs/best_pick_sunday_renomination.md. Same arm at 12:30 ET on the same 52 weeks scores +3.85, probability_positive 0.708 - so on this subset the lean lives in the last 90 minutes before the early kickoffs, and the pre-noon window the live challenger enforces is not obviously the right one. 52 weeks cannot separate the two instants. Unit is one Best Pick per week. Overlaps the 2020-2025 s2 cell of this family.",
+      "plain_summary": "Re-picking the star at 11am Sunday instead of Tuesday is a coin flip: it changed the star in 20 of 52 weeks and won exactly as often.",
+      "probability_positive": 0.508425,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 52,
+      "sample_games": 52,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/best_pick_sunday_renomination/20260911T020636Z/summary.json",
+      "standard_error": null
+    },
+    "best_pick_sunday_renomination_s2_frozen_line_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval crosses zero at a one-pick-per-week resolution of about 9 points, the expected shape for a real small effect, never a closing ground. No resolved wrong sign. The positive control resolves at +34.62 points but was never shown able to see a 3-point effect, so it bounds nothing here.",
+      "closing_ground": null,
+      "description": "Best Pick re-nominated at the pool-cycle Sunday 12:30 ET instant by the refreshed cover probability of the frozen played side at the frozen Tuesday opener line (Tuesday dispersion pool, still-playable games), versus the frozen Tuesday nomination. 103 paired weeks, one Best Pick per week.",
+      "effect": 2.912621,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_renomination",
+      "interval": [
+        -5.825243,
+        11.650485
+      ],
+      "league": "nfl",
+      "notes": "LEAD-53 second historical read, docs/best_pick_sunday_renomination.md. Unit is one Best Pick per week, NOT game-level accuracy points: do not pool with game-level accuracy_points cells. Nominee differs in 40 of 103 weeks, outcome differs in 21 (12 arm, 9 base). Split-half: -4.00 odd weeks / +9.43 even weeks; +1.96 on 2020-2022 / +3.85 on 2023-2025. No reliability recorded: the quantity is a per-week nomination delta, not a per-game trait. Fifth look at the 107-week opener population; carries the standing reuse discount. Correlated with the s3 and s2-vs-t0b cells of the same family (shared weeks, shared inputs).",
+      "plain_summary": "On Sunday morning the star moves to whichever still-unplayed pick the market has walked furthest toward. It won the star 55% of weeks against 52% for the Tuesday choice.",
+      "probability_positive": 0.74205,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 103,
+      "sample_games": 103,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/best_pick_sunday_renomination/20260911T021349Z/summary.json",
+      "standard_error": null
+    },
+    "best_pick_sunday_renomination_s2_vs_functional_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval crosses zero at a one-pick-per-week resolution of about 9 points. No resolved wrong sign; the positive control resolves only at 35 points and bounds nothing at 3.",
+      "closing_ground": null,
+      "description": "Sunday 12:30 ET re-nomination versus the same ranking statistic evaluated at the Tuesday instant: the instant alone, with the ranking functional held constant. 103 paired weeks, one Best Pick per week.",
+      "effect": 2.912621,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_renomination",
+      "interval": [
+        -5.825243,
+        11.650485
+      ],
+      "league": "nfl",
+      "notes": "LEAD-53 second historical read, docs/best_pick_sunday_renomination.md. This is the same comparison as the s2 cell with a different baseline (the functional control instead of the served Tuesday rule); the two are near-identical because the functional itself is inert. Strongly correlated with the s2 and s3 cells of this family - shared weeks, shared inputs - and must not be counted as an independent vote. Unit is one Best Pick per week.",
+      "plain_summary": "Waiting until Sunday morning to choose the star, with everything else about the choice unchanged, won 55% of weeks against 52%.",
+      "probability_positive": 0.7414,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 103,
+      "sample_games": 103,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/best_pick_sunday_renomination/20260911T021349Z/summary.json",
+      "standard_error": null
+    },
+    "best_pick_sunday_renomination_s3_1100et_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval of plus or minus 16 points on 51 weeks crosses zero. No resolved wrong sign; no positive control was shown able to detect a 4-point effect at this sample.",
+      "closing_ground": null,
+      "description": "Instant sensitivity: the s3 full Sunday refresh run at an 11:00 ET instant (the live challenger's pre-noon window) instead of 12:30 ET, on the 2023-2025 seasons where hourly Sunday captures exist. 51 paired weeks.",
+      "effect": 3.921569,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_renomination",
+      "interval": [
+        -11.764706,
+        19.607843
+      ],
+      "league": "nfl",
+      "notes": "LEAD-53 second historical read, docs/best_pick_sunday_renomination.md. Same arm at 12:30 ET on the same weeks scores +1.96, probability_positive 0.603; the two instants do not separate on 51 weeks and the arm order swaps between them, so the choice of instant is itself unresolved. Unit is one Best Pick per week. Overlaps the 2020-2025 s3 cell of this family.",
+      "plain_summary": "Re-picking the star at 11am Sunday from the games the books still agree on won 55% of weeks against 51%.",
+      "probability_positive": 0.67935,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 51,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/best_pick_sunday_renomination/20260911T020636Z/summary.json",
+      "standard_error": null
+    },
+    "best_pick_sunday_renomination_s3_full_refresh_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval crosses zero at a one-pick-per-week resolution of about 11 points, the expected shape for a real small effect, never a closing ground. No resolved wrong sign. The positive control resolves at +34.62 points but was never shown able to see a 5-point effect, so it bounds nothing here.",
+      "closing_ground": null,
+      "description": "Best Pick re-nominated at the pool-cycle Sunday 12:30 ET instant by the refreshed cover probability of the frozen played side at the frozen Tuesday opener line, over a pool rebuilt from Sunday cross-book dispersion among still-playable games, versus the frozen Tuesday nomination. 103 paired weeks, one Best Pick per week.",
+      "effect": 4.854369,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_renomination",
+      "interval": [
+        -5.825243,
+        15.533981
+      ],
+      "league": "nfl",
+      "notes": "LEAD-53 second historical read, docs/best_pick_sunday_renomination.md. Strongest arm measured. Unit is one Best Pick per week, NOT game-level accuracy points: do not pool with game-level accuracy_points cells. Nominee differs in 70 of 103 weeks, outcome differs in 31 (18 arm, 13 base). Split-half: +4.00 odd weeks / +5.66 even weeks; +7.69 on 2020-2022 / +1.96 on 2023-2025 - steadier than the s2 cell on both splits. Not wired: publishing.py reads the frozen Tuesday is_best_pick, and the registered live challenger best_pick_sunday_renomination implements the weaker s1 arm. Correlated with the s2 cells of the same family.",
+      "plain_summary": "On Sunday morning the star is re-chosen from the games the books still agree on, using where the market has moved since Tuesday. It won the star 57% of weeks against 52% for the Tuesday choice.",
+      "probability_positive": 0.814125,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 103,
+      "sample_games": 103,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/best_pick_sunday_renomination/20260911T021349Z/summary.json",
+      "standard_error": null
+    }
+  }
+}

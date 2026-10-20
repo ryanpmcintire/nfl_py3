@@ -1,0 +1,33 @@
+{
+  "family": "team_style_pace_mismatch_on_production_opener",
+  "signals": {
+    "team_style_pace_mismatch_on_production_opener": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Opener primary: -0.219 accuracy points, week-blocked probability_positive 0.286. Neither terminal ground applies: wrong_sign_resolved requires the whole interval on the wrong side, reliability is 0.489 rather than zero, and the +43.860-point positive control demonstrates detection but does not bound this effect. Therefore unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Opener-grade confirmation: predeclared team-style pace mismatch flag on top of production weak_stack versus production unmodified, paired forced-pick probability-rule accuracy.",
+      "effect": -0.2192982456,
+      "effect_units": "accuracy_points",
+      "family": "team_style_pace_mismatch_on_production_opener",
+      "interval": [
+        -1.3245033113,
+        0.8888888889
+      ],
+      "league": "nfl",
+      "notes": "Primary opener probability rule; 456 paired non-push games, 35 weeks, assigned 2020-2021 window. Baseline 53.728%, candidate 53.509%; 12 picks differ. Week 95% [-1.325,+0.889], P+ 0.286. Frozen-pick within-week null center +0.063 points; observed -0.219 is 32.0th percentile. Positive control +43.860 points, P+1.000.",
+      "plain_summary": "Adding the predeclared pace-mismatch flag changed twelve opener picks and was slightly worse on this two-season card. The evidence is unresolved, so the candidate is recorded rather than closed.",
+      "probability_positive": 0.28555,
+      "recorded_at": "2026-09-02",
+      "reliability": 0.489,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/team_style_pace_opener_confirmation/20260902T173905Z/results.json",
+      "standard_error": null
+    }
+  }
+}

@@ -1,0 +1,117 @@
+{
+  "family": "mod18_overlay_union_by_line_shape_v1",
+  "signals": {
+    "mod18_overlay_union_by_line_shape_v1_overlay_union_off_pool_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Played three-member overlay union against the raw read on off_pool, positive favours the overlays",
+      "effect": 4.841149773071,
+      "effect_units": "accuracy_points",
+      "family": "mod18_overlay_union_by_line_shape_v1",
+      "interval": [
+        1.505967478938,
+        8.235417351298
+      ],
+      "league": "nfl",
+      "notes": "POST-HOC and NOT predeclared: this split was noticed while reading lane P1's domain table, after the signs were visible, so it is recorded in its own family rather than pooled with the predeclared discrete-read arms. It is a descriptive reading of the same mined 1,537-game Tuesday-opener archive and is not independent confirmation. It needs a predeclared lane of its own before it may govern the played card; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by three rules about coaches, division rematches and player arrests. Measured only on games whose spread was not a half point, which the pool never posts. This row counts how many more games in a hundred those adjustments get right than leaving the model's own pick alone.",
+      "probability_positive": 0.998675,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 661,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP1\\overlay_domain.json",
+      "standard_error": 1.722942632831
+    },
+    "mod18_overlay_union_by_line_shape_v1_overlay_union_pool_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Played three-member overlay union against the raw read on pool, positive favours the overlays",
+      "effect": -1.425178147268,
+      "effect_units": "accuracy_points",
+      "family": "mod18_overlay_union_by_line_shape_v1",
+      "interval": [
+        -3.933253873659,
+        1.160126491885
+      ],
+      "league": "nfl",
+      "notes": "POST-HOC and NOT predeclared: this split was noticed while reading lane P1's domain table, after the signs were visible, so it is recorded in its own family rather than pooled with the predeclared discrete-read arms. It is a descriptive reading of the same mined 1,537-game Tuesday-opener archive and is not independent confirmation. It needs a predeclared lane of its own before it may govern the played card; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by three rules about coaches, division rematches and player arrests. Measured only on games whose spread was a half point, which is the only kind of spread the pool ever posts. This row counts how many more games in a hundred those adjustments get right than leaving the model's own pick alone.",
+      "probability_positive": 0.13555,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 842,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP1\\overlay_domain.json",
+      "standard_error": 1.301185659279
+    },
+    "mod18_overlay_union_by_line_shape_v1_overlay_union_pool_near_3_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Played three-member overlay union against the raw read on pool_near_3, positive favours the overlays",
+      "effect": -3.216374269006,
+      "effect_units": "accuracy_points",
+      "family": "mod18_overlay_union_by_line_shape_v1",
+      "interval": [
+        -7.242669349666,
+        0.854700854701
+      ],
+      "league": "nfl",
+      "notes": "POST-HOC and NOT predeclared: this split was noticed while reading lane P1's domain table, after the signs were visible, so it is recorded in its own family rather than pooled with the predeclared discrete-read arms. It is a descriptive reading of the same mined 1,537-game Tuesday-opener archive and is not independent confirmation. It needs a predeclared lane of its own before it may govern the played card; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by three rules about coaches, division rematches and player arrests. Measured only on half-point spreads of 2.5 or 3.5. This row counts how many more games in a hundred those adjustments get right than leaving the model's own pick alone.",
+      "probability_positive": 0.06015,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 106,
+      "sample_games": 342,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP1\\overlay_domain.json",
+      "standard_error": 2.056884109092
+    },
+    "mod18_overlay_union_by_line_shape_v1_overlay_union_pool_near_7_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Played three-member overlay union against the raw read on pool_near_7, positive favours the overlays",
+      "effect": 2.564102564103,
+      "effect_units": "accuracy_points",
+      "family": "mod18_overlay_union_by_line_shape_v1",
+      "interval": [
+        -3.448275862069,
+        8.860759493671
+      ],
+      "league": "nfl",
+      "notes": "POST-HOC and NOT predeclared: this split was noticed while reading lane P1's domain table, after the signs were visible, so it is recorded in its own family rather than pooled with the predeclared discrete-read arms. It is a descriptive reading of the same mined 1,537-game Tuesday-opener archive and is not independent confirmation. It needs a predeclared lane of its own before it may govern the played card; no rotation window spent.",
+      "plain_summary": "The card is adjusted every week by three rules about coaches, division rematches and player arrests. Measured only on half-point spreads of 6.5 or 7.5. This row counts how many more games in a hundred those adjustments get right than leaving the model's own pick alone.",
+      "probability_positive": 0.791425,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 83,
+      "sample_games": 156,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP1\\overlay_domain.json",
+      "standard_error": 3.150227365463
+    }
+  }
+}

@@ -1,0 +1,565 @@
+{
+  "family": "lead90_unit1_605_looks",
+  "signals": {
+    "lead90_unit1_2023-accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 605 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fitting the whole score spread near the pool line versus the usual four-term calculation: 2023 accuracy_points",
+      "effect": -1.71673819742,
+      "effect_units": "accuracy_points",
+      "family": "lead90_unit1_605_looks",
+      "interval": [
+        -3.94736842105,
+        0.431034482759
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to care most about scores right around the pool line instead of far-off blowouts. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.0601,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead90_unit1.md",
+      "standard_error": null
+    },
+    "lead90_unit1_2023-brier": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 605 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fitting the whole score spread near the pool line versus the usual four-term calculation: 2023 brier",
+      "effect": -0.000306595845908,
+      "effect_units": "brier_improvement",
+      "family": "lead90_unit1_605_looks",
+      "interval": [
+        -0.00050334228612,
+        -0.000102448418794
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to care most about scores right around the pool line instead of far-off blowouts. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.0021,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead90_unit1.md",
+      "standard_error": null
+    },
+    "lead90_unit1_2023-local_rps": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 605 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fitting the whole score spread near the pool line versus the usual four-term calculation: 2023 local_rps",
+      "effect": -0.00147249487991,
+      "effect_units": "rps_improvement",
+      "family": "lead90_unit1_605_looks",
+      "interval": [
+        -0.00601247181991,
+        0.0028044335735
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to care most about scores right around the pool line instead of far-off blowouts. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.2568,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead90_unit1.md",
+      "standard_error": null
+    },
+    "lead90_unit1_2023-log_loss": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 605 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fitting the whole score spread near the pool line versus the usual four-term calculation: 2023 log_loss",
+      "effect": -0.00061393397695,
+      "effect_units": "log_loss_improvement",
+      "family": "lead90_unit1_605_looks",
+      "interval": [
+        -0.00100803405531,
+        -0.000205137476738
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to care most about scores right around the pool line instead of far-off blowouts. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.0021,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead90_unit1.md",
+      "standard_error": null
+    },
+    "lead90_unit1_2023-rps": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 605 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fitting the whole score spread near the pool line versus the usual four-term calculation: 2023 rps",
+      "effect": -0.264810240142,
+      "effect_units": "rps_improvement",
+      "family": "lead90_unit1_605_looks",
+      "interval": [
+        -0.491446892877,
+        -0.0580818204913
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to care most about scores right around the pool line instead of far-off blowouts. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.0046,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead90_unit1.md",
+      "standard_error": null
+    },
+    "lead90_unit1_2024-accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 605 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fitting the whole score spread near the pool line versus the usual four-term calculation: 2024 accuracy_points",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "lead90_unit1_605_looks",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to care most about scores right around the pool line instead of far-off blowouts. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead90_unit1.md",
+      "standard_error": null
+    },
+    "lead90_unit1_2024-brier": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 605 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fitting the whole score spread near the pool line versus the usual four-term calculation: 2024 brier",
+      "effect": 0.0,
+      "effect_units": "brier_improvement",
+      "family": "lead90_unit1_605_looks",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to care most about scores right around the pool line instead of far-off blowouts. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead90_unit1.md",
+      "standard_error": null
+    },
+    "lead90_unit1_2024-local_rps": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 605 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fitting the whole score spread near the pool line versus the usual four-term calculation: 2024 local_rps",
+      "effect": 0.00432077590327,
+      "effect_units": "rps_improvement",
+      "family": "lead90_unit1_605_looks",
+      "interval": [
+        0.000883055535884,
+        0.00764472185378
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to care most about scores right around the pool line instead of far-off blowouts. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.9932,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead90_unit1.md",
+      "standard_error": null
+    },
+    "lead90_unit1_2024-log_loss": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 605 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fitting the whole score spread near the pool line versus the usual four-term calculation: 2024 log_loss",
+      "effect": 0.0,
+      "effect_units": "log_loss_improvement",
+      "family": "lead90_unit1_605_looks",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to care most about scores right around the pool line instead of far-off blowouts. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead90_unit1.md",
+      "standard_error": null
+    },
+    "lead90_unit1_2024-rps": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 605 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fitting the whole score spread near the pool line versus the usual four-term calculation: 2024 rps",
+      "effect": 0.101080765726,
+      "effect_units": "rps_improvement",
+      "family": "lead90_unit1_605_looks",
+      "interval": [
+        0.00764510920701,
+        0.197201361066
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to care most about scores right around the pool line instead of far-off blowouts. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.9833,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead90_unit1.md",
+      "standard_error": null
+    },
+    "lead90_unit1_2025-accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 605 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fitting the whole score spread near the pool line versus the usual four-term calculation: 2025 accuracy_points",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "lead90_unit1_605_looks",
+      "interval": [
+        -1.74672489083,
+        1.70212765957
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to care most about scores right around the pool line instead of far-off blowouts. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.50035,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead90_unit1.md",
+      "standard_error": null
+    },
+    "lead90_unit1_2025-brier": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 605 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fitting the whole score spread near the pool line versus the usual four-term calculation: 2025 brier",
+      "effect": 0.000191397225387,
+      "effect_units": "brier_improvement",
+      "family": "lead90_unit1_605_looks",
+      "interval": [
+        -0.000251865220854,
+        0.000625774510886
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to care most about scores right around the pool line instead of far-off blowouts. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.8047,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead90_unit1.md",
+      "standard_error": null
+    },
+    "lead90_unit1_2025-local_rps": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 605 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fitting the whole score spread near the pool line versus the usual four-term calculation: 2025 local_rps",
+      "effect": 0.000736487859893,
+      "effect_units": "rps_improvement",
+      "family": "lead90_unit1_605_looks",
+      "interval": [
+        -0.000739096452159,
+        0.00237627852287
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to care most about scores right around the pool line instead of far-off blowouts. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.8239,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead90_unit1.md",
+      "standard_error": null
+    },
+    "lead90_unit1_2025-log_loss": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 605 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fitting the whole score spread near the pool line versus the usual four-term calculation: 2025 log_loss",
+      "effect": 0.000394095666472,
+      "effect_units": "log_loss_improvement",
+      "family": "lead90_unit1_605_looks",
+      "interval": [
+        -0.000504732185815,
+        0.00128590765245
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to care most about scores right around the pool line instead of far-off blowouts. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.8045,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead90_unit1.md",
+      "standard_error": null
+    },
+    "lead90_unit1_2025-rps": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 605 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fitting the whole score spread near the pool line versus the usual four-term calculation: 2025 rps",
+      "effect": 0.0239562050447,
+      "effect_units": "rps_improvement",
+      "family": "lead90_unit1_605_looks",
+      "interval": [
+        -0.026422562011,
+        0.0795920996223
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to care most about scores right around the pool line instead of far-off blowouts. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.813,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead90_unit1.md",
+      "standard_error": null
+    },
+    "lead90_unit1_pooled-accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 605 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fitting the whole score spread near the pool line versus the usual four-term calculation: pooled accuracy_points",
+      "effect": -0.573888091822,
+      "effect_units": "accuracy_points",
+      "family": "lead90_unit1_605_looks",
+      "interval": [
+        -2.01446105364,
+        0.56657223796
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to care most about scores right around the pool line instead of far-off blowouts. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.20095,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead90_unit1.md",
+      "standard_error": null
+    },
+    "lead90_unit1_pooled-brier": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 605 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fitting the whole score spread near the pool line versus the usual four-term calculation: pooled brier",
+      "effect": -3.8784326839e-05,
+      "effect_units": "brier_improvement",
+      "family": "lead90_unit1_605_looks",
+      "interval": [
+        -0.000307850125186,
+        0.000262450268741
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to care most about scores right around the pool line instead of far-off blowouts. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.3824,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead90_unit1.md",
+      "standard_error": null
+    },
+    "lead90_unit1_pooled-local_rps": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 605 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fitting the whole score spread near the pool line versus the usual four-term calculation: pooled local_rps",
+      "effect": 0.00119182914772,
+      "effect_units": "rps_improvement",
+      "family": "lead90_unit1_605_looks",
+      "interval": [
+        -0.00212077853022,
+        0.0044789589475
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to care most about scores right around the pool line instead of far-off blowouts. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.7629,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead90_unit1.md",
+      "standard_error": null
+    },
+    "lead90_unit1_pooled-log_loss": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 605 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fitting the whole score spread near the pool line versus the usual four-term calculation: pooled log_loss",
+      "effect": -7.40551248321e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "lead90_unit1_605_looks",
+      "interval": [
+        -0.000616940124831,
+        0.000540103773051
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to care most about scores right around the pool line instead of far-off blowouts. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.3865,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead90_unit1.md",
+      "standard_error": null
+    },
+    "lead90_unit1_pooled-rps": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 605 declared looks reported.",
+      "closing_ground": null,
+      "description": "Fitting the whole score spread near the pool line versus the usual four-term calculation: pooled rps",
+      "effect": -0.0469955245875,
+      "effect_units": "rps_improvement",
+      "family": "lead90_unit1_605_looks",
+      "interval": [
+        -0.265258245433,
+        0.108088187267
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to care most about scores right around the pool line instead of far-off blowouts. The held-out comparison is a research result; pool picks have not changed.",
+      "probability_positive": 0.3636,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead90_unit1.md",
+      "standard_error": null
+    }
+  }
+}

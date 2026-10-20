@@ -1,0 +1,61 @@
+{
+  "family": "line_move_target_v1",
+  "signals": {
+    "line_move_implied_pick_vs_served_loso": {
+      "category": "market",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "whole season-block interval sits on the wrong side of zero for the implied-pick claim",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "MKT-20 unit 1 companion: predicted move added to opener as a pick, graded cover accuracy at the opener vs served 841-662; ridge -3.6593 points [-5.7299, -1.7577], P+ 0.000; GBR -3.5928, same verdict",
+      "effect": -3.6593,
+      "effect_units": "accuracy_points",
+      "family": "line_move_target_v1",
+      "interval": [
+        -5.7299,
+        -1.7577
+      ],
+      "league": "nfl",
+      "notes": "companion cell; Brier and log-loss losses live in the artifact; SE corrected to bootstrap width after validator flagged the first offer",
+      "plain_summary": "Turning the predicted line move into picks trailed the served card by about three and a half games per hundred.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_move_target/20260916T192806Z",
+      "standard_error": 1.013
+    },
+    "line_move_predict_mae_vs_zero_loso": {
+      "category": "market",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "whole season-block interval sits on the wrong side of zero for the predictability claim",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "MKT-20 unit 1: ridge on opener-time features predicts close-minus-open, LOSO 2020-2025, paired on 1,503 games; MAE 0.9877 vs zero-move 0.9686, gain -0.0191 [-0.0363, -0.0047], P+ 0.003; GBR worse (-0.1058, IS-OOS gap -0.2051, overfit)",
+      "effect": -0.0191,
+      "effect_units": "mae_improvement",
+      "family": "line_move_target_v1",
+      "interval": [
+        -0.0363,
+        -0.0047
+      ],
+      "league": "nfl",
+      "notes": "8 looks, both candidates reported; label std move 1.485 vs margin 12.97",
+      "plain_summary": "Predicting how far the line will move did worse than predicting no move at all, so the move stays an input, never a forecast target.",
+      "probability_positive": 0.003,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_move_target/20260916T192806Z",
+      "standard_error": 0.00808
+    }
+  }
+}

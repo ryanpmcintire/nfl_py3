@@ -1,0 +1,173 @@
+{
+  "family": "sunday_market_probability_fixed_v1",
+  "signals": {
+    "sunday_market_probability_chronological_accuracy_points_v1": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither a resolved wrong sign nor a validated positive-control power bound; paired intervals cross zero and split-half reliability was not established.",
+      "closing_ground": null,
+      "description": "Include Sunday morning leading-book move in the four-term calibrated cover probability instead of ending the exposure at Sunday midnight.",
+      "effect": 0.09551098376313276,
+      "effect_units": "accuracy_points",
+      "family": "sunday_market_probability_fixed_v1",
+      "interval": [
+        -0.7774538386783285,
+        0.9587727708533078
+      ],
+      "league": "nfl",
+      "notes": "Single fixed structural arm; unchanged four-term design; source summary includes exact season and week cells. Market reference 0.5 is neutral, not historical no-vig odds.",
+      "plain_summary": "Sunday morning line changes can update the fitted chance before kickoff; historical evidence is still uncertain.",
+      "probability_positive": 0.5749,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 72,
+      "sample_games": 1047,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\sunday_market_probability\\20260920_fixed\\summary.json",
+      "standard_error": null
+    },
+    "sunday_market_probability_chronological_brier_v1": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither a resolved wrong sign nor a validated positive-control power bound; paired intervals cross zero and split-half reliability was not established.",
+      "closing_ground": null,
+      "description": "Include Sunday morning leading-book move in the four-term calibrated cover probability instead of ending the exposure at Sunday midnight.",
+      "effect": 0.00040328768975104903,
+      "effect_units": "brier_improvement",
+      "family": "sunday_market_probability_fixed_v1",
+      "interval": [
+        -0.0005287571047837167,
+        0.0014296213924603427
+      ],
+      "league": "nfl",
+      "notes": "Single fixed structural arm; unchanged four-term design; source summary includes exact season and week cells. Market reference 0.5 is neutral, not historical no-vig odds.",
+      "plain_summary": "Sunday morning line changes can update the fitted chance before kickoff; historical evidence is still uncertain.",
+      "probability_positive": 0.7819,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 72,
+      "sample_games": 1047,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\sunday_market_probability\\20260920_fixed\\summary.json",
+      "standard_error": null
+    },
+    "sunday_market_probability_chronological_log_loss_v1": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither a resolved wrong sign nor a validated positive-control power bound; paired intervals cross zero and split-half reliability was not established.",
+      "closing_ground": null,
+      "description": "Include Sunday morning leading-book move in the four-term calibrated cover probability instead of ending the exposure at Sunday midnight.",
+      "effect": 0.0008565882771237945,
+      "effect_units": "log_loss_improvement",
+      "family": "sunday_market_probability_fixed_v1",
+      "interval": [
+        -0.0010751150641362703,
+        0.0030196648075662266
+      ],
+      "league": "nfl",
+      "notes": "Single fixed structural arm; unchanged four-term design; source summary includes exact season and week cells. Market reference 0.5 is neutral, not historical no-vig odds.",
+      "plain_summary": "Sunday morning line changes can update the fitted chance before kickoff; historical evidence is still uncertain.",
+      "probability_positive": 0.7835,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 72,
+      "sample_games": 1047,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts\\sunday_market_probability\\20260920_fixed\\summary.json",
+      "standard_error": null
+    },
+    "sunday_market_probability_leave_one_season_out_accuracy_points_v1": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither a resolved wrong sign nor a validated positive-control power bound; paired intervals cross zero and split-half reliability was not established.",
+      "closing_ground": null,
+      "description": "Include Sunday morning leading-book move in the four-term calibrated cover probability instead of ending the exposure at Sunday midnight.",
+      "effect": 0.2661343978709248,
+      "effect_units": "accuracy_points",
+      "family": "sunday_market_probability_fixed_v1",
+      "interval": [
+        -0.5988023952095808,
+        1.1199130539003284
+      ],
+      "league": "nfl",
+      "notes": "Single fixed structural arm; unchanged four-term design; source summary includes exact season and week cells. Market reference 0.5 is neutral, not historical no-vig odds.",
+      "plain_summary": "Sunday morning line changes can update the fitted chance before kickoff; historical evidence is still uncertain.",
+      "probability_positive": 0.72355,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts\\sunday_market_probability\\20260920_fixed\\summary.json",
+      "standard_error": null
+    },
+    "sunday_market_probability_leave_one_season_out_brier_v1": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither a resolved wrong sign nor a validated positive-control power bound; paired intervals cross zero and split-half reliability was not established.",
+      "closing_ground": null,
+      "description": "Include Sunday morning leading-book move in the four-term calibrated cover probability instead of ending the exposure at Sunday midnight.",
+      "effect": 0.0005491423027575993,
+      "effect_units": "brier_improvement",
+      "family": "sunday_market_probability_fixed_v1",
+      "interval": [
+        -0.0002978974562973895,
+        0.0014638673301127967
+      ],
+      "league": "nfl",
+      "notes": "Single fixed structural arm; unchanged four-term design; source summary includes exact season and week cells. Market reference 0.5 is neutral, not historical no-vig odds.",
+      "plain_summary": "Sunday morning line changes can update the fitted chance before kickoff; historical evidence is still uncertain.",
+      "probability_positive": 0.892,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts\\sunday_market_probability\\20260920_fixed\\summary.json",
+      "standard_error": null
+    },
+    "sunday_market_probability_leave_one_season_out_log_loss_v1": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither a resolved wrong sign nor a validated positive-control power bound; paired intervals cross zero and split-half reliability was not established.",
+      "closing_ground": null,
+      "description": "Include Sunday morning leading-book move in the four-term calibrated cover probability instead of ending the exposure at Sunday midnight.",
+      "effect": 0.0011763151499735445,
+      "effect_units": "log_loss_improvement",
+      "family": "sunday_market_probability_fixed_v1",
+      "interval": [
+        -0.0005943616233527938,
+        0.00309369729127518
+      ],
+      "league": "nfl",
+      "notes": "Single fixed structural arm; unchanged four-term design; source summary includes exact season and week cells. Market reference 0.5 is neutral, not historical no-vig odds.",
+      "plain_summary": "Sunday morning line changes can update the fitted chance before kickoff; historical evidence is still uncertain.",
+      "probability_positive": 0.8982,
+      "recorded_at": "2026-09-20",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts\\sunday_market_probability\\20260920_fixed\\summary.json",
+      "standard_error": null
+    }
+  }
+}

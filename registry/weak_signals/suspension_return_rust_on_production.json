@@ -1,0 +1,61 @@
+{
+  "family": "suspension_return_rust_on_production",
+  "signals": {
+    "suspension_return_rust_on_production": {
+      "category": "offfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; chronology-fixed repeat of the previously scored window.",
+      "closing_ground": null,
+      "description": "LEAD-14 suspension-return rust: FADE a team in the return game plus one for a player back from a confirmed 6+-game suspension, stacked on PRODUCTION weak_stack. Corrected point-in-time rerun on matched feature table.",
+      "effect": 0.21929824561403508,
+      "effect_units": "accuracy_points",
+      "family": "suspension_return_rust_on_production",
+      "interval": [
+        -0.4454342984409799,
+        1.0570824524312896
+      ],
+      "league": "nfl",
+      "notes": "2026-09-05 rerun after point-in-time fix 42d78f6. Supersedes artifacts\\transaction_flags_on_production\\suspension_rust\\20260905T104821Z\\results.json. matched feature table; original table SHA256 13644e5c45345644d6b47733b62dee592a49a306123ce0f521c5d987dd52bbcf; current table SHA256 41a778f26a38e63bede7e7bf01f4a4a30254c09164cae3c5ee2cce87bc2547f6. Same assigned 2020-2021 window, same opener grade; not a new independent outcome look. The matched and active entries overlap and are correlated versions, never independent votes. 466 paired rows include 10 opener pushes: the metric scores 456 games. Split-half reliability unmeasured, not zero; predeclared deterministic wire/snap-history construct. Shared oracle verified identical across all three candidate profiles (oracle_equivalence.json); positive control +44.2982 accuracy points, probability_positive=1.0. Live card unchanged by this lane.",
+      "plain_summary": "We checked teams after a player returned from a long suspension. The corrected result depends on which version of the main model is used.",
+      "probability_positive": 0.60665,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts\\vegasinsider\\cx7_42d78f6_transactions_matched\\suspension_rust_screen\\results.json",
+      "standard_error": null
+    },
+    "suspension_return_rust_on_production_cx7_active_table": {
+      "category": "offfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; chronology-fixed repeat of the previously scored window.",
+      "closing_ground": null,
+      "description": "LEAD-14 suspension-return rust: FADE a team in the return game plus one for a player back from a confirmed 6+-game suspension, stacked on PRODUCTION weak_stack. Corrected point-in-time rerun on active feature table.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "suspension_return_rust_on_production",
+      "interval": [
+        -0.881057268722467,
+        0.87527352297593
+      ],
+      "league": "nfl",
+      "notes": "2026-09-05 rerun after point-in-time fix 42d78f6. Supersedes artifacts\\transaction_flags_on_production\\suspension_rust\\20260905T104821Z\\results.json. active feature table; original table SHA256 13644e5c45345644d6b47733b62dee592a49a306123ce0f521c5d987dd52bbcf; current table SHA256 41a778f26a38e63bede7e7bf01f4a4a30254c09164cae3c5ee2cce87bc2547f6. Same assigned 2020-2021 window, same opener grade; not a new independent outcome look. The matched and active entries overlap and are correlated versions, never independent votes. 466 paired rows include 10 opener pushes: the metric scores 456 games. Split-half reliability unmeasured, not zero; predeclared deterministic wire/snap-history construct. Shared oracle verified identical across all three candidate profiles (oracle_equivalence.json); positive control +44.2982 accuracy points, probability_positive=1.0. Live card unchanged by this lane.",
+      "plain_summary": "We checked teams after a player returned from a long suspension. The corrected result depends on which version of the main model is used.",
+      "probability_positive": 0.395,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts\\vegasinsider\\cx7_42d78f6_transactions\\suspension_rust_screen\\results.json",
+      "standard_error": null
+    }
+  }
+}

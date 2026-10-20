@@ -1,0 +1,33 @@
+{
+  "family": "redzone_reversion_on_production",
+  "signals": {
+    "redzone_third_down_over_fade_on_production": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Close-graded look; per AGENTS.md's binding grade-at-the-opener rule a close-graded run settles no play/no-play decision and cannot carry a terminal classification regardless of sign. Neither admissible closing ground applies: the sign is POSITIVE (so no wrong_sign_resolved), the trait's split-half reliability is 0.407 with 95% CI [+0.337,+0.473] (so no no_split_half_reliability), and the positive control proved the instrument CAN see an effect (+50.134 pts, P+ 1.000) but did not prove it would reliably resolve an effect of this size on 746 games (so no positive_control_bound). Reported as probability_positive, never as a binary interval statement.",
+      "closing_ground": null,
+      "description": "Third-down mean-reversion fade (redzone_reversion_screen C3) as ONE game-level column redzone_third_down_over_fade_diff = int(home flagged) - int(away flagged), stacked on the PRODUCTION weak_stack / market_residual / ridge alpha 10.0 chain and compared against that chain unmodified. Close-graded, rotation-assigned window [2011, 2013], paired forced-pick accuracy delta.",
+      "effect": 0.67,
+      "effect_units": "accuracy_points",
+      "family": "redzone_reversion_on_production",
+      "interval": [
+        -0.408,
+        1.854
+      ],
+      "league": "nfl",
+      "notes": "Window [2011,2013], --mode screen, ASSIGNED by nfl-ats rotation assign (never hand-picked); family declared with no --inherits (the reversion battery holds no rotation family) and no --acknowledge-mined (block does not intersect 2018-2025). Instrument checks ran FIRST, in order. Within-week permutation null (200 draws, real feature): centre +0.172 pts, sd 0.666, 95% [-1.206,+1.344]; the observed +0.670 sits at the 74.5th percentile of that null. Positive control (candidate column replaced by realized ats_margin): +50.134 accuracy points, week-blocked P+ 1.000, 95% [+46.428,+53.652], 100.0th percentile of its own null -- the full-profile ridge fit is not blind. Home-pick rates: baseline 53.646%, candidate 56.120% (2.47-point gap; this is what pushes the null off zero, and the percentile reading is the null-adjusted number). Baseline accuracy 49.866% vs candidate 50.536% on 746 paired games / 51 weeks. Season-blocked secondary [+0.000,+2.000], P+ 0.672, reported beside the week-blocked primary and never averaged with it; only 3 season blocks. Column distribution INSIDE the window: coverage 100.000% of 768 games, -1 on 18.750% (144), 0 on 62.500% (480), +1 on 18.750% (144), non-zero on exactly 37.500%. TWO DECLARED DEVIATIONS from the registered cell, both frozen in docs/redzone_reversion_on_production.md section 2 before scoring: (1) the team-game cell becomes one signed game-level difference, preserving C3's direction (a home over-performer to fade is +1) and collapsing both-flagged and neither-flagged to 0; (2) the top-quartile threshold is recomputed EXPANDING over strictly prior seasons only, replacing the frozen screen's whole-panel 2009-2025 quantile (a mild look-ahead a pregame column may not carry) -- a noisier threshold can only attenuate toward the null. NOT POOLABLE with the bare-baseline reversion battery (redzone_reversion_c1..c6): same trait, non-commensurable comparators (subset cover-rate gap vs a bare market baseline versus a paired forced-pick accuracy delta vs the full production chain) and different populations after deviation 2; AGENTS.md's commensurability rule forbids combining them.",
+      "plain_summary": "Teams that converted third downs at a top-quartile rate last season tend to slip back toward the pack. Feeding that fade to the model we actually play made its picks slightly better on this window.",
+      "probability_positive": 0.849,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.407,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/redzone_reversion_on_production/20260901T194749Z/results.json",
+      "standard_error": null
+    }
+  }
+}

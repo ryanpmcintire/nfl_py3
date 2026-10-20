@@ -1,0 +1,61 @@
+{
+  "family": "deadline_integration_drag_on_production",
+  "signals": {
+    "deadline_integration_drag_on_production": {
+      "category": "offfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; chronology-fixed repeat of the previously scored window.",
+      "closing_ground": null,
+      "description": "LEAD-23 trade-deadline integration drag: FADE a team acquiring a confirmed high-snap player in its first 3 REG games after the acquisition, stacked on PRODUCTION weak_stack. Corrected point-in-time rerun on matched feature table.",
+      "effect": 0.8771929824561403,
+      "effect_units": "accuracy_points",
+      "family": "deadline_integration_drag_on_production",
+      "interval": [
+        0.21551724137931033,
+        1.7660044150110374
+      ],
+      "league": "nfl",
+      "notes": "2026-09-05 rerun after point-in-time fix 42d78f6. Supersedes artifacts\\transaction_flags_on_production\\deadline_drag\\20260905T104011Z\\results.json. matched feature table; original table SHA256 13644e5c45345644d6b47733b62dee592a49a306123ce0f521c5d987dd52bbcf; current table SHA256 41a778f26a38e63bede7e7bf01f4a4a30254c09164cae3c5ee2cce87bc2547f6. Same assigned 2020-2021 window, same opener grade; not a new independent outcome look. The matched and active entries overlap and are correlated versions, never independent votes. 466 paired rows include 10 opener pushes: the metric scores 456 games. Split-half reliability unmeasured, not zero; predeclared deterministic wire/snap-history construct. Shared oracle verified identical across all three candidate profiles (oracle_equivalence.json); positive control +44.2982 accuracy points, probability_positive=1.0. Live card unchanged by this lane.",
+      "plain_summary": "We checked teams after trading for a heavily used player. The corrected comparison favours the version that accounts for those trades.",
+      "probability_positive": 0.986,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts\\vegasinsider\\cx7_42d78f6_transactions_matched\\deadline_drag_screen\\results.json",
+      "standard_error": null
+    },
+    "deadline_integration_drag_on_production_cx7_active_table": {
+      "category": "offfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; chronology-fixed repeat of the previously scored window.",
+      "closing_ground": null,
+      "description": "LEAD-23 trade-deadline integration drag: FADE a team acquiring a confirmed high-snap player in its first 3 REG games after the acquisition, stacked on PRODUCTION weak_stack. Corrected point-in-time rerun on active feature table.",
+      "effect": 0.43859649122807015,
+      "effect_units": "accuracy_points",
+      "family": "deadline_integration_drag_on_production",
+      "interval": [
+        0.0,
+        1.1013215859030838
+      ],
+      "league": "nfl",
+      "notes": "2026-09-05 rerun after point-in-time fix 42d78f6. Supersedes artifacts\\transaction_flags_on_production\\deadline_drag\\20260905T104011Z\\results.json. active feature table; original table SHA256 13644e5c45345644d6b47733b62dee592a49a306123ce0f521c5d987dd52bbcf; current table SHA256 41a778f26a38e63bede7e7bf01f4a4a30254c09164cae3c5ee2cce87bc2547f6. Same assigned 2020-2021 window, same opener grade; not a new independent outcome look. The matched and active entries overlap and are correlated versions, never independent votes. 466 paired rows include 10 opener pushes: the metric scores 456 games. Split-half reliability unmeasured, not zero; predeclared deterministic wire/snap-history construct. Shared oracle verified identical across all three candidate profiles (oracle_equivalence.json); positive control +44.2982 accuracy points, probability_positive=1.0. Live card unchanged by this lane.",
+      "plain_summary": "We checked teams after trading for a heavily used player. The corrected comparison favours the version that accounts for those trades.",
+      "probability_positive": 0.87645,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts\\vegasinsider\\cx7_42d78f6_transactions\\deadline_drag_screen\\results.json",
+      "standard_error": null
+    }
+  }
+}

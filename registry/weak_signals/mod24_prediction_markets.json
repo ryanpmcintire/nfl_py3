@@ -1,0 +1,173 @@
+{
+  "family": "mod24_prediction_markets",
+  "signals": {
+    "u8_kalshi_deadline_combined_minus_served": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Served logit plus market term leave-one-week-out minus served, 2025; held-out LL .6945 v served .6941, market-only .6921",
+      "effect": 1.87,
+      "effect_units": "accuracy_points",
+      "family": "mod24_prediction_markets",
+      "interval": [
+        -5.95,
+        9.23
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.683,
+      "recorded_at": "2026-10-20",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "scripts/mod24_u8_grade_deadline.py",
+      "standard_error": 3.88
+    },
+    "u8_kalshi_deadline_minus_served": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Kalshi market side minus served side accuracy points, 2025 week-block bootstrap, 124 disagreement games 65-59",
+      "effect": 2.25,
+      "effect_units": "accuracy_points",
+      "family": "mod24_prediction_markets",
+      "interval": [
+        -6.69,
+        10.69
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.685,
+      "recorded_at": "2026-10-20",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "scripts/mod24_u8_grade_deadline.py",
+      "standard_error": 4.49
+    },
+    "u8_kalshi_deadline_side_vs_50": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Kalshi deadline-implied discrete cover side vs 50 percent at Tuesday opener, 2025, week-block bootstrap",
+      "effect": 3.18,
+      "effect_units": "accuracy_points",
+      "family": "mod24_prediction_markets",
+      "interval": [
+        -3.23,
+        9.26
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.843,
+      "recorded_at": "2026-10-20",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "scripts/mod24_u8_grade_deadline.py",
+      "standard_error": 3.18
+    },
+    "u8_poly_deadline_combined_minus_served": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Served logit plus market term leave-one-week-out minus served, 2025; held-out LL .7097 v served .6992",
+      "effect": -2.35,
+      "effect_units": "accuracy_points",
+      "family": "mod24_prediction_markets",
+      "interval": [
+        -14.79,
+        8.84
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.342,
+      "recorded_at": "2026-10-20",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 170,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "scripts/mod24_u8_grade_deadline.py",
+      "standard_error": 6.02
+    },
+    "u8_poly_deadline_minus_served": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Polymarket market side minus served side accuracy points, 2025, 81 disagreement games 43-38",
+      "effect": 2.94,
+      "effect_units": "accuracy_points",
+      "family": "mod24_prediction_markets",
+      "interval": [
+        -8.76,
+        14.12
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.71,
+      "recorded_at": "2026-10-20",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 170,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "scripts/mod24_u8_grade_deadline.py",
+      "standard_error": 5.84
+    },
+    "u8_poly_deadline_side_vs_50": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Polymarket deadline-implied discrete cover side vs 50 percent at Tuesday opener, 2025, week-block bootstrap",
+      "effect": 0.59,
+      "effect_units": "accuracy_points",
+      "family": "mod24_prediction_markets",
+      "interval": [
+        -5.83,
+        6.46
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.567,
+      "recorded_at": "2026-10-20",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 170,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "scripts/mod24_u8_grade_deadline.py",
+      "standard_error": 3.15
+    }
+  }
+}

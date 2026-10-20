@@ -1,0 +1,677 @@
+{
+  "family": "lead92_unit1_713_looks",
+  "signals": {
+    "lead92_unit1_2023_accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: 2023",
+      "effect": 0.429184549356,
+      "effect_units": "accuracy_points",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        -0.892857142857,
+        1.72413793103
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.71665,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_2023_brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: 2023",
+      "effect": -1.33572538364e-05,
+      "effect_units": "brier_improvement",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        -5.75896682096e-05,
+        3.44857497169e-05
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.2776,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_2023_log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: 2023",
+      "effect": -2.66709129713e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        -0.000115219178069,
+        6.9093149542e-05
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.2782,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_2023_nominee_brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: 2023",
+      "effect": 2.05749299764e-05,
+      "effect_units": "brier_improvement",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        -0.000191126991015,
+        0.000236399776279
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.5684,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_2023_pool_points_per_week": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: 2023",
+      "effect": 0.0,
+      "effect_units": "pool_points_per_week",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_2023_rps_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: 2023",
+      "effect": 0.00110596696045,
+      "effect_units": "rps_improvement",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        0.000191948601016,
+        0.00210785461422
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.9934,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_2024_accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: 2024",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_2024_brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: 2024",
+      "effect": -0.0,
+      "effect_units": "brier_improvement",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        -0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_2024_log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: 2024",
+      "effect": -0.0,
+      "effect_units": "log_loss_improvement",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        -0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_2024_nominee_brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: 2024",
+      "effect": -0.0,
+      "effect_units": "brier_improvement",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        -0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_2024_pool_points_per_week": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: 2024",
+      "effect": 0.0,
+      "effect_units": "pool_points_per_week",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_2024_rps_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: 2024",
+      "effect": -0.0,
+      "effect_units": "rps_improvement",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        -0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_2025_accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: 2025",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        -1.29310344828,
+        1.2987012987
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.4994,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_2025_brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: 2025",
+      "effect": -2.33649965378e-05,
+      "effect_units": "brier_improvement",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        -0.000376162773204,
+        0.000365568529551
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.4367,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_2025_log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: 2025",
+      "effect": -4.11532358817e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        -0.000783182898111,
+        0.000784049890724
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.4456,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_2025_nominee_brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: 2025",
+      "effect": -0.00408609851276,
+      "effect_units": "brier_improvement",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        -0.0132816749496,
+        0.00105451910854
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.0938,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_2025_pool_points_per_week": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: 2025",
+      "effect": -0.0277777777778,
+      "effect_units": "pool_points_per_week",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        -0.0833333333333,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.1806,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_2025_rps_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: 2025",
+      "effect": -0.00257321467337,
+      "effect_units": "rps_improvement",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        -0.00729446487043,
+        0.00282894256162
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.1559,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_pooled_accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: pooled",
+      "effect": 0.143472022956,
+      "effect_units": "accuracy_points",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        -0.441176470588,
+        0.860832137733
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.65305,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_pooled_brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: pooled",
+      "effect": -1.22423519953e-05,
+      "effect_units": "brier_improvement",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        -0.000144366709961,
+        0.000124160091312
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.37435,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_pooled_log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: pooled",
+      "effect": -2.261387869e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        -0.000299395115779,
+        0.00026909096707
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.37975,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_pooled_nominee_brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: pooled",
+      "effect": -0.0014091231005,
+      "effect_units": "brier_improvement",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        -0.00531486727095,
+        0.000201165008128
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.21525,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_pooled_pool_points_per_week": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: pooled",
+      "effect": -0.00925925925926,
+      "effect_units": "pool_points_per_week",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        -0.037037037037,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.2399,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    },
+    "lead92_unit1_pooled_rps_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 713 declared looks reported.",
+      "closing_ground": null,
+      "description": "Best Pick ordering fit versus the usual four-term calculation: pooled",
+      "effect": -0.000486794121146,
+      "effect_units": "rps_improvement",
+      "family": "lead92_unit1_713_looks",
+      "interval": [
+        -0.00332846602366,
+        0.00132538493595
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This teaches the pick calculation to rank the week's games against each other, the way the bonus pick works. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.42935,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead92_unit1.md",
+      "standard_error": null
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "family": "special_teams_return_stacked_on_production",
+  "signals": {
+    "special_teams_return_top_quartile_stacked_on_production": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% CI [-1.9920, +2.5743] accuracy points, P+ 0.57725 (n=1,503 games, 107 week-blocks); season-blocked secondary 95% CI [-1.1811, +1.8229], P+ 0.5877 (6 season-blocks). Point estimate is POSITIVE on both blockings and neither interval sits entirely below zero, so wrong_sign_resolved does not apply; no positive control was run against this stacked form, so positive_control_bound does not apply either. Per AGENTS.md an interval crossing zero is never grounds to close a line of work -- this is a mined-seasons read (already-looked-at 2020-2025 opener archive) offered as CONTEXT for the registration decision, not a gate; the underlying registry cell special_teams_return_top_quartile (week-blocked P+ 0.9547, reliability 0.109-0.158) is the primary evidence.",
+      "closing_ground": null,
+      "description": "special_teams_return_top_quartile tilt overlay (flip the pick onto a team whose prior-season punt+kickoff return composite ranks top-quartile league-wide, when exactly one side qualifies and the model was not already on it) stacked on top of the active model's own opener-graded PRODUCTION picks, REG 2020-2025, 1,503 scored games, 283 games flipped, 74 both-flagged games left untouched.",
+      "effect": 0.26613439787092075,
+      "effect_units": "accuracy_points",
+      "family": "special_teams_return_stacked_on_production",
+      "interval": [
+        -1.9920318725099584,
+        2.574299933295838
+      ],
+      "league": "nfl",
+      "notes": "Stacked-on-production read for the special_teams_return_tilt_overlay prospective challenger (scripts/special_teams_return_stacked_backtest.py; docs/special_teams_return_tilt_overlay.md). n_flipped=283 of 1537 games; n_both_flagged_untouched=74. Baseline is the active model's own opener-graded production card (artifacts/opener_evaluation/20260819T174244Z/per_game.parquet), not a synthetic baseline.",
+      "plain_summary": "Teams with an elite prior-season punt/kickoff return unit get the pick flipped onto them when the model was not already backing them. Layered on top of what the model actually plays across 1,503 graded games (2020-2025), it flips 283 games and nudges accuracy from 53.36% to 53.63% -- a small, uncertain move (interval still crosses zero) but not a wrong-way one.",
+      "probability_positive": 0.57725,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.109,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/special_teams_return_stacked/20260901T193949Z/results.json",
+      "standard_error": null
+    }
+  }
+}

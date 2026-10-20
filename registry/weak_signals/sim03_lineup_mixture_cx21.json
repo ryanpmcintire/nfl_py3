@@ -1,0 +1,173 @@
+{
+  "family": "sim03_lineup_mixture_cx21",
+  "signals": {
+    "sim03_lineup_mixture_accuracy_cx21": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved mechanism refutation or demonstrated candidate-sized positive-control bound; control is snap-derived participation, not official inactive status.",
+      "closing_ground": null,
+      "description": "SIM-03 mixture centered lineup uncertainty versus production; opener-graded weekly chronological screen",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "sim03_lineup_mixture_cx21",
+      "interval": [
+        -0.2413515687851971,
+        0.24311183144246354
+      ],
+      "league": "nfl",
+      "notes": "K=200; seed=2026090521; 20000 week-blocked draws; missing 2025 panel; overlapping arms are not independent signals; positive Brier improvement means lower loss.",
+      "plain_summary": "Allowing for uncertain player availability slightly changes cover chances. This screen compares those chances with the existing forecast.",
+      "probability_positive": 0.34535,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 89,
+      "sample_games": 1236,
+      "seasons": [
+        2020,
+        2024
+      ],
+      "source": "artifacts/experiments/lineup_mixture/results.json",
+      "standard_error": 0.11494465589378491
+    },
+    "sim03_lineup_mixture_brier_cx21": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved mechanism refutation or demonstrated candidate-sized positive-control bound; control is snap-derived participation, not official inactive status.",
+      "closing_ground": null,
+      "description": "SIM-03 mixture centered lineup uncertainty versus production; opener-graded weekly chronological screen",
+      "effect": 3.25122803949041e-05,
+      "effect_units": "brier_improvement",
+      "family": "sim03_lineup_mixture_cx21",
+      "interval": [
+        -2.67991237834828e-05,
+        9.30683424951064e-05
+      ],
+      "league": "nfl",
+      "notes": "K=200; seed=2026090521; 20000 week-blocked draws; missing 2025 panel; overlapping arms are not independent signals; positive Brier improvement means lower loss.",
+      "plain_summary": "Allowing for uncertain player availability slightly changes cover chances. This screen compares those chances with the existing forecast.",
+      "probability_positive": 0.859,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 89,
+      "sample_games": 1236,
+      "seasons": [
+        2020,
+        2024
+      ],
+      "source": "artifacts/experiments/lineup_mixture/results.json",
+      "standard_error": 3.04832982791602e-05
+    },
+    "sim03_lineup_oracle_accuracy_cx21": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved mechanism refutation or demonstrated candidate-sized positive-control bound; control is snap-derived participation, not official inactive status.",
+      "closing_ground": null,
+      "description": "SIM-03 oracle centered lineup uncertainty versus production; opener-graded weekly chronological screen",
+      "effect": -0.4854368932038835,
+      "effect_units": "accuracy_points",
+      "family": "sim03_lineup_mixture_cx21",
+      "interval": [
+        -1.7785683660678342,
+        0.8764940239043825
+      ],
+      "league": "nfl",
+      "notes": "K=200; seed=2026090521; 20000 week-blocked draws; missing 2025 panel; overlapping arms are not independent signals; positive Brier improvement means lower loss.",
+      "plain_summary": "Allowing for uncertain player availability slightly changes cover chances. This screen compares those chances with the existing forecast.",
+      "probability_positive": 0.21715,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 89,
+      "sample_games": 1236,
+      "seasons": [
+        2020,
+        2024
+      ],
+      "source": "artifacts/experiments/lineup_mixture/results.json",
+      "standard_error": 0.6735597947609725
+    },
+    "sim03_lineup_oracle_brier_cx21": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved mechanism refutation or demonstrated candidate-sized positive-control bound; control is snap-derived participation, not official inactive status.",
+      "closing_ground": null,
+      "description": "SIM-03 oracle centered lineup uncertainty versus production; opener-graded weekly chronological screen",
+      "effect": -0.00044207702225593405,
+      "effect_units": "brier_improvement",
+      "family": "sim03_lineup_mixture_cx21",
+      "interval": [
+        -0.001383035587918823,
+        0.000488087261453648
+      ],
+      "league": "nfl",
+      "notes": "K=200; seed=2026090521; 20000 week-blocked draws; missing 2025 panel; overlapping arms are not independent signals; positive Brier improvement means lower loss.",
+      "plain_summary": "Allowing for uncertain player availability slightly changes cover chances. This screen compares those chances with the existing forecast.",
+      "probability_positive": 0.1769,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 89,
+      "sample_games": 1236,
+      "seasons": [
+        2020,
+        2024
+      ],
+      "source": "artifacts/experiments/lineup_mixture/results.json",
+      "standard_error": 0.0004761253120481769
+    },
+    "sim03_lineup_permutation_accuracy_cx21": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved mechanism refutation or demonstrated candidate-sized positive-control bound; control is snap-derived participation, not official inactive status.",
+      "closing_ground": null,
+      "description": "SIM-03 permutation centered lineup uncertainty versus production; opener-graded weekly chronological screen",
+      "effect": -1.6181229773462784,
+      "effect_units": "accuracy_points",
+      "family": "sim03_lineup_mixture_cx21",
+      "interval": [
+        -3.2414910858995136,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "K=200; seed=2026090521; 20000 week-blocked draws; missing 2025 panel; overlapping arms are not independent signals; positive Brier improvement means lower loss.",
+      "plain_summary": "Allowing for uncertain player availability slightly changes cover chances. This screen compares those chances with the existing forecast.",
+      "probability_positive": 0.0232,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 89,
+      "sample_games": 1236,
+      "seasons": [
+        2020,
+        2024
+      ],
+      "source": "artifacts/experiments/lineup_mixture/results.json",
+      "standard_error": 0.8369305955332467
+    },
+    "sim03_lineup_permutation_brier_cx21": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved mechanism refutation or demonstrated candidate-sized positive-control bound; control is snap-derived participation, not official inactive status.",
+      "closing_ground": null,
+      "description": "SIM-03 permutation centered lineup uncertainty versus production; opener-graded weekly chronological screen",
+      "effect": -0.0013442877416382172,
+      "effect_units": "brier_improvement",
+      "family": "sim03_lineup_mixture_cx21",
+      "interval": [
+        -0.0031073216603112416,
+        0.00040276729050560644
+      ],
+      "league": "nfl",
+      "notes": "K=200; seed=2026090521; 20000 week-blocked draws; missing 2025 panel; overlapping arms are not independent signals; positive Brier improvement means lower loss.",
+      "plain_summary": "Allowing for uncertain player availability slightly changes cover chances. This screen compares those chances with the existing forecast.",
+      "probability_positive": 0.06635,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 89,
+      "sample_games": 1236,
+      "seasons": [
+        2020,
+        2024
+      ],
+      "source": "artifacts/experiments/lineup_mixture/results.json",
+      "standard_error": 0.0009000587152138153
+    }
+  }
+}

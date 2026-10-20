@@ -1,0 +1,341 @@
+{
+  "family": "era_weighting_half_life_on_card",
+  "signals": {
+    "era_weighted_hl16_card_overall": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "The week-blocked 95% interval [-2.4487, -0.7363] sits ENTIRELY below zero, admissible ground (a), and the season-blocked interval [-2.2193, -0.9498] agrees. This arm was declared as SENSITIVITY, not as a candidate for the card; the closure is of the 16-season half-life as a replacement for the served model on the played card at the opener, and it is recorded because the mechanical rule fired, not because this arm was ever proposed.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Sensitivity arm: 16-season half-life, the gentlest recency weighting tested, scored through the served three-member card at the opener. Card accuracy 55.888% vs 54.291%; 50 of 1,503 picks changed.",
+      "effect": -1.5968063872255487,
+      "effect_units": "accuracy_points",
+      "family": "era_weighting_half_life_on_card",
+      "interval": [
+        -2.4487162171288106,
+        -0.7362784471218206
+      ],
+      "league": "nfl",
+      "notes": "Closing grounds, verbatim: an interval containing zero is NEVER grounds to reject or close; only (a) a RESOLVED wrong sign (whole interval on the wrong side of zero) or zero split-half reliability, or (b) a positive-control bound, close a line. Everything else is unresolved_below_power. Correlated decomposition: every cell in this family scores the SAME 1,503 opener-graded games of artifacts/opener_evaluation/20260909T183120Z, so these rows are not independent votes; pool at most one of them. Population overlaps the four prior era-weighting looks (docs/era_weighting_screen.md Sections 6 and 8, docs/era_weighting_promotion.md), which scored the same 2020-2025 archive at the ECDF read; this look is the first at the served gaussian_median read with the served home-side offset, and the first through the played card. Mined-ledger discount for 2018-2025 applies (ROADMAP RWB-16). Split-half reliability is not recorded because the varied thing is a training-recipe sample weight, not a measured team trait; the arm is deterministic given the recipe. Reproduction gates passed before any weighted arm was read: the incumbent arm replays the archive with max residual gap 0.0 and max probability gap 0.0 on 1,537 rows, and a uniform-weight refit through the challenger's own fit_weighted_ridge_margin reproduces the incumbent to 0.0 on both (atol 1e-9), with an identical 279-game served flip set.",
+      "plain_summary": "Even the mildest version of recency weighting -- one that changes only 50 picks in six seasons -- makes the played card worse by about 1.6 wins per hundred games.",
+      "probability_positive": 0.0002,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/era_weighted_on_card/20260909T231403Z/arm_results.csv (docs/era_weighted_on_card.md)",
+      "standard_error": 0.434893272485275
+    },
+    "era_weighted_hl16_standalone_overall": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "The week-blocked 95% interval [-2.8667, -0.3371] sits ENTIRELY below zero, admissible ground (a); the season-blocked interval [-2.6283, -0.4791] agrees. Sensitivity arm, recorded because the mechanical rule fired.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Sensitivity arm: 16-season half-life scored standalone on the served raw model at the opener. Raw accuracy 54.558% vs 52.961%; 88 of 1,503 picks changed.",
+      "effect": -1.5968063872255487,
+      "effect_units": "accuracy_points",
+      "family": "era_weighting_half_life_on_card",
+      "interval": [
+        -2.8666666666666667,
+        -0.33714873689778
+      ],
+      "league": "nfl",
+      "notes": "Closing grounds, verbatim: an interval containing zero is NEVER grounds to reject or close; only (a) a RESOLVED wrong sign (whole interval on the wrong side of zero) or zero split-half reliability, or (b) a positive-control bound, close a line. Everything else is unresolved_below_power. Correlated decomposition: every cell in this family scores the SAME 1,503 opener-graded games of artifacts/opener_evaluation/20260909T183120Z, so these rows are not independent votes; pool at most one of them. Population overlaps the four prior era-weighting looks (docs/era_weighting_screen.md Sections 6 and 8, docs/era_weighting_promotion.md), which scored the same 2020-2025 archive at the ECDF read; this look is the first at the served gaussian_median read with the served home-side offset, and the first through the played card. Mined-ledger discount for 2018-2025 applies (ROADMAP RWB-16). Split-half reliability is not recorded because the varied thing is a training-recipe sample weight, not a measured team trait; the arm is deterministic given the recipe. Reproduction gates passed before any weighted arm was read: the incumbent arm replays the archive with max residual gap 0.0 and max probability gap 0.0 on 1,537 rows, and a uniform-weight refit through the challenger's own fit_weighted_ridge_margin reproduces the incumbent to 0.0 on both (atol 1e-9), with an identical 279-game served flip set.",
+      "plain_summary": "The mildest recency weighting also hurts the computer's first pick, by about 1.6 wins per hundred games.",
+      "probability_positive": 0.00595,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/era_weighted_on_card/20260909T231403Z/arm_results.csv (docs/era_weighted_on_card.md)",
+      "standard_error": 0.6405042762413241
+    },
+    "era_weighted_hl4_card_overall": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "The week-blocked upper bound is exactly 0.0, not below it, so the interval is not entirely on the wrong side of zero and wrong_sign_resolved is inadmissible; no positive control was run. Category 3, reported with probability_positive 0.0278.",
+      "closing_ground": null,
+      "description": "Sensitivity arm, declared as sensitivity and never as selection: the same refit at a 4-season half-life, scored through the served three-member card at the opener. Card accuracy 55.888% vs 54.225%; 163 of 1,503 picks changed.",
+      "effect": -1.66333998669328,
+      "effect_units": "accuracy_points",
+      "family": "era_weighting_half_life_on_card",
+      "interval": [
+        -3.3707865168539324,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Closing grounds, verbatim: an interval containing zero is NEVER grounds to reject or close; only (a) a RESOLVED wrong sign (whole interval on the wrong side of zero) or zero split-half reliability, or (b) a positive-control bound, close a line. Everything else is unresolved_below_power. Correlated decomposition: every cell in this family scores the SAME 1,503 opener-graded games of artifacts/opener_evaluation/20260909T183120Z, so these rows are not independent votes; pool at most one of them. Population overlaps the four prior era-weighting looks (docs/era_weighting_screen.md Sections 6 and 8, docs/era_weighting_promotion.md), which scored the same 2020-2025 archive at the ECDF read; this look is the first at the served gaussian_median read with the served home-side offset, and the first through the played card. Mined-ledger discount for 2018-2025 applies (ROADMAP RWB-16). Split-half reliability is not recorded because the varied thing is a training-recipe sample weight, not a measured team trait; the arm is deterministic given the recipe. Reproduction gates passed before any weighted arm was read: the incumbent arm replays the archive with max residual gap 0.0 and max probability gap 0.0 on 1,537 rows, and a uniform-weight refit through the challenger's own fit_weighted_ridge_margin reproduces the incumbent to 0.0 on both (atol 1e-9), with an identical 279-game served flip set.",
+      "plain_summary": "Forgetting old seasons twice as fast also makes the played card worse by about 1.7 wins per hundred games, though this particular cut stops just short of being settled.",
+      "probability_positive": 0.027775,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/era_weighted_on_card/20260909T231403Z/arm_results.csv (docs/era_weighted_on_card.md)",
+      "standard_error": 0.8666232371917221
+    },
+    "era_weighted_hl4_standalone_overall": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "The week-blocked 95% interval [-3.8437, +0.3968] contains zero, so neither admissible closing ground applies and no positive control was run. Category 3, probability_positive 0.0543.",
+      "closing_ground": null,
+      "description": "Sensitivity arm: 4-season half-life scored standalone on the served raw model at the opener. Raw accuracy 54.558% vs 52.828%; 246 of 1,503 picks changed.",
+      "effect": -1.7298735861610113,
+      "effect_units": "accuracy_points",
+      "family": "era_weighting_half_life_on_card",
+      "interval": [
+        -3.843668756690624,
+        0.3968253968253968
+      ],
+      "league": "nfl",
+      "notes": "Closing grounds, verbatim: an interval containing zero is NEVER grounds to reject or close; only (a) a RESOLVED wrong sign (whole interval on the wrong side of zero) or zero split-half reliability, or (b) a positive-control bound, close a line. Everything else is unresolved_below_power. Correlated decomposition: every cell in this family scores the SAME 1,503 opener-graded games of artifacts/opener_evaluation/20260909T183120Z, so these rows are not independent votes; pool at most one of them. Population overlaps the four prior era-weighting looks (docs/era_weighting_screen.md Sections 6 and 8, docs/era_weighting_promotion.md), which scored the same 2020-2025 archive at the ECDF read; this look is the first at the served gaussian_median read with the served home-side offset, and the first through the played card. Mined-ledger discount for 2018-2025 applies (ROADMAP RWB-16). Split-half reliability is not recorded because the varied thing is a training-recipe sample weight, not a measured team trait; the arm is deterministic given the recipe. Reproduction gates passed before any weighted arm was read: the incumbent arm replays the archive with max residual gap 0.0 and max probability gap 0.0 on 1,537 rows, and a uniform-weight refit through the challenger's own fit_weighted_ridge_margin reproduces the incumbent to 0.0 on both (atol 1e-9), with an identical 279-game served flip set.",
+      "plain_summary": "On the computer's first pick, the fastest-forgetting version is the worst of the three tested, but not by enough to call it settled.",
+      "probability_positive": 0.054275,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/era_weighted_on_card/20260909T231403Z/arm_results.csv (docs/era_weighted_on_card.md)",
+      "standard_error": 1.0762586437998036
+    },
+    "era_weighted_hl8_card_0-6.5": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "The week-blocked 95% interval [-2.7701, +0.4496] contains zero; neither admissible closing ground applies. Category 3, probability_positive 0.0775.",
+      "closing_ground": null,
+      "description": "8-season half-life through the served card, restricted to opener spreads of 6.5 points or fewer. Card accuracy 57.609% vs 56.431% on 1,104 games; 77 picks changed.",
+      "effect": -1.177536231884058,
+      "effect_units": "accuracy_points",
+      "family": "era_weighting_half_life_on_card",
+      "interval": [
+        -2.7700892912399526,
+        0.44964028776978415
+      ],
+      "league": "nfl",
+      "notes": "Closing grounds, verbatim: an interval containing zero is NEVER grounds to reject or close; only (a) a RESOLVED wrong sign (whole interval on the wrong side of zero) or zero split-half reliability, or (b) a positive-control bound, close a line. Everything else is unresolved_below_power. Correlated decomposition: every cell in this family scores the SAME 1,503 opener-graded games of artifacts/opener_evaluation/20260909T183120Z, so these rows are not independent votes; pool at most one of them. Population overlaps the four prior era-weighting looks (docs/era_weighting_screen.md Sections 6 and 8, docs/era_weighting_promotion.md), which scored the same 2020-2025 archive at the ECDF read; this look is the first at the served gaussian_median read with the served home-side offset, and the first through the played card. Mined-ledger discount for 2018-2025 applies (ROADMAP RWB-16). Split-half reliability is not recorded because the varied thing is a training-recipe sample weight, not a measured team trait; the arm is deterministic given the recipe. Reproduction gates passed before any weighted arm was read: the incumbent arm replays the archive with max residual gap 0.0 and max probability gap 0.0 on 1,537 rows, and a uniform-weight refit through the challenger's own fit_weighted_ridge_margin reproduces the incumbent to 0.0 on both (atol 1e-9), with an identical 279-game served flip set.",
+      "plain_summary": "In close games -- a touchdown or less -- the recency-weighted retrain leans worse but is not settled either way.",
+      "probability_positive": 0.0775,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1104,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/era_weighted_on_card/20260909T231403Z/arm_results.csv (docs/era_weighted_on_card.md)",
+      "standard_error": 0.8207969068397736
+    },
+    "era_weighted_hl8_card_10.5+": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "The week-blocked upper bound is exactly 0.0, not below it, so wrong_sign_resolved is inadmissible; no positive control was run. Category 3, probability_positive 0.0410.",
+      "closing_ground": null,
+      "description": "8-season half-life through the served card on opener spreads of 10.5 points or more. Card accuracy 51.145% vs 48.092% on 131 games; 6 picks changed.",
+      "effect": -3.0534351145038165,
+      "effect_units": "accuracy_points",
+      "family": "era_weighting_half_life_on_card",
+      "interval": [
+        -6.666666666666667,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Closing grounds, verbatim: an interval containing zero is NEVER grounds to reject or close; only (a) a RESOLVED wrong sign (whole interval on the wrong side of zero) or zero split-half reliability, or (b) a positive-control bound, close a line. Everything else is unresolved_below_power. Correlated decomposition: every cell in this family scores the SAME 1,503 opener-graded games of artifacts/opener_evaluation/20260909T183120Z, so these rows are not independent votes; pool at most one of them. Population overlaps the four prior era-weighting looks (docs/era_weighting_screen.md Sections 6 and 8, docs/era_weighting_promotion.md), which scored the same 2020-2025 archive at the ECDF read; this look is the first at the served gaussian_median read with the served home-side offset, and the first through the played card. Mined-ledger discount for 2018-2025 applies (ROADMAP RWB-16). Split-half reliability is not recorded because the varied thing is a training-recipe sample weight, not a measured team trait; the arm is deterministic given the recipe. Reproduction gates passed before any weighted arm was read: the incumbent arm replays the archive with max residual gap 0.0 and max probability gap 0.0 on 1,537 rows, and a uniform-weight refit through the challenger's own fit_weighted_ridge_margin reproduces the incumbent to 0.0 on both (atol 1e-9), with an identical 279-game served flip set.",
+      "plain_summary": "On double-digit favourites the recency-weighted card leans worse by about three wins per hundred games, but the measurement stops just short of settled.",
+      "probability_positive": 0.04095,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/era_weighted_on_card/20260909T231403Z/arm_results.csv (docs/era_weighted_on_card.md)",
+      "standard_error": 1.7751045819168414
+    },
+    "era_weighted_hl8_card_7": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "An exact dead heat on 74 games: the two cards score identically, and the week-blocked interval [-5.4795, +5.4054] is wide open. probability_positive 0.4959 is the half-credit reading of a tie (nfl_ats.evidence_conventions), not a negative.",
+      "closing_ground": null,
+      "description": "8-season half-life through the served card, restricted to games priced at exactly 7 points. Card accuracy 50.000% vs 50.000% on 74 games; 4 picks changed.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "era_weighting_half_life_on_card",
+      "interval": [
+        -5.47945205479452,
+        5.405405405405405
+      ],
+      "league": "nfl",
+      "notes": "Closing grounds, verbatim: an interval containing zero is NEVER grounds to reject or close; only (a) a RESOLVED wrong sign (whole interval on the wrong side of zero) or zero split-half reliability, or (b) a positive-control bound, close a line. Everything else is unresolved_below_power. Correlated decomposition: every cell in this family scores the SAME 1,503 opener-graded games of artifacts/opener_evaluation/20260909T183120Z, so these rows are not independent votes; pool at most one of them. Population overlaps the four prior era-weighting looks (docs/era_weighting_screen.md Sections 6 and 8, docs/era_weighting_promotion.md), which scored the same 2020-2025 archive at the ECDF read; this look is the first at the served gaussian_median read with the served home-side offset, and the first through the played card. Mined-ledger discount for 2018-2025 applies (ROADMAP RWB-16). Split-half reliability is not recorded because the varied thing is a training-recipe sample weight, not a measured team trait; the arm is deterministic given the recipe. Reproduction gates passed before any weighted arm was read: the incumbent arm replays the archive with max residual gap 0.0 and max probability gap 0.0 on 1,537 rows, and a uniform-weight refit through the challenger's own fit_weighted_ridge_margin reproduces the incumbent to 0.0 on both (atol 1e-9), with an identical 279-game served flip set.",
+      "plain_summary": "On games priced at exactly a touchdown, the recency-weighted card and the played card finish level.",
+      "probability_positive": 0.4959,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/era_weighted_on_card/20260909T231403Z/arm_results.csv (docs/era_weighted_on_card.md)",
+      "standard_error": 2.7171419318046595
+    },
+    "era_weighted_hl8_card_7.5-10": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "The week-blocked 95% interval [-9.3596, -0.4807] sits ENTIRELY below zero, admissible ground (a); the season-blocked interval [-9.0426, -1.0000] agrees. Recorded as a per-bucket decomposition of the primary cell, not an independent vote; it names WHERE the recipe change goes wrong, which is the diagnosis AGENTS.md asks for rather than a threshold flip.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "8-season half-life through the served card on opener spreads of 7.5 to 10 points. Card accuracy 51.546% vs 46.907% on 194 games; 17 picks changed. This is the bucket the overall loss is concentrated in.",
+      "effect": -4.639175257731959,
+      "effect_units": "accuracy_points",
+      "family": "era_weighting_half_life_on_card",
+      "interval": [
+        -9.35960591133005,
+        -0.48071172248804334
+      ],
+      "league": "nfl",
+      "notes": "Closing grounds, verbatim: an interval containing zero is NEVER grounds to reject or close; only (a) a RESOLVED wrong sign (whole interval on the wrong side of zero) or zero split-half reliability, or (b) a positive-control bound, close a line. Everything else is unresolved_below_power. Correlated decomposition: every cell in this family scores the SAME 1,503 opener-graded games of artifacts/opener_evaluation/20260909T183120Z, so these rows are not independent votes; pool at most one of them. Population overlaps the four prior era-weighting looks (docs/era_weighting_screen.md Sections 6 and 8, docs/era_weighting_promotion.md), which scored the same 2020-2025 archive at the ECDF read; this look is the first at the served gaussian_median read with the served home-side offset, and the first through the played card. Mined-ledger discount for 2018-2025 applies (ROADMAP RWB-16). Split-half reliability is not recorded because the varied thing is a training-recipe sample weight, not a measured team trait; the arm is deterministic given the recipe. Reproduction gates passed before any weighted arm was read: the incumbent arm replays the archive with max residual gap 0.0 and max probability gap 0.0 on 1,537 rows, and a uniform-weight refit through the challenger's own fit_weighted_ridge_margin reproduces the incumbent to 0.0 on both (atol 1e-9), with an identical 279-game served flip set.",
+      "plain_summary": "The damage is concentrated on mid-sized favourites of eight to ten points, where the recency-weighted card loses about four and a half wins per hundred games.",
+      "probability_positive": 0.018175,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/era_weighted_on_card/20260909T231403Z/arm_results.csv (docs/era_weighted_on_card.md)",
+      "standard_error": 2.3302912341442936
+    },
+    "era_weighted_hl8_card_overall": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "PRIMARY endpoint, predeclared in docs/era_weighted_on_card.md Sections 5-6 before the run. The week-blocked 95% interval [-3.1123, -0.3298] sits ENTIRELY below zero, which is admissible ground (a), a RESOLVED wrong sign; the season-blocked interval [-2.5500, -1.1046] agrees, and Brier (-0.00077, P+ 0.089) and log loss (-0.00157, P+ 0.091) lean the same way, so there is no accuracy-versus-calibration divergence to appeal to. This closes the half-life-8 refit AS A REPLACEMENT FOR THE SERVED MODEL ON THE PLAYED CARD AT THE OPENER; it does not close era weighting on other instruments (the CFB and NFL close-grade reads lean the other way).",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Era-weighted refit (exponential season decay, 8-season half-life) of the served weak_stack ridge recipe, scored THROUGH the served three-member card (coach fade OR division revenge OR player arrests) at the Tuesday opener, production probability rule with the served home-side offset. Card accuracy 55.888% baseline vs 54.158% candidate; 104 of 1,503 picks changed.",
+      "effect": -1.7298735861610113,
+      "effect_units": "accuracy_points",
+      "family": "era_weighting_half_life_on_card",
+      "interval": [
+        -3.112320658846302,
+        -0.3298098681086652
+      ],
+      "league": "nfl",
+      "notes": "Closing grounds, verbatim: an interval containing zero is NEVER grounds to reject or close; only (a) a RESOLVED wrong sign (whole interval on the wrong side of zero) or zero split-half reliability, or (b) a positive-control bound, close a line. Everything else is unresolved_below_power. Correlated decomposition: every cell in this family scores the SAME 1,503 opener-graded games of artifacts/opener_evaluation/20260909T183120Z, so these rows are not independent votes; pool at most one of them. Population overlaps the four prior era-weighting looks (docs/era_weighting_screen.md Sections 6 and 8, docs/era_weighting_promotion.md), which scored the same 2020-2025 archive at the ECDF read; this look is the first at the served gaussian_median read with the served home-side offset, and the first through the played card. Mined-ledger discount for 2018-2025 applies (ROADMAP RWB-16). Split-half reliability is not recorded because the varied thing is a training-recipe sample weight, not a measured team trait; the arm is deterministic given the recipe. Reproduction gates passed before any weighted arm was read: the incumbent arm replays the archive with max residual gap 0.0 and max probability gap 0.0 on 1,537 rows, and a uniform-weight refit through the challenger's own fit_weighted_ridge_margin reproduces the incumbent to 0.0 on both (atol 1e-9), with an identical 279-game served flip set.",
+      "plain_summary": "Retraining the model to lean on recent seasons and forget older ones makes the picks we actually play worse, not better: on the last six seasons it would have cost about 1.7 wins per hundred games, and it changed 104 picks to do it.",
+      "probability_positive": 0.007825,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/era_weighted_on_card/20260909T231403Z/arm_results.csv (docs/era_weighted_on_card.md)",
+      "standard_error": 0.7122990468139517
+    },
+    "era_weighted_hl8_card_overall_brier": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "The week-blocked 95% interval [-0.001909, +0.000329] contains zero; neither admissible closing ground applies. Recorded so the calibration read cannot later be quoted as if it had gone the other way: unlike the four prior era-weighting looks, it does NOT lean positive here.",
+      "closing_ground": null,
+      "description": "Brier improvement of the 8-season-half-life card over the served card on the same 1,503 opener-graded games (positive means the candidate is better calibrated). Baseline 0.248772, candidate 0.249545.",
+      "effect": -0.0007728969144358513,
+      "effect_units": "brier_improvement",
+      "family": "era_weighting_half_life_on_card",
+      "interval": [
+        -0.0019093715806131053,
+        0.0003285544507095615
+      ],
+      "league": "nfl",
+      "notes": "Closing grounds, verbatim: an interval containing zero is NEVER grounds to reject or close; only (a) a RESOLVED wrong sign (whole interval on the wrong side of zero) or zero split-half reliability, or (b) a positive-control bound, close a line. Everything else is unresolved_below_power. Correlated decomposition: every cell in this family scores the SAME 1,503 opener-graded games of artifacts/opener_evaluation/20260909T183120Z, so these rows are not independent votes; pool at most one of them. Population overlaps the four prior era-weighting looks (docs/era_weighting_screen.md Sections 6 and 8, docs/era_weighting_promotion.md), which scored the same 2020-2025 archive at the ECDF read; this look is the first at the served gaussian_median read with the served home-side offset, and the first through the played card. Mined-ledger discount for 2018-2025 applies (ROADMAP RWB-16). Split-half reliability is not recorded because the varied thing is a training-recipe sample weight, not a measured team trait; the arm is deterministic given the recipe. Reproduction gates passed before any weighted arm was read: the incumbent arm replays the archive with max residual gap 0.0 and max probability gap 0.0 on 1,537 rows, and a uniform-weight refit through the challenger's own fit_weighted_ridge_margin reproduces the incumbent to 0.0 on both (atol 1e-9), with an identical 279-game served flip set.",
+      "plain_summary": "The recency-weighted card's stated confidence is also slightly worse calibrated, though not by a settled amount.",
+      "probability_positive": 0.08945,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/era_weighted_on_card/20260909T231403Z/arm_results.csv (docs/era_weighted_on_card.md)",
+      "standard_error": 0.0005722020990869224
+    },
+    "era_weighted_hl8_card_overall_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "The week-blocked 95% interval [-0.003900, +0.000684] contains zero; neither admissible closing ground applies. Category 3, probability_positive 0.0914.",
+      "closing_ground": null,
+      "description": "Log-loss improvement of the 8-season-half-life card over the served card on the same 1,503 opener-graded games (positive means the candidate is better). Baseline 0.690802, candidate 0.692373.",
+      "effect": -0.0015706807859760473,
+      "effect_units": "log_loss_improvement",
+      "family": "era_weighting_half_life_on_card",
+      "interval": [
+        -0.003900363933175043,
+        0.000683587668999958
+      ],
+      "league": "nfl",
+      "notes": "Closing grounds, verbatim: an interval containing zero is NEVER grounds to reject or close; only (a) a RESOLVED wrong sign (whole interval on the wrong side of zero) or zero split-half reliability, or (b) a positive-control bound, close a line. Everything else is unresolved_below_power. Correlated decomposition: every cell in this family scores the SAME 1,503 opener-graded games of artifacts/opener_evaluation/20260909T183120Z, so these rows are not independent votes; pool at most one of them. Population overlaps the four prior era-weighting looks (docs/era_weighting_screen.md Sections 6 and 8, docs/era_weighting_promotion.md), which scored the same 2020-2025 archive at the ECDF read; this look is the first at the served gaussian_median read with the served home-side offset, and the first through the played card. Mined-ledger discount for 2018-2025 applies (ROADMAP RWB-16). Split-half reliability is not recorded because the varied thing is a training-recipe sample weight, not a measured team trait; the arm is deterministic given the recipe. Reproduction gates passed before any weighted arm was read: the incumbent arm replays the archive with max residual gap 0.0 and max probability gap 0.0 on 1,537 rows, and a uniform-weight refit through the challenger's own fit_weighted_ridge_margin reproduces the incumbent to 0.0 on both (atol 1e-9), with an identical 279-game served flip set.",
+      "plain_summary": "Scored on how confident it was rather than just right or wrong, the recency-weighted card is also a shade worse, but not by a settled amount.",
+      "probability_positive": 0.09135,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/era_weighted_on_card/20260909T231403Z/arm_results.csv (docs/era_weighted_on_card.md)",
+      "standard_error": 0.0011733629814115788
+    },
+    "era_weighted_hl8_standalone_overall": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "The week-blocked 95% interval [-3.3625, +0.0658] does NOT sit entirely below zero -- the upper end is above it by 0.066 accuracy points -- so wrong_sign_resolved is inadmissible here even though the point estimate and probability_positive 0.0277 lean hard against the candidate, and no positive control was run. Category 3.",
+      "closing_ground": null,
+      "description": "The same 8-season-half-life refit scored STANDALONE on the served raw model at the Tuesday opener, before the three-member card is applied. Raw accuracy 54.558% baseline vs 52.894% candidate; 157 of 1,503 picks changed.",
+      "effect": -1.66333998669328,
+      "effect_units": "accuracy_points",
+      "family": "era_weighting_half_life_on_card",
+      "interval": [
+        -3.3625158142778298,
+        0.06583278472679394
+      ],
+      "league": "nfl",
+      "notes": "Closing grounds, verbatim: an interval containing zero is NEVER grounds to reject or close; only (a) a RESOLVED wrong sign (whole interval on the wrong side of zero) or zero split-half reliability, or (b) a positive-control bound, close a line. Everything else is unresolved_below_power. Correlated decomposition: every cell in this family scores the SAME 1,503 opener-graded games of artifacts/opener_evaluation/20260909T183120Z, so these rows are not independent votes; pool at most one of them. Population overlaps the four prior era-weighting looks (docs/era_weighting_screen.md Sections 6 and 8, docs/era_weighting_promotion.md), which scored the same 2020-2025 archive at the ECDF read; this look is the first at the served gaussian_median read with the served home-side offset, and the first through the played card. Mined-ledger discount for 2018-2025 applies (ROADMAP RWB-16). Split-half reliability is not recorded because the varied thing is a training-recipe sample weight, not a measured team trait; the arm is deterministic given the recipe. Reproduction gates passed before any weighted arm was read: the incumbent arm replays the archive with max residual gap 0.0 and max probability gap 0.0 on 1,537 rows, and a uniform-weight refit through the challenger's own fit_weighted_ridge_margin reproduces the incumbent to 0.0 on both (atol 1e-9), with an identical 279-game served flip set.",
+      "plain_summary": "On the computer's first pick, before the situational rules run, the recency-weighted retrain also looks worse by about 1.7 wins per hundred games, but the measurement is not sharp enough to call it settled on its own.",
+      "probability_positive": 0.027725,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/era_weighted_on_card/20260909T231403Z/arm_results.csv (docs/era_weighted_on_card.md)",
+      "standard_error": 0.8689742401362246
+    }
+  }
+}

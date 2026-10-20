@@ -1,0 +1,173 @@
+{
+  "family": "handle_follow_on_card",
+  "signals": {
+    "handle_follow_on_card_control_h1_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Positive control, recorded so the instrument's resolution on this population is on the record. It bounds nothing by itself: it resolves at the perfect-foresight magnitude only. An interval containing zero is never grounds to close; this cell is category 3. No admissible closing ground applies: the sign is not resolved in BOTH the week- and season-blocked bootstraps, split-half reliability was not the question, and the matching perfect-foresight control resolves only at the oracle magnitude, not at the size a real handle effect would have.",
+      "closing_ground": null,
+      "description": "Positive control for H1: perfect foresight on exactly the 37 picks H1 changes, same 260-game population and same week-blocked bootstrap, so the harness's resolution at that flip count is on the record.",
+      "effect": 7.307692,
+      "effect_units": "accuracy_points",
+      "family": "handle_follow_on_card",
+      "interval": [
+        3.358209,
+        12.0
+      ],
+      "league": "nfl",
+      "notes": "season-blocked 7.3077 [0.3891, 14.1447], P+ 0.9923. Served card on this population 0.573077, candidate 0.646154. Flips 37 of 260 (0.93 per week block). Handle readings exist on 133 of the 260 games, all 2023-2025 (era2 schema); 2020-2022 contribute exact zeros to the paired delta.",
+      "plain_summary": "Sanity check: getting those same 37 picks right every time would have been worth about 7.3 wins per 100 picks.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 40,
+      "sample_games": 260,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/handle_follow_on_card/20260909T232503Z/result.json; docs/handle_follow_on_card.md",
+      "standard_error": 2.2131
+    },
+    "handle_follow_on_card_control_h2_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Positive control, recorded so the instrument's resolution on this population is on the record. It bounds nothing by itself: it resolves at the perfect-foresight magnitude only. An interval containing zero is never grounds to close; this cell is category 3. No admissible closing ground applies: the sign is not resolved in BOTH the week- and season-blocked bootstraps, split-half reliability was not the question, and the matching perfect-foresight control resolves only at the oracle magnitude, not at the size a real handle effect would have.",
+      "closing_ground": null,
+      "description": "Positive control for H2: perfect foresight on exactly the 14 picks H2 changes.",
+      "effect": 2.692308,
+      "effect_units": "accuracy_points",
+      "family": "handle_follow_on_card",
+      "interval": [
+        0.796813,
+        4.858565
+      ],
+      "league": "nfl",
+      "notes": "season-blocked 2.6923 [0.0000, 5.6872], P+ 0.9561. Served card on this population 0.573077, candidate 0.600000. Flips 14 of 260 (0.35 per week block). Handle readings exist on 133 of the 260 games, all 2023-2025 (era2 schema); 2020-2022 contribute exact zeros to the paired delta.",
+      "plain_summary": "Sanity check: getting those same 14 picks right every time would have been worth about 2.7 wins per 100 picks.",
+      "probability_positive": 0.9992,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 40,
+      "sample_games": 260,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/handle_follow_on_card/20260909T232503Z/result.json; docs/handle_follow_on_card.md",
+      "standard_error": 1.035191
+    },
+    "handle_follow_on_card_control_h3_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Positive control, recorded so the instrument's resolution on this population is on the record. It bounds nothing by itself: it resolves at the perfect-foresight magnitude only. An interval containing zero is never grounds to close; this cell is category 3. No admissible closing ground applies: the sign is not resolved in BOTH the week- and season-blocked bootstraps, split-half reliability was not the question, and the matching perfect-foresight control resolves only at the oracle magnitude, not at the size a real handle effect would have.",
+      "closing_ground": null,
+      "description": "Positive control for H3: perfect foresight on exactly the 12 picks H3 changes.",
+      "effect": 1.923077,
+      "effect_units": "accuracy_points",
+      "family": "handle_follow_on_card",
+      "interval": [
+        0.404858,
+        3.571429
+      ],
+      "league": "nfl",
+      "notes": "season-blocked 1.9231 [0.0000, 3.9823], P+ 0.9561. Served card on this population 0.573077, candidate 0.592308. Flips 12 of 260 (0.30 per week block). Handle readings exist on 133 of the 260 games, all 2023-2025 (era2 schema); 2020-2022 contribute exact zeros to the paired delta.",
+      "plain_summary": "Sanity check: getting those same 12 picks right every time would have been worth about 1.9 wins per 100 picks.",
+      "probability_positive": 0.997125,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 40,
+      "sample_games": 260,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/handle_follow_on_card/20260909T232503Z/result.json; docs/handle_follow_on_card.md",
+      "standard_error": 0.788947
+    },
+    "handle_follow_on_card_h1_handle70_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "An interval containing zero is never grounds to close; this cell is category 3. No admissible closing ground applies: the sign is not resolved in BOTH the week- and season-blocked bootstraps, split-half reliability was not the question, and the matching perfect-foresight control resolves only at the oracle magnitude, not at the size a real handle effect would have.",
+      "closing_ground": null,
+      "description": "H1, frozen before scoring: flip the served nine-member card's opener pick to the side holding >=70% of the spread HANDLE (money%) at each game's pick deadline min(kickoff, Sunday 16:00 ET), else keep. Paired delta in opener-graded forced-pick accuracy over the whole 260-game split population; handle exists on 133 of them (actionnetwork era2 schema, 2023-2025). 73 games fire, 37 picks change.",
+      "effect": 0.384615,
+      "effect_units": "accuracy_points",
+      "family": "handle_follow_on_card",
+      "interval": [
+        -2.996255,
+        4.280156
+      ],
+      "league": "nfl",
+      "notes": "season-blocked 0.3846 [-2.6906, 2.6866], P+ 0.6031. Served card on this population 0.573077, candidate 0.576923. Flips 37 of 260 (0.93 per week block). Handle readings exist on 133 of the 260 games, all 2023-2025 (era2 schema); 2020-2022 contribute exact zeros to the paired delta.",
+      "plain_summary": "When 70% or more of the money bet on a game is on one team, switching our pick to that team would have won about 0.4 more picks per 100 - a 19-18 record on the 37 picks it changed.",
+      "probability_positive": 0.569475,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 40,
+      "sample_games": 260,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/handle_follow_on_card/20260909T232503Z/result.json; docs/handle_follow_on_card.md",
+      "standard_error": 1.851046
+    },
+    "handle_follow_on_card_h2_handle70_tickets60_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "An interval containing zero is never grounds to close; this cell is category 3. No admissible closing ground applies: the sign is not resolved in BOTH the week- and season-blocked bootstraps, split-half reliability was not the question, and the matching perfect-foresight control resolves only at the oracle magnitude, not at the size a real handle effect would have.",
+      "closing_ground": null,
+      "description": "H2, frozen before scoring: H1 restricted to the sharp-money shape - the heavy-handle side must also hold <=60% of the TICKETS (money without the crowd). 27 games fire, 14 picks change, on the same 260-game paired population.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "handle_follow_on_card",
+      "interval": [
+        -1.872659,
+        1.879699
+      ],
+      "league": "nfl",
+      "notes": "season-blocked 0.0000 [-1.3825, 0.8824], P+ 0.4989. Served card on this population 0.573077, candidate 0.573077. Flips 14 of 260 (0.35 per week block). Handle readings exist on 133 of the 260 games, all 2023-2025 (era2 schema); 2020-2022 contribute exact zeros to the paired delta.",
+      "plain_summary": "When most of the money is on one team but most of the individual bets are not, switching our pick to the money side split exactly even: 7 right, 7 wrong.",
+      "probability_positive": 0.5028,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 40,
+      "sample_games": 260,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/handle_follow_on_card/20260909T232503Z/result.json; docs/handle_follow_on_card.md",
+      "standard_error": 0.938482
+    },
+    "handle_follow_on_card_h3_handle70_spread3_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "An interval containing zero is never grounds to close; this cell is category 3. No admissible closing ground applies: the sign is not resolved in BOTH the week- and season-blocked bootstraps, split-half reliability was not the question, and the matching perfect-foresight control resolves only at the oracle magnitude, not at the size a real handle effect would have.",
+      "closing_ground": null,
+      "description": "H3, frozen before scoring: H1 restricted to lines within 3 points of pick'em (|Tuesday opening home spread| <= 3), where half a point of information matters most. 28 games fire, 12 picks change, on the same 260-game paired population.",
+      "effect": -0.769231,
+      "effect_units": "accuracy_points",
+      "family": "handle_follow_on_card",
+      "interval": [
+        -2.592593,
+        1.140684
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -0.7692 [-2.1390, 0.0000], P+ 0.0449. Served card on this population 0.573077, candidate 0.565385. Flips 12 of 260 (0.30 per week block). Handle readings exist on 133 of the 260 games, all 2023-2025 (era2 schema); 2020-2022 contribute exact zeros to the paired delta.",
+      "plain_summary": "On near-even games, switching our pick to the side holding 70%+ of the money lost about 0.8 picks per 100 - a 5-7 record on the 12 picks it changed.",
+      "probability_positive": 0.21435,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 40,
+      "sample_games": 260,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/handle_follow_on_card/20260909T232503Z/result.json; docs/handle_follow_on_card.md",
+      "standard_error": 0.93342
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "family": "illness_away_active_ge1_on_production_opener",
+  "signals": {
+    "illness_away_active_ge1_on_production_opener": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Opener primary: -0.439 accuracy points, week-blocked probability_positive 0.312. Neither terminal ground applies: wrong_sign_resolved requires the whole interval on the wrong side, reliability is 0.702 rather than zero, and the +43.860-point positive control demonstrates detection but does not bound this effect. Therefore unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Opener-grade confirmation: predeclared away active-illness count at least one on top of production weak_stack versus production unmodified, paired forced-pick probability-rule accuracy.",
+      "effect": -0.4385964912,
+      "effect_units": "accuracy_points",
+      "family": "illness_away_active_ge1_on_production_opener",
+      "interval": [
+        -2.6550144222,
+        1.5317286652
+      ],
+      "league": "nfl",
+      "notes": "Primary opener probability rule; 456 paired non-push games, 35 weeks, assigned 2020-2021 window. Baseline 53.728%, candidate 53.289%; 17 picks differ. Week 95% [-2.655,+1.532], P+ 0.312. Frozen-pick within-week null center -0.378 points; observed -0.439 is 44.5th percentile. Positive control +43.860 points, P+1.000.",
+      "plain_summary": "Telling the model that at least one visiting player was active with an illness changed seventeen opener picks and was slightly worse on this two-season card. The evidence is unresolved, so it is recorded rather than closed.",
+      "probability_positive": 0.31205,
+      "recorded_at": "2026-09-02",
+      "reliability": 0.702,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/illness_away_opener_confirmation/20260902T174255Z/results.json",
+      "standard_error": null
+    }
+  }
+}

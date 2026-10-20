@@ -1,0 +1,33 @@
+{
+  "family": "pick-probability-member-coefficients",
+  "signals": {
+    "pick-probability-coach-own-coefficient-loso": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "gain indistinguishable from zero; coach coefficient exceeds the rest in every fold; 2026 live chronological gap -.0052; no positive control",
+      "closing_ground": null,
+      "description": "Pick probability with the first-year-coach member on its own coefficient versus one shared flag_sum, LOSO 2020-25 held-out log-loss gain per game",
+      "effect": 4e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "pick-probability-member-coefficients",
+      "interval": [
+        -0.00065,
+        0.00073
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Giving the new-coach adjustment its own weight does not improve held-out picks",
+      "probability_positive": 0.54,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/served_calib/perm_out.txt",
+      "standard_error": 0.00042
+    }
+  }
+}

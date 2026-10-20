@@ -202,7 +202,7 @@ def main(argv=None):
         "family_chosen": "attention_battery / reddit_home_comment_ratio_elevated",
         "family_selection_reasoning": (
             "Predeclared before fitting. Selected by prior evidence only from "
-            "registry/weak_signals.json and `nfl-ats weak-signals pool "
+            "registry/weak_signals/ and `nfl-ats weak-signals pool "
             "--league nfl --effect-units accuracy_points`, restricted to families "
             "not among the served 7 composition flags (coach, division, arrests, "
             "bye, cold_visitor, protection, tank_zone) and not player-on-field "

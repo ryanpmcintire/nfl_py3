@@ -1,0 +1,33 @@
+{
+  "family": "dome_shootout_favorite_on_production",
+  "signals": {
+    "dome_shootout_favorite_on_production": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign or demonstrated candidate-sized positive-control bound; assignment coverage is not a mechanism refutation.",
+      "closing_ground": null,
+      "description": "CX8 decision-time rerun: LEAD-41 dome-shootout favorite archetype: BACK the favorite when roof is dome/closed AND Tuesday-opener total >=49 AND |Tuesday-opener spread| <=3, stacked on PRODUCTION weak_stack, opener-graded",
+      "effect": -0.43859649122807015,
+      "effect_units": "accuracy_points",
+      "family": "dome_shootout_favorite_on_production",
+      "interval": [
+        -1.9823788546255507,
+        1.2903921023359228
+      ],
+      "league": "nfl",
+      "notes": "CX8 decision-time rerun supersedes recorded-assignment read artifacts/schedule_flag_on_production/dome_shootout/20260905T032312Z/results.json. Original effect 0.0 accuracy points, probability_positive 0.4384. Matched-current-table oracle: oracle_dome_shootout.json, rotation_2020_2021. Same chronological reused windows, no new rotation window. Untimestamped QB observations stay missing; 2020-2021 QB arms reproduce baseline picks exactly and probability_positive=0 there counts strict gains from an exact tie, not wrong-sign evidence. Odd/even exposure diagnostic: {'interpretation': 'exposure stability only; not an admissible no_split_half_reliability closing ground', 'odd_even_team_season_exposure_correlation': 0.21710172203601755, 'paired_team_seasons': 64}; oracle: {'interpretation': 'exposure stability only; not an admissible no_split_half_reliability closing ground', 'odd_even_team_season_exposure_correlation': 0.23055804433167895, 'paired_team_seasons': 64}. Exposure stability is not repeated-observation reliability and is not a closing ground.",
+      "plain_summary": "Backing the favorite in a high-scoring dome game with a tight spread reads as close to a coin flip so far (about 44% likely to help) -- not proven, not ruled out.",
+      "probability_positive": 0.2451,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts\\cx8_posthoc_assignments\\20260905\\dome_shootout.json",
+      "standard_error": null
+    }
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "family": "pbp_coaching_traits_on_production",
+  "signals": {
+    "fourth_down_aggression_interaction_on_production": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero (week-blocked 95% [-5.7269, +2.2075], P+ 0.21155) -- the EXPECTED shape for a real small signal at this window size, not a closing ground. wrong_sign_resolved is unavailable on the week-blocked read (upper bound is positive); the season-blocked read is entirely negative ([-1.818,-1.271]) but rests on only 2 season blocks and this doc's own stated convention (restated per prior waves) treats that count as not independently informative, so it is not used to resolve. no_split_half_reliability is inadmissible: the underlying fourth_down_go_rate trait has MEASURED non-zero reliability (lane J, docs/pbp_trait_reliability.md: within-season Pearson r=+0.3145, 95% [+0.2074,+0.3828], P+=1.0, the strongest raw reliability of the four traits measured), the opposite of the condition that ground requires. Diagnostic-only in-window split (never separate registry cells, per the family's own predeclaration that the interaction IS the family): aggressive-dog games (n=261) delta -0.383 accuracy points; aggressive-favorite games (n=192) delta -3.125 accuracy points -- both lean negative (opposite the predeclared direction) in this window, reported as a measured diagnostic, not a second closing test.",
+      "closing_ground": null,
+      "description": "LEAD-30: (home minus away trailing 4th-down go rate) x -sign(opener home spread) -- positive means the more aggressive team is also the underdog -- stacked on PRODUCTION weak_stack, opener-graded forced-pick accuracy",
+      "effect": -1.5351,
+      "effect_units": "accuracy_points",
+      "family": "pbp_coaching_traits_on_production",
+      "interval": [
+        -5.7269,
+        2.2075
+      ],
+      "league": "nfl",
+      "notes": "Wave 4 (docs/schedule_flag_battery.md), scripts/pbp_trait_on_production.py --candidate fourth_down_interaction --mode screen. Positive control +44.298 accuracy points, P+ 1.000 both blockings. Missingness: fourth_down_interaction is non-NaN for exactly the 1,613/4,902 full-schedule games with a resolved Tuesday-opener spread (2020-2025); within that population the as-of merge resolves both sides' trailing go rate in effectively every game.",
+      "plain_summary": "An aggressive fourth-down team that is also the underdog at the opener leans the WRONG way in this small window, but the sample is far too thin (35 weeks) to draw a conclusion either way.",
+      "probability_positive": 0.21155,
+      "recorded_at": "2026-09-05",
+      "reliability": 0.3145,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/pbp_trait_on_production/fourth_down_interaction/20260905T045950Z/results.json",
+      "standard_error": null
+    },
+    "opening_drive_script_on_production": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero (week-blocked 95% [-1.7582, +2.1882], P+ 0.5393) -- the EXPECTED shape for a real small signal at this window size, not a closing ground. wrong_sign_resolved is unavailable (upper bound is positive). no_split_half_reliability is inadmissible: the underlying opening_drive_epa_per_play trait has MEASURED non-zero reliability (lane J, docs/pbp_trait_reliability.md: within-season Pearson r=+0.1733, 95% [+0.0770,+0.2705], P+=1.0), the opposite of the condition that ground requires.",
+      "closing_ground": null,
+      "description": "LEAD-26: home minus away trailing opening-drive EPA per play, stacked on PRODUCTION weak_stack, opener-graded forced-pick accuracy",
+      "effect": 0.2193,
+      "effect_units": "accuracy_points",
+      "family": "pbp_coaching_traits_on_production",
+      "interval": [
+        -1.7582,
+        2.1882
+      ],
+      "league": "nfl",
+      "notes": "Wave 4 (docs/schedule_flag_battery.md), scripts/pbp_trait_on_production.py --candidate opening_drive --mode screen. Positive control +44.298 accuracy points, P+ 1.000 both blockings (harness proven sensitive before this result was read).",
+      "plain_summary": "A team with a stronger recent track record on its own opening drive leans slightly toward covering, but the lean is too small to call at this sample size.",
+      "probability_positive": 0.5393,
+      "recorded_at": "2026-09-05",
+      "reliability": 0.1733,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/pbp_trait_on_production/opening_drive/20260905T044424Z/results.json",
+      "standard_error": null
+    },
+    "q3_adjustment_on_production": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero (week-blocked 95% [-1.1261, +0.6682], P+ 0.2489) -- the EXPECTED shape for a real small signal at this window size, not a closing ground. wrong_sign_resolved is unavailable (upper bound is positive, so the interval is not resolved to the wrong side). no_split_half_reliability is inadmissible: the underlying q3_point_diff trait has MEASURED non-zero reliability (lane J, docs/pbp_trait_reliability.md: within-season Pearson r=+0.2385, 95% [+0.1746,+0.2964], P+=1.0, the strongest of the four traits measured), the opposite of the condition that ground requires.",
+      "closing_ground": null,
+      "description": "LEAD-27: home minus away trailing third-quarter point differential (full-game target), stacked on PRODUCTION weak_stack, opener-graded forced-pick accuracy",
+      "effect": -0.2193,
+      "effect_units": "accuracy_points",
+      "family": "pbp_coaching_traits_on_production",
+      "interval": [
+        -1.1261,
+        0.6682
+      ],
+      "league": "nfl",
+      "notes": "Wave 4 (docs/schedule_flag_battery.md), scripts/pbp_trait_on_production.py --candidate q3_diff --mode screen. Positive control +44.298 accuracy points, P+ 1.000 both blockings.",
+      "plain_summary": "A team with a stronger recent history of winning the third quarter leans slightly the WRONG way in this window (toward underperforming), but the lean is too small and the window too short to call.",
+      "probability_positive": 0.2489,
+      "recorded_at": "2026-09-05",
+      "reliability": 0.2385,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/pbp_trait_on_production/q3_diff/20260905T045129Z/results.json",
+      "standard_error": null
+    }
+  }
+}

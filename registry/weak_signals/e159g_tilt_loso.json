@@ -1,0 +1,33 @@
+{
+  "family": "e159g_tilt_loso",
+  "signals": {
+    "e159g_loso_tilt_vs_current_heldout_ll": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; 6 of 9 folds positive; interval is fold-normal approximation (inferred).",
+      "closing_ground": null,
+      "description": "Held-out Bernoulli log-lik of conv and sack outcomes under kernel-weighted candidates (K=200, 54000 queries), LOSO refit AO/AD and LO/LD v current in-sample constants; mean per-fold gain in nats.",
+      "effect": 1.69,
+      "effect_units": "log_loss_improvement",
+      "family": "e159g_tilt_loso",
+      "interval": [
+        0.26,
+        3.12
+      ],
+      "league": "nfl",
+      "notes": "Gain is tiny per play (0.0003 nats); main finding is current sack AO -1.99 over-transfers offense rate SD (.0145 v real .0080) while LOSO -0.35 gives .0090.",
+      "plain_summary": "Refitting the rate tilt out of season shrinks the sack gain about fivefold with slightly better held-out fit.",
+      "probability_positive": 0.97,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 54000,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/mod25e3/tiltl/fit.json",
+      "standard_error": null
+    }
+  }
+}

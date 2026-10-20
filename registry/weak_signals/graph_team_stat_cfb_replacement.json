@@ -1,0 +1,89 @@
+{
+  "family": "graph_team_stat_cfb_replacement",
+  "signals": {
+    "graph_team_stat_cfb_replacement_def_epa_per_play": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Not wrong_sign_resolved: the week-blocked interval [-0.6844,+0.2326] reaches above zero, and the season-blocked interval does too. Not positive_control_bound: the positive control (graph column replaced by realised ats_margin) resolves +48.405 pts at P+ 1.000, 100th percentile of its own null, which proves detection at 48 points and NOT at 0.3 points. Not no_split_half_reliability: measured this session, Spearman-Brown +0.9929 with 95 pct CI on r [+0.9842,+0.9872] and P+ 1.000 over 1672 team-seasons, higher than the raw statistic own +0.9775.",
+      "closing_ground": null,
+      "description": "CFB: the graph team_stat column as a REPLACEMENT input rather than an addition, cell def_epa_per_play. Candidate = the frozen XLG-03 CFB benchmark contract (CFB_MODEL_FEATURE_COLUMNS, 35 columns, ridge alpha 10, 500-game training floor, weekly refit) with home_def_epa_per_play + away_def_epa_per_play + diff_def_epa_per_play REMOVED and the signed-Katz differential of def_epa_per_play propagated over the CFB schedule graph appended (33 columns). Reference = the unmodified benchmark. All three raw columns go together because CFB_TEAM_STATE_FEATURES generates them as one triple per metric and diff equals home minus away exactly (measured, max abs residual 0.0 on 12431 rows), so a diff-only swap would be reconstructable by a linear ridge and would test nothing. Graded at the benchmark own spread_line, XLG-03 clean core 2012-2019+2021-2025, 199 weeks. This is a DIFFERENT comparator from the graph_team_stat_cfb_replication family, which measured ADDITION on top of a contract that still carried the raw statistic. Benchmark accuracy 51.5952 pct, candidate 51.3377 pct.",
+      "effect": -0.2575,
+      "effect_units": "accuracy_points",
+      "family": "graph_team_stat_cfb_replacement",
+      "interval": [
+        -0.6844,
+        0.2326
+      ],
+      "league": "cfb",
+      "notes": "PRIMARY (replacement minus benchmark), close grade, n=8933: -0.2575 pts, week 95% [-0.6844,+0.2326], week P+ 0.145, season P+ 0.179; observed at the 8.0th percentile of its own 200-draw within-week permutation null (null mean +0.034, sd 0.213). OPENER secondary (spread_open, n=8925): -0.0224 pts, week 95% [-0.4781,+0.4714], P+ 0.462; benchmark opener accuracy 51.7199 pct. Picks moved: 450 of 9093 close (4.95 pct), 455 of 9076 opener. SECONDARY A, ablation minus benchmark (what the raw triple is worth at all): -0.0672 pts close P+ 0.396, +0.0896 pts opener P+ 0.662, 387 picks moved. SECONDARY B, replacement minus ablation (the graph column in the vacated slot, the cleanest graph-as-representation read): -0.1903 pts close P+ 0.064 season P+ 0.046, -0.1120 pts opener P+ 0.175, 171 picks moved (1.88 pct). Era magnitudes (report only, close, primary): 2012-2019 +0.000 pts P+ 0.485 95% [-0.563,+0.582] n=5349; 2021-2025 -0.642 pts P+ 0.040 95% [-1.408,+0.112] n=3584 -- the larger recent-era magnitude still reaches above zero and closes nothing. Instrument checks passed before the screen. Reliability measured this session: graph trait Spearman-Brown +0.9929 vs raw +0.9775, both P+ 1.000; NOTE both quantities are heavily autocorrelated within a season (lagged EWM and cumulative propagated state), so odd/even-week split-half here is closer to a stability measure than to a per-game reliability and should not be compared with event-like traits elsewhere in the registry. CFB is replication evidence and changes no NFL card. Sibling WP8 add-on reading on the same window and grade for contrast: -0.011 pts P+ 0.467 moving 1.92 pct of picks.",
+      "plain_summary": "On college football, swapping a defence efficiency stat out of the model and putting its schedule-graph version in its place made the picks slightly worse at the closing line and essentially unchanged at the opener. It moved about 5 percent of the picks. Too small to call either way.",
+      "probability_positive": 0.145,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.9929,
+      "sample_blocks": 199,
+      "sample_games": 8933,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/graph_team_stat_cfb_replacement/def_epa_per_play_screen/20260901T192212Z/results.json; docs/graph_team_stat_cfb_replacement.md",
+      "standard_error": null
+    },
+    "graph_team_stat_cfb_replacement_off_epa_per_play": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Not wrong_sign_resolved: the week-blocked interval [-0.4866,+0.6375] spans zero and the point estimate is positive anyway. Not positive_control_bound: the positive control (graph column replaced by realised ats_margin) resolves +48.405 pts at P+ 1.000, 100th percentile of its own null, which proves detection at 48 points and NOT at 0.1 points. Not no_split_half_reliability: measured this session, Spearman-Brown +0.9925 with 95 pct CI on r [+0.9832,+0.9867] and P+ 1.000 over 1672 team-seasons, higher than the raw statistic own +0.9800.",
+      "closing_ground": null,
+      "description": "CFB: the graph team_stat column as a REPLACEMENT input rather than an addition, cell off_epa_per_play. Candidate = the frozen XLG-03 CFB benchmark contract (CFB_MODEL_FEATURE_COLUMNS, 35 columns, ridge alpha 10, 500-game training floor, weekly refit) with home_off_epa_per_play + away_off_epa_per_play + diff_off_epa_per_play REMOVED and the signed-Katz differential of off_epa_per_play propagated over the CFB schedule graph appended (33 columns). Reference = the unmodified benchmark. All three raw columns go together because CFB_TEAM_STATE_FEATURES generates them as one triple per metric and diff equals home minus away exactly (measured, max abs residual 0.0 on 12431 rows), so a diff-only swap would be reconstructable by a linear ridge and would test nothing. Graded at the benchmark own spread_line, XLG-03 clean core 2012-2019+2021-2025, 199 weeks. This is a DIFFERENT comparator from the graph_team_stat_cfb_replication family, which measured ADDITION on top of a contract that still carried the raw statistic. Benchmark accuracy 51.5952 pct, candidate 51.6512 pct.",
+      "effect": 0.056,
+      "effect_units": "accuracy_points",
+      "family": "graph_team_stat_cfb_replacement",
+      "interval": [
+        -0.4866,
+        0.6375
+      ],
+      "league": "cfb",
+      "notes": "PRIMARY (replacement minus benchmark), close grade, n=8933: +0.0560 pts, week 95% [-0.4866,+0.6375], week P+ 0.573, season P+ 0.584; observed at the 60.0th percentile of its own 200-draw within-week permutation null (null mean -0.011, sd 0.304). OPENER secondary (spread_open, n=8925): +0.0336 pts, week 95% [-0.4922,+0.5659], P+ 0.543; benchmark opener accuracy 51.7199 pct. Picks moved: 709 of 9093 close (7.80 pct), 714 of 9076 opener. SECONDARY A, ablation minus benchmark (what the raw triple is worth at all): -0.1008 pts close P+ 0.367, -0.1793 pts opener P+ 0.261, 584 picks moved. SECONDARY B, replacement minus ablation (the graph column in the vacated slot, the cleanest graph-as-representation read): +0.1567 pts close P+ 0.749 season P+ 0.677, +0.2129 pts opener P+ 0.827 season P+ 0.728, 445 picks moved (4.89 pct) -- the strongest single reading in this work package, and an offence-only version of that question would need its own predeclaration before any sign is seen. Era magnitudes (report only, close, primary): 2012-2019 +0.262 pts P+ 0.770 95% [-0.375,+0.872] n=5349; 2021-2025 -0.251 pts P+ 0.272 95% [-1.226,+0.618] n=3584. Instrument checks passed before the screen. Reliability measured this session: graph trait Spearman-Brown +0.9925 vs raw +0.9800, both P+ 1.000; NOTE both quantities are heavily autocorrelated within a season (lagged EWM and cumulative propagated state), so odd/even-week split-half here is closer to a stability measure than to a per-game reliability. CFB is replication evidence and changes no NFL card. Sibling WP8 add-on reading on the same window and grade for contrast: +0.022 pts P+ 0.535 moving 4.56 pct of picks.",
+      "plain_summary": "On college football, swapping an offence efficiency stat out of the model and putting its schedule-graph version in its place picked slightly better at both the opening and closing line, moving about 8 percent of the picks. The edge is small enough that it leans the right way without being settled.",
+      "probability_positive": 0.573,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.9925,
+      "sample_blocks": 199,
+      "sample_games": 8933,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/graph_team_stat_cfb_replacement/off_epa_per_play_screen/20260901T192326Z/results.json; docs/graph_team_stat_cfb_replacement.md",
+      "standard_error": null
+    },
+    "graph_team_stat_cfb_replacement_off_success_rate": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Not wrong_sign_resolved: the week-blocked interval [-0.6961,+0.8071] spans zero at the close, and the opener reading -0.3249 pts carries 95% [-1.0719,+0.4170] which also reaches above zero. Not positive_control_bound: the positive control (graph column replaced by realised ats_margin) resolves +48.405 pts at P+ 1.000, 100th percentile of its own null, which proves detection at 48 points and NOT at 0.3 points. Not no_split_half_reliability: measured this session, Spearman-Brown +0.9938 with 95 pct CI on r [+0.9861,+0.9890] and P+ 1.000 over 1672 team-seasons, higher than the raw statistic own +0.9799.",
+      "closing_ground": null,
+      "description": "CFB: the graph team_stat column as a REPLACEMENT input rather than an addition, cell off_success_rate. Candidate = the frozen XLG-03 CFB benchmark contract (CFB_MODEL_FEATURE_COLUMNS, 35 columns, ridge alpha 10, 500-game training floor, weekly refit) with home_off_success_rate + away_off_success_rate + diff_off_success_rate REMOVED and the signed-Katz differential of off_success_rate propagated over the CFB schedule graph appended (33 columns). Reference = the unmodified benchmark. All three raw columns go together because CFB_TEAM_STATE_FEATURES generates them as one triple per metric and diff equals home minus away exactly (measured, max abs residual 0.0 on 12431 rows), so a diff-only swap would be reconstructable by a linear ridge and would test nothing. Graded at the benchmark own spread_line, XLG-03 clean core 2012-2019+2021-2025, 199 weeks. This is a DIFFERENT comparator from the graph_team_stat_cfb_replication family, which measured ADDITION on top of a contract that still carried the raw statistic. Benchmark accuracy 51.5952 pct, candidate 51.6176 pct.",
+      "effect": 0.0224,
+      "effect_units": "accuracy_points",
+      "family": "graph_team_stat_cfb_replacement",
+      "interval": [
+        -0.6961,
+        0.8071
+      ],
+      "league": "cfb",
+      "notes": "PRIMARY (replacement minus benchmark), close grade, n=8933: +0.0224 pts, week 95% [-0.6961,+0.8071], week P+ 0.528, season P+ 0.512; observed at the 40.0th percentile of its own 200-draw within-week permutation null (null mean +0.078, sd 0.323). OPENER secondary (spread_open, n=8925): -0.3249 pts, week 95% [-1.0719,+0.4170], P+ 0.221, season P+ 0.150; benchmark opener accuracy 51.7199 pct. The two grades disagree in sign on this cell, which at 0.3-point resolution is a coin-flip-sized disagreement -- neither figure should be quoted alone. Picks moved: 1043 of 9093 close (11.47 pct), 1026 of 9076 opener -- the largest pick movement of the three cells. SECONDARY A, ablation minus benchmark (what the raw triple is worth at all): -0.1008 pts close P+ 0.392, -0.2129 pts opener P+ 0.301, 933 picks moved. SECONDARY B, replacement minus ablation (the graph column in the vacated slot): +0.1231 pts close P+ 0.710 season P+ 0.708, -0.1120 pts opener P+ 0.313, 348 picks moved (3.83 pct). Era magnitudes (report only, close, primary): 2012-2019 -0.037 pts P+ 0.468 95% [-0.941,+0.815] n=5349; 2021-2025 +0.112 pts P+ 0.550 95% [-1.228,+1.443] n=3584. Instrument checks passed before the screen. Reliability measured this session: graph trait Spearman-Brown +0.9938 vs raw +0.9799, both P+ 1.000; NOTE both quantities are heavily autocorrelated within a season (lagged EWM and cumulative propagated state), so odd/even-week split-half here is closer to a stability measure than to a per-game reliability. CFB is replication evidence and changes no NFL card. Sibling WP8 add-on reading on the same window and grade for contrast: -0.179 pts P+ 0.266 moving 5.10 pct of picks -- the replacement comparator moves this cell from P+ 0.266 to P+ 0.528 at the same grade on the same window, the largest addition-versus-substitution gap of the three cells.",
+      "plain_summary": "On college football, swapping an offence success-rate stat out of the model for its schedule-graph version was a wash at the closing line and slightly worse at the opener, while moving more than a tenth of the picks. Unsettled, and the two grades disagree.",
+      "probability_positive": 0.528,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.9938,
+      "sample_blocks": 199,
+      "sample_games": 8933,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/graph_team_stat_cfb_replacement/off_success_rate_screen/20260901T192328Z/results.json; docs/graph_team_stat_cfb_replacement.md",
+      "standard_error": null
+    }
+  }
+}

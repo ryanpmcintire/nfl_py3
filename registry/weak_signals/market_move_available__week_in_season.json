@@ -1,0 +1,1013 @@
+{
+  "family": "market_move_available__week_in_season",
+  "signals": {
+    "market_move_available__week_in_season_chronological_overall_accuracy_points": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic; no untouched selection test or certified historical feature availability. In-sample rows are descriptive only. No research-closing ground is established.",
+      "closing_ground": null,
+      "description": "Paired fitted term market_move_available; split week_in_season; chronological; All games; accuracy_points.",
+      "effect": -0.38204393505253104,
+      "effect_units": "accuracy_points",
+      "family": "market_move_available__week_in_season",
+      "interval": [
+        -1.3371857314260356,
+        0.3741902369465669
+      ],
+      "league": "nfl",
+      "notes": "This is a retrospective comparison. The saved inputs lack per-game evidence proving when every feature became available; historical pregame timing is not certified. The signals were chosen using these years. Neither view is an untouched test of a new idea. Leaving one year out can train on later years. The earlier-years-only view trains on at least two completed years and scores the next year. Both fits use the same games, model probability and available market movement; one also includes the pooled game situations. Grades use the opening spread, even when an input arrived later in the week. Intervals resample years and weeks together for both fits. They hold fitted predictions fixed, so they exclude feature-selection and refitting uncertainty. Chance of improvement is the share of resamples above zero, counting ties as half. It is not a probability that a betting edge exists. The exact decisive-game check assumes independent games; shared weeks and training data limit that assumption. The even-market reference assigns each side 50%. Its accuracy uses a home-side tie break; its probability scores are the useful comparison. All declared week groups are shown. These overlapping comparisons do not select a winning group or change the picks.",
+      "plain_summary": "How the served model's own fitted terms change a probability when added to the same model and market inputs, across several ways of splitting the games.",
+      "probability_positive": 0.1873,
+      "recorded_at": "2026-09-24",
+      "reliability": null,
+      "sample_blocks": 72,
+      "sample_games": 1047,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts/signal_atlas/20260924T194540880742Z/report.json",
+      "standard_error": 0.4374268101006193
+    },
+    "market_move_available__week_in_season_chronological_overall_brier_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic; no untouched selection test or certified historical feature availability. In-sample rows are descriptive only. No research-closing ground is established.",
+      "closing_ground": null,
+      "description": "Paired fitted term market_move_available; split week_in_season; chronological; All games; brier_improvement.",
+      "effect": -4.2587878797061025e-05,
+      "effect_units": "brier_improvement",
+      "family": "market_move_available__week_in_season",
+      "interval": [
+        -0.0004468427156987265,
+        0.00035044416693587636
+      ],
+      "league": "nfl",
+      "notes": "This is a retrospective comparison. The saved inputs lack per-game evidence proving when every feature became available; historical pregame timing is not certified. The signals were chosen using these years. Neither view is an untouched test of a new idea. Leaving one year out can train on later years. The earlier-years-only view trains on at least two completed years and scores the next year. Both fits use the same games, model probability and available market movement; one also includes the pooled game situations. Grades use the opening spread, even when an input arrived later in the week. Intervals resample years and weeks together for both fits. They hold fitted predictions fixed, so they exclude feature-selection and refitting uncertainty. Chance of improvement is the share of resamples above zero, counting ties as half. It is not a probability that a betting edge exists. The exact decisive-game check assumes independent games; shared weeks and training data limit that assumption. The even-market reference assigns each side 50%. Its accuracy uses a home-side tie break; its probability scores are the useful comparison. All declared week groups are shown. These overlapping comparisons do not select a winning group or change the picks.",
+      "plain_summary": "How the served model's own fitted terms change a probability when added to the same model and market inputs, across several ways of splitting the games.",
+      "probability_positive": 0.4064,
+      "recorded_at": "2026-09-24",
+      "reliability": null,
+      "sample_blocks": 72,
+      "sample_games": 1047,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts/signal_atlas/20260924T194540880742Z/report.json",
+      "standard_error": 0.00019169255761734749
+    },
+    "market_move_available__week_in_season_chronological_overall_log_loss_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic; no untouched selection test or certified historical feature availability. In-sample rows are descriptive only. No research-closing ground is established.",
+      "closing_ground": null,
+      "description": "Paired fitted term market_move_available; split week_in_season; chronological; All games; log_loss_improvement.",
+      "effect": -8.27265707311372e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "market_move_available__week_in_season",
+      "interval": [
+        -0.000900052965749486,
+        0.0007211850518861588
+      ],
+      "league": "nfl",
+      "notes": "This is a retrospective comparison. The saved inputs lack per-game evidence proving when every feature became available; historical pregame timing is not certified. The signals were chosen using these years. Neither view is an untouched test of a new idea. Leaving one year out can train on later years. The earlier-years-only view trains on at least two completed years and scores the next year. Both fits use the same games, model probability and available market movement; one also includes the pooled game situations. Grades use the opening spread, even when an input arrived later in the week. Intervals resample years and weeks together for both fits. They hold fitted predictions fixed, so they exclude feature-selection and refitting uncertainty. Chance of improvement is the share of resamples above zero, counting ties as half. It is not a probability that a betting edge exists. The exact decisive-game check assumes independent games; shared weeks and training data limit that assumption. The even-market reference assigns each side 50%. Its accuracy uses a home-side tie break; its probability scores are the useful comparison. All declared week groups are shown. These overlapping comparisons do not select a winning group or change the picks.",
+      "plain_summary": "How the served model's own fitted terms change a probability when added to the same model and market inputs, across several ways of splitting the games.",
+      "probability_positive": 0.4122,
+      "recorded_at": "2026-09-24",
+      "reliability": null,
+      "sample_blocks": 72,
+      "sample_games": 1047,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts/signal_atlas/20260924T194540880742Z/report.json",
+      "standard_error": 0.00039040136066988525
+    },
+    "market_move_available__week_in_season_chronological_weeks_13_18_accuracy_points": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic; no untouched selection test or certified historical feature availability. In-sample rows are descriptive only. No research-closing ground is established.",
+      "closing_ground": null,
+      "description": "Paired fitted term market_move_available; split week_in_season; chronological; Weeks 13-18; accuracy_points.",
+      "effect": -0.2824858757062147,
+      "effect_units": "accuracy_points",
+      "family": "market_move_available__week_in_season",
+      "interval": [
+        -1.3737209759937028,
+        0.8265033560111402
+      ],
+      "league": "nfl",
+      "notes": "This is a retrospective comparison. The saved inputs lack per-game evidence proving when every feature became available; historical pregame timing is not certified. The signals were chosen using these years. Neither view is an untouched test of a new idea. Leaving one year out can train on later years. The earlier-years-only view trains on at least two completed years and scores the next year. Both fits use the same games, model probability and available market movement; one also includes the pooled game situations. Grades use the opening spread, even when an input arrived later in the week. Intervals resample years and weeks together for both fits. They hold fitted predictions fixed, so they exclude feature-selection and refitting uncertainty. Chance of improvement is the share of resamples above zero, counting ties as half. It is not a probability that a betting edge exists. The exact decisive-game check assumes independent games; shared weeks and training data limit that assumption. The even-market reference assigns each side 50%. Its accuracy uses a home-side tie break; its probability scores are the useful comparison. All declared week groups are shown. These overlapping comparisons do not select a winning group or change the picks.",
+      "plain_summary": "How the served model's own fitted terms change a probability when added to the same model and market inputs, across several ways of splitting the games.",
+      "probability_positive": 0.2988,
+      "recorded_at": "2026-09-24",
+      "reliability": null,
+      "sample_blocks": 24,
+      "sample_games": 354,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts/signal_atlas/20260924T194540880742Z/report.json",
+      "standard_error": 0.5270262429054877
+    },
+    "market_move_available__week_in_season_chronological_weeks_13_18_brier_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic; no untouched selection test or certified historical feature availability. In-sample rows are descriptive only. No research-closing ground is established.",
+      "closing_ground": null,
+      "description": "Paired fitted term market_move_available; split week_in_season; chronological; Weeks 13-18; brier_improvement.",
+      "effect": -6.491518905536128e-05,
+      "effect_units": "brier_improvement",
+      "family": "market_move_available__week_in_season",
+      "interval": [
+        -0.0006278747219745502,
+        0.0007303951867068206
+      ],
+      "league": "nfl",
+      "notes": "This is a retrospective comparison. The saved inputs lack per-game evidence proving when every feature became available; historical pregame timing is not certified. The signals were chosen using these years. Neither view is an untouched test of a new idea. Leaving one year out can train on later years. The earlier-years-only view trains on at least two completed years and scores the next year. Both fits use the same games, model probability and available market movement; one also includes the pooled game situations. Grades use the opening spread, even when an input arrived later in the week. Intervals resample years and weeks together for both fits. They hold fitted predictions fixed, so they exclude feature-selection and refitting uncertainty. Chance of improvement is the share of resamples above zero, counting ties as half. It is not a probability that a betting edge exists. The exact decisive-game check assumes independent games; shared weeks and training data limit that assumption. The even-market reference assigns each side 50%. Its accuracy uses a home-side tie break; its probability scores are the useful comparison. All declared week groups are shown. These overlapping comparisons do not select a winning group or change the picks.",
+      "plain_summary": "How the served model's own fitted terms change a probability when added to the same model and market inputs, across several ways of splitting the games.",
+      "probability_positive": 0.3399,
+      "recorded_at": "2026-09-24",
+      "reliability": null,
+      "sample_blocks": 24,
+      "sample_games": 354,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts/signal_atlas/20260924T194540880742Z/report.json",
+      "standard_error": 0.0003425842444099617
+    },
+    "market_move_available__week_in_season_chronological_weeks_13_18_log_loss_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic; no untouched selection test or certified historical feature availability. In-sample rows are descriptive only. No research-closing ground is established.",
+      "closing_ground": null,
+      "description": "Paired fitted term market_move_available; split week_in_season; chronological; Weeks 13-18; log_loss_improvement.",
+      "effect": -0.0001317281301067963,
+      "effect_units": "log_loss_improvement",
+      "family": "market_move_available__week_in_season",
+      "interval": [
+        -0.0012812864347401818,
+        0.0015277187889215773
+      ],
+      "league": "nfl",
+      "notes": "This is a retrospective comparison. The saved inputs lack per-game evidence proving when every feature became available; historical pregame timing is not certified. The signals were chosen using these years. Neither view is an untouched test of a new idea. Leaving one year out can train on later years. The earlier-years-only view trains on at least two completed years and scores the next year. Both fits use the same games, model probability and available market movement; one also includes the pooled game situations. Grades use the opening spread, even when an input arrived later in the week. Intervals resample years and weeks together for both fits. They hold fitted predictions fixed, so they exclude feature-selection and refitting uncertainty. Chance of improvement is the share of resamples above zero, counting ties as half. It is not a probability that a betting edge exists. The exact decisive-game check assumes independent games; shared weeks and training data limit that assumption. The even-market reference assigns each side 50%. Its accuracy uses a home-side tie break; its probability scores are the useful comparison. All declared week groups are shown. These overlapping comparisons do not select a winning group or change the picks.",
+      "plain_summary": "How the served model's own fitted terms change a probability when added to the same model and market inputs, across several ways of splitting the games.",
+      "probability_positive": 0.3389,
+      "recorded_at": "2026-09-24",
+      "reliability": null,
+      "sample_blocks": 24,
+      "sample_games": 354,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts/signal_atlas/20260924T194540880742Z/report.json",
+      "standard_error": 0.0007093669142957413
+    },
+    "market_move_available__week_in_season_chronological_weeks_1_4_accuracy_points": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic; no untouched selection test or certified historical feature availability. In-sample rows are descriptive only. No research-closing ground is established.",
+      "closing_ground": null,
+      "description": "Paired fitted term market_move_available; split week_in_season; chronological; Weeks 1-4; accuracy_points.",
+      "effect": -0.8032128514056225,
+      "effect_units": "accuracy_points",
+      "family": "market_move_available__week_in_season",
+      "interval": [
+        -2.8112449799196786,
+        0.7874015748031497
+      ],
+      "league": "nfl",
+      "notes": "This is a retrospective comparison. The saved inputs lack per-game evidence proving when every feature became available; historical pregame timing is not certified. The signals were chosen using these years. Neither view is an untouched test of a new idea. Leaving one year out can train on later years. The earlier-years-only view trains on at least two completed years and scores the next year. Both fits use the same games, model probability and available market movement; one also includes the pooled game situations. Grades use the opening spread, even when an input arrived later in the week. Intervals resample years and weeks together for both fits. They hold fitted predictions fixed, so they exclude feature-selection and refitting uncertainty. Chance of improvement is the share of resamples above zero, counting ties as half. It is not a probability that a betting edge exists. The exact decisive-game check assumes independent games; shared weeks and training data limit that assumption. The even-market reference assigns each side 50%. Its accuracy uses a home-side tie break; its probability scores are the useful comparison. All declared week groups are shown. These overlapping comparisons do not select a winning group or change the picks.",
+      "plain_summary": "How the served model's own fitted terms change a probability when added to the same model and market inputs, across several ways of splitting the games.",
+      "probability_positive": 0.1694,
+      "recorded_at": "2026-09-24",
+      "reliability": null,
+      "sample_blocks": 16,
+      "sample_games": 249,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts/signal_atlas/20260924T194540880742Z/report.json",
+      "standard_error": 0.8529288777523766
+    },
+    "market_move_available__week_in_season_chronological_weeks_1_4_brier_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic; no untouched selection test or certified historical feature availability. In-sample rows are descriptive only. No research-closing ground is established.",
+      "closing_ground": null,
+      "description": "Paired fitted term market_move_available; split week_in_season; chronological; Weeks 1-4; brier_improvement.",
+      "effect": 9.381617994809872e-05,
+      "effect_units": "brier_improvement",
+      "family": "market_move_available__week_in_season",
+      "interval": [
+        -0.0007305483190833325,
+        0.0009992085995041164
+      ],
+      "league": "nfl",
+      "notes": "This is a retrospective comparison. The saved inputs lack per-game evidence proving when every feature became available; historical pregame timing is not certified. The signals were chosen using these years. Neither view is an untouched test of a new idea. Leaving one year out can train on later years. The earlier-years-only view trains on at least two completed years and scores the next year. Both fits use the same games, model probability and available market movement; one also includes the pooled game situations. Grades use the opening spread, even when an input arrived later in the week. Intervals resample years and weeks together for both fits. They hold fitted predictions fixed, so they exclude feature-selection and refitting uncertainty. Chance of improvement is the share of resamples above zero, counting ties as half. It is not a probability that a betting edge exists. The exact decisive-game check assumes independent games; shared weeks and training data limit that assumption. The even-market reference assigns each side 50%. Its accuracy uses a home-side tie break; its probability scores are the useful comparison. All declared week groups are shown. These overlapping comparisons do not select a winning group or change the picks.",
+      "plain_summary": "How the served model's own fitted terms change a probability when added to the same model and market inputs, across several ways of splitting the games.",
+      "probability_positive": 0.5822999999999999,
+      "recorded_at": "2026-09-24",
+      "reliability": null,
+      "sample_blocks": 16,
+      "sample_games": 249,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts/signal_atlas/20260924T194540880742Z/report.json",
+      "standard_error": 0.0004306342192715955
+    },
+    "market_move_available__week_in_season_chronological_weeks_1_4_log_loss_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic; no untouched selection test or certified historical feature availability. In-sample rows are descriptive only. No research-closing ground is established.",
+      "closing_ground": null,
+      "description": "Paired fitted term market_move_available; split week_in_season; chronological; Weeks 1-4; log_loss_improvement.",
+      "effect": 0.00018621326318901565,
+      "effect_units": "log_loss_improvement",
+      "family": "market_move_available__week_in_season",
+      "interval": [
+        -0.0014691306158833163,
+        0.001988491294788686
+      ],
+      "league": "nfl",
+      "notes": "This is a retrospective comparison. The saved inputs lack per-game evidence proving when every feature became available; historical pregame timing is not certified. The signals were chosen using these years. Neither view is an untouched test of a new idea. Leaving one year out can train on later years. The earlier-years-only view trains on at least two completed years and scores the next year. Both fits use the same games, model probability and available market movement; one also includes the pooled game situations. Grades use the opening spread, even when an input arrived later in the week. Intervals resample years and weeks together for both fits. They hold fitted predictions fixed, so they exclude feature-selection and refitting uncertainty. Chance of improvement is the share of resamples above zero, counting ties as half. It is not a probability that a betting edge exists. The exact decisive-game check assumes independent games; shared weeks and training data limit that assumption. The even-market reference assigns each side 50%. Its accuracy uses a home-side tie break; its probability scores are the useful comparison. All declared week groups are shown. These overlapping comparisons do not select a winning group or change the picks.",
+      "plain_summary": "How the served model's own fitted terms change a probability when added to the same model and market inputs, across several ways of splitting the games.",
+      "probability_positive": 0.5801,
+      "recorded_at": "2026-09-24",
+      "reliability": null,
+      "sample_blocks": 16,
+      "sample_games": 249,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts/signal_atlas/20260924T194540880742Z/report.json",
+      "standard_error": 0.0008633341189153942
+    },
+    "market_move_available__week_in_season_chronological_weeks_5_12_accuracy_points": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic; no untouched selection test or certified historical feature availability. In-sample rows are descriptive only. No research-closing ground is established.",
+      "closing_ground": null,
+      "description": "Paired fitted term market_move_available; split week_in_season; chronological; Weeks 5-12; accuracy_points.",
+      "effect": -0.22522522522522523,
+      "effect_units": "accuracy_points",
+      "family": "market_move_available__week_in_season",
+      "interval": [
+        -1.7937219730941705,
+        1.1261261261261262
+      ],
+      "league": "nfl",
+      "notes": "This is a retrospective comparison. The saved inputs lack per-game evidence proving when every feature became available; historical pregame timing is not certified. The signals were chosen using these years. Neither view is an untouched test of a new idea. Leaving one year out can train on later years. The earlier-years-only view trains on at least two completed years and scores the next year. Both fits use the same games, model probability and available market movement; one also includes the pooled game situations. Grades use the opening spread, even when an input arrived later in the week. Intervals resample years and weeks together for both fits. They hold fitted predictions fixed, so they exclude feature-selection and refitting uncertainty. Chance of improvement is the share of resamples above zero, counting ties as half. It is not a probability that a betting edge exists. The exact decisive-game check assumes independent games; shared weeks and training data limit that assumption. The even-market reference assigns each side 50%. Its accuracy uses a home-side tie break; its probability scores are the useful comparison. All declared week groups are shown. These overlapping comparisons do not select a winning group or change the picks.",
+      "plain_summary": "How the served model's own fitted terms change a probability when added to the same model and market inputs, across several ways of splitting the games.",
+      "probability_positive": 0.38339999999999996,
+      "recorded_at": "2026-09-24",
+      "reliability": null,
+      "sample_blocks": 32,
+      "sample_games": 444,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts/signal_atlas/20260924T194540880742Z/report.json",
+      "standard_error": 0.7062122693878022
+    },
+    "market_move_available__week_in_season_chronological_weeks_5_12_brier_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic; no untouched selection test or certified historical feature availability. In-sample rows are descriptive only. No research-closing ground is established.",
+      "closing_ground": null,
+      "description": "Paired fitted term market_move_available; split week_in_season; chronological; Weeks 5-12; brier_improvement.",
+      "effect": -0.0001012832454549585,
+      "effect_units": "brier_improvement",
+      "family": "market_move_available__week_in_season",
+      "interval": [
+        -0.0008321492690659802,
+        0.00046871968857640795
+      ],
+      "league": "nfl",
+      "notes": "This is a retrospective comparison. The saved inputs lack per-game evidence proving when every feature became available; historical pregame timing is not certified. The signals were chosen using these years. Neither view is an untouched test of a new idea. Leaving one year out can train on later years. The earlier-years-only view trains on at least two completed years and scores the next year. Both fits use the same games, model probability and available market movement; one also includes the pooled game situations. Grades use the opening spread, even when an input arrived later in the week. Intervals resample years and weeks together for both fits. They hold fitted predictions fixed, so they exclude feature-selection and refitting uncertainty. Chance of improvement is the share of resamples above zero, counting ties as half. It is not a probability that a betting edge exists. The exact decisive-game check assumes independent games; shared weeks and training data limit that assumption. The even-market reference assigns each side 50%. Its accuracy uses a home-side tie break; its probability scores are the useful comparison. All declared week groups are shown. These overlapping comparisons do not select a winning group or change the picks.",
+      "plain_summary": "How the served model's own fitted terms change a probability when added to the same model and market inputs, across several ways of splitting the games.",
+      "probability_positive": 0.4001,
+      "recorded_at": "2026-09-24",
+      "reliability": null,
+      "sample_blocks": 32,
+      "sample_games": 444,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts/signal_atlas/20260924T194540880742Z/report.json",
+      "standard_error": 0.0003165368421744485
+    },
+    "market_move_available__week_in_season_chronological_weeks_5_12_log_loss_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic; no untouched selection test or certified historical feature availability. In-sample rows are descriptive only. No research-closing ground is established.",
+      "closing_ground": null,
+      "description": "Paired fitted term market_move_available; split week_in_season; chronological; Weeks 5-12; log_loss_improvement.",
+      "effect": -0.00019448212619765687,
+      "effect_units": "log_loss_improvement",
+      "family": "market_move_available__week_in_season",
+      "interval": [
+        -0.0016871844973292813,
+        0.0009689277385127149
+      ],
+      "league": "nfl",
+      "notes": "This is a retrospective comparison. The saved inputs lack per-game evidence proving when every feature became available; historical pregame timing is not certified. The signals were chosen using these years. Neither view is an untouched test of a new idea. Leaving one year out can train on later years. The earlier-years-only view trains on at least two completed years and scores the next year. Both fits use the same games, model probability and available market movement; one also includes the pooled game situations. Grades use the opening spread, even when an input arrived later in the week. Intervals resample years and weeks together for both fits. They hold fitted predictions fixed, so they exclude feature-selection and refitting uncertainty. Chance of improvement is the share of resamples above zero, counting ties as half. It is not a probability that a betting edge exists. The exact decisive-game check assumes independent games; shared weeks and training data limit that assumption. The even-market reference assigns each side 50%. Its accuracy uses a home-side tie break; its probability scores are the useful comparison. All declared week groups are shown. These overlapping comparisons do not select a winning group or change the picks.",
+      "plain_summary": "How the served model's own fitted terms change a probability when added to the same model and market inputs, across several ways of splitting the games.",
+      "probability_positive": 0.4135,
+      "recorded_at": "2026-09-24",
+      "reliability": null,
+      "sample_blocks": 32,
+      "sample_games": 444,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts/signal_atlas/20260924T194540880742Z/report.json",
+      "standard_error": 0.0006454743809317832
+    },
+    "market_move_available__week_in_season_in_sample_overall_accuracy_points": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic; no untouched selection test or certified historical feature availability. In-sample rows are descriptive only. No research-closing ground is established.",
+      "closing_ground": null,
+      "description": "Paired fitted term market_move_available; split week_in_season; in_sample; All games; accuracy_points.",
+      "effect": -0.5322687957418496,
+      "effect_units": "accuracy_points",
+      "family": "market_move_available__week_in_season",
+      "interval": [
+        -1.478494623655914,
+        0.3326735344224998
+      ],
+      "league": "nfl",
+      "notes": "This is a retrospective comparison. The saved inputs lack per-game evidence proving when every feature became available; historical pregame timing is not certified. The signals were chosen using these years. Neither view is an untouched test of a new idea. Leaving one year out can train on later years. The earlier-years-only view trains on at least two completed years and scores the next year. Both fits use the same games, model probability and available market movement; one also includes the pooled game situations. Grades use the opening spread, even when an input arrived later in the week. Intervals resample years and weeks together for both fits. They hold fitted predictions fixed, so they exclude feature-selection and refitting uncertainty. Chance of improvement is the share of resamples above zero, counting ties as half. It is not a probability that a betting edge exists. The exact decisive-game check assumes independent games; shared weeks and training data limit that assumption. The even-market reference assigns each side 50%. Its accuracy uses a home-side tie break; its probability scores are the useful comparison. All declared week groups are shown. These overlapping comparisons do not select a winning group or change the picks.",
+      "plain_summary": "How the served model's own fitted terms change a probability when added to the same model and market inputs, across several ways of splitting the games.",
+      "probability_positive": 0.11670000000000001,
+      "recorded_at": "2026-09-24",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/signal_atlas/20260924T194540880742Z/report.json",
+      "standard_error": 0.46264469597893115
+    },
+    "market_move_available__week_in_season_in_sample_overall_brier_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic; no untouched selection test or certified historical feature availability. In-sample rows are descriptive only. No research-closing ground is established.",
+      "closing_ground": null,
+      "description": "Paired fitted term market_move_available; split week_in_season; in_sample; All games; brier_improvement.",
+      "effect": 9.096762238489128e-06,
+      "effect_units": "brier_improvement",
+      "family": "market_move_available__week_in_season",
+      "interval": [
+        -0.00016270639649902202,
+        0.00017816754454439175
+      ],
+      "league": "nfl",
+      "notes": "This is a retrospective comparison. The saved inputs lack per-game evidence proving when every feature became available; historical pregame timing is not certified. The signals were chosen using these years. Neither view is an untouched test of a new idea. Leaving one year out can train on later years. The earlier-years-only view trains on at least two completed years and scores the next year. Both fits use the same games, model probability and available market movement; one also includes the pooled game situations. Grades use the opening spread, even when an input arrived later in the week. Intervals resample years and weeks together for both fits. They hold fitted predictions fixed, so they exclude feature-selection and refitting uncertainty. Chance of improvement is the share of resamples above zero, counting ties as half. It is not a probability that a betting edge exists. The exact decisive-game check assumes independent games; shared weeks and training data limit that assumption. The even-market reference assigns each side 50%. Its accuracy uses a home-side tie break; its probability scores are the useful comparison. All declared week groups are shown. These overlapping comparisons do not select a winning group or change the picks.",
+      "plain_summary": "How the served model's own fitted terms change a probability when added to the same model and market inputs, across several ways of splitting the games.",
+      "probability_positive": 0.5306,
+      "recorded_at": "2026-09-24",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/signal_atlas/20260924T194540880742Z/report.json",
+      "standard_error": 8.810902077981669e-05
+    },
+    "market_move_available__week_in_season_in_sample_overall_log_loss_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic; no untouched selection test or certified historical feature availability. In-sample rows are descriptive only. No research-closing ground is established.",
+      "closing_ground": null,
+      "description": "Paired fitted term market_move_available; split week_in_season; in_sample; All games; log_loss_improvement.",
+      "effect": 3.1552326889901546e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "market_move_available__week_in_season",
+      "interval": [
+        -0.0003203465239056259,
+        0.0003822120849437565
+      ],
+      "league": "nfl",
+      "notes": "This is a retrospective comparison. The saved inputs lack per-game evidence proving when every feature became available; historical pregame timing is not certified. The signals were chosen using these years. Neither view is an untouched test of a new idea. Leaving one year out can train on later years. The earlier-years-only view trains on at least two completed years and scores the next year. Both fits use the same games, model probability and available market movement; one also includes the pooled game situations. Grades use the opening spread, even when an input arrived later in the week. Intervals resample years and weeks together for both fits. They hold fitted predictions fixed, so they exclude feature-selection and refitting uncertainty. Chance of improvement is the share of resamples above zero, counting ties as half. It is not a probability that a betting edge exists. The exact decisive-game check assumes independent games; shared weeks and training data limit that assumption. The even-market reference assigns each side 50%. Its accuracy uses a home-side tie break; its probability scores are the useful comparison. All declared week groups are shown. These overlapping comparisons do not select a winning group or change the picks.",
+      "plain_summary": "How the served model's own fitted terms change a probability when added to the same model and market inputs, across several ways of splitting the games.",
+      "probability_positive": 0.5562,
+      "recorded_at": "2026-09-24",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/signal_atlas/20260924T194540880742Z/report.json",
+      "standard_error": 0.00018210004727980204
+    },
+    "market_move_available__week_in_season_in_sample_weeks_13_18_accuracy_points": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic; no untouched selection test or certified historical feature availability. In-sample rows are descriptive only. No research-closing ground is established.",
+      "closing_ground": null,
+      "description": "Paired fitted term market_move_available; split week_in_season; in_sample; Weeks 13-18; accuracy_points.",
+      "effect": -1.0080645161290323,
+      "effect_units": "accuracy_points",
+      "family": "market_move_available__week_in_season",
+      "interval": [
+        -3.239740820734341,
+        0.8475026089459852
+      ],
+      "league": "nfl",
+      "notes": "This is a retrospective comparison. The saved inputs lack per-game evidence proving when every feature became available; historical pregame timing is not certified. The signals were chosen using these years. Neither view is an untouched test of a new idea. Leaving one year out can train on later years. The earlier-years-only view trains on at least two completed years and scores the next year. Both fits use the same games, model probability and available market movement; one also includes the pooled game situations. Grades use the opening spread, even when an input arrived later in the week. Intervals resample years and weeks together for both fits. They hold fitted predictions fixed, so they exclude feature-selection and refitting uncertainty. Chance of improvement is the share of resamples above zero, counting ties as half. It is not a probability that a betting edge exists. The exact decisive-game check assumes independent games; shared weeks and training data limit that assumption. The even-market reference assigns each side 50%. Its accuracy uses a home-side tie break; its probability scores are the useful comparison. All declared week groups are shown. These overlapping comparisons do not select a winning group or change the picks.",
+      "plain_summary": "How the served model's own fitted terms change a probability when added to the same model and market inputs, across several ways of splitting the games.",
+      "probability_positive": 0.16419999999999998,
+      "recorded_at": "2026-09-24",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 496,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/signal_atlas/20260924T194540880742Z/report.json",
+      "standard_error": 1.0297754938757715
+    },
+    "market_move_available__week_in_season_in_sample_weeks_13_18_brier_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic; no untouched selection test or certified historical feature availability. In-sample rows are descriptive only. No research-closing ground is established.",
+      "closing_ground": null,
+      "description": "Paired fitted term market_move_available; split week_in_season; in_sample; Weeks 13-18; brier_improvement.",
+      "effect": -7.094523732332366e-05,
+      "effect_units": "brier_improvement",
+      "family": "market_move_available__week_in_season",
+      "interval": [
+        -0.00045341495866823775,
+        0.0002941937940605757
+      ],
+      "league": "nfl",
+      "notes": "This is a retrospective comparison. The saved inputs lack per-game evidence proving when every feature became available; historical pregame timing is not certified. The signals were chosen using these years. Neither view is an untouched test of a new idea. Leaving one year out can train on later years. The earlier-years-only view trains on at least two completed years and scores the next year. Both fits use the same games, model probability and available market movement; one also includes the pooled game situations. Grades use the opening spread, even when an input arrived later in the week. Intervals resample years and weeks together for both fits. They hold fitted predictions fixed, so they exclude feature-selection and refitting uncertainty. Chance of improvement is the share of resamples above zero, counting ties as half. It is not a probability that a betting edge exists. The exact decisive-game check assumes independent games; shared weeks and training data limit that assumption. The even-market reference assigns each side 50%. Its accuracy uses a home-side tie break; its probability scores are the useful comparison. All declared week groups are shown. These overlapping comparisons do not select a winning group or change the picks.",
+      "plain_summary": "How the served model's own fitted terms change a probability when added to the same model and market inputs, across several ways of splitting the games.",
+      "probability_positive": 0.359,
+      "recorded_at": "2026-09-24",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 496,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/signal_atlas/20260924T194540880742Z/report.json",
+      "standard_error": 0.00019060676948535115
+    },
+    "market_move_available__week_in_season_in_sample_weeks_13_18_log_loss_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic; no untouched selection test or certified historical feature availability. In-sample rows are descriptive only. No research-closing ground is established.",
+      "closing_ground": null,
+      "description": "Paired fitted term market_move_available; split week_in_season; in_sample; Weeks 13-18; log_loss_improvement.",
+      "effect": -0.000137035860944321,
+      "effect_units": "log_loss_improvement",
+      "family": "market_move_available__week_in_season",
+      "interval": [
+        -0.0009246522939955825,
+        0.0006235240691133399
+      ],
+      "league": "nfl",
+      "notes": "This is a retrospective comparison. The saved inputs lack per-game evidence proving when every feature became available; historical pregame timing is not certified. The signals were chosen using these years. Neither view is an untouched test of a new idea. Leaving one year out can train on later years. The earlier-years-only view trains on at least two completed years and scores the next year. Both fits use the same games, model probability and available market movement; one also includes the pooled game situations. Grades use the opening spread, even when an input arrived later in the week. Intervals resample years and weeks together for both fits. They hold fitted predictions fixed, so they exclude feature-selection and refitting uncertainty. Chance of improvement is the share of resamples above zero, counting ties as half. It is not a probability that a betting edge exists. The exact decisive-game check assumes independent games; shared weeks and training data limit that assumption. The even-market reference assigns each side 50%. Its accuracy uses a home-side tie break; its probability scores are the useful comparison. All declared week groups are shown. These overlapping comparisons do not select a winning group or change the picks.",
+      "plain_summary": "How the served model's own fitted terms change a probability when added to the same model and market inputs, across several ways of splitting the games.",
+      "probability_positive": 0.3644,
+      "recorded_at": "2026-09-24",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 496,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/signal_atlas/20260924T194540880742Z/report.json",
+      "standard_error": 0.00039325386164084145
+    },
+    "market_move_available__week_in_season_in_sample_weeks_1_4_accuracy_points": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic; no untouched selection test or certified historical feature availability. In-sample rows are descriptive only. No research-closing ground is established.",
+      "closing_ground": null,
+      "description": "Paired fitted term market_move_available; split week_in_season; in_sample; Weeks 1-4; accuracy_points.",
+      "effect": -0.5555555555555556,
+      "effect_units": "accuracy_points",
+      "family": "market_move_available__week_in_season",
+      "interval": [
+        -2.5570002913752905,
+        1.392757660167131
+      ],
+      "league": "nfl",
+      "notes": "This is a retrospective comparison. The saved inputs lack per-game evidence proving when every feature became available; historical pregame timing is not certified. The signals were chosen using these years. Neither view is an untouched test of a new idea. Leaving one year out can train on later years. The earlier-years-only view trains on at least two completed years and scores the next year. Both fits use the same games, model probability and available market movement; one also includes the pooled game situations. Grades use the opening spread, even when an input arrived later in the week. Intervals resample years and weeks together for both fits. They hold fitted predictions fixed, so they exclude feature-selection and refitting uncertainty. Chance of improvement is the share of resamples above zero, counting ties as half. It is not a probability that a betting edge exists. The exact decisive-game check assumes independent games; shared weeks and training data limit that assumption. The even-market reference assigns each side 50%. Its accuracy uses a home-side tie break; its probability scores are the useful comparison. All declared week groups are shown. These overlapping comparisons do not select a winning group or change the picks.",
+      "plain_summary": "How the served model's own fitted terms change a probability when added to the same model and market inputs, across several ways of splitting the games.",
+      "probability_positive": 0.2919,
+      "recorded_at": "2026-09-24",
+      "reliability": null,
+      "sample_blocks": 24,
+      "sample_games": 360,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/signal_atlas/20260924T194540880742Z/report.json",
+      "standard_error": 1.0120298411803814
+    },
+    "market_move_available__week_in_season_in_sample_weeks_1_4_brier_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic; no untouched selection test or certified historical feature availability. In-sample rows are descriptive only. No research-closing ground is established.",
+      "closing_ground": null,
+      "description": "Paired fitted term market_move_available; split week_in_season; in_sample; Weeks 1-4; brier_improvement.",
+      "effect": 0.000133466310711954,
+      "effect_units": "brier_improvement",
+      "family": "market_move_available__week_in_season",
+      "interval": [
+        -0.0002693770483054385,
+        0.0005378199456971248
+      ],
+      "league": "nfl",
+      "notes": "This is a retrospective comparison. The saved inputs lack per-game evidence proving when every feature became available; historical pregame timing is not certified. The signals were chosen using these years. Neither view is an untouched test of a new idea. Leaving one year out can train on later years. The earlier-years-only view trains on at least two completed years and scores the next year. Both fits use the same games, model probability and available market movement; one also includes the pooled game situations. Grades use the opening spread, even when an input arrived later in the week. Intervals resample years and weeks together for both fits. They hold fitted predictions fixed, so they exclude feature-selection and refitting uncertainty. Chance of improvement is the share of resamples above zero, counting ties as half. It is not a probability that a betting edge exists. The exact decisive-game check assumes independent games; shared weeks and training data limit that assumption. The even-market reference assigns each side 50%. Its accuracy uses a home-side tie break; its probability scores are the useful comparison. All declared week groups are shown. These overlapping comparisons do not select a winning group or change the picks.",
+      "plain_summary": "How the served model's own fitted terms change a probability when added to the same model and market inputs, across several ways of splitting the games.",
+      "probability_positive": 0.747,
+      "recorded_at": "2026-09-24",
+      "reliability": null,
+      "sample_blocks": 24,
+      "sample_games": 360,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/signal_atlas/20260924T194540880742Z/report.json",
+      "standard_error": 0.0002048765246850717
+    },
+    "market_move_available__week_in_season_in_sample_weeks_1_4_log_loss_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic; no untouched selection test or certified historical feature availability. In-sample rows are descriptive only. No research-closing ground is established.",
+      "closing_ground": null,
+      "description": "Paired fitted term market_move_available; split week_in_season; in_sample; Weeks 1-4; log_loss_improvement.",
+      "effect": 0.000260682113222783,
+      "effect_units": "log_loss_improvement",
+      "family": "market_move_available__week_in_season",
+      "interval": [
+        -0.0005644498993691414,
+        0.001088517391909759
+      ],
+      "league": "nfl",
+      "notes": "This is a retrospective comparison. The saved inputs lack per-game evidence proving when every feature became available; historical pregame timing is not certified. The signals were chosen using these years. Neither view is an untouched test of a new idea. Leaving one year out can train on later years. The earlier-years-only view trains on at least two completed years and scores the next year. Both fits use the same games, model probability and available market movement; one also includes the pooled game situations. Grades use the opening spread, even when an input arrived later in the week. Intervals resample years and weeks together for both fits. They hold fitted predictions fixed, so they exclude feature-selection and refitting uncertainty. Chance of improvement is the share of resamples above zero, counting ties as half. It is not a probability that a betting edge exists. The exact decisive-game check assumes independent games; shared weeks and training data limit that assumption. The even-market reference assigns each side 50%. Its accuracy uses a home-side tie break; its probability scores are the useful comparison. All declared week groups are shown. These overlapping comparisons do not select a winning group or change the picks.",
+      "plain_summary": "How the served model's own fitted terms change a probability when added to the same model and market inputs, across several ways of splitting the games.",
+      "probability_positive": 0.7374,
+      "recorded_at": "2026-09-24",
+      "reliability": null,
+      "sample_blocks": 24,
+      "sample_games": 360,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/signal_atlas/20260924T194540880742Z/report.json",
+      "standard_error": 0.0004196330993889006
+    },
+    "market_move_available__week_in_season_in_sample_weeks_5_12_accuracy_points": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic; no untouched selection test or certified historical feature availability. In-sample rows are descriptive only. No research-closing ground is established.",
+      "closing_ground": null,
+      "description": "Paired fitted term market_move_available; split week_in_season; in_sample; Weeks 5-12; accuracy_points.",
+      "effect": -0.1545595054095827,
+      "effect_units": "accuracy_points",
+      "family": "market_move_available__week_in_season",
+      "interval": [
+        -1.0638702678195535,
+        0.8038908823544636
+      ],
+      "league": "nfl",
+      "notes": "This is a retrospective comparison. The saved inputs lack per-game evidence proving when every feature became available; historical pregame timing is not certified. The signals were chosen using these years. Neither view is an untouched test of a new idea. Leaving one year out can train on later years. The earlier-years-only view trains on at least two completed years and scores the next year. Both fits use the same games, model probability and available market movement; one also includes the pooled game situations. Grades use the opening spread, even when an input arrived later in the week. Intervals resample years and weeks together for both fits. They hold fitted predictions fixed, so they exclude feature-selection and refitting uncertainty. Chance of improvement is the share of resamples above zero, counting ties as half. It is not a probability that a betting edge exists. The exact decisive-game check assumes independent games; shared weeks and training data limit that assumption. The even-market reference assigns each side 50%. Its accuracy uses a home-side tie break; its probability scores are the useful comparison. All declared week groups are shown. These overlapping comparisons do not select a winning group or change the picks.",
+      "plain_summary": "How the served model's own fitted terms change a probability when added to the same model and market inputs, across several ways of splitting the games.",
+      "probability_positive": 0.373,
+      "recorded_at": "2026-09-24",
+      "reliability": null,
+      "sample_blocks": 48,
+      "sample_games": 647,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/signal_atlas/20260924T194540880742Z/report.json",
+      "standard_error": 0.4776441418282875
+    },
+    "market_move_available__week_in_season_in_sample_weeks_5_12_brier_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic; no untouched selection test or certified historical feature availability. In-sample rows are descriptive only. No research-closing ground is established.",
+      "closing_ground": null,
+      "description": "Paired fitted term market_move_available; split week_in_season; in_sample; Weeks 5-12; brier_improvement.",
+      "effect": 1.2571862449988476e-06,
+      "effect_units": "brier_improvement",
+      "family": "market_move_available__week_in_season",
+      "interval": [
+        -0.00030270557148467264,
+        0.00029613438147589735
+      ],
+      "league": "nfl",
+      "notes": "This is a retrospective comparison. The saved inputs lack per-game evidence proving when every feature became available; historical pregame timing is not certified. The signals were chosen using these years. Neither view is an untouched test of a new idea. Leaving one year out can train on later years. The earlier-years-only view trains on at least two completed years and scores the next year. Both fits use the same games, model probability and available market movement; one also includes the pooled game situations. Grades use the opening spread, even when an input arrived later in the week. Intervals resample years and weeks together for both fits. They hold fitted predictions fixed, so they exclude feature-selection and refitting uncertainty. Chance of improvement is the share of resamples above zero, counting ties as half. It is not a probability that a betting edge exists. The exact decisive-game check assumes independent games; shared weeks and training data limit that assumption. The even-market reference assigns each side 50%. Its accuracy uses a home-side tie break; its probability scores are the useful comparison. All declared week groups are shown. These overlapping comparisons do not select a winning group or change the picks.",
+      "plain_summary": "How the served model's own fitted terms change a probability when added to the same model and market inputs, across several ways of splitting the games.",
+      "probability_positive": 0.494,
+      "recorded_at": "2026-09-24",
+      "reliability": null,
+      "sample_blocks": 48,
+      "sample_games": 647,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/signal_atlas/20260924T194540880742Z/report.json",
+      "standard_error": 0.00015220510589209998
+    },
+    "market_move_available__week_in_season_in_sample_weeks_5_12_log_loss_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic; no untouched selection test or certified historical feature availability. In-sample rows are descriptive only. No research-closing ground is established.",
+      "closing_ground": null,
+      "description": "Paired fitted term market_move_available; split week_in_season; in_sample; Weeks 5-12; log_loss_improvement.",
+      "effect": 3.330351403972696e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "market_move_available__week_in_season",
+      "interval": [
+        -0.0005967896974764563,
+        0.0006688873086055506
+      ],
+      "league": "nfl",
+      "notes": "This is a retrospective comparison. The saved inputs lack per-game evidence proving when every feature became available; historical pregame timing is not certified. The signals were chosen using these years. Neither view is an untouched test of a new idea. Leaving one year out can train on later years. The earlier-years-only view trains on at least two completed years and scores the next year. Both fits use the same games, model probability and available market movement; one also includes the pooled game situations. Grades use the opening spread, even when an input arrived later in the week. Intervals resample years and weeks together for both fits. They hold fitted predictions fixed, so they exclude feature-selection and refitting uncertainty. Chance of improvement is the share of resamples above zero, counting ties as half. It is not a probability that a betting edge exists. The exact decisive-game check assumes independent games; shared weeks and training data limit that assumption. The even-market reference assigns each side 50%. Its accuracy uses a home-side tie break; its probability scores are the useful comparison. All declared week groups are shown. These overlapping comparisons do not select a winning group or change the picks.",
+      "plain_summary": "How the served model's own fitted terms change a probability when added to the same model and market inputs, across several ways of splitting the games.",
+      "probability_positive": 0.5314,
+      "recorded_at": "2026-09-24",
+      "reliability": null,
+      "sample_blocks": 48,
+      "sample_games": 647,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/signal_atlas/20260924T194540880742Z/report.json",
+      "standard_error": 0.00032094593977588997
+    },
+    "market_move_available__week_in_season_out_of_season_overall_accuracy_points": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic; no untouched selection test or certified historical feature availability. In-sample rows are descriptive only. No research-closing ground is established.",
+      "closing_ground": null,
+      "description": "Paired fitted term market_move_available; split week_in_season; out_of_season; All games; accuracy_points.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "market_move_available__week_in_season",
+      "interval": [
+        -0.8176896471620677,
+        0.9241382471580485
+      ],
+      "league": "nfl",
+      "notes": "This is a retrospective comparison. The saved inputs lack per-game evidence proving when every feature became available; historical pregame timing is not certified. The signals were chosen using these years. Neither view is an untouched test of a new idea. Leaving one year out can train on later years. The earlier-years-only view trains on at least two completed years and scores the next year. Both fits use the same games, model probability and available market movement; one also includes the pooled game situations. Grades use the opening spread, even when an input arrived later in the week. Intervals resample years and weeks together for both fits. They hold fitted predictions fixed, so they exclude feature-selection and refitting uncertainty. Chance of improvement is the share of resamples above zero, counting ties as half. It is not a probability that a betting edge exists. The exact decisive-game check assumes independent games; shared weeks and training data limit that assumption. The even-market reference assigns each side 50%. Its accuracy uses a home-side tie break; its probability scores are the useful comparison. All declared week groups are shown. These overlapping comparisons do not select a winning group or change the picks.",
+      "plain_summary": "How the served model's own fitted terms change a probability when added to the same model and market inputs, across several ways of splitting the games.",
+      "probability_positive": 0.4835,
+      "recorded_at": "2026-09-24",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/signal_atlas/20260924T194540880742Z/report.json",
+      "standard_error": 0.44349700688977267
+    },
+    "market_move_available__week_in_season_out_of_season_overall_brier_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic; no untouched selection test or certified historical feature availability. In-sample rows are descriptive only. No research-closing ground is established.",
+      "closing_ground": null,
+      "description": "Paired fitted term market_move_available; split week_in_season; out_of_season; All games; brier_improvement.",
+      "effect": -9.688039397835911e-06,
+      "effect_units": "brier_improvement",
+      "family": "market_move_available__week_in_season",
+      "interval": [
+        -0.0002282747852761165,
+        0.00020216062720961503
+      ],
+      "league": "nfl",
+      "notes": "This is a retrospective comparison. The saved inputs lack per-game evidence proving when every feature became available; historical pregame timing is not certified. The signals were chosen using these years. Neither view is an untouched test of a new idea. Leaving one year out can train on later years. The earlier-years-only view trains on at least two completed years and scores the next year. Both fits use the same games, model probability and available market movement; one also includes the pooled game situations. Grades use the opening spread, even when an input arrived later in the week. Intervals resample years and weeks together for both fits. They hold fitted predictions fixed, so they exclude feature-selection and refitting uncertainty. Chance of improvement is the share of resamples above zero, counting ties as half. It is not a probability that a betting edge exists. The exact decisive-game check assumes independent games; shared weeks and training data limit that assumption. The even-market reference assigns each side 50%. Its accuracy uses a home-side tie break; its probability scores are the useful comparison. All declared week groups are shown. These overlapping comparisons do not select a winning group or change the picks.",
+      "plain_summary": "How the served model's own fitted terms change a probability when added to the same model and market inputs, across several ways of splitting the games.",
+      "probability_positive": 0.4686,
+      "recorded_at": "2026-09-24",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/signal_atlas/20260924T194540880742Z/report.json",
+      "standard_error": 0.00011059208562931424
+    },
+    "market_move_available__week_in_season_out_of_season_overall_log_loss_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic; no untouched selection test or certified historical feature availability. In-sample rows are descriptive only. No research-closing ground is established.",
+      "closing_ground": null,
+      "description": "Paired fitted term market_move_available; split week_in_season; out_of_season; All games; log_loss_improvement.",
+      "effect": -1.4600581120586624e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "market_move_available__week_in_season",
+      "interval": [
+        -0.0004587991033183019,
+        0.00041597686993582756
+      ],
+      "league": "nfl",
+      "notes": "This is a retrospective comparison. The saved inputs lack per-game evidence proving when every feature became available; historical pregame timing is not certified. The signals were chosen using these years. Neither view is an untouched test of a new idea. Leaving one year out can train on later years. The earlier-years-only view trains on at least two completed years and scores the next year. Both fits use the same games, model probability and available market movement; one also includes the pooled game situations. Grades use the opening spread, even when an input arrived later in the week. Intervals resample years and weeks together for both fits. They hold fitted predictions fixed, so they exclude feature-selection and refitting uncertainty. Chance of improvement is the share of resamples above zero, counting ties as half. It is not a probability that a betting edge exists. The exact decisive-game check assumes independent games; shared weeks and training data limit that assumption. The even-market reference assigns each side 50%. Its accuracy uses a home-side tie break; its probability scores are the useful comparison. All declared week groups are shown. These overlapping comparisons do not select a winning group or change the picks.",
+      "plain_summary": "How the served model's own fitted terms change a probability when added to the same model and market inputs, across several ways of splitting the games.",
+      "probability_positive": 0.4758,
+      "recorded_at": "2026-09-24",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/signal_atlas/20260924T194540880742Z/report.json",
+      "standard_error": 0.00022538918277439777
+    },
+    "market_move_available__week_in_season_out_of_season_weeks_13_18_accuracy_points": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic; no untouched selection test or certified historical feature availability. In-sample rows are descriptive only. No research-closing ground is established.",
+      "closing_ground": null,
+      "description": "Paired fitted term market_move_available; split week_in_season; out_of_season; Weeks 13-18; accuracy_points.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "market_move_available__week_in_season",
+      "interval": [
+        -0.9940357852882704,
+        1.0040160642570282
+      ],
+      "league": "nfl",
+      "notes": "This is a retrospective comparison. The saved inputs lack per-game evidence proving when every feature became available; historical pregame timing is not certified. The signals were chosen using these years. Neither view is an untouched test of a new idea. Leaving one year out can train on later years. The earlier-years-only view trains on at least two completed years and scores the next year. Both fits use the same games, model probability and available market movement; one also includes the pooled game situations. Grades use the opening spread, even when an input arrived later in the week. Intervals resample years and weeks together for both fits. They hold fitted predictions fixed, so they exclude feature-selection and refitting uncertainty. Chance of improvement is the share of resamples above zero, counting ties as half. It is not a probability that a betting edge exists. The exact decisive-game check assumes independent games; shared weeks and training data limit that assumption. The even-market reference assigns each side 50%. Its accuracy uses a home-side tie break; its probability scores are the useful comparison. All declared week groups are shown. These overlapping comparisons do not select a winning group or change the picks.",
+      "plain_summary": "How the served model's own fitted terms change a probability when added to the same model and market inputs, across several ways of splitting the games.",
+      "probability_positive": 0.5044,
+      "recorded_at": "2026-09-24",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 496,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/signal_atlas/20260924T194540880742Z/report.json",
+      "standard_error": 0.4867313039348491
+    },
+    "market_move_available__week_in_season_out_of_season_weeks_13_18_brier_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic; no untouched selection test or certified historical feature availability. In-sample rows are descriptive only. No research-closing ground is established.",
+      "closing_ground": null,
+      "description": "Paired fitted term market_move_available; split week_in_season; out_of_season; Weeks 13-18; brier_improvement.",
+      "effect": -0.00014165695814216683,
+      "effect_units": "brier_improvement",
+      "family": "market_move_available__week_in_season",
+      "interval": [
+        -0.0006814871146852206,
+        0.00034945411896819415
+      ],
+      "league": "nfl",
+      "notes": "This is a retrospective comparison. The saved inputs lack per-game evidence proving when every feature became available; historical pregame timing is not certified. The signals were chosen using these years. Neither view is an untouched test of a new idea. Leaving one year out can train on later years. The earlier-years-only view trains on at least two completed years and scores the next year. Both fits use the same games, model probability and available market movement; one also includes the pooled game situations. Grades use the opening spread, even when an input arrived later in the week. Intervals resample years and weeks together for both fits. They hold fitted predictions fixed, so they exclude feature-selection and refitting uncertainty. Chance of improvement is the share of resamples above zero, counting ties as half. It is not a probability that a betting edge exists. The exact decisive-game check assumes independent games; shared weeks and training data limit that assumption. The even-market reference assigns each side 50%. Its accuracy uses a home-side tie break; its probability scores are the useful comparison. All declared week groups are shown. These overlapping comparisons do not select a winning group or change the picks.",
+      "plain_summary": "How the served model's own fitted terms change a probability when added to the same model and market inputs, across several ways of splitting the games.",
+      "probability_positive": 0.2924,
+      "recorded_at": "2026-09-24",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 496,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/signal_atlas/20260924T194540880742Z/report.json",
+      "standard_error": 0.00025958768050360744
+    },
+    "market_move_available__week_in_season_out_of_season_weeks_13_18_log_loss_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic; no untouched selection test or certified historical feature availability. In-sample rows are descriptive only. No research-closing ground is established.",
+      "closing_ground": null,
+      "description": "Paired fitted term market_move_available; split week_in_season; out_of_season; Weeks 13-18; log_loss_improvement.",
+      "effect": -0.00028064592370402776,
+      "effect_units": "log_loss_improvement",
+      "family": "market_move_available__week_in_season",
+      "interval": [
+        -0.0014017694898277068,
+        0.000734026387544004
+      ],
+      "league": "nfl",
+      "notes": "This is a retrospective comparison. The saved inputs lack per-game evidence proving when every feature became available; historical pregame timing is not certified. The signals were chosen using these years. Neither view is an untouched test of a new idea. Leaving one year out can train on later years. The earlier-years-only view trains on at least two completed years and scores the next year. Both fits use the same games, model probability and available market movement; one also includes the pooled game situations. Grades use the opening spread, even when an input arrived later in the week. Intervals resample years and weeks together for both fits. They hold fitted predictions fixed, so they exclude feature-selection and refitting uncertainty. Chance of improvement is the share of resamples above zero, counting ties as half. It is not a probability that a betting edge exists. The exact decisive-game check assumes independent games; shared weeks and training data limit that assumption. The even-market reference assigns each side 50%. Its accuracy uses a home-side tie break; its probability scores are the useful comparison. All declared week groups are shown. These overlapping comparisons do not select a winning group or change the picks.",
+      "plain_summary": "How the served model's own fitted terms change a probability when added to the same model and market inputs, across several ways of splitting the games.",
+      "probability_positive": 0.3026,
+      "recorded_at": "2026-09-24",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 496,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/signal_atlas/20260924T194540880742Z/report.json",
+      "standard_error": 0.0005370434967238803
+    },
+    "market_move_available__week_in_season_out_of_season_weeks_1_4_accuracy_points": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic; no untouched selection test or certified historical feature availability. In-sample rows are descriptive only. No research-closing ground is established.",
+      "closing_ground": null,
+      "description": "Paired fitted term market_move_available; split week_in_season; out_of_season; Weeks 1-4; accuracy_points.",
+      "effect": -0.2777777777777778,
+      "effect_units": "accuracy_points",
+      "family": "market_move_available__week_in_season",
+      "interval": [
+        -2.2535211267605635,
+        1.9607843137254901
+      ],
+      "league": "nfl",
+      "notes": "This is a retrospective comparison. The saved inputs lack per-game evidence proving when every feature became available; historical pregame timing is not certified. The signals were chosen using these years. Neither view is an untouched test of a new idea. Leaving one year out can train on later years. The earlier-years-only view trains on at least two completed years and scores the next year. Both fits use the same games, model probability and available market movement; one also includes the pooled game situations. Grades use the opening spread, even when an input arrived later in the week. Intervals resample years and weeks together for both fits. They hold fitted predictions fixed, so they exclude feature-selection and refitting uncertainty. Chance of improvement is the share of resamples above zero, counting ties as half. It is not a probability that a betting edge exists. The exact decisive-game check assumes independent games; shared weeks and training data limit that assumption. The even-market reference assigns each side 50%. Its accuracy uses a home-side tie break; its probability scores are the useful comparison. All declared week groups are shown. These overlapping comparisons do not select a winning group or change the picks.",
+      "plain_summary": "How the served model's own fitted terms change a probability when added to the same model and market inputs, across several ways of splitting the games.",
+      "probability_positive": 0.37370000000000003,
+      "recorded_at": "2026-09-24",
+      "reliability": null,
+      "sample_blocks": 24,
+      "sample_games": 360,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/signal_atlas/20260924T194540880742Z/report.json",
+      "standard_error": 1.0654772041416232
+    },
+    "market_move_available__week_in_season_out_of_season_weeks_1_4_brier_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic; no untouched selection test or certified historical feature availability. In-sample rows are descriptive only. No research-closing ground is established.",
+      "closing_ground": null,
+      "description": "Paired fitted term market_move_available; split week_in_season; out_of_season; Weeks 1-4; brier_improvement.",
+      "effect": 0.0002280837195918824,
+      "effect_units": "brier_improvement",
+      "family": "market_move_available__week_in_season",
+      "interval": [
+        -0.0002644533282201593,
+        0.0007448216815222148
+      ],
+      "league": "nfl",
+      "notes": "This is a retrospective comparison. The saved inputs lack per-game evidence proving when every feature became available; historical pregame timing is not certified. The signals were chosen using these years. Neither view is an untouched test of a new idea. Leaving one year out can train on later years. The earlier-years-only view trains on at least two completed years and scores the next year. Both fits use the same games, model probability and available market movement; one also includes the pooled game situations. Grades use the opening spread, even when an input arrived later in the week. Intervals resample years and weeks together for both fits. They hold fitted predictions fixed, so they exclude feature-selection and refitting uncertainty. Chance of improvement is the share of resamples above zero, counting ties as half. It is not a probability that a betting edge exists. The exact decisive-game check assumes independent games; shared weeks and training data limit that assumption. The even-market reference assigns each side 50%. Its accuracy uses a home-side tie break; its probability scores are the useful comparison. All declared week groups are shown. These overlapping comparisons do not select a winning group or change the picks.",
+      "plain_summary": "How the served model's own fitted terms change a probability when added to the same model and market inputs, across several ways of splitting the games.",
+      "probability_positive": 0.8248,
+      "recorded_at": "2026-09-24",
+      "reliability": null,
+      "sample_blocks": 24,
+      "sample_games": 360,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/signal_atlas/20260924T194540880742Z/report.json",
+      "standard_error": 0.000253833483212471
+    },
+    "market_move_available__week_in_season_out_of_season_weeks_1_4_log_loss_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic; no untouched selection test or certified historical feature availability. In-sample rows are descriptive only. No research-closing ground is established.",
+      "closing_ground": null,
+      "description": "Paired fitted term market_move_available; split week_in_season; out_of_season; Weeks 1-4; log_loss_improvement.",
+      "effect": 0.00046326035215114516,
+      "effect_units": "log_loss_improvement",
+      "family": "market_move_available__week_in_season",
+      "interval": [
+        -0.0005396035966667333,
+        0.0015160808508588727
+      ],
+      "league": "nfl",
+      "notes": "This is a retrospective comparison. The saved inputs lack per-game evidence proving when every feature became available; historical pregame timing is not certified. The signals were chosen using these years. Neither view is an untouched test of a new idea. Leaving one year out can train on later years. The earlier-years-only view trains on at least two completed years and scores the next year. Both fits use the same games, model probability and available market movement; one also includes the pooled game situations. Grades use the opening spread, even when an input arrived later in the week. Intervals resample years and weeks together for both fits. They hold fitted predictions fixed, so they exclude feature-selection and refitting uncertainty. Chance of improvement is the share of resamples above zero, counting ties as half. It is not a probability that a betting edge exists. The exact decisive-game check assumes independent games; shared weeks and training data limit that assumption. The even-market reference assigns each side 50%. Its accuracy uses a home-side tie break; its probability scores are the useful comparison. All declared week groups are shown. These overlapping comparisons do not select a winning group or change the picks.",
+      "plain_summary": "How the served model's own fitted terms change a probability when added to the same model and market inputs, across several ways of splitting the games.",
+      "probability_positive": 0.8232,
+      "recorded_at": "2026-09-24",
+      "reliability": null,
+      "sample_blocks": 24,
+      "sample_games": 360,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/signal_atlas/20260924T194540880742Z/report.json",
+      "standard_error": 0.0005182610524053809
+    },
+    "market_move_available__week_in_season_out_of_season_weeks_5_12_accuracy_points": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic; no untouched selection test or certified historical feature availability. In-sample rows are descriptive only. No research-closing ground is established.",
+      "closing_ground": null,
+      "description": "Paired fitted term market_move_available; split week_in_season; out_of_season; Weeks 5-12; accuracy_points.",
+      "effect": 0.1545595054095827,
+      "effect_units": "accuracy_points",
+      "family": "market_move_available__week_in_season",
+      "interval": [
+        -0.91324200913242,
+        1.21765601217656
+      ],
+      "league": "nfl",
+      "notes": "This is a retrospective comparison. The saved inputs lack per-game evidence proving when every feature became available; historical pregame timing is not certified. The signals were chosen using these years. Neither view is an untouched test of a new idea. Leaving one year out can train on later years. The earlier-years-only view trains on at least two completed years and scores the next year. Both fits use the same games, model probability and available market movement; one also includes the pooled game situations. Grades use the opening spread, even when an input arrived later in the week. Intervals resample years and weeks together for both fits. They hold fitted predictions fixed, so they exclude feature-selection and refitting uncertainty. Chance of improvement is the share of resamples above zero, counting ties as half. It is not a probability that a betting edge exists. The exact decisive-game check assumes independent games; shared weeks and training data limit that assumption. The even-market reference assigns each side 50%. Its accuracy uses a home-side tie break; its probability scores are the useful comparison. All declared week groups are shown. These overlapping comparisons do not select a winning group or change the picks.",
+      "plain_summary": "How the served model's own fitted terms change a probability when added to the same model and market inputs, across several ways of splitting the games.",
+      "probability_positive": 0.617,
+      "recorded_at": "2026-09-24",
+      "reliability": null,
+      "sample_blocks": 48,
+      "sample_games": 647,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/signal_atlas/20260924T194540880742Z/report.json",
+      "standard_error": 0.5316135902221102
+    },
+    "market_move_available__week_in_season_out_of_season_weeks_5_12_brier_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic; no untouched selection test or certified historical feature availability. In-sample rows are descriptive only. No research-closing ground is established.",
+      "closing_ground": null,
+      "description": "Paired fitted term market_move_available; split week_in_season; out_of_season; Weeks 5-12; brier_improvement.",
+      "effect": -4.081825506879488e-05,
+      "effect_units": "brier_improvement",
+      "family": "market_move_available__week_in_season",
+      "interval": [
+        -0.00042732261454685383,
+        0.00034525033915747057
+      ],
+      "league": "nfl",
+      "notes": "This is a retrospective comparison. The saved inputs lack per-game evidence proving when every feature became available; historical pregame timing is not certified. The signals were chosen using these years. Neither view is an untouched test of a new idea. Leaving one year out can train on later years. The earlier-years-only view trains on at least two completed years and scores the next year. Both fits use the same games, model probability and available market movement; one also includes the pooled game situations. Grades use the opening spread, even when an input arrived later in the week. Intervals resample years and weeks together for both fits. They hold fitted predictions fixed, so they exclude feature-selection and refitting uncertainty. Chance of improvement is the share of resamples above zero, counting ties as half. It is not a probability that a betting edge exists. The exact decisive-game check assumes independent games; shared weeks and training data limit that assumption. The even-market reference assigns each side 50%. Its accuracy uses a home-side tie break; its probability scores are the useful comparison. All declared week groups are shown. These overlapping comparisons do not select a winning group or change the picks.",
+      "plain_summary": "How the served model's own fitted terms change a probability when added to the same model and market inputs, across several ways of splitting the games.",
+      "probability_positive": 0.4154,
+      "recorded_at": "2026-09-24",
+      "reliability": null,
+      "sample_blocks": 48,
+      "sample_games": 647,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/signal_atlas/20260924T194540880742Z/report.json",
+      "standard_error": 0.00019393543038279844
+    },
+    "market_move_available__week_in_season_out_of_season_weeks_5_12_log_loss_improvement": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Retrospective diagnostic; no untouched selection test or certified historical feature availability. In-sample rows are descriptive only. No research-closing ground is established.",
+      "closing_ground": null,
+      "description": "Paired fitted term market_move_available; split week_in_season; out_of_season; Weeks 5-12; log_loss_improvement.",
+      "effect": -7.653480995588284e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "market_move_available__week_in_season",
+      "interval": [
+        -0.0008618561633661889,
+        0.0007070795901850265
+      ],
+      "league": "nfl",
+      "notes": "This is a retrospective comparison. The saved inputs lack per-game evidence proving when every feature became available; historical pregame timing is not certified. The signals were chosen using these years. Neither view is an untouched test of a new idea. Leaving one year out can train on later years. The earlier-years-only view trains on at least two completed years and scores the next year. Both fits use the same games, model probability and available market movement; one also includes the pooled game situations. Grades use the opening spread, even when an input arrived later in the week. Intervals resample years and weeks together for both fits. They hold fitted predictions fixed, so they exclude feature-selection and refitting uncertainty. Chance of improvement is the share of resamples above zero, counting ties as half. It is not a probability that a betting edge exists. The exact decisive-game check assumes independent games; shared weeks and training data limit that assumption. The even-market reference assigns each side 50%. Its accuracy uses a home-side tie break; its probability scores are the useful comparison. All declared week groups are shown. These overlapping comparisons do not select a winning group or change the picks.",
+      "plain_summary": "How the served model's own fitted terms change a probability when added to the same model and market inputs, across several ways of splitting the games.",
+      "probability_positive": 0.4208,
+      "recorded_at": "2026-09-24",
+      "reliability": null,
+      "sample_blocks": 48,
+      "sample_games": 647,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/signal_atlas/20260924T194540880742Z/report.json",
+      "standard_error": 0.00039168377753235516
+    }
+  }
+}

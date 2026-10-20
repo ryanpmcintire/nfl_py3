@@ -1,0 +1,33 @@
+{
+  "family": "team_style_pace_on_production",
+  "signals": {
+    "team_style_pace_mismatch_on_production": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Close-graded look; per AGENTS.md's binding grade rule a close-graded run settles no play/no-play decision regardless of sign, so a terminal classification is reserved for the opener grade. The week-blocked interval [-0.400, +4.667] does not sit entirely on either side of zero, so no closing ground is admissible; probability_positive 0.944 favours the candidate on EV.",
+      "closing_ground": null,
+      "description": "Team-style pace-mismatch flag (1 when |home-away prior-season league-centred seconds_per_play_pace| is at or above an EXPANDING top-quartile threshold estimated from strictly prior seasons only) as one extra feature column on top of PRODUCTION weak_stack / market_residual / ridge alpha 10.0, vs the identical production chain without it. Paired candidate-minus-baseline forced-pick accuracy delta, close-graded, rotation-assigned window [2011, 2013].",
+      "effect": 2.0107238605898123,
+      "effect_units": "accuracy_points",
+      "family": "team_style_pace_on_production",
+      "interval": [
+        -0.3995074303780342,
+        4.667292225201072
+      ],
+      "league": "nfl",
+      "notes": "Window [2011, 2013] ASSIGNED by nfl-ats rotation assign, never hand-picked; --mode screen after both instrument checks passed. Positive control (candidate column replaced by realized ats_margin): +50.134 accuracy points, week-blocked P+ 1.000, 95% [+46.428, +53.652], 100.0th percentile of its own null -- the full-profile ridge fit is NOT blind. Within-week permutation null (200 draws, real features): centre -0.259 pts, sd 1.162, 95% [-2.416, +1.749]; the observed +2.011 sits at the 97.5th percentile of that null. Home-pick rates: baseline 53.646%, candidate 53.776% -- 0.13 points apart, so this measurement carries essentially none of the home-tilt artifact that discounted the bare-baseline screens. Flag coverage inside the window is 100.000% of 768 REG games, firing on 23.698% (182 games), reproducing the registered screen's 23.6% firing rate. Season-blocked secondary 95% [-2.000, +6.531], P+ 0.857 -- reported beside the week-blocked primary, never averaged with it, and read with caution because 3 season blocks give the season bootstrap very little combinatorial diversity. DECLARED DEVIATION (docs/team_style_pace_on_production.md section 2.1): the registered bare-baseline cell team_style_pace_mismatch_dog_cover cuts its top quartile over the WHOLE 2009-2025 panel, a mild look-ahead; this column recomputes the cut EXPANDING over strictly prior seasons only, making it a slightly different quantity whose noisier threshold can only attenuate toward the null. NOT POOLABLE with the bare-baseline team-style battery: that battery scored a subset cover-rate gap against a bare market baseline scaled to the full slate, this scores a paired accuracy delta against the full production ridge chain -- non-commensurable comparators under AGENTS.md's commensurability rule, and not even the same column.",
+      "plain_summary": "When two teams play at very different tempos, adding that mismatch to the model made it pick more winners than the model we actually use.",
+      "probability_positive": 0.944,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.489,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/team_style_pace_on_production/20260901T194505Z/results.json",
+      "standard_error": null
+    }
+  }
+}

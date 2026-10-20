@@ -1,0 +1,89 @@
+{
+  "family": "cfb_post_bye_home_on_benchmark",
+  "signals": {
+    "cfb_post_bye_home_on_benchmark": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CFB post-bye prep asymmetry (LEAD-48): signed edge column backing the team off a 13+ day bye when its opponent is not, on the frozen XLG-03 benchmark arm",
+      "effect": -0.022388895108026417,
+      "effect_units": "accuracy_points",
+      "family": "cfb_post_bye_home_on_benchmark",
+      "interval": [
+        -0.2886798850450524,
+        0.2576149812565008
+      ],
+      "league": "cfb",
+      "notes": "Signed edge column (+1 home off 13+ day bye & away not, -1 mirror, 0 both known/neither-or-both, NaN either unknown) on the frozen XLG-03 benchmark arm. 1500 flagged (781 +1, 719 -1) of 8933 clean-core games, 548 missing (season openers). NOT a re-score of cfb_rest_bye_replication (bye_edge_home uses a 12-day gap, home-only, unsigned, and predicts the OPPOSITE direction; see docs/cfb_lead_screens_wave1.md section 1). Positive control +48.405 pts P+ 1.000. Per-era: 2012-2019 +0.262 pts P+ 0.915 (CI crosses zero); 2021-2025 -0.446 pts P+ 0.000 (WHOLE interval below zero, recorded separately as refuted_mechanism). Pooled interval crosses zero: not a fair summary of the era disagreement, see era rows. Reliability reused from cfb_rest_bye_replication's own_off_bye_13 across-season instrument (same underlying trait, different combination), Spearman-Brown 0.8271. Close-graded CFB; no NFL window spent or earned.",
+      "plain_summary": "Backing the CFB home team coming off a bye (when the visitor is not) is a coin flip pooled across 2012-2025, but it clearly worked pre-2020 and clearly did not after.",
+      "probability_positive": 0.428,
+      "recorded_at": "2026-09-05",
+      "reliability": 0.8271,
+      "sample_blocks": 199,
+      "sample_games": 8933,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/cfb_lead_screens_wave1/post_bye/20260905T024109Z/results.json",
+      "standard_error": null
+    },
+    "cfb_post_bye_home_on_benchmark_era_2012_2019": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CFB post-bye prep asymmetry (LEAD-48), era 2012-2019 slice on the frozen XLG-03 benchmark arm",
+      "effect": 0.2617311647036829,
+      "effect_units": "accuracy_points",
+      "family": "cfb_post_bye_home_on_benchmark",
+      "interval": [
+        -0.09836952744349278,
+        0.6265921686229916
+      ],
+      "league": "cfb",
+      "notes": "Era slice of cfb_post_bye_home_on_benchmark (2012-2019 half of the clean core), recorded separately because the two eras disagree in sign (2021-2025 reads -0.446 pts, whole interval below zero, recorded as refuted_mechanism). This era leans the predeclared direction (P+ 0.915 week-blocked, 0.937 season-blocked) but its own week-blocked interval still contains zero, so it stays unresolved. 946 of 5349 games flagged. Reliability reused from cfb_rest_bye_replication's own_off_bye_13 across-season instrument, Spearman-Brown 0.8271. Close-graded CFB; no NFL window spent.",
+      "plain_summary": "In 2012-2019, backing the CFB home team off a bye leaned the predicted way (about 3-to-1), but the uncertainty band still touches zero.",
+      "probability_positive": 0.915,
+      "recorded_at": "2026-09-05",
+      "reliability": 0.8271,
+      "sample_blocks": 122,
+      "sample_games": 5349,
+      "seasons": [
+        2012,
+        2019
+      ],
+      "source": "artifacts/cfb_lead_screens_wave1/post_bye/20260905T024109Z/results.json",
+      "standard_error": null
+    },
+    "cfb_post_bye_home_on_benchmark_era_2021_2025": {
+      "category": "schedule",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Week-blocked 95% CI [-0.7632,-0.1660] and season-blocked 95% CI [-0.6954,-0.1959] (pts) both lie entirely below zero (P+ 0.000 in both blockings), resolving the predeclared BACK-the-bye-edge-team direction wrong for this era-restricted population, per AGENTS.md's wrong_sign_resolved ground.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "CFB post-bye prep asymmetry (LEAD-48), era 2021-2025 slice on the frozen XLG-03 benchmark arm",
+      "effect": -0.4464285714285714,
+      "effect_units": "accuracy_points",
+      "family": "cfb_post_bye_home_on_benchmark",
+      "interval": [
+        -0.7632012553172266,
+        -0.16597671766774924
+      ],
+      "league": "cfb",
+      "notes": "Era slice of cfb_post_bye_home_on_benchmark (2021-2025 half of the clean core). WHOLE week-blocked interval [-0.7632,-0.1660] and WHOLE season-blocked interval [-0.6954,-0.1959] (both pts) sit below zero, P+ 0.000 in both blockings, on 554 of 3584 flagged games / 77 weeks. This resolves the predeclared direction (back the post-bye edge team) WRONG for this specific era-restricted population -- a narrow conclusion about this signed-column-and-threshold in this recent window, not a claim that the pooled full-window construct or the broader prep-asymmetry mechanism is refuted (2012-2019 leans the ORIGINAL predicted direction at P+ 0.915). Reliability reused from cfb_rest_bye_replication's own_off_bye_13 across-season instrument, Spearman-Brown 0.8271 (not itself the closing ground here; wrong_sign_resolved is). Close-graded CFB; no NFL window spent or earned by this closure.",
+      "plain_summary": "From 2021-2025, backing the CFB home team off a bye was a clear loser (whole confidence band on the wrong side of zero) even though it worked in 2012-2019 -- this specific column should not be carried forward for recent seasons.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-05",
+      "reliability": 0.8271,
+      "sample_blocks": 77,
+      "sample_games": 3584,
+      "seasons": [
+        2021,
+        2025
+      ],
+      "source": "artifacts/cfb_lead_screens_wave1/post_bye/20260905T024109Z/results.json",
+      "standard_error": null
+    }
+  }
+}

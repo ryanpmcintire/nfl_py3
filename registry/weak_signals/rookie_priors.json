@@ -1,0 +1,173 @@
+{
+  "family": "rookie_priors",
+  "signals": {
+    "xlg06_rookie_prior_surplus_tilt_activation_clean": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval spans zero, which per AGENTS.md is the expected outcome at this resolution and is never a closing ground. The point estimate still favours the candidate (probability_positive 0.648), so no wrong sign is resolved, and the prior has measured split-half reliability.",
+      "closing_ground": null,
+      "description": "Same rookie-prior-surplus tilt on production weak_stack at the opener, full 2020-2025 archive, with game-day activation removed from the feature: once a rookie has appeared, his last-known trailing snap share and snap total are carried forward to every later week whether or not he appeared, so nothing the Tuesday deadline cannot know enters the flag",
+      "effect": 0.4657352,
+      "effect_units": "accuracy_points",
+      "family": "rookie_priors",
+      "interval": [
+        -2.07639112,
+        3.10235032
+      ],
+      "league": "nfl",
+      "notes": "This is the honest, deadline-clean version of xlg06_rookie_prior_surplus_tilt_full_opener_archive (+1.065 pts, P+ 0.811): removing the activation peek cuts the effect by about 56%, from +1.065 to +0.466 points, and P+ from 0.811 to 0.648. The two arms agree on 91.4% of picks; 329 picks changed vs 325. Any decision about playing this rule should use THIS number, not the observed-presence one. Overlaps its own observed-presence twin and the [2020,2021] window read; not an independent vote.",
+      "plain_summary": "With every trace of who was actually dressed on game day stripped out, the rookie rule still picked about half a game in a hundred more correctly than the model alone.",
+      "probability_positive": 0.64805,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.41222972,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg06_rookie_priors/leakage_control_results.json",
+      "standard_error": null
+    },
+    "xlg06_rookie_prior_surplus_tilt_full_opener_archive": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval spans zero, never a closing ground per AGENTS.md; the lean favours the candidate at probability_positive 0.811, no wrong sign is resolved, and the construct has measured split-half reliability.",
+      "closing_ground": null,
+      "description": "Same rookie-prior-surplus tilt on production weak_stack, opener grade, read over the whole paired 2020-2025 opener archive as a secondary (not a separate rotation spend); week-blocked bootstrap, 20,000 resamples, seed 20260911",
+      "effect": 1.06453759,
+      "effect_units": "accuracy_points",
+      "family": "rookie_priors",
+      "interval": [
+        -1.37797537,
+        3.50761085
+      ],
+      "league": "nfl",
+      "notes": "1,503 games / 107 weeks, 639 flagged, 325 forced picks changed. Candidate 55.62% vs baseline 54.56%. Overlaps the window read xlg06_rookie_prior_surplus_tilt_on_production (2020-2021 is inside 2020-2025): they are not independent votes.",
+      "plain_summary": "Over the whole six seasons of opening-line history, the same rookie rule picked about one extra game in a hundred correctly.",
+      "probability_positive": 0.811225,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.41222972,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/xlg06_rookie_priors/production_results.json",
+      "standard_error": null
+    },
+    "xlg06_rookie_prior_surplus_tilt_on_production": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval spans zero, which per AGENTS.md is the expected outcome at this evaluator's ~2-point resolution and is never a closing ground. No wrong sign is resolved (the point estimate and 0.832 probability_positive favour the candidate), and the prior has measured split-half reliability, so no_split_half_reliability is inadmissible. The positive control (+46.711 points, P+ 1.000) proves the harness detects a real effect, so bounded_by_control would require an absent effect, which is not what was measured.",
+      "closing_ground": null,
+      "description": "Rookie-prior-surplus tilt stacked on production weak_stack, opener grade, rotation window [2020,2021]: tilt toward the side whose decayed, snap-share-weighted rookie prior surplus is larger; week-blocked bootstrap, 20,000 resamples, seed 20260911",
+      "effect": 2.4122807,
+      "effect_units": "accuracy_points",
+      "family": "rookie_priors",
+      "interval": [
+        -2.45002535,
+        7.45614035
+      ],
+      "league": "nfl",
+      "notes": "456 paired games / 35 weeks, 234 flagged, 118 forced picks changed (113 graded). Candidate 55.70% vs baseline 53.29%. Season-blocked [+0.4237,+4.5455] P+ 1.000 on only 2 blocks, not treated as informative at that block count. Window intersects the 2018-2025 multiplicity ledger (acknowledged at declaration); apply the stated discount. Predeclared docs/rookie_priors_on_production.md.",
+      "plain_summary": "Leaning toward the team whose rookies looked better than a generic replacement in college and on draft night picked 2.4 more games in a hundred correctly than the model alone over 2020-2021.",
+      "probability_positive": 0.831825,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.41222972,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/xlg06_rookie_priors/production_results.json",
+      "standard_error": null
+    },
+    "xlg06_rookie_prior_vs_realised_value": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval sits entirely above zero and probability_positive is 1.000, so neither terminal ground applies: no wrong sign, and the underlying construct has measured split-half reliability (realised rookie value, odd versus even weeks, Pearson 0.2596, Spearman-Brown 0.4122). Recorded unresolved because the recorder has no confirming classification; the strength is in the effect and probability_positive, not in this field.",
+      "closing_ground": null,
+      "description": "XLG-06 rookie prior (walk-forward ridge on log overall draft pick, class-standardised pre-draft grade and final-college-season usage share, fit only on strictly earlier draft classes) versus realised first-NFL-season value on the injury-value scale, both standardised within arm; draft-class-blocked bootstrap, 20,000 resamples, seed 20260911",
+      "effect": 0.130357,
+      "effect_units": "correlation",
+      "family": "rookie_priors",
+      "interval": [
+        0.09344885,
+        0.17125568
+      ],
+      "league": "nfl",
+      "notes": "n=1288 rookies with at least 100 rookie-season snaps at a position the NFL value scale can measure (RB/WR/TE offensive skill, DL/LB/DB defence). Spearman +0.1675. QB and OL are excluded because the scale has no metric for them.",
+      "plain_summary": "A rookie's college production share and where he was drafted really do line up with how well he plays as a rookie, but only loosely - it is a real signal, not a strong one.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.41222972,
+      "sample_blocks": 11,
+      "sample_games": 1288,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "artifacts/xlg06_rookie_priors/prior_results.json",
+      "standard_error": null
+    },
+    "xlg06_rookie_prior_vs_realised_value_defense_arm": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval entirely above zero, probability_positive 1.000; no terminal ground applies and none is claimed.",
+      "closing_ground": null,
+      "description": "XLG-06 rookie prior versus realised rookie-season defense_disruption per 100 defensive snaps, DL/LB/DB arm only, draft-class-blocked",
+      "effect": 0.16620083,
+      "effect_units": "correlation",
+      "family": "rookie_priors",
+      "interval": [
+        0.10926927,
+        0.22707903
+      ],
+      "league": "nfl",
+      "notes": "Spearman +0.2164. The defence arm carries the pooled correlation.",
+      "plain_summary": "On defence, where a rookie was drafted and what he did in college lines up clearly with how disruptive he is as a rookie.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.41222972,
+      "sample_blocks": 11,
+      "sample_games": 860,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "artifacts/xlg06_rookie_priors/prior_results.json",
+      "standard_error": null
+    },
+    "xlg06_rookie_prior_vs_realised_value_offense_arm": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval spans zero, which per AGENTS.md is the expected outcome at this resolution and is never a closing ground; no wrong sign is resolved and the outcome construct has non-zero split-half reliability, so neither terminal ground applies.",
+      "closing_ground": null,
+      "description": "XLG-06 rookie prior versus realised rookie-season skill_epa per 100 offensive snaps, RB/WR/TE arm only, draft-class-blocked",
+      "effect": 0.03359509,
+      "effect_units": "correlation",
+      "family": "rookie_priors",
+      "interval": [
+        -0.08477173,
+        0.164106
+      ],
+      "league": "nfl",
+      "notes": "Spearman +0.0773. The offence arm is the weaker of the two arms.",
+      "plain_summary": "For running backs, receivers and tight ends, the college-and-draft prior barely predicts rookie production.",
+      "probability_positive": 0.71535,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.41222972,
+      "sample_blocks": 10,
+      "sample_games": 428,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "artifacts/xlg06_rookie_priors/prior_results.json",
+      "standard_error": null
+    }
+  }
+}

@@ -1,0 +1,173 @@
+{
+  "family": "tiebreaker_total_mae",
+  "signals": {
+    "tiebreaker_total_a1_market_only_mae_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No wrong sign is resolved on the predeclared metric and the positive control (perfect foresight) detects at 100-1000x the tested scale, so it bounds nothing: bounded_by_control is unavailable and this stays unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Tiebreaker total arm A1 (submit the market total as quoted) vs A0 (served chain), mean absolute error against the actual combined score. Predeclared in docs/tiebreaker_total.md; 107 last-games-of-week 2020-2025; paired week-blocked bootstrap 20000 draws seed 20260821; baseline is A0, the tiebreaker chain served today (joint-residual total blended at 0.1, then the pick-side-consistent score lattice).",
+      "effect": 0.0794,
+      "effect_units": "mae_improvement",
+      "family": "tiebreaker_total_mae",
+      "interval": [
+        -0.0234,
+        0.1776
+      ],
+      "league": "nfl",
+      "notes": "Positive = candidate closer than the served arm. A1 is the best POINT estimate and the worst tiebreak submission (see the closest-share cells) because a half-point number can never hit exactly.",
+      "plain_summary": "For the weekly tiebreaker we guess the combined score of the last game. Just submitting the bookmakers' total was about 0.08 points closer on average than the guess we actually publish, over 107 weeks.",
+      "probability_positive": 0.94,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 107,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/tiebreaker_total/20260910T043514Z/results.json",
+      "standard_error": 0.051271
+    },
+    "tiebreaker_total_a2_lattice_rounded_mae_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No wrong sign is resolved on the predeclared metric and the positive control (perfect foresight) detects at 100-1000x the tested scale, so it bounds nothing: bounded_by_control is unavailable and this stays unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Tiebreaker total arm A2 (market total rounded to the nearest plausible combined score, the 36 local maxima of the 2009-2025 total distribution) vs A0, MAE. Predeclared in docs/tiebreaker_total.md; 107 last-games-of-week 2020-2025; paired week-blocked bootstrap 20000 draws seed 20260821; baseline is A0, the tiebreaker chain served today (joint-residual total blended at 0.1, then the pick-side-consistent score lattice).",
+      "effect": 0.0187,
+      "effect_units": "mae_improvement",
+      "family": "tiebreaker_total_mae",
+      "interval": [
+        -0.1869,
+        0.2243
+      ],
+      "league": "nfl",
+      "notes": "Positive = candidate closer than the served arm.",
+      "plain_summary": "Football totals cluster on certain numbers. Snapping the bookmakers' total to the nearest one of those was about as close on average as the guess we publish.",
+      "probability_positive": 0.57,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 107,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/tiebreaker_total/20260910T043514Z/results.json",
+      "standard_error": 0.105098
+    },
+    "tiebreaker_total_a3_no_shade_mae_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No wrong sign is resolved on the predeclared metric and the positive control (perfect foresight) detects at 100-1000x the tested scale, so it bounds nothing: bounded_by_control is unavailable and this stays unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Tiebreaker total arm A3 (served total rounded to the nearest plausible combined score -- the served arm with the pick-side shade removed) vs A0, MAE. Predeclared in docs/tiebreaker_total.md; 107 last-games-of-week 2020-2025; paired week-blocked bootstrap 20000 draws seed 20260821; baseline is A0, the tiebreaker chain served today (joint-residual total blended at 0.1, then the pick-side-consistent score lattice).",
+      "effect": -0.0561,
+      "effect_units": "mae_improvement",
+      "family": "tiebreaker_total_mae",
+      "interval": [
+        -0.243,
+        0.1308
+      ],
+      "league": "nfl",
+      "notes": "Positive = candidate closer than the served arm. Average distance and exact-hit rate trade against each other here; the pool pays for the latter.",
+      "plain_summary": "Dropping the rule that forces the guessed score to agree with our spread pick, and snapping to a plausible total instead, was about 0.06 points further from the real score on average -- but it hit the exact total more often, which is what the pool pays.",
+      "probability_positive": 0.273,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 107,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/tiebreaker_total/20260910T043514Z/results.json",
+      "standard_error": 0.094289
+    },
+    "tiebreaker_total_a4_week_median_mae_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No wrong sign is resolved on the predeclared metric and the positive control (perfect foresight) detects at 100-1000x the tested scale, so it bounds nothing: bounded_by_control is unavailable and this stays unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Tiebreaker total control A4 (median of the week's OTHER actual combined scores -- not playable, it reads the same week's results) vs A0, MAE. Predeclared in docs/tiebreaker_total.md; 107 last-games-of-week 2020-2025; paired week-blocked bootstrap 20000 draws seed 20260821; baseline is A0, the tiebreaker chain served today (joint-residual total blended at 0.1, then the pick-side-consistent score lattice).",
+      "effect": 0.8084,
+      "effect_units": "mae_improvement",
+      "family": "tiebreaker_total_mae",
+      "interval": [
+        -0.1495,
+        1.8037
+      ],
+      "league": "nfl",
+      "notes": "NOT a playable arm. Measures week-level scoring-environment information the market total does not carry by kickoff; a pregame proxy for it is a lead, not a finding.",
+      "plain_summary": "If you already knew how much scoring happened in the rest of the week, you would guess the last game's total about 0.8 points better than we do. Nobody can, but it shows how much week-level scoring information the betting total misses.",
+      "probability_positive": 0.947,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 107,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/tiebreaker_total/20260910T043514Z/results.json",
+      "standard_error": 0.501782
+    },
+    "tiebreaker_total_opener_vs_close_mae_2020_2021": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No wrong sign is resolved on the predeclared metric and the positive control (perfect foresight) detects at 100-1000x the tested scale, so it bounds nothing: bounded_by_control is unavailable and this stays unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Tiebreaker total: the OPENING market total vs the CLOSING market total as the guess, MAE against the actual combined score, on the 35 last-games-of-week 2020-2021 where data/processed/sbr_odds.parquet carries both. Positive = the opener is closer. Paired week-blocked bootstrap 20000 draws seed 20260821.",
+      "effect": 0.1,
+      "effect_units": "mae_improvement",
+      "family": "tiebreaker_total_mae",
+      "interval": [
+        -0.6143,
+        0.7999
+      ],
+      "league": "nfl",
+      "notes": "Only 2020-2021 carry both an opening and a closing total in this repository, so this is 35 weeks, not 107.",
+      "plain_summary": "The total the bookmakers post first was about a tenth of a point closer to the real combined score than the one they settle on. Too small and too few weeks to call.",
+      "probability_positive": 0.615,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 35,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/tiebreaker_total/20260910T043514Z/results.json",
+      "standard_error": 0.360312
+    },
+    "tiebreaker_total_pc_perfect_foresight_mae_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No wrong sign is resolved on the predeclared metric and the positive control (perfect foresight) detects at 100-1000x the tested scale, so it bounds nothing: bounded_by_control is unavailable and this stays unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Tiebreaker total POSITIVE CONTROL (submit the actual combined score) vs A0, MAE. Predeclared in docs/tiebreaker_total.md; 107 last-games-of-week 2020-2025; paired week-blocked bootstrap 20000 draws seed 20260821; baseline is A0, the tiebreaker chain served today (joint-residual total blended at 0.1, then the pick-side-consistent score lattice).",
+      "effect": 10.1776,
+      "effect_units": "mae_improvement",
+      "family": "tiebreaker_total_mae",
+      "interval": [
+        8.7474,
+        11.7196
+      ],
+      "league": "nfl",
+      "notes": "Detects at ~100x the scale separating the playable arms, so it proves the instrument works and bounds NOTHING at the tested scale: bounded_by_control is unavailable for every cell in this family.",
+      "plain_summary": "Knowing the final score in advance would beat our tiebreaker guess by about 10 points a week. That is the ceiling, and it confirms the measurement can see a real effect.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 107,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/tiebreaker_total/20260910T043514Z/results.json",
+      "standard_error": 0.758117
+    }
+  }
+}

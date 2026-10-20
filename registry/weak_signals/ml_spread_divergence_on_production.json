@@ -1,0 +1,33 @@
+{
+  "family": "ml_spread_divergence_on_production",
+  "signals": {
+    "ml_spread_divergence_on_production": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval [-3.261, +1.974] accuracy points crosses zero -- the expected shape for a real-but-small (or absent) effect at this evaluator's resolution, never grounds to close per AGENTS.md. A positive control (the candidate column replaced by the realized ats_margin) showed the harness DOES detect a huge planted effect (P+ 1.0) inside the full production feature set, so this is not a bounded-by-control closure either. No resolved wrong sign (the interval is not wholly below zero) and no split-half reliability read was made for this trait -- neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "LEAD-03: opener-graded, production-rule, week-blocked accuracy delta of PRODUCTION weak_stack plus ml_spread_divergence_signal vs PRODUCTION weak_stack alone, rotation window 2020-2021.",
+      "effect": -0.6578947368421052,
+      "effect_units": "accuracy_points",
+      "family": "ml_spread_divergence_on_production",
+      "interval": [
+        -3.260869565217391,
+        1.9736842105263157
+      ],
+      "league": "nfl",
+      "notes": "CORRECTED 2026-09-05: effect/interval rescaled to accuracy points (raw fraction x100); the first recording mistakenly stored the raw 0-1 fraction. Tuesday-opener moneyline coverage measured at 100% (1537/1537 games, every season 2020-2025) via build_pairing_table's existing h2h request at tue_open -- no fallback snapshot needed, superseding the ROADMAP row's true-opener-archive framing. See docs/market_lead_battery.md.",
+      "plain_summary": "The moneyline (who wins the game outright) and the point spread are two separate prices from the same books. When they disagree a lot about how strong the home team is, we tried siding with the moneyline. In this window it did not help or hurt in a way the test could tell apart from chance.",
+      "probability_positive": 0.27765,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/market_lead_on_production/ml_divergence/20260905T032540Z/results.json",
+      "standard_error": null
+    }
+  }
+}

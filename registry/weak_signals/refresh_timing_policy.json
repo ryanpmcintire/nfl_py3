@@ -1,0 +1,1601 @@
+{
+  "family": "refresh_timing_policy",
+  "signals": {
+    "refresh_timing_as_late_as_allowed_incl_sunday_vs_fixed_schedule_2020_2021": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing as_late_as_allowed_incl_sunday (one refresh per game at its own deadline, with the follow rule's Sunday blackout removed) against the twelve served fixed passes on the same games, opener-graded forced picks, 2020-2021. 46 of 456 picks differ.",
+      "effect": -0.438596,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -4.246285,
+        3.501094
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "Against the refresh schedule the project actually runs, one refresh per game at its own deadline, with the follow rule's Sunday blackout removed changed 46 picks and moved the hit rate by -0.44 points per hundred games.",
+      "probability_positive": 0.4101,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9469,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 1.969013
+    },
+    "refresh_timing_as_late_as_allowed_incl_sunday_vs_fixed_schedule_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing as_late_as_allowed_incl_sunday (one refresh per game at its own deadline, with the follow rule's Sunday blackout removed) against the twelve served fixed passes on the same games, opener-graded forced picks, 2020-2025. 99 of 1503 picks differ.",
+      "effect": 0.465735,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -1.069537,
+        2.010724
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "Against the refresh schedule the project actually runs, one refresh per game at its own deadline, with the follow rule's Sunday blackout removed changed 99 picks and moved the hit rate by +0.47 points per hundred games.",
+      "probability_positive": 0.721775,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9391,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 0.795975
+    },
+    "refresh_timing_as_late_as_allowed_incl_sunday_vs_fixed_schedule_2022_2023": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing as_late_as_allowed_incl_sunday (one refresh per game at its own deadline, with the follow rule's Sunday blackout removed) against the twelve served fixed passes on the same games, opener-graded forced picks, 2022-2023. 26 of 514 picks differ.",
+      "effect": 1.55642,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -0.590551,
+        3.557331
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "Against the refresh schedule the project actually runs, one refresh per game at its own deadline, with the follow rule's Sunday blackout removed changed 26 picks and moved the hit rate by +1.56 points per hundred games.",
+      "probability_positive": 0.924325,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9477,
+      "sample_blocks": 36,
+      "sample_games": 514,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 1.059668
+    },
+    "refresh_timing_as_late_as_allowed_incl_sunday_vs_fixed_schedule_2024_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing as_late_as_allowed_incl_sunday (one refresh per game at its own deadline, with the follow rule's Sunday blackout removed) against the twelve served fixed passes on the same games, opener-graded forced picks, 2024-2025. 27 of 533 picks differ.",
+      "effect": 0.187617,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -1.838235,
+        2.218115
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "Against the refresh schedule the project actually runs, one refresh per game at its own deadline, with the follow rule's Sunday blackout removed changed 27 picks and moved the hit rate by +0.19 points per hundred games.",
+      "probability_positive": 0.575225,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9197,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 1.013315
+    },
+    "refresh_timing_as_late_as_allowed_incl_sunday_vs_tuesday_2020_2021": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing as_late_as_allowed_incl_sunday (one refresh per game at its own deadline, with the follow rule's Sunday blackout removed) against the frozen Tuesday card, opener-graded forced picks, 2020-2021. 91 of 456 picks changed; 53.070% vs 57.237%.",
+      "effect": -4.166667,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -8.928571,
+        0.668151
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "Compared with leaving Tuesday's picks alone, one refresh per game at its own deadline, with the follow rule's Sunday blackout removed changed 91 picks and moved the hit rate by -4.17 points per hundred games.",
+      "probability_positive": 0.046525,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9469,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 2.446939
+    },
+    "refresh_timing_as_late_as_allowed_incl_sunday_vs_tuesday_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing as_late_as_allowed_incl_sunday (one refresh per game at its own deadline, with the follow rule's Sunday blackout removed) against the frozen Tuesday card, opener-graded forced picks, 2020-2025. 259 of 1503 picks changed; 56.554% vs 56.886%.",
+      "effect": -0.332668,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -2.427512,
+        1.765889
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "Compared with leaving Tuesday's picks alone, one refresh per game at its own deadline, with the follow rule's Sunday blackout removed changed 259 picks and moved the hit rate by -0.33 points per hundred games.",
+      "probability_positive": 0.3793,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9391,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 1.069229
+    },
+    "refresh_timing_as_late_as_allowed_incl_sunday_vs_tuesday_2022_2023": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing as_late_as_allowed_incl_sunday (one refresh per game at its own deadline, with the follow rule's Sunday blackout removed) against the frozen Tuesday card, opener-graded forced picks, 2022-2023. 85 of 514 picks changed; 59.339% vs 59.144%.",
+      "effect": 0.194553,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -2.970297,
+        3.402647
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "Compared with leaving Tuesday's picks alone, one refresh per game at its own deadline, with the follow rule's Sunday blackout removed changed 85 picks and moved the hit rate by +0.19 points per hundred games.",
+      "probability_positive": 0.544975,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9477,
+      "sample_blocks": 36,
+      "sample_games": 514,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 1.619334
+    },
+    "refresh_timing_as_late_as_allowed_incl_sunday_vs_tuesday_2024_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing as_late_as_allowed_incl_sunday (one refresh per game at its own deadline, with the follow rule's Sunday blackout removed) against the frozen Tuesday card, opener-graded forced picks, 2024-2025. 83 of 533 picks changed; 56.848% vs 54.409%.",
+      "effect": 2.439024,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        0.0,
+        5.037313
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "Compared with leaving Tuesday's picks alone, one refresh per game at its own deadline, with the follow rule's Sunday blackout removed changed 83 picks and moved the hit rate by +2.44 points per hundred games.",
+      "probability_positive": 0.9764,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9197,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 1.265878
+    },
+    "refresh_timing_as_late_as_allowed_vs_fixed_schedule_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing as_late_as_allowed (one refresh per game at its own deadline, min(kickoff, Sunday 16:00 ET)) against the twelve served fixed passes on the same games, opener-graded forced picks, 2020-2025. 3 of 1503 picks differ.",
+      "effect": 0.199601,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        0.0,
+        0.462046
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "Against the refresh schedule the project actually runs, one refresh per game at its own deadline, min(kickoff, Sunday 16:00 ET) changed 3 picks and moved the hit rate by +0.20 points per hundred games.",
+      "probability_positive": 0.9756,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9391,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 0.114023
+    },
+    "refresh_timing_as_late_as_allowed_vs_fixed_schedule_2022_2023": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing as_late_as_allowed (one refresh per game at its own deadline, min(kickoff, Sunday 16:00 ET)) against the twelve served fixed passes on the same games, opener-graded forced picks, 2022-2023. 2 of 514 picks differ.",
+      "effect": 0.389105,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        0.0,
+        0.972763
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "Against the refresh schedule the project actually runs, one refresh per game at its own deadline, min(kickoff, Sunday 16:00 ET) changed 2 picks and moved the hit rate by +0.39 points per hundred games.",
+      "probability_positive": 0.938075,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9477,
+      "sample_blocks": 36,
+      "sample_games": 514,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 0.264548
+    },
+    "refresh_timing_as_late_as_allowed_vs_fixed_schedule_2024_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing as_late_as_allowed (one refresh per game at its own deadline, min(kickoff, Sunday 16:00 ET)) against the twelve served fixed passes on the same games, opener-graded forced picks, 2024-2025. 1 of 533 picks differ.",
+      "effect": 0.187617,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        0.0,
+        0.568182
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "Against the refresh schedule the project actually runs, one refresh per game at its own deadline, min(kickoff, Sunday 16:00 ET) changed 1 picks and moved the hit rate by +0.19 points per hundred games.",
+      "probability_positive": 0.81755,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9197,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 0.183915
+    },
+    "refresh_timing_as_late_as_allowed_vs_tuesday_2020_2021": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing as_late_as_allowed (one refresh per game at its own deadline, min(kickoff, Sunday 16:00 ET)) against the frozen Tuesday card, opener-graded forced picks, 2020-2021. 65 of 456 picks changed; 53.509% vs 57.237%.",
+      "effect": -3.72807,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -6.926407,
+        -0.650759
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "Compared with leaving Tuesday's picks alone, one refresh per game at its own deadline, min(kickoff, Sunday 16:00 ET) changed 65 picks and moved the hit rate by -3.73 points per hundred games.",
+      "probability_positive": 0.0101,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9469,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 1.602257
+    },
+    "refresh_timing_as_late_as_allowed_vs_tuesday_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing as_late_as_allowed (one refresh per game at its own deadline, min(kickoff, Sunday 16:00 ET)) against the frozen Tuesday card, opener-graded forced picks, 2020-2025. 207 of 1503 picks changed; 56.287% vs 56.886%.",
+      "effect": -0.598802,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -2.369676,
+        1.199201
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "Compared with leaving Tuesday's picks alone, one refresh per game at its own deadline, min(kickoff, Sunday 16:00 ET) changed 207 picks and moved the hit rate by -0.60 points per hundred games.",
+      "probability_positive": 0.255625,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9391,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 0.914476
+    },
+    "refresh_timing_as_late_as_allowed_vs_tuesday_2022_2023": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing as_late_as_allowed (one refresh per game at its own deadline, min(kickoff, Sunday 16:00 ET)) against the frozen Tuesday card, opener-graded forced picks, 2022-2023. 73 of 514 picks changed; 58.171% vs 59.144%.",
+      "effect": -0.972763,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -3.681011,
+        1.915709
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "Compared with leaving Tuesday's picks alone, one refresh per game at its own deadline, min(kickoff, Sunday 16:00 ET) changed 73 picks and moved the hit rate by -0.97 points per hundred games.",
+      "probability_positive": 0.248275,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9477,
+      "sample_blocks": 36,
+      "sample_games": 514,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 1.41832
+    },
+    "refresh_timing_as_late_as_allowed_vs_tuesday_2024_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing as_late_as_allowed (one refresh per game at its own deadline, min(kickoff, Sunday 16:00 ET)) against the frozen Tuesday card, opener-graded forced picks, 2024-2025. 69 of 533 picks changed; 56.848% vs 54.409%.",
+      "effect": 2.439024,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -0.562852,
+        5.494505
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "Compared with leaving Tuesday's picks alone, one refresh per game at its own deadline, min(kickoff, Sunday 16:00 ET) changed 69 picks and moved the hit rate by +2.44 points per hundred games.",
+      "probability_positive": 0.9428,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9197,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 1.548773
+    },
+    "refresh_timing_decay_incl_sunday_h000_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing decay curve: the served follow rule evaluated 0 hours before each game's own deadline (Sunday blackout removed), against the frozen Tuesday card, opener-graded, 2020-2025. 259 of 1503 picks changed.",
+      "effect": -0.332668,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -2.427512,
+        1.765889
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "If the picks were finalised 0 hours before the pool deadline instead of on Tuesday, the hit rate moved by -0.33 points per hundred games.",
+      "probability_positive": 0.3793,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9391,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 1.069229
+    },
+    "refresh_timing_decay_incl_sunday_h003_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing decay curve: the served follow rule evaluated 3 hours before each game's own deadline (Sunday blackout removed), against the frozen Tuesday card, opener-graded, 2020-2025. 213 of 1503 picks changed.",
+      "effect": 0.199601,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -1.652374,
+        2.098361
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "If the picks were finalised 3 hours before the pool deadline instead of on Tuesday, the hit rate moved by +0.20 points per hundred games.",
+      "probability_positive": 0.5813,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9391,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 0.951495
+    },
+    "refresh_timing_decay_incl_sunday_h006_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing decay curve: the served follow rule evaluated 6 hours before each game's own deadline (Sunday blackout removed), against the frozen Tuesday card, opener-graded, 2020-2025. 192 of 1503 picks changed.",
+      "effect": -0.399202,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -2.111834,
+        1.294473
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "If the picks were finalised 6 hours before the pool deadline instead of on Tuesday, the hit rate moved by -0.40 points per hundred games.",
+      "probability_positive": 0.32205,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9391,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 0.874368
+    },
+    "refresh_timing_decay_incl_sunday_h012_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing decay curve: the served follow rule evaluated 12 hours before each game's own deadline (Sunday blackout removed), against the frozen Tuesday card, opener-graded, 2020-2025. 188 of 1503 picks changed.",
+      "effect": -0.266134,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -1.984193,
+        1.459854
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "If the picks were finalised 12 hours before the pool deadline instead of on Tuesday, the hit rate moved by -0.27 points per hundred games.",
+      "probability_positive": 0.38405,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9391,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 0.884409
+    },
+    "refresh_timing_decay_incl_sunday_h018_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing decay curve: the served follow rule evaluated 18 hours before each game's own deadline (Sunday blackout removed), against the frozen Tuesday card, opener-graded, 2020-2025. 188 of 1503 picks changed.",
+      "effect": -0.532269,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -2.269693,
+        1.197625
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "If the picks were finalised 18 hours before the pool deadline instead of on Tuesday, the hit rate moved by -0.53 points per hundred games.",
+      "probability_positive": 0.27745,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9391,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 0.887578
+    },
+    "refresh_timing_decay_incl_sunday_h024_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing decay curve: the served follow rule evaluated 24 hours before each game's own deadline (Sunday blackout removed), against the frozen Tuesday card, opener-graded, 2020-2025. 177 of 1503 picks changed.",
+      "effect": -0.73187,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -2.439024,
+        0.93147
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "If the picks were finalised 24 hours before the pool deadline instead of on Tuesday, the hit rate moved by -0.73 points per hundred games.",
+      "probability_positive": 0.1959,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9391,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 0.858561
+    },
+    "refresh_timing_decay_incl_sunday_h036_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing decay curve: the served follow rule evaluated 36 hours before each game's own deadline (Sunday blackout removed), against the frozen Tuesday card, opener-graded, 2020-2025. 168 of 1503 picks changed.",
+      "effect": -0.266134,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -1.876707,
+        1.324525
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "If the picks were finalised 36 hours before the pool deadline instead of on Tuesday, the hit rate moved by -0.27 points per hundred games.",
+      "probability_positive": 0.370025,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9391,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 0.816794
+    },
+    "refresh_timing_decay_incl_sunday_h048_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing decay curve: the served follow rule evaluated 48 hours before each game's own deadline (Sunday blackout removed), against the frozen Tuesday card, opener-graded, 2020-2025. 155 of 1503 picks changed.",
+      "effect": 0.066534,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -1.395349,
+        1.48248
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "If the picks were finalised 48 hours before the pool deadline instead of on Tuesday, the hit rate moved by +0.07 points per hundred games.",
+      "probability_positive": 0.53755,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9391,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 0.736954
+    },
+    "refresh_timing_decay_incl_sunday_h060_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing decay curve: the served follow rule evaluated 60 hours before each game's own deadline (Sunday blackout removed), against the frozen Tuesday card, opener-graded, 2020-2025. 145 of 1503 picks changed.",
+      "effect": -0.332668,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -1.742666,
+        1.061026
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "If the picks were finalised 60 hours before the pool deadline instead of on Tuesday, the hit rate moved by -0.33 points per hundred games.",
+      "probability_positive": 0.319575,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9391,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 0.711354
+    },
+    "refresh_timing_decay_incl_sunday_h072_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing decay curve: the served follow rule evaluated 72 hours before each game's own deadline (Sunday blackout removed), against the frozen Tuesday card, opener-graded, 2020-2025. 55 of 1503 picks changed.",
+      "effect": 0.066534,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -0.991408,
+        1.063123
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "If the picks were finalised 72 hours before the pool deadline instead of on Tuesday, the hit rate moved by +0.07 points per hundred games.",
+      "probability_positive": 0.558025,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9391,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 0.519493
+    },
+    "refresh_timing_decay_incl_sunday_h096_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing decay curve: the served follow rule evaluated 96 hours before each game's own deadline (Sunday blackout removed), against the frozen Tuesday card, opener-graded, 2020-2025. 22 of 1503 picks changed.",
+      "effect": 0.266134,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -0.333333,
+        0.867259
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "If the picks were finalised 96 hours before the pool deadline instead of on Tuesday, the hit rate moved by +0.27 points per hundred games.",
+      "probability_positive": 0.803275,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9391,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 0.308624
+    },
+    "refresh_timing_decay_served_rule_h000_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing decay curve: the served follow rule evaluated 0 hours before each game's own deadline (served rule as frozen), against the frozen Tuesday card, opener-graded, 2020-2025. 207 of 1503 picks changed.",
+      "effect": -0.598802,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -2.369676,
+        1.199201
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "If the picks were finalised 0 hours before the pool deadline instead of on Tuesday, the hit rate moved by -0.60 points per hundred games.",
+      "probability_positive": 0.255625,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9391,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 0.914476
+    },
+    "refresh_timing_decay_served_rule_h003_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing decay curve: the served follow rule evaluated 3 hours before each game's own deadline (served rule as frozen), against the frozen Tuesday card, opener-graded, 2020-2025. 196 of 1503 picks changed.",
+      "effect": -0.532269,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -2.290589,
+        1.248378
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "If the picks were finalised 3 hours before the pool deadline instead of on Tuesday, the hit rate moved by -0.53 points per hundred games.",
+      "probability_positive": 0.28115,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9391,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 0.902444
+    },
+    "refresh_timing_decay_served_rule_h006_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing decay curve: the served follow rule evaluated 6 hours before each game's own deadline (served rule as frozen), against the frozen Tuesday card, opener-graded, 2020-2025. 193 of 1503 picks changed.",
+      "effect": -0.598802,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -2.320823,
+        1.123596
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "If the picks were finalised 6 hours before the pool deadline instead of on Tuesday, the hit rate moved by -0.60 points per hundred games.",
+      "probability_positive": 0.2522,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9391,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 0.885164
+    },
+    "refresh_timing_decay_served_rule_h012_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing decay curve: the served follow rule evaluated 12 hours before each game's own deadline (served rule as frozen), against the frozen Tuesday card, opener-graded, 2020-2025. 190 of 1503 picks changed.",
+      "effect": -0.399202,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -2.119205,
+        1.317523
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "If the picks were finalised 12 hours before the pool deadline instead of on Tuesday, the hit rate moved by -0.40 points per hundred games.",
+      "probability_positive": 0.328175,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9391,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 0.878558
+    },
+    "refresh_timing_decay_served_rule_h018_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing decay curve: the served follow rule evaluated 18 hours before each game's own deadline (served rule as frozen), against the frozen Tuesday card, opener-graded, 2020-2025. 188 of 1503 picks changed.",
+      "effect": -0.532269,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -2.269693,
+        1.197625
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "If the picks were finalised 18 hours before the pool deadline instead of on Tuesday, the hit rate moved by -0.53 points per hundred games.",
+      "probability_positive": 0.27745,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9391,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 0.887578
+    },
+    "refresh_timing_decay_served_rule_h024_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing decay curve: the served follow rule evaluated 24 hours before each game's own deadline (served rule as frozen), against the frozen Tuesday card, opener-graded, 2020-2025. 177 of 1503 picks changed.",
+      "effect": -0.73187,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -2.439024,
+        0.93147
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "If the picks were finalised 24 hours before the pool deadline instead of on Tuesday, the hit rate moved by -0.73 points per hundred games.",
+      "probability_positive": 0.1959,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9391,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 0.858561
+    },
+    "refresh_timing_decay_served_rule_h036_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing decay curve: the served follow rule evaluated 36 hours before each game's own deadline (served rule as frozen), against the frozen Tuesday card, opener-graded, 2020-2025. 168 of 1503 picks changed.",
+      "effect": -0.266134,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -1.876707,
+        1.324525
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "If the picks were finalised 36 hours before the pool deadline instead of on Tuesday, the hit rate moved by -0.27 points per hundred games.",
+      "probability_positive": 0.370025,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9391,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 0.816794
+    },
+    "refresh_timing_decay_served_rule_h048_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing decay curve: the served follow rule evaluated 48 hours before each game's own deadline (served rule as frozen), against the frozen Tuesday card, opener-graded, 2020-2025. 155 of 1503 picks changed.",
+      "effect": 0.066534,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -1.395349,
+        1.48248
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "If the picks were finalised 48 hours before the pool deadline instead of on Tuesday, the hit rate moved by +0.07 points per hundred games.",
+      "probability_positive": 0.53755,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9391,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 0.736954
+    },
+    "refresh_timing_decay_served_rule_h060_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing decay curve: the served follow rule evaluated 60 hours before each game's own deadline (served rule as frozen), against the frozen Tuesday card, opener-graded, 2020-2025. 145 of 1503 picks changed.",
+      "effect": -0.332668,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -1.742666,
+        1.061026
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "If the picks were finalised 60 hours before the pool deadline instead of on Tuesday, the hit rate moved by -0.33 points per hundred games.",
+      "probability_positive": 0.319575,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9391,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 0.711354
+    },
+    "refresh_timing_decay_served_rule_h072_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing decay curve: the served follow rule evaluated 72 hours before each game's own deadline (served rule as frozen), against the frozen Tuesday card, opener-graded, 2020-2025. 55 of 1503 picks changed.",
+      "effect": 0.066534,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -0.991408,
+        1.063123
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "If the picks were finalised 72 hours before the pool deadline instead of on Tuesday, the hit rate moved by +0.07 points per hundred games.",
+      "probability_positive": 0.558025,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9391,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 0.519493
+    },
+    "refresh_timing_decay_served_rule_h096_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing decay curve: the served follow rule evaluated 96 hours before each game's own deadline (served rule as frozen), against the frozen Tuesday card, opener-graded, 2020-2025. 22 of 1503 picks changed.",
+      "effect": 0.266134,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -0.333333,
+        0.867259
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "If the picks were finalised 96 hours before the pool deadline instead of on Tuesday, the hit rate moved by +0.27 points per hundred games.",
+      "probability_positive": 0.803275,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9391,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 0.308624
+    },
+    "refresh_timing_fixed_passes_vs_tuesday_2020_2021": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing fixed_passes (the twelve scheduled refresh-picks passes now in SCHEDULE) against the frozen Tuesday card, opener-graded forced picks, 2020-2021. 65 of 456 picks changed; 53.509% vs 57.237%.",
+      "effect": -3.72807,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -6.926407,
+        -0.650759
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "Compared with leaving Tuesday's picks alone, the twelve scheduled refresh-picks passes now in SCHEDULE changed 65 picks and moved the hit rate by -3.73 points per hundred games.",
+      "probability_positive": 0.0101,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9469,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 1.602257
+    },
+    "refresh_timing_fixed_passes_vs_tuesday_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing fixed_passes (the twelve scheduled refresh-picks passes now in SCHEDULE) against the frozen Tuesday card, opener-graded forced picks, 2020-2025. 206 of 1503 picks changed; 56.088% vs 56.886%.",
+      "effect": -0.798403,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -2.555481,
+        0.99272
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "Compared with leaving Tuesday's picks alone, the twelve scheduled refresh-picks passes now in SCHEDULE changed 206 picks and moved the hit rate by -0.80 points per hundred games.",
+      "probability_positive": 0.191725,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9391,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 0.910155
+    },
+    "refresh_timing_fixed_passes_vs_tuesday_2022_2023": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing fixed_passes (the twelve scheduled refresh-picks passes now in SCHEDULE) against the frozen Tuesday card, opener-graded forced picks, 2022-2023. 73 of 514 picks changed; 57.782% vs 59.144%.",
+      "effect": -1.361868,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -4.158425,
+        1.559454
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "Compared with leaving Tuesday's picks alone, the twelve scheduled refresh-picks passes now in SCHEDULE changed 73 picks and moved the hit rate by -1.36 points per hundred games.",
+      "probability_positive": 0.175725,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9477,
+      "sample_blocks": 36,
+      "sample_games": 514,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 1.463451
+    },
+    "refresh_timing_fixed_passes_vs_tuesday_2024_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing fixed_passes (the twelve scheduled refresh-picks passes now in SCHEDULE) against the frozen Tuesday card, opener-graded forced picks, 2024-2025. 68 of 533 picks changed; 56.660% vs 54.409%.",
+      "effect": 2.251407,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -0.575816,
+        5.214153
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "Compared with leaving Tuesday's picks alone, the twelve scheduled refresh-picks passes now in SCHEDULE changed 68 picks and moved the hit rate by +2.25 points per hundred games.",
+      "probability_positive": 0.93365,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9197,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 1.500497
+    },
+    "refresh_timing_news_triggered_0_5_vs_fixed_schedule_2020_2021": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing news_triggered_0_5 (refresh only when the leader-book median line has moved 0.5 points or more since the last refresh) against the twelve served fixed passes on the same games, opener-graded forced picks, 2020-2021. 23 of 456 picks differ.",
+      "effect": 0.657895,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -1.310115,
+        2.603178
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "Against the refresh schedule the project actually runs, refresh only when the leader-book median line has moved 0.5 points or more since the last refresh changed 23 picks and moved the hit rate by +0.66 points per hundred games.",
+      "probability_positive": 0.7488,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9469,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 1.000369
+    },
+    "refresh_timing_news_triggered_0_5_vs_fixed_schedule_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing news_triggered_0_5 (refresh only when the leader-book median line has moved 0.5 points or more since the last refresh) against the twelve served fixed passes on the same games, opener-graded forced picks, 2020-2025. 70 of 1503 picks differ.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -1.077441,
+        1.114772
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "Against the refresh schedule the project actually runs, refresh only when the leader-book median line has moved 0.5 points or more since the last refresh changed 70 picks and moved the hit rate by +0.00 points per hundred games.",
+      "probability_positive": 0.49655,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9391,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 0.557576
+    },
+    "refresh_timing_news_triggered_0_5_vs_fixed_schedule_2022_2023": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing news_triggered_0_5 (refresh only when the leader-book median line has moved 0.5 points or more since the last refresh) against the twelve served fixed passes on the same games, opener-graded forced picks, 2022-2023. 30 of 514 picks differ.",
+      "effect": 0.77821,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -1.20006,
+        2.964427
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "Against the refresh schedule the project actually runs, refresh only when the leader-book median line has moved 0.5 points or more since the last refresh changed 30 picks and moved the hit rate by +0.78 points per hundred games.",
+      "probability_positive": 0.756575,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9477,
+      "sample_blocks": 36,
+      "sample_games": 514,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 1.085624
+    },
+    "refresh_timing_news_triggered_0_5_vs_fixed_schedule_2024_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing news_triggered_0_5 (refresh only when the leader-book median line has moved 0.5 points or more since the last refresh) against the twelve served fixed passes on the same games, opener-graded forced picks, 2024-2025. 17 of 533 picks differ.",
+      "effect": -1.313321,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -2.814259,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "Against the refresh schedule the project actually runs, refresh only when the leader-book median line has moved 0.5 points or more since the last refresh changed 17 picks and moved the hit rate by -1.31 points per hundred games.",
+      "probability_positive": 0.03565,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9197,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 0.740829
+    },
+    "refresh_timing_news_triggered_0_5_vs_tuesday_2020_2021": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing news_triggered_0_5 (refresh only when the leader-book median line has moved 0.5 points or more since the last refresh) against the frozen Tuesday card, opener-graded forced picks, 2020-2021. 56 of 456 picks changed; 54.167% vs 57.237%.",
+      "effect": -3.070175,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -5.494505,
+        -0.854701
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "Compared with leaving Tuesday's picks alone, refresh only when the leader-book median line has moved 0.5 points or more since the last refresh changed 56 picks and moved the hit rate by -3.07 points per hundred games.",
+      "probability_positive": 0.00445,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9469,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 1.207683
+    },
+    "refresh_timing_news_triggered_0_5_vs_tuesday_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing news_triggered_0_5 (refresh only when the leader-book median line has moved 0.5 points or more since the last refresh) against the frozen Tuesday card, opener-graded forced picks, 2020-2025. 164 of 1503 picks changed; 56.088% vs 56.886%.",
+      "effect": -0.798403,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -2.409639,
+        0.854167
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "Compared with leaving Tuesday's picks alone, refresh only when the leader-book median line has moved 0.5 points or more since the last refresh changed 164 picks and moved the hit rate by -0.80 points per hundred games.",
+      "probability_positive": 0.164775,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9391,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 0.82027
+    },
+    "refresh_timing_news_triggered_0_5_vs_tuesday_2022_2023": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing news_triggered_0_5 (refresh only when the leader-book median line has moved 0.5 points or more since the last refresh) against the frozen Tuesday card, opener-graded forced picks, 2022-2023. 53 of 514 picks changed; 58.560% vs 59.144%.",
+      "effect": -0.583658,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -3.250478,
+        2.2
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "Compared with leaving Tuesday's picks alone, refresh only when the leader-book median line has moved 0.5 points or more since the last refresh changed 53 picks and moved the hit rate by -0.58 points per hundred games.",
+      "probability_positive": 0.33875,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9477,
+      "sample_blocks": 36,
+      "sample_games": 514,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 1.399433
+    },
+    "refresh_timing_news_triggered_0_5_vs_tuesday_2024_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing news_triggered_0_5 (refresh only when the leader-book median line has moved 0.5 points or more since the last refresh) against the frozen Tuesday card, opener-graded forced picks, 2024-2025. 55 of 533 picks changed; 55.347% vs 54.409%.",
+      "effect": 0.938086,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -1.876173,
+        3.888889
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "Compared with leaving Tuesday's picks alone, refresh only when the leader-book median line has moved 0.5 points or more since the last refresh changed 55 picks and moved the hit rate by +0.94 points per hundred games.",
+      "probability_positive": 0.735225,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9197,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 1.475209
+    },
+    "refresh_timing_news_triggered_1_0_vs_fixed_schedule_2020_2021": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing news_triggered_1_0 (refresh only when the leader-book median line has moved 1.0 points or more since the last refresh) against the twelve served fixed passes on the same games, opener-graded forced picks, 2020-2021. 47 of 456 picks differ.",
+      "effect": 1.973684,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -1.079914,
+        5.021834
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "Against the refresh schedule the project actually runs, refresh only when the leader-book median line has moved 1.0 points or more since the last refresh changed 47 picks and moved the hit rate by +1.97 points per hundred games.",
+      "probability_positive": 0.90325,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9469,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 1.535545
+    },
+    "refresh_timing_news_triggered_1_0_vs_fixed_schedule_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing news_triggered_1_0 (refresh only when the leader-book median line has moved 1.0 points or more since the last refresh) against the twelve served fixed passes on the same games, opener-graded forced picks, 2020-2025. 132 of 1503 picks differ.",
+      "effect": 0.266134,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -1.13941,
+        1.749664
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "Against the refresh schedule the project actually runs, refresh only when the leader-book median line has moved 1.0 points or more since the last refresh changed 132 picks and moved the hit rate by +0.27 points per hundred games.",
+      "probability_positive": 0.63815,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9391,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 0.742753
+    },
+    "refresh_timing_news_triggered_1_0_vs_fixed_schedule_2022_2023": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing news_triggered_1_0 (refresh only when the leader-book median line has moved 1.0 points or more since the last refresh) against the twelve served fixed passes on the same games, opener-graded forced picks, 2022-2023. 51 of 514 picks differ.",
+      "effect": 0.972763,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -1.372549,
+        3.515625
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "Against the refresh schedule the project actually runs, refresh only when the leader-book median line has moved 1.0 points or more since the last refresh changed 51 picks and moved the hit rate by +0.97 points per hundred games.",
+      "probability_positive": 0.775925,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9477,
+      "sample_blocks": 36,
+      "sample_games": 514,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 1.257659
+    },
+    "refresh_timing_news_triggered_1_0_vs_fixed_schedule_2024_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing news_triggered_1_0 (refresh only when the leader-book median line has moved 1.0 points or more since the last refresh) against the twelve served fixed passes on the same games, opener-graded forced picks, 2024-2025. 34 of 533 picks differ.",
+      "effect": -1.876173,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -3.780718,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "Against the refresh schedule the project actually runs, refresh only when the leader-book median line has moved 1.0 points or more since the last refresh changed 34 picks and moved the hit rate by -1.88 points per hundred games.",
+      "probability_positive": 0.02695,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9197,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 0.977424
+    },
+    "refresh_timing_news_triggered_1_0_vs_tuesday_2020_2021": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing news_triggered_1_0 (refresh only when the leader-book median line has moved 1.0 points or more since the last refresh) against the frozen Tuesday card, opener-graded forced picks, 2020-2021. 24 of 456 picks changed; 55.482% vs 57.237%.",
+      "effect": -1.754386,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -3.49345,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "Compared with leaving Tuesday's picks alone, refresh only when the leader-book median line has moved 1.0 points or more since the last refresh changed 24 picks and moved the hit rate by -1.75 points per hundred games.",
+      "probability_positive": 0.021375,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9469,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 0.877422
+    },
+    "refresh_timing_news_triggered_1_0_vs_tuesday_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing news_triggered_1_0 (refresh only when the leader-book median line has moved 1.0 points or more since the last refresh) against the frozen Tuesday card, opener-graded forced picks, 2020-2025. 86 of 1503 picks changed; 56.354% vs 56.886%.",
+      "effect": -0.532269,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -1.615101,
+        0.598802
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "Compared with leaving Tuesday's picks alone, refresh only when the leader-book median line has moved 1.0 points or more since the last refresh changed 86 picks and moved the hit rate by -0.53 points per hundred games.",
+      "probability_positive": 0.17315,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9391,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 0.569281
+    },
+    "refresh_timing_news_triggered_1_0_vs_tuesday_2022_2023": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing news_triggered_1_0 (refresh only when the leader-book median line has moved 1.0 points or more since the last refresh) against the frozen Tuesday card, opener-graded forced picks, 2022-2023. 26 of 514 picks changed; 58.755% vs 59.144%.",
+      "effect": -0.389105,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -1.956947,
+        1.192843
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "Compared with leaving Tuesday's picks alone, refresh only when the leader-book median line has moved 1.0 points or more since the last refresh changed 26 picks and moved the hit rate by -0.39 points per hundred games.",
+      "probability_positive": 0.31835,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9477,
+      "sample_blocks": 36,
+      "sample_games": 514,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 0.815374
+    },
+    "refresh_timing_news_triggered_1_0_vs_tuesday_2024_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared timing-policy cell frozen in scripts/refresh_timing_policy.py before any accuracy was computed. Neither admissible AGENTS.md closing ground applies: the leader-book net move has split-half reliability 0.85-0.90 raw (0.92-0.95 Spearman-Brown), so no_split_half_reliability is out; no positive control was run for this channel, so bounded_by_control is out; and the same rule reads the opposite sign on 2024-2025 as on 2020-2021, so no wrong sign is resolved for the family. Recorded as unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Refresh timing news_triggered_1_0 (refresh only when the leader-book median line has moved 1.0 points or more since the last refresh) against the frozen Tuesday card, opener-graded forced picks, 2024-2025. 36 of 533 picks changed; 54.784% vs 54.409%.",
+      "effect": 0.375235,
+      "effect_units": "accuracy_points",
+      "family": "refresh_timing_policy",
+      "interval": [
+        -1.730769,
+        2.772772
+      ],
+      "league": "nfl",
+      "notes": "MKT-08. The served late-week leader-median follow rule held fixed; only the refresh instants vary. Opener-graded forced picks at margin_vs_open, week-blocked bootstrap, 20000 samples, seed 20260911. Cells within a window are the SAME games re-decided at different instants, so they are correlated decompositions of one window, not independent votes. Rotation family refresh_timing_policy, mined 2018-2025 era acknowledged and discounted.",
+      "plain_summary": "Compared with leaving Tuesday's picks alone, refresh only when the leader-book median line has moved 1.0 points or more since the last refresh changed 36 picks and moved the hit rate by +0.38 points per hundred games.",
+      "probability_positive": 0.620725,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.9197,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
+      "standard_error": 1.153867
+    }
+  }
+}

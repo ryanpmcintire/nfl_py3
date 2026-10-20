@@ -1,0 +1,33 @@
+{
+  "family": "mod25e-generator-fidelity",
+  "signals": {
+    "mod25e-e180-final-drive-pass-turnover-gap": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "measured game-bootstrap 400 reps 90% sim minus real; gap is a generator miss not a refuted signal; no closing ground applies",
+      "closing_ground": null,
+      "description": "Trailing 1-8 offense, Q4 drives starting last 2 min: pass turnover (INT+fumble lost) rate per pass, base 3-seed sim minus real 2009-17; sim flat .032 across clock, real .040 (4-2 min) .086 (<2 min) .128 (<1 min)",
+      "effect": -5.39,
+      "effect_units": "rate_pp",
+      "family": "mod25e-generator-fidelity",
+      "interval": [
+        -6.45,
+        -4.41
+      ],
+      "league": "nfl",
+      "notes": "n drives real 617 sim 10306; TO/drive .316 v .115; start<=60 TO/pass .128 v .031; 120-240 gap -0.97pp [-1.58,-0.32]; look count 8 strata",
+      "plain_summary": "Simulated trailing teams in the last two minutes turn the ball over on passes far less often than real teams, and the sim rate does not rise as the clock runs down.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e180/an.py",
+      "standard_error": 0.62
+    }
+  }
+}

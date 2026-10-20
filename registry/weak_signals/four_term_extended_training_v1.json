@@ -1,0 +1,33 @@
+{
+  "family": "four_term_extended_training_v1",
+  "signals": {
+    "four_term_extended_training_2011_2025_vs_served": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Accuracy interval crosses zero; decisive games served 48-44 on 92; Brier worse for extended training in 91% of draws (+0.00075 [-0.00040,+0.00174]), log loss P+ 0.91 worse; extended fit shrinks predictions toward 0.5; predeclared pre-2020 interaction arm adds nothing (P+ 0.455 vs extended)",
+      "closing_ground": null,
+      "description": "Served four-term pick probability trained on 2011-2025 (3,734 games, market terms zero pre-2020) instead of 2020-2025 only, LOSO over held-out 2020-2025 seasons, scored on the identical 1,503 opener-graded games",
+      "effect": -0.266,
+      "effect_units": "accuracy_points",
+      "family": "four_term_extended_training_v1",
+      "interval": [
+        -0.914,
+        0.575
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Training the pick probability on fifteen seasons instead of six did not pick better on the six recent seasons, and its probabilities were slightly less sharp.",
+      "probability_positive": 0.251,
+      "recorded_at": "2026-09-24",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/four_term_extended_training/20260924T195332Z/summary.json",
+      "standard_error": null
+    }
+  }
+}

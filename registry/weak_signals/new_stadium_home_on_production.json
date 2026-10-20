@@ -1,0 +1,33 @@
+{
+  "family": "new_stadium_home_on_production",
+  "signals": {
+    "new_stadium_home_on_production": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval [-0.6565,+0.6550] crosses zero -- EXPECTED at this window size per AGENTS.md, not a rejection. wrong_sign_resolved unavailable (interval not entirely negative). no_split_half_reliability inadmissible: stadium_id/season is a deterministic, zero-measurement-noise venue-assignment fact, same reasoning as the Wave 1 schedule flags already in this registry.",
+      "closing_ground": null,
+      "description": "LEAD-39 new-stadium honeymoon: BACK home team in a frozen permanent venue's first two REG seasons of use, stacked on PRODUCTION weak_stack, opener-graded",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "new_stadium_home_on_production",
+      "interval": [
+        -0.6565,
+        0.655
+      ],
+      "league": "nfl",
+      "notes": "Positive control (candidate column replaced by realized ats_margin) read +44.298 accuracy points, week/season-blocked P+ 1.000 both, proving the harness can detect an effect this size; the screen itself found none large enough to resolve at n=456/35 weeks.",
+      "plain_summary": "Backing the home team during a brand-new stadium's first two seasons reads as close to a coin flip so far (about 35% likely to help) -- not proven, not ruled out.",
+      "probability_positive": 0.34815,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/schedule_flag_on_production/new_stadium/20260905T031856Z/results.json",
+      "standard_error": null
+    }
+  }
+}

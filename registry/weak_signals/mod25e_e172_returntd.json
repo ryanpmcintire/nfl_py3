@@ -1,0 +1,33 @@
+{
+  "family": "mod25e_e172_returntd",
+  "signals": {
+    "e172d_teamkernel_returntd_lift": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "300 queries seed 11 single replay, no interval; shuffled-rating control gives 3.63 so rating information carries the lift; not a wrong sign",
+      "closing_ground": null,
+      "description": "Team kernel (hard home/away match x BLUP off/def rating nearness) lifts defensive return-TD per turnover from 4.12 to 5.23 pct in the nearest-200 Geo K-set replay; ipw and tilt do not",
+      "effect": 1.83,
+      "effect_units": "mae",
+      "family": "mod25e_e172_returntd",
+      "interval": null,
+      "invalidated_reason": "Measured on 300 replay queries; at 60,000 queries (tests/scratch/e172/cd_run.txt) the served kernel gives 3.478 [3.37,3.60] returned TDs per turnover v K-set 3.49, so the 4.12 to 5.23 lift was small-sample noise. Not a closure of the return-TD gap.",
+      "league": "nfl",
+      "notes": "[2026-10-18T22:57:27.140319+00:00] invalidated: Measured on 300 replay queries; at 60,000 queries (tests/scratch/e172/cd_run.txt) the served kernel gives 3.478 [3.37,3.60] returned TDs per turnover v K-set 3.49, so the 4.12 to 5.23 lift was small-sample noise. Not a closure of the return-TD gap.. Superseded by: 'e172_clsdraw_loso_class_ll_vs_window'. Invalidation is not closure.",
+      "plain_summary": "Return TDs per turnover rise from 4.12 to 5.23 percent when the Geo pick weights rows by team rating nearness; real is 3.40",
+      "probability_positive": null,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 300,
+      "seasons": [
+        2013,
+        2024
+      ],
+      "source": "docs/lanes/mod25e-e172c-returntd.md",
+      "standard_error": null,
+      "status": "invalidated",
+      "superseded_by": "e172_clsdraw_loso_class_ll_vs_window"
+    }
+  }
+}

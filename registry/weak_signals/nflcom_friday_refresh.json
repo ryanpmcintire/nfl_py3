@@ -1,0 +1,33 @@
+{
+  "family": "nflcom_friday_refresh",
+  "signals": {
+    "nflcom_refresh_out2_starters_on_chain_gate_admitted": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Not terminal: the point estimate is positive and both blockings' intervals sit above zero on the admitted subset, so neither admissible closing ground (resolved wrong sign, zero split-half reliability) applies. Three seasons only and a mined family, so it stays unresolved rather than a claim.",
+      "closing_ground": null,
+      "description": "NFL.com Friday out>=2-starters fade composed on the production chain, restricted to the games the CORRECTED per-game freshness gate can actually admit (page must predate each game's own pick deadline). Re-read of the frozen 2026-08-22 artifact; no new window spent.",
+      "effect": 1.9471,
+      "effect_units": "accuracy_points",
+      "family": "nflcom_friday_refresh",
+      "interval": [
+        0.1416,
+        3.7635
+      ],
+      "league": "nfl",
+      "notes": "Corrects the production-reachable estimate for challenger nflcom_friday_refresh_out2_starters_v1. The published +2.1795 pts (n=780) scored Wed/Thu games off a Friday page published AFTER their own kickoff: scripts/nflcom_friday_refresh_feature.py joins Out counts on (season,week,team) with no kickoff filter. 61 of 799 games (57 Thu, 2 Wed, 2 Fri) are excluded by the corrected gate; 7 of the 67 changed picks sat on excluded games and ran 5/7 for the arm vs 2/7 for the chain. Restricted: +1.9471 pts week-blocked [+0.1416,+3.7635] P+ 0.9827; season-blocked [+0.4367,+4.0984] P+ 1.0000. Excluded-only cell +4.9180 [-3.2787,+13.5593] P+ 0.8333 n=61. Net: the signal survives the correction about 0.23 points smaller.\n[2026-09-01T20:03:12.741219+00:00] reliability set: None -> 0.5619 95% [0.3492, 0.7144]. Method: team-season odd/even-week split-half of the underlying continuous trait, Spearman-Brown corrected, block bootstrap over team-seasons (nfl_ats.cfb_qb_dependence.split_half_reliability, seed 20260901, 4000 draws). Measured from: F:\\Repos\\nfl_py3\\artifacts\\reliability_sweep\\health_roster\\20260901T200018Z\\results.json. Reason: starter_out is the continuous per-team-week parent quantity this cell is built on, measured on the cell's own seasons 2022-2024 with n=96 team-seasons. scripts/nflcom_friday_designation_screen.py:239-250 (attach_flags) and scripts/nflcom_friday_refresh_feature.py:116-144 (build_out_counts) build the per-(season, week, team) counts this cell thresholds; snapshot pinned to 20260821T222602Z because the two newer snapshots hold zero rows. same starter_out >= 2 overlay; the freshness gate changes only WHICH games are admitted (780 -> 719), not the underlying per-team-week quantity, so it shares the parent trait exactly. Reliability fields only; effect/interval/classification/closing_ground untouched, and this measurement does not by itself reclassify the entry.",
+      "plain_summary": "Two-plus starters Out, only counting pre-deadline reports. Fade them.",
+      "probability_positive": 0.9827,
+      "recorded_at": "2026-08-25",
+      "reliability": 0.561862,
+      "sample_blocks": null,
+      "sample_games": 719,
+      "seasons": [
+        2022,
+        2024
+      ],
+      "source": "artifacts/nflcom_friday_refresh/20260822T231604Z/per_game.parquet re-scored 2026-08-25 with nfl_ats.clv.week_blocked_bootstrap, 20000 samples seed 20260823 (study constants); full-population reproduction gate matched the published +2.1795 to 1.3e-5",
+      "standard_error": 0.9239
+    }
+  }
+}

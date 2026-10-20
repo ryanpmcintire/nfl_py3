@@ -1,0 +1,251 @@
+{
+  "family": "latent_ratings_on_production",
+  "signals": {
+    "latent_ratings_divergence_cell_tilt_opener": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval spans both signs by a wide margin at 187 games, reliability is nonzero, and no positive control was run at this cell size. unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Predeclared cell: the 187 of 456 window games where at least one team's expected lineup is furthest from its own full-strength rated lineup (max absolute divergence at or above the 2017-2019 75th percentile, C=0.013312). Lineup-divergence tilt inside the cell -0.535 accuracy points vs -0.372 outside it - the cell did not separate (docs/latent_ratings_on_production.md section 8.7).",
+      "effect": -0.5347593582887722,
+      "effect_units": "accuracy_points",
+      "family": "latent_ratings_on_production",
+      "interval": [
+        -8.187374173137762,
+        7.464291445995813
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Looking only at the games where one team is unusually far from having its best lineup available - the situation where player ratings should help most - the lean did no better there than anywhere else.",
+      "probability_positive": 0.453,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.17399237816850593,
+      "sample_blocks": 34,
+      "sample_games": 187,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/latent_ratings_on_production/20260911T000000Z/results.json",
+      "standard_error": null
+    },
+    "latent_ratings_divergence_tilt_brier": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Probability_positive is above 0.5 and the interval spans both signs, so no wrong sign; reliability is nonzero; the positive control was far larger than this effect, so no positive_control_bound. unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Brier read of the lineup-divergence tilt under the predeclared mirror mapping, rotation window [2020,2021], active model d49194e04945a5e5: +0.001555, week-blocked 95% [-0.006785, +0.009274], probability_positive 0.667 - the one reading in this look that leans toward the candidate (docs/latent_ratings_on_production.md section 8.6).",
+      "effect": 0.0015551987752753793,
+      "effect_units": "brier_improvement",
+      "family": "latent_ratings_on_production",
+      "interval": [
+        -0.006785222816541179,
+        0.009274144491985853
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Judging the health-gap lean by how honest its stated confidence would have been rather than by wins and losses, it comes out slightly ahead.",
+      "probability_positive": 0.667,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.17399237816850593,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/latent_ratings_on_production/20260911T000000Z/results.json",
+      "standard_error": null
+    },
+    "latent_ratings_divergence_tilt_opener": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground: the week-blocked interval reaches +3.254 so there is no resolved wrong sign; split-half reliability is +0.174/+0.154, not zero; the positive control proved detection at +11.623 points, far above the scale in dispute, so no positive_control_bound. unresolved_below_power.",
+      "closing_ground": null,
+      "description": "On-production opener screen, rotation window [2020,2021], active model d49194e04945a5e5: production's served opener pick plus a tilt toward the side whose expected lineup is less degraded relative to its own full-strength rated lineup, at the predeclared 2017-2019 75th-percentile margin (M2=0.012329). 165 eligible games, 86 picks changed, 53.29% baseline vs 52.85% candidate; 2020 +4.545, 2021 -5.085. Observed delta sits at the 83rd percentile of its own 200-draw within-week permutation null (centre -1.986) (docs/latent_ratings_on_production.md section 8.6).",
+      "effect": -0.43859649122807154,
+      "effect_units": "accuracy_points",
+      "family": "latent_ratings_on_production",
+      "interval": [
+        -4.625550660792954,
+        3.253972932189
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Leaning the pick toward whichever team is closest to having its full healthy lineup available cost about half a point of accuracy over 2020-2021, but it did better than a coin-flip version of the same rule and was clearly positive in 2020.",
+      "probability_positive": 0.43525,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.17399237816850593,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/latent_ratings_on_production/20260911T000000Z/results.json",
+      "standard_error": null
+    },
+    "latent_ratings_expected_lineup_cell_tilt_opener": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval spans both signs at 187 games, reliability is nonzero, no positive control at this cell size. unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Same predeclared 187-game cell, expected-lineup rating tilt instead of the divergence tilt: -1.070 accuracy points inside the cell vs -1.115 outside it (docs/latent_ratings_on_production.md section 8.7).",
+      "effect": -1.0695187165775333,
+      "effect_units": "accuracy_points",
+      "family": "latent_ratings_on_production",
+      "interval": [
+        -7.567567567567568,
+        4.908226893291767
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The lineup-rating lean, restricted to games where one team is unusually short of its best available lineup, performed the same as it did on every other game.",
+      "probability_positive": 0.36925,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.17399237816850593,
+      "sample_blocks": 34,
+      "sample_games": 187,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/latent_ratings_on_production/20260911T000000Z/results.json",
+      "standard_error": null
+    },
+    "latent_ratings_expected_lineup_tilt_brier": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval spans both signs, reliability is nonzero, and the positive control resolved only a +0.0168 Brier gain, so none of the three admissible grounds applies. unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Brier read of the expected-lineup rating tilt under the predeclared mirror mapping (flipped games take 1-p, others keep p), rotation window [2020,2021], active model d49194e04945a5e5 (docs/latent_ratings_on_production.md section 8.5).",
+      "effect": -6.085955251355912e-05,
+      "effect_units": "brier_improvement",
+      "family": "latent_ratings_on_production",
+      "interval": [
+        -0.004733855834290821,
+        0.004493655303743526
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Measuring the same lineup-rating lean by how well-calibrated the published confidence would have been, rather than by wins and losses: no detectable difference either way.",
+      "probability_positive": 0.4695,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.17399237816850593,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/latent_ratings_on_production/20260911T000000Z/results.json",
+      "standard_error": null
+    },
+    "latent_ratings_expected_lineup_tilt_opener": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground: the week-blocked interval reaches +2.298 so there is no resolved wrong sign; split-half reliability is +0.174 and +0.154, not zero; the positive control proved detection at +11.623 points, not at the ~1-point scale in dispute, so no positive_control_bound. unresolved_below_power.",
+      "closing_ground": null,
+      "description": "On-production opener screen, rotation window [2020,2021], active model d49194e04945a5e5: production's served opener pick plus a tilt toward the side whose expected-lineup RAPM sum leads by the predeclared 2017-2019 75th-percentile margin (M1=0.056158). 203 eligible games, 81 picks changed, 53.29% baseline vs 52.19% candidate. Observed delta sits at the 69th percentile of its own 200-draw within-week permutation null, whose centre is -1.726 because any tilt at this flip rate costs accuracy by arithmetic (docs/latent_ratings_on_production.md section 8.5).",
+      "effect": -1.0964912280701844,
+      "effect_units": "accuracy_points",
+      "family": "latent_ratings_on_production",
+      "interval": [
+        -4.450031352131942,
+        2.2978003497314528
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Leaning the pick toward the team whose expected starting lineup grades out better than the other side's did not improve the picks on 2020-2021 - the spread already knows most of what player ratings know.",
+      "probability_positive": 0.25625,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.17399237816850593,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/latent_ratings_on_production/20260911T000000Z/results.json",
+      "standard_error": null
+    },
+    "latent_ratings_player_defense_reliability": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Reliability is positive and clearly nonzero, so no_split_half_reliability is not an admissible ground; no wrong sign and no positive control bounds a correlation of this size. unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Odd-vs-even-season split-half of the season-lagged defensive RAPM player coefficient: 808 players with 500+ defensive participation plays in both halves, Pearson +0.154, Spearman-Brown +0.268 (docs/latent_ratings_on_production.md section 8.2).",
+      "effect": 0.15445521736273005,
+      "effect_units": "correlation",
+      "family": "latent_ratings_on_production",
+      "interval": null,
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Same check on the defensive side of the player ratings: odd and even seasons agree modestly, so the defensive ratings are real but noisy.",
+      "probability_positive": null,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.15445521736273005,
+      "sample_blocks": null,
+      "sample_games": 808,
+      "seasons": [
+        2016,
+        2025
+      ],
+      "source": "artifacts/latent_ratings_on_production/20260911T000000Z/reliability.json",
+      "standard_error": null
+    },
+    "latent_ratings_player_offense_reliability": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Reliability is positive and clearly nonzero, so no_split_half_reliability is not an admissible ground; no wrong sign and no positive control bounds a correlation of this size. unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Odd-vs-even-season split-half of the season-lagged offensive RAPM player coefficient: 760 players with 500+ offensive participation plays in both halves, Pearson +0.174, Spearman-Brown +0.296 (docs/latent_ratings_on_production.md section 8.2).",
+      "effect": 0.17399237816850593,
+      "effect_units": "correlation",
+      "family": "latent_ratings_on_production",
+      "interval": null,
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Rating each player from past seasons and then checking whether the odd-numbered seasons agree with the even-numbered ones: they agree modestly, so the offensive player ratings are real but noisy.",
+      "probability_positive": null,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.17399237816850593,
+      "sample_blocks": null,
+      "sample_games": 760,
+      "seasons": [
+        2016,
+        2025
+      ],
+      "source": "artifacts/latent_ratings_on_production/20260911T000000Z/reliability.json",
+      "standard_error": null
+    },
+    "latent_ratings_tilt_positive_control": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A leaked control is not a research finding and closes nothing; recorded so the bound it does and does not establish is on the record. unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Deliberate-leak instrument check for the on-production tilt harness: the tilt feature replaced by the realized opener ATS margin at the same 75th-percentile threshold rule. 53 picks changed, all 53 wrong-to-right, +11.623 accuracy points, week-blocked 95% [+8.171, +15.066]. Proves the harness detects an effect of that size; it does not bound the ~1-point scale the real screen disputes (docs/latent_ratings_on_production.md section 8.4).",
+      "effect": 11.622807017543856,
+      "effect_units": "accuracy_points",
+      "family": "latent_ratings_on_production",
+      "interval": [
+        8.17148642887595,
+        15.065804761858649
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "A rigged check that feeds the rule the actual game result: it correctly flipped every pick it touched, confirming the measuring setup is not blind.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/latent_ratings_on_production/20260911T000000Z/positive_control.json",
+      "standard_error": null
+    }
+  }
+}

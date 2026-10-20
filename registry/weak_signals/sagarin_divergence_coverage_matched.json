@@ -1,0 +1,61 @@
+{
+  "family": "sagarin_divergence_coverage_matched",
+  "signals": {
+    "sagarin_battery_large_divergence_coverage_matched_era": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Two-sided by construction (no direction was predeclared), so wrong_sign_resolved is inadmissible. The already-in-hand Era-B coverage precedent shows instrument SENSITIVITY to coverage composition, which is not detectability, so it bounds nothing; the injection control is the detectability statement. Category 3 by AGENTS.md.",
+      "closing_ground": null,
+      "description": "Sagarin-side cover rate on |divergence_close| >= 3.0, close grade, EARLY era 2010-2016, restricted to seasons whose own within-season usable-Sagarin coverage is >= 80 percent on WP19 corrected coverage (keeps 2010, 2011, 2013, 2014, 2015, 2016; drops 2012 at 47.3 percent). NEW family on a coverage-matched population - NOT a re-score of sagarin_battery_large_divergence_era_2010_2016, whose frozen entry is untouched. Instrument-composition diagnostic with NO predeclared direction.",
+      "effect": 2.1514629948364887,
+      "effect_units": "accuracy_points",
+      "family": "sagarin_divergence_coverage_matched",
+      "interval": [
+        -2.1959961367455816,
+        6.396396396396398
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/era_mechanism_screens_20260901.md section 2.3 BEFORE any effect was computed; proposed unrun in docs/era_magnitude_report.md section 2.3. NOT A RE-SCORE and NOT A REPLACEMENT: docs/sagarin_backfill.md section 9.4 requires a fresh predeclaration and its own rotation window before the frozen sagarin_battery_* identities may be re-measured; this is a different (coverage-matched) population under a new family, and no sagarin_battery_* entry was read back, overwritten, corrected or reclassified. Corrected-coverage UNMATCHED 2010-2016 diagnostic (computed, deliberately NOT recorded): +1.4548 [-2.4960, +5.3825] P+=0.7614 on 653 games. Frozen pre-fix registry value for the unmatched era, quoted for comparison only: +1.8072. Coverage matching therefore moves the early-era read UP (+1.4548 unmatched to +2.1515 matched), i.e. the newly-recovered 2012 games pull the era estimate toward zero. Season-blocked secondary +2.1515 [+0.1701, +4.9815] P+=0.9810 on 6 blocks - DEGENERATE, below the 10-block floor, informational only. Within-week permutation null on the Sagarin side assignment (200 draws): null mean +0.6695, [-3.0120, +4.9053]; 34 percent of null draws have |effect| at or above the observed. Injection positive control on this exact population (25 replicates x 2000 draws per target): detection rate 0.00 at +0.5 and +1.0 points, 0.44 at +2.0, 1.00 at +4.0 - so this cell can only resolve effects of roughly 4 accuracy points, and nothing at or below 1 point can be bounded here. team-quality-is-already-priced ceiling applies. Mined-window discount applies. Close grade only; the pool-relevant opener population is unchanged by WP19 and is not touched here.",
+      "plain_summary": "When Jeff Sagarins ratings disagreed with the betting line by three points or more in 2010-2016, his side covered a bit more often than not. This version drops the one season whose ratings archive is still mostly missing, so every season in it is measured on comparable footing.",
+      "probability_positive": 0.82885,
+      "recorded_at": "2026-09-01",
+      "reliability": null,
+      "sample_blocks": 94,
+      "sample_games": 581,
+      "seasons": [
+        2010,
+        2016
+      ],
+      "source": "scripts/era_mechanism_screens.py; artifacts/era_mechanism_screens/20260901T195546Z_screen/results.json; docs/era_mechanism_screens_20260901.md",
+      "standard_error": null
+    },
+    "sagarin_battery_large_divergence_coverage_matched_era_late": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Two-sided by construction (no direction was predeclared), so wrong_sign_resolved is inadmissible - the interval also does not sit entirely below zero. No positive control has been shown able to detect an effect of this size on this arm. Category 3 by AGENTS.md.",
+      "closing_ground": null,
+      "description": "The predeclared coverage-matched COMPANION arm of sagarin_battery_large_divergence_coverage_matched_era: identical construction (|divergence_close| >= 3.0, close grade, seasons with >= 80 percent within-season usable-Sagarin coverage) on the LATE era 2017-2025 (keeps 2017, 2020, 2023, 2024, 2025; drops 2018, 2019, 2021, 2022). Declared before any sign was seen so the era contrast is read as two matched magnitudes, never one average. NO predeclared direction.",
+      "effect": -3.5416666666666665,
+      "effect_units": "accuracy_points",
+      "family": "sagarin_divergence_coverage_matched",
+      "interval": [
+        -8.278145695364238,
+        1.1407867494824016
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/era_mechanism_screens_20260901.md section 2.3 BEFORE any effect was computed. NOT A RE-SCORE and NOT A REPLACEMENT of sagarin_battery_large_divergence_era_2017_2025, which is untouched. Corrected-coverage UNMATCHED 2017-2025 diagnostic (computed, deliberately NOT recorded): -2.2989 [-6.1010, +1.5153] P+=0.1130 on 696 games - reproducing the frozen registry value -2.2989 to four decimals, as expected since WP19 changed no season after 2013; that exact agreement is this runs own cross-check that the pipeline reproduces the parent battery. Season-blocked secondary -3.5417 [-7.1429, +0.4836] P+=0.0365 on 5 blocks - DEGENERATE, below the 10-block floor, informational only. Within-week permutation null on the Sagarin side assignment (200 draws): null mean -1.2208, [-4.7917, +2.3021], NOT zero-centred; 14.5 percent of null draws have |effect| at or above the observed. ERA MAGNITUDE, NOT PRESENCE: paired with the early arm +2.1515 [-2.1960, +6.3964] P+=0.8289, coverage matching WIDENS the era gap from 3.75 points (unmatched) to 5.69 points (matched) rather than shrinking it, so coverage composition does not explain the parent constructs era heterogeneity - the two magnitudes are reported separately and never averaged. team-quality-is-already-priced ceiling applies. Mined-window discount applies (this arm sits almost entirely inside the mined 2018-2025 window boundary seasons). Close grade only.",
+      "plain_summary": "The same Sagarin-versus-the-line test on 2017-2025, again keeping only the seasons whose ratings archive is close to complete. Here his side covers less often than not - the opposite lean from the early era, and a bigger gap once the thin seasons are removed.",
+      "probability_positive": 0.066,
+      "recorded_at": "2026-09-01",
+      "reliability": null,
+      "sample_blocks": 80,
+      "sample_games": 480,
+      "seasons": [
+        2017,
+        2025
+      ],
+      "source": "scripts/era_mechanism_screens.py; artifacts/era_mechanism_screens/20260901T195546Z_screen/results.json; docs/era_mechanism_screens_20260901.md",
+      "standard_error": null
+    }
+  }
+}

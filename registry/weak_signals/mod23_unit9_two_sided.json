@@ -1,0 +1,117 @@
+{
+  "family": "mod23_unit9_two_sided",
+  "signals": {
+    "mod23_unit9_two_sided_P1_sbr_2011_2019_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Two-sided points labels arm P1 paired vs base, 2011-2019; 1149-1082 vs 1142-1089.",
+      "effect": 0.31376064545047067,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit9_two_sided",
+      "interval": [
+        -0.9395973154362416,
+        1.477832512315271
+      ],
+      "league": "nfl",
+      "notes": "Home and away points fitted as separate ridge targets (residual to market-implied team points), margin by difference, arm P1; four looks (two arms, two eras).",
+      "plain_summary": "Predicting each side's points separately and subtracting moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.6942,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod23_unit9/report_all.json",
+      "standard_error": null
+    },
+    "mod23_unit9_two_sided_P1_tuesday_2020_2025_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Two-sided points labels arm P1 paired vs base, 2020-2025; 791-712 vs 802-701.",
+      "effect": -0.7318695941450433,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit9_two_sided",
+      "interval": [
+        -1.4122394082044385,
+        -0.06447453255963895
+      ],
+      "league": "nfl",
+      "notes": "Home and away points fitted as separate ridge targets (residual to market-implied team points), margin by difference, arm P1; four looks (two arms, two eras).",
+      "plain_summary": "Predicting each side's points separately and subtracting moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.0131,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit9/report_all.json",
+      "standard_error": null
+    },
+    "mod23_unit9_two_sided_P2_sbr_2011_2019_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Two-sided points labels arm P2 paired vs base, 2011-2019; 1129-1102 vs 1142-1089.",
+      "effect": -0.5826983415508741,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit9_two_sided",
+      "interval": [
+        -1.0695187165775402,
+        -0.09041591320072333
+      ],
+      "league": "nfl",
+      "notes": "Home and away points fitted as separate ridge targets (residual to market-implied team points), margin by difference, arm P2; four looks (two arms, two eras).",
+      "plain_summary": "Predicting each side's points separately and subtracting moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.0049,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod23_unit9/report_all.json",
+      "standard_error": null
+    },
+    "mod23_unit9_two_sided_P2_tuesday_2020_2025_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Two-sided points labels arm P2 paired vs base, 2020-2025; 798-705 vs 802-701.",
+      "effect": -0.2661343978709248,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit9_two_sided",
+      "interval": [
+        -0.5798969072164949,
+        0.06954102920723226
+      ],
+      "league": "nfl",
+      "notes": "Home and away points fitted as separate ridge targets (residual to market-implied team points), margin by difference, arm P2; four looks (two arms, two eras).",
+      "plain_summary": "Predicting each side's points separately and subtracting moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.0468,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit9/report_all.json",
+      "standard_error": null
+    }
+  }
+}

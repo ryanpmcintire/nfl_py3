@@ -1,0 +1,33 @@
+{
+  "family": "team_style_pace_mismatch_stacked_on_production",
+  "signals": {
+    "pace_mismatch_dog_tilt_stacked_on_production": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% CI [-1.9515, +0.9987] and season-blocked secondary 95% CI [-1.3559, +0.6267] BOTH cross zero (neither blocking has its whole interval on the wrong side of zero), so the RESOLVED-wrong-sign closing ground does not apply despite the negative point estimate (-0.4657 pts, week-blocked P+ 0.2498); no positive-control bound was run for this stacked comparator. Per AGENTS.md an interval crossing zero is never grounds to close a line of work, so this stays unresolved_below_power -- context on the STACKED form only, and does not reclassify the already-registered pregame-safe cell team_style_pace_mismatch_dog_cover (effect +0.2292, P+ 0.71125), which is unaffected by this stacked read.",
+      "closing_ground": null,
+      "description": "Pace-mismatch dog tilt overlay (team_style_pace_mismatch_dog_cover: top-quartile abs prior-season centered seconds_per_play_pace, flip the model's own favourite pick to the underdog) applied ON TOP OF the PLAYED four-member overlay union (coach_fade_overlay, division_revenge_tilt_overlay, player_arrests_back_side_policy, spread_gap_zone_fade_overlay) rather than a bare baseline, opener-graded, on the frozen 1,537-REG-game 2020-2025 archive (artifacts/opener_evaluation/20260819T174244Z/per_game.parquet). n_flipped=180 total (120 net-new beyond what the played union already flips); measured overlap with spread_gap_zone_fade_overlay's own flip set = 27 of 180 games.",
+      "effect": -0.4657351962741196,
+      "effect_units": "accuracy_points",
+      "family": "team_style_pace_mismatch_stacked_on_production",
+      "interval": [
+        -1.9515477792732105,
+        0.9987017310252994
+      ],
+      "league": "nfl",
+      "notes": "MINED-SEASONS stacked read, not a fresh confirmation -- context for the registration decision, not a gate on it (docs/pace_mismatch_dog_tilt_overlay.md, docs/challenger_expansion_20260901.md). Production accuracy on this archive 55.4225%% vs candidate (production+mine) 54.9568%%, baseline (no overlays) 53.3599%%. Distinct from the sibling registry entry team_style_pace_mismatch_on_production (family team_style_pace_on_production, source artifacts/team_style_pace_on_production/20260901T194505Z/results.json): that study used an EXPANDING strictly-prior-season quartile cut against the full retrained production ridge chain on a rotation-ASSIGNED [2011,2013] window with a positive control; this one uses the FROZEN whole-panel quartile cut (2.1685022294778378, the same cut the registered bare-baseline cell uses) stacked as a pick-flip on top of the PLAYED overlay union on the mined 2020-2025 opener archive. Not poolable with either the bare-baseline team-style battery or that other stacked study: different comparators (played-union pick-flip delta vs retrained-chain accuracy delta) under AGENTS.md's commensurability rule.",
+      "plain_summary": "When we add the pace-mismatch underdog flip on top of everything else the pool already plays (coach fade, division revenge, player arrests, spread-gap fade), the combined card comes out very slightly worse in this backtest (about half a point), but the uncertainty is wide enough that a real improvement is still well within reach -- this is not proof the idea is bad, just not yet confirmed either way when stacked.",
+      "probability_positive": 0.24985,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.489,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pace_mismatch_dog_stacked/20260901T195112Z/results.json",
+      "standard_error": null
+    }
+  }
+}

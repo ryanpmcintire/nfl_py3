@@ -1,0 +1,873 @@
+{
+  "family": "mod18_big_spread_reduced_model_v1",
+  "signals": {
+    "big_spread_reduced_model_control_market_move_oracle_10p5_plus_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "positive control, recorded so a later candidate on the same games can be bounded against it; week [4.2845, 22.3810] at 0.9978. A favourable interval is not a closing ground, so the cell stays open",
+      "closing_ground": null,
+      "description": "control_market_move_oracle at the Tuesday opener, 10.5+, 2020-2025, accuracy points, week-blocked bootstrap 20000 samples seed 20260821",
+      "effect": 13.302752,
+      "effect_units": "accuracy_points",
+      "family": "mod18_big_spread_reduced_model_v1",
+      "interval": [
+        4.284504,
+        22.380952
+      ],
+      "league": "nfl",
+      "notes": "accuracy 0.6330; the served model on the same games 0.4954; zero-move games excluded 22",
+      "plain_summary": "How often the side the betting line moved toward between Tuesday and kickoff went on to cover. It is not a pick anyone could have made on Tuesday; it is the yardstick for how much is there to be won.",
+      "probability_positive": 0.997775,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 68,
+      "sample_games": 109,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/big_spread_reduced_model/20260910T041850Z + docs/big_spread_reduced_model.md",
+      "standard_error": 4.654119
+    },
+    "big_spread_reduced_model_control_market_move_oracle_7p5_10_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "positive control, recorded so a later candidate on the same games can be bounded against it; week [-4.1182, 11.0739] at 0.8203. A favourable interval is not a closing ground, so the cell stays open",
+      "closing_ground": null,
+      "description": "control_market_move_oracle at the Tuesday opener, 7.5-10, 2020-2025, accuracy points, week-blocked bootstrap 20000 samples seed 20260821",
+      "effect": 3.503185,
+      "effect_units": "accuracy_points",
+      "family": "mod18_big_spread_reduced_model_v1",
+      "interval": [
+        -4.118209,
+        11.073926
+      ],
+      "league": "nfl",
+      "notes": "accuracy 0.5350; the served model on the same games 0.5032; zero-move games excluded 37",
+      "plain_summary": "How often the side the betting line moved toward between Tuesday and kickoff went on to cover. It is not a pick anyone could have made on Tuesday; it is the yardstick for how much is there to be won.",
+      "probability_positive": 0.82025,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 87,
+      "sample_games": 157,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/big_spread_reduced_model/20260910T041850Z + docs/big_spread_reduced_model.md",
+      "standard_error": 3.877324
+    },
+    "big_spread_reduced_model_control_market_move_oracle_overall_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "positive control, recorded so a later candidate on the same games can be bounded against it; week [2.2648, 7.8855] at 0.9999. A favourable interval is not a closing ground, so the cell stays open",
+      "closing_ground": null,
+      "description": "control_market_move_oracle at the Tuesday opener, overall, 2020-2025, accuracy points, week-blocked bootstrap 20000 samples seed 20260821",
+      "effect": 5.075022,
+      "effect_units": "accuracy_points",
+      "family": "mod18_big_spread_reduced_model_v1",
+      "interval": [
+        2.2648,
+        7.885466
+      ],
+      "league": "nfl",
+      "notes": "accuracy 0.5508; the served model on the same games 0.5463; zero-move games excluded 370",
+      "plain_summary": "How often the side the betting line moved toward between Tuesday and kickoff went on to cover. It is not a pick anyone could have made on Tuesday; it is the yardstick for how much is there to be won.",
+      "probability_positive": 0.9999,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1133,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/big_spread_reduced_model/20260910T041850Z + docs/big_spread_reduced_model.md",
+      "standard_error": 1.42323
+    },
+    "big_spread_reduced_model_control_perfect_foresight_r1_card_10p5_plus_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "positive control, recorded so a later candidate on the same games can be bounded against it; week [1.5038, 8.3969] at 0.9990. A favourable interval is not a closing ground, so the cell stays open",
+      "closing_ground": null,
+      "description": "control_perfect_foresight_R1 at the Tuesday opener, card_10.5+, 2020-2025, accuracy points, week-blocked bootstrap 20000 samples seed 20260821",
+      "effect": 4.580153,
+      "effect_units": "accuracy_points",
+      "family": "mod18_big_spread_reduced_model_v1",
+      "interval": [
+        1.503759,
+        8.396947
+      ],
+      "league": "nfl",
+      "notes": "baseline 0.5115, ceiling 0.5573 on 15 changed picks",
+      "plain_summary": "The ceiling: what this year's picks would have scored if every pick this candidate changed had been right. It measures how much room the change had, not how well it did.",
+      "probability_positive": 0.999025,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/big_spread_reduced_model/20260910T041850Z + docs/big_spread_reduced_model.md",
+      "standard_error": 1.781306
+    },
+    "big_spread_reduced_model_control_perfect_foresight_r1_card_overall_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "positive control, recorded so a later candidate on the same games can be bounded against it; week [0.1318, 0.7348] at 0.9988. A favourable interval is not a closing ground, so the cell stays open",
+      "closing_ground": null,
+      "description": "control_perfect_foresight_R1 at the Tuesday opener, card_overall, 2020-2025, accuracy points, week-blocked bootstrap 20000 samples seed 20260821",
+      "effect": 0.399202,
+      "effect_units": "accuracy_points",
+      "family": "mod18_big_spread_reduced_model_v1",
+      "interval": [
+        0.131839,
+        0.734803
+      ],
+      "league": "nfl",
+      "notes": "baseline 0.5689, ceiling 0.5729 on 15 changed picks",
+      "plain_summary": "The ceiling: what this year's picks would have scored if every pick this candidate changed had been right. It measures how much room the change had, not how well it did.",
+      "probability_positive": 0.998775,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/big_spread_reduced_model/20260910T041850Z + docs/big_spread_reduced_model.md",
+      "standard_error": 0.158996
+    },
+    "big_spread_reduced_model_control_perfect_foresight_r1_standalone_10p5_plus_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "positive control, recorded so a later candidate on the same games can be bounded against it; week [9.9237, 22.6891] at 1.0000. A favourable interval is not a closing ground, so the cell stays open",
+      "closing_ground": null,
+      "description": "control_perfect_foresight_R1 at the Tuesday opener, standalone_10.5+, 2020-2025, accuracy points, week-blocked bootstrap 20000 samples seed 20260821",
+      "effect": 16.030534,
+      "effect_units": "accuracy_points",
+      "family": "mod18_big_spread_reduced_model_v1",
+      "interval": [
+        9.923664,
+        22.689076
+      ],
+      "league": "nfl",
+      "notes": "baseline 0.4733, ceiling 0.6336 on 38 changed picks",
+      "plain_summary": "The ceiling: what this year's picks would have scored if every pick this candidate changed had been right. It measures how much room the change had, not how well it did.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/big_spread_reduced_model/20260910T041850Z + docs/big_spread_reduced_model.md",
+      "standard_error": 3.256372
+    },
+    "big_spread_reduced_model_control_perfect_foresight_r1_standalone_overall_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "positive control, recorded so a later candidate on the same games can be bounded against it; week [0.8502, 2.0080] at 1.0000. A favourable interval is not a closing ground, so the cell stays open",
+      "closing_ground": null,
+      "description": "control_perfect_foresight_R1 at the Tuesday opener, standalone_overall, 2020-2025, accuracy points, week-blocked bootstrap 20000 samples seed 20260821",
+      "effect": 1.397206,
+      "effect_units": "accuracy_points",
+      "family": "mod18_big_spread_reduced_model_v1",
+      "interval": [
+        0.850229,
+        2.008032
+      ],
+      "league": "nfl",
+      "notes": "baseline 0.5456, ceiling 0.5595 on 38 changed picks",
+      "plain_summary": "The ceiling: what this year's picks would have scored if every pick this candidate changed had been right. It measures how much room the change had, not how well it did.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/big_spread_reduced_model/20260910T041850Z + docs/big_spread_reduced_model.md",
+      "standard_error": 0.299453
+    },
+    "big_spread_reduced_model_control_perfect_foresight_r2_card_10p5_plus_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "positive control, recorded so a later candidate on the same games can be bounded against it; week [2.4000, 10.2941] at 0.9999. A favourable interval is not a closing ground, so the cell stays open",
+      "closing_ground": null,
+      "description": "control_perfect_foresight_R2 at the Tuesday opener, card_10.5+, 2020-2025, accuracy points, week-blocked bootstrap 20000 samples seed 20260821",
+      "effect": 6.10687,
+      "effect_units": "accuracy_points",
+      "family": "mod18_big_spread_reduced_model_v1",
+      "interval": [
+        2.4,
+        10.294118
+      ],
+      "league": "nfl",
+      "notes": "baseline 0.5115, ceiling 0.5725 on 14 changed picks",
+      "plain_summary": "The ceiling: what this year's picks would have scored if every pick this candidate changed had been right. It measures how much room the change had, not how well it did.",
+      "probability_positive": 0.999875,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/big_spread_reduced_model/20260910T041850Z + docs/big_spread_reduced_model.md",
+      "standard_error": 2.001952
+    },
+    "big_spread_reduced_model_control_perfect_foresight_r2_card_overall_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "positive control, recorded so a later candidate on the same games can be bounded against it; week [0.1991, 0.9278] at 0.9998. A favourable interval is not a closing ground, so the cell stays open",
+      "closing_ground": null,
+      "description": "control_perfect_foresight_R2 at the Tuesday opener, card_overall, 2020-2025, accuracy points, week-blocked bootstrap 20000 samples seed 20260821",
+      "effect": 0.532269,
+      "effect_units": "accuracy_points",
+      "family": "mod18_big_spread_reduced_model_v1",
+      "interval": [
+        0.199071,
+        0.927767
+      ],
+      "league": "nfl",
+      "notes": "baseline 0.5689, ceiling 0.5742 on 14 changed picks",
+      "plain_summary": "The ceiling: what this year's picks would have scored if every pick this candidate changed had been right. It measures how much room the change had, not how well it did.",
+      "probability_positive": 0.999825,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/big_spread_reduced_model/20260910T041850Z + docs/big_spread_reduced_model.md",
+      "standard_error": 0.182269
+    },
+    "big_spread_reduced_model_control_perfect_foresight_r2_standalone_10p5_plus_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "positive control, recorded so a later candidate on the same games can be bounded against it; week [10.1449, 22.2222] at 1.0000. A favourable interval is not a closing ground, so the cell stays open",
+      "closing_ground": null,
+      "description": "control_perfect_foresight_R2 at the Tuesday opener, standalone_10.5+, 2020-2025, accuracy points, week-blocked bootstrap 20000 samples seed 20260821",
+      "effect": 16.030534,
+      "effect_units": "accuracy_points",
+      "family": "mod18_big_spread_reduced_model_v1",
+      "interval": [
+        10.144928,
+        22.222222
+      ],
+      "league": "nfl",
+      "notes": "baseline 0.4733, ceiling 0.6336 on 35 changed picks",
+      "plain_summary": "The ceiling: what this year's picks would have scored if every pick this candidate changed had been right. It measures how much room the change had, not how well it did.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/big_spread_reduced_model/20260910T041850Z + docs/big_spread_reduced_model.md",
+      "standard_error": 3.091738
+    },
+    "big_spread_reduced_model_control_perfect_foresight_r2_standalone_overall_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "positive control, recorded so a later candidate on the same games can be bounded against it; week [0.8530, 2.0081] at 1.0000. A favourable interval is not a closing ground, so the cell stays open",
+      "closing_ground": null,
+      "description": "control_perfect_foresight_R2 at the Tuesday opener, standalone_overall, 2020-2025, accuracy points, week-blocked bootstrap 20000 samples seed 20260821",
+      "effect": 1.397206,
+      "effect_units": "accuracy_points",
+      "family": "mod18_big_spread_reduced_model_v1",
+      "interval": [
+        0.853018,
+        2.008066
+      ],
+      "league": "nfl",
+      "notes": "baseline 0.5456, ceiling 0.5595 on 35 changed picks",
+      "plain_summary": "The ceiling: what this year's picks would have scored if every pick this candidate changed had been right. It measures how much room the change had, not how well it did.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/big_spread_reduced_model/20260910T041850Z + docs/big_spread_reduced_model.md",
+      "standard_error": 0.300278
+    },
+    "big_spread_reduced_model_control_perfect_foresight_r3_card_10p5_plus_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "positive control, recorded so a later candidate on the same games can be bounded against it; week [1.5038, 8.3969] at 0.9990. A favourable interval is not a closing ground, so the cell stays open",
+      "closing_ground": null,
+      "description": "control_perfect_foresight_R3 at the Tuesday opener, card_10.5+, 2020-2025, accuracy points, week-blocked bootstrap 20000 samples seed 20260821",
+      "effect": 4.580153,
+      "effect_units": "accuracy_points",
+      "family": "mod18_big_spread_reduced_model_v1",
+      "interval": [
+        1.503759,
+        8.396947
+      ],
+      "league": "nfl",
+      "notes": "baseline 0.5115, ceiling 0.5573 on 15 changed picks",
+      "plain_summary": "The ceiling: what this year's picks would have scored if every pick this candidate changed had been right. It measures how much room the change had, not how well it did.",
+      "probability_positive": 0.999025,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/big_spread_reduced_model/20260910T041850Z + docs/big_spread_reduced_model.md",
+      "standard_error": 1.781306
+    },
+    "big_spread_reduced_model_control_perfect_foresight_r3_card_7p5_10_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "positive control, recorded so a later candidate on the same games can be bounded against it; week [0.9950, 5.7292] at 0.9990. A favourable interval is not a closing ground, so the cell stays open",
+      "closing_ground": null,
+      "description": "control_perfect_foresight_R3 at the Tuesday opener, card_7.5-10, 2020-2025, accuracy points, week-blocked bootstrap 20000 samples seed 20260821",
+      "effect": 3.092784,
+      "effect_units": "accuracy_points",
+      "family": "mod18_big_spread_reduced_model_v1",
+      "interval": [
+        0.995025,
+        5.729167
+      ],
+      "league": "nfl",
+      "notes": "baseline 0.5258, ceiling 0.5567 on 20 changed picks",
+      "plain_summary": "The ceiling: what this year's picks would have scored if every pick this candidate changed had been right. It measures how much room the change had, not how well it did.",
+      "probability_positive": 0.999025,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/big_spread_reduced_model/20260910T041850Z + docs/big_spread_reduced_model.md",
+      "standard_error": 1.235149
+    },
+    "big_spread_reduced_model_control_perfect_foresight_r3_card_overall_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "positive control, recorded so a later candidate on the same games can be bounded against it; week [0.3919, 1.2882] at 1.0000. A favourable interval is not a closing ground, so the cell stays open",
+      "closing_ground": null,
+      "description": "control_perfect_foresight_R3 at the Tuesday opener, card_overall, 2020-2025, accuracy points, week-blocked bootstrap 20000 samples seed 20260821",
+      "effect": 0.798403,
+      "effect_units": "accuracy_points",
+      "family": "mod18_big_spread_reduced_model_v1",
+      "interval": [
+        0.391901,
+        1.288157
+      ],
+      "league": "nfl",
+      "notes": "baseline 0.5689, ceiling 0.5768 on 35 changed picks",
+      "plain_summary": "The ceiling: what this year's picks would have scored if every pick this candidate changed had been right. It measures how much room the change had, not how well it did.",
+      "probability_positive": 0.999975,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/big_spread_reduced_model/20260910T041850Z + docs/big_spread_reduced_model.md",
+      "standard_error": 0.239231
+    },
+    "big_spread_reduced_model_control_perfect_foresight_r3_standalone_10p5_plus_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "positive control, recorded so a later candidate on the same games can be bounded against it; week [9.9237, 22.6891] at 1.0000. A favourable interval is not a closing ground, so the cell stays open",
+      "closing_ground": null,
+      "description": "control_perfect_foresight_R3 at the Tuesday opener, standalone_10.5+, 2020-2025, accuracy points, week-blocked bootstrap 20000 samples seed 20260821",
+      "effect": 16.030534,
+      "effect_units": "accuracy_points",
+      "family": "mod18_big_spread_reduced_model_v1",
+      "interval": [
+        9.923664,
+        22.689076
+      ],
+      "league": "nfl",
+      "notes": "baseline 0.4733, ceiling 0.6336 on 38 changed picks",
+      "plain_summary": "The ceiling: what this year's picks would have scored if every pick this candidate changed had been right. It measures how much room the change had, not how well it did.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/big_spread_reduced_model/20260910T041850Z + docs/big_spread_reduced_model.md",
+      "standard_error": 3.256372
+    },
+    "big_spread_reduced_model_control_perfect_foresight_r3_standalone_7p5_10_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "positive control, recorded so a later candidate on the same games can be bounded against it; week [5.1813, 13.8614] at 1.0000. A favourable interval is not a closing ground, so the cell stays open",
+      "closing_ground": null,
+      "description": "control_perfect_foresight_R3 at the Tuesday opener, standalone_7.5-10, 2020-2025, accuracy points, week-blocked bootstrap 20000 samples seed 20260821",
+      "effect": 9.278351,
+      "effect_units": "accuracy_points",
+      "family": "mod18_big_spread_reduced_model_v1",
+      "interval": [
+        5.181347,
+        13.861386
+      ],
+      "league": "nfl",
+      "notes": "baseline 0.5155, ceiling 0.6082 on 49 changed picks",
+      "plain_summary": "The ceiling: what this year's picks would have scored if every pick this candidate changed had been right. It measures how much room the change had, not how well it did.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/big_spread_reduced_model/20260910T041850Z + docs/big_spread_reduced_model.md",
+      "standard_error": 2.208888
+    },
+    "big_spread_reduced_model_control_perfect_foresight_r3_standalone_overall_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "positive control, recorded so a later candidate on the same games can be bounded against it; week [1.8385, 3.3820] at 1.0000. A favourable interval is not a closing ground, so the cell stays open",
+      "closing_ground": null,
+      "description": "control_perfect_foresight_R3 at the Tuesday opener, standalone_overall, 2020-2025, accuracy points, week-blocked bootstrap 20000 samples seed 20260821",
+      "effect": 2.59481,
+      "effect_units": "accuracy_points",
+      "family": "mod18_big_spread_reduced_model_v1",
+      "interval": [
+        1.838477,
+        3.381963
+      ],
+      "league": "nfl",
+      "notes": "baseline 0.5456, ceiling 0.5715 on 87 changed picks",
+      "plain_summary": "The ceiling: what this year's picks would have scored if every pick this candidate changed had been right. It measures how much room the change had, not how well it did.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/big_spread_reduced_model/20260910T041850Z + docs/big_spread_reduced_model.md",
+      "standard_error": 0.395283
+    },
+    "big_spread_reduced_model_r1_card_10p5_plus_2020_2025": {
+      "category": "modeling",
+      "classification": "bounded_by_control",
+      "classification_evidence": "the perfect-foresight control on this arm's own 10.5+ flip set resolves +4.58 accuracy points at probability_positive 0.9990 and the market-move control resolves +13.30 at 0.9978, so the instrument detects effects of that size here; this cell's week [-8.2645, 3.4965] and season [-7.0796, 1.4085] both exclude the predeclared +5.3 magnitude and the point estimate is -2.2901. This bounds the SIZE of the effect at 10.5+ through the card; it does not say the effect is zero and it does not close the mechanism, whose standalone cell stays open",
+      "closing_ground": "positive_control_bound",
+      "description": "R1 (season form plus power rating alone pick the side on spreads of 10.5 or more) minus the served model, forced-pick accuracy at the Tuesday opener, card surface, 10.5+ lines, 2020-2025, week-blocked bootstrap 20000 samples seed 20260821",
+      "effect": -2.290076,
+      "effect_units": "accuracy_points",
+      "family": "mod18_big_spread_reduced_model_v1",
+      "interval": [
+        -8.264463,
+        3.496503
+      ],
+      "league": "nfl",
+      "notes": "served 0.5115 vs candidate 0.4885, 15 picks changed; season-blocked [-7.0796, 1.4085] at 0.1419; Brier 0.25657 -> 0.25278; home-pick share 0.6107 -> 0.6641 against a home cover rate of 0.5802; reliability field is this arm's own split-half correlation at 10.5+",
+      "plain_summary": "On the biggest spreads the model has been picking barely better than a coin flip. This test lets season form plus power rating alone pick the side on spreads of 10.5 or more, and compares the whole season's picks with what was actually played.",
+      "probability_positive": 0.2193,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.589695,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/big_spread_reduced_model/20260910T041850Z + docs/big_spread_reduced_model.md",
+      "standard_error": 2.987525
+    },
+    "big_spread_reduced_model_r1_card_overall_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "week [-0.7227, 0.3289] at probability_positive 0.2185; season [-0.5348, 0.1383] at 0.1419. Neither predeclared terminal ground holds, and an interval containing zero closes nothing",
+      "closing_ground": null,
+      "description": "R1 (season form plus power rating alone pick the side on spreads of 10.5 or more) minus the served model, forced-pick accuracy at the Tuesday opener, card surface, overall lines, 2020-2025, week-blocked bootstrap 20000 samples seed 20260821",
+      "effect": -0.199601,
+      "effect_units": "accuracy_points",
+      "family": "mod18_big_spread_reduced_model_v1",
+      "interval": [
+        -0.722733,
+        0.328947
+      ],
+      "league": "nfl",
+      "notes": "served 0.5689 vs candidate 0.5669, 15 picks changed; season-blocked [-0.5348, 0.1383] at 0.1419; Brier 0.24696 -> 0.24663; home-pick share 0.5017 -> 0.5063 against a home cover rate of 0.4963; reliability field is this arm's own split-half correlation at 10.5+",
+      "plain_summary": "On the biggest spreads the model has been picking barely better than a coin flip. This test lets season form plus power rating alone pick the side on spreads of 10.5 or more, and compares the whole season's picks with what was actually played.",
+      "probability_positive": 0.2185,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.589695,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/big_spread_reduced_model/20260910T041850Z + docs/big_spread_reduced_model.md",
+      "standard_error": 0.25757
+    },
+    "big_spread_reduced_model_r1_standalone_10p5_plus_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "week [-6.1069, 12.0301] at probability_positive 0.7484; season [-5.0847, 14.6154] at 0.7087. Neither predeclared terminal ground holds, and an interval containing zero closes nothing",
+      "closing_ground": null,
+      "description": "R1 (season form plus power rating alone pick the side on spreads of 10.5 or more) minus the served model, forced-pick accuracy at the Tuesday opener, standalone surface, 10.5+ lines, 2020-2025, week-blocked bootstrap 20000 samples seed 20260821",
+      "effect": 3.053435,
+      "effect_units": "accuracy_points",
+      "family": "mod18_big_spread_reduced_model_v1",
+      "interval": [
+        -6.10687,
+        12.030075
+      ],
+      "league": "nfl",
+      "notes": "served 0.4733 vs candidate 0.5038, 38 picks changed; season-blocked [-5.0847, 14.6154] at 0.7087; Brier 0.26130 -> 0.25083; home-pick share 0.5878 -> 0.6794 against a home cover rate of 0.5802; reliability field is this arm's own split-half correlation at 10.5+",
+      "plain_summary": "On the biggest spreads the model has been picking barely better than a coin flip. This test lets season form plus power rating alone pick the side on spreads of 10.5 or more, and compares the whole season's picks with what was actually played.",
+      "probability_positive": 0.74845,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.589695,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/big_spread_reduced_model/20260910T041850Z + docs/big_spread_reduced_model.md",
+      "standard_error": 4.597401
+    },
+    "big_spread_reduced_model_r1_standalone_overall_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "week [-0.5330, 1.0195] at probability_positive 0.7501; season [-0.4560, 1.1711] at 0.7087. Neither predeclared terminal ground holds, and an interval containing zero closes nothing",
+      "closing_ground": null,
+      "description": "R1 (season form plus power rating alone pick the side on spreads of 10.5 or more) minus the served model, forced-pick accuracy at the Tuesday opener, standalone surface, overall lines, 2020-2025, week-blocked bootstrap 20000 samples seed 20260821",
+      "effect": 0.266134,
+      "effect_units": "accuracy_points",
+      "family": "mod18_big_spread_reduced_model_v1",
+      "interval": [
+        -0.532978,
+        1.019503
+      ],
+      "league": "nfl",
+      "notes": "served 0.5456 vs candidate 0.5482, 38 picks changed; season-blocked [-0.4560, 1.1711] at 0.7087; Brier 0.25158 -> 0.25067; home-pick share 0.4331 -> 0.4411 against a home cover rate of 0.4963; reliability field is this arm's own split-half correlation at 10.5+",
+      "plain_summary": "On the biggest spreads the model has been picking barely better than a coin flip. This test lets season form plus power rating alone pick the side on spreads of 10.5 or more, and compares the whole season's picks with what was actually played.",
+      "probability_positive": 0.75015,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.589695,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/big_spread_reduced_model/20260910T041850Z + docs/big_spread_reduced_model.md",
+      "standard_error": 0.394903
+    },
+    "big_spread_reduced_model_r2_card_10p5_plus_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "week [-4.0323, 7.0312] at probability_positive 0.7036; season [-2.8846, 5.4217] at 0.6947. Neither predeclared terminal ground holds, and an interval containing zero closes nothing",
+      "closing_ground": null,
+      "description": "R2 (the two blocks with the best recent record on big spreads pick the side there) minus the served model, forced-pick accuracy at the Tuesday opener, card surface, 10.5+ lines, 2020-2025, week-blocked bootstrap 20000 samples seed 20260821",
+      "effect": 1.526718,
+      "effect_units": "accuracy_points",
+      "family": "mod18_big_spread_reduced_model_v1",
+      "interval": [
+        -4.032258,
+        7.03125
+      ],
+      "league": "nfl",
+      "notes": "served 0.5115 vs candidate 0.5267, 14 picks changed; season-blocked [-2.8846, 5.4217] at 0.6947; Brier 0.25657 -> 0.25155; home-pick share 0.6107 -> 0.6718 against a home cover rate of 0.5802; reliability field is this arm's own split-half correlation at 10.5+",
+      "plain_summary": "On the biggest spreads the model has been picking barely better than a coin flip. This test lets the two blocks with the best recent record on big spreads pick the side there, and compares the whole season's picks with what was actually played.",
+      "probability_positive": 0.703575,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.206987,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/big_spread_reduced_model/20260910T041850Z + docs/big_spread_reduced_model.md",
+      "standard_error": 2.827218
+    },
+    "big_spread_reduced_model_r2_card_overall_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "week [-0.3358, 0.6094] at probability_positive 0.7020; season [-0.1901, 0.6156] at 0.6947. Neither predeclared terminal ground holds, and an interval containing zero closes nothing",
+      "closing_ground": null,
+      "description": "R2 (the two blocks with the best recent record on big spreads pick the side there) minus the served model, forced-pick accuracy at the Tuesday opener, card surface, overall lines, 2020-2025, week-blocked bootstrap 20000 samples seed 20260821",
+      "effect": 0.133067,
+      "effect_units": "accuracy_points",
+      "family": "mod18_big_spread_reduced_model_v1",
+      "interval": [
+        -0.335796,
+        0.609354
+      ],
+      "league": "nfl",
+      "notes": "served 0.5689 vs candidate 0.5702, 14 picks changed; season-blocked [-0.1901, 0.6156] at 0.6947; Brier 0.24696 -> 0.24653; home-pick share 0.5017 -> 0.5070 against a home cover rate of 0.4963; reliability field is this arm's own split-half correlation at 10.5+",
+      "plain_summary": "On the biggest spreads the model has been picking barely better than a coin flip. This test lets the two blocks with the best recent record on big spreads pick the side there, and compares the whole season's picks with what was actually played.",
+      "probability_positive": 0.702025,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.206987,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/big_spread_reduced_model/20260910T041850Z + docs/big_spread_reduced_model.md",
+      "standard_error": 0.250912
+    },
+    "big_spread_reduced_model_r2_standalone_10p5_plus_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "week [-2.9630, 13.2867] at probability_positive 0.9012; season [-2.7273, 14.7826] at 0.8962. Neither predeclared terminal ground holds, and an interval containing zero closes nothing",
+      "closing_ground": null,
+      "description": "R2 (the two blocks with the best recent record on big spreads pick the side there) minus the served model, forced-pick accuracy at the Tuesday opener, standalone surface, 10.5+ lines, 2020-2025, week-blocked bootstrap 20000 samples seed 20260821",
+      "effect": 5.343511,
+      "effect_units": "accuracy_points",
+      "family": "mod18_big_spread_reduced_model_v1",
+      "interval": [
+        -2.962963,
+        13.286713
+      ],
+      "league": "nfl",
+      "notes": "served 0.4733 vs candidate 0.5267, 35 picks changed; season-blocked [-2.7273, 14.7826] at 0.8962; Brier 0.26130 -> 0.25280; home-pick share 0.5878 -> 0.6870 against a home cover rate of 0.5802; reliability field is this arm's own split-half correlation at 10.5+",
+      "plain_summary": "On the biggest spreads the model has been picking barely better than a coin flip. This test lets the two blocks with the best recent record on big spreads pick the side there, and compares the whole season's picks with what was actually played.",
+      "probability_positive": 0.901175,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.206987,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/big_spread_reduced_model/20260910T041850Z + docs/big_spread_reduced_model.md",
+      "standard_error": 4.137275
+    },
+    "big_spread_reduced_model_r2_standalone_overall_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "week [-0.2637, 1.1881] at probability_positive 0.8992; season [-0.2558, 1.1984] at 0.8962. Neither predeclared terminal ground holds, and an interval containing zero closes nothing",
+      "closing_ground": null,
+      "description": "R2 (the two blocks with the best recent record on big spreads pick the side there) minus the served model, forced-pick accuracy at the Tuesday opener, standalone surface, overall lines, 2020-2025, week-blocked bootstrap 20000 samples seed 20260821",
+      "effect": 0.465735,
+      "effect_units": "accuracy_points",
+      "family": "mod18_big_spread_reduced_model_v1",
+      "interval": [
+        -0.263683,
+        1.188138
+      ],
+      "league": "nfl",
+      "notes": "served 0.5456 vs candidate 0.5502, 35 picks changed; season-blocked [-0.2558, 1.1984] at 0.8962; Brier 0.25158 -> 0.25084; home-pick share 0.4331 -> 0.4418 against a home cover rate of 0.4963; reliability field is this arm's own split-half correlation at 10.5+",
+      "plain_summary": "On the biggest spreads the model has been picking barely better than a coin flip. This test lets the two blocks with the best recent record on big spreads pick the side there, and compares the whole season's picks with what was actually played.",
+      "probability_positive": 0.899175,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.206987,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/big_spread_reduced_model/20260910T041850Z + docs/big_spread_reduced_model.md",
+      "standard_error": 0.363481
+    },
+    "big_spread_reduced_model_r3_card_10p5_plus_2020_2025": {
+      "category": "modeling",
+      "classification": "bounded_by_control",
+      "classification_evidence": "the perfect-foresight control on this arm's own 10.5+ flip set resolves +4.58 accuracy points at probability_positive 0.9990 and the market-move control resolves +13.30 at 0.9978, so the instrument detects effects of that size here; this cell's week [-8.2645, 3.4965] and season [-7.0796, 1.4085] both exclude the predeclared +5.3 magnitude and the point estimate is -2.2901. This bounds the SIZE of the effect at 10.5+ through the card; it does not say the effect is zero and it does not close the mechanism, whose standalone cell stays open",
+      "closing_ground": "positive_control_bound",
+      "description": "R3 (season form plus power rating alone pick the side on spreads of 7.5 or more) minus the served model, forced-pick accuracy at the Tuesday opener, card surface, 10.5+ lines, 2020-2025, week-blocked bootstrap 20000 samples seed 20260821",
+      "effect": -2.290076,
+      "effect_units": "accuracy_points",
+      "family": "mod18_big_spread_reduced_model_v1",
+      "interval": [
+        -8.264463,
+        3.496503
+      ],
+      "league": "nfl",
+      "notes": "served 0.5115 vs candidate 0.4885, 15 picks changed; season-blocked [-7.0796, 1.4085] at 0.1419; Brier 0.25657 -> 0.25297; home-pick share 0.6107 -> 0.6641 against a home cover rate of 0.5802; reliability field is this arm's own split-half correlation at 10.5+",
+      "plain_summary": "On the biggest spreads the model has been picking barely better than a coin flip. This test lets season form plus power rating alone pick the side on spreads of 7.5 or more, and compares the whole season's picks with what was actually played.",
+      "probability_positive": 0.2193,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.589695,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/big_spread_reduced_model/20260910T041850Z + docs/big_spread_reduced_model.md",
+      "standard_error": 2.987525
+    },
+    "big_spread_reduced_model_r3_card_7p5_10_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "week [-8.8670, 0.5155] at probability_positive 0.0401; season [-8.8235, 0.0000] at 0.0288. Neither predeclared terminal ground holds, and an interval containing zero closes nothing",
+      "closing_ground": null,
+      "description": "R3 (season form plus power rating alone pick the side on spreads of 7.5 or more) minus the served model, forced-pick accuracy at the Tuesday opener, card surface, 7.5-10 lines, 2020-2025, week-blocked bootstrap 20000 samples seed 20260821",
+      "effect": -4.123711,
+      "effect_units": "accuracy_points",
+      "family": "mod18_big_spread_reduced_model_v1",
+      "interval": [
+        -8.866995,
+        0.515464
+      ],
+      "league": "nfl",
+      "notes": "served 0.5258 vs candidate 0.4845, 20 picks changed; season-blocked [-8.8235, 0.0000] at 0.0288; Brier 0.25346 -> 0.25571; home-pick share 0.5567 -> 0.5567 against a home cover rate of 0.5258; reliability field is this arm's own split-half correlation at 10.5+",
+      "plain_summary": "On the biggest spreads the model has been picking barely better than a coin flip. This test lets season form plus power rating alone pick the side on spreads of 7.5 or more, and compares the whole season's picks with what was actually played.",
+      "probability_positive": 0.04015,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.589695,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/big_spread_reduced_model/20260910T041850Z + docs/big_spread_reduced_model.md",
+      "standard_error": 2.384734
+    },
+    "big_spread_reduced_model_r3_card_overall_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "week [-1.5926, 0.1313] at probability_positive 0.0442; season [-1.3870, -0.1350] at 0.0057. Neither predeclared terminal ground holds, and an interval containing zero closes nothing",
+      "closing_ground": null,
+      "description": "R3 (season form plus power rating alone pick the side on spreads of 7.5 or more) minus the served model, forced-pick accuracy at the Tuesday opener, card surface, overall lines, 2020-2025, week-blocked bootstrap 20000 samples seed 20260821",
+      "effect": -0.73187,
+      "effect_units": "accuracy_points",
+      "family": "mod18_big_spread_reduced_model_v1",
+      "interval": [
+        -1.592594,
+        0.131322
+      ],
+      "league": "nfl",
+      "notes": "served 0.5689 vs candidate 0.5615, 35 picks changed; season-blocked [-1.3870, -0.1350] at 0.0057; Brier 0.24696 -> 0.24694; home-pick share 0.5017 -> 0.5063 against a home cover rate of 0.4963; reliability field is this arm's own split-half correlation at 10.5+",
+      "plain_summary": "On the biggest spreads the model has been picking barely better than a coin flip. This test lets season form plus power rating alone pick the side on spreads of 7.5 or more, and compares the whole season's picks with what was actually played.",
+      "probability_positive": 0.044175,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.589695,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/big_spread_reduced_model/20260910T041850Z + docs/big_spread_reduced_model.md",
+      "standard_error": 0.430782
+    },
+    "big_spread_reduced_model_r3_standalone_10p5_plus_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "week [-6.1069, 12.0301] at probability_positive 0.7484; season [-5.0847, 14.6154] at 0.7087. Neither predeclared terminal ground holds, and an interval containing zero closes nothing",
+      "closing_ground": null,
+      "description": "R3 (season form plus power rating alone pick the side on spreads of 7.5 or more) minus the served model, forced-pick accuracy at the Tuesday opener, standalone surface, 10.5+ lines, 2020-2025, week-blocked bootstrap 20000 samples seed 20260821",
+      "effect": 3.053435,
+      "effect_units": "accuracy_points",
+      "family": "mod18_big_spread_reduced_model_v1",
+      "interval": [
+        -6.10687,
+        12.030075
+      ],
+      "league": "nfl",
+      "notes": "served 0.4733 vs candidate 0.5038, 38 picks changed; season-blocked [-5.0847, 14.6154] at 0.7087; Brier 0.26130 -> 0.25062; home-pick share 0.5878 -> 0.6794 against a home cover rate of 0.5802; reliability field is this arm's own split-half correlation at 10.5+",
+      "plain_summary": "On the biggest spreads the model has been picking barely better than a coin flip. This test lets season form plus power rating alone pick the side on spreads of 7.5 or more, and compares the whole season's picks with what was actually played.",
+      "probability_positive": 0.74845,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.589695,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/big_spread_reduced_model/20260910T041850Z + docs/big_spread_reduced_model.md",
+      "standard_error": 4.597401
+    },
+    "big_spread_reduced_model_r3_standalone_7p5_10_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "week [-13.9896, 0.5182] at probability_positive 0.0347; season [-17.7083, 3.6842] at 0.1186. Neither predeclared terminal ground holds, and an interval containing zero closes nothing",
+      "closing_ground": null,
+      "description": "R3 (season form plus power rating alone pick the side on spreads of 7.5 or more) minus the served model, forced-pick accuracy at the Tuesday opener, standalone surface, 7.5-10 lines, 2020-2025, week-blocked bootstrap 20000 samples seed 20260821",
+      "effect": -6.701031,
+      "effect_units": "accuracy_points",
+      "family": "mod18_big_spread_reduced_model_v1",
+      "interval": [
+        -13.989637,
+        0.518202
+      ],
+      "league": "nfl",
+      "notes": "served 0.5155 vs candidate 0.4485, 49 picks changed; season-blocked [-17.7083, 3.6842] at 0.1186; Brier 0.26030 -> 0.25607; home-pick share 0.4227 -> 0.4278 against a home cover rate of 0.5258; reliability field is this arm's own split-half correlation at 10.5+",
+      "plain_summary": "On the biggest spreads the model has been picking barely better than a coin flip. This test lets season form plus power rating alone pick the side on spreads of 7.5 or more, and compares the whole season's picks with what was actually played.",
+      "probability_positive": 0.034675,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.589695,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/big_spread_reduced_model/20260910T041850Z + docs/big_spread_reduced_model.md",
+      "standard_error": 3.672593
+    },
+    "big_spread_reduced_model_r3_standalone_overall_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "week [-1.8060, 0.5972] at probability_positive 0.1656; season [-2.4374, 1.5504] at 0.2859. Neither predeclared terminal ground holds, and an interval containing zero closes nothing",
+      "closing_ground": null,
+      "description": "R3 (season form plus power rating alone pick the side on spreads of 7.5 or more) minus the served model, forced-pick accuracy at the Tuesday opener, standalone surface, overall lines, 2020-2025, week-blocked bootstrap 20000 samples seed 20260821",
+      "effect": -0.598802,
+      "effect_units": "accuracy_points",
+      "family": "mod18_big_spread_reduced_model_v1",
+      "interval": [
+        -1.80602,
+        0.597213
+      ],
+      "league": "nfl",
+      "notes": "served 0.5456 vs candidate 0.5396, 87 picks changed; season-blocked [-2.4374, 1.5504] at 0.2859; Brier 0.25158 -> 0.25010; home-pick share 0.4331 -> 0.4418 against a home cover rate of 0.4963; reliability field is this arm's own split-half correlation at 10.5+",
+      "plain_summary": "On the biggest spreads the model has been picking barely better than a coin flip. This test lets season form plus power rating alone pick the side on spreads of 7.5 or more, and compares the whole season's picks with what was actually played.",
+      "probability_positive": 0.16565,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.589695,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/big_spread_reduced_model/20260910T041850Z + docs/big_spread_reduced_model.md",
+      "standard_error": 0.612919
+    }
+  }
+}

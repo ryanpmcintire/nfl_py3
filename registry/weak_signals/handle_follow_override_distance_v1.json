@@ -1,0 +1,89 @@
+{
+  "family": "handle_follow_override_distance_v1",
+  "signals": {
+    "handle_follow_deep_override_only": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "The week-blocked interval's upper end is +0.78, above zero, so the sign is NOT resolved and wrong_sign_resolved is inadmissible; the foresight control bounds nothing at this scale.",
+      "closing_ground": null,
+      "description": "Following the heavy handle only when it overrides a pick the served card holds beyond the frozen median override distance, against the ungated rule as served",
+      "effect": -1.9231,
+      "effect_units": "accuracy_points",
+      "family": "handle_follow_override_distance_v1",
+      "interval": [
+        -4.908,
+        0.7752
+      ],
+      "league": "nfl",
+      "notes": "18 flips. Season-blocked P+ 0.2344. Week 1's ARI at LAC sat at override distance 0.138, near this group's maximum 0.1394.",
+      "plain_summary": "When the big money would overturn a pick the card felt sure about, following it has hurt: the card was 11-7 on those and following the money makes it 7-11.",
+      "probability_positive": 0.0914,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 40,
+      "sample_games": 260,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/handle_follow_override_distance/20260914T180713Z/summary.json",
+      "standard_error": null
+    },
+    "handle_follow_override_foresight_control": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A control, not a closure: it shows the harness resolves a 6.9-point effect at 19 flips and therefore bounds nothing at the 1.5-to-2-point scale the candidate arms live at.",
+      "closing_ground": null,
+      "description": "Perfect-foresight control on the heavy-handle flip set, frozen lane-S population",
+      "effect": 6.9231,
+      "effect_units": "accuracy_points",
+      "family": "handle_follow_override_distance_v1",
+      "interval": [
+        3.9216,
+        10.1476
+      ],
+      "league": "nfl",
+      "notes": "19 oracle flips.",
+      "plain_summary": "If every heavy-money flip went the right way, the card would gain about seven points - the yardstick showing the test can see a big effect at this number of games.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 40,
+      "sample_games": 260,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/handle_follow_override_distance/20260914T180713Z/summary.json",
+      "standard_error": null
+    },
+    "handle_follow_shallow_override_only": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign and no positive control bound; the foresight control on the same 19 flips reads +6.92 [+3.92, +10.15], well above this effect.",
+      "closing_ground": null,
+      "description": "Following the heavy handle only when it overrides a pick the served card holds within the frozen median override distance (0.0261), against the ungated rule as served",
+      "effect": 1.5385,
+      "effect_units": "accuracy_points",
+      "family": "handle_follow_override_distance_v1",
+      "interval": [
+        -1.5873,
+        4.6753
+      ],
+      "league": "nfl",
+      "notes": "Second look at the frozen lane-S population; H1 reproduced exactly (73 fires, 37 flips, +0.3846). Season-blocked P+ 0.8112.",
+      "plain_summary": "Following the big money helps when it only overturns a pick we were unsure about; on those the card was 7-12 and following the money makes it 12-7.",
+      "probability_positive": 0.8335,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 40,
+      "sample_games": 260,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/handle_follow_override_distance/20260914T180713Z/summary.json",
+      "standard_error": null
+    }
+  }
+}

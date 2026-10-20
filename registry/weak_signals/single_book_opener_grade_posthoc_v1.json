@@ -1,0 +1,117 @@
+{
+  "family": "single_book_opener_grade_posthoc_v1",
+  "signals": {
+    "single_book_opener_grade_posthoc_v1_sb_posthoc_different_line_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Post-hoc decomposition of the single-book opener grade, different_line",
+      "effect": -1.608579088472,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_posthoc_v1",
+      "interval": [
+        -3.457446808511,
+        0.246959646213
+      ],
+      "league": "nfl",
+      "notes": "POST-HOC and NOT predeclared: this decomposition was cut after the headline signs were visible, so it is recorded in its own family rather than pooled with the predeclared cells. Descriptive reuse of the same 2020-2025 archive at two different opener lines; no rotation window spent.",
+      "plain_summary": "On the games where the book's opening spread was a different number from the average across books, this row counts how many more games in a hundred the model gets right against the book's number.",
+      "probability_positive": 0.0375,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 103,
+      "sample_games": 373,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\posthoc.json",
+      "standard_error": 0.917381834772
+    },
+    "single_book_opener_grade_posthoc_v1_sb_posthoc_offset_value_book_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Post-hoc decomposition of the single-book opener grade, offset_value_book",
+      "effect": 0.201477501679,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_posthoc_v1",
+      "interval": [
+        -0.75447110727,
+        1.188138430752
+      ],
+      "league": "nfl",
+      "notes": "POST-HOC and NOT predeclared: this decomposition was cut after the headline signs were visible, so it is recorded in its own family rather than pooled with the predeclared cells. Descriptive reuse of the same 2020-2025 archive at two different opener lines; no rotation window spent.",
+      "plain_summary": "The card nudges every pick toward the home or away side by an amount learned from past weeks. This row counts how many more games in a hundred that nudge wins when every game is graded against one book's posted opening spread.",
+      "probability_positive": 0.657175,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1489,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\posthoc.json",
+      "standard_error": 0.495042733257
+    },
+    "single_book_opener_grade_posthoc_v1_sb_posthoc_offset_value_consensus_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Post-hoc decomposition of the single-book opener grade, offset_value_consensus",
+      "effect": 0.672494956288,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_posthoc_v1",
+      "interval": [
+        -0.199203187251,
+        1.546764421306
+      ],
+      "league": "nfl",
+      "notes": "POST-HOC and NOT predeclared: this decomposition was cut after the headline signs were visible, so it is recorded in its own family rather than pooled with the predeclared cells. Descriptive reuse of the same 2020-2025 archive at two different opener lines; no rotation window spent.",
+      "plain_summary": "The same nudge, counted against the average opening spread across books, which is the number the published history is graded on.",
+      "probability_positive": 0.9392,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1487,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\posthoc.json",
+      "standard_error": 0.437923457101
+    },
+    "single_book_opener_grade_posthoc_v1_sb_posthoc_same_line_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Post-hoc decomposition of the single-book opener grade, same_line",
+      "effect": -0.36231884058,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_posthoc_v1",
+      "interval": [
+        -0.900110281298,
+        0.091996320147
+      ],
+      "league": "nfl",
+      "notes": "POST-HOC and NOT predeclared: this decomposition was cut after the headline signs were visible, so it is recorded in its own family rather than pooled with the predeclared cells. Descriptive reuse of the same 2020-2025 archive at two different opener lines; no rotation window spent.",
+      "plain_summary": "On the games where the book's opening spread was the same number as the average across books, this row counts how many more games in a hundred the model gets right when it is refitted and graded against the book's number instead of the average.",
+      "probability_positive": 0.07335,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1104,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\posthoc.json",
+      "standard_error": 0.256071708919
+    }
+  }
+}

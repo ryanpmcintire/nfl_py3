@@ -1,0 +1,33 @@
+{
+  "family": "referee_assignments_crew_tilt",
+  "signals": {
+    "crew_tilt_stacked_on_served_nine_member_card_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Not terminal on any admissible ground. Neither blocking sits entirely below zero -- week 95% [-0.8011, +0.3976], season 95% [-0.8684, +0.3906] -- so wrong_sign_resolved is unavailable, and an interval containing zero is never grounds to close anything. Both parent cells carry non-zero split-half reliability (0.3226 and 0.3702), so no_split_half_reliability is unavailable. No positive control was run at this effect size. probability_positive 0.2610 week / 0.2828 season -- reported, never the binary contains-zero.",
+      "closing_ground": null,
+      "description": "The frozen crew_tilt_refresh_v1 additive probability tilt (cell C penalty_crew_holding_tilt_run_heavy -0.05995 when the home team is run-heavy and the referee's prior-season Offensive Holding rate is top-quartile; cell A penalty_crew_high_flag_heavy_underdog_opener +0.16772 when the referee's prior-season mean_total rate is top-quartile and the home team is getting at least 7 points), stacked on the SERVED NINE-MEMBER card overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3 at the OPENER grade, 1,537-game archive (1,503 non-push).",
+      "effect": -0.1996007984031989,
+      "effect_units": "accuracy_points",
+      "family": "referee_assignments_crew_tilt",
+      "interval": [
+        -0.8010680907877155,
+        0.3976143141153021
+      ],
+      "league": "nfl",
+      "notes": "Measured 2026-09-09, the FIRST run of nfl_ats.crew_tilt_refresh_overlay.run_stacked_backtest since commit b5f60b7 grew COMPOSITION_ORDER to nine names: the function had been raising DataContractError on the current archive because it rebuilt only a three-member members dict, and it now builds the served composition through nfl_ats.unserved_tilt_marginals.served_card_flip_set. Nine-member reconstruction verified: coach fade 107, division revenge 155, player arrests 24, bye edge 73, cold visitor 57, protection mismatch 111, interim coach 6, tank zone 17, precipitation 15, union 487, production accuracy 56.8862 percent -- all matching docs/served_card_harness.md exactly. Week- and season-blocked paired bootstrap, 20,000 samples, seed 20260901, within-week correlation zero. 23 stacked flips. This SUPERSEDES the three-member reading crew_tilt_stacked_on_production (+0.3327, probability_positive 0.8825) as the read against the card that is played; that cell stands for the card it measured. Correlated decomposition of its own two parent cells and of the played chain: standalone attribution only, never pooled as an independent arm. MINED-SEASONS context declared not a gate before it was run; no rotation-registry window spent.",
+      "plain_summary": "Nudging the pick when the referee's crew throws a lot of flags, or a lot of holding calls against a run-heavy home team, moved the picks we actually play from 56.9 percent to 56.7 percent right against the opening line over 2020-25, changing 23 picks. About 26 percent likely to help, so it leans against being worth playing but is not settled -- and on the shorter three-member card it had leaned the other way.",
+      "probability_positive": 0.260975,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.32260090874115543,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scratchpad/crew_tilt_backtest/20260910T001631Z/results.json (nfl_ats.crew_tilt_refresh_overlay backtest, 2026-09-09); docs/referee_assignments_capture.md",
+      "standard_error": null
+    }
+  }
+}

@@ -575,20 +575,36 @@ def _lead_sentence(
     )
 
 
-def _what_tips_it_sentence(game_explanation: GameExplanation | None) -> str:
+def _leans_against_pick(game_explanation: GameExplanation | None, pick_side: str) -> bool:
+    return (
+        game_explanation is not None
+        and bool(game_explanation.drivers)
+        and bool(pick_side)
+        and game_explanation.pick_team != pick_side
+    )
+
+
+def _what_tips_it_sentence(
+    game_explanation: GameExplanation | None, pick_side: str, overlays: OverlaysComponent
+) -> str:
 
     if game_explanation is None:
         return ""
     if not game_explanation.drivers:
         return "The model and the market largely agree here."
     phrases = _join_two_or_three([driver.phrase for driver in game_explanation.drivers[:2]])
+    if _leans_against_pick(game_explanation, pick_side):
+        sentence = f"The model's biggest inputs lean {game_explanation.pick_team}: {phrases}"
+        if not overlays.firings:
+            sentence += f", but taken together its inputs land on {pick_side}"
+        return sentence + "."
     sentence = f"What tips it: {phrases} favour {game_explanation.pick_team}"
     if game_explanation.offsets:
         sentence += f"; {game_explanation.offsets[0].phrase} pulls the other way"
     return sentence + "."
 
 
-def _situational_adjustment_sentence(overlays: OverlaysComponent) -> str:
+def _situational_adjustment_sentence(overlays: OverlaysComponent, carries_pick_to: str = "") -> str:
     if overlays.firings:
         names = _join_two_or_three(
             [
@@ -596,6 +612,8 @@ def _situational_adjustment_sentence(overlays: OverlaysComponent) -> str:
                 for firing in overlays.firings
             ]
         )
+        if carries_pick_to:
+            return f"Situational adjustments carry the pick to {carries_pick_to}: {names}."
         return f"Situational adjustment fired: {names}."
     if overlays.provenance == NO_DATA:
         return ""
@@ -672,8 +690,13 @@ def render_pick_text(
                 else _push_sentence(market_line.home_spread_line, push_probability)
             )
         ),
-        _what_tips_it_sentence(game_explanation),
-        _situational_adjustment_sentence(overlays),
+        _what_tips_it_sentence(game_explanation, model_probability.pick_side, overlays),
+        _situational_adjustment_sentence(
+            overlays,
+            model_probability.pick_side
+            if _leans_against_pick(game_explanation, model_probability.pick_side)
+            else "",
+        ),
         _freshness_clause(freshness),
         _REFRESH_SHORT_CLAUSES.get(refresh.status, ""),
     ]

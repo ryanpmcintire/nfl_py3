@@ -1,0 +1,313 @@
+{
+  "family": "injury_signal_on_refresh_card_2023_2025",
+  "signals": {
+    "injury_signal_on_refresh_card_composition_on_raw_2023_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither admissible closing ground applies: the week-blocked interval is not wholly on one side of zero and the flag's split-half reliability is not zero (0.0748 over 64 team-seasons, 2023-2024). Recorded unresolved_below_power and reported by probability_positive, per AGENTS.md.",
+      "closing_ground": null,
+      "description": "The served nine-member overlay composition versus the raw probability pick on the 2023-2025 intraday-archive window, graded at the Tuesday opener.",
+      "effect": 1.0012515644555695,
+      "effect_units": "accuracy_points",
+      "family": "injury_signal_on_refresh_card_2023_2025",
+      "interval": [
+        -3.186372248285817,
+        5.05050505050505
+      ],
+      "league": "nfl",
+      "notes": "Context cell for the two arms above, not an independent evaluation of the composition (it was selected on an overlapping window). 260 of 816 picks are complemented. Correlated decomposition: same 816-game 2023-2025 intraday archive and the same equal-book follow computation as sharp_book_movement_equal_2023_2025, and the same injury construction as movement_attribution_pop_threshold_injury. Never pool additively with the sharp_book_movement_*, observed_movement_* or movement_attribution_* entries. Week-blocked bootstrap, 20000 draws, seed 20260821; graded at margin_vs_open on the active model c657058903f3232b.",
+      "plain_summary": "The nine situational rules the card already runs are worth about one extra correct pick per hundred on the three seasons with an hourly line archive.",
+      "probability_positive": 0.686225,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/injury_signal_on_refresh_card/20260909T231954Z/metadata.json",
+      "standard_error": null
+    },
+    "injury_signal_on_refresh_card_follow_on_composed_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither admissible closing ground applies: the week-blocked interval is not wholly on one side of zero and the flag's split-half reliability is not zero (0.0748 over 64 team-seasons, 2023-2024). Recorded unresolved_below_power and reported by probability_positive, per AGENTS.md.",
+      "closing_ground": null,
+      "description": "The same late-week follow rule applied on top of the served nine-member overlay composition card instead of the raw pick, 2023-2025, graded at the opener.",
+      "effect": -0.37546933667083854,
+      "effect_units": "accuracy_points",
+      "family": "injury_signal_on_refresh_card_2023_2025",
+      "interval": [
+        -3.270440251572327,
+        2.5317257865267617
+      ],
+      "league": "nfl",
+      "notes": "Baseline is the nine-member composition overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3 rebuilt on the opener archive; 145 of 816 picks switch. Correlated decomposition: same 816-game 2023-2025 intraday archive and the same equal-book follow computation as sharp_book_movement_equal_2023_2025, and the same injury construction as movement_attribution_pop_threshold_injury. Never pool additively with the sharp_book_movement_*, observed_movement_* or movement_attribution_* entries. Week-blocked bootstrap, 20000 draws, seed 20260821; graded at margin_vs_open on the active model c657058903f3232b.",
+      "plain_summary": "Following a half-point late-week line move helps less once the card has already been through its nine overlay rules; measured on three seasons it is a coin flip leaning slightly against.",
+      "probability_positive": 0.399725,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.1008828675834187,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/injury_signal_on_refresh_card/20260909T231954Z/metadata.json",
+      "standard_error": null
+    },
+    "injury_signal_on_refresh_card_follow_on_raw_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither admissible closing ground applies: the week-blocked interval is not wholly on one side of zero and the flag's split-half reliability is not zero (0.0748 over 64 team-seasons, 2023-2024). Recorded unresolved_below_power and reported by probability_positive, per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Promoted late-week follow rule (equal-book Wednesday-to-deadline net move, |net| >= 0.5 takes the market side) applied to the raw probability pick at the Tuesday opener, 2023-2025 intraday archive, graded at the opener.",
+      "effect": 0.8760951188986232,
+      "effect_units": "accuracy_points",
+      "family": "injury_signal_on_refresh_card_2023_2025",
+      "interval": [
+        -1.879758209828209,
+        3.670886075949367
+      ],
+      "league": "nfl",
+      "notes": "Reproduction check of sharp_book_movement_equal_2023_2025 (+1.75219) under the CURRENT active model. The exposure reproduces exactly (329 flagged games, split-half exposure reliability 0.1008828675834187, both identical to the MKT-15 artifact); the delta differs only because the baseline pick stream changed with the 2026-09-07/08 model and served home-side offset. Correlated decomposition: same 816-game 2023-2025 intraday archive and the same equal-book follow computation as sharp_book_movement_equal_2023_2025, and the same injury construction as movement_attribution_pop_threshold_injury. Never pool additively with the sharp_book_movement_*, observed_movement_* or movement_attribution_* entries. Week-blocked bootstrap, 20000 draws, seed 20260821; graded at margin_vs_open on the active model c657058903f3232b.",
+      "plain_summary": "When the betting line moves at least half a point between Wednesday and the pick deadline, switching to the side the line moved toward wins about one extra pick in every hundred and fifteen.",
+      "probability_positive": 0.730525,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.1008828675834187,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/injury_signal_on_refresh_card/20260909T231954Z/metadata.json",
+      "standard_error": null
+    },
+    "injury_signal_on_refresh_card_tilt_on_served_2023": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither admissible closing ground applies: the week-blocked interval is not wholly on one side of zero and the flag's split-half reliability is not zero (0.0748 over 64 team-seasons, 2023-2024). Recorded unresolved_below_power and reported by probability_positive, per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Season stability: injury_signal_refresh_tilt on top of the served refresh card, 2023 only, graded at the Tuesday opener.",
+      "effect": -3.7593984962406015,
+      "effect_units": "accuracy_points",
+      "family": "injury_signal_on_refresh_card_2023_2025",
+      "interval": [
+        -9.25925925925926,
+        1.486988847583643
+      ],
+      "league": "nfl",
+      "notes": "100 of 272 picks would switch; official injury-report path. Correlated decomposition: same 816-game 2023-2025 intraday archive and the same equal-book follow computation as sharp_book_movement_equal_2023_2025, and the same injury construction as movement_attribution_pop_threshold_injury. Never pool additively with the sharp_book_movement_*, observed_movement_* or movement_attribution_* entries. Week-blocked bootstrap, 20000 draws, seed 20260821; graded at margin_vs_open on the active model c657058903f3232b.",
+      "plain_summary": "In 2023 the injury switch cost close to four correct picks per hundred on top of the card that was already played.",
+      "probability_positive": 0.08415,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.07475262663979636,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "artifacts/injury_signal_on_refresh_card/20260909T231954Z/metadata.json",
+      "standard_error": null
+    },
+    "injury_signal_on_refresh_card_tilt_on_served_2023_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither admissible closing ground applies: the week-blocked interval is not wholly on one side of zero and the flag's split-half reliability is not zero (0.0748 over 64 team-seasons, 2023-2024). Recorded unresolved_below_power and reported by probability_positive, per AGENTS.md.",
+      "closing_ground": null,
+      "description": "PRIMARY. injury_signal_refresh_tilt applied on top of the served refresh card (nine-member Tuesday composition then the half-point follow rule) at each game's own pick deadline, 2023-2025, graded at the Tuesday opener.",
+      "effect": -1.6270337922403004,
+      "effect_units": "accuracy_points",
+      "family": "injury_signal_on_refresh_card_2023_2025",
+      "interval": [
+        -4.708798017348204,
+        1.2547445508596904
+      ],
+      "league": "nfl",
+      "notes": "198 of 816 picks would switch (3.7 a week). Mechanism diagnostic measured the same session: the module's official path subtracts an own-week Tuesday-noon baseline that is empty for 812 of 816 games (only 187 of 27617 official filings 2020-2024 land Monday or Tuesday; 21249 land Friday), so what fires is the whole-week skill-position injury LEVEL, not the post-Tuesday news delta the module's docstring describes. Correlated decomposition: same 816-game 2023-2025 intraday archive and the same equal-book follow computation as sharp_book_movement_equal_2023_2025, and the same injury construction as movement_attribution_pop_threshold_injury. Never pool additively with the sharp_book_movement_*, observed_movement_* or movement_attribution_* entries. Week-blocked bootstrap, 20000 draws, seed 20260821; graded at margin_vs_open on the active model c657058903f3232b.",
+      "plain_summary": "Switching away from the team whose skill players are worse off on the injury report costs about one and a half correct picks per hundred once the card has already followed the late-week line move.",
+      "probability_positive": 0.139025,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.07475262663979636,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/injury_signal_on_refresh_card/20260909T231954Z/metadata.json",
+      "standard_error": null
+    },
+    "injury_signal_on_refresh_card_tilt_on_served_2024": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither admissible closing ground applies: the week-blocked interval is not wholly on one side of zero and the flag's split-half reliability is not zero (0.0748 over 64 team-seasons, 2023-2024). Recorded unresolved_below_power and reported by probability_positive, per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Season stability: injury_signal_refresh_tilt on top of the served refresh card, 2024 only, graded at the Tuesday opener.",
+      "effect": -1.1278195488721805,
+      "effect_units": "accuracy_points",
+      "family": "injury_signal_on_refresh_card_2023_2025",
+      "interval": [
+        -8.487084870848708,
+        5.7034220532319395
+      ],
+      "league": "nfl",
+      "notes": "98 of 272 picks would switch; official injury-report path. Correlated decomposition: same 816-game 2023-2025 intraday archive and the same equal-book follow computation as sharp_book_movement_equal_2023_2025, and the same injury construction as movement_attribution_pop_threshold_injury. Never pool additively with the sharp_book_movement_*, observed_movement_* or movement_attribution_* entries. Week-blocked bootstrap, 20000 draws, seed 20260821; graded at margin_vs_open on the active model c657058903f3232b.",
+      "plain_summary": "In 2024 the injury switch cost about one correct pick per hundred on top of the card that was already played.",
+      "probability_positive": 0.383325,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.07475262663979636,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "artifacts/injury_signal_on_refresh_card/20260909T231954Z/metadata.json",
+      "standard_error": null
+    },
+    "injury_signal_on_refresh_card_tilt_on_served_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither admissible closing ground applies: this arm changes no picks at all, so there is no sign to resolve, and the flag's split-half reliability is not zero on the seasons where it does fire. Recorded unresolved_below_power with probability_positive 0.5, the shared convention for a no-op candidate.",
+      "closing_ground": null,
+      "description": "Season stability: injury_signal_refresh_tilt on top of the served refresh card, 2025 only. The module is a literal no-op here.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "injury_signal_on_refresh_card_2023_2025",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Not a measured effect: an operational gap. The module selects the official path whenever the season has any official row, and every 2025 row in the local snapshot carries observed_at_basis week_proxy with a null date_modified, so the severity as-of filter admits nothing and net_score is 0.0 on all 272 games. probability_positive is 0.5 by the shared nfl_ats.evidence_conventions.probability_positive_from_draws convention for a no-op candidate (the 2026-09-08 fix), not a measured near-miss. Correlated decomposition: same 816-game 2023-2025 intraday archive as the sibling cells. Never pool additively with the sharp_book_movement_*, observed_movement_* or movement_attribution_* entries.",
+      "plain_summary": "For the 2025 season the injury switch never fires at all, so it changes no picks and wins and loses nothing.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "artifacts/injury_signal_on_refresh_card/20260909T231954Z/metadata.json",
+      "standard_error": null
+    },
+    "injury_signal_on_refresh_card_tilt_pft2025_2023_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither admissible closing ground applies: the week-blocked interval is not wholly on one side of zero and the flag's split-half reliability is not zero (0.0748 over 64 team-seasons, 2023-2024). Recorded unresolved_below_power and reported by probability_positive, per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Source variant: injury_signal_refresh_tilt on top of the served refresh card with 2025 forced through the module's ProFootballTalk headline fallback, 2023-2025, graded at the Tuesday opener.",
+      "effect": -1.1264080100125156,
+      "effect_units": "accuracy_points",
+      "family": "injury_signal_on_refresh_card_2023_2025",
+      "interval": [
+        -4.645545883451487,
+        2.261377642931633
+      ],
+      "league": "nfl",
+      "notes": "This is what the module would do if the local official snapshot carried no 2025 rows at all; 286 of 816 picks switch. Correlated decomposition: same 816-game 2023-2025 intraday archive and the same equal-book follow computation as sharp_book_movement_equal_2023_2025, and the same injury construction as movement_attribution_pop_threshold_injury. Never pool additively with the sharp_book_movement_*, observed_movement_* or movement_attribution_* entries. Week-blocked bootstrap, 20000 draws, seed 20260821; graded at margin_vs_open on the active model c657058903f3232b.",
+      "plain_summary": "Using injury news headlines instead of the official report for 2025 makes the injury switch less costly overall, but it still loses ground across the three seasons.",
+      "probability_positive": 0.257925,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.07475262663979636,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/injury_signal_on_refresh_card/20260909T231954Z/metadata.json",
+      "standard_error": null
+    },
+    "injury_signal_on_refresh_card_tilt_pft2025_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither admissible closing ground applies: the week-blocked interval is not wholly on one side of zero and the flag's split-half reliability is 0.333 over 32 team-seasons. Recorded unresolved_below_power and reported by probability_positive, per AGENTS.md.",
+      "closing_ground": null,
+      "description": "The ProFootballTalk headline fallback path alone: injury_signal_refresh_tilt on top of the served refresh card, 2025 only, graded at the Tuesday opener.",
+      "effect": 1.4981273408239701,
+      "effect_units": "accuracy_points",
+      "family": "injury_signal_on_refresh_card_2023_2025",
+      "interval": [
+        -3.690036900369004,
+        6.691449814126394
+      ],
+      "league": "nfl",
+      "notes": "The only positive lane in this battery and the only one whose signal is a genuine post-Tuesday news window (headline timestamps inside (Tuesday noon, deadline]), unlike the official path whose Tuesday baseline is empty. 88 of 272 picks switch. One season, mined out of a battery of eleven cells, no multiplicity correction claimed. Correlated decomposition: same 816-game 2023-2025 intraday archive and the same equal-book follow computation as sharp_book_movement_equal_2023_2025. Never pool additively with the sharp_book_movement_*, observed_movement_* or movement_attribution_* entries. Week-blocked bootstrap, 20000 draws, seed 20260821; graded at margin_vs_open on the active model c657058903f3232b.",
+      "plain_summary": "On 2025 alone, switching when injury-news headlines pile up on the picked team rather than the opponent gained about one and a half correct picks per hundred.",
+      "probability_positive": 0.716075,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.33329269890400326,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "artifacts/injury_signal_on_refresh_card/20260909T231954Z/metadata.json",
+      "standard_error": null
+    },
+    "injury_signal_on_refresh_card_tilt_precedence_2023_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither admissible closing ground applies: the week-blocked interval is not wholly on one side of zero and the flag's split-half reliability is not zero (0.0748 over 64 team-seasons, 2023-2024). Recorded unresolved_below_power and reported by probability_positive, per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Precedence variant: injury_signal_refresh_tilt applied to the Tuesday composition card first, with the half-point follow rule overriding wherever it fires, versus the served refresh card, 2023-2025, graded at the Tuesday opener.",
+      "effect": -1.7521902377972465,
+      "effect_units": "accuracy_points",
+      "family": "injury_signal_on_refresh_card_2023_2025",
+      "interval": [
+        -4.738290491719419,
+        1.1320754716981132
+      ],
+      "league": "nfl",
+      "notes": "Answers the precedence half of the decision: giving the follow rule the last word does not rescue the tilt. Correlated decomposition: same 816-game 2023-2025 intraday archive and the same equal-book follow computation as sharp_book_movement_equal_2023_2025, and the same injury construction as movement_attribution_pop_threshold_injury. Never pool additively with the sharp_book_movement_*, observed_movement_* or movement_attribution_* entries. Week-blocked bootstrap, 20000 draws, seed 20260821; graded at margin_vs_open on the active model c657058903f3232b.",
+      "plain_summary": "Letting the injury switch act first and the line-move rule overrule it is slightly worse than letting the injury switch act last; both are worse than not using it.",
+      "probability_positive": 0.119775,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.07475262663979636,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/injury_signal_on_refresh_card/20260909T231954Z/metadata.json",
+      "standard_error": null
+    },
+    "injury_signal_on_refresh_card_tilt_where_follow_silent_2023_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither admissible closing ground applies: the week-blocked interval is not wholly on one side of zero and the flag's split-half reliability is not zero (0.0748 over 64 team-seasons, 2023-2024). Recorded unresolved_below_power and reported by probability_positive, per AGENTS.md.",
+      "closing_ground": null,
+      "description": "The injury-only lane: injury_signal_refresh_tilt on top of the served refresh card restricted to games where the half-point follow rule did not fire, 2023-2025, graded at the Tuesday opener.",
+      "effect": -2.9535864978902953,
+      "effect_units": "accuracy_points",
+      "family": "injury_signal_on_refresh_card_2023_2025",
+      "interval": [
+        -7.933276999039003,
+        1.948051948051948
+      ],
+      "league": "nfl",
+      "notes": "This is the lane the challenger's classify_disagreement calls injury_only, the one the front-running story needs to work: 119 of the 198 firings live here. Correlated decomposition: same 816-game 2023-2025 intraday archive and the same equal-book follow computation as sharp_book_movement_equal_2023_2025, and the same injury construction as movement_attribution_pop_threshold_injury. Never pool additively with the sharp_book_movement_*, observed_movement_* or movement_attribution_* entries. Week-blocked bootstrap, 20000 draws, seed 20260821; graded at margin_vs_open on the active model c657058903f3232b.",
+      "plain_summary": "Even on the games where the betting line has not moved at all, switching away from the more injured team costs about three correct picks per hundred.",
+      "probability_positive": 0.119775,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.07475262663979636,
+      "sample_blocks": 54,
+      "sample_games": 474,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/injury_signal_on_refresh_card/20260909T231954Z/metadata.json",
+      "standard_error": null
+    }
+  }
+}

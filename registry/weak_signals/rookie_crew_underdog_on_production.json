@@ -1,0 +1,33 @@
+{
+  "family": "rookie_crew_underdog_on_production",
+  "signals": {
+    "rookie_crew_underdog_on_production": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval [-2.6906, +0.2217] accuracy points; the upper bound sits fractionally above zero, so this is NOT a RESOLVED whole-interval-below-zero wrong sign despite the low probability_positive (0.0456) -- the admissible ground requires the WHOLE interval on the wrong side, which this narrowly misses. No positive control was run against this specific effect size (the harness leak positive control, +44.3pp P+ 1.0, proves harness sensitivity only). Left-censoring disclosed: 17/29 (58.6%) referees show a 2015 debut (censored, unknown true tenure) vs 12/29 (41.4%) genuine 2016-2025 debuts; the Stage-2 population is restricted to season >= 2016 for exactly this reason.",
+      "closing_ground": null,
+      "description": "LEAD-31: take the UNDERDOG when the assigned officiating crew is in its first or second dataset-visible season (season >= 2016, excludes left-censored 2015), stacked on production weak_stack, opener-graded window [2020,2021].",
+      "effect": -1.0965,
+      "effect_units": "accuracy_points",
+      "family": "rookie_crew_underdog_on_production",
+      "interval": [
+        -2.6906,
+        0.2217
+      ],
+      "league": "nfl",
+      "notes": "docs/officials_crew_leads.md, LEAD-31 Stage 2. Late-week refresh-channel candidate (referee assignments publish Wednesday-Thursday, after the Tuesday lock); nfl_ats.crew_tilt_refresh_overlay is the existing live vehicle for this pattern, not wired here this session.",
+      "plain_summary": "Taking the underdog when a first- or second-year referee crew is assigned leans slightly the WRONG way in this sample -- not proven wrong, since the interval still brushes positive, but it does not support the predeclared chaos mechanism either.",
+      "probability_positive": 0.0456,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/officials_flags_on_production/rookie_underdog/20260905T104625Z/results.json",
+      "standard_error": null
+    }
+  }
+}

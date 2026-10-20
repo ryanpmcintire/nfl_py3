@@ -1,0 +1,565 @@
+{
+  "family": "lead95_unit1_609_looks",
+  "signals": {
+    "lead95_unit1_2023_accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "Regulation-margin fit with overtime settlement versus the usual four-term calculation: 2023 accuracy_points",
+      "effect": -1.28755364807,
+      "effect_units": "accuracy_points",
+      "family": "lead95_unit1_609_looks",
+      "interval": [
+        -4.70085470085,
+        2.13675213675
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This trains the pick calculation on the score at the end of regulation and treats overtime as a separate coin flip on tied games. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.2322,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead95_unit1.md",
+      "standard_error": null
+    },
+    "lead95_unit1_2023_brier": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "Regulation-margin fit with overtime settlement versus the usual four-term calculation: 2023 brier",
+      "effect": -1.61078376114e-05,
+      "effect_units": "brier_improvement",
+      "family": "lead95_unit1_609_looks",
+      "interval": [
+        -0.000264225910398,
+        0.000208053302213
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This trains the pick calculation on the score at the end of regulation and treats overtime as a separate coin flip on tied games. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.4711,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead95_unit1.md",
+      "standard_error": null
+    },
+    "lead95_unit1_2023_log_loss": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "Regulation-margin fit with overtime settlement versus the usual four-term calculation: 2023 log_loss",
+      "effect": -3.27844502123e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "lead95_unit1_609_looks",
+      "interval": [
+        -0.000530139301349,
+        0.000416390488676
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This trains the pick calculation on the score at the end of regulation and treats overtime as a separate coin flip on tied games. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.4702,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead95_unit1.md",
+      "standard_error": null
+    },
+    "lead95_unit1_2023_regulation_log_score": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "Regulation-margin fit with overtime settlement versus the usual four-term calculation: 2023 regulation_log_score",
+      "effect": 0.0815312298652,
+      "effect_units": "log_loss_improvement",
+      "family": "lead95_unit1_609_looks",
+      "interval": [
+        0.0312995641662,
+        0.135292267365
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This trains the pick calculation on the score at the end of regulation and treats overtime as a separate coin flip on tied games. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.9997,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead95_unit1.md",
+      "standard_error": null
+    },
+    "lead95_unit1_2023_rps": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "Regulation-margin fit with overtime settlement versus the usual four-term calculation: 2023 rps",
+      "effect": -0.00161799089093,
+      "effect_units": "rps_improvement",
+      "family": "lead95_unit1_609_looks",
+      "interval": [
+        -0.0126245282584,
+        0.00961992899573
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This trains the pick calculation on the score at the end of regulation and treats overtime as a separate coin flip on tied games. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.3902,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 233,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead95_unit1.md",
+      "standard_error": null
+    },
+    "lead95_unit1_2024_accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "Regulation-margin fit with overtime settlement versus the usual four-term calculation: 2024 accuracy_points",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "lead95_unit1_609_looks",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This trains the pick calculation on the score at the end of regulation and treats overtime as a separate coin flip on tied games. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead95_unit1.md",
+      "standard_error": null
+    },
+    "lead95_unit1_2024_brier": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "Regulation-margin fit with overtime settlement versus the usual four-term calculation: 2024 brier",
+      "effect": -0.0,
+      "effect_units": "brier_improvement",
+      "family": "lead95_unit1_609_looks",
+      "interval": [
+        -0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This trains the pick calculation on the score at the end of regulation and treats overtime as a separate coin flip on tied games. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead95_unit1.md",
+      "standard_error": null
+    },
+    "lead95_unit1_2024_log_loss": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "Regulation-margin fit with overtime settlement versus the usual four-term calculation: 2024 log_loss",
+      "effect": -0.0,
+      "effect_units": "log_loss_improvement",
+      "family": "lead95_unit1_609_looks",
+      "interval": [
+        -0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This trains the pick calculation on the score at the end of regulation and treats overtime as a separate coin flip on tied games. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead95_unit1.md",
+      "standard_error": null
+    },
+    "lead95_unit1_2024_regulation_log_score": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "Regulation-margin fit with overtime settlement versus the usual four-term calculation: 2024 regulation_log_score",
+      "effect": 0.158256022705,
+      "effect_units": "log_loss_improvement",
+      "family": "lead95_unit1_609_looks",
+      "interval": [
+        0.0574990672918,
+        0.268251598875
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This trains the pick calculation on the score at the end of regulation and treats overtime as a separate coin flip on tied games. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.9995,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead95_unit1.md",
+      "standard_error": null
+    },
+    "lead95_unit1_2024_rps": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "Regulation-margin fit with overtime settlement versus the usual four-term calculation: 2024 rps",
+      "effect": 0.00699440262574,
+      "effect_units": "rps_improvement",
+      "family": "lead95_unit1_609_looks",
+      "interval": [
+        -0.00619389067503,
+        0.02108739463
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This trains the pick calculation on the score at the end of regulation and treats overtime as a separate coin flip on tied games. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.8441,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead95_unit1.md",
+      "standard_error": null
+    },
+    "lead95_unit1_2025_accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "Regulation-margin fit with overtime settlement versus the usual four-term calculation: 2025 accuracy_points",
+      "effect": 0.431034482759,
+      "effect_units": "accuracy_points",
+      "family": "lead95_unit1_609_looks",
+      "interval": [
+        0.0,
+        1.31578947368
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This trains the pick calculation on the score at the end of regulation and treats overtime as a separate coin flip on tied games. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.82105,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead95_unit1.md",
+      "standard_error": null
+    },
+    "lead95_unit1_2025_brier": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "Regulation-margin fit with overtime settlement versus the usual four-term calculation: 2025 brier",
+      "effect": 0.000539867060056,
+      "effect_units": "brier_improvement",
+      "family": "lead95_unit1_609_looks",
+      "interval": [
+        -0.000419373269161,
+        0.00154102213021
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This trains the pick calculation on the score at the end of regulation and treats overtime as a separate coin flip on tied games. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.8619,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead95_unit1.md",
+      "standard_error": null
+    },
+    "lead95_unit1_2025_log_loss": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "Regulation-margin fit with overtime settlement versus the usual four-term calculation: 2025 log_loss",
+      "effect": 0.00106544849016,
+      "effect_units": "log_loss_improvement",
+      "family": "lead95_unit1_609_looks",
+      "interval": [
+        -0.000876663867944,
+        0.00310625002998
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This trains the pick calculation on the score at the end of regulation and treats overtime as a separate coin flip on tied games. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.855,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead95_unit1.md",
+      "standard_error": null
+    },
+    "lead95_unit1_2025_regulation_log_score": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "Regulation-margin fit with overtime settlement versus the usual four-term calculation: 2025 regulation_log_score",
+      "effect": 0.0878946349229,
+      "effect_units": "log_loss_improvement",
+      "family": "lead95_unit1_609_looks",
+      "interval": [
+        0.0001100234284,
+        0.202683028444
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This trains the pick calculation on the score at the end of regulation and treats overtime as a separate coin flip on tied games. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.9752,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead95_unit1.md",
+      "standard_error": null
+    },
+    "lead95_unit1_2025_rps": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "Regulation-margin fit with overtime settlement versus the usual four-term calculation: 2025 rps",
+      "effect": 0.0136675572514,
+      "effect_units": "rps_improvement",
+      "family": "lead95_unit1_609_looks",
+      "interval": [
+        -0.00995266221057,
+        0.0414527290233
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This trains the pick calculation on the score at the end of regulation and treats overtime as a separate coin flip on tied games. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.8501,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead95_unit1.md",
+      "standard_error": null
+    },
+    "lead95_unit1_pooled_accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "Regulation-margin fit with overtime settlement versus the usual four-term calculation: pooled accuracy_points",
+      "effect": -0.286944045911,
+      "effect_units": "accuracy_points",
+      "family": "lead95_unit1_609_looks",
+      "interval": [
+        -2.03193033382,
+        0.860832137733
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This trains the pick calculation on the score at the end of regulation and treats overtime as a separate coin flip on tied games. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.4283,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead95_unit1.md",
+      "standard_error": null
+    },
+    "lead95_unit1_pooled_brier": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "Regulation-margin fit with overtime settlement versus the usual four-term calculation: pooled brier",
+      "effect": 0.00017431281459,
+      "effect_units": "brier_improvement",
+      "family": "lead95_unit1_609_looks",
+      "interval": [
+        -0.000126531156662,
+        0.000726056111247
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This trains the pick calculation on the score at the end of regulation and treats overtime as a separate coin flip on tied games. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.75755,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead95_unit1.md",
+      "standard_error": null
+    },
+    "lead95_unit1_pooled_log_loss": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "Regulation-margin fit with overtime settlement versus the usual four-term calculation: pooled log_loss",
+      "effect": 0.000343680448806,
+      "effect_units": "log_loss_improvement",
+      "family": "lead95_unit1_609_looks",
+      "interval": [
+        -0.000264339857128,
+        0.00145687470087
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This trains the pick calculation on the score at the end of regulation and treats overtime as a separate coin flip on tied games. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.75295,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead95_unit1.md",
+      "standard_error": null
+    },
+    "lead95_unit1_pooled_regulation_log_score": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "Regulation-margin fit with overtime settlement versus the usual four-term calculation: pooled regulation_log_score",
+      "effect": 0.109187559725,
+      "effect_units": "log_loss_improvement",
+      "family": "lead95_unit1_609_looks",
+      "interval": [
+        0.0518163032268,
+        0.179592633066
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This trains the pick calculation on the score at the end of regulation and treats overtime as a separate coin flip on tied games. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead95_unit1.md",
+      "standard_error": null
+    },
+    "lead95_unit1_pooled_rps": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no mechanism closure or serving claim. All 609 declared looks reported.",
+      "closing_ground": null,
+      "description": "Regulation-margin fit with overtime settlement versus the usual four-term calculation: pooled rps",
+      "effect": 0.00633656070863,
+      "effect_units": "rps_improvement",
+      "family": "lead95_unit1_609_looks",
+      "interval": [
+        -0.00460845118064,
+        0.0207411678532
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This trains the pick calculation on the score at the end of regulation and treats overtime as a separate coin flip on tied games. The held-out comparison stays a research result; pool picks have not changed.",
+      "probability_positive": 0.8403,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead95_unit1.md",
+      "standard_error": null
+    }
+  }
+}

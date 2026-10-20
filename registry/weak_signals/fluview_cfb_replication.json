@@ -1,0 +1,61 @@
+{
+  "family": "fluview_cfb_replication",
+  "signals": {
+    "cfb_fluview_away_market_elevated_on_benchmark": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither terminal ground is met. wrong_sign_resolved requires the WHOLE week-blocked interval on the wrong side of zero; this one is [-1.5529, +0.6943] and crosses it. positive_control_bound requires the instrument to have been PROVEN able to detect an effect of the size in question; the control here detected a +48.598 point leak (P+ 1.000), which proves the 36-column ridge fit is not blind but says nothing about detecting a sub-1-point effect, and the week-blocked CI spans 2.2 points, wider than the NFL reading being replicated. Recorded unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "CFB cross-league replication of NFL fluview_away_market_elevated_on_production. Away school home-state as-of CDC FluView ILI in that state top decile, added as exactly one column to the frozen XLG-03 CFB benchmark arm (market_residual, ridge alpha 10, min 500 training games, weekly walk-forward refits) and measured as the paired candidate-minus-baseline forced-pick accuracy delta, close-proxy median-book spread_line grade. Population: XLG-03 clean-core seasons with measured non-zero FluView coverage (2017-2019, 2021-2025), n=5671 scored games, 575 flagged elevated, 801 feature-missing. Baseline accuracy 51.402 pct, candidate 50.979 pct. State panel built from 42 states (19 fetched from Delphi this session, 23 reused from the frozen NFL snapshot); school to venue state joined on CFBD ESPN team_id from cfbfastR-data team_info, no name join, 0 unresolved rows.",
+      "effect": -0.4232,
+      "effect_units": "accuracy_points",
+      "family": "fluview_cfb_replication",
+      "interval": [
+        -1.5529,
+        0.6943
+      ],
+      "league": "cfb",
+      "notes": "PRIMARY cell, mirroring the NFL family own away-primary assignment (docs/fluview_on_production.md section 4). Season-blocked secondary: [-1.2751, +0.4566], P+ 0.173. Permutation null (200 within-week draws) mean +0.152 pts; observed sits at the 10.5th percentile of its own null. ERA MAGNITUDES, NOT AVERAGED: 2017-2019 delta +0.527 pts P+ 0.707 (n=2087, only 72 flagged); 2021-2025 delta -0.977 pts P+ 0.063 (n=3584, 503 flagged). These two eras carry OPPOSITE SIGNS, so the pooled figure above averages across a sign flip and must not be read as one era magnitude. The NFL on-production away cell was itself near a coin flip (0.000 pts, P+ 0.403), so this CFB read does not contradict a positive NFL finding for this cell. Secondary read on the full clean core including the zero-coverage 2012-2016 seasons is reported in docs/fluview_cfb_replication.md section 9. No NFL evaluation window and no rotation window spent. Interval contains zero, which is not grounds for rejection.",
+      "plain_summary": "Flu is running hot in the visiting school home state. On college football this did not help the model pick sides.",
+      "probability_positive": 0.213,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.9856,
+      "sample_blocks": 122,
+      "sample_games": 5671,
+      "seasons": [
+        2017,
+        2025
+      ],
+      "source": "docs/fluview_cfb_replication.md; scripts/fluview_cfb_replication.py; artifacts/fluview_cfb_replication/20260901T185607Z/results.json (screen); artifacts/fluview_cfb_replication/20260901T185526Z/results.json (positive control); artifacts/fluview_cfb_replication/20260901T185447Z/results.json (null); artifacts/fluview_cfb_replication/coverage.json",
+      "standard_error": null
+    },
+    "cfb_fluview_home_market_elevated_on_benchmark": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither terminal ground is met. wrong_sign_resolved requires the WHOLE week-blocked interval on the wrong side of zero; this one is [-1.2723, +0.4605] and crosses it. positive_control_bound requires the instrument to have been PROVEN able to detect an effect of the size in question; the control detected a +48.598 point leak (P+ 1.000), proving the 36-column ridge fit is not blind, but it never demonstrated detection of a sub-1-point effect, and this week-blocked CI spans 1.7 points, wider than the +0.969 NFL reading being replicated. Recorded unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "CFB cross-league replication of NFL fluview_home_market_elevated_on_production (+0.969 accuracy points, P+ 0.792). Home school own-state as-of CDC FluView ILI in that state top decile, added as exactly one column to the frozen XLG-03 CFB benchmark arm (market_residual, ridge alpha 10, min 500 training games, weekly walk-forward refits) and measured as the paired candidate-minus-baseline forced-pick accuracy delta, close-proxy median-book spread_line grade. Population: XLG-03 clean-core seasons with measured non-zero FluView coverage (2017-2019, 2021-2025), n=5671 scored games, 579 flagged elevated, 796 feature-missing. Baseline accuracy 51.402 pct, candidate 51.014 pct. Underlying CFB state-week trait split-half reliability measured independently at Pearson r 0.9716, Spearman-Brown 0.9856 on 351 state-seasons, replicating the NFL trait 0.9814.",
+      "effect": -0.3879,
+      "effect_units": "accuracy_points",
+      "family": "fluview_cfb_replication",
+      "interval": [
+        -1.2723,
+        0.4605
+      ],
+      "league": "cfb",
+      "notes": "SECONDARY cell, mirroring the NFL family own home-secondary assignment (docs/fluview_on_production.md section 4); it is also the cell whose NFL on-production reading was the stronger of the two (+0.969 pts, P+ 0.792), so this is the direct replication test of that finding and it did NOT replicate in direction. Season-blocked secondary: [-1.1003, +0.2785], P+ 0.125. Permutation null (200 within-week draws) mean +0.116 pts; observed sits at the 10.5th percentile of its own null. ERA MAGNITUDES, NOT AVERAGED: 2017-2019 delta -0.767 pts P+ 0.205 (n=2087, 87 flagged); 2021-2025 delta -0.167 pts P+ 0.305 (n=3584, 492 flagged). Same sign in both eras, magnitude roughly 4.6x larger in the thinner earlier era. Secondary read on the full clean core including the zero-coverage 2012-2016 seasons: -0.246 pts, week 95 pct [-0.835, +0.340], P+ 0.195, n=8933. No NFL evaluation window and no rotation window spent; a CFB result never by itself changes an NFL card. Interval contains zero, which is not grounds for rejection.",
+      "plain_summary": "Flu is running hot in the home school own state. On college football this did not help the model pick sides.",
+      "probability_positive": 0.2,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.9856,
+      "sample_blocks": 122,
+      "sample_games": 5671,
+      "seasons": [
+        2017,
+        2025
+      ],
+      "source": "docs/fluview_cfb_replication.md; scripts/fluview_cfb_replication.py; artifacts/fluview_cfb_replication/20260901T185542Z/results.json (screen); artifacts/fluview_cfb_replication/20260901T185503Z/results.json (positive control); artifacts/fluview_cfb_replication/20260901T185447Z/results.json (null); artifacts/fluview_cfb_replication/coverage.json",
+      "standard_error": null
+    }
+  }
+}

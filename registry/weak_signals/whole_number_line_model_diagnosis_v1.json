@@ -1,0 +1,1125 @@
+{
+  "family": "whole_number_line_model_diagnosis_v1",
+  "signals": {
+    "whole_number_line_model_diagnosis_v1_wn_d0_gap_off_pool_minus_half_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Whole-number opener diagnosis D0 cell off_pool_minus_half, positive favours the whole-number domain",
+      "effect": -4.640992378208,
+      "effect_units": "accuracy_points",
+      "family": "whole_number_line_model_diagnosis_v1",
+      "interval": [
+        -9.755496525973,
+        0.445999509284
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a weakness lane P1 noticed POST-HOC and lane Q1 measured on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2, P1 and Q1 were selected on. The mechanism tests are predeclared in docs/whole_number_line_model_diagnosis.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "This row is about the model's own pick, not about the weekly adjustments. It is how many more games in a hundred the model gets right when the opening spread was a whole number than when it ended in a half point, which is the only kind the pool ever posts. A negative number means the model is weaker on whole numbers.",
+      "probability_positive": 0.036475,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ2\\cells.json",
+      "standard_error": 2.594746571463
+    },
+    "whole_number_line_model_diagnosis_v1_wn_d0_gap_quarter_minus_half_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Whole-number opener diagnosis D0 cell quarter_minus_half, positive favours the whole-number domain",
+      "effect": -6.532066508314,
+      "effect_units": "accuracy_points",
+      "family": "whole_number_line_model_diagnosis_v1",
+      "interval": [
+        -24.652696791088,
+        12.554986336101
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a weakness lane P1 noticed POST-HOC and lane Q1 measured on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2, P1 and Q1 were selected on. The mechanism tests are predeclared in docs/whole_number_line_model_diagnosis.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "This row is about the model's own pick, not about the weekly adjustments. It is how many more games in a hundred the model gets right when the opening spread was a whole number than when it ended in a half point, which is the only kind the pool ever posts. A negative number means the model is weaker on whole numbers.",
+      "probability_positive": 0.2496,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 876,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ2\\cells.json",
+      "standard_error": 9.493763361292
+    },
+    "whole_number_line_model_diagnosis_v1_wn_d0_gap_whole_minus_half_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Whole-number opener diagnosis D0 cell whole_minus_half, positive favours the whole-number domain",
+      "effect": -4.53844609364,
+      "effect_units": "accuracy_points",
+      "family": "whole_number_line_model_diagnosis_v1",
+      "interval": [
+        -9.612172457997,
+        0.484142165253
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a weakness lane P1 noticed POST-HOC and lane Q1 measured on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2, P1 and Q1 were selected on. The mechanism tests are predeclared in docs/whole_number_line_model_diagnosis.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "This row is about the model's own pick, not about the weekly adjustments. It is how many more games in a hundred the model gets right when the opening spread was a whole number than when it ended in a half point, which is the only kind the pool ever posts. A negative number means the model is weaker on whole numbers.",
+      "probability_positive": 0.0401,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1469,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ2\\cells.json",
+      "standard_error": 2.586840927427
+    },
+    "whole_number_line_model_diagnosis_v1_wn_d1b_gap_books_disagreed_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Whole-number opener diagnosis D1b cell whole_minus_half_books_disagreed, positive favours the whole-number domain",
+      "effect": -5.542019557607,
+      "effect_units": "accuracy_points",
+      "family": "whole_number_line_model_diagnosis_v1",
+      "interval": [
+        -11.119261082167,
+        -0.037098997732
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a weakness lane P1 noticed POST-HOC and lane Q1 measured on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2, P1 and Q1 were selected on. The mechanism tests are predeclared in docs/whole_number_line_model_diagnosis.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "This row is about the model's own pick, not about the weekly adjustments. It is how many more games in a hundred the model gets right when the opening spread was a whole number than when it ended in a half point, which is the only kind the pool ever posts. A negative number means the model is weaker on whole numbers. Measured separately for games where every sportsbook posted the same number and for games where they did not agree.",
+      "probability_positive": 0.024175,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1164,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ2\\cells.json",
+      "standard_error": 2.837639062441
+    },
+    "whole_number_line_model_diagnosis_v1_wn_d1b_gap_unanimous_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Whole-number opener diagnosis D1b cell whole_minus_half_unanimous, positive favours the whole-number domain",
+      "effect": -1.794871794872,
+      "effect_units": "accuracy_points",
+      "family": "whole_number_line_model_diagnosis_v1",
+      "interval": [
+        -13.587401638776,
+        9.7141091553
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a weakness lane P1 noticed POST-HOC and lane Q1 measured on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2, P1 and Q1 were selected on. The mechanism tests are predeclared in docs/whole_number_line_model_diagnosis.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "This row is about the model's own pick, not about the weekly adjustments. It is how many more games in a hundred the model gets right when the opening spread was a whole number than when it ended in a half point, which is the only kind the pool ever posts. A negative number means the model is weaker on whole numbers. Measured separately for games where every sportsbook posted the same number and for games where they did not agree.",
+      "probability_positive": 0.376,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 100,
+      "sample_games": 305,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ2\\cells.json",
+      "standard_error": 5.943433180835
+    },
+    "whole_number_line_model_diagnosis_v1_wn_d1c_every_line_books_disagreed_minus_unanimous_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Whole-number opener diagnosis D1c cell every_line_books_disagreed_minus_unanimous, positive favours the whole-number domain",
+      "effect": 4.194696078163,
+      "effect_units": "accuracy_points",
+      "family": "whole_number_line_model_diagnosis_v1",
+      "interval": [
+        -2.074252978772,
+        10.503503105071
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a weakness lane P1 noticed POST-HOC and lane Q1 measured on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2, P1 and Q1 were selected on. The mechanism tests are predeclared in docs/whole_number_line_model_diagnosis.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "This row is about the model's own pick, not about the weekly adjustments. It is how many more games in a hundred the model gets right when the opening spread was a whole number than when it ended in a half point, which is the only kind the pool ever posts. A negative number means the model is weaker on whole numbers. The two kinds of spread are first matched on how far apart the sportsbooks were, so a difference in how much the books disagreed cannot produce the answer.",
+      "probability_positive": 0.90635,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ2\\cells.json",
+      "standard_error": 3.182432954452
+    },
+    "whole_number_line_model_diagnosis_v1_wn_d1c_gap_standardised_by_dispersion_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Whole-number opener diagnosis D1c cell whole_minus_half_standardised_by_book_disagreement, positive favours the whole-number domain",
+      "effect": -4.786877593965,
+      "effect_units": "accuracy_points",
+      "family": "whole_number_line_model_diagnosis_v1",
+      "interval": [
+        -9.981948800551,
+        0.49734967567
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a weakness lane P1 noticed POST-HOC and lane Q1 measured on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2, P1 and Q1 were selected on. The mechanism tests are predeclared in docs/whole_number_line_model_diagnosis.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "This row is about the model's own pick, not about the weekly adjustments. It is how many more games in a hundred the model gets right when the opening spread was a whole number than when it ended in a half point, which is the only kind the pool ever posts. A negative number means the model is weaker on whole numbers. The two kinds of spread are first matched on how far apart the sportsbooks were, so a difference in how much the books disagreed cannot produce the answer.",
+      "probability_positive": 0.0405,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1469,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ2\\cells.json",
+      "standard_error": 2.672360429433
+    },
+    "whole_number_line_model_diagnosis_v1_wn_d1c_half_books_disagreed_minus_unanimous_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Whole-number opener diagnosis D1c cell half_books_disagreed_minus_unanimous, positive favours the whole-number domain",
+      "effect": 6.164942733722,
+      "effect_units": "accuracy_points",
+      "family": "whole_number_line_model_diagnosis_v1",
+      "interval": [
+        -0.788736397591,
+        13.339517584381
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a weakness lane P1 noticed POST-HOC and lane Q1 measured on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2, P1 and Q1 were selected on. The mechanism tests are predeclared in docs/whole_number_line_model_diagnosis.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "This row is about the model's own pick, not about the weekly adjustments. It is how many more games in a hundred the model gets right when the opening spread was a whole number than when it ended in a half point, which is the only kind the pool ever posts. A negative number means the model is weaker on whole numbers. The two kinds of spread are first matched on how far apart the sportsbooks were, so a difference in how much the books disagreed cannot produce the answer.",
+      "probability_positive": 0.95795,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 842,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ2\\cells.json",
+      "standard_error": 3.583661899322
+    },
+    "whole_number_line_model_diagnosis_v1_wn_d1c_whole_books_disagreed_minus_unanimous_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Whole-number opener diagnosis D1c cell whole_books_disagreed_minus_unanimous, positive favours the whole-number domain",
+      "effect": 2.417794970986,
+      "effect_units": "accuracy_points",
+      "family": "whole_number_line_model_diagnosis_v1",
+      "interval": [
+        -8.524665643615,
+        13.614464384608
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a weakness lane P1 noticed POST-HOC and lane Q1 measured on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2, P1 and Q1 were selected on. The mechanism tests are predeclared in docs/whole_number_line_model_diagnosis.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "This row is about the model's own pick, not about the weekly adjustments. It is how many more games in a hundred the model gets right when the opening spread was a whole number than when it ended in a half point, which is the only kind the pool ever posts. A negative number means the model is weaker on whole numbers. The two kinds of spread are first matched on how far apart the sportsbooks were, so a difference in how much the books disagreed cannot produce the answer.",
+      "probability_positive": 0.66355,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 627,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ2\\cells.json",
+      "standard_error": 5.670169940106
+    },
+    "whole_number_line_model_diagnosis_v1_wn_d2a_gap_away_from_the_key_numbers_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Whole-number opener diagnosis D2a cell whole_minus_half_away_from_the_key_numbers, positive favours the whole-number domain",
+      "effect": -6.395348837209,
+      "effect_units": "accuracy_points",
+      "family": "whole_number_line_model_diagnosis_v1",
+      "interval": [
+        -13.307350072868,
+        0.657300894671
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a weakness lane P1 noticed POST-HOC and lane Q1 measured on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2, P1 and Q1 were selected on. The mechanism tests are predeclared in docs/whole_number_line_model_diagnosis.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "This row is about the model's own pick, not about the weekly adjustments. It is how many more games in a hundred the model gets right when the opening spread was a whole number than when it ended in a half point, which is the only kind the pool ever posts. A negative number means the model is weaker on whole numbers. Split by whether the spread sat on one of the numbers football scores pile up on, or right beside it.",
+      "probability_positive": 0.038375,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 688,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ2\\cells.json",
+      "standard_error": 3.553739863232
+    },
+    "whole_number_line_model_diagnosis_v1_wn_d2a_half_beside_3_or_7_minus_other_half_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Whole-number opener diagnosis D2a cell half_beside_3_or_7_minus_other_half, positive favours the whole-number domain",
+      "effect": -1.243345474923,
+      "effect_units": "accuracy_points",
+      "family": "whole_number_line_model_diagnosis_v1",
+      "interval": [
+        -8.238484006551,
+        5.779747135814
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a weakness lane P1 noticed POST-HOC and lane Q1 measured on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2, P1 and Q1 were selected on. The mechanism tests are predeclared in docs/whole_number_line_model_diagnosis.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "This row is about the model's own pick. It is how many more games in a hundred the model gets right on spreads that sat on one of the numbers football scores pile up on than on the other spreads of the same kind. Split by whether the spread sat on one of the numbers football scores pile up on, or right beside it.",
+      "probability_positive": 0.359875,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 842,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ2\\cells.json",
+      "standard_error": 3.570530330332
+    },
+    "whole_number_line_model_diagnosis_v1_wn_d2a_whole_on_3_or_7_minus_other_whole_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Whole-number opener diagnosis D2a cell whole_on_3_or_7_minus_other_whole, positive favours the whole-number domain",
+      "effect": 2.355453560273,
+      "effect_units": "accuracy_points",
+      "family": "whole_number_line_model_diagnosis_v1",
+      "interval": [
+        -6.011479494026,
+        10.487759124404
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a weakness lane P1 noticed POST-HOC and lane Q1 measured on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2, P1 and Q1 were selected on. The mechanism tests are predeclared in docs/whole_number_line_model_diagnosis.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "This row is about the model's own pick. It is how many more games in a hundred the model gets right on spreads that sat on one of the numbers football scores pile up on than on the other spreads of the same kind. Split by whether the spread sat on one of the numbers football scores pile up on, or right beside it.",
+      "probability_positive": 0.71205,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 627,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ2\\cells.json",
+      "standard_error": 4.217666834074
+    },
+    "whole_number_line_model_diagnosis_v1_wn_d2a_whole_on_a_key_number_minus_other_whole_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Whole-number opener diagnosis D2a cell whole_on_key_number_minus_other_whole, positive favours the whole-number domain",
+      "effect": 2.484797436108,
+      "effect_units": "accuracy_points",
+      "family": "whole_number_line_model_diagnosis_v1",
+      "interval": [
+        -5.400717269509,
+        10.259359383629
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a weakness lane P1 noticed POST-HOC and lane Q1 measured on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2, P1 and Q1 were selected on. The mechanism tests are predeclared in docs/whole_number_line_model_diagnosis.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "This row is about the model's own pick. It is how many more games in a hundred the model gets right on spreads that sat on one of the numbers football scores pile up on than on the other spreads of the same kind. Split by whether the spread sat on one of the numbers football scores pile up on, or right beside it.",
+      "probability_positive": 0.734975,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 627,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ2\\cells.json",
+      "standard_error": 3.992695651622
+    },
+    "whole_number_line_model_diagnosis_v1_wn_d2b_gap_decided_by_a_point_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Whole-number opener diagnosis D2b cell whole_minus_half_margin_at_least_one_point, positive favours the whole-number domain",
+      "effect": -4.248166707535,
+      "effect_units": "accuracy_points",
+      "family": "whole_number_line_model_diagnosis_v1",
+      "interval": [
+        -9.703817289753,
+        1.06784949417
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a weakness lane P1 noticed POST-HOC and lane Q1 measured on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2, P1 and Q1 were selected on. The mechanism tests are predeclared in docs/whole_number_line_model_diagnosis.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "This row is about the model's own pick, not about the weekly adjustments. It is how many more games in a hundred the model gets right when the opening spread was a whole number than when it ended in a half point, which is the only kind the pool ever posts. A negative number means the model is weaker on whole numbers. Games that landed exactly on a whole-number spread are either taken out of both groups or put back in and counted as a result, instead of being thrown away from one group only.",
+      "probability_positive": 0.06025,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1388,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ2\\cells.json",
+      "standard_error": 2.738426999172
+    },
+    "whole_number_line_model_diagnosis_v1_wn_d2b_gap_pushes_reinstated_away_favourable_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Whole-number opener diagnosis D2b cell whole_minus_half_pushes_reinstated_away_favourable, positive favours the whole-number domain",
+      "effect": -4.489706447799,
+      "effect_units": "accuracy_points",
+      "family": "whole_number_line_model_diagnosis_v1",
+      "interval": [
+        -9.679854911282,
+        0.600496037405
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a weakness lane P1 noticed POST-HOC and lane Q1 measured on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2, P1 and Q1 were selected on. The mechanism tests are predeclared in docs/whole_number_line_model_diagnosis.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "This row is about the model's own pick, not about the weekly adjustments. It is how many more games in a hundred the model gets right when the opening spread was a whole number than when it ended in a half point, which is the only kind the pool ever posts. A negative number means the model is weaker on whole numbers. Games that landed exactly on a whole-number spread are either taken out of both groups or put back in and counted as a result, instead of being thrown away from one group only.",
+      "probability_positive": 0.044,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ2\\cells.json",
+      "standard_error": 2.62510631934
+    },
+    "whole_number_line_model_diagnosis_v1_wn_d2b_gap_pushes_reinstated_home_favourable_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Whole-number opener diagnosis D2b cell whole_minus_half_pushes_reinstated_home_favourable, positive favours the whole-number domain",
+      "effect": -4.792278308616,
+      "effect_units": "accuracy_points",
+      "family": "whole_number_line_model_diagnosis_v1",
+      "interval": [
+        -9.747405802074,
+        0.138906427985
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a weakness lane P1 noticed POST-HOC and lane Q1 measured on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2, P1 and Q1 were selected on. The mechanism tests are predeclared in docs/whole_number_line_model_diagnosis.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "This row is about the model's own pick, not about the weekly adjustments. It is how many more games in a hundred the model gets right when the opening spread was a whole number than when it ended in a half point, which is the only kind the pool ever posts. A negative number means the model is weaker on whole numbers. Games that landed exactly on a whole-number spread are either taken out of both groups or put back in and counted as a result, instead of being thrown away from one group only.",
+      "probability_positive": 0.0288,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ2\\cells.json",
+      "standard_error": 2.522015229333
+    },
+    "whole_number_line_model_diagnosis_v1_wn_d2e_gap_standardised_by_line_size_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Whole-number opener diagnosis D2e cell whole_minus_half_standardised_by_line_size, positive favours the whole-number domain",
+      "effect": -4.054971452579,
+      "effect_units": "accuracy_points",
+      "family": "whole_number_line_model_diagnosis_v1",
+      "interval": [
+        -9.513904783062,
+        1.702214196711
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a weakness lane P1 noticed POST-HOC and lane Q1 measured on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2, P1 and Q1 were selected on. The mechanism tests are predeclared in docs/whole_number_line_model_diagnosis.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "This row is about the model's own pick, not about the weekly adjustments. It is how many more games in a hundred the model gets right when the opening spread was a whole number than when it ended in a half point, which is the only kind the pool ever posts. A negative number means the model is weaker on whole numbers. The two kinds of spread are first matched on how big the spread was, so the key numbers sitting on whole numbers cannot produce the answer.",
+      "probability_positive": 0.082,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1360,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ2\\cells.json",
+      "standard_error": 2.882627194437
+    },
+    "whole_number_line_model_diagnosis_v1_wn_d3b_gap_moved_line_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Whole-number opener diagnosis D3b cell whole_minus_half_moved_line, positive favours the whole-number domain",
+      "effect": -1.903522852074,
+      "effect_units": "accuracy_points",
+      "family": "whole_number_line_model_diagnosis_v1",
+      "interval": [
+        -7.943768708147,
+        3.99769207749
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a weakness lane P1 noticed POST-HOC and lane Q1 measured on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2, P1 and Q1 were selected on. The mechanism tests are predeclared in docs/whole_number_line_model_diagnosis.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "This row is about the model's own pick, not about the weekly adjustments. It is how many more games in a hundred the model gets right when the opening spread was a whole number than when it ended in a half point, which is the only kind the pool ever posts. A negative number means the model is weaker on whole numbers. The model is trained against one week's market line and asked about the Tuesday opening line. This row matches the two kinds of spread on how far those two lines were apart.",
+      "probability_positive": 0.263725,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1098,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ2\\cells.json",
+      "standard_error": 3.034281732188
+    },
+    "whole_number_line_model_diagnosis_v1_wn_d3b_gap_same_line_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Whole-number opener diagnosis D3b cell whole_minus_half_same_line, positive favours the whole-number domain",
+      "effect": -12.448930545542,
+      "effect_units": "accuracy_points",
+      "family": "whole_number_line_model_diagnosis_v1",
+      "interval": [
+        -22.66298944707,
+        -1.691057535878
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a weakness lane P1 noticed POST-HOC and lane Q1 measured on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2, P1 and Q1 were selected on. The mechanism tests are predeclared in docs/whole_number_line_model_diagnosis.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "This row is about the model's own pick, not about the weekly adjustments. It is how many more games in a hundred the model gets right when the opening spread was a whole number than when it ended in a half point, which is the only kind the pool ever posts. A negative number means the model is weaker on whole numbers. The model is trained against one week's market line and asked about the Tuesday opening line. This row matches the two kinds of spread on how far those two lines were apart.",
+      "probability_positive": 0.01145,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 103,
+      "sample_games": 371,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ2\\cells.json",
+      "standard_error": 5.33476331965
+    },
+    "whole_number_line_model_diagnosis_v1_wn_d3b_gap_standardised_by_line_shift_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Whole-number opener diagnosis D3b cell whole_minus_half_standardised_by_line_substitution, positive favours the whole-number domain",
+      "effect": -4.887739162646,
+      "effect_units": "accuracy_points",
+      "family": "whole_number_line_model_diagnosis_v1",
+      "interval": [
+        -10.054227865724,
+        0.419796381342
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a weakness lane P1 noticed POST-HOC and lane Q1 measured on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2, P1 and Q1 were selected on. The mechanism tests are predeclared in docs/whole_number_line_model_diagnosis.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "This row is about the model's own pick, not about the weekly adjustments. It is how many more games in a hundred the model gets right when the opening spread was a whole number than when it ended in a half point, which is the only kind the pool ever posts. A negative number means the model is weaker on whole numbers. The model is trained against one week's market line and asked about the Tuesday opening line. This row matches the two kinds of spread on how far those two lines were apart.",
+      "probability_positive": 0.0385,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1469,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ2\\cells.json",
+      "standard_error": 2.631561212176
+    },
+    "whole_number_line_model_diagnosis_v1_wn_d3c_gap_edge_half_to_one_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Whole-number opener diagnosis D3c cell whole_minus_half_edge_half_to_one, positive favours the whole-number domain",
+      "effect": -0.305157155935,
+      "effect_units": "accuracy_points",
+      "family": "whole_number_line_model_diagnosis_v1",
+      "interval": [
+        -13.056120853096,
+        12.979193705741
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a weakness lane P1 noticed POST-HOC and lane Q1 measured on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2, P1 and Q1 were selected on. The mechanism tests are predeclared in docs/whole_number_line_model_diagnosis.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "This row is about the model's own pick, not about the weekly adjustments. It is how many more games in a hundred the model gets right when the opening spread was a whole number than when it ended in a half point, which is the only kind the pool ever posts. A negative number means the model is weaker on whole numbers. The two kinds of spread are first matched on how far the model thought the line was wrong, so a difference in how much the model had to say cannot produce the answer.",
+      "probability_positive": 0.466525,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 99,
+      "sample_games": 258,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ2\\cells.json",
+      "standard_error": 6.624097002249
+    },
+    "whole_number_line_model_diagnosis_v1_wn_d3c_gap_edge_one_to_two_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Whole-number opener diagnosis D3c cell whole_minus_half_edge_one_to_two, positive favours the whole-number domain",
+      "effect": -10.756226609885,
+      "effect_units": "accuracy_points",
+      "family": "whole_number_line_model_diagnosis_v1",
+      "interval": [
+        -19.86181135423,
+        -2.043876273028
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a weakness lane P1 noticed POST-HOC and lane Q1 measured on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2, P1 and Q1 were selected on. The mechanism tests are predeclared in docs/whole_number_line_model_diagnosis.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "This row is about the model's own pick, not about the weekly adjustments. It is how many more games in a hundred the model gets right when the opening spread was a whole number than when it ended in a half point, which is the only kind the pool ever posts. A negative number means the model is weaker on whole numbers. The two kinds of spread are first matched on how far the model thought the line was wrong, so a difference in how much the model had to say cannot produce the answer.",
+      "probability_positive": 0.00725,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 106,
+      "sample_games": 435,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ2\\cells.json",
+      "standard_error": 4.537600419269
+    },
+    "whole_number_line_model_diagnosis_v1_wn_d3c_gap_edge_over_two_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Whole-number opener diagnosis D3c cell whole_minus_half_edge_over_two, positive favours the whole-number domain",
+      "effect": -2.571176340764,
+      "effect_units": "accuracy_points",
+      "family": "whole_number_line_model_diagnosis_v1",
+      "interval": [
+        -11.769487932291,
+        6.623152680711
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a weakness lane P1 noticed POST-HOC and lane Q1 measured on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2, P1 and Q1 were selected on. The mechanism tests are predeclared in docs/whole_number_line_model_diagnosis.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "This row is about the model's own pick, not about the weekly adjustments. It is how many more games in a hundred the model gets right when the opening spread was a whole number than when it ended in a half point, which is the only kind the pool ever posts. A negative number means the model is weaker on whole numbers. The two kinds of spread are first matched on how far the model thought the line was wrong, so a difference in how much the model had to say cannot produce the answer.",
+      "probability_positive": 0.285975,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 473,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ2\\cells.json",
+      "standard_error": 4.710212043164
+    },
+    "whole_number_line_model_diagnosis_v1_wn_d3c_gap_edge_under_half_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Whole-number opener diagnosis D3c cell whole_minus_half_edge_under_half, positive favours the whole-number domain",
+      "effect": -2.1875,
+      "effect_units": "accuracy_points",
+      "family": "whole_number_line_model_diagnosis_v1",
+      "interval": [
+        -13.562675621377,
+        8.871355710549
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a weakness lane P1 noticed POST-HOC and lane Q1 measured on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2, P1 and Q1 were selected on. The mechanism tests are predeclared in docs/whole_number_line_model_diagnosis.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "This row is about the model's own pick, not about the weekly adjustments. It is how many more games in a hundred the model gets right when the opening spread was a whole number than when it ended in a half point, which is the only kind the pool ever posts. A negative number means the model is weaker on whole numbers. The two kinds of spread are first matched on how far the model thought the line was wrong, so a difference in how much the model had to say cannot produce the answer.",
+      "probability_positive": 0.351925,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 102,
+      "sample_games": 303,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ2\\cells.json",
+      "standard_error": 5.725634101674
+    },
+    "whole_number_line_model_diagnosis_v1_wn_d3c_gap_standardised_by_model_edge_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Whole-number opener diagnosis D3c cell whole_minus_half_standardised_by_model_edge, positive favours the whole-number domain",
+      "effect": -4.517813499464,
+      "effect_units": "accuracy_points",
+      "family": "whole_number_line_model_diagnosis_v1",
+      "interval": [
+        -9.642712020024,
+        0.672822459407
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a weakness lane P1 noticed POST-HOC and lane Q1 measured on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2, P1 and Q1 were selected on. The mechanism tests are predeclared in docs/whole_number_line_model_diagnosis.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "This row is about the model's own pick, not about the weekly adjustments. It is how many more games in a hundred the model gets right when the opening spread was a whole number than when it ended in a half point, which is the only kind the pool ever posts. A negative number means the model is weaker on whole numbers. The two kinds of spread are first matched on how far the model thought the line was wrong, so a difference in how much the model had to say cannot produce the answer.",
+      "probability_positive": 0.0455,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1469,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ2\\cells.json",
+      "standard_error": 2.576968941706
+    },
+    "whole_number_line_model_diagnosis_v1_wn_d4_gap_season_2020_2020_2020": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Whole-number opener diagnosis D4 cell whole_minus_half_season_2020, positive favours the whole-number domain",
+      "effect": -1.204453441296,
+      "effect_units": "accuracy_points",
+      "family": "whole_number_line_model_diagnosis_v1",
+      "interval": [
+        -13.251589714,
+        10.15971933013
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a weakness lane P1 noticed POST-HOC and lane Q1 measured on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2, P1 and Q1 were selected on. The mechanism tests are predeclared in docs/whole_number_line_model_diagnosis.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "This row is about the model's own pick, not about the weekly adjustments. It is how many more games in a hundred the model gets right when the opening spread was a whole number than when it ended in a half point, which is the only kind the pool ever posts. A negative number means the model is weaker on whole numbers. Measured one season at a time, or with the seasons matched.",
+      "probability_positive": 0.390925,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 217,
+      "seasons": [
+        2020,
+        2020
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ2\\cells.json",
+      "standard_error": 5.909693344203
+    },
+    "whole_number_line_model_diagnosis_v1_wn_d4_gap_season_2021_2021_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Whole-number opener diagnosis D4 cell whole_minus_half_season_2021, positive favours the whole-number domain",
+      "effect": -2.520169035728,
+      "effect_units": "accuracy_points",
+      "family": "whole_number_line_model_diagnosis_v1",
+      "interval": [
+        -14.540292461984,
+        9.944782044547
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a weakness lane P1 noticed POST-HOC and lane Q1 measured on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2, P1 and Q1 were selected on. The mechanism tests are predeclared in docs/whole_number_line_model_diagnosis.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "This row is about the model's own pick, not about the weekly adjustments. It is how many more games in a hundred the model gets right when the opening spread was a whole number than when it ended in a half point, which is the only kind the pool ever posts. A negative number means the model is weaker on whole numbers. Measured one season at a time, or with the seasons matched.",
+      "probability_positive": 0.3461,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 232,
+      "seasons": [
+        2021,
+        2021
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ2\\cells.json",
+      "standard_error": 6.30153086264
+    },
+    "whole_number_line_model_diagnosis_v1_wn_d4_gap_season_2022_2022_2022": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Whole-number opener diagnosis D4 cell whole_minus_half_season_2022, positive favours the whole-number domain",
+      "effect": -12.060367454068,
+      "effect_units": "accuracy_points",
+      "family": "whole_number_line_model_diagnosis_v1",
+      "interval": [
+        -23.29767589706,
+        -0.840974379135
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a weakness lane P1 noticed POST-HOC and lane Q1 measured on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2, P1 and Q1 were selected on. The mechanism tests are predeclared in docs/whole_number_line_model_diagnosis.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "This row is about the model's own pick, not about the weekly adjustments. It is how many more games in a hundred the model gets right when the opening spread was a whole number than when it ended in a half point, which is the only kind the pool ever posts. A negative number means the model is weaker on whole numbers. Measured one season at a time, or with the seasons matched.",
+      "probability_positive": 0.017175,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 247,
+      "seasons": [
+        2022,
+        2022
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ2\\cells.json",
+      "standard_error": 5.720760188337
+    },
+    "whole_number_line_model_diagnosis_v1_wn_d4_gap_season_2023_2023_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Whole-number opener diagnosis D4 cell whole_minus_half_season_2023, positive favours the whole-number domain",
+      "effect": -1.65284288977,
+      "effect_units": "accuracy_points",
+      "family": "whole_number_line_model_diagnosis_v1",
+      "interval": [
+        -13.686103746256,
+        10.730026859461
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a weakness lane P1 noticed POST-HOC and lane Q1 measured on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2, P1 and Q1 were selected on. The mechanism tests are predeclared in docs/whole_number_line_model_diagnosis.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "This row is about the model's own pick, not about the weekly adjustments. It is how many more games in a hundred the model gets right when the opening spread was a whole number than when it ended in a half point, which is the only kind the pool ever posts. A negative number means the model is weaker on whole numbers. Measured one season at a time, or with the seasons matched.",
+      "probability_positive": 0.387225,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 259,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ2\\cells.json",
+      "standard_error": 6.239964499748
+    },
+    "whole_number_line_model_diagnosis_v1_wn_d4_gap_season_2024_2024_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Whole-number opener diagnosis D4 cell whole_minus_half_season_2024, positive favours the whole-number domain",
+      "effect": 0.488950977902,
+      "effect_units": "accuracy_points",
+      "family": "whole_number_line_model_diagnosis_v1",
+      "interval": [
+        -11.759227807971,
+        12.488769388269
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a weakness lane P1 noticed POST-HOC and lane Q1 measured on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2, P1 and Q1 were selected on. The mechanism tests are predeclared in docs/whole_number_line_model_diagnosis.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "This row is about the model's own pick, not about the weekly adjustments. It is how many more games in a hundred the model gets right when the opening spread was a whole number than when it ended in a half point, which is the only kind the pool ever posts. A negative number means the model is weaker on whole numbers. Measured one season at a time, or with the seasons matched.",
+      "probability_positive": 0.530575,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 251,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ2\\cells.json",
+      "standard_error": 6.195268745975
+    },
+    "whole_number_line_model_diagnosis_v1_wn_d4_gap_season_2025_2025_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Whole-number opener diagnosis D4 cell whole_minus_half_season_2025, positive favours the whole-number domain",
+      "effect": -11.43475572047,
+      "effect_units": "accuracy_points",
+      "family": "whole_number_line_model_diagnosis_v1",
+      "interval": [
+        -25.139253718184,
+        2.125913260216
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a weakness lane P1 noticed POST-HOC and lane Q1 measured on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2, P1 and Q1 were selected on. The mechanism tests are predeclared in docs/whole_number_line_model_diagnosis.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "This row is about the model's own pick, not about the weekly adjustments. It is how many more games in a hundred the model gets right when the opening spread was a whole number than when it ended in a half point, which is the only kind the pool ever posts. A negative number means the model is weaker on whole numbers. Measured one season at a time, or with the seasons matched.",
+      "probability_positive": 0.048225,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 263,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ2\\cells.json",
+      "standard_error": 6.931144994924
+    },
+    "whole_number_line_model_diagnosis_v1_wn_d4_gap_standardised_by_season_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Whole-number opener diagnosis D4 cell whole_minus_half_standardised_by_season, positive favours the whole-number domain",
+      "effect": -4.858854146825,
+      "effect_units": "accuracy_points",
+      "family": "whole_number_line_model_diagnosis_v1",
+      "interval": [
+        -10.240462340726,
+        0.353549242594
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a weakness lane P1 noticed POST-HOC and lane Q1 measured on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2, P1 and Q1 were selected on. The mechanism tests are predeclared in docs/whole_number_line_model_diagnosis.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "This row is about the model's own pick, not about the weekly adjustments. It is how many more games in a hundred the model gets right when the opening spread was a whole number than when it ended in a half point, which is the only kind the pool ever posts. A negative number means the model is weaker on whole numbers. Measured one season at a time, or with the seasons matched.",
+      "probability_positive": 0.0345,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1469,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ2\\cells.json",
+      "standard_error": 2.679494014338
+    },
+    "whole_number_line_model_diagnosis_v1_wn_d5a_gap_even_seasons_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Whole-number opener diagnosis D5a cell whole_minus_half_even_seasons, positive favours the whole-number domain",
+      "effect": -3.806192696932,
+      "effect_units": "accuracy_points",
+      "family": "whole_number_line_model_diagnosis_v1",
+      "interval": [
+        -10.584877002841,
+        2.953836247943
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a weakness lane P1 noticed POST-HOC and lane Q1 measured on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2, P1 and Q1 were selected on. The mechanism tests are predeclared in docs/whole_number_line_model_diagnosis.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "This row is about the model's own pick, not about the weekly adjustments. It is how many more games in a hundred the model gets right when the opening spread was a whole number than when it ended in a half point, which is the only kind the pool ever posts. A negative number means the model is weaker on whole numbers. Measured on half the seasons, to see whether the same answer comes back twice.",
+      "probability_positive": 0.1345,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 53,
+      "sample_games": 715,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ2\\cells.json",
+      "standard_error": 3.456756631622
+    },
+    "whole_number_line_model_diagnosis_v1_wn_d5a_gap_odd_seasons_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Whole-number opener diagnosis D5a cell whole_minus_half_odd_seasons, positive favours the whole-number domain",
+      "effect": -5.150501186735,
+      "effect_units": "accuracy_points",
+      "family": "whole_number_line_model_diagnosis_v1",
+      "interval": [
+        -12.554427797434,
+        2.342269371777
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a weakness lane P1 noticed POST-HOC and lane Q1 measured on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2, P1 and Q1 were selected on. The mechanism tests are predeclared in docs/whole_number_line_model_diagnosis.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "This row is about the model's own pick, not about the weekly adjustments. It is how many more games in a hundred the model gets right when the opening spread was a whole number than when it ended in a half point, which is the only kind the pool ever posts. A negative number means the model is weaker on whole numbers. Measured on half the seasons, to see whether the same answer comes back twice.",
+      "probability_positive": 0.08945,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 754,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ2\\cells.json",
+      "standard_error": 3.804616805768
+    },
+    "whole_number_line_model_diagnosis_v1_wn_d6_gap_offset_never_applied_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Whole-number opener diagnosis D6 cell whole_minus_half_games_the_offset_left_alone, positive favours the whole-number domain",
+      "effect": -4.335557954657,
+      "effect_units": "accuracy_points",
+      "family": "whole_number_line_model_diagnosis_v1",
+      "interval": [
+        -10.616525673316,
+        1.807171002551
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a weakness lane P1 noticed POST-HOC and lane Q1 measured on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2, P1 and Q1 were selected on. The mechanism tests are predeclared in docs/whole_number_line_model_diagnosis.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "This row is about the model's own pick, not about the weekly adjustments. It is how many more games in a hundred the model gets right when the opening spread was a whole number than when it ended in a half point, which is the only kind the pool ever posts. A negative number means the model is weaker on whole numbers. Measured on the model's pick before the home-side correction is applied, or on games that correction leaves alone.",
+      "probability_positive": 0.0857,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1087,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ2\\cells.json",
+      "standard_error": 3.174261193699
+    },
+    "whole_number_line_model_diagnosis_v1_wn_d6_gap_raw_probability_pick_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Whole-number opener diagnosis D6 cell whole_minus_half_raw_probability_pick, positive favours the whole-number domain",
+      "effect": -5.57683346782,
+      "effect_units": "accuracy_points",
+      "family": "whole_number_line_model_diagnosis_v1",
+      "interval": [
+        -10.622132357515,
+        -0.528651643034
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a weakness lane P1 noticed POST-HOC and lane Q1 measured on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2, P1 and Q1 were selected on. The mechanism tests are predeclared in docs/whole_number_line_model_diagnosis.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "This row is about the model's own pick, not about the weekly adjustments. It is how many more games in a hundred the model gets right when the opening spread was a whole number than when it ended in a half point, which is the only kind the pool ever posts. A negative number means the model is weaker on whole numbers. Measured on the model's pick before the home-side correction is applied, or on games that correction leaves alone.",
+      "probability_positive": 0.0144,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1469,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ2\\cells.json",
+      "standard_error": 2.583665445546
+    },
+    "whole_number_line_model_diagnosis_v1_wn_d6_gap_residual_sign_pick_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Whole-number opener diagnosis D6 cell whole_minus_half_residual_sign_pick, positive favours the whole-number domain",
+      "effect": -7.969177965427,
+      "effect_units": "accuracy_points",
+      "family": "whole_number_line_model_diagnosis_v1",
+      "interval": [
+        -13.184106555686,
+        -2.818739628432
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a weakness lane P1 noticed POST-HOC and lane Q1 measured on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2, P1 and Q1 were selected on. The mechanism tests are predeclared in docs/whole_number_line_model_diagnosis.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "This row is about the model's own pick, not about the weekly adjustments. It is how many more games in a hundred the model gets right when the opening spread was a whole number than when it ended in a half point, which is the only kind the pool ever posts. A negative number means the model is weaker on whole numbers. Measured on the model's pick before the home-side correction is applied, or on games that correction leaves alone.",
+      "probability_positive": 0.00135,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1469,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ2\\cells.json",
+      "standard_error": 2.646503865913
+    },
+    "whole_number_line_model_diagnosis_v1_wn_d7_gap_over_a_side_matched_null_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Whole-number opener diagnosis D7 cell whole_minus_half_excess_over_a_side_matched_null, positive favours the whole-number domain",
+      "effect": -4.144206701884,
+      "effect_units": "accuracy_points",
+      "family": "whole_number_line_model_diagnosis_v1",
+      "interval": [
+        -9.383658479912,
+        0.947503388458
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a weakness lane P1 noticed POST-HOC and lane Q1 measured on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2, P1 and Q1 were selected on. The mechanism tests are predeclared in docs/whole_number_line_model_diagnosis.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "This row is about the model's own pick. It is how much more the model beats a coin-flip stand-in on whole-number opening spreads than it beats the same stand-in on half-point ones, which is the only kind the pool ever posts. Both groups are first compared against picking the same number of home sides at random, so a difference in how often the home side covered cannot produce the answer.",
+      "probability_positive": 0.0584,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1469,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ2\\cells.json",
+      "standard_error": 2.632985360002
+    },
+    "whole_number_line_model_diagnosis_v1_wn_d8_gap_market_movement_reference_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Whole-number opener diagnosis D8 cell whole_minus_half_market_movement_reference, positive favours the whole-number domain",
+      "effect": -1.77441606013,
+      "effect_units": "accuracy_points",
+      "family": "whole_number_line_model_diagnosis_v1",
+      "interval": [
+        -7.738568061262,
+        3.990446054764
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a weakness lane P1 noticed POST-HOC and lane Q1 measured on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2, P1 and Q1 were selected on. The mechanism tests are predeclared in docs/whole_number_line_model_diagnosis.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent. This row CONDITIONS ON THE REALISED RESULT or on information that does not exist before kickoff, and is a diagnostic only: this row can never become a rule.",
+      "plain_summary": "This row is a reference rather than the model's pick. It is how many more games in a hundred the reference gets right when the opening spread was a whole number than when it ended in a half point, which is the only kind the pool ever posts. This row is a reference rather than the model: it scores the side the market itself moved toward, or the same model graded against the final spread instead of the opener.",
+      "probability_positive": 0.272875,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1099,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ2\\cells.json",
+      "standard_error": 2.991258682413
+    },
+    "whole_number_line_model_diagnosis_v1_wn_d8_gap_same_model_graded_at_the_close_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Whole-number opener diagnosis D8 cell whole_minus_half_by_opener_shape_graded_at_the_close, positive favours the whole-number domain",
+      "effect": -2.810665540332,
+      "effect_units": "accuracy_points",
+      "family": "whole_number_line_model_diagnosis_v1",
+      "interval": [
+        -7.750273283488,
+        2.106657271633
+      ],
+      "league": "nfl",
+      "notes": "Mechanism diagnostics for a weakness lane P1 noticed POST-HOC and lane Q1 measured on the same mined 1,537-game Tuesday-opener archive lanes K, T, H, S, V, C2, P1 and Q1 were selected on. The mechanism tests are predeclared in docs/whole_number_line_model_diagnosis.md, frozen before measurement; the observation they explain was not, and this lane cannot un-see it. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "This row is a reference rather than the model's pick. It is how many more games in a hundred the reference gets right when the opening spread was a whole number than when it ended in a half point, which is the only kind the pool ever posts. This row is a reference rather than the model: it scores the side the market itself moved toward, or the same model graded against the final spread instead of the opener.",
+      "probability_positive": 0.13065,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1474,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneQ2\\cells.json",
+      "standard_error": 2.503644279938
+    }
+  }
+}

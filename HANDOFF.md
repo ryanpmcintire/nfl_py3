@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-20T18:54:26.888603+00:00`
+Refreshed at: `2026-10-20T22:55:01.717118+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-10-20T18:54:26.888603+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `2bff4365ab6c` — Republish the site with the latest settled results
-- Pending change set: 138 paths
+- Baseline commit: `89c8cad82bcb` — Republish the site with the latest settled results
+- Pending change set: 570 paths
   - `M  CURRENT_PREDICTIONS.md`
+  - `M  HANDOFF.md`
+  - `M  README.md`
   - `M  docs/findings.html`
   - `M  docs/history.html`
   - `M  docs/index.html`
+  - `M  docs/lanes/README.md`
+  - `M  docs/lanes/acc-u8-prediction-markets.md`
+  - `M  docs/lanes/acc-u9-beat-reporters.md`
+  - `A  docs/lanes/done/registry-split.md`
+  - `M  docs/lanes/independent-combination-validation.md`
+  - `A  docs/lanes/week7-lock-2026-10-20.md`
+  - `A  docs/mod24_u9_beat_grade.json`
   - `M  docs/model.html`
-  - ` M registry/weak_signals.json`
-  - `M  tiebreaker.json`
-  - `?? an.csv`
-  - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
-  - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
-  - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
-  - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
-  - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
-  - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
-  - ...and 118 more
+  - `A  registry/studies/combined_vs_raw_2026_v4.json`
+  - `D  registry/weak_signals.json`
+  - `A  registry/weak_signals/LEAD-71-unit2.json`
+  - `A  registry/weak_signals/LEAD-71-unit3.json`
+  - `A  registry/weak_signals/LEAD-71-unit4.json`
+  - `A  registry/weak_signals/LEAD-84-unit2.json`
+  - ...and 550 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -52,18 +52,18 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `b50f4319ec3d4479`
+- Model ID: `d9f3d948b9b79488`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261019T161409Z`)
+- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261020T222448Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card combines this with the coach component in one fitted calibrated probability, while paired prospective tracking continues
-- Secondary close-grade historical classification: **1,127 / 2,154 (52.32%)**
-- Linked forecast: **2026 Week 6**, created `2026-10-20T18:40:43.081915+00:00`
+- Secondary close-grade historical classification: **1,130 / 2,168 (52.12%)**
+- Linked forecast: **2026 Week 7**, created `2026-10-20T22:20:18.137257+00:00`
 
-The 52.32% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
+The 52.12% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 6** from model `b50f4319ec3d4479`, published `2026-10-20T18:46:53.527668+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 7** from model `d9f3d948b9b79488`, published `2026-10-20T22:49:51.539269+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

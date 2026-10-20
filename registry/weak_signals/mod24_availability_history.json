@@ -1,0 +1,89 @@
+{
+  "family": "mod24_availability_history",
+  "signals": {
+    "mod24_u7a_a1_exclude_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; record states probability_positive from season-blocked bootstrap.",
+      "closing_ground": null,
+      "description": "Model-alone opener test 2011-2025, rolling team inputs rebuilt around starter availability. A1 exclude past games with a different own starting QB (offense and results inputs) or against a fill-in opponent QB (defense inputs); paired vs base, pooled.",
+      "effect": 0.16068559185859668,
+      "effect_units": "accuracy_points",
+      "family": "mod24_availability_history",
+      "interval": [
+        -0.4568695040933036,
+        0.6787958788846361
+      ],
+      "league": "nfl",
+      "notes": "Three arms, three-weight grid for A2; season-blocked 20000 draws; proxy era uses SBR open, not the Tuesday open; eras: proxy +0.672 true -0.599",
+      "plain_summary": "Rebuilds each team rolling form so games played by a backup quarterback or against one count less, then asks whether picks against the opener improve.",
+      "probability_positive": 0.71145,
+      "recorded_at": "2026-10-01",
+      "reliability": null,
+      "sample_blocks": 15,
+      "sample_games": 3734,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/mod24_u7a/report.json",
+      "standard_error": null
+    },
+    "mod24_u7a_a2_down_weight_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; record states probability_positive from season-blocked bootstrap.",
+      "closing_ground": null,
+      "description": "Model-alone opener test 2011-2025, rolling team inputs rebuilt around starter availability. A2 down-weight those games with weight chosen out of season on 4 inner seasons (grid 0.25/0.5/0.75); paired vs base, pooled.",
+      "effect": 0.18746652383502946,
+      "effect_units": "accuracy_points",
+      "family": "mod24_availability_history",
+      "interval": [
+        -0.35239902412577934,
+        0.7303310589243768
+      ],
+      "league": "nfl",
+      "notes": "Three arms, three-weight grid for A2; season-blocked 20000 draws; proxy era uses SBR open, not the Tuesday open; eras: proxy +0.359 true -0.067",
+      "plain_summary": "Rebuilds each team rolling form so games played by a backup quarterback or against one count less, then asks whether picks against the opener improve.",
+      "probability_positive": 0.7388,
+      "recorded_at": "2026-10-01",
+      "reliability": null,
+      "sample_blocks": 15,
+      "sample_games": 3734,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/mod24_u7a/report.json",
+      "standard_error": null
+    },
+    "mod24_u7a_a3_exclude_ol_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; record states probability_positive from season-blocked bootstrap.",
+      "closing_ground": null,
+      "description": "Model-alone opener test 2011-2025, rolling team inputs rebuilt around starter availability. A3 A1 plus past games with 2 or more of 5 expected OL starters missing (own or opponent); paired vs base, pooled.",
+      "effect": -0.10712372790573112,
+      "effect_units": "accuracy_points",
+      "family": "mod24_availability_history",
+      "interval": [
+        -1.0089991818925552,
+        0.8665159351979391
+      ],
+      "league": "nfl",
+      "notes": "Three arms, three-weight grid for A2; season-blocked 20000 draws; proxy era uses SBR open, not the Tuesday open; eras: proxy -0.045 true -0.200",
+      "plain_summary": "Rebuilds each team rolling form so games played by a backup quarterback or against one count less, then asks whether picks against the opener improve.",
+      "probability_positive": 0.3899,
+      "recorded_at": "2026-10-01",
+      "reliability": null,
+      "sample_blocks": 15,
+      "sample_games": 3734,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/mod24_u7a/report.json",
+      "standard_error": null
+    }
+  }
+}

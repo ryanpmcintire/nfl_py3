@@ -1,0 +1,117 @@
+{
+  "family": "mod23_unit8_span",
+  "signals": {
+    "mod23_unit8_span_fam_sbr_2011_2019_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model with per-family span chosen leave-one-season-out, paired vs span 8 base, 2011-2019; 1135-1096 vs 1142-1089.",
+      "effect": -0.31376064545047067,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit8_span",
+      "interval": [
+        -1.2505582849486379,
+        0.4941710378328056
+      ],
+      "league": "nfl",
+      "notes": "Base ridge alpha 10 with the exponentially weighted team-state span (per-family span chosen leave-one-season-out) over a grid of 3 to 24 games, scored on the held-out season; four looks (two eras by family and global arms); the declared penalty and special-teams families have no state input and were not tested.",
+      "plain_summary": "Letting the memory length of team form be chosen from other seasons moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.23735,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod23_unit8_span/report_all.json",
+      "standard_error": null
+    },
+    "mod23_unit8_span_fam_tuesday_2020_2025_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model with per-family span chosen leave-one-season-out, paired vs span 8 base, 2020-2025; 806-697 vs 802-701.",
+      "effect": 0.2661343978709248,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit8_span",
+      "interval": [
+        -0.2777777777777778,
+        1.0745466756212223
+      ],
+      "league": "nfl",
+      "notes": "Base ridge alpha 10 with the exponentially weighted team-state span (per-family span chosen leave-one-season-out) over a grid of 3 to 24 games, scored on the held-out season; four looks (two eras by family and global arms); the declared penalty and special-teams families have no state input and were not tested.",
+      "plain_summary": "Letting the memory length of team form be chosen from other seasons moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.6887,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit8_span/report_all.json",
+      "standard_error": null
+    },
+    "mod23_unit8_span_glob_sbr_2011_2019_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model with one global span chosen leave-one-season-out, paired vs span 8 base, 2011-2019; 1172-1059 vs 1142-1089.",
+      "effect": 1.344688480502017,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit8_span",
+      "interval": [
+        0.09000900090009001,
+        2.5000279142474295
+      ],
+      "league": "nfl",
+      "notes": "Base ridge alpha 10 with the exponentially weighted team-state span (one global span chosen leave-one-season-out) over a grid of 3 to 24 games, scored on the held-out season; four looks (two eras by family and global arms); the declared penalty and special-teams families have no state input and were not tested.",
+      "plain_summary": "Letting the memory length of team form be chosen from other seasons moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.98035,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod23_unit8_span/report_all.json",
+      "standard_error": null
+    },
+    "mod23_unit8_span_glob_tuesday_2020_2025_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model with one global span chosen leave-one-season-out, paired vs span 8 base, 2020-2025; 789-714 vs 802-701.",
+      "effect": -0.8649367930805056,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit8_span",
+      "interval": [
+        -2.370275464445868,
+        0.649772579597141
+      ],
+      "league": "nfl",
+      "notes": "Base ridge alpha 10 with the exponentially weighted team-state span (one global span chosen leave-one-season-out) over a grid of 3 to 24 games, scored on the held-out season; four looks (two eras by family and global arms); the declared penalty and special-teams families have no state input and were not tested.",
+      "plain_summary": "Letting the memory length of team form be chosen from other seasons moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.12855,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit8_span/report_all.json",
+      "standard_error": null
+    }
+  }
+}

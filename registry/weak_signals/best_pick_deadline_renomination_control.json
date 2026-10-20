@@ -1,0 +1,61 @@
+{
+  "family": "best_pick_deadline_renomination_control",
+  "signals": {
+    "best_pick_deadline_renomination_oracle_positive_control_2023_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power is the only admissible classification. Neither terminal ground applies: no interval sits wholly on the wrong side of zero (wrong_sign_resolved is rejected outright otherwise), split-half reliability is not zero and is not the question here, and the positive control -- perfect-foresight renomination, +25.49 accuracy points, 95% [+13.73, +37.25], probability_positive 1.000 -- proves only that this harness detects a ~25-point renomination effect, never that it could detect a 1-2 point one, so bounded_by_control is unavailable. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, deliberately leaked: perfect-foresight renomination -- among the still-playable Tuesday-pool games, take any whose graded pick is correct, else keep the Tuesday nominee; served late-week pick side, frozen Tuesday opener line; top-1 Best Pick hit rate per week. Bounds what this harness can see, and is not a playable rule.",
+      "effect": 25.4901960784,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_deadline_renomination_control",
+      "interval": [
+        13.7254901961,
+        37.2549019608
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/best_pick_deadline_renomination.md before any number was computed. Population: 816 games, 54 weeks, 2023-2025, the intersection of the frozen 1,537-game opener archive (artifacts/ridge_alpha_promotion/20260818T221459Z) with the intraday_hourly late-week archive the served MKT-15/CX18 follow rule was measured on. One nomination per week, paired against the served Tuesday v2 nominee on the 51 weeks where both nominees resolved at the frozen Tuesday opener line. Week-blocked bootstrap, blocks (season, week), 20,000 draws, seed 20260821; within-week correlation zero by owner mandate. Renomination instant is that week's Sunday 12:00 ET, the window nfl_ats.best_pick_refresh_prospective already enforces; a nominee whose own kickoff has passed is frozen (10 of 54 weeks). Declared limitation: the historical feature table is a single as-of build, so a deadline refit reproduces the Tuesday probability exactly -- only the market moves between the two instants, so these arms measure the market half of renomination, not the refreshed-probability half. This cell: nominees differ in 13 of 51 paired weeks and the outcome differs in 13; arm 46/51 vs incumbent 33/51.",
+      "plain_summary": "A cheat check: if we could see the results and move the Best Pick flag to a winner, we would gain +25 points a week. That is only there to prove the test can see a difference this big when one exists.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 816,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "scripts/best_pick_deadline_renomination_eval.py; artifacts/best_pick_deadline_renomination/20260909T214500Z/summary.json; docs/best_pick_deadline_renomination.md",
+      "standard_error": null
+    },
+    "best_pick_deadline_renomination_oracle_positive_control_tuesday_side_2023_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power is the only admissible classification. Neither terminal ground applies: no interval sits wholly on the wrong side of zero (wrong_sign_resolved is rejected outright otherwise), split-half reliability is not zero and is not the question here, and the positive control -- perfect-foresight renomination, +25.49 accuracy points, 95% [+13.73, +37.25], probability_positive 1.000 -- proves only that this harness detects a ~25-point renomination effect, never that it could detect a 1-2 point one, so bounded_by_control is unavailable. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL, deliberately leaked: perfect-foresight renomination graded on the FROZEN Tuesday pick side at the frozen Tuesday opener line; top-1 Best Pick hit rate per week. Bounds what this harness can see, and is not a playable rule.",
+      "effect": 19.6078431373,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_deadline_renomination_control",
+      "interval": [
+        9.8039215686,
+        31.3725490196
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/best_pick_deadline_renomination.md before any number was computed. Population: 816 games, 54 weeks, 2023-2025, the intersection of the frozen 1,537-game opener archive (artifacts/ridge_alpha_promotion/20260818T221459Z) with the intraday_hourly late-week archive the served MKT-15/CX18 follow rule was measured on. One nomination per week, paired against the served Tuesday v2 nominee on the 51 weeks where both nominees resolved at the frozen Tuesday opener line. Week-blocked bootstrap, blocks (season, week), 20,000 draws, seed 20260821; within-week correlation zero by owner mandate. Renomination instant is that week's Sunday 12:00 ET, the window nfl_ats.best_pick_refresh_prospective already enforces; a nominee whose own kickoff has passed is frozen (10 of 54 weeks). Declared limitation: the historical feature table is a single as-of build, so a deadline refit reproduces the Tuesday probability exactly -- only the market moves between the two instants, so these arms measure the market half of renomination, not the refreshed-probability half. This cell: nominees differ in 13 of 51 paired weeks and the outcome differs in 10; arm 42/51 vs incumbent 32/51.",
+      "plain_summary": "The same cheat check graded on the Tuesday pick: +20 points a week.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 816,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "scripts/best_pick_deadline_renomination_eval.py; artifacts/best_pick_deadline_renomination/20260909T214500Z/summary.json; docs/best_pick_deadline_renomination.md",
+      "standard_error": null
+    }
+  }
+}

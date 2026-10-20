@@ -1,0 +1,61 @@
+{
+  "family": "totals_market_residual",
+  "signals": {
+    "totals_market_residual_blend": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "AGENTS.md taxonomy: not refuted_mechanism (the interval is not wholly on the wrong side of zero -- probability_positive 0.583 -- and the trait's reliability was not measured to be zero) and not bounded_by_control (no positive control was run that was proven able to detect an 0.001-point MAE effect). Everything else is category 3.",
+      "closing_ground": null,
+      "description": "Ridge on the market total's residual (total_residual = home_score + away_score - total_line), 41-column frozen allowlist, SimpleImputer(median,+indicator) -> StandardScaler -> Ridge(alpha=10), expanding walk-forward by (season, week) with min_train_games=500. Effect = mean per-game reduction in absolute total error from serving total_line + 0.1 * predicted_residual instead of the market total alone, on 3935 regular-season games 2010-2025.",
+      "effect": 0.0008182403046396893,
+      "effect_units": "mae_improvement",
+      "family": "totals_market_residual",
+      "interval": [
+        -0.0062423638231792955,
+        0.007686120691323128
+      ],
+      "league": "nfl",
+      "notes": "SIGN CONVENTION: effect is stated as an IMPROVEMENT, so POSITIVE IS BETTER -- it is (market mean |error|) minus (blend mean |error|) in total points, +0.00082 here. This is the opposite of the raw 'mae' unit's usual negative-is-better reading; --effect-units mae was chosen because it is the only supported unit measured in points of absolute error (the unit actually wanted was 'total_points_mae_improvement', which the recorder does not offer). Raw levels for reference: market total MAE 10.4249, chosen blend (k=0.1) MAE 10.4241, raw model total (k=1.0) MAE 10.5495 -- the raw model total is WORSE than the market, the same shape the margin side found. MAE-minimising k over {0.0..1.0} is 0.1; alphas 1 and 100 also pick k=0.1 (+0.0009, +0.0012). Playoffs reported separately, never pooled: 188 games, market MAE 10.9231, blend MAE 10.8994, delta +0.0237. Per-season deltas split 9 positive / 7 negative. Interval is a week-blocked bootstrap (nfl_ats.clv.week_blocked_bootstrap, 2000 resamples, 261 week blocks, seed 20260901). Wired as nfl_ats.tiebreaker.TOTALS_RESIDUAL_WEIGHT = 0.1.\n[2026-09-01T19:03:10.067315+00:00] effect_units retagged: 'mae' -> 'mae_improvement'. Reason: was recorded under mae with the sign convention explained only in notes; this project's mae unit is candidate-minus-baseline with negative=better, but this entry stored an already-negated improvement (baseline MAE minus candidate MAE, positive=candidate better). mae_improvement is the unit built for exactly that convention (WP16).",
+      "plain_summary": "We built a model to guess whether a game goes over or under the posted total, then checked it week by week against every season since 2010. On its own it is worse at guessing the final total than the betting line is. Nudging the line 10% of the way toward the model is very slightly better than using the line alone -- about eight thousandths of a point per game -- so the tiebreaker guess now takes that small nudge.",
+      "probability_positive": 0.583,
+      "recorded_at": "2026-09-01",
+      "reliability": null,
+      "sample_blocks": 261,
+      "sample_games": 3935,
+      "seasons": [
+        2010,
+        2025
+      ],
+      "source": "artifacts/totals_backtest/20260901T184010Z (docs/totals_model.md, predeclared 2026-09-01)",
+      "standard_error": null
+    },
+    "totals_market_residual_wave2_vs_wave1": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "AGENTS.md taxonomy: not refuted_mechanism (interval [-0.00243, +0.00635] is not wholly on the wrong side of zero; probability_positive 0.8235 favors wave 2). Not bounded_by_control: a positive control was run (home_drive_points_per_drive replaced by the row's own total_residual) and the pipeline registered it correctly (chosen k=1.0, MAE improvement +10.3657, probability_positive 1.000, artifacts/totals_backtest_wave2/wp18run/positive_control) -- this proves the walk-forward+ridge+blend+bootstrap machinery CAN detect a large injected effect, but that control was not calibrated to bound power at this experiment's own ~0.002 MAE magnitude specifically, so it cannot certify absence at this scale. Everything else is category 3.",
+      "closing_ground": null,
+      "description": "Wave 2 of the totals residual regime: wave 1's 41-column ridge allowlist plus 24 drive-pace columns ({home,away} x points/yards/plays/seconds per drive, scoring/turnover/takeaway rate, from data/processed/game_features_pbp.parquet), same pipeline (SimpleImputer(median,+indicator)->StandardScaler->Ridge(alpha=10)), same expanding walk-forward (min_train_games=500). Effect = paired per-game |error| improvement of the wave-2 blend (own MAE-minimizing k=0.1) over the wave-1 blend (frozen k=0.1), on the identical 3935 regular-season games 2010-2025 both waves score.",
+      "effect": 0.002023855824488682,
+      "effect_units": "mae_improvement",
+      "family": "totals_market_residual",
+      "interval": [
+        -0.0024322716407372547,
+        0.006345403474600712
+      ],
+      "league": "nfl",
+      "notes": "SIGN CONVENTION: positive = wave 2 better (wave-1 |error| minus wave-2 |error|), matching totals_market_residual_blend's convention. Raw levels: market MAE 10.4249 (identical to wave 1's, confirming identical population), wave-1 chosen blend (k=0.1) MAE 10.4241, wave-2 chosen blend (k=0.1, its own sweep minimum, matches wave 1's operating point by coincidence not by construction) MAE 10.4221, wave-2 raw model (k=1.0) MAE 10.5799 (worse than market, same shape as wave 1's own raw model at 10.5495 and the margin side). Wave-2 vs market alone: MAE improvement +0.0028 (secondary metric), about 3.5x wave 1's own +0.0008 vs-market figure. Per-season paired MAE deltas (wave1_mae - wave2_mae, positive = wave2 better): 10 of 16 seasons positive, 6 negative; 2010 (16-game warm-up stub) is the largest negative outlier at -0.0774, all other seasons within +-0.02. Playoffs (188 games, never pooled into the primary): wave-1 blend MAE 10.8991 (vs market 10.9229, +0.0237, matches docs/totals_model.md exactly), wave-2 blend MAE 10.8907 (vs market +0.0321); wave2-vs-wave1 paired mean improvement on playoffs +0.0084, same direction as the regular season and about 4x the size on under 5% of the sample. Interval is a week-blocked bootstrap (nfl_ats.clv.week_blocked_bootstrap, 2000 resamples, 261 week blocks, seed 20260901), matching wave 1's construction exactly. DECISION (AGENTS.md EV rule, probability_positive>0.5 favors the candidate): wave 2 is the favourite over wave 1 at probability_positive 0.8235, so the served tiebreaker total SHOULD move to wave 2 -- proposed, not wired, this session (src/nfl_ats/tiebreaker.py is another agent's active file and off-limits to WP18). Proposed change on adoption: add a model_total_view_wave2 in src/nfl_ats/totals_wave2.py mirroring nfl_ats.totals.model_total_view but sourcing WAVE2_FEATURES/game_features_pbp.parquet, then repoint nfl_ats.tiebreaker's totals-view call at it; TOTALS_RESIDUAL_WEIGHT stays numerically 0.1 (wave 2's own chosen k) -- what changes is which fitted model produces the blended residual, not the blend weight itself.",
+      "plain_summary": "We added how-fast-and-how-often-each-team-scores-per-drive stats to the over/under model that was already using per-play efficiency. Checked against last time's version (without those pace stats) on the same 3,935 games, the pace version was closer to the final score more often than not -- favored in about 5 of every 6 week-by-week resamples -- but the gap is still small enough that we cannot be fully sure it is real yet.",
+      "probability_positive": 0.8235,
+      "recorded_at": "2026-09-01",
+      "reliability": null,
+      "sample_blocks": 261,
+      "sample_games": 3935,
+      "seasons": [
+        2010,
+        2025
+      ],
+      "source": "artifacts/totals_backtest_wave2/wp18run/screen (docs/totals_model_wave2.md, predeclared 2026-09-01)",
+      "standard_error": null
+    }
+  }
+}

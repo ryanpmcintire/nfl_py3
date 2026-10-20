@@ -1,0 +1,2021 @@
+{
+  "family": "single_book_opener_grade_v1",
+  "signals": {
+    "single_book_opener_grade_v1_sb_book_probability_rule_half_point_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Opener grade at book line vs the cross-book consensus line, probability_rule pick, positive favours the single-book grade",
+      "effect": -0.352112676056,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -1.118599547562,
+        0.371287128713
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The pool always posts a half-point spread at one sportsbook. This row grades the same model against one book's posted opening spread instead of the average of every book's number, on the games whose spread was a half point, and counts how many more games in a hundred it gets right that way, using the pick the card actually plays, the model's cover chance with the home-side adjustment.",
+      "probability_positive": 0.1839,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 852,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\headline.json",
+      "standard_error": 0.386716688742
+    },
+    "single_book_opener_grade_v1_sb_book_probability_rule_paired_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Opener grade at book line vs the cross-book consensus line, probability_rule pick, positive favours the single-book grade",
+      "effect": -0.677048070413,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -1.279461279461,
+        -0.133689839572
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The pool always posts a half-point spread at one sportsbook. This row grades the same model against one book's posted opening spread instead of the average of every book's number, on every paired game, and counts how many more games in a hundred it gets right that way, using the pick the card actually plays, the model's cover chance with the home-side adjustment.",
+      "probability_positive": 0.008575,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1477,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\headline.json",
+      "standard_error": 0.295854621209
+    },
+    "single_book_opener_grade_v1_sb_book_probability_rule_season_2020_2020_2020": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Opener grade at book line vs the cross-book consensus line, probability_rule pick, positive favours the single-book grade",
+      "effect": -0.487804878049,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -1.507537688442,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The pool always posts a half-point spread at one sportsbook. This row grades the same model against one book's posted opening spread instead of the average of every book's number, on the 2020 season, and counts how many more games in a hundred it gets right that way, using the pick the card actually plays, the model's cover chance with the home-side adjustment.",
+      "probability_positive": 0.1791,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 205,
+      "seasons": [
+        2020,
+        2020
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\headline.json",
+      "standard_error": 0.471563231736
+    },
+    "single_book_opener_grade_v1_sb_book_probability_rule_season_2021_2021_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Opener grade at book line vs the cross-book consensus line, probability_rule pick, positive favours the single-book grade",
+      "effect": -1.282051282051,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -3.43347639485,
+        0.851063829787
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The pool always posts a half-point spread at one sportsbook. This row grades the same model against one book's posted opening spread instead of the average of every book's number, on the 2021 season, and counts how many more games in a hundred it gets right that way, using the pick the card actually plays, the model's cover chance with the home-side adjustment.",
+      "probability_positive": 0.12215,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 234,
+      "seasons": [
+        2021,
+        2021
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\headline.json",
+      "standard_error": 1.088279762258
+    },
+    "single_book_opener_grade_v1_sb_book_probability_rule_season_2022_2022_2022": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Opener grade at book line vs the cross-book consensus line, probability_rule pick, positive favours the single-book grade",
+      "effect": -0.813008130081,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -2.016129032258,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The pool always posts a half-point spread at one sportsbook. This row grades the same model against one book's posted opening spread instead of the average of every book's number, on the 2022 season, and counts how many more games in a hundred it gets right that way, using the pick the card actually plays, the model's cover chance with the home-side adjustment.",
+      "probability_positive": 0.06115,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 246,
+      "seasons": [
+        2022,
+        2022
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\headline.json",
+      "standard_error": 0.536138358546
+    },
+    "single_book_opener_grade_v1_sb_book_probability_rule_season_2023_2023_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Opener grade at book line vs the cross-book consensus line, probability_rule pick, positive favours the single-book grade",
+      "effect": -0.378787878788,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -2.272727272727,
+        1.115241635688
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The pool always posts a half-point spread at one sportsbook. This row grades the same model against one book's posted opening spread instead of the average of every book's number, on the 2023 season, and counts how many more games in a hundred it gets right that way, using the pick the card actually plays, the model's cover chance with the home-side adjustment.",
+      "probability_positive": 0.360575,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 264,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\headline.json",
+      "standard_error": 0.844943432083
+    },
+    "single_book_opener_grade_v1_sb_book_probability_rule_season_2024_2024_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Opener grade at book line vs the cross-book consensus line, probability_rule pick, positive favours the single-book grade",
+      "effect": -0.380228136882,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -1.145147845924,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The pool always posts a half-point spread at one sportsbook. This row grades the same model against one book's posted opening spread instead of the average of every book's number, on the 2024 season, and counts how many more games in a hundred it gets right that way, using the pick the card actually plays, the model's cover chance with the home-side adjustment.",
+      "probability_positive": 0.177,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 263,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\headline.json",
+      "standard_error": 0.363167137976
+    },
+    "single_book_opener_grade_v1_sb_book_probability_rule_season_2025_2025_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Opener grade at book line vs the cross-book consensus line, probability_rule pick, positive favours the single-book grade",
+      "effect": -0.754716981132,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -2.230483271375,
+        0.754716981132
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The pool always posts a half-point spread at one sportsbook. This row grades the same model against one book's posted opening spread instead of the average of every book's number, on the 2025 season, and counts how many more games in a hundred it gets right that way, using the pick the card actually plays, the model's cover chance with the home-side adjustment.",
+      "probability_positive": 0.1535,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 265,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\headline.json",
+      "standard_error": 0.725335487815
+    },
+    "single_book_opener_grade_v1_sb_book_raw_paired_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Opener grade at book line vs the cross-book consensus line, raw pick, positive favours the single-book grade",
+      "effect": -0.203114421124,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -0.546075085324,
+        0.135777325187
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The pool always posts a half-point spread at one sportsbook. This row grades the same model against one book's posted opening spread instead of the average of every book's number, on every paired game, and counts how many more games in a hundred it gets right that way, using the model's cover chance before the home-side adjustment.",
+      "probability_positive": 0.131325,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1477,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\headline.json",
+      "standard_error": 0.178373761227
+    },
+    "single_book_opener_grade_v1_sb_book_raw_season_2020_2020_2020": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Opener grade at book line vs the cross-book consensus line, raw pick, positive favours the single-book grade",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -0.131370244699,
+        0.131370244699
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent. Degenerate cell: the paired difference is identical on all 205 games, so the block bootstrap returns a zero-width band that no re-measurement can widen. Per docs/weak_signal_pooling.md (defect 4, 2026-09-08) the band is FLOORED to what this sample size supports -- standard error 0.0670, from this family's own median SE^2*n curve at three robust sigmas -- and the row is kept, not dropped. The point estimate is the measurement and is unchanged.",
+      "plain_summary": "The pool always posts a half-point spread at one sportsbook. This row grades the same model against one book's posted opening spread instead of the average of every book's number, on the 2020 season, and counts how many more games in a hundred it gets right that way, using the model's cover chance before the home-side adjustment.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 205,
+      "seasons": [
+        2020,
+        2020
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\headline.json",
+      "standard_error": 0.2726728139101774
+    },
+    "single_book_opener_grade_v1_sb_book_raw_season_2021_2021_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Opener grade at book line vs the cross-book consensus line, raw pick, positive favours the single-book grade",
+      "effect": -0.42735042735,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -1.304347826087,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The pool always posts a half-point spread at one sportsbook. This row grades the same model against one book's posted opening spread instead of the average of every book's number, on the 2021 season, and counts how many more games in a hundred it gets right that way, using the model's cover chance before the home-side adjustment.",
+      "probability_positive": 0.178625,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 234,
+      "seasons": [
+        2021,
+        2021
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\headline.json",
+      "standard_error": 0.417972975025
+    },
+    "single_book_opener_grade_v1_sb_book_raw_season_2022_2022_2022": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Opener grade at book line vs the cross-book consensus line, raw pick, positive favours the single-book grade",
+      "effect": 0.406504065041,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        0.0,
+        1.239669421488
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The pool always posts a half-point spread at one sportsbook. This row grades the same model against one book's posted opening spread instead of the average of every book's number, on the 2022 season, and counts how many more games in a hundred it gets right that way, using the model's cover chance before the home-side adjustment.",
+      "probability_positive": 0.823,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 246,
+      "seasons": [
+        2022,
+        2022
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\headline.json",
+      "standard_error": 0.388339290059
+    },
+    "single_book_opener_grade_v1_sb_book_raw_season_2023_2023_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Opener grade at book line vs the cross-book consensus line, raw pick, positive favours the single-book grade",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -0.115763587206,
+        0.115763587206
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent. Degenerate cell: the paired difference is identical on all 264 games, so the block bootstrap returns a zero-width band that no re-measurement can widen. Per docs/weak_signal_pooling.md (defect 4, 2026-09-08) the band is FLOORED to what this sample size supports -- standard error 0.0591, from this family's own median SE^2*n curve at three robust sigmas -- and the row is kept, not dropped. The point estimate is the measurement and is unchanged.",
+      "plain_summary": "The pool always posts a half-point spread at one sportsbook. This row grades the same model against one book's posted opening spread instead of the average of every book's number, on the 2023 season, and counts how many more games in a hundred it gets right that way, using the model's cover chance before the home-side adjustment.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 264,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\headline.json",
+      "standard_error": 0.24007001290484767
+    },
+    "single_book_opener_grade_v1_sb_book_raw_season_2024_2024_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Opener grade at book line vs the cross-book consensus line, raw pick, positive favours the single-book grade",
+      "effect": -0.380228136882,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -1.176470588235,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The pool always posts a half-point spread at one sportsbook. This row grades the same model against one book's posted opening spread instead of the average of every book's number, on the 2024 season, and counts how many more games in a hundred it gets right that way, using the model's cover chance before the home-side adjustment.",
+      "probability_positive": 0.177675,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 263,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\headline.json",
+      "standard_error": 0.371708683014
+    },
+    "single_book_opener_grade_v1_sb_book_raw_season_2025_2025_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Opener grade at book line vs the cross-book consensus line, raw pick, positive favours the single-book grade",
+      "effect": -0.754716981132,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -2.230483271375,
+        0.754716981132
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The pool always posts a half-point spread at one sportsbook. This row grades the same model against one book's posted opening spread instead of the average of every book's number, on the 2025 season, and counts how many more games in a hundred it gets right that way, using the model's cover chance before the home-side adjustment.",
+      "probability_positive": 0.1535,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 265,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\headline.json",
+      "standard_error": 0.725335487815
+    },
+    "single_book_opener_grade_v1_sb_book_residual_paired_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Opener grade at book line vs the cross-book consensus line, residual pick, positive favours the single-book grade",
+      "effect": -0.270819228165,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -0.54533060668,
+        -0.066844919786
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The pool always posts a half-point spread at one sportsbook. This row grades the same model against one book's posted opening spread instead of the average of every book's number, on every paired game, and counts how many more games in a hundred it gets right that way, using the pick taken from the sign of the model's points edge.",
+      "probability_positive": 0.009175,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1477,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\headline.json",
+      "standard_error": 0.132468305631
+    },
+    "single_book_opener_grade_v1_sb_book_residual_season_2020_2020_2020": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Opener grade at book line vs the cross-book consensus line, residual pick, positive favours the single-book grade",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -0.131370244699,
+        0.131370244699
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent. Degenerate cell: the paired difference is identical on all 205 games, so the block bootstrap returns a zero-width band that no re-measurement can widen. Per docs/weak_signal_pooling.md (defect 4, 2026-09-08) the band is FLOORED to what this sample size supports -- standard error 0.0670, from this family's own median SE^2*n curve at three robust sigmas -- and the row is kept, not dropped. The point estimate is the measurement and is unchanged.",
+      "plain_summary": "The pool always posts a half-point spread at one sportsbook. This row grades the same model against one book's posted opening spread instead of the average of every book's number, on the 2020 season, and counts how many more games in a hundred it gets right that way, using the pick taken from the sign of the model's points edge.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 205,
+      "seasons": [
+        2020,
+        2020
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\headline.json",
+      "standard_error": 0.27093923394049485
+    },
+    "single_book_opener_grade_v1_sb_book_residual_season_2021_2021_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Opener grade at book line vs the cross-book consensus line, residual pick, positive favours the single-book grade",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -0.122960610475,
+        0.122960610475
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent. Degenerate cell: the paired difference is identical on all 234 games, so the block bootstrap returns a zero-width band that no re-measurement can widen. Per docs/weak_signal_pooling.md (defect 4, 2026-09-08) the band is FLOORED to what this sample size supports -- standard error 0.0627, from this family's own median SE^2*n curve at three robust sigmas -- and the row is kept, not dropped. The point estimate is the measurement and is unchanged.",
+      "plain_summary": "The pool always posts a half-point spread at one sportsbook. This row grades the same model against one book's posted opening spread instead of the average of every book's number, on the 2021 season, and counts how many more games in a hundred it gets right that way, using the pick taken from the sign of the model's points edge.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 234,
+      "seasons": [
+        2021,
+        2021
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\headline.json",
+      "standard_error": 0.25302955297341123
+    },
+    "single_book_opener_grade_v1_sb_book_residual_season_2022_2022_2022": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Opener grade at book line vs the cross-book consensus line, residual pick, positive favours the single-book grade",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -0.119924077344,
+        0.119924077344
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent. Degenerate cell: the paired difference is identical on all 246 games, so the block bootstrap returns a zero-width band that no re-measurement can widen. Per docs/weak_signal_pooling.md (defect 4, 2026-09-08) the band is FLOORED to what this sample size supports -- standard error 0.0612, from this family's own median SE^2*n curve at three robust sigmas -- and the row is kept, not dropped. The point estimate is the measurement and is unchanged.",
+      "plain_summary": "The pool always posts a half-point spread at one sportsbook. This row grades the same model against one book's posted opening spread instead of the average of every book's number, on the 2022 season, and counts how many more games in a hundred it gets right that way, using the pick taken from the sign of the model's points edge.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 246,
+      "seasons": [
+        2022,
+        2022
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\headline.json",
+      "standard_error": 0.24653349101238875
+    },
+    "single_book_opener_grade_v1_sb_book_residual_season_2023_2023_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Opener grade at book line vs the cross-book consensus line, residual pick, positive favours the single-book grade",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -0.115763587206,
+        0.115763587206
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent. Degenerate cell: the paired difference is identical on all 264 games, so the block bootstrap returns a zero-width band that no re-measurement can widen. Per docs/weak_signal_pooling.md (defect 4, 2026-09-08) the band is FLOORED to what this sample size supports -- standard error 0.0591, from this family's own median SE^2*n curve at three robust sigmas -- and the row is kept, not dropped. The point estimate is the measurement and is unchanged.",
+      "plain_summary": "The pool always posts a half-point spread at one sportsbook. This row grades the same model against one book's posted opening spread instead of the average of every book's number, on the 2023 season, and counts how many more games in a hundred it gets right that way, using the pick taken from the sign of the model's points edge.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 264,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\headline.json",
+      "standard_error": 0.2379484236348093
+    },
+    "single_book_opener_grade_v1_sb_book_residual_season_2024_2024_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Opener grade at book line vs the cross-book consensus line, residual pick, positive favours the single-book grade",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -0.115983461264,
+        0.115983461264
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent. Degenerate cell: the paired difference is identical on all 263 games, so the block bootstrap returns a zero-width band that no re-measurement can widen. Per docs/weak_signal_pooling.md (defect 4, 2026-09-08) the band is FLOORED to what this sample size supports -- standard error 0.0592, from this family's own median SE^2*n curve at three robust sigmas -- and the row is kept, not dropped. The point estimate is the measurement and is unchanged.",
+      "plain_summary": "The pool always posts a half-point spread at one sportsbook. This row grades the same model against one book's posted opening spread instead of the average of every book's number, on the 2024 season, and counts how many more games in a hundred it gets right that way, using the pick taken from the sign of the model's points edge.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 263,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\headline.json",
+      "standard_error": 0.2382476519969838
+    },
+    "single_book_opener_grade_v1_sb_book_residual_season_2025_2025_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Opener grade at book line vs the cross-book consensus line, residual pick, positive favours the single-book grade",
+      "effect": -1.509433962264,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -2.962962962963,
+        -0.374531835206
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The pool always posts a half-point spread at one sportsbook. This row grades the same model against one book's posted opening spread instead of the average of every book's number, on the 2025 season, and counts how many more games in a hundred it gets right that way, using the pick taken from the sign of the model's points edge.",
+      "probability_positive": 0.0052,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 265,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\headline.json",
+      "standard_error": 0.662021720377
+    },
+    "single_book_opener_grade_v1_sb_g2_vs_s3_all_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Discrete key-number read G2 against the served smooth read at one book's posted opener, positive favours the candidate",
+      "effect": -0.268636668905,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -1.538461538462,
+        1.010781671159
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "Football scores pile up on 3 and 7. When the spread is on one of those numbers, or a half point either side of it, this version reads the chance of covering off how games at a similar spread actually finished; every other game is left alone. Every game is graded against one book's posted opening spread, not the average across books. Measured on every game the book posted an opening spread for. This row counts the same thing after the usual weekly adjustments are applied to both.",
+      "probability_positive": 0.34405,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1489,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\cells.json",
+      "standard_error": 0.647572140928
+    },
+    "single_book_opener_grade_v1_sb_g2_vs_s3_all_standalone_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Discrete key-number read G2 against the served smooth read at one book's posted opener, positive favours the candidate",
+      "effect": -0.873069173942,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -2.19414893617,
+        0.476514635807
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "Football scores pile up on 3 and 7. When the spread is on one of those numbers, or a half point either side of it, this version reads the chance of covering off how games at a similar spread actually finished; every other game is left alone. Every game is graded against one book's posted opening spread, not the average across books. Measured on every game the book posted an opening spread for. This row counts how many more games in a hundred it gets right than the smooth reading in use.",
+      "probability_positive": 0.1038,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1489,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\cells.json",
+      "standard_error": 0.684800146432
+    },
+    "single_book_opener_grade_v1_sb_g2_vs_s3_half_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Discrete key-number read G2 against the served smooth read at one book's posted opener, positive favours the candidate",
+      "effect": -0.810185185185,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -2.488165061869,
+        0.832367221562
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "Football scores pile up on 3 and 7. When the spread is on one of those numbers, or a half point either side of it, this version reads the chance of covering off how games at a similar spread actually finished; every other game is left alone. Every game is graded against one book's posted opening spread, not the average across books. Measured only on games whose opening spread at that book was a half point, which is the only kind of spread the pool ever posts. This row counts the same thing after the usual weekly adjustments are applied to both.",
+      "probability_positive": 0.167725,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 864,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\cells.json",
+      "standard_error": 0.844416890561
+    },
+    "single_book_opener_grade_v1_sb_g2_vs_s3_half_season_2020_card_2020_2020": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Discrete key-number read G2 against the served smooth read at one book's posted opener, positive favours the candidate",
+      "effect": 0.699300699301,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -3.623188405797,
+        4.477611940299
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "Football scores pile up on 3 and 7. When the spread is on one of those numbers, or a half point either side of it, this version reads the chance of covering off how games at a similar spread actually finished; every other game is left alone. Every game is graded against one book's posted opening spread, not the average across books. Measured only on games whose opening spread at that book was a half point, which is the only kind of spread the pool ever posts. This row counts the same thing after the usual weekly adjustments are applied to both.",
+      "probability_positive": 0.647325,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 143,
+      "seasons": [
+        2020,
+        2020
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\cells.json",
+      "standard_error": 2.08734501655
+    },
+    "single_book_opener_grade_v1_sb_g2_vs_s3_half_season_2020_standalone_2020_2020": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Discrete key-number read G2 against the served smooth read at one book's posted opener, positive favours the candidate",
+      "effect": 0.699300699301,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -3.623188405797,
+        4.487781954887
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "Football scores pile up on 3 and 7. When the spread is on one of those numbers, or a half point either side of it, this version reads the chance of covering off how games at a similar spread actually finished; every other game is left alone. Every game is graded against one book's posted opening spread, not the average across books. Measured only on games whose opening spread at that book was a half point, which is the only kind of spread the pool ever posts. This row counts how many more games in a hundred it gets right than the smooth reading in use.",
+      "probability_positive": 0.6475,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 143,
+      "seasons": [
+        2020,
+        2020
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\cells.json",
+      "standard_error": 2.090900127211
+    },
+    "single_book_opener_grade_v1_sb_g2_vs_s3_half_season_2021_card_2021_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Discrete key-number read G2 against the served smooth read at one book's posted opener, positive favours the candidate",
+      "effect": 0.917431192661,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -1.941747572816,
+        3.77358490566
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "Football scores pile up on 3 and 7. When the spread is on one of those numbers, or a half point either side of it, this version reads the chance of covering off how games at a similar spread actually finished; every other game is left alone. Every game is graded against one book's posted opening spread, not the average across books. Measured only on games whose opening spread at that book was a half point, which is the only kind of spread the pool ever posts. This row counts the same thing after the usual weekly adjustments are applied to both.",
+      "probability_positive": 0.712875,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 109,
+      "seasons": [
+        2021,
+        2021
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\cells.json",
+      "standard_error": 1.537559488577
+    },
+    "single_book_opener_grade_v1_sb_g2_vs_s3_half_season_2021_standalone_2021_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Discrete key-number read G2 against the served smooth read at one book's posted opener, positive favours the candidate",
+      "effect": 1.834862385321,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -2.857142857143,
+        7.017543859649
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "Football scores pile up on 3 and 7. When the spread is on one of those numbers, or a half point either side of it, this version reads the chance of covering off how games at a similar spread actually finished; every other game is left alone. Every game is graded against one book's posted opening spread, not the average across books. Measured only on games whose opening spread at that book was a half point, which is the only kind of spread the pool ever posts. This row counts how many more games in a hundred it gets right than the smooth reading in use.",
+      "probability_positive": 0.7555,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 109,
+      "seasons": [
+        2021,
+        2021
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\cells.json",
+      "standard_error": 2.528528405746
+    },
+    "single_book_opener_grade_v1_sb_g2_vs_s3_half_season_2022_card_2022_2022": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Discrete key-number read G2 against the served smooth read at one book's posted opener, positive favours the candidate",
+      "effect": -1.680672268908,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -5.042016806723,
+        1.526717557252
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "Football scores pile up on 3 and 7. When the spread is on one of those numbers, or a half point either side of it, this version reads the chance of covering off how games at a similar spread actually finished; every other game is left alone. Every game is graded against one book's posted opening spread, not the average across books. Measured only on games whose opening spread at that book was a half point, which is the only kind of spread the pool ever posts. This row counts the same thing after the usual weekly adjustments are applied to both.",
+      "probability_positive": 0.154825,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 119,
+      "seasons": [
+        2022,
+        2022
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\cells.json",
+      "standard_error": 1.644125640703
+    },
+    "single_book_opener_grade_v1_sb_g2_vs_s3_half_season_2022_standalone_2022_2022": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Discrete key-number read G2 against the served smooth read at one book's posted opener, positive favours the candidate",
+      "effect": -3.361344537815,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -8.490566037736,
+        1.550387596899
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "Football scores pile up on 3 and 7. When the spread is on one of those numbers, or a half point either side of it, this version reads the chance of covering off how games at a similar spread actually finished; every other game is left alone. Every game is graded against one book's posted opening spread, not the average across books. Measured only on games whose opening spread at that book was a half point, which is the only kind of spread the pool ever posts. This row counts how many more games in a hundred it gets right than the smooth reading in use.",
+      "probability_positive": 0.0906,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 119,
+      "seasons": [
+        2022,
+        2022
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\cells.json",
+      "standard_error": 2.544126860657
+    },
+    "single_book_opener_grade_v1_sb_g2_vs_s3_half_season_2023_card_2023_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Discrete key-number read G2 against the served smooth read at one book's posted opener, positive favours the candidate",
+      "effect": -0.675675675676,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -5.921052631579,
+        4.347826086957
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "Football scores pile up on 3 and 7. When the spread is on one of those numbers, or a half point either side of it, this version reads the chance of covering off how games at a similar spread actually finished; every other game is left alone. Every game is graded against one book's posted opening spread, not the average across books. Measured only on games whose opening spread at that book was a half point, which is the only kind of spread the pool ever posts. This row counts the same thing after the usual weekly adjustments are applied to both.",
+      "probability_positive": 0.406375,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 148,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\cells.json",
+      "standard_error": 2.621340365089
+    },
+    "single_book_opener_grade_v1_sb_g2_vs_s3_half_season_2023_standalone_2023_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Discrete key-number read G2 against the served smooth read at one book's posted opener, positive favours the candidate",
+      "effect": -1.351351351351,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -7.843137254902,
+        4.545454545455
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "Football scores pile up on 3 and 7. When the spread is on one of those numbers, or a half point either side of it, this version reads the chance of covering off how games at a similar spread actually finished; every other game is left alone. Every game is graded against one book's posted opening spread, not the average across books. Measured only on games whose opening spread at that book was a half point, which is the only kind of spread the pool ever posts. This row counts how many more games in a hundred it gets right than the smooth reading in use.",
+      "probability_positive": 0.345375,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 148,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\cells.json",
+      "standard_error": 3.164558135399
+    },
+    "single_book_opener_grade_v1_sb_g2_vs_s3_half_season_2024_card_2024_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Discrete key-number read G2 against the served smooth read at one book's posted opener, positive favours the candidate",
+      "effect": -0.714285714286,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -5.714285714286,
+        4.575288130519
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "Football scores pile up on 3 and 7. When the spread is on one of those numbers, or a half point either side of it, this version reads the chance of covering off how games at a similar spread actually finished; every other game is left alone. Every game is graded against one book's posted opening spread, not the average across books. Measured only on games whose opening spread at that book was a half point, which is the only kind of spread the pool ever posts. This row counts the same thing after the usual weekly adjustments are applied to both.",
+      "probability_positive": 0.389,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 140,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\cells.json",
+      "standard_error": 2.590357682002
+    },
+    "single_book_opener_grade_v1_sb_g2_vs_s3_half_season_2024_standalone_2024_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Discrete key-number read G2 against the served smooth read at one book's posted opener, positive favours the candidate",
+      "effect": -2.857142857143,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -7.547169811321,
+        1.526717557252
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "Football scores pile up on 3 and 7. When the spread is on one of those numbers, or a half point either side of it, this version reads the chance of covering off how games at a similar spread actually finished; every other game is left alone. Every game is graded against one book's posted opening spread, not the average across books. Measured only on games whose opening spread at that book was a half point, which is the only kind of spread the pool ever posts. This row counts how many more games in a hundred it gets right than the smooth reading in use.",
+      "probability_positive": 0.1131,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 140,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\cells.json",
+      "standard_error": 2.331886440009
+    },
+    "single_book_opener_grade_v1_sb_g2_vs_s3_half_season_2025_card_2025_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Discrete key-number read G2 against the served smooth read at one book's posted opener, positive favours the candidate",
+      "effect": -2.439024390244,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -5.314009661836,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "Football scores pile up on 3 and 7. When the spread is on one of those numbers, or a half point either side of it, this version reads the chance of covering off how games at a similar spread actually finished; every other game is left alone. Every game is graded against one book's posted opening spread, not the average across books. Measured only on games whose opening spread at that book was a half point, which is the only kind of spread the pool ever posts. This row counts the same thing after the usual weekly adjustments are applied to both.",
+      "probability_positive": 0.028975,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 205,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\cells.json",
+      "standard_error": 1.359466508866
+    },
+    "single_book_opener_grade_v1_sb_g2_vs_s3_half_season_2025_standalone_2025_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Discrete key-number read G2 against the served smooth read at one book's posted opener, positive favours the candidate",
+      "effect": -2.439024390244,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -6.030150753769,
+        0.995024875622
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "Football scores pile up on 3 and 7. When the spread is on one of those numbers, or a half point either side of it, this version reads the chance of covering off how games at a similar spread actually finished; every other game is left alone. Every game is graded against one book's posted opening spread, not the average across books. Measured only on games whose opening spread at that book was a half point, which is the only kind of spread the pool ever posts. This row counts how many more games in a hundred it gets right than the smooth reading in use.",
+      "probability_positive": 0.089225,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 205,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\cells.json",
+      "standard_error": 1.811201745902
+    },
+    "single_book_opener_grade_v1_sb_g2_vs_s3_half_standalone_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Discrete key-number read G2 against the served smooth read at one book's posted opener, positive favours the candidate",
+      "effect": -1.388888888889,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -3.382229901902,
+        0.572115182751
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "Football scores pile up on 3 and 7. When the spread is on one of those numbers, or a half point either side of it, this version reads the chance of covering off how games at a similar spread actually finished; every other game is left alone. Every game is graded against one book's posted opening spread, not the average across books. Measured only on games whose opening spread at that book was a half point, which is the only kind of spread the pool ever posts. This row counts how many more games in a hundred it gets right than the smooth reading in use.",
+      "probability_positive": 0.0823,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 864,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\cells.json",
+      "standard_error": 1.002471683434
+    },
+    "single_book_opener_grade_v1_sb_g2_vs_s3_near_3_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Discrete key-number read G2 against the served smooth read at one book's posted opener, positive favours the candidate",
+      "effect": -1.483679525223,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -5.20262243342,
+        2.1875
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "Football scores pile up on 3 and 7. When the spread is on one of those numbers, or a half point either side of it, this version reads the chance of covering off how games at a similar spread actually finished; every other game is left alone. Every game is graded against one book's posted opening spread, not the average across books. Measured only on half-point spreads of 2.5 or 3.5. This row counts the same thing after the usual weekly adjustments are applied to both.",
+      "probability_positive": 0.218225,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 103,
+      "sample_games": 337,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\cells.json",
+      "standard_error": 1.898255846969
+    },
+    "single_book_opener_grade_v1_sb_g2_vs_s3_near_3_standalone_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Discrete key-number read G2 against the served smooth read at one book's posted opener, positive favours the candidate",
+      "effect": -2.373887240356,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -6.925207756233,
+        2.102102102102
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "Football scores pile up on 3 and 7. When the spread is on one of those numbers, or a half point either side of it, this version reads the chance of covering off how games at a similar spread actually finished; every other game is left alone. Every game is graded against one book's posted opening spread, not the average across books. Measured only on half-point spreads of 2.5 or 3.5. This row counts how many more games in a hundred it gets right than the smooth reading in use.",
+      "probability_positive": 0.151,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 103,
+      "sample_games": 337,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\cells.json",
+      "standard_error": 2.292769427392
+    },
+    "single_book_opener_grade_v1_sb_g2_vs_s3_near_7_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Discrete key-number read G2 against the served smooth read at one book's posted opener, positive favours the candidate",
+      "effect": -1.351351351351,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -6.122448979592,
+        3.184713375796
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "Football scores pile up on 3 and 7. When the spread is on one of those numbers, or a half point either side of it, this version reads the chance of covering off how games at a similar spread actually finished; every other game is left alone. Every game is graded against one book's posted opening spread, not the average across books. Measured only on half-point spreads of 6.5 or 7.5. This row counts the same thing after the usual weekly adjustments are applied to both.",
+      "probability_positive": 0.282125,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 81,
+      "sample_games": 148,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\cells.json",
+      "standard_error": 2.353522858751
+    },
+    "single_book_opener_grade_v1_sb_g2_vs_s3_near_7_standalone_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Discrete key-number read G2 against the served smooth read at one book's posted opener, positive favours the candidate",
+      "effect": -2.702702702703,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -8.823529411765,
+        3.14465408805
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "Football scores pile up on 3 and 7. When the spread is on one of those numbers, or a half point either side of it, this version reads the chance of covering off how games at a similar spread actually finished; every other game is left alone. Every game is graded against one book's posted opening spread, not the average across books. Measured only on half-point spreads of 6.5 or 7.5. This row counts how many more games in a hundred it gets right than the smooth reading in use.",
+      "probability_positive": 0.18685,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 81,
+      "sample_games": 148,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\cells.json",
+      "standard_error": 3.055441496292
+    },
+    "single_book_opener_grade_v1_sb_g2_vs_s3_near_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Discrete key-number read G2 against the served smooth read at one book's posted opener, positive favours the candidate",
+      "effect": -1.443298969072,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -4.366100693138,
+        1.452282157676
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "Football scores pile up on 3 and 7. When the spread is on one of those numbers, or a half point either side of it, this version reads the chance of covering off how games at a similar spread actually finished; every other game is left alone. Every game is graded against one book's posted opening spread, not the average across books. Measured only on half-point spreads of 2.5, 3.5, 6.5 or 7.5. This row counts the same thing after the usual weekly adjustments are applied to both.",
+      "probability_positive": 0.16595,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 105,
+      "sample_games": 485,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\cells.json",
+      "standard_error": 1.484472783114
+    },
+    "single_book_opener_grade_v1_sb_g2_vs_s3_near_standalone_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Discrete key-number read G2 against the served smooth read at one book's posted opener, positive favours the candidate",
+      "effect": -2.474226804124,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -5.944798301486,
+        1.002004008016
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "Football scores pile up on 3 and 7. When the spread is on one of those numbers, or a half point either side of it, this version reads the chance of covering off how games at a similar spread actually finished; every other game is left alone. Every game is graded against one book's posted opening spread, not the average across books. Measured only on half-point spreads of 2.5, 3.5, 6.5 or 7.5. This row counts how many more games in a hundred it gets right than the smooth reading in use.",
+      "probability_positive": 0.080225,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 105,
+      "sample_games": 485,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\cells.json",
+      "standard_error": 1.769823794661
+    },
+    "single_book_opener_grade_v1_sb_g2_vs_s3_whole_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Discrete key-number read G2 against the served smooth read at one book's posted opener, positive favours the candidate",
+      "effect": 0.48,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -1.076923076923,
+        2.090662469772
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "Football scores pile up on 3 and 7. When the spread is on one of those numbers, or a half point either side of it, this version reads the chance of covering off how games at a similar spread actually finished; every other game is left alone. Every game is graded against one book's posted opening spread, not the average across books. Measured only on games whose opening spread at that book was a whole number, which the pool never posts; reported for contrast. This row counts the same thing after the usual weekly adjustments are applied to both.",
+      "probability_positive": 0.723625,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 106,
+      "sample_games": 625,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\cells.json",
+      "standard_error": 0.800088710646
+    },
+    "single_book_opener_grade_v1_sb_g2_vs_s3_whole_standalone_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Discrete key-number read G2 against the served smooth read at one book's posted opener, positive favours the candidate",
+      "effect": -0.16,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -2.070063694268,
+        1.842546063652
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "Football scores pile up on 3 and 7. When the spread is on one of those numbers, or a half point either side of it, this version reads the chance of covering off how games at a similar spread actually finished; every other game is left alone. Every game is graded against one book's posted opening spread, not the average across books. Measured only on games whose opening spread at that book was a whole number, which the pool never posts; reported for contrast. This row counts how many more games in a hundred it gets right than the smooth reading in use.",
+      "probability_positive": 0.434525,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 106,
+      "sample_games": 625,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\cells.json",
+      "standard_error": 0.99880748838
+    },
+    "single_book_opener_grade_v1_sb_halfpoint_median_probability_rule_half_point_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Opener grade at halfpoint_median line vs the cross-book consensus line, probability_rule pick, positive favours the single-book grade",
+      "effect": -0.662251655629,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -1.396057991529,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The pool always posts a half-point spread at one sportsbook. This row grades the same model against the middle of the half-point prices the books posted instead of the average of every book's number, on the games whose spread was a half point, and counts how many more games in a hundred it gets right that way, using the pick the card actually plays, the model's cover chance with the home-side adjustment.",
+      "probability_positive": 0.0312,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1359,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\headline.json",
+      "standard_error": 0.362211847714
+    },
+    "single_book_opener_grade_v1_sb_halfpoint_median_probability_rule_paired_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Opener grade at halfpoint_median line vs the cross-book consensus line, probability_rule pick, positive favours the single-book grade",
+      "effect": -0.650759219089,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -1.372832369942,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The pool always posts a half-point spread at one sportsbook. This row grades the same model against the middle of the half-point prices the books posted instead of the average of every book's number, on every paired game, and counts how many more games in a hundred it gets right that way, using the pick the card actually plays, the model's cover chance with the home-side adjustment.",
+      "probability_positive": 0.0312,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1383,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\headline.json",
+      "standard_error": 0.355859130692
+    },
+    "single_book_opener_grade_v1_sb_halfpoint_median_probability_rule_season_2020_2020_2020": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Opener grade at halfpoint_median line vs the cross-book consensus line, probability_rule pick, positive favours the single-book grade",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -1.415094339623,
+        1.522842639594
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The pool always posts a half-point spread at one sportsbook. This row grades the same model against the middle of the half-point prices the books posted instead of the average of every book's number, on the 2020 season, and counts how many more games in a hundred it gets right that way, using the pick the card actually plays, the model's cover chance with the home-side adjustment.",
+      "probability_positive": 0.500225,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 203,
+      "seasons": [
+        2020,
+        2020
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\headline.json",
+      "standard_error": 0.699893242302
+    },
+    "single_book_opener_grade_v1_sb_halfpoint_median_probability_rule_season_2021_2021_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Opener grade at halfpoint_median line vs the cross-book consensus line, probability_rule pick, positive favours the single-book grade",
+      "effect": -0.884955752212,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -2.19298245614,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The pool always posts a half-point spread at one sportsbook. This row grades the same model against the middle of the half-point prices the books posted instead of the average of every book's number, on the 2021 season, and counts how many more games in a hundred it gets right that way, using the pick the card actually plays, the model's cover chance with the home-side adjustment.",
+      "probability_positive": 0.058725,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 226,
+      "seasons": [
+        2021,
+        2021
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\headline.json",
+      "standard_error": 0.584303886572
+    },
+    "single_book_opener_grade_v1_sb_halfpoint_median_probability_rule_season_2022_2022_2022": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Opener grade at halfpoint_median line vs the cross-book consensus line, probability_rule pick, positive favours the single-book grade",
+      "effect": -1.388888888889,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -3.381642512077,
+        0.467289719626
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The pool always posts a half-point spread at one sportsbook. This row grades the same model against the middle of the half-point prices the books posted instead of the average of every book's number, on the 2022 season, and counts how many more games in a hundred it gets right that way, using the pick the card actually plays, the model's cover chance with the home-side adjustment.",
+      "probability_positive": 0.081975,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 216,
+      "seasons": [
+        2022,
+        2022
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\headline.json",
+      "standard_error": 0.989889215962
+    },
+    "single_book_opener_grade_v1_sb_halfpoint_median_probability_rule_season_2023_2023_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Opener grade at halfpoint_median line vs the cross-book consensus line, probability_rule pick, positive favours the single-book grade",
+      "effect": -1.25,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -2.586206896552,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The pool always posts a half-point spread at one sportsbook. This row grades the same model against the middle of the half-point prices the books posted instead of the average of every book's number, on the 2023 season, and counts how many more games in a hundred it gets right that way, using the pick the card actually plays, the model's cover chance with the home-side adjustment.",
+      "probability_positive": 0.019725,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 240,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\headline.json",
+      "standard_error": 0.657399575744
+    },
+    "single_book_opener_grade_v1_sb_halfpoint_median_probability_rule_season_2024_2024_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Opener grade at halfpoint_median line vs the cross-book consensus line, probability_rule pick, positive favours the single-book grade",
+      "effect": -0.404858299595,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -2.066115702479,
+        1.271186440678
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The pool always posts a half-point spread at one sportsbook. This row grades the same model against the middle of the half-point prices the books posted instead of the average of every book's number, on the 2024 season, and counts how many more games in a hundred it gets right that way, using the pick the card actually plays, the model's cover chance with the home-side adjustment.",
+      "probability_positive": 0.32655,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 247,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\headline.json",
+      "standard_error": 0.89216402847
+    },
+    "single_book_opener_grade_v1_sb_halfpoint_median_probability_rule_season_2025_2025_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Opener grade at halfpoint_median line vs the cross-book consensus line, probability_rule pick, positive favours the single-book grade",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -2.34375,
+        2.049180327869
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The pool always posts a half-point spread at one sportsbook. This row grades the same model against the middle of the half-point prices the books posted instead of the average of every book's number, on the 2025 season, and counts how many more games in a hundred it gets right that way, using the pick the card actually plays, the model's cover chance with the home-side adjustment.",
+      "probability_positive": 0.521025,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 251,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\headline.json",
+      "standard_error": 1.123841274462
+    },
+    "single_book_opener_grade_v1_sb_halfpoint_median_raw_paired_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Opener grade at halfpoint_median line vs the cross-book consensus line, raw pick, positive favours the single-book grade",
+      "effect": 0.072306579899,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -0.221406301951,
+        0.422237860662
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The pool always posts a half-point spread at one sportsbook. This row grades the same model against the middle of the half-point prices the books posted instead of the average of every book's number, on every paired game, and counts how many more games in a hundred it gets right that way, using the model's cover chance before the home-side adjustment.",
+      "probability_positive": 0.6709,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1383,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\headline.json",
+      "standard_error": 0.162772763376
+    },
+    "single_book_opener_grade_v1_sb_halfpoint_median_raw_season_2020_2020_2020": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Opener grade at halfpoint_median line vs the cross-book consensus line, raw pick, positive favours the single-book grade",
+      "effect": 0.492610837438,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        0.0,
+        1.492537313433
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The pool always posts a half-point spread at one sportsbook. This row grades the same model against the middle of the half-point prices the books posted instead of the average of every book's number, on the 2020 season, and counts how many more games in a hundred it gets right that way, using the model's cover chance before the home-side adjustment.",
+      "probability_positive": 0.8216,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 203,
+      "seasons": [
+        2020,
+        2020
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\headline.json",
+      "standard_error": 0.468029527293
+    },
+    "single_book_opener_grade_v1_sb_halfpoint_median_raw_season_2021_2021_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Opener grade at halfpoint_median line vs the cross-book consensus line, raw pick, positive favours the single-book grade",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -0.125117978739,
+        0.125117978739
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent. Degenerate cell: the paired difference is identical on all 226 games, so the block bootstrap returns a zero-width band that no re-measurement can widen. Per docs/weak_signal_pooling.md (defect 4, 2026-09-08) the band is FLOORED to what this sample size supports -- standard error 0.0638, from this family's own median SE^2*n curve at three robust sigmas -- and the row is kept, not dropped. The point estimate is the measurement and is unchanged.",
+      "plain_summary": "The pool always posts a half-point spread at one sportsbook. This row grades the same model against the middle of the half-point prices the books posted instead of the average of every book's number, on the 2021 season, and counts how many more games in a hundred it gets right that way, using the model's cover chance before the home-side adjustment.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 226,
+      "seasons": [
+        2021,
+        2021
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\headline.json",
+      "standard_error": 0.25025318709251315
+    },
+    "single_book_opener_grade_v1_sb_halfpoint_median_raw_season_2022_2022_2022": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Opener grade at halfpoint_median line vs the cross-book consensus line, raw pick, positive favours the single-book grade",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -1.401869158879,
+        1.345291479821
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The pool always posts a half-point spread at one sportsbook. This row grades the same model against the middle of the half-point prices the books posted instead of the average of every book's number, on the 2022 season, and counts how many more games in a hundred it gets right that way, using the model's cover chance before the home-side adjustment.",
+      "probability_positive": 0.49865,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 216,
+      "seasons": [
+        2022,
+        2022
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\headline.json",
+      "standard_error": 0.650524941769
+    },
+    "single_book_opener_grade_v1_sb_halfpoint_median_raw_season_2023_2023_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Opener grade at halfpoint_median line vs the cross-book consensus line, raw pick, positive favours the single-book grade",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -0.121413874558,
+        0.121413874558
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent. Degenerate cell: the paired difference is identical on all 240 games, so the block bootstrap returns a zero-width band that no re-measurement can widen. Per docs/weak_signal_pooling.md (defect 4, 2026-09-08) the band is FLOORED to what this sample size supports -- standard error 0.0619, from this family's own median SE^2*n curve at three robust sigmas -- and the row is kept, not dropped. The point estimate is the measurement and is unchanged.",
+      "plain_summary": "The pool always posts a half-point spread at one sportsbook. This row grades the same model against the middle of the half-point prices the books posted instead of the average of every book's number, on the 2023 season, and counts how many more games in a hundred it gets right that way, using the model's cover chance before the home-side adjustment.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 240,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\headline.json",
+      "standard_error": 0.24068456333653918
+    },
+    "single_book_opener_grade_v1_sb_halfpoint_median_raw_season_2024_2024_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Opener grade at halfpoint_median line vs the cross-book consensus line, raw pick, positive favours the single-book grade",
+      "effect": -0.404858299595,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -1.276595744681,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The pool always posts a half-point spread at one sportsbook. This row grades the same model against the middle of the half-point prices the books posted instead of the average of every book's number, on the 2024 season, and counts how many more games in a hundred it gets right that way, using the model's cover chance before the home-side adjustment.",
+      "probability_positive": 0.177675,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 247,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\headline.json",
+      "standard_error": 0.400085897806
+    },
+    "single_book_opener_grade_v1_sb_halfpoint_median_raw_season_2025_2025_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Opener grade at halfpoint_median line vs the cross-book consensus line, raw pick, positive favours the single-book grade",
+      "effect": 0.398406374502,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        0.0,
+        1.214574898785
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The pool always posts a half-point spread at one sportsbook. This row grades the same model against the middle of the half-point prices the books posted instead of the average of every book's number, on the 2025 season, and counts how many more games in a hundred it gets right that way, using the model's cover chance before the home-side adjustment.",
+      "probability_positive": 0.821375,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 251,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\headline.json",
+      "standard_error": 0.386935492195
+    },
+    "single_book_opener_grade_v1_sb_halfpoint_median_residual_paired_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Opener grade at halfpoint_median line vs the cross-book consensus line, residual pick, positive favours the single-book grade",
+      "effect": -0.144613159798,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -0.650759219089,
+        0.358937544867
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The pool always posts a half-point spread at one sportsbook. This row grades the same model against the middle of the half-point prices the books posted instead of the average of every book's number, on every paired game, and counts how many more games in a hundred it gets right that way, using the pick taken from the sign of the model's points edge.",
+      "probability_positive": 0.28085,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1383,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\headline.json",
+      "standard_error": 0.251813583613
+    },
+    "single_book_opener_grade_v1_sb_halfpoint_median_residual_season_2020_2020_2020": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Opener grade at halfpoint_median line vs the cross-book consensus line, residual pick, positive favours the single-book grade",
+      "effect": 0.492610837438,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -1.030927835052,
+        2.083333333333
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The pool always posts a half-point spread at one sportsbook. This row grades the same model against the middle of the half-point prices the books posted instead of the average of every book's number, on the 2020 season, and counts how many more games in a hundred it gets right that way, using the pick taken from the sign of the model's points edge.",
+      "probability_positive": 0.716075,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 203,
+      "seasons": [
+        2020,
+        2020
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\headline.json",
+      "standard_error": 0.847719880884
+    },
+    "single_book_opener_grade_v1_sb_halfpoint_median_residual_season_2021_2021_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Opener grade at halfpoint_median line vs the cross-book consensus line, residual pick, positive favours the single-book grade",
+      "effect": 0.884955752212,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        0.0,
+        2.202643171806
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The pool always posts a half-point spread at one sportsbook. This row grades the same model against the middle of the half-point prices the books posted instead of the average of every book's number, on the 2021 season, and counts how many more games in a hundred it gets right that way, using the pick taken from the sign of the model's points edge.",
+      "probability_positive": 0.94055,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 226,
+      "seasons": [
+        2021,
+        2021
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\headline.json",
+      "standard_error": 0.589177318165
+    },
+    "single_book_opener_grade_v1_sb_halfpoint_median_residual_season_2022_2022_2022": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Opener grade at halfpoint_median line vs the cross-book consensus line, residual pick, positive favours the single-book grade",
+      "effect": -0.462962962963,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -1.470588235294,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The pool always posts a half-point spread at one sportsbook. This row grades the same model against the middle of the half-point prices the books posted instead of the average of every book's number, on the 2022 season, and counts how many more games in a hundred it gets right that way, using the pick taken from the sign of the model's points edge.",
+      "probability_positive": 0.178325,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 216,
+      "seasons": [
+        2022,
+        2022
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\headline.json",
+      "standard_error": 0.458287722173
+    },
+    "single_book_opener_grade_v1_sb_halfpoint_median_residual_season_2023_2023_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Opener grade at halfpoint_median line vs the cross-book consensus line, residual pick, positive favours the single-book grade",
+      "effect": 0.416666666667,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        0.0,
+        1.260504201681
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The pool always posts a half-point spread at one sportsbook. This row grades the same model against the middle of the half-point prices the books posted instead of the average of every book's number, on the 2023 season, and counts how many more games in a hundred it gets right that way, using the pick taken from the sign of the model's points edge.",
+      "probability_positive": 0.822325,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 240,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\headline.json",
+      "standard_error": 0.397237414546
+    },
+    "single_book_opener_grade_v1_sb_halfpoint_median_residual_season_2024_2024_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Opener grade at halfpoint_median line vs the cross-book consensus line, residual pick, positive favours the single-book grade",
+      "effect": -0.80971659919,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -2.024291497976,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The pool always posts a half-point spread at one sportsbook. This row grades the same model against the middle of the half-point prices the books posted instead of the average of every book's number, on the 2024 season, and counts how many more games in a hundred it gets right that way, using the pick taken from the sign of the model's points edge.",
+      "probability_positive": 0.059475,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 247,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\headline.json",
+      "standard_error": 0.537556294406
+    },
+    "single_book_opener_grade_v1_sb_halfpoint_median_residual_season_2025_2025_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Opener grade at halfpoint_median line vs the cross-book consensus line, residual pick, positive favours the single-book grade",
+      "effect": -1.195219123506,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -2.542372881356,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The pool always posts a half-point spread at one sportsbook. This row grades the same model against the middle of the half-point prices the books posted instead of the average of every book's number, on the 2025 season, and counts how many more games in a hundred it gets right that way, using the pick taken from the sign of the model's points edge.",
+      "probability_positive": 0.018375,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 251,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\headline.json",
+      "standard_error": 0.657269497793
+    },
+    "single_book_opener_grade_v1_sb_kl1b_vs_s3_all_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Discrete key-number read KL1b against the served smooth read at one book's posted opener, positive favours the candidate",
+      "effect": 0.201477501679,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -0.461133069829,
+        0.878378378378
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The rule the card plays today: when the spread is set exactly on 3 or 7, the chance of covering is read off how games at a similar spread actually finished. Every game is graded against one book's posted opening spread, not the average across books. Measured on every game the book posted an opening spread for. This row counts the same thing after the usual weekly adjustments are applied to both.",
+      "probability_positive": 0.724975,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1489,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\cells.json",
+      "standard_error": 0.335915410106
+    },
+    "single_book_opener_grade_v1_sb_kl1b_vs_s3_all_standalone_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Discrete key-number read KL1b against the served smooth read at one book's posted opener, positive favours the candidate",
+      "effect": -0.067159167226,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -0.870730073677,
+        0.785417712984
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The rule the card plays today: when the spread is set exactly on 3 or 7, the chance of covering is read off how games at a similar spread actually finished. Every game is graded against one book's posted opening spread, not the average across books. Measured on every game the book posted an opening spread for. This row counts how many more games in a hundred it gets right than the smooth reading in use.",
+      "probability_positive": 0.43665,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1489,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\cells.json",
+      "standard_error": 0.420030378917
+    },
+    "single_book_opener_grade_v1_sb_kl1b_vs_s3_whole_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Discrete key-number read KL1b against the served smooth read at one book's posted opener, positive favours the candidate",
+      "effect": 0.48,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -1.076923076923,
+        2.090662469772
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The rule the card plays today: when the spread is set exactly on 3 or 7, the chance of covering is read off how games at a similar spread actually finished. Every game is graded against one book's posted opening spread, not the average across books. Measured only on games whose opening spread at that book was a whole number, which the pool never posts; reported for contrast. This row counts the same thing after the usual weekly adjustments are applied to both.",
+      "probability_positive": 0.723625,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 106,
+      "sample_games": 625,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\cells.json",
+      "standard_error": 0.800088710646
+    },
+    "single_book_opener_grade_v1_sb_kl1b_vs_s3_whole_standalone_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Discrete key-number read KL1b against the served smooth read at one book's posted opener, positive favours the candidate",
+      "effect": -0.16,
+      "effect_units": "accuracy_points",
+      "family": "single_book_opener_grade_v1",
+      "interval": [
+        -2.070063694268,
+        1.842546063652
+      ],
+      "league": "nfl",
+      "notes": "Same 2020-2025 seasons every other lane has read, and the atom set {3, 7} is lane T's, chosen after seeing lane K's bucket-7 gain on these same games. What is new is the LINE: a per-book posted opener that no prior lane has graded at, so the graded outcome differs from the consensus archive wherever the book and the consensus disagree. Descriptive reuse of a mined era, not independent confirmation; no rotation window spent.",
+      "plain_summary": "The rule the card plays today: when the spread is set exactly on 3 or 7, the chance of covering is read off how games at a similar spread actually finished. Every game is graded against one book's posted opening spread, not the average across books. Measured only on games whose opening spread at that book was a whole number, which the pool never posts; reported for contrast. This row counts how many more games in a hundred it gets right than the smooth reading in use.",
+      "probability_positive": 0.434525,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 106,
+      "sample_games": 625,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneP2\\cells.json",
+      "standard_error": 0.99880748838
+    }
+  }
+}

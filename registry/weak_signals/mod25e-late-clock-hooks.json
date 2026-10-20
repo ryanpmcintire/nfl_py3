@@ -1,0 +1,58 @@
+{
+  "family": "mod25e-late-clock-hooks",
+  "signals": {
+    "mod25e-gstop2-smoke-s31-final-drive-mechanism": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "GSTOP2 minus base final-drive (tie/trail 1-3, Q4 last drive) reach yl<=40, 73 v 78 drives, seed 31 one world; plays/drive, s/play, start clock, clock-expiry share unchanged within noise; timeouts used 0.14 v 0.14 v real 0.58 in both sims; unpaired game bootstrap 300 reps",
+      "effect": -4.5,
+      "effect_units": "rate_pp",
+      "family": "mod25e-late-clock-hooks",
+      "interval": [
+        -16.9,
+        7.3
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Reach drop is within sampling noise of one world; no clock carrier found; offense timeout use is the same shortfall in base and GSTOP2.",
+      "probability_positive": 0.26,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 544,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e179/fd.py",
+      "standard_error": null
+    },
+    "mod25e-gstop2-smoke-s31-final-drive-reach": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "GSTOP2 (clock from near-set row with served stop class) vs LDR+RG base, 1 world 4 seasons seed 31, burn 2, 544 games each; final drive tie/trail 1-3 P(reach yl<=40) sim-real gap -0.094 base to -0.141 GSTOP2 (moved away from real .423); P(score) .329 to .269 v real .340; Q4 last play <=5s .250 to .268 v real .214; clock expiry given reach .042 to .045 v .022; margin_sd 15.15 to 14.57, mass3 .154 to .129, pts/g 44.16 to 44.35. g2sth smoke had no e5.json at scoring.",
+      "effect": -4.7,
+      "effect_units": "rate_pp",
+      "family": "mod25e-late-clock-hooks",
+      "interval": null,
+      "league": "nfl",
+      "notes": "[2026-10-18T22:48:35.490051+00:00] effect_units retagged: 'accuracy_points' -> 'rate_pp'. Reason: units corrected on 2026-10-18: effect is a simulator-minus-real (or real-minus-served) gap in percentage points of an event rate, not pick accuracy",
+      "plain_summary": "One-world smoke is below power; GSTOP2 did not move the final-drive reach target toward real.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 544,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/mod25e3/e5_crHpqokgndecsmfwtjo2as2ypw2xfdcdtbkhghkekudwtpq2ugkyg2rtgw13gx2fag2sldrg_s31/e5.json",
+      "standard_error": null
+    }
+  }
+}

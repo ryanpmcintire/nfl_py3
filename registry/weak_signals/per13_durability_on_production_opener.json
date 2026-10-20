@@ -1,0 +1,33 @@
+{
+  "family": "per13_durability_on_production_opener",
+  "signals": {
+    "per13_durability_on_production_opener_ats": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Opener-grade primary week-blocked estimate -0.8772 accuracy points with 95% interval [-2.3864,+0.4464] and probability_positive 0.084. This is unresolved_below_power: the interval is not wholly below zero, the underlying durability trait has measured split-half reliability 0.793, and the positive control detected +43.860 points with probability_positive 1.000 rather than bounding an effect at this scale. The binding taxonomy therefore supplies no admissible closing ground.",
+      "closing_ground": null,
+      "description": "PER-13 opener-graded confirmation: durability-augmented P(plays) replacement of the nine production weak_stack injury columns versus unmodified weak_stack, both market_residual/ridge/alpha10, on the rotation-assigned Tuesday-opener window [2020,2021].",
+      "effect": -0.8771929824561403,
+      "effect_units": "accuracy_points",
+      "family": "per13_durability_on_production_opener",
+      "interval": [
+        -2.386377062273451,
+        0.4464285714285714
+      ],
+      "league": "nfl",
+      "notes": "Measured by scripts/per13_durability_on_production.py --mode screen --grade opener --seasons 2020-2021 --permutations 200 --bootstrap-samples 1000 --seed 20260826. The null ran first (200 within-week permutations; mean +0.1086 pts; observed at 3.0th percentile), then the positive control (43.860 pts, P+ 1.000), then this screen. Candidate 52.8509%, baseline 53.7281%, paired delta -0.8772 pts; home-pick rates 22.1030% vs 21.2446%; 2.146% picks differ. The opener child inherits the spent close family and acknowledges mined-season multiplicity. Do not pool with the close-graded per13_durability_on_production_ats row: same units but distinct grade/window and correlated lineage.",
+      "plain_summary": "At the Tuesday opener, the durability version changed the production model's pick on a small share of games and scored below the unchanged model in this two-season window. The opener result is unresolved research evidence -- it doesn't mean this version should replace what's currently played.",
+      "probability_positive": 0.084,
+      "recorded_at": "2026-09-02",
+      "reliability": 0.793,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/per13_durability_on_production_opener/20260902T144444Z/results.json; docs/per13_durability_opener_confirmation.md",
+      "standard_error": null
+    }
+  }
+}

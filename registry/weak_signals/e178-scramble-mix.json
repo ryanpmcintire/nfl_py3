@@ -1,0 +1,33 @@
+{
+  "family": "e178-scramble-mix",
+  "signals": {
+    "e178-neutral-3rd7plus-run-scramble-mix-gap": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Neutral 3rd and 7+ run conversion: real minus no-context LOSO exact-distance pool, decomposed into scramble-share effect (real 44.5% scrambles v pool 34.3%), within-scramble and within-designed conversion",
+      "effect": 2.9,
+      "effect_units": "rate_pp",
+      "family": "e178-scramble-mix",
+      "interval": [
+        2.31,
+        3.56
+      ],
+      "league": "nfl",
+      "notes": "game bootstrap 90%; within-scramble +1.55 [0.21,2.93] P>0 .968; within-designed +0.64 [-0.42,1.66]; proxy is LOSO exact-dist pool, not Geo-served rows (inferred)",
+      "plain_summary": "Share effect 2.90pp of a 5.1pp pool gap; CTX F leaves 3.08pp [1.26,4.88]",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1466,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "docs/lanes/mod25e-e176-neutral-yards.md",
+      "standard_error": 0.4
+    }
+  }
+}

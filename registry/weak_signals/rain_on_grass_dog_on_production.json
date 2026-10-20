@@ -1,0 +1,33 @@
+{
+  "family": "rain_on_grass_dog_on_production",
+  "signals": {
+    "rain_on_grass_dog_on_production": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% CI [-1.7058,+2.8446] crosses zero -- the EXPECTED shape for a real small signal at this evaluator's resolution, not grounds to close per AGENTS.md. Neither admissible ground applies: wrong_sign_resolved is unavailable (interval sits mostly on the predicted positive side, not entirely on the wrong side) and no_split_half_reliability is inadmissible (a deterministic pregame-safe flag built from surface + a validated forecast archive + the opener spread, zero measurement noise in the derivation itself). The forecast-precip-probability proxy (not an observed rain/snow outcome) is a construction caveat, disclosed, not a closing ground.",
+      "closing_ground": null,
+      "description": "Grass surface AND forecast precip probability >=60% (pool_decision archive, disclosed proxy for no local observed precip/snow column); UNDERDOG at the Tuesday opener stacked on PRODUCTION weak_stack.",
+      "effect": 0.6579,
+      "effect_units": "accuracy_points",
+      "family": "rain_on_grass_dog_on_production",
+      "interval": [
+        -1.7058,
+        2.8446
+      ],
+      "league": "nfl",
+      "notes": "ATS chaos-framing is new vs the existing forecast_weather_kn_precip_* cells (docs/weak_stack_v4.md), which test a TOTALS-market tilt, a different market, never poolable with this construct. No observed historical precipitation/snow column exists locally (docs/weather_venue_leads.md source-gap note); forecast_precip_prob_pct is genuinely pregame-safe by the archive's own cutoff-validation contract. Positive control +44.298 pts P+ 1.000 both blockings. Plain sign rule on the identical population reads +0.439 pts P+ 0.635 (same direction, smaller magnitude). Flag fires 154/4902 full-schedule games (grass AND forecast precip prob >=60%); 103 of the 154 lack a resolved opener-store spread. docs/weather_venue_leads.md.",
+      "plain_summary": "Underdog on a grass field with a high forecast chance of rain. Leans slightly positive for this rule but too small a sample to call yet.",
+      "probability_positive": 0.69175,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/weather_venue_flags_on_production/rain_on_grass/20260905T132107Z/results.json",
+      "standard_error": null
+    }
+  }
+}

@@ -1,0 +1,201 @@
+{
+  "family": "playcaller_change",
+  "signals": {
+    "playcaller_change_interim_overlay_module_full_archive": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked upper bound (+0.1322) is positive, so this is not a resolved wrong sign; season-blocked 95% [-0.263, 0.000] touches but does not sit strictly below zero. Reproduces registry/weak_signals.json:playcaller_change_lead29_production_screen_full_archive to within ordinary bootstrap-seed noise; recorded as its own entry because it verifies the new interim_playcaller_first_game_back_overlay challenger module's own code, not as a second independent measurement.",
+      "closing_ground": null,
+      "description": "LEAD-29 interim/midseason play-caller BACK overlay module (nfl_ats.interim_playcaller_first_game_back_overlay) applied directly and independently to the frozen 2020-2025 opener archive; a fidelity check that the new challenger's own module code reproduces the already-recorded production-conditional read.",
+      "effect": -0.1331,
+      "effect_units": "accuracy_points",
+      "family": "playcaller_change",
+      "interval": [
+        -0.4008,
+        0.1322
+      ],
+      "league": "nfl",
+      "notes": "Fidelity check: confirms nfl_ats.interim_playcaller_first_game_back_overlay.apply_interim_playcaller_first_game_back_overlay (the module backing the new ACTIVE_PROSPECTIVE challenger of the same name, registered 2026-09-11) reproduces registry/weak_signals.json:playcaller_change_lead29_production_screen_full_archive (-0.1331 pts, [-0.4008,+0.1322], P+0.16045 week / 0.04305 season, 4 of 1503 picks changed) to within ordinary bootstrap-seed noise. Zero rotation-registry window spent -- this is a direct archive application, not a confirmation_split. Live 2026 Week 1 preview (measured, record_interim_playcaller_first_game_back_overlay_decisions): 0 flips, all 14 pre-kickoff picks recorded as byte-identical mirrors of production's own pick, matching expectation since no midseason 2026 change has occurred yet.",
+      "plain_summary": "Testing whether backing a team in its very first game under a mid-season play-caller change helps, using the same rule the new free challenger applies every week: on the same six seasons of test games used before, it still costs a little accuracy rather than gaining any, though the sample of real changes (12) is thin.",
+      "probability_positive": 0.16045,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/playcaller_change_leads/interim_playcaller_first_game_back_overlay_dry_grade.json",
+      "standard_error": null
+    },
+    "playcaller_change_lead28_production_screen_full_archive": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% CI [-0.7275,+1.3898] crosses zero; no admissible closing ground.",
+      "closing_ground": null,
+      "description": "LEAD-28 post-bye playcaller-tenure tilt stacked on PRODUCTION weak_stack opener pick, full predeclared descriptive archive 2020-2025 (not a rotation-window confirmation; mined-archive multiplicity discount applies).",
+      "effect": 0.3327,
+      "effect_units": "accuracy_points",
+      "family": "playcaller_change",
+      "interval": [
+        -0.7275,
+        1.3898
+      ],
+      "league": "nfl",
+      "notes": "145 of 1,537 archive games flagged, 71 of 1,503 graded picks changed. Season-blocked 95% [-0.5810,+1.2676], P+ 0.7631. This archive was mined by other families; this reading carries that selection discount.",
+      "plain_summary": "Across six full seasons of picks, leaning toward the newer offensive playcaller (and away from the veteran one) after a bye week would have added about a third of an accuracy point, but the evidence is still short of certain.",
+      "probability_positive": 0.7337,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/playcaller_change_leads/production_results_lead28.json",
+      "standard_error": null
+    },
+    "playcaller_change_lead28_production_screen_window": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% CI [-0.8869,+2.6432] crosses zero; no admissible closing ground (not a resolved wrong sign, no positive control run).",
+      "closing_ground": null,
+      "description": "LEAD-28 post-bye playcaller-tenure tilt (back post-bye year-1/2 OC teams, fade post-bye year-3+ OC teams, clean-case only) stacked on PRODUCTION weak_stack opener pick, assigned rotation window 2020-2021.",
+      "effect": 0.8772,
+      "effect_units": "accuracy_points",
+      "family": "playcaller_change",
+      "interval": [
+        -0.8869,
+        2.6432
+      ],
+      "league": "nfl",
+      "notes": "22 of 456 graded games had picks changed. Season-blocked 95% [-0.4237,+2.2727], P+ 0.74935. See docs/playcaller_change_leads.md and artifacts/playcaller_change_leads/production_results_lead28.json.",
+      "plain_summary": "Backing the newer offensive playcaller (and fading the veteran one) on a team's first game back from its bye, on top of our regular picks, gained just under a point of accuracy on the 2020-2021 test slate, but the result is not yet certain.",
+      "probability_positive": 0.8287,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/playcaller_change_leads/production_results_lead28.json",
+      "standard_error": null
+    },
+    "playcaller_change_lead28_reliability_season_pair": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "95% CI [-0.5674,+0.9187] crosses zero on 7 season-pairs; not resolved toward zero (no_split_half_reliability requires a resolved-at-zero reading, not merely a wide interval) and not a resolved positive.",
+      "closing_ground": null,
+      "description": "LEAD-28 split-half reliability: post-bye new-OC-cover-rate minus veteran-OC-cover-rate, computed per season 2011-2024, correlated across 7 odd/even adjacent season pairs (2011-2012 ... 2023-2024).",
+      "effect": 0.2691,
+      "effect_units": "correlation",
+      "family": "playcaller_change",
+      "interval": [
+        -0.5674,
+        0.9187
+      ],
+      "league": "nfl",
+      "notes": "Spearman-Brown full-length correction +0.4241. Descriptive odd/even season-halves of the primary back-cell alone (not the interaction): odd seasons (154 games) gap -2.497 pts P+ 0.296; even seasons (149 games) gap -2.195 pts P+ 0.311 -- both halves lean the same direction as the pooled full-history read (-2.33 pts P+ 0.230). effect-units recorded as correlation (a Pearson r), not accuracy_points, because that is the quantity actually measured; see docs/playcaller_change_leads.md.",
+      "plain_summary": "We checked whether the post-bye new-playcaller-vs-veteran pattern shows up consistently from one pair of seasons to the next; it leans toward yes (a positive but uncertain correlation), not toward no.",
+      "probability_positive": 0.754,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.2691,
+      "sample_blocks": 7,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/playcaller_change_leads/screen_results.json",
+      "standard_error": null
+    },
+    "playcaller_change_lead29_production_screen_full_archive": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked upper bound (+0.1322) is positive, so this is not a resolved wrong sign; season-blocked 95% [-0.2630,0.0000] touches but does not sit strictly below zero. No admissible closing ground.",
+      "closing_ground": null,
+      "description": "LEAD-29 first-game-after-playcaller-change tilt stacked on PRODUCTION weak_stack opener pick, full predeclared descriptive archive 2020-2025 (all 12 counted events fall inside this archive).",
+      "effect": -0.1331,
+      "effect_units": "accuracy_points",
+      "family": "playcaller_change",
+      "interval": [
+        -0.4008,
+        0.1322
+      ],
+      "league": "nfl",
+      "notes": "12 of 1,537 archive games flagged (all 12 counted events), only 4 of 1,503 graded picks actually changed. Season-blocked 95% [-0.2630,0.0000], P+ 0.04305.",
+      "plain_summary": "Backing a team in its very first game under a new offensive or defensive playcaller, on top of our regular picks, actually cost a little accuracy across six seasons of test games -- the effect leans the wrong way here, though the sample is thin (12 events, 4 real pick changes).",
+      "probability_positive": 0.16045,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/playcaller_change_leads/production_results_lead29.json",
+      "standard_error": null
+    },
+    "playcaller_change_lead29_production_screen_window": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Degenerate: zero of the 12 counted in-season OC/DC changes (all 2022-2025) fall inside the assigned 2020-2021 window, so zero picks changed and the arm is identical to baseline. Not a real test of the direction; recorded for confirmation-window accounting only.",
+      "closing_ground": null,
+      "description": "LEAD-29 first-game-after-playcaller-change tilt (back the changed team, clean-case only) stacked on PRODUCTION weak_stack opener pick, assigned rotation window 2020-2021.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "playcaller_change",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "0 of 456 graded games flagged. This is a structural zero (window/event overlap), not evidence against the rule; see full_archive_descriptive in the same artifact for the real read.",
+      "plain_summary": "None of the coordinator changes we found happened to fall in the two-season slice used to spend this research window, so this particular test could not move the needle either way.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/playcaller_change_leads/production_results_lead29.json",
+      "standard_error": null
+    },
+    "playcaller_change_lead29_reliability_odd_even_seasons": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "playcaller_first_game is a rare in-season event flag (12 events, 4 seasons), not a repeated-measures per-team trait with enough seasons to correlate; a formal split-half coefficient does not apply (matches docs/snow_game_home_prep.md section 4 convention for thin per-event flags). Reported instead: odd-season half above, even-season half in notes. Neither refutes nor confirms.",
+      "closing_ground": null,
+      "description": "LEAD-29 split-half reliability: first-game-after-playcaller-change cover gap vs population, measured independently on odd-numbered and even-numbered seasons of the R1 2020-2025 opener population (method not_applicable for a formal correlation: only 12 events across 4 seasons).",
+      "effect": 7.1755,
+      "effect_units": "accuracy_points",
+      "family": "playcaller_change",
+      "interval": [
+        -35.8742,
+        50.1951
+      ],
+      "league": "nfl",
+      "notes": "Effect/interval/P+ above are the ODD-season half (7 first games, 2023+2025): gap +7.18 pts, 95% [-35.87,+50.20], P+ 0.6407. EVEN-season half (5 first games, 2022+2024): gap -10.03 pts, 95% [-50.10,+50.03], P+ 0.2858. Halves disagree in sign, as expected at n=7/n=5; not a zero-reliability closing ground, which requires a resolved-at-zero formal coefficient, not two noisy halves.",
+      "plain_summary": "There are too few coordinator-change events (12, across just 4 seasons) to test whether this pattern repeats reliably from year to year; the two halves of the data we do have point in different directions, which is expected noise at this size, not a refutation.",
+      "probability_positive": 0.6407,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 20,
+      "sample_games": 7,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/playcaller_change_leads/screen_results.json",
+      "standard_error": null
+    }
+  }
+}

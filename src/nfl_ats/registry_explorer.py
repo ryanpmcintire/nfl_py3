@@ -405,7 +405,7 @@ FAMILY_SOURCE_RULES: tuple[SourceRule, ...] = (
         "Adjusted plus-minus built from existing nflverse pbp/roster "
         "participation data already in the feature pipeline; no separate "
         "capture job.",
-        "registry/weak_signals.json unit_apm_* 'source' fields (read this "
+        "registry/weak_signals/ unit_apm_* 'source' fields (read this "
         "session); scheduler job-name grep (measured, no 'apm' match)",
     ),
     SourceRule(
@@ -413,7 +413,7 @@ FAMILY_SOURCE_RULES: tuple[SourceRule, ...] = (
         "derived_no_separate_capture",
         "Turf/venue history derived from the schedules.parquet venue+surface "
         "columns, the same basis confirmed for roof_battery/bye_overval.",
-        "registry/weak_signals.json surface_familiarity_* 'source' field (read this session)",
+        "registry/weak_signals/ surface_familiarity_* 'source' field (read this session)",
     ),
     SourceRule(
         "altitude_deficit",
@@ -421,7 +421,7 @@ FAMILY_SOURCE_RULES: tuple[SourceRule, ...] = (
         "Venue elevation vs. an away team's modal home elevation; static "
         "reference table registry/stadium_elevations.json plus the schedule's "
         "venue field, no live capture.",
-        "registry/weak_signals.json altitude_deficit_4000ft 'notes' field (read this session)",
+        "registry/weak_signals/ altitude_deficit_4000ft 'notes' field (read this session)",
     ),
     SourceRule(
         "ffc_adp",

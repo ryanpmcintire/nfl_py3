@@ -1,0 +1,117 @@
+{
+  "family": "lead83_unit2_501_looks",
+  "signals": {
+    "lead83_unit2_pooled_accuracy_points": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Pooled primary Brier remains unresolved; no closure is claimed for this cell.",
+      "closing_ground": null,
+      "description": "Noisy movement shrinkage versus refitted four-term base: pooled",
+      "effect": 0.143472022956,
+      "effect_units": "accuracy_points",
+      "family": "lead83_unit2_501_looks",
+      "interval": [
+        -0.99573257468,
+        1.70212765957
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When books disagree, this softens their line move before making the pick. It has not shown a dependable improvement over the usual calculation.",
+      "probability_positive": 0.499,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead83_unit2.md",
+      "standard_error": null
+    },
+    "lead83_unit2_pooled_brier_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Pooled primary Brier remains unresolved; no closure is claimed for this cell.",
+      "closing_ground": null,
+      "description": "Noisy movement shrinkage versus refitted four-term base: pooled",
+      "effect": -0.000169845047236,
+      "effect_units": "brier_improvement",
+      "family": "lead83_unit2_501_looks",
+      "interval": [
+        -0.000690244164975,
+        0.000176408547523
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When books disagree, this softens their line move before making the pick. It has not shown a dependable improvement over the usual calculation.",
+      "probability_positive": 0.24715,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead83_unit2.md",
+      "standard_error": null
+    },
+    "lead83_unit2_pooled_log_loss_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Pooled primary Brier remains unresolved; no closure is claimed for this cell.",
+      "closing_ground": null,
+      "description": "Noisy movement shrinkage versus refitted four-term base: pooled",
+      "effect": -0.000350039475421,
+      "effect_units": "log_loss_improvement",
+      "family": "lead83_unit2_501_looks",
+      "interval": [
+        -0.00141863156756,
+        0.000353458946242
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When books disagree, this softens their line move before making the pick. It has not shown a dependable improvement over the usual calculation.",
+      "probability_positive": 0.24515,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead83_unit2.md",
+      "standard_error": null
+    },
+    "lead83_unit2_pooled_rps_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Pooled primary Brier remains unresolved; no closure is claimed for this cell.",
+      "closing_ground": null,
+      "description": "Noisy movement shrinkage versus refitted four-term base: pooled",
+      "effect": -0.00640220529344,
+      "effect_units": "rps_improvement",
+      "family": "lead83_unit2_501_looks",
+      "interval": [
+        -0.0140197048332,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When books disagree, this softens their line move before making the pick. It has not shown a dependable improvement over the usual calculation.",
+      "probability_positive": 0.02965,
+      "recorded_at": "2026-09-29",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 697,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead83_unit2.md",
+      "standard_error": null
+    }
+  }
+}

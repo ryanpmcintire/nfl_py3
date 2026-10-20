@@ -1,0 +1,201 @@
+{
+  "family": "lattice_centre_challenger",
+  "signals": {
+    "mod17_lattice_centre_closest_score": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which closes nothing. The positive control moved this metric by +2.371 [+2.149, +2.605], proving the instrument detects a score-error change of about 2.4 points; the measured effect is 0.027 points, roughly ninety times smaller, so the control bounds nothing at this size and bounded_by_control is not admissible.",
+      "closing_ground": null,
+      "description": "Pick-deciding-margin lattice centre versus the served predicted_margin centre: paired closest-score error, abs(guess_home minus actual_home) plus abs(guess_away minus actual_away), served minus challenger, every graded game in the walk-forward opener archive",
+      "effect": -0.026675341574495772,
+      "effect_units": "mae_improvement",
+      "family": "lattice_centre_challenger",
+      "interval": [
+        -0.06153049249679105,
+        0.009121266313257112
+      ],
+      "league": "nfl",
+      "notes": "Sensitive metric: the oracle-margin control registers on it, unlike the closest-total metric.",
+      "plain_summary": "The projected final score moved on about half the games and ended up a fraction of a point further from the real score on average, a gap far too small for this many games to resolve.",
+      "probability_positive": 0.07075,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod17_lattice_centre/20260911T043520Z/summary.json; docs/tiebreaker.md 2026-09-11 predeclaration",
+      "standard_error": null
+    },
+    "mod17_lattice_centre_closest_score_last_game": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared secondary population, 101 games. Interval crosses zero, which closes nothing; the control detects a 2.4-point score-error move and this is 0.02 points, so no control bound applies.",
+      "closing_ground": null,
+      "description": "Pick-deciding-margin lattice centre versus the served predicted_margin centre: paired closest-score error on the week's last game only",
+      "effect": -0.019801980198019802,
+      "effect_units": "mae_improvement",
+      "family": "lattice_centre_challenger",
+      "interval": [
+        -0.16831683168316833,
+        0.12871287128712872
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "On the one game each week the pool scores, the two guessed scores finish about level against the real final.",
+      "probability_positive": 0.39775,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 101,
+      "sample_games": 101,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod17_lattice_centre/20260911T043520Z/summary.json; docs/tiebreaker.md 2026-09-11 predeclaration",
+      "standard_error": null
+    },
+    "mod17_lattice_centre_closest_total": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which closes nothing. The predeclared positive control (centre the lattice on the REALISED margin) moved this same metric by -0.0221 [-0.0580, +0.0132], so perfect margin knowledge buys no closest-total accuracy either: the instrument was never shown able to register a margin-centre change on the total axis, so bounded_by_control is not admissible and the sign is not resolved.",
+      "closing_ground": null,
+      "description": "Tiebreaker lattice centred on the pick-deciding margin (predicted_margin plus the served residual location) instead of the raw predicted_margin: paired closest-total absolute error, served minus challenger, every graded game in the walk-forward opener archive",
+      "effect": -0.02147039687703318,
+      "effect_units": "mae_improvement",
+      "family": "lattice_centre_challenger",
+      "interval": [
+        -0.052330671432449544,
+        0.011628637346192133
+      ],
+      "league": "nfl",
+      "notes": "Both arms share the market total as the total centre; the low-side shade stays in its own ledger.",
+      "plain_summary": "Moving the projected score to the margin that actually decides the pick left the guessed total about the same distance from the real total as before (two hundredths of a point worse on average, well inside the noise).",
+      "probability_positive": 0.0985,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod17_lattice_centre/20260911T043520Z/summary.json; docs/tiebreaker.md 2026-09-11 predeclaration",
+      "standard_error": null
+    },
+    "mod17_lattice_centre_closest_total_last_game": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared secondary population, 101 games. Interval crosses zero, which closes nothing, and the positive control shows the closest-total metric does not move even under perfect margin knowledge, so no control bound applies.",
+      "closing_ground": null,
+      "description": "Pick-deciding-margin lattice centre versus the served predicted_margin centre: paired closest-total absolute error on the week's last game only, the game the pool actually breaks ties on",
+      "effect": -0.019801980198019802,
+      "effect_units": "mae_improvement",
+      "family": "lattice_centre_challenger",
+      "interval": [
+        -0.12871287128712872,
+        0.0891089108910891
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Looking only at the one game each week the pool scores, the two ways of building the guessed score finish about level on how close the total lands.",
+      "probability_positive": 0.37125,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 101,
+      "sample_games": 101,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod17_lattice_centre/20260911T043520Z/summary.json; docs/tiebreaker.md 2026-09-11 predeclaration",
+      "standard_error": null
+    },
+    "mod17_lattice_centre_control_closest_score": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "The control fires: perfect margin knowledge moves the closest-score metric by 2.371 points with the whole interval above zero, so the instrument can detect a score-error change of that size. It was never shown able to detect one 90 times smaller, which is the size the real challenger measured.",
+      "closing_ground": null,
+      "description": "Positive control for the lattice-centre comparison: centre the lattice on the REALISED home margin, paired closest-score error against the served predicted_margin centre",
+      "effect": 2.3708523096942096,
+      "effect_units": "mae_improvement",
+      "family": "lattice_centre_challenger",
+      "interval": [
+        2.148818770226537,
+        2.604547329732973
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Knowing the real winning margin in advance would put the guessed score about two and a half points closer to the real final, which is how we know the score half of this test can tell methods apart at all.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod17_lattice_centre/20260911T043520Z/summary.json; docs/tiebreaker.md 2026-09-11 predeclaration",
+      "standard_error": null
+    },
+    "mod17_lattice_centre_control_closest_total": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "The control's job was to prove the instrument can register a margin-centre change on this metric. It does not: perfect knowledge of the realised margin buys no closest-total accuracy, because the total axis is pinned by the market total and the one-point tolerance. The closest-total metric is therefore uninformative about the margin centre and cannot bound anything.",
+      "closing_ground": null,
+      "description": "Positive control for the lattice-centre comparison: centre the lattice on the REALISED home margin, paired closest-total absolute error against the served predicted_margin centre",
+      "effect": -0.022121014964216004,
+      "effect_units": "mae_improvement",
+      "family": "lattice_centre_challenger",
+      "interval": [
+        -0.05797219545377246,
+        0.013213121972699235
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Even if you knew the real winning margin in advance, the guessed total would land no closer to the real total, so the total half of the tiebreak cannot tell these two methods apart.",
+      "probability_positive": 0.11,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod17_lattice_centre/20260911T043520Z/summary.json; docs/tiebreaker.md 2026-09-11 predeclaration",
+      "standard_error": null
+    },
+    "mod17_lattice_centre_pick_consistency": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Resolvably positive: the whole interval sits above zero and the challenger is on the pick side in 100 percent of games against the served centre's 85.0 percent. The classification enum has no resolved-positive state and no closing ground applies, so the non-terminal option is recorded and the evidence states the direction.",
+      "closing_ground": null,
+      "description": "Share of games whose tiebreaker lattice centre sits strictly on the side the card actually picks: challenger minus served, every graded game in the walk-forward opener archive",
+      "effect": 15.029277813923228,
+      "effect_units": "accuracy_points",
+      "family": "lattice_centre_challenger",
+      "interval": [
+        13.006644891803786,
+        16.939312277511362
+      ],
+      "league": "nfl",
+      "notes": "This is the C2 defect in docs/tiebreaker.md priced directly.",
+      "plain_summary": "On about one game in seven the projected score is built around a margin that backs the other team; centring it on the margin that decides the pick removes every one of those.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod17_lattice_centre/20260911T043520Z/summary.json; docs/tiebreaker.md 2026-09-11 predeclaration",
+      "standard_error": null
+    }
+  }
+}

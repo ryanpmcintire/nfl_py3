@@ -1,0 +1,229 @@
+{
+  "family": "mod25_distillation",
+  "signals": {
+    "mod25 distillation hgb_nomkt proxy acc_diff_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval not resolved at this sample; no refuted mechanism or positive-control bound",
+      "closing_ground": null,
+      "description": "Distilled margin from synthetic crj (hgb_nomkt) as one fitted term on the base ridge, accuracy diff vs base, 2011-2019 SBR open",
+      "effect": 0.896459,
+      "effect_units": "accuracy_points",
+      "family": "mod25_distillation",
+      "interval": [
+        -0.313761,
+        2.56295
+      ],
+      "league": "nfl",
+      "notes": "Generator crj at scale .9 still fails margin SD (15.6 vs band 13.97-14.87), non-strength variance (about 217 vs 178) and late-season R-squared (.104-.107 vs .132-.166); student learned features to true expected margin on 130,560 synthetic games (R2 vs true .513 holdout worlds; oracle R2 vs realized .244, student .128), transferred to real with walk-forward feature standardisation; market columns excluded (real stored line is the close); one fitted term w*(distilled minus line minus base) with w from leave-one-season-out base predictions in training. Looks counted: 2 students x 2 eras x 2 metrics = 8 cells; primary is ridge_nomkt.",
+      "plain_summary": "hgb_nomkt 2011-2019 SBR open: record 1162-1069 vs base 1142-1089",
+      "probability_positive": 0.8862,
+      "recorded_at": "2026-10-02",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod25_pipeline_v2/grade_hgb_nomkt.json",
+      "standard_error": 0.733855
+    },
+    "mod25 distillation hgb_nomkt proxy recal_logloss_gain": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval not resolved at this sample; no refuted mechanism or positive-control bound",
+      "closing_ground": null,
+      "description": "Distilled margin from synthetic crj (hgb_nomkt) as one fitted term on the base ridge, recalibrated log loss gain vs base, 2011-2019 SBR open",
+      "effect": 0.001111,
+      "effect_units": "log_loss_improvement",
+      "family": "mod25_distillation",
+      "interval": [
+        3.3e-05,
+        0.002196
+      ],
+      "league": "nfl",
+      "notes": "Generator crj at scale .9 still fails margin SD (15.6 vs band 13.97-14.87), non-strength variance (about 217 vs 178) and late-season R-squared (.104-.107 vs .132-.166); student learned features to true expected margin on 130,560 synthetic games (R2 vs true .513 holdout worlds; oracle R2 vs realized .244, student .128), transferred to real with walk-forward feature standardisation; market columns excluded (real stored line is the close); one fitted term w*(distilled minus line minus base) with w from leave-one-season-out base predictions in training. Looks counted: 2 students x 2 eras x 2 metrics = 8 cells; primary is ridge_nomkt.",
+      "plain_summary": "hgb_nomkt 2011-2019 SBR open: record 1162-1069 vs base 1142-1089",
+      "probability_positive": 0.9782,
+      "recorded_at": "2026-10-02",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod25_pipeline_v2/grade_hgb_nomkt.json",
+      "standard_error": 0.000552
+    },
+    "mod25 distillation hgb_nomkt true acc_diff_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval not resolved at this sample; no refuted mechanism or positive-control bound",
+      "closing_ground": null,
+      "description": "Distilled margin from synthetic crj (hgb_nomkt) as one fitted term on the base ridge, accuracy diff vs base, 2020-2025 Tuesday opener",
+      "effect": -0.266134,
+      "effect_units": "accuracy_points",
+      "family": "mod25_distillation",
+      "interval": [
+        -1.551957,
+        0.853805
+      ],
+      "league": "nfl",
+      "notes": "Generator crj at scale .9 still fails margin SD (15.6 vs band 13.97-14.87), non-strength variance (about 217 vs 178) and late-season R-squared (.104-.107 vs .132-.166); student learned features to true expected margin on 130,560 synthetic games (R2 vs true .513 holdout worlds; oracle R2 vs realized .244, student .128), transferred to real with walk-forward feature standardisation; market columns excluded (real stored line is the close); one fitted term w*(distilled minus line minus base) with w from leave-one-season-out base predictions in training. Looks counted: 2 students x 2 eras x 2 metrics = 8 cells; primary is ridge_nomkt.",
+      "plain_summary": "hgb_nomkt 2020-2025 Tuesday opener: record 798-705 vs base 802-701",
+      "probability_positive": 0.3248,
+      "recorded_at": "2026-10-02",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod25_pipeline_v2/grade_hgb_nomkt.json",
+      "standard_error": 0.613715
+    },
+    "mod25 distillation hgb_nomkt true recal_logloss_gain": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval not resolved at this sample; no refuted mechanism or positive-control bound",
+      "closing_ground": null,
+      "description": "Distilled margin from synthetic crj (hgb_nomkt) as one fitted term on the base ridge, recalibrated log loss gain vs base, 2020-2025 Tuesday opener",
+      "effect": 0.000207,
+      "effect_units": "log_loss_improvement",
+      "family": "mod25_distillation",
+      "interval": [
+        -0.000657,
+        0.000911
+      ],
+      "league": "nfl",
+      "notes": "Generator crj at scale .9 still fails margin SD (15.6 vs band 13.97-14.87), non-strength variance (about 217 vs 178) and late-season R-squared (.104-.107 vs .132-.166); student learned features to true expected margin on 130,560 synthetic games (R2 vs true .513 holdout worlds; oracle R2 vs realized .244, student .128), transferred to real with walk-forward feature standardisation; market columns excluded (real stored line is the close); one fitted term w*(distilled minus line minus base) with w from leave-one-season-out base predictions in training. Looks counted: 2 students x 2 eras x 2 metrics = 8 cells; primary is ridge_nomkt.",
+      "plain_summary": "hgb_nomkt 2020-2025 Tuesday opener: record 798-705 vs base 802-701",
+      "probability_positive": 0.7052,
+      "recorded_at": "2026-10-02",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod25_pipeline_v2/grade_hgb_nomkt.json",
+      "standard_error": 0.0004
+    },
+    "mod25 distillation ridge_nomkt proxy acc_diff_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval not resolved at this sample; no refuted mechanism or positive-control bound",
+      "closing_ground": null,
+      "description": "Distilled margin from synthetic crj (ridge_nomkt) as one fitted term on the base ridge, accuracy diff vs base, 2011-2019 SBR open",
+      "effect": 0.627521,
+      "effect_units": "accuracy_points",
+      "family": "mod25_distillation",
+      "interval": [
+        -1.078191,
+        2.85469
+      ],
+      "league": "nfl",
+      "notes": "Generator crj at scale .9 still fails margin SD (15.6 vs band 13.97-14.87), non-strength variance (about 217 vs 178) and late-season R-squared (.104-.107 vs .132-.166); student learned features to true expected margin on 130,560 synthetic games (R2 vs true .513 holdout worlds; oracle R2 vs realized .244, student .128), transferred to real with walk-forward feature standardisation; market columns excluded (real stored line is the close); one fitted term w*(distilled minus line minus base) with w from leave-one-season-out base predictions in training. Looks counted: 2 students x 2 eras x 2 metrics = 8 cells; primary is ridge_nomkt.",
+      "plain_summary": "ridge_nomkt 2011-2019 SBR open: record 1156-1075 vs base 1142-1089",
+      "probability_positive": 0.7037,
+      "recorded_at": "2026-10-02",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod25_pipeline_v2/grade_ridge_nomkt.json",
+      "standard_error": 1.003286
+    },
+    "mod25 distillation ridge_nomkt proxy recal_logloss_gain": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval not resolved at this sample; no refuted mechanism or positive-control bound",
+      "closing_ground": null,
+      "description": "Distilled margin from synthetic crj (ridge_nomkt) as one fitted term on the base ridge, recalibrated log loss gain vs base, 2011-2019 SBR open",
+      "effect": 0.001006,
+      "effect_units": "log_loss_improvement",
+      "family": "mod25_distillation",
+      "interval": [
+        -0.000104,
+        0.00215
+      ],
+      "league": "nfl",
+      "notes": "Generator crj at scale .9 still fails margin SD (15.6 vs band 13.97-14.87), non-strength variance (about 217 vs 178) and late-season R-squared (.104-.107 vs .132-.166); student learned features to true expected margin on 130,560 synthetic games (R2 vs true .513 holdout worlds; oracle R2 vs realized .244, student .128), transferred to real with walk-forward feature standardisation; market columns excluded (real stored line is the close); one fitted term w*(distilled minus line minus base) with w from leave-one-season-out base predictions in training. Looks counted: 2 students x 2 eras x 2 metrics = 8 cells; primary is ridge_nomkt.",
+      "plain_summary": "ridge_nomkt 2011-2019 SBR open: record 1156-1075 vs base 1142-1089",
+      "probability_positive": 0.96,
+      "recorded_at": "2026-10-02",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod25_pipeline_v2/grade_ridge_nomkt.json",
+      "standard_error": 0.000575
+    },
+    "mod25 distillation ridge_nomkt true acc_diff_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval not resolved at this sample; no refuted mechanism or positive-control bound",
+      "closing_ground": null,
+      "description": "Distilled margin from synthetic crj (ridge_nomkt) as one fitted term on the base ridge, accuracy diff vs base, 2020-2025 Tuesday opener",
+      "effect": 0.199601,
+      "effect_units": "accuracy_points",
+      "family": "mod25_distillation",
+      "interval": [
+        -0.630252,
+        1.210962
+      ],
+      "league": "nfl",
+      "notes": "Generator crj at scale .9 still fails margin SD (15.6 vs band 13.97-14.87), non-strength variance (about 217 vs 178) and late-season R-squared (.104-.107 vs .132-.166); student learned features to true expected margin on 130,560 synthetic games (R2 vs true .513 holdout worlds; oracle R2 vs realized .244, student .128), transferred to real with walk-forward feature standardisation; market columns excluded (real stored line is the close); one fitted term w*(distilled minus line minus base) with w from leave-one-season-out base predictions in training. Looks counted: 2 students x 2 eras x 2 metrics = 8 cells; primary is ridge_nomkt.",
+      "plain_summary": "ridge_nomkt 2020-2025 Tuesday opener: record 805-698 vs base 802-701",
+      "probability_positive": 0.584,
+      "recorded_at": "2026-10-02",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod25_pipeline_v2/grade_ridge_nomkt.json",
+      "standard_error": 0.469698
+    },
+    "mod25 distillation ridge_nomkt true recal_logloss_gain": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval not resolved at this sample; no refuted mechanism or positive-control bound",
+      "closing_ground": null,
+      "description": "Distilled margin from synthetic crj (ridge_nomkt) as one fitted term on the base ridge, recalibrated log loss gain vs base, 2020-2025 Tuesday opener",
+      "effect": 0.000162,
+      "effect_units": "log_loss_improvement",
+      "family": "mod25_distillation",
+      "interval": [
+        -0.000519,
+        0.000812
+      ],
+      "league": "nfl",
+      "notes": "Generator crj at scale .9 still fails margin SD (15.6 vs band 13.97-14.87), non-strength variance (about 217 vs 178) and late-season R-squared (.104-.107 vs .132-.166); student learned features to true expected margin on 130,560 synthetic games (R2 vs true .513 holdout worlds; oracle R2 vs realized .244, student .128), transferred to real with walk-forward feature standardisation; market columns excluded (real stored line is the close); one fitted term w*(distilled minus line minus base) with w from leave-one-season-out base predictions in training. Looks counted: 2 students x 2 eras x 2 metrics = 8 cells; primary is ridge_nomkt.",
+      "plain_summary": "ridge_nomkt 2020-2025 Tuesday opener: record 805-698 vs base 802-701",
+      "probability_positive": 0.6815,
+      "recorded_at": "2026-10-02",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod25_pipeline_v2/grade_ridge_nomkt.json",
+      "standard_error": 0.00034
+    }
+  }
+}

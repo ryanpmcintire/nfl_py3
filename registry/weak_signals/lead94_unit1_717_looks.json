@@ -1,0 +1,901 @@
+{
+  "family": "lead94_unit1_717_looks",
+  "signals": {
+    "lead94_unit1_2023-adjusted_deadline-all_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2023-adjusted_deadline-all_mae",
+      "effect": -0.0585774058577,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.145228215768,
+        0.0208333333333
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.0789,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 239,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2023-adjusted_deadline-last_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2023-adjusted_deadline-last_mae",
+      "effect": 0.0555555555556,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.222222222222,
+        0.333333333333
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.6453,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2023-deadline-all_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2023-deadline-all_mae",
+      "effect": -0.0836820083682,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.195744680851,
+        0.0158761904762
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.04985,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 239,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2023-deadline-last_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2023-deadline-last_mae",
+      "effect": 0.0555555555556,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.222222222222,
+        0.333333333333
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.6434,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2023-median-all_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2023-median-all_mae",
+      "effect": 1.87447698745,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        0.874014947827,
+        2.78111587983
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.9999,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 239,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2023-median-last_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2023-median-last_mae",
+      "effect": 1.33333333333,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.944444444444,
+        3.38888888889
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.884,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2023-tuesday-all_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2023-tuesday-all_mae",
+      "effect": 0.112970711297,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        0.0207468879668,
+        0.210300429185
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.99125,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 239,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2023-tuesday-last_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2023-tuesday-last_mae",
+      "effect": 0.277777777778,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.166666666667,
+        0.777777777778
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.8843,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2024-adjusted_deadline-all_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2024-adjusted_deadline-all_mae",
+      "effect": -0.126050420168,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.262717343659,
+        0.0125013075314
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.0351,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 238,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2024-adjusted_deadline-last_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2024-adjusted_deadline-last_mae",
+      "effect": -0.111111111111,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.555555555556,
+        0.333333333333
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.322,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2024-deadline-all_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2024-deadline-all_mae",
+      "effect": -0.126050420168,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.262717343659,
+        0.0125013075314
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.0351,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 238,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2024-deadline-last_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2024-deadline-last_mae",
+      "effect": -0.111111111111,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.555555555556,
+        0.333333333333
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.322,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2024-median-all_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2024-median-all_mae",
+      "effect": 0.273109243697,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.320516877637,
+        0.828451882845
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.82245,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 238,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2024-median-last_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2024-median-last_mae",
+      "effect": -0.388888888889,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -2.0,
+        1.11111111111
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.31075,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2024-tuesday-all_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2024-tuesday-all_mae",
+      "effect": -0.22268907563,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.497992367878,
+        0.0480585509313
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.0544,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 238,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2024-tuesday-last_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2024-tuesday-last_mae",
+      "effect": 0.111111111111,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.777777777778,
+        1.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.5966,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2025-adjusted_deadline-all_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2025-adjusted_deadline-all_mae",
+      "effect": -0.168776371308,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.337606837607,
+        -0.00847457627119
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.0192,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 237,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2025-adjusted_deadline-last_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2025-adjusted_deadline-last_mae",
+      "effect": 0.111111111111,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.333333333333,
+        0.611111111111
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.6623,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2025-deadline-all_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2025-deadline-all_mae",
+      "effect": -0.198312236287,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.338983050847,
+        -0.0635593220339
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.00215,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 237,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2025-deadline-last_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2025-deadline-last_mae",
+      "effect": 0.111111111111,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.277777777778,
+        0.5
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.72075,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2025-median-all_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2025-median-all_mae",
+      "effect": 0.324894514768,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.0808510638298,
+        0.758931260757
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.9352,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 237,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2025-median-last_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2025-median-last_mae",
+      "effect": 0.0555555555556,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -1.72222222222,
+        1.94444444444
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.5185,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2025-tuesday-all_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2025-tuesday-all_mae",
+      "effect": -0.232067510549,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.502092050209,
+        0.00862256371814
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.03055,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 237,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_2025-tuesday-last_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: 2025-tuesday-last_mae",
+      "effect": 0.111111111111,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.555555555556,
+        0.777777777778
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.61865,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_pooled-adjusted_deadline-all_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: pooled-adjusted_deadline-all_mae",
+      "effect": -0.117647058824,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.217573372481,
+        -0.0334704756141
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.0015,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 714,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_pooled-adjusted_deadline-last_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: pooled-adjusted_deadline-last_mae",
+      "effect": 0.0185185185185,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.259259259259,
+        0.277777777778
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.55295,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 54,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_pooled-deadline-all_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: pooled-deadline-all_mae",
+      "effect": -0.135854341737,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.229020695578,
+        -0.0500695410292
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.0009,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 714,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_pooled-deadline-last_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: pooled-deadline-last_mae",
+      "effect": 0.0185185185185,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.240740740741,
+        0.240740740741
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.56965,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 54,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_pooled-median-all_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: pooled-median-all_mae",
+      "effect": 0.826330532213,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        0.0923262713572,
+        1.86217908203
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.9937,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 714,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_pooled-median-last_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: pooled-median-last_mae",
+      "effect": 0.333333333333,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.925925925926,
+        1.75925925926
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.6652,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 54,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_pooled-tuesday-all_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: pooled-tuesday-all_mae",
+      "effect": -0.113445378151,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.336643619286,
+        0.108386251032
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.1711,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 714,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    },
+    "lead94_unit1_pooled-tuesday-last_mae-mae_improvement": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Three held-out seasons; no refuted mechanism or powered control. All 717 declared looks reported.",
+      "closing_ground": null,
+      "description": "Final-game total guess weighted toward final-game-like games versus the comparator: pooled-tuesday-last_mae",
+      "effect": 0.166666666667,
+      "effect_units": "mae_improvement",
+      "family": "lead94_unit1_717_looks",
+      "interval": [
+        -0.259259259259,
+        0.555555555556
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "This lets the last game of the week count more when learning how totals move after Tuesday, then guesses its combined score. Picks against the spread are unchanged; this is a research result only.",
+      "probability_positive": 0.7903,
+      "recorded_at": "2026-09-30",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 54,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead94_unit1.md",
+      "standard_error": null
+    }
+  }
+}

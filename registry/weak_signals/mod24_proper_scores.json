@@ -1,0 +1,481 @@
+{
+  "family": "mod24_proper_scores",
+  "signals": {
+    "mod24_u2_u1_alpha_only_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval not resolved to wrong side; no positive control.",
+      "closing_ground": null,
+      "description": "MOD-23 arm u1_alpha_only vs served base at Tuesday opener 2020-2025: paired cover log loss under discrete lattice (positive = arm better); season-blocked bootstrap.",
+      "effect": -0.00011638365448401217,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_proper_scores",
+      "interval": [
+        -0.0008364794987835271,
+        0.00073588276940269
+      ],
+      "league": "nfl",
+      "notes": "Look 1 of 51 (17 arms x 3 metrics); Brier and RPS in results.json.",
+      "plain_summary": "Whether this MOD-23 variant gives better-calibrated cover probabilities than the base model at the opener.",
+      "probability_positive": 0.373,
+      "recorded_at": "2026-10-01",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_u2/results.json",
+      "standard_error": null
+    },
+    "mod24_u2_u1_greedy_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval not resolved to wrong side; no positive control.",
+      "closing_ground": null,
+      "description": "MOD-23 arm u1_greedy vs served base at Tuesday opener 2020-2025: paired cover log loss under discrete lattice (positive = arm better); season-blocked bootstrap.",
+      "effect": 0.004123726523304582,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_proper_scores",
+      "interval": [
+        -0.00013415730966167313,
+        0.00906612619321203
+      ],
+      "league": "nfl",
+      "notes": "Look 1 of 51 (17 arms x 3 metrics); Brier and RPS in results.json.",
+      "plain_summary": "Whether this MOD-23 variant gives better-calibrated cover probabilities than the base model at the opener.",
+      "probability_positive": 0.969,
+      "recorded_at": "2026-10-01",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_u2/results.json",
+      "standard_error": null
+    },
+    "mod24_u2_u2_divergence_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval not resolved to wrong side; no positive control.",
+      "closing_ground": null,
+      "description": "MOD-23 arm u2_divergence vs served base at Tuesday opener 2020-2025: paired cover log loss under discrete lattice (positive = arm better); season-blocked bootstrap.",
+      "effect": -0.00025131982876599134,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_proper_scores",
+      "interval": [
+        -0.0008332814231704403,
+        0.00021217631688787917
+      ],
+      "league": "nfl",
+      "notes": "Look 1 of 51 (17 arms x 3 metrics); Brier and RPS in results.json.",
+      "plain_summary": "Whether this MOD-23 variant gives better-calibrated cover probabilities than the base model at the opener.",
+      "probability_positive": 0.1828,
+      "recorded_at": "2026-10-01",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_u2/results.json",
+      "standard_error": null
+    },
+    "mod24_u2_u2_full_strength_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval not resolved to wrong side; no positive control.",
+      "closing_ground": null,
+      "description": "MOD-23 arm u2_full_strength vs served base at Tuesday opener 2020-2025: paired cover log loss under discrete lattice (positive = arm better); season-blocked bootstrap.",
+      "effect": -0.00011239253707055795,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_proper_scores",
+      "interval": [
+        -0.00044320092103374866,
+        0.0002853362959635974
+      ],
+      "league": "nfl",
+      "notes": "Look 1 of 51 (17 arms x 3 metrics); Brier and RPS in results.json.",
+      "plain_summary": "Whether this MOD-23 variant gives better-calibrated cover probabilities than the base model at the opener.",
+      "probability_positive": 0.2618,
+      "recorded_at": "2026-10-01",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_u2/results.json",
+      "standard_error": null
+    },
+    "mod24_u2_u2_lineup_and_divergence_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval not resolved to wrong side; no positive control.",
+      "closing_ground": null,
+      "description": "MOD-23 arm u2_lineup_and_divergence vs served base at Tuesday opener 2020-2025: paired cover log loss under discrete lattice (positive = arm better); season-blocked bootstrap.",
+      "effect": -0.0006292595471062885,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_proper_scores",
+      "interval": [
+        -0.001141450071247297,
+        -0.00019019935917262027
+      ],
+      "league": "nfl",
+      "notes": "Look 1 of 51 (17 arms x 3 metrics); Brier and RPS in results.json.",
+      "plain_summary": "Whether this MOD-23 variant gives better-calibrated cover probabilities than the base model at the opener.",
+      "probability_positive": 0.001,
+      "recorded_at": "2026-10-01",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_u2/results.json",
+      "standard_error": null
+    },
+    "mod24_u2_u2_lineup_total_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval not resolved to wrong side; no positive control.",
+      "closing_ground": null,
+      "description": "MOD-23 arm u2_lineup_total vs served base at Tuesday opener 2020-2025: paired cover log loss under discrete lattice (positive = arm better); season-blocked bootstrap.",
+      "effect": -0.000363401782825199,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_proper_scores",
+      "interval": [
+        -0.0005681939940424547,
+        -0.00016188024383944163
+      ],
+      "league": "nfl",
+      "notes": "Look 1 of 51 (17 arms x 3 metrics); Brier and RPS in results.json.",
+      "plain_summary": "Whether this MOD-23 variant gives better-calibrated cover probabilities than the base model at the opener.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-10-01",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_u2/results.json",
+      "standard_error": null
+    },
+    "mod24_u2_u2_qb_out_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval not resolved to wrong side; no positive control.",
+      "closing_ground": null,
+      "description": "MOD-23 arm u2_qb_out vs served base at Tuesday opener 2020-2025: paired cover log loss under discrete lattice (positive = arm better); season-blocked bootstrap.",
+      "effect": -0.0021486178594755296,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_proper_scores",
+      "interval": [
+        -0.004281853297549078,
+        0.000166487896615671
+      ],
+      "league": "nfl",
+      "notes": "Look 1 of 51 (17 arms x 3 metrics); Brier and RPS in results.json.",
+      "plain_summary": "Whether this MOD-23 variant gives better-calibrated cover probabilities than the base model at the opener.",
+      "probability_positive": 0.0311,
+      "recorded_at": "2026-10-01",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_u2/results.json",
+      "standard_error": null
+    },
+    "mod24_u2_u2_qb_quality_loss_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval not resolved to wrong side; no positive control.",
+      "closing_ground": null,
+      "description": "MOD-23 arm u2_qb_quality_loss vs served base at Tuesday opener 2020-2025: paired cover log loss under discrete lattice (positive = arm better); season-blocked bootstrap.",
+      "effect": -0.009713765787366175,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_proper_scores",
+      "interval": [
+        -0.02920102074221894,
+        0.0015433720544087706
+      ],
+      "league": "nfl",
+      "notes": "Look 1 of 51 (17 arms x 3 metrics); Brier and RPS in results.json.",
+      "plain_summary": "Whether this MOD-23 variant gives better-calibrated cover probabilities than the base model at the opener.",
+      "probability_positive": 0.1279,
+      "recorded_at": "2026-10-01",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_u2/results.json",
+      "standard_error": null
+    },
+    "mod24_u2_u3_add_adjusted_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval not resolved to wrong side; no positive control.",
+      "closing_ground": null,
+      "description": "MOD-23 arm u3_add_adjusted vs served base at Tuesday opener 2020-2025: paired cover log loss under discrete lattice (positive = arm better); season-blocked bootstrap.",
+      "effect": -0.0022605979934664866,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_proper_scores",
+      "interval": [
+        -0.005962954545495703,
+        0.0018183373302676938
+      ],
+      "league": "nfl",
+      "notes": "Look 1 of 51 (17 arms x 3 metrics); Brier and RPS in results.json.",
+      "plain_summary": "Whether this MOD-23 variant gives better-calibrated cover probabilities than the base model at the opener.",
+      "probability_positive": 0.1319,
+      "recorded_at": "2026-10-01",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_u2/results.json",
+      "standard_error": null
+    },
+    "mod24_u2_u3_compact_net_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval not resolved to wrong side; no positive control.",
+      "closing_ground": null,
+      "description": "MOD-23 arm u3_compact_net vs served base at Tuesday opener 2020-2025: paired cover log loss under discrete lattice (positive = arm better); season-blocked bootstrap.",
+      "effect": 0.0024695474518511605,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_proper_scores",
+      "interval": [
+        -0.0002653926084358438,
+        0.005048650443706343
+      ],
+      "league": "nfl",
+      "notes": "Look 1 of 51 (17 arms x 3 metrics); Brier and RPS in results.json.",
+      "plain_summary": "Whether this MOD-23 variant gives better-calibrated cover probabilities than the base model at the opener.",
+      "probability_positive": 0.9524,
+      "recorded_at": "2026-10-01",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_u2/results.json",
+      "standard_error": null
+    },
+    "mod24_u2_u3_replace_adjusted_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval not resolved to wrong side; no positive control.",
+      "closing_ground": null,
+      "description": "MOD-23 arm u3_replace_adjusted vs served base at Tuesday opener 2020-2025: paired cover log loss under discrete lattice (positive = arm better); season-blocked bootstrap.",
+      "effect": -0.0005441956191115601,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_proper_scores",
+      "interval": [
+        -0.002093063267856885,
+        0.0011778163572170233
+      ],
+      "league": "nfl",
+      "notes": "Look 1 of 51 (17 arms x 3 metrics); Brier and RPS in results.json.",
+      "plain_summary": "Whether this MOD-23 variant gives better-calibrated cover probabilities than the base model at the opener.",
+      "probability_positive": 0.2564,
+      "recorded_at": "2026-10-01",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_u2/results.json",
+      "standard_error": null
+    },
+    "mod24_u2_u4_blend_compact_net_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval not resolved to wrong side; no positive control.",
+      "closing_ground": null,
+      "description": "MOD-23 arm u4_blend_compact_net vs served base at Tuesday opener 2020-2025: paired cover log loss under discrete lattice (positive = arm better); season-blocked bootstrap.",
+      "effect": 0.0024695474518511605,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_proper_scores",
+      "interval": [
+        -0.0002653926084358438,
+        0.005048650443706343
+      ],
+      "league": "nfl",
+      "notes": "Look 1 of 51 (17 arms x 3 metrics); Brier and RPS in results.json.",
+      "plain_summary": "Whether this MOD-23 variant gives better-calibrated cover probabilities than the base model at the opener.",
+      "probability_positive": 0.9524,
+      "recorded_at": "2026-10-01",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_u2/results.json",
+      "standard_error": null
+    },
+    "mod24_u2_u4_blend_unit1_trimmed_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval not resolved to wrong side; no positive control.",
+      "closing_ground": null,
+      "description": "MOD-23 arm u4_blend_unit1_trimmed vs served base at Tuesday opener 2020-2025: paired cover log loss under discrete lattice (positive = arm better); season-blocked bootstrap.",
+      "effect": 0.004108705255834963,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_proper_scores",
+      "interval": [
+        -0.00018151212162650573,
+        0.009040373369830013
+      ],
+      "league": "nfl",
+      "notes": "Look 1 of 51 (17 arms x 3 metrics); Brier and RPS in results.json.",
+      "plain_summary": "Whether this MOD-23 variant gives better-calibrated cover probabilities than the base model at the opener.",
+      "probability_positive": 0.9687,
+      "recorded_at": "2026-10-01",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_u2/results.json",
+      "standard_error": null
+    },
+    "mod24_u2_u4_shrink_served_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval not resolved to wrong side; no positive control.",
+      "closing_ground": null,
+      "description": "MOD-23 arm u4_shrink_served vs served base at Tuesday opener 2020-2025: paired cover log loss under discrete lattice (positive = arm better); season-blocked bootstrap.",
+      "effect": 0.0036282729358688742,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_proper_scores",
+      "interval": [
+        0.0007764065266170312,
+        0.007534088329578373
+      ],
+      "league": "nfl",
+      "notes": "Look 1 of 51 (17 arms x 3 metrics); Brier and RPS in results.json.",
+      "plain_summary": "Whether this MOD-23 variant gives better-calibrated cover probabilities than the base model at the opener.",
+      "probability_positive": 0.9991,
+      "recorded_at": "2026-10-01",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_u2/results.json",
+      "standard_error": null
+    },
+    "mod24_u2_u5_both_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval not resolved to wrong side; no positive control.",
+      "closing_ground": null,
+      "description": "MOD-23 arm u5_both vs served base at Tuesday opener 2020-2025: paired cover log loss under discrete lattice (positive = arm better); season-blocked bootstrap.",
+      "effect": -0.042292440986741495,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_proper_scores",
+      "interval": [
+        -0.13056842484104547,
+        -0.0004544753965521434
+      ],
+      "league": "nfl",
+      "notes": "Look 1 of 51 (17 arms x 3 metrics); Brier and RPS in results.json.",
+      "plain_summary": "Whether this MOD-23 variant gives better-calibrated cover probabilities than the base model at the opener.",
+      "probability_positive": 0.0068,
+      "recorded_at": "2026-10-01",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_u2/results.json",
+      "standard_error": null
+    },
+    "mod24_u2_u5_coverage_type_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval not resolved to wrong side; no positive control.",
+      "closing_ground": null,
+      "description": "MOD-23 arm u5_coverage_type vs served base at Tuesday opener 2020-2025: paired cover log loss under discrete lattice (positive = arm better); season-blocked bootstrap.",
+      "effect": -0.04076067883277286,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_proper_scores",
+      "interval": [
+        -0.12910400524452148,
+        0.0006124979312076025
+      ],
+      "league": "nfl",
+      "notes": "Look 1 of 51 (17 arms x 3 metrics); Brier and RPS in results.json.",
+      "plain_summary": "Whether this MOD-23 variant gives better-calibrated cover probabilities than the base model at the opener.",
+      "probability_positive": 0.1168,
+      "recorded_at": "2026-10-01",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_u2/results.json",
+      "standard_error": null
+    },
+    "mod24_u2_u5_man_zone_log_loss_improvement": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval not resolved to wrong side; no positive control.",
+      "closing_ground": null,
+      "description": "MOD-23 arm u5_man_zone vs served base at Tuesday opener 2020-2025: paired cover log loss under discrete lattice (positive = arm better); season-blocked bootstrap.",
+      "effect": 0.0004730014710358329,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_proper_scores",
+      "interval": [
+        -5.731090720818689e-05,
+        0.0010397762345770415
+      ],
+      "league": "nfl",
+      "notes": "Look 1 of 51 (17 arms x 3 metrics); Brier and RPS in results.json.",
+      "plain_summary": "Whether this MOD-23 variant gives better-calibrated cover probabilities than the base model at the opener.",
+      "probability_positive": 0.9552,
+      "recorded_at": "2026-10-01",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_u2/results.json",
+      "standard_error": null
+    }
+  }
+}

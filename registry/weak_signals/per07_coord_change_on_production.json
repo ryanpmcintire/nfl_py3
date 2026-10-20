@@ -1,0 +1,33 @@
+{
+  "family": "per07_coord_change_on_production",
+  "signals": {
+    "per07_coord_change_on_production_opener": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground established; one fixed paired opener look remains unresolved.",
+      "closing_ground": null,
+      "description": "Predeclared September HC/OC/DC turnover differences added to active weak_stack; full archive baseline fallback when any flag unknown.",
+      "effect": -0.332667997338656,
+      "effect_units": "accuracy_points",
+      "family": "per07_coord_change_on_production",
+      "interval": [
+        -1.5925680159256803,
+        0.9265387160820648
+      ],
+      "league": "nfl",
+      "notes": "One completed look; 1537 archive games, 1503 nonpush, 1019 covered, 518 baseline fallbacks; 20000 week draws seed 20260817; within-week correlation zero. Mined-archive multiplicity discount; no incumbent or played-card change. 2020-2021 assigned-window result recorded separately in rotation.",
+      "plain_summary": "This checks whether changes in a team's head coach and coordinators improve our picks. Accounting for those changes produced five fewer correct picks across the archive.",
+      "probability_positive": 0.28905,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\b05b3398-3142-4412-ab83-4ff679c1ad88\\scratchpad\\laneM_artifacts\\eval_final\\opener_summary.json",
+      "standard_error": null
+    }
+  }
+}

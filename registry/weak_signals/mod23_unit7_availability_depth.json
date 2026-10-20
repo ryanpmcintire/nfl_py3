@@ -1,0 +1,61 @@
+{
+  "family": "mod23_unit7_availability_depth",
+  "signals": {
+    "mod23_unit7_availability_B5_proxy_2011_2019_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model with rolling team inputs adjusted for own QB snap share in each past game, paired vs base, 2011-2019; 1145-1086 vs 1142-1089.",
+      "effect": 0.1344688480502017,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit7_availability_depth",
+      "interval": [
+        -0.5800981704596162,
+        0.8558558558558559
+      ],
+      "league": "nfl",
+      "notes": "B5 adds a top-2 RB absence group to unit 6b B3; two eras (two new looks, family total 21); snap counts of completed games; coefficients fit on earlier seasons only.",
+      "plain_summary": "Also discounting past games by running-back absence gave a small unresolved change in picks against the opener.",
+      "probability_positive": 0.6188,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod23_unit7/report.json",
+      "standard_error": null
+    },
+    "mod23_unit7_availability_B5_true_2020_2025_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model with rolling team inputs adjusted for own QB snap share in each past game, paired vs base, 2020-2025; 802-701 vs 802-701.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit7_availability_depth",
+      "interval": [
+        -0.6333122229259025,
+        0.9213323883770376
+      ],
+      "league": "nfl",
+      "notes": "B5 adds a top-2 RB absence group to unit 6b B3; two eras (two new looks, family total 21); snap counts of completed games; coefficients fit on earlier seasons only.",
+      "plain_summary": "Also discounting past games by running-back absence gave a small unresolved change in picks against the opener.",
+      "probability_positive": 0.42475,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit7/report.json",
+      "standard_error": null
+    }
+  }
+}

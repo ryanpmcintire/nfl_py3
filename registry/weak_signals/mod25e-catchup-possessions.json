@@ -1,0 +1,61 @@
+{
+  "family": "mod25e-catchup-possessions",
+  "signals": {
+    "e182-q4-trailer-drive-start-lt3min-share": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Share of Q4 trailer drives starting under 3 min left, sim v real, aligned",
+      "effect": 0.058,
+      "effect_units": "rate_pp",
+      "family": "mod25e-catchup-possessions",
+      "interval": [
+        -0.269,
+        0.393
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Under-3-minute trailer drive share matches",
+      "probability_positive": 0.63,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "scratchpad pace.py; docs/lanes/mod25e-gap-table.md",
+      "standard_error": null
+    },
+    "e182-q4-trailer-drive-start-lt5min-share": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Share of Q4 trailer drives (aligned: kneels/spikes dropped real, final-120s drives dropped both sides) starting with under 5 min left, sim base FD5 v real 2009-17",
+      "effect": -1.566,
+      "effect_units": "rate_pp",
+      "family": "mod25e-catchup-possessions",
+      "interval": [
+        -2.344,
+        -0.806
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Sim has fewer late Q4 trailer drives",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-10-19",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "scratchpad pace.py; docs/lanes/mod25e-gap-table.md",
+      "standard_error": null
+    }
+  }
+}

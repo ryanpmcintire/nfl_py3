@@ -1,0 +1,117 @@
+{
+  "family": "graph_team_stat_cfb_offense_replacement",
+  "signals": {
+    "graph_team_stat_cfb_offense_replacement_off_epa_per_play_alone": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the 95% interval [-0.4922, +0.5659] spans zero so wrong_sign_resolved is inadmissible; the positive control resolves +44.908 accuracy points at P+ 1.000 and was never shown able to resolve a 0.03-point effect, so positive_control_bound is inadmissible; split-half reliability is +0.99246 Spearman-Brown (P+ 1.000), so no_split_half_reliability is inadmissible. P+ 0.543 favours the candidate on expected value.",
+      "closing_ground": null,
+      "description": "CFB XLG-03 benchmark with only off_epa_per_play's raw home/away/diff triple swapped for its graph signed-Katz differential (33 cols vs 35), versus the unmodified benchmark. Re-run of WP24's primary for that metric so the joint two-metric swap can be read against its own parts computed by the same code; reported for CONTINUITY, not as new evidence. Opener-graded, week-blocked bootstrap.",
+      "effect": 0.0336,
+      "effect_units": "accuracy_points",
+      "family": "graph_team_stat_cfb_offense_replacement",
+      "interval": [
+        -0.4922,
+        0.5659
+      ],
+      "league": "cfb",
+      "notes": "PREDECLARED cell 2 (secondary, CONTINUITY ONLY) of docs/graph_team_stat_cfb_offense_replacement.md. CONTINUITY RE-RUN, NOT INDEPENDENT EVIDENCE: this is the SAME comparator on the SAME window as WP24's row graph_team_stat_cfb_replacement_off_epa_per_play -- it reproduces that row to four decimal places at both grades, which is the point of running it. DO NOT POOL with the WP24 row: it would double-count one window. Grade: OPENER recorded (section 6); CLOSE reads +0.0560, week 95% [-0.4866, +0.6375], week P+ 0.573, season P+ 0.584. Season-blocked opener P+ 0.546, 95% [-0.3578, +0.4310]. Picks moved 714/9076 = 7.87% at the opener. This cell does NOT vote on the work package's decision rule, which reads cell 1 only. SEQUENTIAL CONFIRMATION context: the offence side was selected after WP24's diagnostic signs were seen (section 1). DO NOT POOL the four family cells with each other -- one shared window. This family records the OPENER while WP8's and WP24's CFB rows record the CLOSE.",
+      "plain_summary": "College football only. Swapping just the offensive EPA-per-play stat for a schedule-graph version that adjusts for opponent strength left the picks a shade better -- about three hundredths of a percentage point. It is the one arm of this experiment that came out on the favourable side, and it is small enough to be noise.",
+      "probability_positive": 0.543,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.99246,
+      "sample_blocks": 198,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/graph_team_stat_cfb_offense_replacement/screen/20260901T195141Z/results.json; docs/graph_team_stat_cfb_offense_replacement.md section 12; reliability from artifacts/graph_team_stat_cfb_offense_replacement/reliability/20260901T191734Z/results.json (WP24)",
+      "standard_error": null
+    },
+    "graph_team_stat_cfb_offense_replacement_off_success_rate_alone": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the 95% interval [-1.0719, +0.4170] reaches above zero so wrong_sign_resolved is inadmissible; the positive control resolves +44.885 accuracy points at P+ 1.000 and was never shown able to resolve a 0.3-point effect, so positive_control_bound is inadmissible; split-half reliability is +0.99382 Spearman-Brown (P+ 1.000), so no_split_half_reliability is inadmissible. P+ 0.221 is a 22% chance the candidate is better, not a closure. Note the two grades disagree in SIGN on this cell (+0.022 close, -0.325 opener), which is itself a below-power symptom rather than a result.",
+      "closing_ground": null,
+      "description": "CFB XLG-03 benchmark with only off_success_rate's raw home/away/diff triple swapped for its graph signed-Katz differential (33 cols vs 35), versus the unmodified benchmark. Re-run of WP24's primary for that metric; reported for CONTINUITY, not as new evidence. Opener-graded, week-blocked bootstrap.",
+      "effect": -0.3249,
+      "effect_units": "accuracy_points",
+      "family": "graph_team_stat_cfb_offense_replacement",
+      "interval": [
+        -1.0719,
+        0.417
+      ],
+      "league": "cfb",
+      "notes": "PREDECLARED cell 3 (secondary, CONTINUITY ONLY) of docs/graph_team_stat_cfb_offense_replacement.md. CONTINUITY RE-RUN, NOT INDEPENDENT EVIDENCE: this is the SAME comparator on the SAME window as WP24's row graph_team_stat_cfb_replacement_off_success_rate -- it reproduces that row to four decimal places at both grades. DO NOT POOL with the WP24 row: it would double-count one window. Grade: OPENER recorded (section 6); CLOSE reads +0.0224, week 95% [-0.6961, +0.8071], week P+ 0.528, season P+ 0.512 -- the grades disagree in sign. Season-blocked opener P+ 0.150, 95% [-0.9973, +0.3715]. Picks moved 1026/9076 = 11.30% at the opener. This cell does NOT vote on the decision rule, which reads cell 1 only. Its screen values were re-derived byte-identically in the positive-control run, proving the one-column leak never entered this arm. DO NOT POOL the four family cells with each other -- one shared window. This family records the OPENER while WP8's and WP24's CFB rows record the CLOSE.",
+      "plain_summary": "College football only. Swapping just the offensive success-rate stat for a schedule-graph version made the picks about a third of a percentage point worse when graded against the opening line, though it was a shade better against the closing line. The two ways of grading disagree, which usually means the sample cannot tell them apart.",
+      "probability_positive": 0.221,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.99382,
+      "sample_blocks": 198,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/graph_team_stat_cfb_offense_replacement/screen/20260901T195141Z/results.json; docs/graph_team_stat_cfb_offense_replacement.md section 12; reliability from artifacts/graph_team_stat_cfb_offense_replacement/reliability/20260901T191734Z/results.json (WP24)",
+      "standard_error": null
+    },
+    "graph_team_stat_cfb_offense_replacement_two_metric": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the 95% interval [-1.0053, +0.5158] reaches above zero so wrong_sign_resolved is inadmissible; the positive control resolves +44.885 accuracy points (P+ 1.000, 100th percentile of its own null) and was never shown able to resolve a 0.3-point effect, so positive_control_bound is inadmissible; split-half reliability is +0.99246 Spearman-Brown (P+ 1.000), so no_split_half_reliability is inadmissible. P+ 0.269 is a 27% chance the candidate is better, not a closure.",
+      "closing_ground": null,
+      "description": "CFB XLG-03 benchmark with BOTH offence statistics' raw home/away/diff triples (off_epa_per_play, off_success_rate) removed simultaneously and both graph signed-Katz differentials swapped in (31 cols vs the benchmark's 35), versus the unmodified benchmark. Forced-pick accuracy, opener-graded, week-blocked bootstrap.",
+      "effect": -0.2353,
+      "effect_units": "accuracy_points",
+      "family": "graph_team_stat_cfb_offense_replacement",
+      "interval": [
+        -1.0053,
+        0.5158
+      ],
+      "league": "cfb",
+      "notes": "PREDECLARED cell 1 (PRIMARY) of docs/graph_team_stat_cfb_offense_replacement.md. Grade: OPENER is the recorded and decision grade (section 6); CLOSE reads -0.1343, week 95% [-0.8479, +0.6405], week P+ 0.344, season P+ 0.342. Season-blocked opener P+ 0.245, 95% [-0.9453, +0.3732]. Picks moved 1080/9076 = 11.90% at the opener. Era MAGNITUDES (opener): 2012-2019 -0.188 pts P+ 0.292 n=5333; 2021-2025 -0.306 pts P+ 0.307 n=3592 (close: +0.019 P+ 0.525; -0.363 P+ 0.267). Within-week permutation null (200 draws): mean +0.101 sd 0.329 opener, observed at the 12.0th percentile. SEQUENTIAL CONFIRMATION, not a first look: the offence side was selected AFTER WP24's diagnostic signs were seen (see section 1), so the effective multiplicity is at least 3. DO NOT POOL these four family cells with each other -- they share ONE window (2012-2025 CFB clean core, 8925-8933 paired games) and overlapping football, and cell 1 = diagnostic + cell 4 exactly. This family records the OPENER while WP8's and WP24's CFB rows record the CLOSE, so a pool must first pick one grade.",
+      "plain_summary": "College football only. We took the two offensive efficiency stats out of the model and replaced them with schedule-graph versions of the same stats that adjust for who each team played. Doing both at once made the picks slightly worse rather than better, by about a fifth of a percentage point, but the margin is small enough that it could still go either way.",
+      "probability_positive": 0.269,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.99246,
+      "sample_blocks": 198,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/graph_team_stat_cfb_offense_replacement/screen/20260901T195141Z/results.json; docs/graph_team_stat_cfb_offense_replacement.md section 12; reliability from artifacts/graph_team_stat_cfb_offense_replacement/reliability/20260901T191734Z/results.json (WP24)",
+      "standard_error": null
+    },
+    "graph_team_stat_cfb_offense_replacement_two_metric_vs_ablation": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the 95% interval [-0.5266, +0.3704] reaches above zero so wrong_sign_resolved is inadmissible; the positive control resolves +45.020 accuracy points at P+ 1.000 and was never shown able to resolve a 0.1-point effect, so positive_control_bound is inadmissible; split-half reliability is +0.99246 Spearman-Brown (P+ 1.000), so no_split_half_reliability is inadmissible. P+ 0.320 is a 32% chance the candidate is better, not a closure.",
+      "closing_ground": null,
+      "description": "What the two offence graph signed-Katz differentials are worth once BOTH offence raw triples are already gone: CFB XLG-03 benchmark minus both triples plus both graph columns (31 cols) versus the same benchmark minus both triples and nothing added (29 cols). The joint version of WP24's per-cell secondary-B diagnostic. Opener-graded, week-blocked bootstrap.",
+      "effect": -0.1008,
+      "effect_units": "accuracy_points",
+      "family": "graph_team_stat_cfb_offense_replacement",
+      "interval": [
+        -0.5266,
+        0.3704
+      ],
+      "league": "cfb",
+      "notes": "PREDECLARED cell 4 (secondary) of docs/graph_team_stat_cfb_offense_replacement.md. THIS IS THE JOINT VERSION OF WP24's SECONDARY-B DIAGNOSTIC, and it is the reason the work package existed: WP24's per-metric secondary B read +0.213 opener P+ 0.827 (off_epa_per_play) and +0.123 close P+ 0.710 (off_success_rate), and the two positives do NOT add up to a positive joint reading (-0.1008 opener P+ 0.320; -0.0112 close P+ 0.458). That is the correction a sequential confirmation of a post-hoc subset exists to produce -- see section 1 and section 12.5 point 2. Grade: OPENER recorded (section 6); CLOSE reads -0.0112, week 95% [-0.4639, +0.4097], week P+ 0.458, season P+ 0.449. Season-blocked opener P+ 0.274, 95% [-0.4368, +0.2334]. Picks moved 393/9076 = 4.33% at the opener. This cell does NOT vote on the decision rule, which reads cell 1 only, because it uses the ablation as its reference. Measured identity: cell 1 = (offense_ablation - benchmark) + cell 4 exactly, -0.1345 + -0.1008 = -0.2353 at the opener. The report-only diagnostic offense_ablation - benchmark (-0.134 opener P+ 0.379, -0.123 close P+ 0.370, 969/9076 picks moved) was declared report-only before the run and deliberately gets NO registry row. DO NOT POOL the four family cells with each other -- one shared window. This family records the OPENER while WP8's and WP24's CFB rows record the CLOSE.",
+      "plain_summary": "College football only. After stripping both offensive stats out of the model, adding back schedule-graph versions of them was worth about a tenth of a percentage point LESS than adding nothing at all. Asked one stat at a time in an earlier study this same comparison looked favourable, so the joint version is the one that did not hold up.",
+      "probability_positive": 0.32,
+      "recorded_at": "2026-09-01",
+      "reliability": 0.99246,
+      "sample_blocks": 198,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/graph_team_stat_cfb_offense_replacement/screen/20260901T195141Z/results.json; docs/graph_team_stat_cfb_offense_replacement.md section 12; reliability from artifacts/graph_team_stat_cfb_offense_replacement/reliability/20260901T191734Z/results.json (WP24)",
+      "standard_error": null
+    }
+  }
+}

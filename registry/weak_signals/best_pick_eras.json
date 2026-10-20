@@ -1,0 +1,1125 @@
+{
+  "family": "best_pick_eras",
+  "signals": {
+    "best_pick_eras_control_perfect_foresight_vs_n0_2020_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_eras.md). Neither admissible closing ground applies: no interval is resolved on the wrong side of zero, and the positive control resolves at roughly +40 accuracy points, proving only that this instrument can see a renomination effect that large -- it was never shown able to see a 2-point one, so it bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Best Pick nomination, the positive control: perfect-foresight nomination inside v2's pool vs the served small-spread nominator (v2 restricted to spreads of 6.5 or less), one nomination per week graded at the frozen Tuesday opener on the production probability-rule pick (correct_at_open_probability_rule), seasons 2020-2021, paired weekly delta in Best-Pick accuracy points",
+      "effect": 48.5714285714,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_eras",
+      "interval": [
+        31.4285714286,
+        65.7142857143
+      ],
+      "league": "nfl",
+      "notes": "Sixth reuse of the ~107-week opener population for the Best Pick family; the incumbent N0 was itself selected on this same window one day earlier (docs/best_pick_bucket_confidence.md), so any N0-favouring reading is inflated. Bootstrap: seed 20260821, 20,000 draws, week-blocked on (season, week), within-week correlation zero. Raw record 35/35 vs 18/35; the arm wins 17 weeks outright and loses 0. Sides never change: this is a ranking only. CORRELATED DECOMPOSITION: this era cell is a subset of best_pick_eras_control_perfect_foresight_vs_n0_2020_2025 on the same weeks and is not an independent vote; pool it with the overlap discount, or pool the full window instead.",
+      "plain_summary": "Which single game gets the week's star. Compares a cheat rule that already knows the answers against the star rule we play now (never star a game with a spread bigger than 6.5) over 2020-2021. +48.6 points a week for the first one, 100% likely the better of the two; they star a different game in 17 of 35 weeks.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 35,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "scripts/best_pick_eras_eval.py; artifacts/best_pick_eras/20260910T033510Z/summary.json; docs/best_pick_eras.md",
+      "standard_error": null
+    },
+    "best_pick_eras_control_perfect_foresight_vs_n0_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_eras.md). Neither admissible closing ground applies: no interval is resolved on the wrong side of zero, and the positive control resolves at roughly +40 accuracy points, proving only that this instrument can see a renomination effect that large -- it was never shown able to see a 2-point one, so it bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Best Pick nomination, the positive control: perfect-foresight nomination inside v2's pool vs the served small-spread nominator (v2 restricted to spreads of 6.5 or less), one nomination per week graded at the frozen Tuesday opener on the production probability-rule pick (correct_at_open_probability_rule), seasons 2020-2025, paired weekly delta in Best-Pick accuracy points",
+      "effect": 43.137254902,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_eras",
+      "interval": [
+        33.3333333333,
+        52.9411764706
+      ],
+      "league": "nfl",
+      "notes": "Sixth reuse of the ~107-week opener population for the Best Pick family; the incumbent N0 was itself selected on this same window one day earlier (docs/best_pick_bucket_confidence.md), so any N0-favouring reading is inflated. Bootstrap: seed 20260821, 20,000 draws, week-blocked on (season, week), within-week correlation zero. Raw record 101/102 vs 57/102; the arm wins 44 weeks outright and loses 0. Sides never change: this is a ranking only. Era decomposition (2020-21 / 2022-23 / 2024-25): +48.57 / +47.06 / +33.33 accuracy points; 3 of 3 eras share the full window's sign; sign reversal across eras: False.",
+      "plain_summary": "Which single game gets the week's star. Compares a cheat rule that already knows the answers against the star rule we play now (never star a game with a spread bigger than 6.5) over 2020-2025. +43.1 points a week for the first one, 100% likely the better of the two; they star a different game in 51 of 102 weeks.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 102,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/best_pick_eras_eval.py; artifacts/best_pick_eras/20260910T033510Z/summary.json; docs/best_pick_eras.md",
+      "standard_error": null
+    },
+    "best_pick_eras_control_perfect_foresight_vs_n0_2022_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_eras.md). Neither admissible closing ground applies: no interval is resolved on the wrong side of zero, and the positive control resolves at roughly +40 accuracy points, proving only that this instrument can see a renomination effect that large -- it was never shown able to see a 2-point one, so it bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Best Pick nomination, the positive control: perfect-foresight nomination inside v2's pool vs the served small-spread nominator (v2 restricted to spreads of 6.5 or less), one nomination per week graded at the frozen Tuesday opener on the production probability-rule pick (correct_at_open_probability_rule), seasons 2022-2023, paired weekly delta in Best-Pick accuracy points",
+      "effect": 47.0588235294,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_eras",
+      "interval": [
+        29.4117647059,
+        64.7058823529
+      ],
+      "league": "nfl",
+      "notes": "Sixth reuse of the ~107-week opener population for the Best Pick family; the incumbent N0 was itself selected on this same window one day earlier (docs/best_pick_bucket_confidence.md), so any N0-favouring reading is inflated. Bootstrap: seed 20260821, 20,000 draws, week-blocked on (season, week), within-week correlation zero. Raw record 33/34 vs 17/34; the arm wins 16 weeks outright and loses 0. Sides never change: this is a ranking only. CORRELATED DECOMPOSITION: this era cell is a subset of best_pick_eras_control_perfect_foresight_vs_n0_2020_2025 on the same weeks and is not an independent vote; pool it with the overlap discount, or pool the full window instead.",
+      "plain_summary": "Which single game gets the week's star. Compares a cheat rule that already knows the answers against the star rule we play now (never star a game with a spread bigger than 6.5) over 2022-2023. +47.1 points a week for the first one, 100% likely the better of the two; they star a different game in 19 of 34 weeks.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 34,
+      "sample_games": 34,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "scripts/best_pick_eras_eval.py; artifacts/best_pick_eras/20260910T033510Z/summary.json; docs/best_pick_eras.md",
+      "standard_error": null
+    },
+    "best_pick_eras_control_perfect_foresight_vs_n0_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_eras.md). Neither admissible closing ground applies: no interval is resolved on the wrong side of zero, and the positive control resolves at roughly +40 accuracy points, proving only that this instrument can see a renomination effect that large -- it was never shown able to see a 2-point one, so it bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Best Pick nomination, the positive control: perfect-foresight nomination inside v2's pool vs the served small-spread nominator (v2 restricted to spreads of 6.5 or less), one nomination per week graded at the frozen Tuesday opener on the production probability-rule pick (correct_at_open_probability_rule), seasons 2024-2025, paired weekly delta in Best-Pick accuracy points",
+      "effect": 33.3333333333,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_eras",
+      "interval": [
+        18.1818181818,
+        48.4848484848
+      ],
+      "league": "nfl",
+      "notes": "Sixth reuse of the ~107-week opener population for the Best Pick family; the incumbent N0 was itself selected on this same window one day earlier (docs/best_pick_bucket_confidence.md), so any N0-favouring reading is inflated. Bootstrap: seed 20260821, 20,000 draws, week-blocked on (season, week), within-week correlation zero. Raw record 33/33 vs 22/33; the arm wins 11 weeks outright and loses 0. Sides never change: this is a ranking only. CORRELATED DECOMPOSITION: this era cell is a subset of best_pick_eras_control_perfect_foresight_vs_n0_2020_2025 on the same weeks and is not an independent vote; pool it with the overlap discount, or pool the full window instead.",
+      "plain_summary": "Which single game gets the week's star. Compares a cheat rule that already knows the answers against the star rule we play now (never star a game with a spread bigger than 6.5) over 2024-2025. +33.3 points a week for the first one, 100% likely the better of the two; they star a different game in 15 of 33 weeks.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 33,
+      "sample_games": 33,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "scripts/best_pick_eras_eval.py; artifacts/best_pick_eras/20260910T033510Z/summary.json; docs/best_pick_eras.md",
+      "standard_error": null
+    },
+    "best_pick_eras_control_perfect_foresight_vs_n1_2020_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_eras.md). Neither admissible closing ground applies: no interval is resolved on the wrong side of zero, and the positive control resolves at roughly +40 accuracy points, proving only that this instrument can see a renomination effect that large -- it was never shown able to see a 2-point one, so it bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Best Pick nomination, the positive control: perfect-foresight nomination inside v2's pool vs the unrestricted v2 nominator, one nomination per week graded at the frozen Tuesday opener on the production probability-rule pick (correct_at_open_probability_rule), seasons 2020-2021, paired weekly delta in Best-Pick accuracy points",
+      "effect": 48.5714285714,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_eras",
+      "interval": [
+        31.4285714286,
+        65.7142857143
+      ],
+      "league": "nfl",
+      "notes": "Sixth reuse of the ~107-week opener population for the Best Pick family; the incumbent N0 was itself selected on this same window one day earlier (docs/best_pick_bucket_confidence.md), so any N0-favouring reading is inflated. Bootstrap: seed 20260821, 20,000 draws, week-blocked on (season, week), within-week correlation zero. Raw record 35/35 vs 18/35; the arm wins 17 weeks outright and loses 0. Sides never change: this is a ranking only. CORRELATED DECOMPOSITION: this era cell is a subset of best_pick_eras_control_perfect_foresight_vs_n1_2020_2025 on the same weeks and is not an independent vote; pool it with the overlap discount, or pool the full window instead.",
+      "plain_summary": "Which single game gets the week's star. Compares a cheat rule that already knows the answers against the older star rule with no spread limit over 2020-2021. +48.6 points a week for the first one, 100% likely the better of the two; they star a different game in 17 of 35 weeks.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 35,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "scripts/best_pick_eras_eval.py; artifacts/best_pick_eras/20260910T033510Z/summary.json; docs/best_pick_eras.md",
+      "standard_error": null
+    },
+    "best_pick_eras_control_perfect_foresight_vs_n1_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_eras.md). Neither admissible closing ground applies: no interval is resolved on the wrong side of zero, and the positive control resolves at roughly +40 accuracy points, proving only that this instrument can see a renomination effect that large -- it was never shown able to see a 2-point one, so it bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Best Pick nomination, the positive control: perfect-foresight nomination inside v2's pool vs the unrestricted v2 nominator, one nomination per week graded at the frozen Tuesday opener on the production probability-rule pick (correct_at_open_probability_rule), seasons 2020-2025, paired weekly delta in Best-Pick accuracy points",
+      "effect": 43.6893203883,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_eras",
+      "interval": [
+        33.9805825243,
+        53.3980582524
+      ],
+      "league": "nfl",
+      "notes": "Sixth reuse of the ~107-week opener population for the Best Pick family; the incumbent N0 was itself selected on this same window one day earlier (docs/best_pick_bucket_confidence.md), so any N0-favouring reading is inflated. Bootstrap: seed 20260821, 20,000 draws, week-blocked on (season, week), within-week correlation zero. Raw record 102/103 vs 57/103; the arm wins 45 weeks outright and loses 0. Sides never change: this is a ranking only. Era decomposition (2020-21 / 2022-23 / 2024-25): +48.57 / +52.94 / +29.41 accuracy points; 3 of 3 eras share the full window's sign; sign reversal across eras: False.",
+      "plain_summary": "Which single game gets the week's star. Compares a cheat rule that already knows the answers against the older star rule with no spread limit over 2020-2025. +43.7 points a week for the first one, 100% likely the better of the two; they star a different game in 45 of 103 weeks.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 103,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/best_pick_eras_eval.py; artifacts/best_pick_eras/20260910T033510Z/summary.json; docs/best_pick_eras.md",
+      "standard_error": null
+    },
+    "best_pick_eras_control_perfect_foresight_vs_n1_2022_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_eras.md). Neither admissible closing ground applies: no interval is resolved on the wrong side of zero, and the positive control resolves at roughly +40 accuracy points, proving only that this instrument can see a renomination effect that large -- it was never shown able to see a 2-point one, so it bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Best Pick nomination, the positive control: perfect-foresight nomination inside v2's pool vs the unrestricted v2 nominator, one nomination per week graded at the frozen Tuesday opener on the production probability-rule pick (correct_at_open_probability_rule), seasons 2022-2023, paired weekly delta in Best-Pick accuracy points",
+      "effect": 52.9411764706,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_eras",
+      "interval": [
+        35.2941176471,
+        70.5882352941
+      ],
+      "league": "nfl",
+      "notes": "Sixth reuse of the ~107-week opener population for the Best Pick family; the incumbent N0 was itself selected on this same window one day earlier (docs/best_pick_bucket_confidence.md), so any N0-favouring reading is inflated. Bootstrap: seed 20260821, 20,000 draws, week-blocked on (season, week), within-week correlation zero. Raw record 33/34 vs 15/34; the arm wins 18 weeks outright and loses 0. Sides never change: this is a ranking only. CORRELATED DECOMPOSITION: this era cell is a subset of best_pick_eras_control_perfect_foresight_vs_n1_2020_2025 on the same weeks and is not an independent vote; pool it with the overlap discount, or pool the full window instead.",
+      "plain_summary": "Which single game gets the week's star. Compares a cheat rule that already knows the answers against the older star rule with no spread limit over 2022-2023. +52.9 points a week for the first one, 100% likely the better of the two; they star a different game in 18 of 34 weeks.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 34,
+      "sample_games": 34,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "scripts/best_pick_eras_eval.py; artifacts/best_pick_eras/20260910T033510Z/summary.json; docs/best_pick_eras.md",
+      "standard_error": null
+    },
+    "best_pick_eras_control_perfect_foresight_vs_n1_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_eras.md). Neither admissible closing ground applies: no interval is resolved on the wrong side of zero, and the positive control resolves at roughly +40 accuracy points, proving only that this instrument can see a renomination effect that large -- it was never shown able to see a 2-point one, so it bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Best Pick nomination, the positive control: perfect-foresight nomination inside v2's pool vs the unrestricted v2 nominator, one nomination per week graded at the frozen Tuesday opener on the production probability-rule pick (correct_at_open_probability_rule), seasons 2024-2025, paired weekly delta in Best-Pick accuracy points",
+      "effect": 29.4117647059,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_eras",
+      "interval": [
+        14.7058823529,
+        44.1176470588
+      ],
+      "league": "nfl",
+      "notes": "Sixth reuse of the ~107-week opener population for the Best Pick family; the incumbent N0 was itself selected on this same window one day earlier (docs/best_pick_bucket_confidence.md), so any N0-favouring reading is inflated. Bootstrap: seed 20260821, 20,000 draws, week-blocked on (season, week), within-week correlation zero. Raw record 34/34 vs 24/34; the arm wins 10 weeks outright and loses 0. Sides never change: this is a ranking only. CORRELATED DECOMPOSITION: this era cell is a subset of best_pick_eras_control_perfect_foresight_vs_n1_2020_2025 on the same weeks and is not an independent vote; pool it with the overlap discount, or pool the full window instead.",
+      "plain_summary": "Which single game gets the week's star. Compares a cheat rule that already knows the answers against the older star rule with no spread limit over 2024-2025. +29.4 points a week for the first one, 100% likely the better of the two; they star a different game in 10 of 34 weeks.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 34,
+      "sample_games": 34,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "scripts/best_pick_eras_eval.py; artifacts/best_pick_eras/20260910T033510Z/summary.json; docs/best_pick_eras.md",
+      "standard_error": null
+    },
+    "best_pick_eras_n0_small_spread_vs_n1_2020_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_eras.md). Neither admissible closing ground applies: no interval is resolved on the wrong side of zero, and the positive control resolves at roughly +40 accuracy points, proving only that this instrument can see a renomination effect that large -- it was never shown able to see a 2-point one, so it bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Best Pick nomination, the served small-spread nominator (v2 restricted to spreads of 6.5 or less) vs the unrestricted v2 nominator, one nomination per week graded at the frozen Tuesday opener on the production probability-rule pick (correct_at_open_probability_rule), seasons 2020-2021, paired weekly delta in Best-Pick accuracy points",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_eras",
+      "interval": [
+        -11.4285714286,
+        11.4285714286
+      ],
+      "league": "nfl",
+      "notes": "Sixth reuse of the ~107-week opener population for the Best Pick family; the incumbent N0 was itself selected on this same window one day earlier (docs/best_pick_bucket_confidence.md), so any N0-favouring reading is inflated. Bootstrap: seed 20260821, 20,000 draws, week-blocked on (season, week), within-week correlation zero. Raw record 18/35 vs 18/35; the arm wins 2 weeks outright and loses 2. Sides never change: this is a ranking only. CORRELATED DECOMPOSITION: this era cell is a subset of best_pick_eras_n0_small_spread_vs_n1_2020_2025 on the same weeks and is not an independent vote; pool it with the overlap discount, or pool the full window instead.",
+      "plain_summary": "Which single game gets the week's star. Compares the star rule we play now (never star a game with a spread bigger than 6.5) against the older star rule with no spread limit over 2020-2021. +0.0 points a week for the first one, 50% likely the better of the two; they star a different game in 8 of 35 weeks.",
+      "probability_positive": 0.4991,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 35,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "scripts/best_pick_eras_eval.py; artifacts/best_pick_eras/20260910T033510Z/summary.json; docs/best_pick_eras.md",
+      "standard_error": null
+    },
+    "best_pick_eras_n0_small_spread_vs_n1_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_eras.md). Neither admissible closing ground applies: no interval is resolved on the wrong side of zero, and the positive control resolves at roughly +40 accuracy points, proving only that this instrument can see a renomination effect that large -- it was never shown able to see a 2-point one, so it bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Best Pick nomination, the served small-spread nominator (v2 restricted to spreads of 6.5 or less) vs the unrestricted v2 nominator, one nomination per week graded at the frozen Tuesday opener on the production probability-rule pick (correct_at_open_probability_rule), seasons 2020-2025, paired weekly delta in Best-Pick accuracy points",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_eras",
+      "interval": [
+        -6.862745098,
+        6.862745098
+      ],
+      "league": "nfl",
+      "notes": "Sixth reuse of the ~107-week opener population for the Best Pick family; the incumbent N0 was itself selected on this same window one day earlier (docs/best_pick_bucket_confidence.md), so any N0-favouring reading is inflated. Bootstrap: seed 20260821, 20,000 draws, week-blocked on (season, week), within-week correlation zero. Raw record 57/102 vs 57/102; the arm wins 7 weeks outright and loses 7. Sides never change: this is a ranking only. Era decomposition (2020-21 / 2022-23 / 2024-25): +0.00 / +5.88 / -6.06 accuracy points; 1 of 3 eras share the full window's sign; sign reversal across eras: True.",
+      "plain_summary": "Which single game gets the week's star. Compares the star rule we play now (never star a game with a spread bigger than 6.5) against the older star rule with no spread limit over 2020-2025. +0.0 points a week for the first one, 50% likely the better of the two; they star a different game in 26 of 102 weeks.",
+      "probability_positive": 0.501375,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 102,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/best_pick_eras_eval.py; artifacts/best_pick_eras/20260910T033510Z/summary.json; docs/best_pick_eras.md",
+      "standard_error": null
+    },
+    "best_pick_eras_n0_small_spread_vs_n1_2022_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_eras.md). Neither admissible closing ground applies: no interval is resolved on the wrong side of zero, and the positive control resolves at roughly +40 accuracy points, proving only that this instrument can see a renomination effect that large -- it was never shown able to see a 2-point one, so it bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Best Pick nomination, the served small-spread nominator (v2 restricted to spreads of 6.5 or less) vs the unrestricted v2 nominator, one nomination per week graded at the frozen Tuesday opener on the production probability-rule pick (correct_at_open_probability_rule), seasons 2022-2023, paired weekly delta in Best-Pick accuracy points",
+      "effect": 5.8823529412,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_eras",
+      "interval": [
+        -5.8823529412,
+        17.6470588235
+      ],
+      "league": "nfl",
+      "notes": "Sixth reuse of the ~107-week opener population for the Best Pick family; the incumbent N0 was itself selected on this same window one day earlier (docs/best_pick_bucket_confidence.md), so any N0-favouring reading is inflated. Bootstrap: seed 20260821, 20,000 draws, week-blocked on (season, week), within-week correlation zero. Raw record 17/34 vs 15/34; the arm wins 3 weeks outright and loses 1. Sides never change: this is a ranking only. CORRELATED DECOMPOSITION: this era cell is a subset of best_pick_eras_n0_small_spread_vs_n1_2020_2025 on the same weeks and is not an independent vote; pool it with the overlap discount, or pool the full window instead.",
+      "plain_summary": "Which single game gets the week's star. Compares the star rule we play now (never star a game with a spread bigger than 6.5) against the older star rule with no spread limit over 2022-2023. +5.9 points a week for the first one, 85% likely the better of the two; they star a different game in 7 of 34 weeks.",
+      "probability_positive": 0.84555,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 34,
+      "sample_games": 34,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "scripts/best_pick_eras_eval.py; artifacts/best_pick_eras/20260910T033510Z/summary.json; docs/best_pick_eras.md",
+      "standard_error": null
+    },
+    "best_pick_eras_n0_small_spread_vs_n1_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_eras.md). Neither admissible closing ground applies: no interval is resolved on the wrong side of zero, and the positive control resolves at roughly +40 accuracy points, proving only that this instrument can see a renomination effect that large -- it was never shown able to see a 2-point one, so it bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Best Pick nomination, the served small-spread nominator (v2 restricted to spreads of 6.5 or less) vs the unrestricted v2 nominator, one nomination per week graded at the frozen Tuesday opener on the production probability-rule pick (correct_at_open_probability_rule), seasons 2024-2025, paired weekly delta in Best-Pick accuracy points",
+      "effect": -6.0606060606,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_eras",
+      "interval": [
+        -21.2121212121,
+        9.0909090909
+      ],
+      "league": "nfl",
+      "notes": "Sixth reuse of the ~107-week opener population for the Best Pick family; the incumbent N0 was itself selected on this same window one day earlier (docs/best_pick_bucket_confidence.md), so any N0-favouring reading is inflated. Bootstrap: seed 20260821, 20,000 draws, week-blocked on (season, week), within-week correlation zero. Raw record 22/33 vs 24/33; the arm wins 2 weeks outright and loses 4. Sides never change: this is a ranking only. CORRELATED DECOMPOSITION: this era cell is a subset of best_pick_eras_n0_small_spread_vs_n1_2020_2025 on the same weeks and is not an independent vote; pool it with the overlap discount, or pool the full window instead.",
+      "plain_summary": "Which single game gets the week's star. Compares the star rule we play now (never star a game with a spread bigger than 6.5) against the older star rule with no spread limit over 2024-2025. -6.1 points a week for the first one, 21% likely the better of the two; they star a different game in 11 of 33 weeks.",
+      "probability_positive": 0.208775,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 33,
+      "sample_games": 33,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "scripts/best_pick_eras_eval.py; artifacts/best_pick_eras/20260910T033510Z/summary.json; docs/best_pick_eras.md",
+      "standard_error": null
+    },
+    "best_pick_eras_n1_v2_unrestricted_vs_n0_2020_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_eras.md). Neither admissible closing ground applies: no interval is resolved on the wrong side of zero, and the positive control resolves at roughly +40 accuracy points, proving only that this instrument can see a renomination effect that large -- it was never shown able to see a 2-point one, so it bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Best Pick nomination, the unrestricted v2 nominator vs the served small-spread nominator (v2 restricted to spreads of 6.5 or less), one nomination per week graded at the frozen Tuesday opener on the production probability-rule pick (correct_at_open_probability_rule), seasons 2020-2021, paired weekly delta in Best-Pick accuracy points",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_eras",
+      "interval": [
+        -11.4285714286,
+        11.4285714286
+      ],
+      "league": "nfl",
+      "notes": "Sixth reuse of the ~107-week opener population for the Best Pick family; the incumbent N0 was itself selected on this same window one day earlier (docs/best_pick_bucket_confidence.md), so any N0-favouring reading is inflated. Bootstrap: seed 20260821, 20,000 draws, week-blocked on (season, week), within-week correlation zero. Raw record 18/35 vs 18/35; the arm wins 2 weeks outright and loses 2. Sides never change: this is a ranking only. CORRELATED DECOMPOSITION: this era cell is a subset of best_pick_eras_n1_v2_unrestricted_vs_n0_2020_2025 on the same weeks and is not an independent vote; pool it with the overlap discount, or pool the full window instead.",
+      "plain_summary": "Which single game gets the week's star. Compares the older star rule with no spread limit against the star rule we play now (never star a game with a spread bigger than 6.5) over 2020-2021. +0.0 points a week for the first one, 50% likely the better of the two; they star a different game in 8 of 35 weeks.",
+      "probability_positive": 0.5009,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 35,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "scripts/best_pick_eras_eval.py; artifacts/best_pick_eras/20260910T033510Z/summary.json; docs/best_pick_eras.md",
+      "standard_error": null
+    },
+    "best_pick_eras_n1_v2_unrestricted_vs_n0_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_eras.md). Neither admissible closing ground applies: no interval is resolved on the wrong side of zero, and the positive control resolves at roughly +40 accuracy points, proving only that this instrument can see a renomination effect that large -- it was never shown able to see a 2-point one, so it bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Best Pick nomination, the unrestricted v2 nominator vs the served small-spread nominator (v2 restricted to spreads of 6.5 or less), one nomination per week graded at the frozen Tuesday opener on the production probability-rule pick (correct_at_open_probability_rule), seasons 2020-2025, paired weekly delta in Best-Pick accuracy points",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_eras",
+      "interval": [
+        -6.862745098,
+        6.862745098
+      ],
+      "league": "nfl",
+      "notes": "Sixth reuse of the ~107-week opener population for the Best Pick family; the incumbent N0 was itself selected on this same window one day earlier (docs/best_pick_bucket_confidence.md), so any N0-favouring reading is inflated. Bootstrap: seed 20260821, 20,000 draws, week-blocked on (season, week), within-week correlation zero. Raw record 57/102 vs 57/102; the arm wins 7 weeks outright and loses 7. Sides never change: this is a ranking only. Era decomposition (2020-21 / 2022-23 / 2024-25): +0.00 / -5.88 / +6.06 accuracy points; 1 of 3 eras share the full window's sign; sign reversal across eras: True.",
+      "plain_summary": "Which single game gets the week's star. Compares the older star rule with no spread limit against the star rule we play now (never star a game with a spread bigger than 6.5) over 2020-2025. +0.0 points a week for the first one, 50% likely the better of the two; they star a different game in 26 of 102 weeks.",
+      "probability_positive": 0.498625,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 102,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/best_pick_eras_eval.py; artifacts/best_pick_eras/20260910T033510Z/summary.json; docs/best_pick_eras.md",
+      "standard_error": null
+    },
+    "best_pick_eras_n1_v2_unrestricted_vs_n0_2022_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_eras.md). Neither admissible closing ground applies: no interval is resolved on the wrong side of zero, and the positive control resolves at roughly +40 accuracy points, proving only that this instrument can see a renomination effect that large -- it was never shown able to see a 2-point one, so it bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Best Pick nomination, the unrestricted v2 nominator vs the served small-spread nominator (v2 restricted to spreads of 6.5 or less), one nomination per week graded at the frozen Tuesday opener on the production probability-rule pick (correct_at_open_probability_rule), seasons 2022-2023, paired weekly delta in Best-Pick accuracy points",
+      "effect": -5.8823529412,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_eras",
+      "interval": [
+        -17.6470588235,
+        5.8823529412
+      ],
+      "league": "nfl",
+      "notes": "Sixth reuse of the ~107-week opener population for the Best Pick family; the incumbent N0 was itself selected on this same window one day earlier (docs/best_pick_bucket_confidence.md), so any N0-favouring reading is inflated. Bootstrap: seed 20260821, 20,000 draws, week-blocked on (season, week), within-week correlation zero. Raw record 15/34 vs 17/34; the arm wins 1 weeks outright and loses 3. Sides never change: this is a ranking only. CORRELATED DECOMPOSITION: this era cell is a subset of best_pick_eras_n1_v2_unrestricted_vs_n0_2020_2025 on the same weeks and is not an independent vote; pool it with the overlap discount, or pool the full window instead.",
+      "plain_summary": "Which single game gets the week's star. Compares the older star rule with no spread limit against the star rule we play now (never star a game with a spread bigger than 6.5) over 2022-2023. -5.9 points a week for the first one, 15% likely the better of the two; they star a different game in 7 of 34 weeks.",
+      "probability_positive": 0.15445,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 34,
+      "sample_games": 34,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "scripts/best_pick_eras_eval.py; artifacts/best_pick_eras/20260910T033510Z/summary.json; docs/best_pick_eras.md",
+      "standard_error": null
+    },
+    "best_pick_eras_n1_v2_unrestricted_vs_n0_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_eras.md). Neither admissible closing ground applies: no interval is resolved on the wrong side of zero, and the positive control resolves at roughly +40 accuracy points, proving only that this instrument can see a renomination effect that large -- it was never shown able to see a 2-point one, so it bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Best Pick nomination, the unrestricted v2 nominator vs the served small-spread nominator (v2 restricted to spreads of 6.5 or less), one nomination per week graded at the frozen Tuesday opener on the production probability-rule pick (correct_at_open_probability_rule), seasons 2024-2025, paired weekly delta in Best-Pick accuracy points",
+      "effect": 6.0606060606,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_eras",
+      "interval": [
+        -9.0909090909,
+        21.2121212121
+      ],
+      "league": "nfl",
+      "notes": "Sixth reuse of the ~107-week opener population for the Best Pick family; the incumbent N0 was itself selected on this same window one day earlier (docs/best_pick_bucket_confidence.md), so any N0-favouring reading is inflated. Bootstrap: seed 20260821, 20,000 draws, week-blocked on (season, week), within-week correlation zero. Raw record 24/33 vs 22/33; the arm wins 4 weeks outright and loses 2. Sides never change: this is a ranking only. CORRELATED DECOMPOSITION: this era cell is a subset of best_pick_eras_n1_v2_unrestricted_vs_n0_2020_2025 on the same weeks and is not an independent vote; pool it with the overlap discount, or pool the full window instead.",
+      "plain_summary": "Which single game gets the week's star. Compares the older star rule with no spread limit against the star rule we play now (never star a game with a spread bigger than 6.5) over 2024-2025. +6.1 points a week for the first one, 79% likely the better of the two; they star a different game in 11 of 33 weeks.",
+      "probability_positive": 0.791225,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 33,
+      "sample_games": 33,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "scripts/best_pick_eras_eval.py; artifacts/best_pick_eras/20260910T033510Z/summary.json; docs/best_pick_eras.md",
+      "standard_error": null
+    },
+    "best_pick_eras_n2_reliable_bucket_vs_n0_2020_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_eras.md). Neither admissible closing ground applies: no interval is resolved on the wrong side of zero, and the positive control resolves at roughly +40 accuracy points, proving only that this instrument can see a renomination effect that large -- it was never shown able to see a 2-point one, so it bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Best Pick nomination, a nominator restricted each week to the spread bucket with the best walk-forward realised accuracy (20-pseudo-observation shrinkage, expanding from 2020) vs the served small-spread nominator (v2 restricted to spreads of 6.5 or less), one nomination per week graded at the frozen Tuesday opener on the production probability-rule pick (correct_at_open_probability_rule), seasons 2020-2021, paired weekly delta in Best-Pick accuracy points",
+      "effect": 2.9411764706,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_eras",
+      "interval": [
+        0.0,
+        8.8235294118
+      ],
+      "league": "nfl",
+      "notes": "Sixth reuse of the ~107-week opener population for the Best Pick family; the incumbent N0 was itself selected on this same window one day earlier (docs/best_pick_bucket_confidence.md), so any N0-favouring reading is inflated. Bootstrap: seed 20260821, 20,000 draws, week-blocked on (season, week), within-week correlation zero. Raw record 19/34 vs 18/34; the arm wins 1 weeks outright and loses 0. Sides never change: this is a ranking only. CORRELATED DECOMPOSITION: this era cell is a subset of best_pick_eras_n2_reliable_bucket_vs_n0_2020_2025 on the same weeks and is not an independent vote; pool it with the overlap discount, or pool the full window instead.",
+      "plain_summary": "Which single game gets the week's star. Compares starring only games in whichever spread range the model has been best at against the star rule we play now (never star a game with a spread bigger than 6.5) over 2020-2021. +2.9 points a week for the first one, 82% likely the better of the two; they star a different game in 4 of 34 weeks.",
+      "probability_positive": 0.8195,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 34,
+      "sample_games": 34,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "scripts/best_pick_eras_eval.py; artifacts/best_pick_eras/20260910T033510Z/summary.json; docs/best_pick_eras.md",
+      "standard_error": null
+    },
+    "best_pick_eras_n2_reliable_bucket_vs_n0_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_eras.md). Neither admissible closing ground applies: no interval is resolved on the wrong side of zero, and the positive control resolves at roughly +40 accuracy points, proving only that this instrument can see a renomination effect that large -- it was never shown able to see a 2-point one, so it bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Best Pick nomination, a nominator restricted each week to the spread bucket with the best walk-forward realised accuracy (20-pseudo-observation shrinkage, expanding from 2020) vs the served small-spread nominator (v2 restricted to spreads of 6.5 or less), one nomination per week graded at the frozen Tuesday opener on the production probability-rule pick (correct_at_open_probability_rule), seasons 2020-2025, paired weekly delta in Best-Pick accuracy points",
+      "effect": 0.9900990099,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_eras",
+      "interval": [
+        0.0,
+        2.9702970297
+      ],
+      "league": "nfl",
+      "notes": "Sixth reuse of the ~107-week opener population for the Best Pick family; the incumbent N0 was itself selected on this same window one day earlier (docs/best_pick_bucket_confidence.md), so any N0-favouring reading is inflated. Bootstrap: seed 20260821, 20,000 draws, week-blocked on (season, week), within-week correlation zero. Raw record 58/101 vs 57/101; the arm wins 1 weeks outright and loses 0. Sides never change: this is a ranking only. Era decomposition (2020-21 / 2022-23 / 2024-25): +2.94 / +0.00 / +0.00 accuracy points; 1 of 3 eras share the full window's sign; sign reversal across eras: False.",
+      "plain_summary": "Which single game gets the week's star. Compares starring only games in whichever spread range the model has been best at against the star rule we play now (never star a game with a spread bigger than 6.5) over 2020-2025. +1.0 points a week for the first one, 82% likely the better of the two; they star a different game in 4 of 101 weeks.",
+      "probability_positive": 0.817575,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 101,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/best_pick_eras_eval.py; artifacts/best_pick_eras/20260910T033510Z/summary.json; docs/best_pick_eras.md",
+      "standard_error": null
+    },
+    "best_pick_eras_n2_reliable_bucket_vs_n0_2022_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_eras.md). Neither admissible closing ground applies: no interval is resolved on the wrong side of zero, and the positive control resolves at roughly +40 accuracy points, proving only that this instrument can see a renomination effect that large -- it was never shown able to see a 2-point one, so it bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Best Pick nomination, a nominator restricted each week to the spread bucket with the best walk-forward realised accuracy (20-pseudo-observation shrinkage, expanding from 2020) vs the served small-spread nominator (v2 restricted to spreads of 6.5 or less), one nomination per week graded at the frozen Tuesday opener on the production probability-rule pick (correct_at_open_probability_rule), seasons 2022-2023, paired weekly delta in Best-Pick accuracy points",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_eras",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Sixth reuse of the ~107-week opener population for the Best Pick family; the incumbent N0 was itself selected on this same window one day earlier (docs/best_pick_bucket_confidence.md), so any N0-favouring reading is inflated. Bootstrap: seed 20260821, 20,000 draws, week-blocked on (season, week), within-week correlation zero. Raw record 17/34 vs 17/34; the arm wins 0 weeks outright and loses 0. Sides never change: this is a ranking only. CORRELATED DECOMPOSITION: this era cell is a subset of best_pick_eras_n2_reliable_bucket_vs_n0_2020_2025 on the same weeks and is not an independent vote; pool it with the overlap discount, or pool the full window instead.",
+      "plain_summary": "Which single game gets the week's star. Compares starring only games in whichever spread range the model has been best at against the star rule we play now (never star a game with a spread bigger than 6.5) over 2022-2023. +0.0 points a week for the first one, 50% likely the better of the two; they star a different game in 0 of 34 weeks.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 34,
+      "sample_games": 34,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "scripts/best_pick_eras_eval.py; artifacts/best_pick_eras/20260910T033510Z/summary.json; docs/best_pick_eras.md",
+      "standard_error": null
+    },
+    "best_pick_eras_n2_reliable_bucket_vs_n0_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_eras.md). Neither admissible closing ground applies: no interval is resolved on the wrong side of zero, and the positive control resolves at roughly +40 accuracy points, proving only that this instrument can see a renomination effect that large -- it was never shown able to see a 2-point one, so it bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Best Pick nomination, a nominator restricted each week to the spread bucket with the best walk-forward realised accuracy (20-pseudo-observation shrinkage, expanding from 2020) vs the served small-spread nominator (v2 restricted to spreads of 6.5 or less), one nomination per week graded at the frozen Tuesday opener on the production probability-rule pick (correct_at_open_probability_rule), seasons 2024-2025, paired weekly delta in Best-Pick accuracy points",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_eras",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Sixth reuse of the ~107-week opener population for the Best Pick family; the incumbent N0 was itself selected on this same window one day earlier (docs/best_pick_bucket_confidence.md), so any N0-favouring reading is inflated. Bootstrap: seed 20260821, 20,000 draws, week-blocked on (season, week), within-week correlation zero. Raw record 22/33 vs 22/33; the arm wins 0 weeks outright and loses 0. Sides never change: this is a ranking only. CORRELATED DECOMPOSITION: this era cell is a subset of best_pick_eras_n2_reliable_bucket_vs_n0_2020_2025 on the same weeks and is not an independent vote; pool it with the overlap discount, or pool the full window instead.",
+      "plain_summary": "Which single game gets the week's star. Compares starring only games in whichever spread range the model has been best at against the star rule we play now (never star a game with a spread bigger than 6.5) over 2024-2025. +0.0 points a week for the first one, 50% likely the better of the two; they star a different game in 0 of 33 weeks.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 33,
+      "sample_games": 33,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "scripts/best_pick_eras_eval.py; artifacts/best_pick_eras/20260910T033510Z/summary.json; docs/best_pick_eras.md",
+      "standard_error": null
+    },
+    "best_pick_eras_n2_reliable_bucket_vs_n1_2020_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_eras.md). Neither admissible closing ground applies: no interval is resolved on the wrong side of zero, and the positive control resolves at roughly +40 accuracy points, proving only that this instrument can see a renomination effect that large -- it was never shown able to see a 2-point one, so it bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Best Pick nomination, a nominator restricted each week to the spread bucket with the best walk-forward realised accuracy (20-pseudo-observation shrinkage, expanding from 2020) vs the unrestricted v2 nominator, one nomination per week graded at the frozen Tuesday opener on the production probability-rule pick (correct_at_open_probability_rule), seasons 2020-2021, paired weekly delta in Best-Pick accuracy points",
+      "effect": 2.9411764706,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_eras",
+      "interval": [
+        -5.8823529412,
+        11.7647058824
+      ],
+      "league": "nfl",
+      "notes": "Sixth reuse of the ~107-week opener population for the Best Pick family; the incumbent N0 was itself selected on this same window one day earlier (docs/best_pick_bucket_confidence.md), so any N0-favouring reading is inflated. Bootstrap: seed 20260821, 20,000 draws, week-blocked on (season, week), within-week correlation zero. Raw record 19/34 vs 18/34; the arm wins 2 weeks outright and loses 1. Sides never change: this is a ranking only. CORRELATED DECOMPOSITION: this era cell is a subset of best_pick_eras_n2_reliable_bucket_vs_n1_2020_2025 on the same weeks and is not an independent vote; pool it with the overlap discount, or pool the full window instead.",
+      "plain_summary": "Which single game gets the week's star. Compares starring only games in whichever spread range the model has been best at against the older star rule with no spread limit over 2020-2021. +2.9 points a week for the first one, 71% likely the better of the two; they star a different game in 8 of 34 weeks.",
+      "probability_positive": 0.71145,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 34,
+      "sample_games": 34,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "scripts/best_pick_eras_eval.py; artifacts/best_pick_eras/20260910T033510Z/summary.json; docs/best_pick_eras.md",
+      "standard_error": null
+    },
+    "best_pick_eras_n2_reliable_bucket_vs_n1_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_eras.md). Neither admissible closing ground applies: no interval is resolved on the wrong side of zero, and the positive control resolves at roughly +40 accuracy points, proving only that this instrument can see a renomination effect that large -- it was never shown able to see a 2-point one, so it bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Best Pick nomination, a nominator restricted each week to the spread bucket with the best walk-forward realised accuracy (20-pseudo-observation shrinkage, expanding from 2020) vs the unrestricted v2 nominator, one nomination per week graded at the frozen Tuesday opener on the production probability-rule pick (correct_at_open_probability_rule), seasons 2020-2025, paired weekly delta in Best-Pick accuracy points",
+      "effect": 0.9900990099,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_eras",
+      "interval": [
+        -5.9405940594,
+        7.9207920792
+      ],
+      "league": "nfl",
+      "notes": "Sixth reuse of the ~107-week opener population for the Best Pick family; the incumbent N0 was itself selected on this same window one day earlier (docs/best_pick_bucket_confidence.md), so any N0-favouring reading is inflated. Bootstrap: seed 20260821, 20,000 draws, week-blocked on (season, week), within-week correlation zero. Raw record 58/101 vs 57/101; the arm wins 7 weeks outright and loses 6. Sides never change: this is a ranking only. Era decomposition (2020-21 / 2022-23 / 2024-25): +2.94 / +5.88 / -6.06 accuracy points; 2 of 3 eras share the full window's sign; sign reversal across eras: True.",
+      "plain_summary": "Which single game gets the week's star. Compares starring only games in whichever spread range the model has been best at against the older star rule with no spread limit over 2020-2025. +1.0 points a week for the first one, 61% likely the better of the two; they star a different game in 26 of 101 weeks.",
+      "probability_positive": 0.6076,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 101,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/best_pick_eras_eval.py; artifacts/best_pick_eras/20260910T033510Z/summary.json; docs/best_pick_eras.md",
+      "standard_error": null
+    },
+    "best_pick_eras_n2_reliable_bucket_vs_n1_2022_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_eras.md). Neither admissible closing ground applies: no interval is resolved on the wrong side of zero, and the positive control resolves at roughly +40 accuracy points, proving only that this instrument can see a renomination effect that large -- it was never shown able to see a 2-point one, so it bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Best Pick nomination, a nominator restricted each week to the spread bucket with the best walk-forward realised accuracy (20-pseudo-observation shrinkage, expanding from 2020) vs the unrestricted v2 nominator, one nomination per week graded at the frozen Tuesday opener on the production probability-rule pick (correct_at_open_probability_rule), seasons 2022-2023, paired weekly delta in Best-Pick accuracy points",
+      "effect": 5.8823529412,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_eras",
+      "interval": [
+        -5.8823529412,
+        17.6470588235
+      ],
+      "league": "nfl",
+      "notes": "Sixth reuse of the ~107-week opener population for the Best Pick family; the incumbent N0 was itself selected on this same window one day earlier (docs/best_pick_bucket_confidence.md), so any N0-favouring reading is inflated. Bootstrap: seed 20260821, 20,000 draws, week-blocked on (season, week), within-week correlation zero. Raw record 17/34 vs 15/34; the arm wins 3 weeks outright and loses 1. Sides never change: this is a ranking only. CORRELATED DECOMPOSITION: this era cell is a subset of best_pick_eras_n2_reliable_bucket_vs_n1_2020_2025 on the same weeks and is not an independent vote; pool it with the overlap discount, or pool the full window instead.",
+      "plain_summary": "Which single game gets the week's star. Compares starring only games in whichever spread range the model has been best at against the older star rule with no spread limit over 2022-2023. +5.9 points a week for the first one, 85% likely the better of the two; they star a different game in 7 of 34 weeks.",
+      "probability_positive": 0.84555,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 34,
+      "sample_games": 34,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "scripts/best_pick_eras_eval.py; artifacts/best_pick_eras/20260910T033510Z/summary.json; docs/best_pick_eras.md",
+      "standard_error": null
+    },
+    "best_pick_eras_n2_reliable_bucket_vs_n1_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_eras.md). Neither admissible closing ground applies: no interval is resolved on the wrong side of zero, and the positive control resolves at roughly +40 accuracy points, proving only that this instrument can see a renomination effect that large -- it was never shown able to see a 2-point one, so it bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Best Pick nomination, a nominator restricted each week to the spread bucket with the best walk-forward realised accuracy (20-pseudo-observation shrinkage, expanding from 2020) vs the unrestricted v2 nominator, one nomination per week graded at the frozen Tuesday opener on the production probability-rule pick (correct_at_open_probability_rule), seasons 2024-2025, paired weekly delta in Best-Pick accuracy points",
+      "effect": -6.0606060606,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_eras",
+      "interval": [
+        -21.2121212121,
+        9.0909090909
+      ],
+      "league": "nfl",
+      "notes": "Sixth reuse of the ~107-week opener population for the Best Pick family; the incumbent N0 was itself selected on this same window one day earlier (docs/best_pick_bucket_confidence.md), so any N0-favouring reading is inflated. Bootstrap: seed 20260821, 20,000 draws, week-blocked on (season, week), within-week correlation zero. Raw record 22/33 vs 24/33; the arm wins 2 weeks outright and loses 4. Sides never change: this is a ranking only. CORRELATED DECOMPOSITION: this era cell is a subset of best_pick_eras_n2_reliable_bucket_vs_n1_2020_2025 on the same weeks and is not an independent vote; pool it with the overlap discount, or pool the full window instead.",
+      "plain_summary": "Which single game gets the week's star. Compares starring only games in whichever spread range the model has been best at against the older star rule with no spread limit over 2024-2025. -6.1 points a week for the first one, 21% likely the better of the two; they star a different game in 11 of 33 weeks.",
+      "probability_positive": 0.208775,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 33,
+      "sample_games": 33,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "scripts/best_pick_eras_eval.py; artifacts/best_pick_eras/20260910T033510Z/summary.json; docs/best_pick_eras.md",
+      "standard_error": null
+    },
+    "best_pick_eras_n3_calibrated_pool_vs_n0_2020_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_eras.md). Neither admissible closing ground applies: no interval is resolved on the wrong side of zero, and the positive control resolves at roughly +40 accuracy points, proving only that this instrument can see a renomination effect that large -- it was never shown able to see a 2-point one, so it bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Best Pick nomination, a nominator taking the highest calibrated displayed score inside v2's low-disagreement pool vs the served small-spread nominator (v2 restricted to spreads of 6.5 or less), one nomination per week graded at the frozen Tuesday opener on the production probability-rule pick (correct_at_open_probability_rule), seasons 2020-2021, paired weekly delta in Best-Pick accuracy points",
+      "effect": 2.8571428571,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_eras",
+      "interval": [
+        -14.2857142857,
+        20.0
+      ],
+      "league": "nfl",
+      "notes": "Sixth reuse of the ~107-week opener population for the Best Pick family; the incumbent N0 was itself selected on this same window one day earlier (docs/best_pick_bucket_confidence.md), so any N0-favouring reading is inflated. Bootstrap: seed 20260821, 20,000 draws, week-blocked on (season, week), within-week correlation zero. Raw record 19/35 vs 18/35; the arm wins 5 weeks outright and loses 4. Sides never change: this is a ranking only. CORRELATED DECOMPOSITION: this era cell is a subset of best_pick_eras_n3_calibrated_pool_vs_n0_2020_2025 on the same weeks and is not an independent vote; pool it with the overlap discount, or pool the full window instead.",
+      "plain_summary": "Which single game gets the week's star. Compares starring the game with the highest honest confidence score against the star rule we play now (never star a game with a spread bigger than 6.5) over 2020-2021. +2.9 points a week for the first one, 63% likely the better of the two; they star a different game in 14 of 35 weeks.",
+      "probability_positive": 0.63015,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 35,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "scripts/best_pick_eras_eval.py; artifacts/best_pick_eras/20260910T033510Z/summary.json; docs/best_pick_eras.md",
+      "standard_error": null
+    },
+    "best_pick_eras_n3_calibrated_pool_vs_n0_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_eras.md). Neither admissible closing ground applies: no interval is resolved on the wrong side of zero, and the positive control resolves at roughly +40 accuracy points, proving only that this instrument can see a renomination effect that large -- it was never shown able to see a 2-point one, so it bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Best Pick nomination, a nominator taking the highest calibrated displayed score inside v2's low-disagreement pool vs the served small-spread nominator (v2 restricted to spreads of 6.5 or less), one nomination per week graded at the frozen Tuesday opener on the production probability-rule pick (correct_at_open_probability_rule), seasons 2020-2025, paired weekly delta in Best-Pick accuracy points",
+      "effect": 3.9603960396,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_eras",
+      "interval": [
+        -6.9306930693,
+        14.8514851485
+      ],
+      "league": "nfl",
+      "notes": "Sixth reuse of the ~107-week opener population for the Best Pick family; the incumbent N0 was itself selected on this same window one day earlier (docs/best_pick_bucket_confidence.md), so any N0-favouring reading is inflated. Bootstrap: seed 20260821, 20,000 draws, week-blocked on (season, week), within-week correlation zero. Raw record 60/101 vs 56/101; the arm wins 17 weeks outright and loses 13. Sides never change: this is a ranking only. Era decomposition (2020-21 / 2022-23 / 2024-25): +2.86 / +8.82 / +0.00 accuracy points; 2 of 3 eras share the full window's sign; sign reversal across eras: False.",
+      "plain_summary": "Which single game gets the week's star. Compares starring the game with the highest honest confidence score against the star rule we play now (never star a game with a spread bigger than 6.5) over 2020-2025. +4.0 points a week for the first one, 77% likely the better of the two; they star a different game in 62 of 101 weeks.",
+      "probability_positive": 0.7665,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 101,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/best_pick_eras_eval.py; artifacts/best_pick_eras/20260910T033510Z/summary.json; docs/best_pick_eras.md",
+      "standard_error": null
+    },
+    "best_pick_eras_n3_calibrated_pool_vs_n0_2022_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_eras.md). Neither admissible closing ground applies: no interval is resolved on the wrong side of zero, and the positive control resolves at roughly +40 accuracy points, proving only that this instrument can see a renomination effect that large -- it was never shown able to see a 2-point one, so it bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Best Pick nomination, a nominator taking the highest calibrated displayed score inside v2's low-disagreement pool vs the served small-spread nominator (v2 restricted to spreads of 6.5 or less), one nomination per week graded at the frozen Tuesday opener on the production probability-rule pick (correct_at_open_probability_rule), seasons 2022-2023, paired weekly delta in Best-Pick accuracy points",
+      "effect": 8.8235294118,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_eras",
+      "interval": [
+        -5.8823529412,
+        23.5294117647
+      ],
+      "league": "nfl",
+      "notes": "Sixth reuse of the ~107-week opener population for the Best Pick family; the incumbent N0 was itself selected on this same window one day earlier (docs/best_pick_bucket_confidence.md), so any N0-favouring reading is inflated. Bootstrap: seed 20260821, 20,000 draws, week-blocked on (season, week), within-week correlation zero. Raw record 20/34 vs 17/34; the arm wins 5 weeks outright and loses 2. Sides never change: this is a ranking only. CORRELATED DECOMPOSITION: this era cell is a subset of best_pick_eras_n3_calibrated_pool_vs_n0_2020_2025 on the same weeks and is not an independent vote; pool it with the overlap discount, or pool the full window instead.",
+      "plain_summary": "Which single game gets the week's star. Compares starring the game with the highest honest confidence score against the star rule we play now (never star a game with a spread bigger than 6.5) over 2022-2023. +8.8 points a week for the first one, 88% likely the better of the two; they star a different game in 22 of 34 weeks.",
+      "probability_positive": 0.876375,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 34,
+      "sample_games": 34,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "scripts/best_pick_eras_eval.py; artifacts/best_pick_eras/20260910T033510Z/summary.json; docs/best_pick_eras.md",
+      "standard_error": null
+    },
+    "best_pick_eras_n3_calibrated_pool_vs_n0_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_eras.md). Neither admissible closing ground applies: no interval is resolved on the wrong side of zero, and the positive control resolves at roughly +40 accuracy points, proving only that this instrument can see a renomination effect that large -- it was never shown able to see a 2-point one, so it bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Best Pick nomination, a nominator taking the highest calibrated displayed score inside v2's low-disagreement pool vs the served small-spread nominator (v2 restricted to spreads of 6.5 or less), one nomination per week graded at the frozen Tuesday opener on the production probability-rule pick (correct_at_open_probability_rule), seasons 2024-2025, paired weekly delta in Best-Pick accuracy points",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_eras",
+      "interval": [
+        -21.875,
+        21.875
+      ],
+      "league": "nfl",
+      "notes": "Sixth reuse of the ~107-week opener population for the Best Pick family; the incumbent N0 was itself selected on this same window one day earlier (docs/best_pick_bucket_confidence.md), so any N0-favouring reading is inflated. Bootstrap: seed 20260821, 20,000 draws, week-blocked on (season, week), within-week correlation zero. Raw record 21/32 vs 21/32; the arm wins 7 weeks outright and loses 7. Sides never change: this is a ranking only. CORRELATED DECOMPOSITION: this era cell is a subset of best_pick_eras_n3_calibrated_pool_vs_n0_2020_2025 on the same weeks and is not an independent vote; pool it with the overlap discount, or pool the full window instead.",
+      "plain_summary": "Which single game gets the week's star. Compares starring the game with the highest honest confidence score against the star rule we play now (never star a game with a spread bigger than 6.5) over 2024-2025. +0.0 points a week for the first one, 50% likely the better of the two; they star a different game in 26 of 32 weeks.",
+      "probability_positive": 0.496125,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 32,
+      "sample_games": 32,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "scripts/best_pick_eras_eval.py; artifacts/best_pick_eras/20260910T033510Z/summary.json; docs/best_pick_eras.md",
+      "standard_error": null
+    },
+    "best_pick_eras_n3_calibrated_pool_vs_n1_2020_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_eras.md). Neither admissible closing ground applies: no interval is resolved on the wrong side of zero, and the positive control resolves at roughly +40 accuracy points, proving only that this instrument can see a renomination effect that large -- it was never shown able to see a 2-point one, so it bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Best Pick nomination, a nominator taking the highest calibrated displayed score inside v2's low-disagreement pool vs the unrestricted v2 nominator, one nomination per week graded at the frozen Tuesday opener on the production probability-rule pick (correct_at_open_probability_rule), seasons 2020-2021, paired weekly delta in Best-Pick accuracy points",
+      "effect": 2.8571428571,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_eras",
+      "interval": [
+        -11.4285714286,
+        17.1428571429
+      ],
+      "league": "nfl",
+      "notes": "Sixth reuse of the ~107-week opener population for the Best Pick family; the incumbent N0 was itself selected on this same window one day earlier (docs/best_pick_bucket_confidence.md), so any N0-favouring reading is inflated. Bootstrap: seed 20260821, 20,000 draws, week-blocked on (season, week), within-week correlation zero. Raw record 19/35 vs 18/35; the arm wins 4 weeks outright and loses 3. Sides never change: this is a ranking only. CORRELATED DECOMPOSITION: this era cell is a subset of best_pick_eras_n3_calibrated_pool_vs_n1_2020_2025 on the same weeks and is not an independent vote; pool it with the overlap discount, or pool the full window instead.",
+      "plain_summary": "Which single game gets the week's star. Compares starring the game with the highest honest confidence score against the older star rule with no spread limit over 2020-2021. +2.9 points a week for the first one, 65% likely the better of the two; they star a different game in 12 of 35 weeks.",
+      "probability_positive": 0.645575,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 35,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "scripts/best_pick_eras_eval.py; artifacts/best_pick_eras/20260910T033510Z/summary.json; docs/best_pick_eras.md",
+      "standard_error": null
+    },
+    "best_pick_eras_n3_calibrated_pool_vs_n1_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_eras.md). Neither admissible closing ground applies: no interval is resolved on the wrong side of zero, and the positive control resolves at roughly +40 accuracy points, proving only that this instrument can see a renomination effect that large -- it was never shown able to see a 2-point one, so it bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Best Pick nomination, a nominator taking the highest calibrated displayed score inside v2's low-disagreement pool vs the unrestricted v2 nominator, one nomination per week graded at the frozen Tuesday opener on the production probability-rule pick (correct_at_open_probability_rule), seasons 2020-2025, paired weekly delta in Best-Pick accuracy points",
+      "effect": 2.9411764706,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_eras",
+      "interval": [
+        -7.8431372549,
+        13.7254901961
+      ],
+      "league": "nfl",
+      "notes": "Sixth reuse of the ~107-week opener population for the Best Pick family; the incumbent N0 was itself selected on this same window one day earlier (docs/best_pick_bucket_confidence.md), so any N0-favouring reading is inflated. Bootstrap: seed 20260821, 20,000 draws, week-blocked on (season, week), within-week correlation zero. Raw record 60/102 vs 57/102; the arm wins 17 weeks outright and loses 14. Sides never change: this is a ranking only. Era decomposition (2020-21 / 2022-23 / 2024-25): +2.86 / +14.71 / -9.09 accuracy points; 2 of 3 eras share the full window's sign; sign reversal across eras: True.",
+      "plain_summary": "Which single game gets the week's star. Compares starring the game with the highest honest confidence score against the older star rule with no spread limit over 2020-2025. +2.9 points a week for the first one, 71% likely the better of the two; they star a different game in 62 of 102 weeks.",
+      "probability_positive": 0.706525,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 102,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/best_pick_eras_eval.py; artifacts/best_pick_eras/20260910T033510Z/summary.json; docs/best_pick_eras.md",
+      "standard_error": null
+    },
+    "best_pick_eras_n3_calibrated_pool_vs_n1_2022_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_eras.md). Neither admissible closing ground applies: no interval is resolved on the wrong side of zero, and the positive control resolves at roughly +40 accuracy points, proving only that this instrument can see a renomination effect that large -- it was never shown able to see a 2-point one, so it bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Best Pick nomination, a nominator taking the highest calibrated displayed score inside v2's low-disagreement pool vs the unrestricted v2 nominator, one nomination per week graded at the frozen Tuesday opener on the production probability-rule pick (correct_at_open_probability_rule), seasons 2022-2023, paired weekly delta in Best-Pick accuracy points",
+      "effect": 14.7058823529,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_eras",
+      "interval": [
+        -2.9411764706,
+        32.3529411765
+      ],
+      "league": "nfl",
+      "notes": "Sixth reuse of the ~107-week opener population for the Best Pick family; the incumbent N0 was itself selected on this same window one day earlier (docs/best_pick_bucket_confidence.md), so any N0-favouring reading is inflated. Bootstrap: seed 20260821, 20,000 draws, week-blocked on (season, week), within-week correlation zero. Raw record 20/34 vs 15/34; the arm wins 8 weeks outright and loses 3. Sides never change: this is a ranking only. CORRELATED DECOMPOSITION: this era cell is a subset of best_pick_eras_n3_calibrated_pool_vs_n1_2020_2025 on the same weeks and is not an independent vote; pool it with the overlap discount, or pool the full window instead.",
+      "plain_summary": "Which single game gets the week's star. Compares starring the game with the highest honest confidence score against the older star rule with no spread limit over 2022-2023. +14.7 points a week for the first one, 94% likely the better of the two; they star a different game in 24 of 34 weeks.",
+      "probability_positive": 0.940075,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 34,
+      "sample_games": 34,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "scripts/best_pick_eras_eval.py; artifacts/best_pick_eras/20260910T033510Z/summary.json; docs/best_pick_eras.md",
+      "standard_error": null
+    },
+    "best_pick_eras_n3_calibrated_pool_vs_n1_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_eras.md). Neither admissible closing ground applies: no interval is resolved on the wrong side of zero, and the positive control resolves at roughly +40 accuracy points, proving only that this instrument can see a renomination effect that large -- it was never shown able to see a 2-point one, so it bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Best Pick nomination, a nominator taking the highest calibrated displayed score inside v2's low-disagreement pool vs the unrestricted v2 nominator, one nomination per week graded at the frozen Tuesday opener on the production probability-rule pick (correct_at_open_probability_rule), seasons 2024-2025, paired weekly delta in Best-Pick accuracy points",
+      "effect": -9.0909090909,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_eras",
+      "interval": [
+        -30.303030303,
+        12.1212121212
+      ],
+      "league": "nfl",
+      "notes": "Sixth reuse of the ~107-week opener population for the Best Pick family; the incumbent N0 was itself selected on this same window one day earlier (docs/best_pick_bucket_confidence.md), so any N0-favouring reading is inflated. Bootstrap: seed 20260821, 20,000 draws, week-blocked on (season, week), within-week correlation zero. Raw record 21/33 vs 24/33; the arm wins 5 weeks outright and loses 8. Sides never change: this is a ranking only. CORRELATED DECOMPOSITION: this era cell is a subset of best_pick_eras_n3_calibrated_pool_vs_n1_2020_2025 on the same weeks and is not an independent vote; pool it with the overlap discount, or pool the full window instead.",
+      "plain_summary": "Which single game gets the week's star. Compares starring the game with the highest honest confidence score against the older star rule with no spread limit over 2024-2025. -9.1 points a week for the first one, 19% likely the better of the two; they star a different game in 26 of 33 weeks.",
+      "probability_positive": 0.19375,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 33,
+      "sample_games": 33,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "scripts/best_pick_eras_eval.py; artifacts/best_pick_eras/20260910T033510Z/summary.json; docs/best_pick_eras.md",
+      "standard_error": null
+    },
+    "best_pick_eras_n4_calibrated_open_vs_n0_2020_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_eras.md). Neither admissible closing ground applies: no interval is resolved on the wrong side of zero, and the positive control resolves at roughly +40 accuracy points, proving only that this instrument can see a renomination effect that large -- it was never shown able to see a 2-point one, so it bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Best Pick nomination, a nominator taking the highest calibrated displayed score across the whole card, with no dispersion pool vs the served small-spread nominator (v2 restricted to spreads of 6.5 or less), one nomination per week graded at the frozen Tuesday opener on the production probability-rule pick (correct_at_open_probability_rule), seasons 2020-2021, paired weekly delta in Best-Pick accuracy points",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_eras",
+      "interval": [
+        -17.1428571429,
+        17.1428571429
+      ],
+      "league": "nfl",
+      "notes": "Sixth reuse of the ~107-week opener population for the Best Pick family; the incumbent N0 was itself selected on this same window one day earlier (docs/best_pick_bucket_confidence.md), so any N0-favouring reading is inflated. Bootstrap: seed 20260821, 20,000 draws, week-blocked on (season, week), within-week correlation zero. Raw record 18/35 vs 18/35; the arm wins 5 weeks outright and loses 5. Sides never change: this is a ranking only. CORRELATED DECOMPOSITION: this era cell is a subset of best_pick_eras_n4_calibrated_open_vs_n0_2020_2025 on the same weeks and is not an independent vote; pool it with the overlap discount, or pool the full window instead.",
+      "plain_summary": "Which single game gets the week's star. Compares starring the game with the highest honest confidence score, ignoring whether the sportsbooks agree against the star rule we play now (never star a game with a spread bigger than 6.5) over 2020-2021. +0.0 points a week for the first one, 50% likely the better of the two; they star a different game in 20 of 35 weeks.",
+      "probability_positive": 0.49755,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 35,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "scripts/best_pick_eras_eval.py; artifacts/best_pick_eras/20260910T033510Z/summary.json; docs/best_pick_eras.md",
+      "standard_error": null
+    },
+    "best_pick_eras_n4_calibrated_open_vs_n0_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_eras.md). Neither admissible closing ground applies: no interval is resolved on the wrong side of zero, and the positive control resolves at roughly +40 accuracy points, proving only that this instrument can see a renomination effect that large -- it was never shown able to see a 2-point one, so it bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Best Pick nomination, a nominator taking the highest calibrated displayed score across the whole card, with no dispersion pool vs the served small-spread nominator (v2 restricted to spreads of 6.5 or less), one nomination per week graded at the frozen Tuesday opener on the production probability-rule pick (correct_at_open_probability_rule), seasons 2020-2025, paired weekly delta in Best-Pick accuracy points",
+      "effect": 0.9803921569,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_eras",
+      "interval": [
+        -10.7843137255,
+        12.7450980392
+      ],
+      "league": "nfl",
+      "notes": "Sixth reuse of the ~107-week opener population for the Best Pick family; the incumbent N0 was itself selected on this same window one day earlier (docs/best_pick_bucket_confidence.md), so any N0-favouring reading is inflated. Bootstrap: seed 20260821, 20,000 draws, week-blocked on (season, week), within-week correlation zero. Raw record 58/102 vs 57/102; the arm wins 19 weeks outright and loses 18. Sides never change: this is a ranking only. Era decomposition (2020-21 / 2022-23 / 2024-25): +0.00 / +23.53 / -21.21 accuracy points; 1 of 3 eras share the full window's sign; sign reversal across eras: True.",
+      "plain_summary": "Which single game gets the week's star. Compares starring the game with the highest honest confidence score, ignoring whether the sportsbooks agree against the star rule we play now (never star a game with a spread bigger than 6.5) over 2020-2025. +1.0 points a week for the first one, 57% likely the better of the two; they star a different game in 77 of 102 weeks.",
+      "probability_positive": 0.566975,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 102,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/best_pick_eras_eval.py; artifacts/best_pick_eras/20260910T033510Z/summary.json; docs/best_pick_eras.md",
+      "standard_error": null
+    },
+    "best_pick_eras_n4_calibrated_open_vs_n0_2022_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_eras.md). Neither admissible closing ground applies: no interval is resolved on the wrong side of zero, and the positive control resolves at roughly +40 accuracy points, proving only that this instrument can see a renomination effect that large -- it was never shown able to see a 2-point one, so it bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Best Pick nomination, a nominator taking the highest calibrated displayed score across the whole card, with no dispersion pool vs the served small-spread nominator (v2 restricted to spreads of 6.5 or less), one nomination per week graded at the frozen Tuesday opener on the production probability-rule pick (correct_at_open_probability_rule), seasons 2022-2023, paired weekly delta in Best-Pick accuracy points",
+      "effect": 23.5294117647,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_eras",
+      "interval": [
+        5.8823529412,
+        41.1764705882
+      ],
+      "league": "nfl",
+      "notes": "Sixth reuse of the ~107-week opener population for the Best Pick family; the incumbent N0 was itself selected on this same window one day earlier (docs/best_pick_bucket_confidence.md), so any N0-favouring reading is inflated. Bootstrap: seed 20260821, 20,000 draws, week-blocked on (season, week), within-week correlation zero. Raw record 25/34 vs 17/34; the arm wins 10 weeks outright and loses 2. Sides never change: this is a ranking only. CORRELATED DECOMPOSITION: this era cell is a subset of best_pick_eras_n4_calibrated_open_vs_n0_2020_2025 on the same weeks and is not an independent vote; pool it with the overlap discount, or pool the full window instead.",
+      "plain_summary": "Which single game gets the week's star. Compares starring the game with the highest honest confidence score, ignoring whether the sportsbooks agree against the star rule we play now (never star a game with a spread bigger than 6.5) over 2022-2023. +23.5 points a week for the first one, 99% likely the better of the two; they star a different game in 26 of 34 weeks.",
+      "probability_positive": 0.994425,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 34,
+      "sample_games": 34,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "scripts/best_pick_eras_eval.py; artifacts/best_pick_eras/20260910T033510Z/summary.json; docs/best_pick_eras.md",
+      "standard_error": null
+    },
+    "best_pick_eras_n4_calibrated_open_vs_n0_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_eras.md). Neither admissible closing ground applies: no interval is resolved on the wrong side of zero, and the positive control resolves at roughly +40 accuracy points, proving only that this instrument can see a renomination effect that large -- it was never shown able to see a 2-point one, so it bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Best Pick nomination, a nominator taking the highest calibrated displayed score across the whole card, with no dispersion pool vs the served small-spread nominator (v2 restricted to spreads of 6.5 or less), one nomination per week graded at the frozen Tuesday opener on the production probability-rule pick (correct_at_open_probability_rule), seasons 2024-2025, paired weekly delta in Best-Pick accuracy points",
+      "effect": -21.2121212121,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_eras",
+      "interval": [
+        -42.4242424242,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Sixth reuse of the ~107-week opener population for the Best Pick family; the incumbent N0 was itself selected on this same window one day earlier (docs/best_pick_bucket_confidence.md), so any N0-favouring reading is inflated. Bootstrap: seed 20260821, 20,000 draws, week-blocked on (season, week), within-week correlation zero. Raw record 15/33 vs 22/33; the arm wins 4 weeks outright and loses 11. Sides never change: this is a ranking only. CORRELATED DECOMPOSITION: this era cell is a subset of best_pick_eras_n4_calibrated_open_vs_n0_2020_2025 on the same weeks and is not an independent vote; pool it with the overlap discount, or pool the full window instead.",
+      "plain_summary": "Which single game gets the week's star. Compares starring the game with the highest honest confidence score, ignoring whether the sportsbooks agree against the star rule we play now (never star a game with a spread bigger than 6.5) over 2024-2025. -21.2 points a week for the first one, 3% likely the better of the two; they star a different game in 31 of 33 weeks.",
+      "probability_positive": 0.0276,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 33,
+      "sample_games": 33,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "scripts/best_pick_eras_eval.py; artifacts/best_pick_eras/20260910T033510Z/summary.json; docs/best_pick_eras.md",
+      "standard_error": null
+    },
+    "best_pick_eras_n4_calibrated_open_vs_n1_2020_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_eras.md). Neither admissible closing ground applies: no interval is resolved on the wrong side of zero, and the positive control resolves at roughly +40 accuracy points, proving only that this instrument can see a renomination effect that large -- it was never shown able to see a 2-point one, so it bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Best Pick nomination, a nominator taking the highest calibrated displayed score across the whole card, with no dispersion pool vs the unrestricted v2 nominator, one nomination per week graded at the frozen Tuesday opener on the production probability-rule pick (correct_at_open_probability_rule), seasons 2020-2021, paired weekly delta in Best-Pick accuracy points",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_eras",
+      "interval": [
+        -17.1428571429,
+        17.1428571429
+      ],
+      "league": "nfl",
+      "notes": "Sixth reuse of the ~107-week opener population for the Best Pick family; the incumbent N0 was itself selected on this same window one day earlier (docs/best_pick_bucket_confidence.md), so any N0-favouring reading is inflated. Bootstrap: seed 20260821, 20,000 draws, week-blocked on (season, week), within-week correlation zero. Raw record 18/35 vs 18/35; the arm wins 4 weeks outright and loses 4. Sides never change: this is a ranking only. CORRELATED DECOMPOSITION: this era cell is a subset of best_pick_eras_n4_calibrated_open_vs_n1_2020_2025 on the same weeks and is not an independent vote; pool it with the overlap discount, or pool the full window instead.",
+      "plain_summary": "Which single game gets the week's star. Compares starring the game with the highest honest confidence score, ignoring whether the sportsbooks agree against the older star rule with no spread limit over 2020-2021. +0.0 points a week for the first one, 50% likely the better of the two; they star a different game in 18 of 35 weeks.",
+      "probability_positive": 0.501075,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 35,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "scripts/best_pick_eras_eval.py; artifacts/best_pick_eras/20260910T033510Z/summary.json; docs/best_pick_eras.md",
+      "standard_error": null
+    },
+    "best_pick_eras_n4_calibrated_open_vs_n1_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_eras.md). Neither admissible closing ground applies: no interval is resolved on the wrong side of zero, and the positive control resolves at roughly +40 accuracy points, proving only that this instrument can see a renomination effect that large -- it was never shown able to see a 2-point one, so it bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Best Pick nomination, a nominator taking the highest calibrated displayed score across the whole card, with no dispersion pool vs the unrestricted v2 nominator, one nomination per week graded at the frozen Tuesday opener on the production probability-rule pick (correct_at_open_probability_rule), seasons 2020-2025, paired weekly delta in Best-Pick accuracy points",
+      "effect": 0.9708737864,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_eras",
+      "interval": [
+        -10.6796116505,
+        12.6213592233
+      ],
+      "league": "nfl",
+      "notes": "Sixth reuse of the ~107-week opener population for the Best Pick family; the incumbent N0 was itself selected on this same window one day earlier (docs/best_pick_bucket_confidence.md), so any N0-favouring reading is inflated. Bootstrap: seed 20260821, 20,000 draws, week-blocked on (season, week), within-week correlation zero. Raw record 58/103 vs 57/103; the arm wins 20 weeks outright and loses 19. Sides never change: this is a ranking only. Era decomposition (2020-21 / 2022-23 / 2024-25): +0.00 / +29.41 / -26.47 accuracy points; 1 of 3 eras share the full window's sign; sign reversal across eras: True.",
+      "plain_summary": "Which single game gets the week's star. Compares starring the game with the highest honest confidence score, ignoring whether the sportsbooks agree against the older star rule with no spread limit over 2020-2025. +1.0 points a week for the first one, 57% likely the better of the two; they star a different game in 75 of 103 weeks.",
+      "probability_positive": 0.568575,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 103,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/best_pick_eras_eval.py; artifacts/best_pick_eras/20260910T033510Z/summary.json; docs/best_pick_eras.md",
+      "standard_error": null
+    },
+    "best_pick_eras_n4_calibrated_open_vs_n1_2022_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_eras.md). Neither admissible closing ground applies: no interval is resolved on the wrong side of zero, and the positive control resolves at roughly +40 accuracy points, proving only that this instrument can see a renomination effect that large -- it was never shown able to see a 2-point one, so it bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Best Pick nomination, a nominator taking the highest calibrated displayed score across the whole card, with no dispersion pool vs the unrestricted v2 nominator, one nomination per week graded at the frozen Tuesday opener on the production probability-rule pick (correct_at_open_probability_rule), seasons 2022-2023, paired weekly delta in Best-Pick accuracy points",
+      "effect": 29.4117647059,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_eras",
+      "interval": [
+        8.8235294118,
+        50.0
+      ],
+      "league": "nfl",
+      "notes": "Sixth reuse of the ~107-week opener population for the Best Pick family; the incumbent N0 was itself selected on this same window one day earlier (docs/best_pick_bucket_confidence.md), so any N0-favouring reading is inflated. Bootstrap: seed 20260821, 20,000 draws, week-blocked on (season, week), within-week correlation zero. Raw record 25/34 vs 15/34; the arm wins 13 weeks outright and loses 3. Sides never change: this is a ranking only. CORRELATED DECOMPOSITION: this era cell is a subset of best_pick_eras_n4_calibrated_open_vs_n1_2020_2025 on the same weeks and is not an independent vote; pool it with the overlap discount, or pool the full window instead.",
+      "plain_summary": "Which single game gets the week's star. Compares starring the game with the highest honest confidence score, ignoring whether the sportsbooks agree against the older star rule with no spread limit over 2022-2023. +29.4 points a week for the first one, 100% likely the better of the two; they star a different game in 27 of 34 weeks.",
+      "probability_positive": 0.9971,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 34,
+      "sample_games": 34,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "scripts/best_pick_eras_eval.py; artifacts/best_pick_eras/20260910T033510Z/summary.json; docs/best_pick_eras.md",
+      "standard_error": null
+    },
+    "best_pick_eras_n4_calibrated_open_vs_n1_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_eras.md). Neither admissible closing ground applies: no interval is resolved on the wrong side of zero, and the positive control resolves at roughly +40 accuracy points, proving only that this instrument can see a renomination effect that large -- it was never shown able to see a 2-point one, so it bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Best Pick nomination, a nominator taking the highest calibrated displayed score across the whole card, with no dispersion pool vs the unrestricted v2 nominator, one nomination per week graded at the frozen Tuesday opener on the production probability-rule pick (correct_at_open_probability_rule), seasons 2024-2025, paired weekly delta in Best-Pick accuracy points",
+      "effect": -26.4705882353,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_eras",
+      "interval": [
+        -47.0588235294,
+        -5.8823529412
+      ],
+      "league": "nfl",
+      "notes": "Sixth reuse of the ~107-week opener population for the Best Pick family; the incumbent N0 was itself selected on this same window one day earlier (docs/best_pick_bucket_confidence.md), so any N0-favouring reading is inflated. Bootstrap: seed 20260821, 20,000 draws, week-blocked on (season, week), within-week correlation zero. Raw record 15/34 vs 24/34; the arm wins 3 weeks outright and loses 12. Sides never change: this is a ranking only. CORRELATED DECOMPOSITION: this era cell is a subset of best_pick_eras_n4_calibrated_open_vs_n1_2020_2025 on the same weeks and is not an independent vote; pool it with the overlap discount, or pool the full window instead.",
+      "plain_summary": "Which single game gets the week's star. Compares starring the game with the highest honest confidence score, ignoring whether the sportsbooks agree against the older star rule with no spread limit over 2024-2025. -26.5 points a week for the first one, 1% likely the better of the two; they star a different game in 30 of 34 weeks.",
+      "probability_positive": 0.00555,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 34,
+      "sample_games": 34,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "scripts/best_pick_eras_eval.py; artifacts/best_pick_eras/20260910T033510Z/summary.json; docs/best_pick_eras.md",
+      "standard_error": null
+    }
+  }
+}

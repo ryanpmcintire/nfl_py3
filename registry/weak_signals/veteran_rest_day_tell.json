@@ -1,0 +1,33 @@
+{
+  "family": "veteran_rest_day_tell",
+  "signals": {
+    "veteran_rest_day_tell_on_production": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Assigned-window (2020-2021, rotation family veteran_rest_day_tell_on_production) week-blocked interval [-5.765,+0.222] crosses zero: not a resolved wrong sign. Trait reliability (team rest-tag rate, odd vs even season halves, 32 teams) Pearson r=0.5633 95%% [0.285,0.768] excludes zero: rules out no_split_half_reliability. No positive-control-sized bound attempted at this effect size. Neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Value-weighted count of flagged 30+ veteran starters (Wednesday DNP/rest or not-injury-related reason text, cleared to practice later that week) stacked as a FADE overlay on production's opener probability-rule pick.",
+      "effect": -2.6315789473684212,
+      "effect_units": "accuracy_points",
+      "family": "veteran_rest_day_tell",
+      "interval": [
+        -5.764966740576496,
+        0.22172949002217296
+      ],
+      "league": "nfl",
+      "notes": "docs/veteran_rest_day_tell.md; scripts/veteran_rest_day_tell.py. Full 2020-2025 opener archive (1537 games, descriptive only, NOT the recorded confirmation cell): -2.7944 pts, 95%% [-4.573,-1.002], P+ 0.00105. Outcome comparison (2021-2025, 1022 flagged player-weeks): raw same-week snap share is HIGHER for flagged veterans than the general 30+ population (selection: only high-usage starters get rest days), but once matched to trailing-starter status only (n=790 flagged vs 8381 control), flagged veterans show a SMALLER production drop from their own trailing baseline (-0.0154 vs -0.0273) and a LOWER 4-week missed-game rate (0.195 vs 0.251) than matched non-flagged starters, both directions consistent across odd (2021/23/25) and even (2022/24) season halves -- pointing away from the predeclared hidden-decline mechanism. Birth dates: 100%% coverage via nflreadpy.load_players() (32 null league-wide), unlike the prior NFL.com-sourced screen (docs/injury_trajectory_leads.md) which had zero coverage.",
+      "plain_summary": "When a team rests a 30+ veteran on Wednesday for a non-injury reason and he returns to practice, betting against that team lost a little accuracy rather than gaining it (39 of 466 games would have flipped); not enough games yet to be sure either way.",
+      "probability_positive": 0.038225,
+      "recorded_at": "2026-09-11",
+      "reliability": 0.5632573223589222,
+      "sample_blocks": 35,
+      "sample_games": 466,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/experiments/veteran_rest_day_tell/20260911T020731Z/results.json",
+      "standard_error": null
+    }
+  }
+}

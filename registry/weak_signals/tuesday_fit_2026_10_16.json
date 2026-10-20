@@ -1,0 +1,33 @@
+{
+  "family": "tuesday_fit_2026_10_16",
+  "signals": {
+    "tuesday_fit_vs_served_move0_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval spans zero; positive but tiny, 5 of 6 seasons favour Tuesday-fit; no closing ground",
+      "closing_ground": null,
+      "description": "Pooled four-term coefficients fitted with move zeroed (Tuesday-fit) versus served full-fit coefficients scored with move zero, LOSO, Tuesday information",
+      "effect": 8.94e-05,
+      "effect_units": "brier_improvement",
+      "family": "tuesday_fit_2026_10_16",
+      "interval": [
+        -0.000313,
+        0.000495
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Fitting the lock-time coefficients without the market move lowers Brier by 0.00009 out of season; unresolved.",
+      "probability_positive": 0.6643,
+      "recorded_at": "2026-10-16",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/tue_fit_out.json",
+      "standard_error": 0.000208
+    }
+  }
+}

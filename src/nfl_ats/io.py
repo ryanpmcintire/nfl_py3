@@ -90,13 +90,14 @@ def file_lock(path: Path, *, timeout: float = 60.0, poll: float = 0.05) -> Itera
         lock_path.unlink(missing_ok=True)
 
 
+def render_json(payload: dict[str, Any]) -> str:
+    return json.dumps(payload, indent=2, sort_keys=True, default=json_default) + "\n"
+
+
 def atomic_json(payload: dict[str, Any], destination: Path) -> None:
     destination.parent.mkdir(parents=True, exist_ok=True)
     temporary = _temporary_path(destination)
-    temporary.write_text(
-        json.dumps(payload, indent=2, sort_keys=True, default=json_default) + "\n",
-        encoding="utf-8",
-    )
+    temporary.write_text(render_json(payload), encoding="utf-8")
     _replace(temporary, destination)
 
 

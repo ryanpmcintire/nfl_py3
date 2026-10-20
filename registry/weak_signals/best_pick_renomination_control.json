@@ -1,0 +1,33 @@
+{
+  "family": "best_pick_renomination_control",
+  "signals": {
+    "best_pick_sunday_renomination_positive_control_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A control, not a candidate: it closes nothing and is recorded to calibrate what this instrument can see. It demonstrates the harness resolves a 35-point renomination effect on 104 weeks; it was never shown able to resolve a 3-to-5 point one, so it does not license bounded_by_control for any arm in this family.",
+      "closing_ground": null,
+      "description": "Positive control: perfect-foresight Sunday re-nomination - any still-playable Tuesday-pool game whose graded pick is correct - versus the frozen Tuesday nomination. 104 paired weeks.",
+      "effect": 34.615385,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_renomination_control",
+      "interval": [
+        25.961538,
+        44.230769
+      ],
+      "league": "nfl",
+      "notes": "LEAD-53 second historical read, docs/best_pick_sunday_renomination.md. Ceiling on the renomination question over this population. Not a bound on the s1/s2/s3 arms: it resolves at 35 points, an order of magnitude above where those arms live. Unit is one Best Pick per week, NOT game-level accuracy points.",
+      "plain_summary": "If you knew the results in advance and moved the star to a winner every Sunday, you would hit 88% of weeks instead of 53%. This is a yardstick for how much a re-pick could possibly be worth, not a rule anyone can play.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-11",
+      "reliability": null,
+      "sample_blocks": 104,
+      "sample_games": 104,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/best_pick_sunday_renomination/20260911T021349Z/summary.json",
+      "standard_error": null
+    }
+  }
+}

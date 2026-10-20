@@ -1,0 +1,173 @@
+{
+  "family": "pol09_best_pick_composed_v1",
+  "signals": {
+    "pol09_best_pick_composed_v1_tiebreak_dispersion_vs_alphabetical": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_composed_rule.md). Neither admissible closing ground applies: the interval is not resolved on the wrong side of zero and no positive control was run for this family, so unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Tie-break audit: in the weeks where the production Best Pick pool ties at the top, the dispersion tie-break's nominee vs the alphabetical game_id fallback (nfl_ats.best_pick_nomination.select_nominee_v3) on the same pool, both settled on the ACTIVE model's pick side, top-1 hit rate; descriptive, tie weeks only",
+      "effect": -20.0,
+      "effect_units": "accuracy_points",
+      "family": "pol09_best_pick_composed_v1",
+      "interval": [
+        -60.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Fourth reuse of the ~107-week opener population for the Best Pick family (ridge_alpha promotion look, odds-microstructure battery, 2026-08-18 ranker screen, 2026-08-19 v3 audit) -- compounding look-reuse discount. No rotation window assigned or spent: a scoring of an already-played rule. Population: 1,537 games, 107 weeks, seasons 2020-2025. Nominees settle on the ACTIVE model's pick (baseline_correct_open), not the candidate arm's; the 2026-08-19 v3 audit's 54.37% was the candidate-arm read. Bootstrap: seed 20260817, 20,000 draws, week-blocked, within-week correlation zero. v1 sweep refit reproduction max |residual diff| vs archive: 3.47 (probability_method gaussian_median). Nominees differ in 2 of 5 paired weeks; the outcome differs in 1.",
+      "plain_summary": "When two games tie for the week's Best Pick, we now break the tie toward the game the sportsbooks agree on most instead of alphabetical order. That happened in only 5 weeks, and the two ways picked a different game in 2 of them; the new tie-break came out -20 points a week against the alphabetical choice there. One week's difference, far too few to call either way.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 5,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/best_pick_composed_rule_eval.py; artifacts/best_pick_composed_rule/20260908T003306Z/summary.json; docs/best_pick_composed_rule.md",
+      "standard_error": null
+    },
+    "pol09_best_pick_composed_v1_v2_as_played_vs_top_residual": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_composed_rule.md). Neither admissible closing ground applies: the interval is not resolved on the wrong side of zero and no positive control was run for this family, so unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Production Best Pick nomination (v2 as played) vs the raw model's top-|residual| pick (scripts/best_pick_opener_ranker_eval.py chooser 1), both settled on the ACTIVE model's pick side, top-1 hit rate per week",
+      "effect": 3.8834951456,
+      "effect_units": "accuracy_points",
+      "family": "pol09_best_pick_composed_v1",
+      "interval": [
+        -6.7961165049,
+        14.5631067961
+      ],
+      "league": "nfl",
+      "notes": "Fourth reuse of the ~107-week opener population for the Best Pick family (ridge_alpha promotion look, odds-microstructure battery, 2026-08-18 ranker screen, 2026-08-19 v3 audit) -- compounding look-reuse discount. No rotation window assigned or spent: a scoring of an already-played rule. Population: 1,537 games, 107 weeks, seasons 2020-2025. Nominees settle on the ACTIVE model's pick (baseline_correct_open), not the candidate arm's; the 2026-08-19 v3 audit's 54.37% was the candidate-arm read. Bootstrap: seed 20260817, 20,000 draws, week-blocked, within-week correlation zero. v1 sweep refit reproduction max |residual diff| vs archive: 3.47 (probability_method gaussian_median). Nominees differ in 72 of 103 paired weeks; the outcome differs in 34.",
+      "plain_summary": "Which game we flag as the week's Best Pick. The rule we use now against simply taking the game where the model disagrees most with the line. +3.9 points a week for the current rule, 73% likely the better of the two; they name a different game in 72 of 103 weeks.",
+      "probability_positive": 0.72855,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 103,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/best_pick_composed_rule_eval.py; artifacts/best_pick_composed_rule/20260908T003306Z/summary.json; docs/best_pick_composed_rule.md",
+      "standard_error": null
+    },
+    "pol09_best_pick_composed_v1_v2_as_played_vs_v1_sweep": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_composed_rule.md). Neither admissible closing ground applies: the interval is not resolved on the wrong side of zero and no positive control was run for this family, so unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Production Best Pick nomination (v2 as played: alpha=2000 probability distance, below-median cross-book opener dispersion pool, dispersion then game_id tie-break; nfl_ats.best_pick_nomination.select_nominee) vs the v1 sweep_robustness rule it replaced (nfl_ats.best_pick.select_best_pick on a gaussian_median opener sweep), both settled on the ACTIVE model's pick side, top-1 hit rate per week",
+      "effect": 0.9708737864,
+      "effect_units": "accuracy_points",
+      "family": "pol09_best_pick_composed_v1",
+      "interval": [
+        -10.6796116505,
+        11.6504854369
+      ],
+      "league": "nfl",
+      "notes": "Fourth reuse of the ~107-week opener population for the Best Pick family (ridge_alpha promotion look, odds-microstructure battery, 2026-08-18 ranker screen, 2026-08-19 v3 audit) -- compounding look-reuse discount. No rotation window assigned or spent: a scoring of an already-played rule. Population: 1,537 games, 107 weeks, seasons 2020-2025. Nominees settle on the ACTIVE model's pick (baseline_correct_open), not the candidate arm's; the 2026-08-19 v3 audit's 54.37% was the candidate-arm read. Bootstrap: seed 20260817, 20,000 draws, week-blocked, within-week correlation zero. v1 sweep refit reproduction max |residual diff| vs archive: 3.47 (probability_method gaussian_median). Nominees differ in 69 of 103 paired weeks; the outcome differs in 35.",
+      "plain_summary": "Which game we flag as the week's Best Pick. The rule we use now (the calmer model's surest game, among games the sportsbooks agree on) against the old rule (the game whose pick survives the biggest line move). +1.0 points a week for the current rule, 54% likely the better of the two; they name a different game in 69 of 103 weeks.",
+      "probability_positive": 0.53585,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 103,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/best_pick_composed_rule_eval.py; artifacts/best_pick_composed_rule/20260908T003306Z/summary.json; docs/best_pick_composed_rule.md",
+      "standard_error": null
+    },
+    "pol09_best_pick_composed_v1_v2_plus_big_spread_discount_vs_top_residual": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_composed_rule.md). Neither admissible closing ground applies: the interval is not resolved on the wrong side of zero and no positive control was run for this family, so unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Production Best Pick nomination with the 10+ opener-spread eligibility exclusion vs the raw model's top-|residual| pick, both settled on the ACTIVE model's pick side, top-1 hit rate per week",
+      "effect": 4.854368932,
+      "effect_units": "accuracy_points",
+      "family": "pol09_best_pick_composed_v1",
+      "interval": [
+        -6.7961165049,
+        16.5048543689
+      ],
+      "league": "nfl",
+      "notes": "Fourth reuse of the ~107-week opener population for the Best Pick family (ridge_alpha promotion look, odds-microstructure battery, 2026-08-18 ranker screen, 2026-08-19 v3 audit) -- compounding look-reuse discount. No rotation window assigned or spent: a scoring of an already-played rule. Population: 1,537 games, 107 weeks, seasons 2020-2025. Nominees settle on the ACTIVE model's pick (baseline_correct_open), not the candidate arm's; the 2026-08-19 v3 audit's 54.37% was the candidate-arm read. Bootstrap: seed 20260817, 20,000 draws, week-blocked, within-week correlation zero. v1 sweep refit reproduction max |residual diff| vs archive: 3.47 (probability_method gaussian_median). Nominees differ in 73 of 103 paired weeks; the outcome differs in 37.",
+      "plain_summary": "Which game we flag as the week's Best Pick, if we also refuse to flag any game with a spread of 10 or more, against simply taking the game where the model disagrees most with the line. +4.9 points a week for the no-blowouts version, 77% likely the better of the two.",
+      "probability_positive": 0.7741,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 103,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/best_pick_composed_rule_eval.py; artifacts/best_pick_composed_rule/20260908T003306Z/summary.json; docs/best_pick_composed_rule.md",
+      "standard_error": null
+    },
+    "pol09_best_pick_composed_v1_v2_plus_big_spread_discount_vs_v1_sweep": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_composed_rule.md). Neither admissible closing ground applies: the interval is not resolved on the wrong side of zero and no positive control was run for this family, so unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Production Best Pick nomination with the side-ledger 10+ opener-spread eligibility exclusion (nfl_ats.best_pick_big_spread_challenger.apply_big_spread_eligibility, fallback to the unmodified v2 pool) vs the v1 sweep_robustness rule, both settled on the ACTIVE model's pick side, top-1 hit rate per week",
+      "effect": 1.9417475728,
+      "effect_units": "accuracy_points",
+      "family": "pol09_best_pick_composed_v1",
+      "interval": [
+        -8.7378640777,
+        12.6213592233
+      ],
+      "league": "nfl",
+      "notes": "Fourth reuse of the ~107-week opener population for the Best Pick family (ridge_alpha promotion look, odds-microstructure battery, 2026-08-18 ranker screen, 2026-08-19 v3 audit) -- compounding look-reuse discount. No rotation window assigned or spent: a scoring of an already-played rule. Population: 1,537 games, 107 weeks, seasons 2020-2025. Nominees settle on the ACTIVE model's pick (baseline_correct_open), not the candidate arm's; the 2026-08-19 v3 audit's 54.37% was the candidate-arm read. Bootstrap: seed 20260817, 20,000 draws, week-blocked, within-week correlation zero. v1 sweep refit reproduction max |residual diff| vs archive: 3.47 (probability_method gaussian_median). Nominees differ in 67 of 103 paired weeks; the outcome differs in 34.",
+      "plain_summary": "Which game we flag as the week's Best Pick, if we also refuse to flag any game with a spread of 10 or more, against the old rule. +1.9 points a week for the no-blowouts version, 60% likely the better of the two.",
+      "probability_positive": 0.6021,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 103,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/best_pick_composed_rule_eval.py; artifacts/best_pick_composed_rule/20260908T003306Z/summary.json; docs/best_pick_composed_rule.md",
+      "standard_error": null
+    },
+    "pol09_best_pick_composed_v1_v2_plus_big_spread_discount_vs_v2_as_played": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_composed_rule.md). Neither admissible closing ground applies: the interval is not resolved on the wrong side of zero and no positive control was run for this family, so unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "The 10+ opener-spread eligibility exclusion's marginal on top of the production Best Pick nomination (v2 as played), both settled on the ACTIVE model's pick side, top-1 hit rate per week",
+      "effect": 0.9708737864,
+      "effect_units": "accuracy_points",
+      "family": "pol09_best_pick_composed_v1",
+      "interval": [
+        -2.9126213592,
+        4.854368932
+      ],
+      "league": "nfl",
+      "notes": "Fourth reuse of the ~107-week opener population for the Best Pick family (ridge_alpha promotion look, odds-microstructure battery, 2026-08-18 ranker screen, 2026-08-19 v3 audit) -- compounding look-reuse discount. No rotation window assigned or spent: a scoring of an already-played rule. Population: 1,537 games, 107 weeks, seasons 2020-2025. Nominees settle on the ACTIVE model's pick (baseline_correct_open), not the candidate arm's; the 2026-08-19 v3 audit's 54.37% was the candidate-arm read. Bootstrap: seed 20260817, 20,000 draws, week-blocked, within-week correlation zero. v1 sweep refit reproduction max |residual diff| vs archive: 3.47 (probability_method gaussian_median). Nominees differ in 8 of 103 paired weeks; the outcome differs in 5.",
+      "plain_summary": "Does refusing to flag a 10-point-or-more spread as the Best Pick help? Same rule otherwise. +1.0 points a week, 59% likely to help; it changes the flagged game in only 8 of 103 weeks.",
+      "probability_positive": 0.59195,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 103,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/best_pick_composed_rule_eval.py; artifacts/best_pick_composed_rule/20260908T003306Z/summary.json; docs/best_pick_composed_rule.md",
+      "standard_error": null
+    }
+  }
+}

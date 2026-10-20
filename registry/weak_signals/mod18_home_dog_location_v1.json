@@ -1,0 +1,2469 @@
+{
+  "family": "mod18_home_dog_location_v1",
+  "signals": {
+    "mod18_home_dog_location_v1_Q1_2020_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q1, positive favours the candidate",
+      "effect": 0.21929824561403508,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -0.8771929824561403,
+        1.342281879194631
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, so home underdogs get a fairer shake without any hand-set rule.",
+      "probability_positive": 0.57415,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\window_2020_2021.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q1_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q1, positive favours the candidate",
+      "effect": -0.332667997338656,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -1.0603048376408217,
+        0.3929337456581012
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, so home underdogs get a fairer shake without any hand-set rule.",
+      "probability_positive": 0.1552,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\window_2020_2025.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q1_2022_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q1, positive favours the candidate",
+      "effect": -1.3618677042801557,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -2.7079303675048356,
+        -0.18832391713747645
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, so home underdogs get a fairer shake without any hand-set rule.",
+      "probability_positive": 0.01065,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 514,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\window_2022_2023.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q1_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q1, positive favours the candidate",
+      "effect": 0.18761726078799248,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -0.9346231929714025,
+        1.308411214953271
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, so home underdogs get a fairer shake without any hand-set rule.",
+      "probability_positive": 0.5631,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\window_2024_2025.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q1_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q1_brier, positive favours the candidate",
+      "effect": 4.861929817339532e-06,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -0.00023194803821296805,
+        0.00023225413211750928
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, so home underdogs get a fairer shake without any hand-set rule.",
+      "probability_positive": 0.52215,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\losses.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q1_bucket_0-3_all_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q1_bucket_0-3_all, positive favours the candidate",
+      "effect": -0.905797101449,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -2.329749103943,
+        0.376647834275
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, so home underdogs get a fairer shake without any hand-set rule.",
+      "probability_positive": 0.095975,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\bucket_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q1_bucket_0-3_home_favourite_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q1_bucket_0-3_home_favourite, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -1.672381091334,
+        1.677852348993
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, so home underdogs get a fairer shake without any hand-set rule.",
+      "probability_positive": 0.50035,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 102,
+      "sample_games": 294,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\bucket_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q1_bucket_0-3_home_underdog_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q1_bucket_0-3_home_underdog, positive favours the candidate",
+      "effect": -2.032520325203,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -4.583333333333,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, so home underdogs get a fairer shake without any hand-set rule.",
+      "probability_positive": 0.035225,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 98,
+      "sample_games": 246,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\bucket_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q1_bucket_10p5plus_all_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q1_bucket_10p5plus_all, positive favours the candidate",
+      "effect": -2.290076335878,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -5.785123966942,
+        0.793650793651
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, so home underdogs get a fairer shake without any hand-set rule.",
+      "probability_positive": 0.085125,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\bucket_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q1_bucket_10p5plus_home_favourite_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q1_bucket_10p5plus_home_favourite, positive favours the candidate",
+      "effect": -3.030303030303,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -7.547169811321,
+        1.041940789474
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, so home underdogs get a fairer shake without any hand-set rule.",
+      "probability_positive": 0.083875,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 67,
+      "sample_games": 99,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\bucket_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q1_bucket_10p5plus_home_underdog_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q1_bucket_10p5plus_home_underdog, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, so home underdogs get a fairer shake without any hand-set rule.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 28,
+      "sample_games": 32,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\bucket_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q1_bucket_3p5-6p5_all_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q1_bucket_3p5-6p5_all, positive favours the candidate",
+      "effect": 0.36231884058,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -0.528169014085,
+        1.286823949193
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, so home underdogs get a fairer shake without any hand-set rule.",
+      "probability_positive": 0.792975,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\bucket_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q1_bucket_3p5-6p5_home_favourite_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q1_bucket_3p5-6p5_home_favourite, positive favours the candidate",
+      "effect": 0.946372239748,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        0.0,
+        2.140672782875
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, so home underdogs get a fairer shake without any hand-set rule.",
+      "probability_positive": 0.976375,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 102,
+      "sample_games": 317,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\bucket_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q1_bucket_3p5-6p5_home_underdog_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q1_bucket_3p5-6p5_home_underdog, positive favours the candidate",
+      "effect": -0.425531914894,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -1.968503937008,
+        0.909090909091
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, so home underdogs get a fairer shake without any hand-set rule.",
+      "probability_positive": 0.2881,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 97,
+      "sample_games": 235,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\bucket_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q1_bucket_7_all_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q1_bucket_7_all, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, so home underdogs get a fairer shake without any hand-set rule.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\bucket_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q1_bucket_7_home_favourite_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q1_bucket_7_home_favourite, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, so home underdogs get a fairer shake without any hand-set rule.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 38,
+      "sample_games": 49,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\bucket_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q1_bucket_7_home_underdog_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q1_bucket_7_home_underdog, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, so home underdogs get a fairer shake without any hand-set rule.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 24,
+      "sample_games": 25,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\bucket_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q1_bucket_7p5-10_all_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q1_bucket_7p5-10_all, positive favours the candidate",
+      "effect": 0.515463917526,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -1.098901098901,
+        2.293577981651
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, so home underdogs get a fairer shake without any hand-set rule.",
+      "probability_positive": 0.7093,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\bucket_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q1_bucket_7p5-10_home_favourite_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q1_bucket_7p5-10_home_favourite, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -2.459016393443,
+        2.272727272727
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, so home underdogs get a fairer shake without any hand-set rule.",
+      "probability_positive": 0.502975,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 78,
+      "sample_games": 125,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\bucket_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q1_bucket_7p5-10_home_underdog_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q1_bucket_7p5-10_home_underdog, positive favours the candidate",
+      "effect": 1.449275362319,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        0.0,
+        4.6875
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, so home underdogs get a fairer shake without any hand-set rule.",
+      "probability_positive": 0.817625,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 69,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\bucket_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q1_log_loss_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q1_log_loss, positive favours the candidate",
+      "effect": -6.785487e-06,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -0.000493070643,
+        0.00045876893
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, so home underdogs get a fairer shake without any hand-set rule.",
+      "probability_positive": 0.49345,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\losses.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q1_mae_0-3_all_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q1_mae_0-3_all, positive favours the candidate",
+      "effect": -0.003775320051,
+      "effect_units": "mae_improvement",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -0.013486173625,
+        0.00605438881
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, so home underdogs get a fairer shake without any hand-set rule.",
+      "probability_positive": 0.22215,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 573,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\mae_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q1_mae_0-3_home_favourite_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q1_mae_0-3_home_favourite, positive favours the candidate",
+      "effect": -0.000569396983,
+      "effect_units": "mae_improvement",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -0.014642202776,
+        0.013361621013
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, so home underdogs get a fairer shake without any hand-set rule.",
+      "probability_positive": 0.46725,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 102,
+      "sample_games": 307,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\mae_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q1_mae_0-3_home_underdog_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q1_mae_0-3_home_underdog, positive favours the candidate",
+      "effect": -0.003971285279,
+      "effect_units": "mae_improvement",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -0.014862562616,
+        0.006621158474
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, so home underdogs get a fairer shake without any hand-set rule.",
+      "probability_positive": 0.2327,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 98,
+      "sample_games": 254,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\mae_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q1_mae_10p5plus_all_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q1_mae_10p5plus_all, positive favours the candidate",
+      "effect": 0.003964773886,
+      "effect_units": "mae_improvement",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -0.037297797467,
+        0.044052870001
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, so home underdogs get a fairer shake without any hand-set rule.",
+      "probability_positive": 0.58205,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 134,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\mae_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q1_mae_10p5plus_home_favourite_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q1_mae_10p5plus_home_favourite, positive favours the candidate",
+      "effect": 0.003171251635,
+      "effect_units": "mae_improvement",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -0.027890710465,
+        0.034021076936
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, so home underdogs get a fairer shake without any hand-set rule.",
+      "probability_positive": 0.576,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 69,
+      "sample_games": 102,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\mae_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q1_mae_10p5plus_home_underdog_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q1_mae_10p5plus_home_underdog, positive favours the candidate",
+      "effect": 0.006494126062,
+      "effect_units": "mae_improvement",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -0.125524140189,
+        0.132197763096
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, so home underdogs get a fairer shake without any hand-set rule.",
+      "probability_positive": 0.5351,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 28,
+      "sample_games": 32,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\mae_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q1_mae_3p5-6p5_all_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q1_mae_3p5-6p5_all, positive favours the candidate",
+      "effect": -0.001747345503,
+      "effect_units": "mae_improvement",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -0.007308844964,
+        0.003805685974
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, so home underdogs get a fairer shake without any hand-set rule.",
+      "probability_positive": 0.27245,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 558,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\mae_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q1_mae_3p5-6p5_home_favourite_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q1_mae_3p5-6p5_home_favourite, positive favours the candidate",
+      "effect": -0.00572640579,
+      "effect_units": "mae_improvement",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -0.011772675737,
+        0.000235476827
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, so home underdogs get a fairer shake without any hand-set rule.",
+      "probability_positive": 0.02935,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 102,
+      "sample_games": 321,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\mae_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q1_mae_3p5-6p5_home_underdog_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q1_mae_3p5-6p5_home_underdog, positive favours the candidate",
+      "effect": 0.003642014632,
+      "effect_units": "mae_improvement",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -0.006613392225,
+        0.014064008614
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, so home underdogs get a fairer shake without any hand-set rule.",
+      "probability_positive": 0.7618,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 97,
+      "sample_games": 237,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\mae_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q1_mae_7_all_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q1_mae_7_all, positive favours the candidate",
+      "effect": 0.000843622941,
+      "effect_units": "mae_improvement",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -0.018019668903,
+        0.02013623225
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, so home underdogs get a fairer shake without any hand-set rule.",
+      "probability_positive": 0.52925,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 58,
+      "sample_games": 77,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\mae_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q1_mae_7_home_favourite_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q1_mae_7_home_favourite, positive favours the candidate",
+      "effect": -0.00159274476,
+      "effect_units": "mae_improvement",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -0.013650824905,
+        0.010971747456
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, so home underdogs get a fairer shake without any hand-set rule.",
+      "probability_positive": 0.39025,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 40,
+      "sample_games": 52,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\mae_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q1_mae_7_home_underdog_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q1_mae_7_home_underdog, positive favours the candidate",
+      "effect": 0.005911267758,
+      "effect_units": "mae_improvement",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -0.044950760489,
+        0.059522791482
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, so home underdogs get a fairer shake without any hand-set rule.",
+      "probability_positive": 0.58515,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 24,
+      "sample_games": 25,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\mae_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q1_mae_7p5-10_all_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q1_mae_7p5-10_all, positive favours the candidate",
+      "effect": 0.000244647637,
+      "effect_units": "mae_improvement",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -0.025818156973,
+        0.025688917626
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, so home underdogs get a fairer shake without any hand-set rule.",
+      "probability_positive": 0.51225,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 195,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\mae_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q1_mae_7p5-10_home_favourite_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q1_mae_7p5-10_home_favourite, positive favours the candidate",
+      "effect": 0.00117036261,
+      "effect_units": "mae_improvement",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -0.014969399683,
+        0.016809408288
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, so home underdogs get a fairer shake without any hand-set rule.",
+      "probability_positive": 0.5638,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 78,
+      "sample_games": 126,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\mae_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q1_mae_7p5-10_home_underdog_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q1_mae_7p5-10_home_underdog, positive favours the candidate",
+      "effect": -0.001445788401,
+      "effect_units": "mae_improvement",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -0.062832866347,
+        0.057832135595
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, so home underdogs get a fairer shake without any hand-set rule.",
+      "probability_positive": 0.47835,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 69,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\mae_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q1_mae_all_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q1_mae_all, positive favours the candidate",
+      "effect": -0.00162285766,
+      "effect_units": "mae_improvement",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -0.008824079041,
+        0.005299531906
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, so home underdogs get a fairer shake without any hand-set rule.",
+      "probability_positive": 0.3247,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\mae_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q1_season_2020_2020": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q1_season, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -1.339285714286,
+        1.357466063348
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, so home underdogs get a fairer shake without any hand-set rule.",
+      "probability_positive": 0.499675,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 220,
+      "seasons": [
+        2020,
+        2020
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\seasons.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q1_season_2021_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q1_season, positive favours the candidate",
+      "effect": 0.423728813559,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -1.282051282051,
+        2.19298245614
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, so home underdogs get a fairer shake without any hand-set rule.",
+      "probability_positive": 0.6752,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 236,
+      "seasons": [
+        2021,
+        2021
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\seasons.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q1_season_2022_2022": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q1_season, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -1.652892561983,
+        1.56862745098
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, so home underdogs get a fairer shake without any hand-set rule.",
+      "probability_positive": 0.4966,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 248,
+      "seasons": [
+        2022,
+        2022
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\seasons.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q1_season_2023_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q1_season, positive favours the candidate",
+      "effect": -2.631578947368,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -4.562737642586,
+        -0.790436027512
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, so home underdogs get a fairer shake without any hand-set rule.",
+      "probability_positive": 0.000275,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\seasons.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q1_season_2024_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q1_season, positive favours the candidate",
+      "effect": -0.375939849624,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -1.5625,
+        0.757575757576
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, so home underdogs get a fairer shake without any hand-set rule.",
+      "probability_positive": 0.2859,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\seasons.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q1_season_2025_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q1_season, positive favours the candidate",
+      "effect": 0.749063670412,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -1.111111111111,
+        2.592592592593
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, so home underdogs get a fairer shake without any hand-set rule.",
+      "probability_positive": 0.794725,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\seasons.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q1_three_member_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q1_three_member_card, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -0.539811066127,
+        0.536193029491
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, so home underdogs get a fairer shake without any hand-set rule.",
+      "probability_positive": 0.46225,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\composition.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q2_2020_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q2, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -1.6018306636155606,
+        1.7543859649122806
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, and it may add a little more once the home team is more than a touchdown behind.",
+      "probability_positive": 0.4493,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\window_2020_2021.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q2_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q2, positive favours the candidate",
+      "effect": -0.2661343978709248,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -1.2632978723404256,
+        0.7328569842327326
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, and it may add a little more once the home team is more than a touchdown behind.",
+      "probability_positive": 0.2728,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\window_2020_2025.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q2_2022_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q2, positive favours the candidate",
+      "effect": -0.7782101167315175,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -2.584493041749503,
+        1.125756464331556
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, and it may add a little more once the home team is more than a touchdown behind.",
+      "probability_positive": 0.17525,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 514,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\window_2022_2023.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q2_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q2, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -1.5296367112810707,
+        1.5180265654648957
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, and it may add a little more once the home team is more than a touchdown behind.",
+      "probability_positive": 0.45985,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\window_2024_2025.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q2_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q2_brier, positive favours the candidate",
+      "effect": -1.5390524e-05,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -0.000599443864,
+        0.000589408373
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, and it may add a little more once the home team is more than a touchdown behind.",
+      "probability_positive": 0.47735,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\losses.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q2_bucket_0-3_all_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q2_bucket_0-3_all, positive favours the candidate",
+      "effect": -0.724637681159,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -2.272727272727,
+        0.732634338139
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, and it may add a little more once the home team is more than a touchdown behind.",
+      "probability_positive": 0.170225,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\bucket_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q2_bucket_0-3_home_favourite_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q2_bucket_0-3_home_favourite, positive favours the candidate",
+      "effect": -0.340136054422,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -2.372881355932,
+        1.677852348993
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, and it may add a little more once the home team is more than a touchdown behind.",
+      "probability_positive": 0.36705,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 102,
+      "sample_games": 294,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\bucket_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q2_bucket_0-3_home_underdog_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q2_bucket_0-3_home_underdog, positive favours the candidate",
+      "effect": -0.813008130081,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -2.857142857143,
+        1.149425287356
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, and it may add a little more once the home team is more than a touchdown behind.",
+      "probability_positive": 0.208,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 98,
+      "sample_games": 246,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\bucket_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q2_bucket_10p5plus_all_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q2_bucket_10p5plus_all, positive favours the candidate",
+      "effect": -1.526717557252,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -6.870887075546,
+        3.623188405797
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, and it may add a little more once the home team is more than a touchdown behind.",
+      "probability_positive": 0.282075,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\bucket_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q2_bucket_10p5plus_home_favourite_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q2_bucket_10p5plus_home_favourite, positive favours the candidate",
+      "effect": -1.010101010101,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -5.494505494505,
+        3.225806451613
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, and it may add a little more once the home team is more than a touchdown behind.",
+      "probability_positive": 0.333975,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 67,
+      "sample_games": 99,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\bucket_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q2_bucket_10p5plus_home_underdog_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q2_bucket_10p5plus_home_underdog, positive favours the candidate",
+      "effect": -3.125,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -20.0,
+        12.5
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, and it may add a little more once the home team is more than a touchdown behind.",
+      "probability_positive": 0.35505,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 28,
+      "sample_games": 32,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\bucket_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q2_bucket_3p5-6p5_all_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q2_bucket_3p5-6p5_all, positive favours the candidate",
+      "effect": 0.54347826087,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -1.291512915129,
+        2.513464991023
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, and it may add a little more once the home team is more than a touchdown behind.",
+      "probability_positive": 0.70435,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\bucket_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q2_bucket_3p5-6p5_home_favourite_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q2_bucket_3p5-6p5_home_favourite, positive favours the candidate",
+      "effect": 0.946372239748,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -0.320512820513,
+        2.431796278449
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, and it may add a little more once the home team is more than a touchdown behind.",
+      "probability_positive": 0.9158,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 102,
+      "sample_games": 317,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\bucket_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q2_bucket_3p5-6p5_home_underdog_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q2_bucket_3p5-6p5_home_underdog, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -3.52422907489,
+        3.571428571429
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, and it may add a little more once the home team is more than a touchdown behind.",
+      "probability_positive": 0.494575,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 97,
+      "sample_games": 235,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\bucket_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q2_bucket_7_all_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q2_bucket_7_all, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -5.555555555556,
+        5.405405405405
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, and it may add a little more once the home team is more than a touchdown behind.",
+      "probability_positive": 0.499925,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\bucket_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q2_bucket_7_home_favourite_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q2_bucket_7_home_favourite, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, and it may add a little more once the home team is more than a touchdown behind.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 38,
+      "sample_games": 49,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\bucket_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q2_bucket_7_home_underdog_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q2_bucket_7_home_underdog, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -16.0,
+        16.0
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, and it may add a little more once the home team is more than a touchdown behind.",
+      "probability_positive": 0.4989,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 24,
+      "sample_games": 25,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\bucket_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q2_bucket_7p5-10_all_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q2_bucket_7p5-10_all, positive favours the candidate",
+      "effect": -0.515463917526,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -3.191489361702,
+        2.150537634409
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, and it may add a little more once the home team is more than a touchdown behind.",
+      "probability_positive": 0.353325,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\bucket_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q2_bucket_7p5-10_home_favourite_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q2_bucket_7p5-10_home_favourite, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -2.325581395349,
+        2.325581395349
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, and it may add a little more once the home team is more than a touchdown behind.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 78,
+      "sample_games": 125,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\bucket_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q2_bucket_7p5-10_home_underdog_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q2_bucket_7p5-10_home_underdog, positive favours the candidate",
+      "effect": -1.449275362319,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -7.8125,
+        4.615384615385
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, and it may add a little more once the home team is more than a touchdown behind.",
+      "probability_positive": 0.332125,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 69,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\bucket_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q2_log_loss_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q2_log_loss, positive favours the candidate",
+      "effect": -8.7187717e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -0.001281232949,
+        0.001145665076
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, and it may add a little more once the home team is more than a touchdown behind.",
+      "probability_positive": 0.4412,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\losses.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q2_mae_0-3_all_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q2_mae_0-3_all, positive favours the candidate",
+      "effect": -0.011749365144,
+      "effect_units": "mae_improvement",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -0.026052633402,
+        0.001830540144
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, and it may add a little more once the home team is more than a touchdown behind.",
+      "probability_positive": 0.0467,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 573,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\mae_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q2_mae_0-3_home_favourite_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q2_mae_0-3_home_favourite, positive favours the candidate",
+      "effect": -0.012200134759,
+      "effect_units": "mae_improvement",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -0.029349113816,
+        0.004549548809
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, and it may add a little more once the home team is more than a touchdown behind.",
+      "probability_positive": 0.0769,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 102,
+      "sample_games": 307,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\mae_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q2_mae_0-3_home_underdog_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q2_mae_0-3_home_underdog, positive favours the candidate",
+      "effect": -0.007704139364,
+      "effect_units": "mae_improvement",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -0.028737039007,
+        0.012424643233
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, and it may add a little more once the home team is more than a touchdown behind.",
+      "probability_positive": 0.2282,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 98,
+      "sample_games": 254,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\mae_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q2_mae_10p5plus_all_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q2_mae_10p5plus_all, positive favours the candidate",
+      "effect": 0.073869317046,
+      "effect_units": "mae_improvement",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -0.071719885088,
+        0.213793455247
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, and it may add a little more once the home team is more than a touchdown behind.",
+      "probability_positive": 0.8378,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 134,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\mae_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q2_mae_10p5plus_home_favourite_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q2_mae_10p5plus_home_favourite, positive favours the candidate",
+      "effect": -0.008836776428,
+      "effect_units": "mae_improvement",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -0.03984453204,
+        0.020252372735
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, and it may add a little more once the home team is more than a touchdown behind.",
+      "probability_positive": 0.28865,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 69,
+      "sample_games": 102,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\mae_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q2_mae_10p5plus_home_underdog_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q2_mae_10p5plus_home_underdog, positive favours the candidate",
+      "effect": 0.337494989993,
+      "effect_units": "mae_improvement",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -0.26308847148,
+        0.89022167634
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, and it may add a little more once the home team is more than a touchdown behind.",
+      "probability_positive": 0.86835,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 28,
+      "sample_games": 32,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\mae_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q2_mae_3p5-6p5_all_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q2_mae_3p5-6p5_all, positive favours the candidate",
+      "effect": -0.004086538301,
+      "effect_units": "mae_improvement",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -0.02527274933,
+        0.016846967252
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, and it may add a little more once the home team is more than a touchdown behind.",
+      "probability_positive": 0.35295,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 558,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\mae_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q2_mae_3p5-6p5_home_favourite_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q2_mae_3p5-6p5_home_favourite, positive favours the candidate",
+      "effect": 0.000954964645,
+      "effect_units": "mae_improvement",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -0.011677768381,
+        0.013728673117
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, and it may add a little more once the home team is more than a touchdown behind.",
+      "probability_positive": 0.5535,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 102,
+      "sample_games": 321,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\mae_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q2_mae_3p5-6p5_home_underdog_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q2_mae_3p5-6p5_home_underdog, positive favours the candidate",
+      "effect": -0.010914903051,
+      "effect_units": "mae_improvement",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -0.060430566876,
+        0.036302525582
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, and it may add a little more once the home team is more than a touchdown behind.",
+      "probability_positive": 0.32185,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 97,
+      "sample_games": 237,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\mae_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q2_mae_7_all_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q2_mae_7_all, positive favours the candidate",
+      "effect": -0.003468193315,
+      "effect_units": "mae_improvement",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -0.084024555171,
+        0.0749942115
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, and it may add a little more once the home team is more than a touchdown behind.",
+      "probability_positive": 0.46995,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 58,
+      "sample_games": 77,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\mae_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q2_mae_7_home_favourite_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q2_mae_7_home_favourite, positive favours the candidate",
+      "effect": 0.007503734356,
+      "effect_units": "mae_improvement",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -0.013077539387,
+        0.027416342654
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, and it may add a little more once the home team is more than a touchdown behind.",
+      "probability_positive": 0.7675,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 40,
+      "sample_games": 52,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\mae_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q2_mae_7_home_underdog_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q2_mae_7_home_underdog, positive favours the candidate",
+      "effect": -0.026289802871,
+      "effect_units": "mae_improvement",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -0.269363250258,
+        0.210719589473
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, and it may add a little more once the home team is more than a touchdown behind.",
+      "probability_positive": 0.41085,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 24,
+      "sample_games": 25,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\mae_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q2_mae_7p5-10_all_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q2_mae_7p5-10_all, positive favours the candidate",
+      "effect": -0.017913904569,
+      "effect_units": "mae_improvement",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -0.061049173192,
+        0.024108619879
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, and it may add a little more once the home team is more than a touchdown behind.",
+      "probability_positive": 0.20195,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 195,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\mae_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q2_mae_7p5-10_home_favourite_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q2_mae_7p5-10_home_favourite, positive favours the candidate",
+      "effect": -0.002506151638,
+      "effect_units": "mae_improvement",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -0.018998361435,
+        0.013814383956
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, and it may add a little more once the home team is more than a touchdown behind.",
+      "probability_positive": 0.3815,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 78,
+      "sample_games": 126,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\mae_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q2_mae_7p5-10_home_underdog_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q2_mae_7p5-10_home_underdog, positive favours the candidate",
+      "effect": -0.046049801225,
+      "effect_units": "mae_improvement",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -0.163472014778,
+        0.068174276708
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, and it may add a little more once the home team is more than a touchdown behind.",
+      "probability_positive": 0.21245,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 69,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\mae_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q2_mae_all_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q2_mae_all, positive favours the candidate",
+      "effect": -0.001870168114,
+      "effect_units": "mae_improvement",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -0.01940096623,
+        0.016000650788
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, and it may add a little more once the home team is more than a touchdown behind.",
+      "probability_positive": 0.4139,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\mae_cells.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q2_season_2020_2020": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q2_season, positive favours the candidate",
+      "effect": -1.363636363636,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -3.603603603604,
+        0.917431192661
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, and it may add a little more once the home team is more than a touchdown behind.",
+      "probability_positive": 0.12205,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 220,
+      "seasons": [
+        2020,
+        2020
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\seasons.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q2_season_2021_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q2_season, positive favours the candidate",
+      "effect": 1.271186440678,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -0.869565217391,
+        3.79746835443
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, and it may add a little more once the home team is more than a touchdown behind.",
+      "probability_positive": 0.84905,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 236,
+      "seasons": [
+        2021,
+        2021
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\seasons.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q2_season_2022_2022": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q2_season, positive favours the candidate",
+      "effect": -0.403225806452,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -2.788844621514,
+        1.984126984127
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, and it may add a little more once the home team is more than a touchdown behind.",
+      "probability_positive": 0.367,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 248,
+      "seasons": [
+        2022,
+        2022
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\seasons.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q2_season_2023_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q2_season, positive favours the candidate",
+      "effect": -1.127819548872,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -3.831417624521,
+        1.818181818182
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, and it may add a little more once the home team is more than a touchdown behind.",
+      "probability_positive": 0.215175,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\seasons.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q2_season_2024_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q2_season, positive favours the candidate",
+      "effect": 0.375939849624,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -1.87969924812,
+        2.554978476511
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, and it may add a little more once the home team is more than a touchdown behind.",
+      "probability_positive": 0.643575,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\seasons.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q2_season_2025_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q2_season, positive favours the candidate",
+      "effect": -0.374531835206,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -2.602230483271,
+        1.87265917603
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, and it may add a little more once the home team is more than a touchdown behind.",
+      "probability_positive": 0.371525,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\seasons.json",
+      "standard_error": null
+    },
+    "mod18_home_dog_location_v1_Q2_three_member_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-underdog location feature Q2_three_member_card, positive favours the candidate",
+      "effect": -0.266134397871,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_dog_location_v1",
+      "interval": [
+        -1.065246338216,
+        0.586739780658
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the home team is the underdog, the model learns from past seasons how much to give back to the home side for each point it is behind, and it may add a little more once the home team is more than a touchdown behind.",
+      "probability_positive": 0.23505,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\composition.json",
+      "standard_error": null
+    }
+  }
+}

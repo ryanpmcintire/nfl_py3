@@ -1,0 +1,9 @@
+{
+  "notes": [
+    "Category 3 of the taxonomy in docs/pool_edge_plan.md: the interval contains both zero AND the hypothesised effect, so the test said nothing. These are NOT negatives.",
+    "The evaluator resolves ~2 ATS points (RWB-15). Most single features are worth a fraction of that, so landing here is the DEFAULT outcome for a real small signal.",
+    "Effects are stored so POSITIVE FAVOURS THE CANDIDATE regardless of the metric's own polarity; Brier and MAE must be negated before recording.",
+    "A pooled estimate justifies ONE predeclared combined look on a rotation window none of the inputs touched. It is never itself a finding."
+  ],
+  "version": 1
+}

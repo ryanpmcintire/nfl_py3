@@ -20,6 +20,7 @@ modified lane when the prompt just says to continue.
 
 ## Active
 
+- [week7-lock-2026-10-20](week7-lock-2026-10-20.md) - 2026-10-20: Week 7 board read by agent after the noon capture failed; locked and published; Best Pick NYJ -4.5 carried by situational adjustments; validation v4 enrolled.
 - [mod23-unit6-availability-history](mod23-unit6-availability-history.md) - 2026-10-16: own backup-QB games discounted: +0.40 pts both eras, pooled P+ 0.93; unit 6b (dose, non-QB) adds nothing; unresolved.
 - [armb-forward-log](armb-forward-log.md) - 2026-10-16: unit 6 arm B logged beside the served card Weeks 7-18 (Thu 19:10, Sun 11:10); score after Week 18 only.
 - [lead98-price-skew](lead98-price-skew.md) - 2026-10-16: opener price skew as a fifth term: Tuesday +0.41 (P+ 0.91), full -0.20, Brier worse; not served.
@@ -29,7 +30,7 @@ modified lane when the prompt just says to continue.
 - [backup-offsite-timeout](backup-offsite-timeout.md) - 2026-10-16: restic job timed out 10-04 and 10-11; fix in progress.
 - [backlog execution](backlog-execution-2026-09-28.md) - 2026-09-28: operations fixes and truthful scheduler status verified; special-teams season-lagged builder produced 7,413 ratings across four declared fits; host verification awaits explicit approval.
 - [backlog research checkpoint](done/backlog-research-2026-09-28.md) - 2026-09-28: corrected frozen scorecard and pool chronology; completed four-cell precision replay and simulator terminal-rule repair/regrade.
-- [independent-combination-validation](independent-combination-validation.md) - 2026-10-01: v1 stopped by source guard; v2 enrolled, all 16 Week 4 games captured pregame.
+- [independent-combination-validation](independent-combination-validation.md) - 2026-10-20: v3 stopped by the source guard after 10-18 pinned edits; v4 enrolled for Weeks 7-18 (179 games), Week 7 captured.
 - [backlog-batch-2026-09-26](backlog-batch-2026-09-26.md) - 2026-09-26: 16 finished research lanes closed to done/; see State for what each closed on.
 - [sim08-simulator-rebuild](sim08-simulator-rebuild.md) - 2026-09-28: historical overtime terminal rules repaired and regraded; 30,006 simulations retained, four unresolved records; simulator remains unserved.
 - [lead53-sunday-renomination](lead53-sunday-renomination.md) - 2026-09-24: ranks on the served four-term probability; after Sun 10:00 ET grep BEST-PICK-LEDGER in data/scheduler_log.txt for the Week 3 pairing.
@@ -49,6 +50,7 @@ modified lane when the prompt just says to continue.
 
 ## Done
 
+- [registry-split](done/registry-split.md) - 2026-10-20: registry/weak_signals.json split into 392 per-family shards under registry/weak_signals/.
 - [card-table-ledger-sync](done/card-table-ledger-sync.md) - 2026-10-16: card table rewrites from the refresh ledger rows; card, board and alerts share the held Tuesday Best Pick until the Sunday re-nomination.
 - [one backlog](done/backlog-accounting.md) - 2026-09-28: one canonical list and count; unknown statuses fail visibly; selected-batch completion wording corrected.
 - [seven-category implementation batch](done/seven-backlog-completion.md) - 2026-09-28: selected implementation work completed; remaining work stays in the single backlog in ROADMAP.md.

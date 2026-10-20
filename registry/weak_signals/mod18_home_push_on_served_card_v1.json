@@ -1,0 +1,2861 @@
+{
+  "family": "mod18_home_push_on_served_card_v1",
+  "signals": {
+    "home_push_on_served_card_control_foresight_vs_h0_10p5_plus_2020_2021": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A control cell, recorded so later cells can be bounded against it; it is an upper bound on the flip set, not a candidate rule.",
+      "closing_ground": null,
+      "description": "Positive control: perfect foresight on exactly the games the served home-side push flips, added to the H0 nine-member card, on spreads 10.5+, 2020-2021. The ceiling any push setting could reach on that flip set.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +0.0000 [+0.0000, +0.0000] P+ 0.5000; touched 3 games; docs/home_push_on_served_card.md",
+      "plain_summary": "If we had known the answer in advance on the 3 games the home-side push changes, the card would have gone from 50.00% to 50.00% on spreads 10.5+. That is the whole prize on those games.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 29,
+      "sample_games": 54,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": null
+    },
+    "home_push_on_served_card_control_foresight_vs_h0_10p5_plus_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A control cell, recorded so later cells can be bounded against it; it is an upper bound on the flip set, not a candidate rule.",
+      "closing_ground": null,
+      "description": "Positive control: perfect foresight on exactly the games the served home-side push flips, added to the H0 nine-member card, on spreads 10.5+, 2020-2025. The ceiling any push setting could reach on that flip set.",
+      "effect": 5.343511,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        1.709402,
+        9.375
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +5.3435 [+1.4085, +10.4348] P+ 0.9994; touched 24 games; docs/home_push_on_served_card.md",
+      "plain_summary": "If we had known the answer in advance on the 24 games the home-side push changes, the card would have gone from 51.15% to 56.49% on spreads 10.5+. That is the whole prize on those games.",
+      "probability_positive": 0.999675,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 1.922144
+    },
+    "home_push_on_served_card_control_foresight_vs_h0_10p5_plus_2022_2023": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A control cell, recorded so later cells can be bounded against it; it is an upper bound on the flip set, not a candidate rule.",
+      "closing_ground": null,
+      "description": "Positive control: perfect foresight on exactly the games the served home-side push flips, added to the H0 nine-member card, on spreads 10.5+, 2022-2023. The ceiling any push setting could reach on that flip set.",
+      "effect": 12.5,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        3.030303,
+        21.73913
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +12.5000 [+10.5263, +14.2857] P+ 1.0000; touched 14 games; docs/home_push_on_served_card.md",
+      "plain_summary": "If we had known the answer in advance on the 14 games the home-side push changes, the card would have gone from 57.50% to 70.00% on spreads 10.5+. That is the whole prize on those games.",
+      "probability_positive": 0.997425,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 26,
+      "sample_games": 40,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 4.650482
+    },
+    "home_push_on_served_card_control_foresight_vs_h0_10p5_plus_2024_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A control cell, recorded so later cells can be bounded against it; it is an upper bound on the flip set, not a candidate rule.",
+      "closing_ground": null,
+      "description": "Positive control: perfect foresight on exactly the games the served home-side push flips, added to the H0 nine-member card, on spreads 10.5+, 2024-2025. The ceiling any push setting could reach on that flip set.",
+      "effect": 5.405405,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        0.0,
+        13.333333
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +5.4054 [+4.1667, +7.6923] P+ 1.0000; touched 7 games; docs/home_push_on_served_card.md",
+      "plain_summary": "If we had known the answer in advance on the 7 games the home-side push changes, the card would have gone from 45.95% to 51.35% on spreads 10.5+. That is the whole prize on those games.",
+      "probability_positive": 0.939,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 22,
+      "sample_games": 37,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 3.595908
+    },
+    "home_push_on_served_card_control_foresight_vs_h0_7_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A control cell, recorded so later cells can be bounded against it; it is an upper bound on the flip set, not a candidate rule.",
+      "closing_ground": null,
+      "description": "Positive control: perfect foresight on exactly the games the served home-side push flips, added to the H0 nine-member card, on spreads 7, 2020-2025. The ceiling any push setting could reach on that flip set.",
+      "effect": 2.702703,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        0.0,
+        7.042254
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +2.7027 [+0.0000, +5.5556] P+ 0.9553; touched 7 games; docs/home_push_on_served_card.md",
+      "plain_summary": "If we had known the answer in advance on the 7 games the home-side push changes, the card would have gone from 50.00% to 52.70% on spreads 7. That is the whole prize on those games.",
+      "probability_positive": 0.935875,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 1.909266
+    },
+    "home_push_on_served_card_control_foresight_vs_h0_7_2022_2023": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A control cell, recorded so later cells can be bounded against it; it is an upper bound on the flip set, not a candidate rule.",
+      "closing_ground": null,
+      "description": "Positive control: perfect foresight on exactly the games the served home-side push flips, added to the H0 nine-member card, on spreads 7, 2022-2023. The ceiling any push setting could reach on that flip set.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +0.0000 [+0.0000, +0.0000] P+ 0.5000; touched 3 games; docs/home_push_on_served_card.md",
+      "plain_summary": "If we had known the answer in advance on the 3 games the home-side push changes, the card would have gone from 78.26% to 78.26% on spreads 7. That is the whole prize on those games.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 18,
+      "sample_games": 23,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": null
+    },
+    "home_push_on_served_card_control_foresight_vs_h0_7_2024_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A control cell, recorded so later cells can be bounded against it; it is an upper bound on the flip set, not a candidate rule.",
+      "closing_ground": null,
+      "description": "Positive control: perfect foresight on exactly the games the served home-side push flips, added to the H0 nine-member card, on spreads 7, 2024-2025. The ceiling any push setting could reach on that flip set.",
+      "effect": 6.666667,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        0.0,
+        17.857143
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +6.6667 [+5.2632, +9.0909] P+ 1.0000; touched 4 games; docs/home_push_on_served_card.md",
+      "plain_summary": "If we had known the answer in advance on the 4 games the home-side push changes, the card would have gone from 33.33% to 40.00% on spreads 7. That is the whole prize on those games.",
+      "probability_positive": 0.940025,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 21,
+      "sample_games": 30,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 4.763514
+    },
+    "home_push_on_served_card_control_foresight_vs_h0_7p5_10_2020_2021": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A control cell, recorded so later cells can be bounded against it; it is an upper bound on the flip set, not a candidate rule.",
+      "closing_ground": null,
+      "description": "Positive control: perfect foresight on exactly the games the served home-side push flips, added to the H0 nine-member card, on spreads 7.5-10, 2020-2021. The ceiling any push setting could reach on that flip set.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +0.0000 [+0.0000, +0.0000] P+ 0.5000; touched 1 games; docs/home_push_on_served_card.md",
+      "plain_summary": "If we had known the answer in advance on the 1 games the home-side push changes, the card would have gone from 52.86% to 52.86% on spreads 7.5-10. That is the whole prize on those games.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 29,
+      "sample_games": 70,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": null
+    },
+    "home_push_on_served_card_control_foresight_vs_h0_7p5_10_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A control cell, recorded so later cells can be bounded against it; it is an upper bound on the flip set, not a candidate rule.",
+      "closing_ground": null,
+      "description": "Positive control: perfect foresight on exactly the games the served home-side push flips, added to the H0 nine-member card, on spreads 7.5-10, 2020-2025. The ceiling any push setting could reach on that flip set.",
+      "effect": 2.061856,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        0.5,
+        4.145078
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +2.0619 [+0.5000, +4.0404] P+ 0.9923; touched 12 games; docs/home_push_on_served_card.md",
+      "plain_summary": "If we had known the answer in advance on the 12 games the home-side push changes, the card would have gone from 52.58% to 54.64% on spreads 7.5-10. That is the whole prize on those games.",
+      "probability_positive": 0.991875,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 0.980142
+    },
+    "home_push_on_served_card_control_foresight_vs_h0_7p5_10_2022_2023": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A control cell, recorded so later cells can be bounded against it; it is an upper bound on the flip set, not a candidate rule.",
+      "closing_ground": null,
+      "description": "Positive control: perfect foresight on exactly the games the served home-side push flips, added to the H0 nine-member card, on spreads 7.5-10, 2022-2023. The ceiling any push setting could reach on that flip set.",
+      "effect": 1.666667,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        0.0,
+        4.6875
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +1.6667 [+0.0000, +3.0303] P+ 0.8758; touched 3 games; docs/home_push_on_served_card.md",
+      "plain_summary": "If we had known the answer in advance on the 3 games the home-side push changes, the card would have gone from 45.00% to 46.67% on spreads 7.5-10. That is the whole prize on those games.",
+      "probability_positive": 0.815225,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 30,
+      "sample_games": 60,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 1.470075
+    },
+    "home_push_on_served_card_control_foresight_vs_h0_7p5_10_2024_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A control cell, recorded so later cells can be bounded against it; it is an upper bound on the flip set, not a candidate rule.",
+      "closing_ground": null,
+      "description": "Positive control: perfect foresight on exactly the games the served home-side push flips, added to the H0 nine-member card, on spreads 7.5-10, 2024-2025. The ceiling any push setting could reach on that flip set.",
+      "effect": 4.6875,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        0.0,
+        10.0
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +4.6875 [+3.2258, +6.0606] P+ 1.0000; touched 8 games; docs/home_push_on_served_card.md",
+      "plain_summary": "If we had known the answer in advance on the 8 games the home-side push changes, the card would have gone from 59.38% to 64.06% on spreads 7.5-10. That is the whole prize on those games.",
+      "probability_positive": 0.9778,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 32,
+      "sample_games": 64,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 2.500642
+    },
+    "home_push_on_served_card_control_foresight_vs_h0_overall_2020_2021": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A control cell, recorded so later cells can be bounded against it; it is an upper bound on the flip set, not a candidate rule.",
+      "closing_ground": null,
+      "description": "Positive control: perfect foresight on exactly the games the served home-side push flips, added to the H0 nine-member card, on all lines, 2020-2021. The ceiling any push setting could reach on that flip set.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +0.0000 [+0.0000, +0.0000] P+ 0.5000; touched 4 games; docs/home_push_on_served_card.md",
+      "plain_summary": "If we had known the answer in advance on the 4 games the home-side push changes, the card would have gone from 57.24% to 57.24% on all lines. That is the whole prize on those games.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": null
+    },
+    "home_push_on_served_card_control_foresight_vs_h0_overall_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A control cell, recorded so later cells can be bounded against it; it is an upper bound on the flip set, not a candidate rule.",
+      "closing_ground": null,
+      "description": "Positive control: perfect foresight on exactly the games the served home-side push flips, added to the H0 nine-member card, on all lines, 2020-2025. The ceiling any push setting could reach on that flip set.",
+      "effect": 0.864937,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        0.462351,
+        1.32714
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +0.8649 [+0.3465, +1.3300] P+ 0.9994; touched 43 games; docs/home_push_on_served_card.md",
+      "plain_summary": "If we had known the answer in advance on the 43 games the home-side push changes, the card would have gone from 56.89% to 57.75% on all lines. That is the whole prize on those games.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 0.224659
+    },
+    "home_push_on_served_card_control_foresight_vs_h0_overall_2022_2023": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A control cell, recorded so later cells can be bounded against it; it is an upper bound on the flip set, not a candidate rule.",
+      "closing_ground": null,
+      "description": "Positive control: perfect foresight on exactly the games the served home-side push flips, added to the H0 nine-member card, on all lines, 2022-2023. The ceiling any push setting could reach on that flip set.",
+      "effect": 1.167315,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        0.38835,
+        2.10325
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +1.1673 [+0.8065, +1.5038] P+ 1.0000; touched 20 games; docs/home_push_on_served_card.md",
+      "plain_summary": "If we had known the answer in advance on the 20 games the home-side push changes, the card would have gone from 59.14% to 60.31% on all lines. That is the whole prize on those games.",
+      "probability_positive": 0.9995,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 36,
+      "sample_games": 514,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 0.43016
+    },
+    "home_push_on_served_card_control_foresight_vs_h0_overall_2024_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A control cell, recorded so later cells can be bounded against it; it is an upper bound on the flip set, not a candidate rule.",
+      "closing_ground": null,
+      "description": "Positive control: perfect foresight on exactly the games the served home-side push flips, added to the H0 nine-member card, on all lines, 2024-2025. The ceiling any push setting could reach on that flip set.",
+      "effect": 1.313321,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        0.553506,
+        2.259887
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +1.3133 [+1.1236, +1.5038] P+ 1.0000; touched 19 games; docs/home_push_on_served_card.md",
+      "plain_summary": "If we had known the answer in advance on the 19 games the home-side push changes, the card would have gone from 54.41% to 55.72% on all lines. That is the whole prize on those games.",
+      "probability_positive": 0.999825,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 0.44886
+    },
+    "home_push_on_served_card_control_foresight_vs_h1_10p5_plus_2020_2021": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A control cell, recorded so later cells can be bounded against it; it is an upper bound on the flip set, not a candidate rule.",
+      "closing_ground": null,
+      "description": "Positive control: perfect foresight on exactly the games the served home-side push flips, added to the H1 nine-member card, on spreads 10.5+, 2020-2021. The ceiling any push setting could reach on that flip set.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +0.0000 [+0.0000, +0.0000] P+ 0.5000; touched 3 games; docs/home_push_on_served_card.md",
+      "plain_summary": "If we had known the answer in advance on the 3 games the home-side push changes, the card would have gone from 50.00% to 50.00% on spreads 10.5+. That is the whole prize on those games.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 29,
+      "sample_games": 54,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": null
+    },
+    "home_push_on_served_card_control_foresight_vs_h1_10p5_plus_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A control cell, recorded so later cells can be bounded against it; it is an upper bound on the flip set, not a candidate rule.",
+      "closing_ground": null,
+      "description": "Positive control: perfect foresight on exactly the games the served home-side push flips, added to the H1 nine-member card, on spreads 10.5+, 2020-2025. The ceiling any push setting could reach on that flip set.",
+      "effect": 9.923664,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        5.30303,
+        15.079365
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +9.9237 [+2.4387, +20.7921] P+ 0.9994; touched 24 games; docs/home_push_on_served_card.md",
+      "plain_summary": "If we had known the answer in advance on the 24 games the home-side push changes, the card would have gone from 46.56% to 56.49% on spreads 10.5+. That is the whole prize on those games.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 2.512025
+    },
+    "home_push_on_served_card_control_foresight_vs_h1_10p5_plus_2022_2023": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A control cell, recorded so later cells can be bounded against it; it is an upper bound on the flip set, not a candidate rule.",
+      "closing_ground": null,
+      "description": "Positive control: perfect foresight on exactly the games the served home-side push flips, added to the H1 nine-member card, on spreads 10.5+, 2022-2023. The ceiling any push setting could reach on that flip set.",
+      "effect": 22.5,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        11.904762,
+        32.55814
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +22.5000 [+15.7895, +28.5714] P+ 1.0000; touched 14 games; docs/home_push_on_served_card.md",
+      "plain_summary": "If we had known the answer in advance on the 14 games the home-side push changes, the card would have gone from 47.50% to 70.00% on spreads 10.5+. That is the whole prize on those games.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 26,
+      "sample_games": 40,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 5.232182
+    },
+    "home_push_on_served_card_control_foresight_vs_h1_10p5_plus_2024_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A control cell, recorded so later cells can be bounded against it; it is an upper bound on the flip set, not a candidate rule.",
+      "closing_ground": null,
+      "description": "Positive control: perfect foresight on exactly the games the served home-side push flips, added to the H1 nine-member card, on spreads 10.5+, 2024-2025. The ceiling any push setting could reach on that flip set.",
+      "effect": 10.810811,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        2.439024,
+        22.857143
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +10.8108 [+4.1667, +23.0769] P+ 1.0000; touched 7 games; docs/home_push_on_served_card.md",
+      "plain_summary": "If we had known the answer in advance on the 7 games the home-side push changes, the card would have gone from 40.54% to 51.35% on spreads 10.5+. That is the whole prize on those games.",
+      "probability_positive": 0.994275,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 22,
+      "sample_games": 37,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 5.373081
+    },
+    "home_push_on_served_card_control_foresight_vs_h1_7_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A control cell, recorded so later cells can be bounded against it; it is an upper bound on the flip set, not a candidate rule.",
+      "closing_ground": null,
+      "description": "Positive control: perfect foresight on exactly the games the served home-side push flips, added to the H1 nine-member card, on spreads 7, 2020-2025. The ceiling any push setting could reach on that flip set.",
+      "effect": 6.756757,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        1.369863,
+        13.333333
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +6.7568 [+1.5385, +11.5789] P+ 0.9922; touched 7 games; docs/home_push_on_served_card.md",
+      "plain_summary": "If we had known the answer in advance on the 7 games the home-side push changes, the card would have gone from 45.95% to 52.70% on spreads 7. That is the whole prize on those games.",
+      "probability_positive": 0.9975,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 2.985671
+    },
+    "home_push_on_served_card_control_foresight_vs_h1_7_2022_2023": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A control cell, recorded so later cells can be bounded against it; it is an upper bound on the flip set, not a candidate rule.",
+      "closing_ground": null,
+      "description": "Positive control: perfect foresight on exactly the games the served home-side push flips, added to the H1 nine-member card, on spreads 7, 2022-2023. The ceiling any push setting could reach on that flip set.",
+      "effect": 4.347826,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        0.0,
+        15.0
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +4.3478 [+0.0000, +6.2500] P+ 0.8745; touched 3 games; docs/home_push_on_served_card.md",
+      "plain_summary": "If we had known the answer in advance on the 3 games the home-side push changes, the card would have gone from 73.91% to 78.26% on spreads 7. That is the whole prize on those games.",
+      "probability_positive": 0.82115,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 18,
+      "sample_games": 23,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 4.439926
+    },
+    "home_push_on_served_card_control_foresight_vs_h1_7_2024_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A control cell, recorded so later cells can be bounded against it; it is an upper bound on the flip set, not a candidate rule.",
+      "closing_ground": null,
+      "description": "Positive control: perfect foresight on exactly the games the served home-side push flips, added to the H1 nine-member card, on spreads 7, 2024-2025. The ceiling any push setting could reach on that flip set.",
+      "effect": 13.333333,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        2.941176,
+        28.571429
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +13.3333 [+10.5263, +18.1818] P+ 1.0000; touched 4 games; docs/home_push_on_served_card.md",
+      "plain_summary": "If we had known the answer in advance on the 4 games the home-side push changes, the card would have gone from 26.67% to 40.00% on spreads 7. That is the whole prize on those games.",
+      "probability_positive": 0.99455,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 21,
+      "sample_games": 30,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 6.7292
+    },
+    "home_push_on_served_card_control_foresight_vs_h1_7p5_10_2020_2021": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A control cell, recorded so later cells can be bounded against it; it is an upper bound on the flip set, not a candidate rule.",
+      "closing_ground": null,
+      "description": "Positive control: perfect foresight on exactly the games the served home-side push flips, added to the H1 nine-member card, on spreads 7.5-10, 2020-2021. The ceiling any push setting could reach on that flip set.",
+      "effect": 1.428571,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        0.0,
+        4.6875
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +1.4286 [+0.0000, +2.8571] P+ 0.8745; touched 1 games; docs/home_push_on_served_card.md",
+      "plain_summary": "If we had known the answer in advance on the 1 games the home-side push changes, the card would have gone from 51.43% to 52.86% on spreads 7.5-10. That is the whole prize on those games.",
+      "probability_positive": 0.8186,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 29,
+      "sample_games": 70,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 1.435118
+    },
+    "home_push_on_served_card_control_foresight_vs_h1_7p5_10_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A control cell, recorded so later cells can be bounded against it; it is an upper bound on the flip set, not a candidate rule.",
+      "closing_ground": null,
+      "description": "Positive control: perfect foresight on exactly the games the served home-side push flips, added to the H1 nine-member card, on spreads 7.5-10, 2020-2025. The ceiling any push setting could reach on that flip set.",
+      "effect": 2.57732,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        0.526316,
+        4.945055
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +2.5773 [+1.0101, +4.2553] P+ 0.9993; touched 12 games; docs/home_push_on_served_card.md",
+      "plain_summary": "If we had known the answer in advance on the 12 games the home-side push changes, the card would have gone from 52.06% to 54.64% on spreads 7.5-10. That is the whole prize on those games.",
+      "probability_positive": 0.996925,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 1.118746
+    },
+    "home_push_on_served_card_control_foresight_vs_h1_7p5_10_2022_2023": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A control cell, recorded so later cells can be bounded against it; it is an upper bound on the flip set, not a candidate rule.",
+      "closing_ground": null,
+      "description": "Positive control: perfect foresight on exactly the games the served home-side push flips, added to the H1 nine-member card, on spreads 7.5-10, 2022-2023. The ceiling any push setting could reach on that flip set.",
+      "effect": 1.666667,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        0.0,
+        4.6875
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +1.6667 [+0.0000, +3.0303] P+ 0.8758; touched 3 games; docs/home_push_on_served_card.md",
+      "plain_summary": "If we had known the answer in advance on the 3 games the home-side push changes, the card would have gone from 45.00% to 46.67% on spreads 7.5-10. That is the whole prize on those games.",
+      "probability_positive": 0.815225,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 30,
+      "sample_games": 60,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 1.470075
+    },
+    "home_push_on_served_card_control_foresight_vs_h1_7p5_10_2024_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A control cell, recorded so later cells can be bounded against it; it is an upper bound on the flip set, not a candidate rule.",
+      "closing_ground": null,
+      "description": "Positive control: perfect foresight on exactly the games the served home-side push flips, added to the H1 nine-member card, on spreads 7.5-10, 2024-2025. The ceiling any push setting could reach on that flip set.",
+      "effect": 4.6875,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        0.0,
+        10.9375
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +4.6875 [+3.0303, +6.4516] P+ 1.0000; touched 8 games; docs/home_push_on_served_card.md",
+      "plain_summary": "If we had known the answer in advance on the 8 games the home-side push changes, the card would have gone from 59.38% to 64.06% on spreads 7.5-10. That is the whole prize on those games.",
+      "probability_positive": 0.978175,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 32,
+      "sample_games": 64,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 2.738805
+    },
+    "home_push_on_served_card_control_foresight_vs_h1_overall_2020_2021": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A control cell, recorded so later cells can be bounded against it; it is an upper bound on the flip set, not a candidate rule.",
+      "closing_ground": null,
+      "description": "Positive control: perfect foresight on exactly the games the served home-side push flips, added to the H1 nine-member card, on all lines, 2020-2021. The ceiling any push setting could reach on that flip set.",
+      "effect": 0.219298,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        0.0,
+        0.663717
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +0.2193 [+0.0000, +0.4545] P+ 0.8745; touched 4 games; docs/home_push_on_served_card.md",
+      "plain_summary": "If we had known the answer in advance on the 4 games the home-side push changes, the card would have gone from 57.02% to 57.24% on all lines. That is the whole prize on those games.",
+      "probability_positive": 0.819725,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 0.213184
+    },
+    "home_push_on_served_card_control_foresight_vs_h1_overall_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A control cell, recorded so later cells can be bounded against it; it is an upper bound on the flip set, not a candidate rule.",
+      "closing_ground": null,
+      "description": "Positive control: perfect foresight on exactly the games the served home-side push flips, added to the H1 nine-member card, on all lines, 2020-2025. The ceiling any push setting could reach on that flip set.",
+      "effect": 1.530273,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        0.985545,
+        2.133364
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +1.5303 [+0.7524, +2.2152] P+ 1.0000; touched 43 games; docs/home_push_on_served_card.md",
+      "plain_summary": "If we had known the answer in advance on the 43 games the home-side push changes, the card would have gone from 56.22% to 57.75% on all lines. That is the whole prize on those games.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 0.296639
+    },
+    "home_push_on_served_card_control_foresight_vs_h1_overall_2022_2023": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A control cell, recorded so later cells can be bounded against it; it is an upper bound on the flip set, not a candidate rule.",
+      "closing_ground": null,
+      "description": "Positive control: perfect foresight on exactly the games the served home-side push flips, added to the H1 nine-member card, on all lines, 2022-2023. The ceiling any push setting could reach on that flip set.",
+      "effect": 2.140078,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        1.153846,
+        3.231939
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +2.1401 [+1.6129, +2.6316] P+ 1.0000; touched 20 games; docs/home_push_on_served_card.md",
+      "plain_summary": "If we had known the answer in advance on the 20 games the home-side push changes, the card would have gone from 58.17% to 60.31% on all lines. That is the whole prize on those games.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 36,
+      "sample_games": 514,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 0.534618
+    },
+    "home_push_on_served_card_control_foresight_vs_h1_overall_2024_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A control cell, recorded so later cells can be bounded against it; it is an upper bound on the flip set, not a candidate rule.",
+      "closing_ground": null,
+      "description": "Positive control: perfect foresight on exactly the games the served home-side push flips, added to the H1 nine-member card, on all lines, 2024-2025. The ceiling any push setting could reach on that flip set.",
+      "effect": 2.06379,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        0.956023,
+        3.225806
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +2.0638 [+1.8727, +2.2556] P+ 1.0000; touched 19 games; docs/home_push_on_served_card.md",
+      "plain_summary": "If we had known the answer in advance on the 19 games the home-side push changes, the card would have gone from 53.66% to 55.72% on all lines. That is the whole prize on those games.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 0.574419
+    },
+    "home_push_on_served_card_h1_push_off_card_10p5_plus_2020_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push turned off everywhere, through the served nine-member card, minus the served policy home_side_offset_big_spreads_v2, on spreads 10.5+, 2020-2021. Negative favours the served push.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +0.0000 [+0.0000, +0.0000] P+ 0.5000; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 10.5+, switching off the extra points the model gives the home team on big spreads moved its record by +0.00 points (50.00% against the served 50.00%) over 54 games, changing 0 picks.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 29,
+      "sample_games": 54,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": null
+    },
+    "home_push_on_served_card_h1_push_off_card_10p5_plus_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push turned off everywhere, through the served nine-member card, minus the served policy home_side_offset_big_spreads_v2, on spreads 10.5+, 2020-2025. Negative favours the served push.",
+      "effect": -4.580153,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -9.565217,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -4.5802 [-10.4348, -0.6452] P+ 0.0080; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 10.5+, switching off the extra points the model gives the home team on big spreads moved its record by -4.58 points (46.56% against the served 51.15%) over 131 games, changing 12 picks.",
+      "probability_positive": 0.0229,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 2.38506
+    },
+    "home_push_on_served_card_h1_push_off_card_10p5_plus_2022_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push turned off everywhere, through the served nine-member card, minus the served policy home_side_offset_big_spreads_v2, on spreads 10.5+, 2022-2023. Negative favours the served push.",
+      "effect": -10.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -19.444444,
+        -2.439024
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -10.0000 [-14.2857, -5.2632] P+ 0.0000; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 10.5+, switching off the extra points the model gives the home team on big spreads moved its record by -10.00 points (47.50% against the served 57.50%) over 40 games, changing 6 picks.",
+      "probability_positive": 0.00655,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 26,
+      "sample_games": 40,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 4.446839
+    },
+    "home_push_on_served_card_h1_push_off_card_10p5_plus_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push turned off everywhere, through the served nine-member card, minus the served policy home_side_offset_big_spreads_v2, on spreads 10.5+, 2024-2025. Negative favours the served push.",
+      "effect": -5.405405,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -19.444444,
+        7.317073
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -5.4054 [-15.3846, +0.0000] P+ 0.1255; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 10.5+, switching off the extra points the model gives the home team on big spreads moved its record by -5.41 points (40.54% against the served 45.95%) over 37 games, changing 6 picks.",
+      "probability_positive": 0.20075,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 22,
+      "sample_games": 37,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 6.797895
+    },
+    "home_push_on_served_card_h1_push_off_card_7_2020_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push turned off everywhere, through the served nine-member card, minus the served policy home_side_offset_big_spreads_v2, on spreads 7, 2020-2021. Negative favours the served push.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +0.0000 [+0.0000, +0.0000] P+ 0.5000; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 7, switching off the extra points the model gives the home team on big spreads moved its record by +0.00 points (42.86% against the served 42.86%) over 21 games, changing 0 picks.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 17,
+      "sample_games": 21,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": null
+    },
+    "home_push_on_served_card_h1_push_off_card_7_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push turned off everywhere, through the served nine-member card, minus the served policy home_side_offset_big_spreads_v2, on spreads 7, 2020-2025. Negative favours the served push.",
+      "effect": -4.054054,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -9.459459,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -4.0541 [-6.4103, -1.4706] P+ 0.0077; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 7, switching off the extra points the model gives the home team on big spreads moved its record by -4.05 points (45.95% against the served 50.00%) over 74 games, changing 3 picks.",
+      "probability_positive": 0.023475,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 2.35899
+    },
+    "home_push_on_served_card_h1_push_off_card_7_2022_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push turned off everywhere, through the served nine-member card, minus the served policy home_side_offset_big_spreads_v2, on spreads 7, 2022-2023. Negative favours the served push.",
+      "effect": -4.347826,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -15.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -4.3478 [-6.2500, +0.0000] P+ 0.1255; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 7, switching off the extra points the model gives the home team on big spreads moved its record by -4.35 points (73.91% against the served 78.26%) over 23 games, changing 1 picks.",
+      "probability_positive": 0.17885,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 18,
+      "sample_games": 23,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 4.439926
+    },
+    "home_push_on_served_card_h1_push_off_card_7_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push turned off everywhere, through the served nine-member card, minus the served policy home_side_offset_big_spreads_v2, on spreads 7, 2024-2025. Negative favours the served push.",
+      "effect": -6.666667,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -17.857143,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -6.6667 [-9.0909, -5.2632] P+ 0.0000; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 7, switching off the extra points the model gives the home team on big spreads moved its record by -6.67 points (26.67% against the served 33.33%) over 30 games, changing 2 picks.",
+      "probability_positive": 0.06065,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 21,
+      "sample_games": 30,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 4.78919
+    },
+    "home_push_on_served_card_h1_push_off_card_7p5_10_2020_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push turned off everywhere, through the served nine-member card, minus the served policy home_side_offset_big_spreads_v2, on spreads 7.5-10, 2020-2021. Negative favours the served push.",
+      "effect": -1.428571,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -4.6875,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -1.4286 [-2.8571, +0.0000] P+ 0.1255; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 7.5-10, switching off the extra points the model gives the home team on big spreads moved its record by -1.43 points (51.43% against the served 52.86%) over 70 games, changing 1 picks.",
+      "probability_positive": 0.1814,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 29,
+      "sample_games": 70,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 1.435118
+    },
+    "home_push_on_served_card_h1_push_off_card_7p5_10_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push turned off everywhere, through the served nine-member card, minus the served policy home_side_offset_big_spreads_v2, on spreads 7.5-10, 2020-2025. Negative favours the served push.",
+      "effect": -0.515464,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -2.873563,
+        1.604278
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -0.5155 [-2.1053, +1.0753] P+ 0.2832; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 7.5-10, switching off the extra points the model gives the home team on big spreads moved its record by -0.52 points (52.06% against the served 52.58%) over 194 games, changing 5 picks.",
+      "probability_positive": 0.331875,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 1.163704
+    },
+    "home_push_on_served_card_h1_push_off_card_7p5_10_2022_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push turned off everywhere, through the served nine-member card, minus the served policy home_side_offset_big_spreads_v2, on spreads 7.5-10, 2022-2023. Negative favours the served push.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +0.0000 [+0.0000, +0.0000] P+ 0.5000; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 7.5-10, switching off the extra points the model gives the home team on big spreads moved its record by +0.00 points (45.00% against the served 45.00%) over 60 games, changing 0 picks.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 30,
+      "sample_games": 60,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": null
+    },
+    "home_push_on_served_card_h1_push_off_card_7p5_10_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push turned off everywhere, through the served nine-member card, minus the served policy home_side_offset_big_spreads_v2, on spreads 7.5-10, 2024-2025. Negative favours the served push.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -6.666667,
+        5.797101
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +0.0000 [-3.2258, +3.0303] P+ 0.4987; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 7.5-10, switching off the extra points the model gives the home team on big spreads moved its record by +0.00 points (59.38% against the served 59.38%) over 64 games, changing 4 picks.",
+      "probability_positive": 0.495875,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 32,
+      "sample_games": 64,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 3.133337
+    },
+    "home_push_on_served_card_h1_push_off_card_overall_2020_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push turned off everywhere, through the served nine-member card, minus the served policy home_side_offset_big_spreads_v2, on all lines, 2020-2021. Negative favours the served push.",
+      "effect": -0.219298,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -0.663717,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -0.2193 [-0.4545, +0.0000] P+ 0.1255; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On all lines, switching off the extra points the model gives the home team on big spreads moved its record by -0.22 points (57.02% against the served 57.24%) over 456 games, changing 1 picks.",
+      "probability_positive": 0.180275,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 0.213184
+    },
+    "home_push_on_served_card_h1_push_off_card_overall_2020_2025": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Both the week-blocked and the season-blocked interval sit entirely below zero on the played card, so the candidate setting is resolvedly worse than the served push; this is a wrong sign that is resolved, not an interval that contains zero.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Opener forced-pick accuracy of the home-side push turned off everywhere, through the served nine-member card, minus the served policy home_side_offset_big_spreads_v2, on all lines, 2020-2025. Negative favours the served push.",
+      "effect": -0.665336,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -1.211306,
+        -0.13342
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -0.6653 [-0.9132, -0.3511] P+ 0.0000; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On all lines, switching off the extra points the model gives the home team on big spreads moved its record by -0.67 points (56.22% against the served 56.89%) over 1503 games, changing 20 picks.",
+      "probability_positive": 0.006825,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 0.275028
+    },
+    "home_push_on_served_card_h1_push_off_card_overall_2022_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push turned off everywhere, through the served nine-member card, minus the served policy home_side_offset_big_spreads_v2, on all lines, 2022-2023. Negative favours the served push.",
+      "effect": -0.972763,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -1.789264,
+        -0.197619
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -0.9728 [-1.1278, -0.8065] P+ 0.0000; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On all lines, switching off the extra points the model gives the home team on big spreads moved its record by -0.97 points (58.17% against the served 59.14%) over 514 games, changing 7 picks.",
+      "probability_positive": 0.002,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 36,
+      "sample_games": 514,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 0.401597
+    },
+    "home_push_on_served_card_h1_push_off_card_overall_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push turned off everywhere, through the served nine-member card, minus the served policy home_side_offset_big_spreads_v2, on all lines, 2024-2025. Negative favours the served push.",
+      "effect": -0.750469,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -2.02952,
+        0.556586
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -0.7505 [-0.7519, -0.7491] P+ 0.0000; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On all lines, switching off the extra points the model gives the home team on big spreads moved its record by -0.75 points (53.66% against the served 54.41%) over 533 games, changing 12 picks.",
+      "probability_positive": 0.119075,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 0.631072
+    },
+    "home_push_on_served_card_h1_push_off_standalone_10p5_plus_2020_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push turned off everywhere, on the model's own pick, minus the served policy home_side_offset_big_spreads_v2, on spreads 10.5+, 2020-2021. Negative favours the served push.",
+      "effect": -1.851852,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -8.064516,
+        4.081633
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -1.8519 [-2.9412, +0.0000] P+ 0.1242; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 10.5+, switching off the extra points the model gives the home team on big spreads moved its record by -1.85 points (44.44% against the served 46.30%) over 54 games, changing 3 picks.",
+      "probability_positive": 0.29185,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 29,
+      "sample_games": 54,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 3.166336
+    },
+    "home_push_on_served_card_h1_push_off_standalone_10p5_plus_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push turned off everywhere, on the model's own pick, minus the served policy home_side_offset_big_spreads_v2, on spreads 10.5+, 2020-2025. Negative favours the served push.",
+      "effect": -3.053435,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -9.774436,
+        3.623188
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -3.0534 [-8.3333, +3.6697] P+ 0.1644; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 10.5+, switching off the extra points the model gives the home team on big spreads moved its record by -3.05 points (44.27% against the served 47.33%) over 131 games, changing 24 picks.",
+      "probability_positive": 0.182325,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 3.403096
+    },
+    "home_push_on_served_card_h1_push_off_standalone_10p5_plus_2022_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push turned off everywhere, on the model's own pick, minus the served policy home_side_offset_big_spreads_v2, on spreads 10.5+, 2022-2023. Negative favours the served push.",
+      "effect": -5.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -20.0,
+        11.111111
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -5.0000 [-10.5263, +0.0000] P+ 0.1255; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 10.5+, switching off the extra points the model gives the home team on big spreads moved its record by -5.00 points (32.50% against the served 37.50%) over 40 games, changing 14 picks.",
+      "probability_positive": 0.263775,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 26,
+      "sample_games": 40,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 7.87643
+    },
+    "home_push_on_served_card_h1_push_off_standalone_10p5_plus_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push turned off everywhere, on the model's own pick, minus the served policy home_side_offset_big_spreads_v2, on spreads 10.5+, 2024-2025. Negative favours the served push.",
+      "effect": -2.702703,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -17.647059,
+        11.111111
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -2.7027 [-12.5000, +15.3846] P+ 0.2483; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 10.5+, switching off the extra points the model gives the home team on big spreads moved its record by -2.70 points (56.76% against the served 59.46%) over 37 games, changing 7 picks.",
+      "probability_positive": 0.3547,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 22,
+      "sample_games": 37,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 7.271801
+    },
+    "home_push_on_served_card_h1_push_off_standalone_7_2020_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push turned off everywhere, on the model's own pick, minus the served policy home_side_offset_big_spreads_v2, on spreads 7, 2020-2021. Negative favours the served push.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +0.0000 [+0.0000, +0.0000] P+ 0.5000; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 7, switching off the extra points the model gives the home team on big spreads moved its record by +0.00 points (47.62% against the served 47.62%) over 21 games, changing 0 picks.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 17,
+      "sample_games": 21,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": null
+    },
+    "home_push_on_served_card_h1_push_off_standalone_7_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push turned off everywhere, on the model's own pick, minus the served policy home_side_offset_big_spreads_v2, on spreads 7, 2020-2025. Negative favours the served push.",
+      "effect": 1.351351,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -5.714286,
+        8.333333
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +1.3514 [-5.5556, +10.0000] P+ 0.6416; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 7, switching off the extra points the model gives the home team on big spreads moved its record by +1.35 points (52.70% against the served 51.35%) over 74 games, changing 7 picks.",
+      "probability_positive": 0.643275,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 3.575541
+    },
+    "home_push_on_served_card_h1_push_off_standalone_7_2022_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push turned off everywhere, on the model's own pick, minus the served policy home_side_offset_big_spreads_v2, on spreads 7, 2022-2023. Negative favours the served push.",
+      "effect": 4.347826,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -10.0,
+        18.181818
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +4.3478 [+0.0000, +6.2500] P+ 0.8745; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 7, switching off the extra points the model gives the home team on big spreads moved its record by +4.35 points (65.22% against the served 60.87%) over 23 games, changing 3 picks.",
+      "probability_positive": 0.71625,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 18,
+      "sample_games": 23,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 7.344965
+    },
+    "home_push_on_served_card_h1_push_off_standalone_7_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push turned off everywhere, on the model's own pick, minus the served policy home_side_offset_big_spreads_v2, on spreads 7, 2024-2025. Negative favours the served push.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -13.793103,
+        13.793103
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +0.0000 [-10.5263, +18.1818] P+ 0.4987; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 7, switching off the extra points the model gives the home team on big spreads moved its record by +0.00 points (46.67% against the served 46.67%) over 30 games, changing 4 picks.",
+      "probability_positive": 0.49985,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 21,
+      "sample_games": 30,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 6.874877
+    },
+    "home_push_on_served_card_h1_push_off_standalone_7p5_10_2020_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push turned off everywhere, on the model's own pick, minus the served policy home_side_offset_big_spreads_v2, on spreads 7.5-10, 2020-2021. Negative favours the served push.",
+      "effect": -1.428571,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -4.6875,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -1.4286 [-2.8571, +0.0000] P+ 0.1255; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 7.5-10, switching off the extra points the model gives the home team on big spreads moved its record by -1.43 points (45.71% against the served 47.14%) over 70 games, changing 1 picks.",
+      "probability_positive": 0.1814,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 29,
+      "sample_games": 70,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 1.435118
+    },
+    "home_push_on_served_card_h1_push_off_standalone_7p5_10_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push turned off everywhere, on the model's own pick, minus the served policy home_side_offset_big_spreads_v2, on spreads 7.5-10, 2020-2025. Negative favours the served push.",
+      "effect": -3.092784,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -6.914894,
+        0.518135
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -3.0928 [-5.2083, -1.0000] P+ 0.0009; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 7.5-10, switching off the extra points the model gives the home team on big spreads moved its record by -3.09 points (48.45% against the served 51.55%) over 194 games, changing 12 picks.",
+      "probability_positive": 0.046425,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 1.879241
+    },
+    "home_push_on_served_card_h1_push_off_standalone_7p5_10_2022_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push turned off everywhere, on the model's own pick, minus the served policy home_side_offset_big_spreads_v2, on spreads 7.5-10, 2022-2023. Negative favours the served push.",
+      "effect": -5.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -10.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -5.0000 [-6.0606, -3.7037] P+ 0.0000; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 7.5-10, switching off the extra points the model gives the home team on big spreads moved its record by -5.00 points (40.00% against the served 45.00%) over 60 games, changing 3 picks.",
+      "probability_positive": 0.0209,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 30,
+      "sample_games": 60,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 2.43465
+    },
+    "home_push_on_served_card_h1_push_off_standalone_7p5_10_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push turned off everywhere, on the model's own pick, minus the served policy home_side_offset_big_spreads_v2, on spreads 7.5-10, 2024-2025. Negative favours the served push.",
+      "effect": -3.125,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -13.114754,
+        6.060606
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -3.1250 [-6.4516, +0.0000] P+ 0.1242; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 7.5-10, switching off the extra points the model gives the home team on big spreads moved its record by -3.12 points (59.38% against the served 62.50%) over 64 games, changing 8 picks.",
+      "probability_positive": 0.267575,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 32,
+      "sample_games": 64,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 4.890285
+    },
+    "home_push_on_served_card_h1_push_off_standalone_overall_2020_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push turned off everywhere, on the model's own pick, minus the served policy home_side_offset_big_spreads_v2, on all lines, 2020-2021. Negative favours the served push.",
+      "effect": -0.438596,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -1.310044,
+        0.4329
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -0.4386 [-0.4545, -0.4237] P+ 0.0000; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On all lines, switching off the extra points the model gives the home team on big spreads moved its record by -0.44 points (52.85% against the served 53.29%) over 456 games, changing 4 picks.",
+      "probability_positive": 0.15815,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 0.42961
+    },
+    "home_push_on_served_card_h1_push_off_standalone_overall_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push turned off everywhere, on the model's own pick, minus the served policy home_side_offset_big_spreads_v2, on all lines, 2020-2025. Negative favours the served push.",
+      "effect": -0.598802,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -1.494477,
+        0.265781
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -0.5988 [-1.6571, +0.4575] P+ 0.1415; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On all lines, switching off the extra points the model gives the home team on big spreads moved its record by -0.60 points (53.96% against the served 54.56%) over 1503 games, changing 43 picks.",
+      "probability_positive": 0.0907,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 0.451722
+    },
+    "home_push_on_served_card_h1_push_off_standalone_overall_2022_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push turned off everywhere, on the model's own pick, minus the served policy home_side_offset_big_spreads_v2, on all lines, 2022-2023. Negative favours the served push.",
+      "effect": -0.77821,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -2.298851,
+        0.773694
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -0.7782 [-0.8065, -0.7519] P+ 0.0000; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On all lines, switching off the extra points the model gives the home team on big spreads moved its record by -0.78 points (55.06% against the served 55.84%) over 514 games, changing 20 picks.",
+      "probability_positive": 0.15195,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 36,
+      "sample_games": 514,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 0.764625
+    },
+    "home_push_on_served_card_h1_push_off_standalone_overall_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push turned off everywhere, on the model's own pick, minus the served policy home_side_offset_big_spreads_v2, on all lines, 2024-2025. Negative favours the served push.",
+      "effect": -0.562852,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -2.471483,
+        1.2939
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -0.5629 [-2.6217, +1.5038] P+ 0.2483; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On all lines, switching off the extra points the model gives the home team on big spreads moved its record by -0.56 points (53.85% against the served 54.41%) over 533 games, changing 19 picks.",
+      "probability_positive": 0.285075,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 0.955442
+    },
+    "home_push_on_served_card_h2_all_buckets_card_0_6p5_2020_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push extended to every spread bucket, through the served nine-member card, minus the served policy home_side_offset_big_spreads_v2, on spreads 0-6.5, 2020-2021. Negative favours the served push.",
+      "effect": 0.643087,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -1.0,
+        2.464897
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +0.6431 [+0.0000, +1.2739] P+ 0.8758; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 0-6.5, changing the extra points the model gives the home team on big spreads moved its record by +0.64 points (61.09% against the served 60.45%) over 311 games, changing 8 picks.",
+      "probability_positive": 0.76165,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 35,
+      "sample_games": 311,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 0.900327
+    },
+    "home_push_on_served_card_h2_all_buckets_card_0_6p5_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push extended to every spread bucket, through the served nine-member card, minus the served policy home_side_offset_big_spreads_v2, on spreads 0-6.5, 2020-2025. Negative favours the served push.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -1.016659,
+        1.01196
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +0.0000 [-0.5300, +0.5976] P+ 0.5014; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 0-6.5, changing the extra points the model gives the home team on big spreads moved its record by +0.00 points (58.79% against the served 58.79%) over 1104 games, changing 28 picks.",
+      "probability_positive": 0.5024,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 107,
+      "sample_games": 1104,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 0.523054
+    },
+    "home_push_on_served_card_h2_all_buckets_card_0_6p5_2022_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push extended to every spread bucket, through the served nine-member card, minus the served policy home_side_offset_big_spreads_v2, on spreads 0-6.5, 2022-2023. Negative favours the served push.",
+      "effect": -0.255754,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -2.570694,
+        2.030457
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -0.2558 [-0.9756, +0.5376] P+ 0.2483; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 0-6.5, changing the extra points the model gives the home team on big spreads moved its record by -0.26 points (60.10% against the served 60.36%) over 391 games, changing 15 picks.",
+      "probability_positive": 0.4146,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 36,
+      "sample_games": 391,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 1.16948
+    },
+    "home_push_on_served_card_h2_all_buckets_card_0_6p5_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push extended to every spread bucket, through the served nine-member card, minus the served policy home_side_offset_big_spreads_v2, on spreads 0-6.5, 2024-2025. Negative favours the served push.",
+      "effect": -0.248756,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -1.308901,
+        0.759542
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -0.2488 [-0.5181, +0.0000] P+ 0.1242; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 0-6.5, changing the extra points the model gives the home team on big spreads moved its record by -0.25 points (55.72% against the served 55.97%) over 402 games, changing 5 picks.",
+      "probability_positive": 0.329175,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 36,
+      "sample_games": 402,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 0.555579
+    },
+    "home_push_on_served_card_h2_all_buckets_card_overall_2020_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push extended to every spread bucket, through the served nine-member card, minus the served policy home_side_offset_big_spreads_v2, on all lines, 2020-2021. Negative favours the served push.",
+      "effect": 0.438596,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -0.668151,
+        1.72043
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +0.4386 [+0.0000, +0.8475] P+ 0.8758; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On all lines, changing the extra points the model gives the home team on big spreads moved its record by +0.44 points (57.68% against the served 57.24%) over 456 games, changing 8 picks.",
+      "probability_positive": 0.76165,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 0.61181
+    },
+    "home_push_on_served_card_h2_all_buckets_card_overall_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push extended to every spread bucket, through the served nine-member card, minus the served policy home_side_offset_big_spreads_v2, on all lines, 2020-2025. Negative favours the served push.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -0.741252,
+        0.736291
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +0.0000 [-0.3914, +0.4158] P+ 0.5014; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On all lines, changing the extra points the model gives the home team on big spreads moved its record by +0.00 points (56.89% against the served 56.89%) over 1503 games, changing 28 picks.",
+      "probability_positive": 0.5024,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 0.384271
+    },
+    "home_push_on_served_card_h2_all_buckets_card_overall_2022_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push extended to every spread bucket, through the served nine-member card, minus the served policy home_side_offset_big_spreads_v2, on all lines, 2022-2023. Negative favours the served push.",
+      "effect": -0.194553,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -1.964637,
+        1.538462
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -0.1946 [-0.7519, +0.4032] P+ 0.2483; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On all lines, changing the extra points the model gives the home team on big spreads moved its record by -0.19 points (58.95% against the served 59.14%) over 514 games, changing 15 picks.",
+      "probability_positive": 0.4146,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 36,
+      "sample_games": 514,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 0.891081
+    },
+    "home_push_on_served_card_h2_all_buckets_card_overall_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push extended to every spread bucket, through the served nine-member card, minus the served policy home_side_offset_big_spreads_v2, on all lines, 2024-2025. Negative favours the served push.",
+      "effect": -0.187617,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -0.959693,
+        0.567108
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -0.1876 [-0.3745, +0.0000] P+ 0.1242; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On all lines, changing the extra points the model gives the home team on big spreads moved its record by -0.19 points (54.22% against the served 54.41%) over 533 games, changing 5 picks.",
+      "probability_positive": 0.329175,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 0.41814
+    },
+    "home_push_on_served_card_h2_all_buckets_standalone_0_6p5_2020_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push extended to every spread bucket, on the model's own pick, minus the served policy home_side_offset_big_spreads_v2, on spreads 0-6.5, 2020-2021. Negative favours the served push.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -2.893891,
+        3.040747
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +0.0000 [-0.6494, +0.6369] P+ 0.5013; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 0-6.5, changing the extra points the model gives the home team on big spreads moved its record by +0.00 points (56.27% against the served 56.27%) over 311 games, changing 20 picks.",
+      "probability_positive": 0.4958,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 35,
+      "sample_games": 311,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 1.514123
+    },
+    "home_push_on_served_card_h2_all_buckets_standalone_0_6p5_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push extended to every spread bucket, on the model's own pick, minus the served policy home_side_offset_big_spreads_v2, on spreads 0-6.5, 2020-2025. Negative favours the served push.",
+      "effect": -1.086957,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -2.443439,
+        0.275989
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -1.0870 [-2.2284, +0.0927] P+ 0.0335; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 0-6.5, changing the extra points the model gives the home team on big spreads moved its record by -1.09 points (55.07% against the served 56.16%) over 1104 games, changing 64 picks.",
+      "probability_positive": 0.060775,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 107,
+      "sample_games": 1104,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 0.692856
+    },
+    "home_push_on_served_card_h2_all_buckets_standalone_0_6p5_2022_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push extended to every spread bucket, on the model's own pick, minus the served policy home_side_offset_big_spreads_v2, on spreads 0-6.5, 2022-2023. Negative favours the served push.",
+      "effect": -2.813299,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -5.276382,
+        -0.257732
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -2.8133 [-3.4146, -2.1505] P+ 0.0000; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 0-6.5, changing the extra points the model gives the home team on big spreads moved its record by -2.81 points (56.27% against the served 59.08%) over 391 games, changing 35 picks.",
+      "probability_positive": 0.0143,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 36,
+      "sample_games": 391,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 1.276244
+    },
+    "home_push_on_served_card_h2_all_buckets_standalone_0_6p5_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push extended to every spread bucket, on the model's own pick, minus the served policy home_side_offset_big_spreads_v2, on spreads 0-6.5, 2024-2025. Negative favours the served push.",
+      "effect": -0.248756,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -1.728395,
+        1.234568
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -0.2488 [-0.9569, +0.5181] P+ 0.2510; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 0-6.5, changing the extra points the model gives the home team on big spreads moved its record by -0.25 points (52.99% against the served 53.23%) over 402 games, changing 9 picks.",
+      "probability_positive": 0.3654,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 36,
+      "sample_games": 402,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 0.741704
+    },
+    "home_push_on_served_card_h2_all_buckets_standalone_overall_2020_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push extended to every spread bucket, on the model's own pick, minus the served policy home_side_offset_big_spreads_v2, on all lines, 2020-2021. Negative favours the served push.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -1.969365,
+        2.027027
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +0.0000 [-0.4545, +0.4237] P+ 0.5013; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On all lines, changing the extra points the model gives the home team on big spreads moved its record by +0.00 points (53.29% against the served 53.29%) over 456 games, changing 20 picks.",
+      "probability_positive": 0.4958,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 1.029014
+    },
+    "home_push_on_served_card_h2_all_buckets_standalone_overall_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push extended to every spread bucket, on the model's own pick, minus the served policy home_side_offset_big_spreads_v2, on all lines, 2020-2025. Negative favours the served push.",
+      "effect": -0.798403,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -1.798831,
+        0.200941
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -0.7984 [-1.6796, +0.0657] P+ 0.0335; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On all lines, changing the extra points the model gives the home team on big spreads moved its record by -0.80 points (53.76% against the served 54.56%) over 1503 games, changing 64 picks.",
+      "probability_positive": 0.060775,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 0.510255
+    },
+    "home_push_on_served_card_h2_all_buckets_standalone_overall_2022_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push extended to every spread bucket, on the model's own pick, minus the served policy home_side_offset_big_spreads_v2, on all lines, 2022-2023. Negative favours the served push.",
+      "effect": -2.140078,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -4.061896,
+        -0.193424
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -2.1401 [-2.6316, -1.6129] P+ 0.0000; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On all lines, changing the extra points the model gives the home team on big spreads moved its record by -2.14 points (53.70% against the served 55.84%) over 514 games, changing 35 picks.",
+      "probability_positive": 0.0143,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 36,
+      "sample_games": 514,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 0.981405
+    },
+    "home_push_on_served_card_h2_all_buckets_standalone_overall_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push extended to every spread bucket, on the model's own pick, minus the served policy home_side_offset_big_spreads_v2, on all lines, 2024-2025. Negative favours the served push.",
+      "effect": -0.187617,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -1.308411,
+        0.934579
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -0.1876 [-0.7519, +0.3745] P+ 0.2510; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On all lines, changing the extra points the model gives the home team on big spreads moved its record by -0.19 points (54.22% against the served 54.41%) over 533 games, changing 9 picks.",
+      "probability_positive": 0.3654,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 0.558794
+    },
+    "home_push_on_served_card_h3_big_only_card_7_2020_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push restricted to spreads of 10.5 or more, through the served nine-member card, minus the served policy home_side_offset_big_spreads_v2, on spreads 7, 2020-2021. Negative favours the served push.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +0.0000 [+0.0000, +0.0000] P+ 0.5000; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 7, changing the extra points the model gives the home team on big spreads moved its record by +0.00 points (42.86% against the served 42.86%) over 21 games, changing 0 picks.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 17,
+      "sample_games": 21,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": null
+    },
+    "home_push_on_served_card_h3_big_only_card_7_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push restricted to spreads of 10.5 or more, through the served nine-member card, minus the served policy home_side_offset_big_spreads_v2, on spreads 7, 2020-2025. Negative favours the served push.",
+      "effect": -4.054054,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -9.459459,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -4.0541 [-6.4103, -1.4706] P+ 0.0077; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 7, changing the extra points the model gives the home team on big spreads moved its record by -4.05 points (45.95% against the served 50.00%) over 74 games, changing 3 picks.",
+      "probability_positive": 0.023475,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 2.35899
+    },
+    "home_push_on_served_card_h3_big_only_card_7_2022_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push restricted to spreads of 10.5 or more, through the served nine-member card, minus the served policy home_side_offset_big_spreads_v2, on spreads 7, 2022-2023. Negative favours the served push.",
+      "effect": -4.347826,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -15.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -4.3478 [-6.2500, +0.0000] P+ 0.1255; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 7, changing the extra points the model gives the home team on big spreads moved its record by -4.35 points (73.91% against the served 78.26%) over 23 games, changing 1 picks.",
+      "probability_positive": 0.17885,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 18,
+      "sample_games": 23,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 4.439926
+    },
+    "home_push_on_served_card_h3_big_only_card_7_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push restricted to spreads of 10.5 or more, through the served nine-member card, minus the served policy home_side_offset_big_spreads_v2, on spreads 7, 2024-2025. Negative favours the served push.",
+      "effect": -6.666667,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -17.857143,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -6.6667 [-9.0909, -5.2632] P+ 0.0000; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 7, changing the extra points the model gives the home team on big spreads moved its record by -6.67 points (26.67% against the served 33.33%) over 30 games, changing 2 picks.",
+      "probability_positive": 0.06065,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 21,
+      "sample_games": 30,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 4.78919
+    },
+    "home_push_on_served_card_h3_big_only_card_7p5_10_2020_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push restricted to spreads of 10.5 or more, through the served nine-member card, minus the served policy home_side_offset_big_spreads_v2, on spreads 7.5-10, 2020-2021. Negative favours the served push.",
+      "effect": -1.428571,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -4.6875,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -1.4286 [-2.8571, +0.0000] P+ 0.1255; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 7.5-10, changing the extra points the model gives the home team on big spreads moved its record by -1.43 points (51.43% against the served 52.86%) over 70 games, changing 1 picks.",
+      "probability_positive": 0.1814,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 29,
+      "sample_games": 70,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 1.435118
+    },
+    "home_push_on_served_card_h3_big_only_card_7p5_10_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push restricted to spreads of 10.5 or more, through the served nine-member card, minus the served policy home_side_offset_big_spreads_v2, on spreads 7.5-10, 2020-2025. Negative favours the served push.",
+      "effect": -0.515464,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -2.873563,
+        1.604278
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -0.5155 [-2.1053, +1.0753] P+ 0.2832; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 7.5-10, changing the extra points the model gives the home team on big spreads moved its record by -0.52 points (52.06% against the served 52.58%) over 194 games, changing 5 picks.",
+      "probability_positive": 0.331875,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 1.163704
+    },
+    "home_push_on_served_card_h3_big_only_card_7p5_10_2022_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push restricted to spreads of 10.5 or more, through the served nine-member card, minus the served policy home_side_offset_big_spreads_v2, on spreads 7.5-10, 2022-2023. Negative favours the served push.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +0.0000 [+0.0000, +0.0000] P+ 0.5000; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 7.5-10, changing the extra points the model gives the home team on big spreads moved its record by +0.00 points (45.00% against the served 45.00%) over 60 games, changing 0 picks.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 30,
+      "sample_games": 60,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": null
+    },
+    "home_push_on_served_card_h3_big_only_card_7p5_10_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push restricted to spreads of 10.5 or more, through the served nine-member card, minus the served policy home_side_offset_big_spreads_v2, on spreads 7.5-10, 2024-2025. Negative favours the served push.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -6.666667,
+        5.797101
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +0.0000 [-3.2258, +3.0303] P+ 0.4987; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 7.5-10, changing the extra points the model gives the home team on big spreads moved its record by +0.00 points (59.38% against the served 59.38%) over 64 games, changing 4 picks.",
+      "probability_positive": 0.495875,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 32,
+      "sample_games": 64,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 3.133337
+    },
+    "home_push_on_served_card_h3_big_only_card_overall_2020_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push restricted to spreads of 10.5 or more, through the served nine-member card, minus the served policy home_side_offset_big_spreads_v2, on all lines, 2020-2021. Negative favours the served push.",
+      "effect": -0.219298,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -0.663717,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -0.2193 [-0.4545, +0.0000] P+ 0.1255; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On all lines, changing the extra points the model gives the home team on big spreads moved its record by -0.22 points (57.02% against the served 57.24%) over 456 games, changing 1 picks.",
+      "probability_positive": 0.180275,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 0.213184
+    },
+    "home_push_on_served_card_h3_big_only_card_overall_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push restricted to spreads of 10.5 or more, through the served nine-member card, minus the served policy home_side_offset_big_spreads_v2, on all lines, 2020-2025. Negative favours the served push.",
+      "effect": -0.266134,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -0.658328,
+        0.067114
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -0.2661 [-0.5212, -0.0646] P+ 0.0076; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On all lines, changing the extra points the model gives the home team on big spreads moved its record by -0.27 points (56.62% against the served 56.89%) over 1503 games, changing 8 picks.",
+      "probability_positive": 0.072475,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 0.185205
+    },
+    "home_push_on_served_card_h3_big_only_card_overall_2022_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push restricted to spreads of 10.5 or more, through the served nine-member card, minus the served policy home_side_offset_big_spreads_v2, on all lines, 2022-2023. Negative favours the served push.",
+      "effect": -0.194553,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -0.59761,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -0.1946 [-0.4032, +0.0000] P+ 0.1255; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On all lines, changing the extra points the model gives the home team on big spreads moved its record by -0.19 points (58.95% against the served 59.14%) over 514 games, changing 1 picks.",
+      "probability_positive": 0.181025,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 36,
+      "sample_games": 514,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 0.192903
+    },
+    "home_push_on_served_card_h3_big_only_card_overall_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push restricted to spreads of 10.5 or more, through the served nine-member card, minus the served policy home_side_offset_big_spreads_v2, on all lines, 2024-2025. Negative favours the served push.",
+      "effect": -0.375235,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -1.30597,
+        0.557621
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -0.3752 [-0.7491, +0.0000] P+ 0.1242; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On all lines, changing the extra points the model gives the home team on big spreads moved its record by -0.38 points (54.03% against the served 54.41%) over 533 games, changing 6 picks.",
+      "probability_positive": 0.2065,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 0.451821
+    },
+    "home_push_on_served_card_h3_big_only_standalone_7_2020_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push restricted to spreads of 10.5 or more, on the model's own pick, minus the served policy home_side_offset_big_spreads_v2, on spreads 7, 2020-2021. Negative favours the served push.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +0.0000 [+0.0000, +0.0000] P+ 0.5000; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 7, changing the extra points the model gives the home team on big spreads moved its record by +0.00 points (47.62% against the served 47.62%) over 21 games, changing 0 picks.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 17,
+      "sample_games": 21,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": null
+    },
+    "home_push_on_served_card_h3_big_only_standalone_7_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push restricted to spreads of 10.5 or more, on the model's own pick, minus the served policy home_side_offset_big_spreads_v2, on spreads 7, 2020-2025. Negative favours the served push.",
+      "effect": 1.351351,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -5.714286,
+        8.333333
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +1.3514 [-5.5556, +10.0000] P+ 0.6416; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 7, changing the extra points the model gives the home team on big spreads moved its record by +1.35 points (52.70% against the served 51.35%) over 74 games, changing 7 picks.",
+      "probability_positive": 0.643275,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 3.575541
+    },
+    "home_push_on_served_card_h3_big_only_standalone_7_2022_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push restricted to spreads of 10.5 or more, on the model's own pick, minus the served policy home_side_offset_big_spreads_v2, on spreads 7, 2022-2023. Negative favours the served push.",
+      "effect": 4.347826,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -10.0,
+        18.181818
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +4.3478 [+0.0000, +6.2500] P+ 0.8745; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 7, changing the extra points the model gives the home team on big spreads moved its record by +4.35 points (65.22% against the served 60.87%) over 23 games, changing 3 picks.",
+      "probability_positive": 0.71625,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 18,
+      "sample_games": 23,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 7.344965
+    },
+    "home_push_on_served_card_h3_big_only_standalone_7_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push restricted to spreads of 10.5 or more, on the model's own pick, minus the served policy home_side_offset_big_spreads_v2, on spreads 7, 2024-2025. Negative favours the served push.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -13.793103,
+        13.793103
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +0.0000 [-10.5263, +18.1818] P+ 0.4987; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 7, changing the extra points the model gives the home team on big spreads moved its record by +0.00 points (46.67% against the served 46.67%) over 30 games, changing 4 picks.",
+      "probability_positive": 0.49985,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 21,
+      "sample_games": 30,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 6.874877
+    },
+    "home_push_on_served_card_h3_big_only_standalone_7p5_10_2020_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push restricted to spreads of 10.5 or more, on the model's own pick, minus the served policy home_side_offset_big_spreads_v2, on spreads 7.5-10, 2020-2021. Negative favours the served push.",
+      "effect": -1.428571,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -4.6875,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -1.4286 [-2.8571, +0.0000] P+ 0.1255; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 7.5-10, changing the extra points the model gives the home team on big spreads moved its record by -1.43 points (45.71% against the served 47.14%) over 70 games, changing 1 picks.",
+      "probability_positive": 0.1814,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 29,
+      "sample_games": 70,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 1.435118
+    },
+    "home_push_on_served_card_h3_big_only_standalone_7p5_10_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push restricted to spreads of 10.5 or more, on the model's own pick, minus the served policy home_side_offset_big_spreads_v2, on spreads 7.5-10, 2020-2025. Negative favours the served push.",
+      "effect": -3.092784,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -6.914894,
+        0.518135
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -3.0928 [-5.2083, -1.0000] P+ 0.0009; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 7.5-10, changing the extra points the model gives the home team on big spreads moved its record by -3.09 points (48.45% against the served 51.55%) over 194 games, changing 12 picks.",
+      "probability_positive": 0.046425,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 1.879241
+    },
+    "home_push_on_served_card_h3_big_only_standalone_7p5_10_2022_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push restricted to spreads of 10.5 or more, on the model's own pick, minus the served policy home_side_offset_big_spreads_v2, on spreads 7.5-10, 2022-2023. Negative favours the served push.",
+      "effect": -5.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -10.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -5.0000 [-6.0606, -3.7037] P+ 0.0000; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 7.5-10, changing the extra points the model gives the home team on big spreads moved its record by -5.00 points (40.00% against the served 45.00%) over 60 games, changing 3 picks.",
+      "probability_positive": 0.0209,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 30,
+      "sample_games": 60,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 2.43465
+    },
+    "home_push_on_served_card_h3_big_only_standalone_7p5_10_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push restricted to spreads of 10.5 or more, on the model's own pick, minus the served policy home_side_offset_big_spreads_v2, on spreads 7.5-10, 2024-2025. Negative favours the served push.",
+      "effect": -3.125,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -13.114754,
+        6.060606
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -3.1250 [-6.4516, +0.0000] P+ 0.1242; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 7.5-10, changing the extra points the model gives the home team on big spreads moved its record by -3.12 points (59.38% against the served 62.50%) over 64 games, changing 8 picks.",
+      "probability_positive": 0.267575,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 32,
+      "sample_games": 64,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 4.890285
+    },
+    "home_push_on_served_card_h3_big_only_standalone_overall_2020_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push restricted to spreads of 10.5 or more, on the model's own pick, minus the served policy home_side_offset_big_spreads_v2, on all lines, 2020-2021. Negative favours the served push.",
+      "effect": -0.219298,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -0.663717,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -0.2193 [-0.4545, +0.0000] P+ 0.1255; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On all lines, changing the extra points the model gives the home team on big spreads moved its record by -0.22 points (53.07% against the served 53.29%) over 456 games, changing 1 picks.",
+      "probability_positive": 0.180275,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 0.213184
+    },
+    "home_push_on_served_card_h3_big_only_standalone_overall_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push restricted to spreads of 10.5 or more, on the model's own pick, minus the served policy home_side_offset_big_spreads_v2, on all lines, 2020-2025. Negative favours the served push.",
+      "effect": -0.332668,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -1.053325,
+        0.331345
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -0.3327 [-0.9097, +0.2604] P+ 0.1410; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On all lines, changing the extra points the model gives the home team on big spreads moved its record by -0.33 points (54.22% against the served 54.56%) over 1503 games, changing 19 picks.",
+      "probability_positive": 0.166,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 0.344866
+    },
+    "home_push_on_served_card_h3_big_only_standalone_overall_2022_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push restricted to spreads of 10.5 or more, on the model's own pick, minus the served policy home_side_offset_big_spreads_v2, on all lines, 2022-2023. Negative favours the served push.",
+      "effect": -0.389105,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -1.348748,
+        0.582524
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -0.3891 [-0.7519, +0.0000] P+ 0.1242; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On all lines, changing the extra points the model gives the home team on big spreads moved its record by -0.39 points (55.45% against the served 55.84%) over 514 games, changing 6 picks.",
+      "probability_positive": 0.203475,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 36,
+      "sample_games": 514,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 0.468274
+    },
+    "home_push_on_served_card_h3_big_only_standalone_overall_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push restricted to spreads of 10.5 or more, on the model's own pick, minus the served policy home_side_offset_big_spreads_v2, on all lines, 2024-2025. Negative favours the served push.",
+      "effect": -0.375235,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -2.06379,
+        1.136364
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -0.3752 [-1.4981, +0.7519] P+ 0.2483; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On all lines, changing the extra points the model gives the home team on big spreads moved its record by -0.38 points (54.03% against the served 54.41%) over 533 games, changing 12 picks.",
+      "probability_positive": 0.340675,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 0.822859
+    }
+  }
+}

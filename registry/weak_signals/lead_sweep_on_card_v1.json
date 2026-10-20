@@ -1,0 +1,201 @@
+{
+  "family": "lead_sweep_on_card_v1",
+  "signals": {
+    "lead_sweep_on_card_fluview_away_elevated_tilt_2020_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution, the EXPECTED shape for a real small signal and never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign (week-blocked upper bound +0.335, season-blocked upper bound +0.479, both above zero) and the positive control does not bound it -- perfect foresight on the same 38-game incremental flip set is only +0.998 points with a week-blocked standard error of 0.387, so the instrument cannot resolve an effect the registered flag's own size (+0.368 full-slate points).",
+      "closing_ground": null,
+      "description": "Marginal of the ported fluview_away_market_elevated flag, as a post-prediction tilt overlay (flag on AND model picks the away side -> flip to home), on top of the SERVED nine-member card (policy overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3) at the Tuesday-opener grade, 2020-2025 archive, 1503 scored games. 188 flagged, 72 flips, 34 already made by the card, 38 incremental. Frozen per-state top-decile thresholds and the Tuesday as-of construction imported from nfl_ats.fluview_production_feature; no re-tuning. Predeclared docs/lead_sweep_on_card.md sections 1-6.",
+      "effect": -0.399202,
+      "effect_units": "accuracy_points",
+      "family": "lead_sweep_on_card_v1",
+      "interval": [
+        -1.184211,
+        0.334672
+      ],
+      "league": "nfl",
+      "notes": "Direction verified against artifacts/fluview_battery/20260820T003505Z/results.json: predeclared sign POSITIVE and measured subset_cover 0.5186915887850467 vs complement_cover 0.4839424141749723 agree. Flags concentrate in 2022 (103 of 188 archive flags); 2020 has zero flagged games because CDC ILI was suppressed that season. Per-season deltas 2020 +0.000, 2021 +1.271, 2022 -2.419, 2023 -1.128, 2024 +0.376, 2025 -0.375.",
+      "plain_summary": "The visiting team's home state is in a bad flu week, so back the home team. On top of the picks we actually play, it moved 38 games over six seasons and cost about four-tenths of a point of accuracy -- not enough evidence either way to settle it.",
+      "probability_positive": 0.151325,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.9814475666016571,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/lead_sweep_on_card/20260910T042951Z/result.json; docs/lead_sweep_on_card.md",
+      "standard_error": 0.387268
+    },
+    "lead_sweep_on_card_fluview_away_elevated_tilt_control_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A foresight control, not a playable rule; it closes nothing on its own. It resolves +0.998 accuracy points at probability_positive 1.000, which proves the harness can see an effect of ABOUT ONE POINT on this 38-game flip set. It does NOT prove the harness can see the registered flag's own +0.368 full-slate size against a week-blocked standard error of 0.387, so it does not license a bounded_by_control closure of the candidate cell.",
+      "closing_ground": null,
+      "description": "Positive control for lead_sweep_on_card_fluview_away_elevated_tilt_2020_2025: perfect foresight on exactly the 38 incremental games that overlay flips, i.e. take the served nine-member card and pick the winning side on those games only. The ceiling any setting of that flag could reach on its own flip set, same harness, same week- and season-blocked bootstraps.",
+      "effect": 0.998004,
+      "effect_units": "accuracy_points",
+      "family": "lead_sweep_on_card_v1",
+      "interval": [
+        0.39604,
+        1.741489
+      ],
+      "league": "nfl",
+      "notes": "The candidate captured -0.400 of that +0.998 ceiling, i.e. a negative share. Ceiling accuracy on the card 0.578842 against the served card's 0.568862.",
+      "plain_summary": "A sanity check, not a betting rule: if we had known the answer in advance on exactly the 38 games this idea would have changed, the card would have gained one point of accuracy. That is the most the idea could ever have been worth.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.9814475666016571,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/lead_sweep_on_card/20260910T042951Z/result.json; docs/lead_sweep_on_card.md",
+      "standard_error": null
+    },
+    "lead_sweep_on_card_fluview_home_elevated_tilt_2020_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "NOT closed, and the reason is stated precisely rather than softened. The PRIMARY week-blocked 95% interval is [-1.133, 0.000]: its upper bound is exactly zero, so the interval is not wholly on the wrong side and wrong_sign_resolved is inadmissible. The season-blocked SECONDARY [-1.058, -0.067] does sit entirely below zero, on six season blocks, and that is reported here rather than used as the closure. The positive control does not bound it either -- perfect foresight on the same 36-game flip set is +0.865 points against a week-blocked standard error of 0.291, which cannot resolve the registered flag's own +0.309 full-slate size. Classification unresolved_below_power, leaning strongly against the candidate at probability_positive 0.0267.",
+      "closing_ground": null,
+      "description": "Marginal of the ported fluview_home_market_elevated flag, as a post-prediction tilt overlay (flag on AND model picks the away side -> flip to home), on top of the SERVED nine-member card at the Tuesday-opener grade, 2020-2025 archive, 1503 scored games. 179 flagged, 67 flips, 31 already made by the card, 36 incremental. Frozen thresholds and Tuesday as-of construction imported from nfl_ats.fluview_production_feature; no re-tuning. Predeclared docs/lead_sweep_on_card.md sections 1-6.",
+      "effect": -0.532269,
+      "effect_units": "accuracy_points",
+      "family": "lead_sweep_on_card_v1",
+      "interval": [
+        -1.132578,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Direction conflict, disclosed: the battery predeclared NEGATIVE (a sick home market should cover less) but measured subset_cover 0.5145631067961165 vs complement_cover 0.48428019856591287, so the registered +0.309 effect and P+ 0.8179 describe a HOME tilt; this overlay ports the measured direction, not the predeclared illness mechanism. 26 of the 36 incremental flips fall in 2022 alone (per-season deltas 2020 +0.000, 2021 +0.000, 2022 -1.613, 2023 -1.128, 2024 -0.376, 2025 +0.000), so this is effectively a 2022 measurement. Prior on the same flag as a refit FEATURE column at the opener grade: docs/fluview_opener_look.md pooled -1.12 points, P+ 0.113.",
+      "plain_summary": "The home team's own state is in a bad flu week and the rule says back the home team anyway. On top of the picks we actually play it moved 36 games over six seasons and cost about half a point of accuracy -- the weakest of the three ideas tested in this batch.",
+      "probability_positive": 0.02665,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.9814475666016571,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/lead_sweep_on_card/20260910T042951Z/result.json; docs/lead_sweep_on_card.md",
+      "standard_error": 0.290945
+    },
+    "lead_sweep_on_card_fluview_home_elevated_tilt_control_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A foresight control, not a playable rule. It resolves +0.865 accuracy points at probability_positive 0.9998, proving the harness can see an effect of about nine-tenths of a point on this 36-game flip set. It does NOT prove the harness can see the registered flag's own +0.309 full-slate size against a week-blocked standard error of 0.291, so it does not license a bounded_by_control closure of the candidate cell.",
+      "closing_ground": null,
+      "description": "Positive control for lead_sweep_on_card_fluview_home_elevated_tilt_2020_2025: perfect foresight on exactly the 36 incremental games that overlay flips, on top of the served nine-member card, same harness and bootstraps.",
+      "effect": 0.864937,
+      "effect_units": "accuracy_points",
+      "family": "lead_sweep_on_card_v1",
+      "interval": [
+        0.264201,
+        1.670035
+      ],
+      "league": "nfl",
+      "notes": "The candidate captured -0.615 of that ceiling. Ceiling accuracy on the card 0.577512 against the served card's 0.568862.",
+      "plain_summary": "A sanity check, not a betting rule: knowing the answer in advance on exactly the 36 games this idea would have changed is worth nine-tenths of a point of accuracy. That is its ceiling.",
+      "probability_positive": 0.999775,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.9814475666016571,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/lead_sweep_on_card/20260910T042951Z/result.json; docs/lead_sweep_on_card.md",
+      "standard_error": null
+    },
+    "lead_sweep_on_card_reddit_home_ratio_tilt_2020_2025": {
+      "category": "attention",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval crosses zero; per AGENTS.md that is the EXPECTED shape at ~2-point resolution and never grounds to close. Neither admissible closing ground applies: no resolved wrong sign (week-blocked [-0.934, +0.801], season-blocked [-0.719, +0.580], both straddle zero) and the positive control does not bound it -- perfect foresight on the same 40-game incremental flip set is +1.264 points against a week-blocked standard error of 0.445, which cannot resolve the registered flag's own +0.329 full-slate size.",
+      "closing_ground": null,
+      "description": "Marginal of the ported reddit_home_comment_ratio_elevated flag, as a post-prediction tilt overlay (flag on AND model picks the away side -> flip to home), on top of the SERVED nine-member card at the Tuesday-opener grade, 2020-2025 archive, 1503 scored games. 119 flagged, 65 flips, 25 already made by the card, 40 incremental. SPIKE_THRESHOLD and the Tuesday-ending window imported from nfl_ats.reddit_attention_production_feature / scripts.arctic_shift_battery_screen; no re-tuning. Predeclared docs/lead_sweep_on_card.md sections 1-6.",
+      "effect": -0.066534,
+      "effect_units": "accuracy_points",
+      "family": "lead_sweep_on_card_v1",
+      "interval": [
+        -0.933956,
+        0.800534
+      ],
+      "league": "nfl",
+      "notes": "Direction conflict, disclosed: the battery predeclared NEGATIVE (home covers less) but measured subset_cover 0.5210084033613446 vs complement_cover 0.4900265957446808, so the registered +0.329 effect and P+ 0.8848 describe a HOME tilt; this overlay ports the measured direction. Flag coverage is even across seasons (12/17/18/27/16/29). Per-season deltas 2020 +0.455, 2021 -1.271, 2022 -0.403, 2023 +1.128, 2024 -0.752, 2025 +0.375. Highest probability_positive of the three cells in this lane.",
+      "plain_summary": "The home team's fan subreddit is unusually argumentative in the week before the game, so back the home team. On top of the picks we actually play it moved 40 games over six seasons and finished a hair below break-even -- a coin flip, not a settled answer.",
+      "probability_positive": 0.43905,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.9920242411347565,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/lead_sweep_on_card/20260910T042951Z/result.json; docs/lead_sweep_on_card.md",
+      "standard_error": 0.44506
+    },
+    "lead_sweep_on_card_reddit_home_ratio_tilt_control_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A foresight control, not a playable rule. It resolves +1.264 accuracy points at probability_positive 1.000, proving the harness can see an effect of about one and a quarter points on this 40-game flip set. It does NOT prove the harness can see the registered flag's own +0.329 full-slate size against a week-blocked standard error of 0.445, so it does not license a bounded_by_control closure.",
+      "closing_ground": null,
+      "description": "Positive control for lead_sweep_on_card_reddit_home_ratio_tilt_2020_2025: perfect foresight on exactly the 40 incremental games that overlay flips, on top of the served nine-member card, same harness and bootstraps.",
+      "effect": 1.264138,
+      "effect_units": "accuracy_points",
+      "family": "lead_sweep_on_card_v1",
+      "interval": [
+        0.72702,
+        1.865454
+      ],
+      "league": "nfl",
+      "notes": "The candidate captured -0.053 of that ceiling. Ceiling accuracy on the card 0.581504 against the served card's 0.568862.",
+      "plain_summary": "A sanity check, not a betting rule: knowing the answer in advance on exactly the 40 games this idea would have changed is worth one and a quarter points of accuracy. That is its ceiling.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.9920242411347565,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/lead_sweep_on_card/20260910T042951Z/result.json; docs/lead_sweep_on_card.md",
+      "standard_error": null
+    },
+    "lead_sweep_on_card_union_of_three_2020_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval [-1.649, +0.537] crosses zero, the EXPECTED shape at this resolution and never grounds to close. Season-blocked [-1.190, 0.000] has an upper bound of exactly zero, which is not wholly on the wrong side, so wrong_sign_resolved is inadmissible. No positive control was run on the union's own 82-game flip set, so bounded_by_control is inadmissible too. Unresolved, leaning against the candidate at probability_positive 0.173.",
+      "closing_ground": null,
+      "description": "Joint OR of all three ported flags (fluview away elevated, reddit home comment ratio elevated, fluview home elevated) as one marginal on top of the SERVED nine-member card at the Tuesday-opener grade, 2020-2025, 1503 scored games, 82 incremental flips. Post-hoc attribution on the same games the three were scored on, reported for completeness, not a predeclared fourth arm.",
+      "effect": -0.532269,
+      "effect_units": "accuracy_points",
+      "family": "lead_sweep_on_card_v1",
+      "interval": [
+        -1.649077,
+        0.536931
+      ],
+      "league": "nfl",
+      "notes": "Pairwise flip overlap: fluview away and fluview home share 53 flips, fluview away and reddit share 7, fluview home and reddit share 6. The two FluView arms are largely the same games, so the union is close to reddit plus one FluView arm.",
+      "plain_summary": "All three flu-and-fan-attention ideas stacked together, on top of the picks we actually play: 82 changed games over six seasons, about half a point of accuracy worse. Not settled, but nothing here argues for playing them.",
+      "probability_positive": 0.17255,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.9814475666016571,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/lead_sweep_on_card/20260910T042951Z/result.json; docs/lead_sweep_on_card.md",
+      "standard_error": 0.563308
+    }
+  }
+}

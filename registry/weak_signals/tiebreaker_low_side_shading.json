@@ -1,0 +1,397 @@
+{
+  "family": "tiebreaker_low_side_shading",
+  "signals": {
+    "tiebreaker_low_side_shading_minus1_ae": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero; not a resolved sign and no positive-control bound was run for this specific arm.",
+      "closing_ground": null,
+      "description": "Shade the tiebreaker last-game total guess 1 point below the market total (predeclared LEAD-54 direction). Metric: mean absolute error improvement (candidate minus served, positive favours the shade) against the raw served market-total guess, closest-total tiebreak reading, all REG last-games-of-week 2009-2025.",
+      "effect": 0.047619047619047616,
+      "effect_units": "mae_improvement",
+      "family": "tiebreaker_low_side_shading",
+      "interval": [
+        -0.0508517813905223,
+        0.15017064846416384
+      ],
+      "league": "nfl",
+      "notes": "Season-blocked bootstrap, 4000 draws, seed 20260910. Served baseline = raw schedules total_line (offset 0), common random numbers used against the simulated public field for every offset.",
+      "plain_summary": "Guessing 1 point lower than the betting market's total for the week's last game came a hair closer to the real final score than guessing the market number exactly, on 17 seasons of games.",
+      "probability_positive": 0.816125,
+      "recorded_at": "2026-09-11",
+      "reliability": -0.383923,
+      "sample_blocks": 17,
+      "sample_games": 294,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/tiebreaker_low_side_shading/20260911T023009Z/summary.json",
+      "standard_error": null
+    },
+    "tiebreaker_low_side_shading_minus1_exact_score_ae": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero; this is a secondary metric because POL-12 never recorded which rule the pool actually uses.",
+      "closing_ground": null,
+      "description": "Alternative reading of the pool's undocumented tiebreak rule: closest EXACT SCORE (Manhattan distance on home/away points) instead of closest total. -1 point shade vs the served guess, both scores built from the market margin plus the (shaded) total, rounded; mean distance improvement, 2009-2025.",
+      "effect": -0.05782312925170068,
+      "effect_units": "mae_improvement",
+      "family": "tiebreaker_low_side_shading",
+      "interval": [
+        -0.2389115845600487,
+        0.11987331120839809
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "If the pool actually judges the tiebreaker by the exact final score rather than just the combined total, shading the total down by 1 point did not clearly help and leaned slightly the other way.",
+      "probability_positive": 0.257375,
+      "recorded_at": "2026-09-11",
+      "reliability": -0.383923,
+      "sample_blocks": 17,
+      "sample_games": 294,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/tiebreaker_low_side_shading/20260911T023009Z/summary.json",
+      "standard_error": null
+    },
+    "tiebreaker_low_side_shading_minus1_exact_score_winrate": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero.",
+      "closing_ground": null,
+      "description": "Exact-score tiebreak reading, -1 point shade, win rate vs the served guess against the declared simulated public field (mean +1.5, sd 6), 2009-2025.",
+      "effect": -2.554914965986394,
+      "effect_units": "accuracy_points",
+      "family": "tiebreaker_low_side_shading",
+      "interval": [
+        -6.785179237288135,
+        2.010228462837839
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Under the exact-score reading of the pool's rule, shading the total down by 1 point did not win more tiebreakers than the plain market-based guess.",
+      "probability_positive": 0.12075,
+      "recorded_at": "2026-09-11",
+      "reliability": -0.383923,
+      "sample_blocks": 17,
+      "sample_games": 294,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/tiebreaker_low_side_shading/20260911T023009Z/summary.json",
+      "standard_error": null
+    },
+    "tiebreaker_low_side_shading_minus1_oos_ae": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero.",
+      "closing_ground": null,
+      "description": "Chronological out-of-sample check: the -1 point shade (LEAD-54's predeclared direction, and the shade the AE metric alone would have chosen from 2009-2017) scored on the held-out 2018-2025 seasons only. Mean absolute error improvement vs the served market-total guess, closest-total reading.",
+      "effect": 0.07801418439716312,
+      "effect_units": "mae_improvement",
+      "family": "tiebreaker_low_side_shading",
+      "interval": [
+        -0.06382978723404255,
+        0.22535211267605634
+      ],
+      "league": "nfl",
+      "notes": "Trained (shade choice only, by AE improvement) on 2009-2017; scored here strictly on 2018-2025, no re-selection.",
+      "plain_summary": "Picking the 1-point-under shade using only the older seasons, then testing it on the newer seasons, still showed the same small edge -- it did not fall apart out of sample.",
+      "probability_positive": 0.843125,
+      "recorded_at": "2026-09-11",
+      "reliability": -0.383923,
+      "sample_blocks": 8,
+      "sample_games": 141,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/tiebreaker_low_side_shading/20260911T023009Z/summary.json",
+      "standard_error": null
+    },
+    "tiebreaker_low_side_shading_minus1_oos_winrate": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero.",
+      "closing_ground": null,
+      "description": "Same chronological out-of-sample check as the AE version, scored instead as tie-break win rate vs the served guess against the declared simulated public field (mean +1.5, sd 6), 2018-2025 held-out seasons.",
+      "effect": -0.11620567375886498,
+      "effect_units": "accuracy_points",
+      "family": "tiebreaker_low_side_shading",
+      "interval": [
+        -1.2792024086005391,
+        1.0991549295774645
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "On the newer seasons held back for testing, the 1-point shade still did not clearly win more tiebreakers against a crowd that leans toward overs.",
+      "probability_positive": 0.4275,
+      "recorded_at": "2026-09-11",
+      "reliability": -0.383923,
+      "sample_blocks": 8,
+      "sample_games": 141,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/tiebreaker_low_side_shading/20260911T023009Z/summary.json",
+      "standard_error": null
+    },
+    "tiebreaker_low_side_shading_minus1_winrate": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero.",
+      "closing_ground": null,
+      "description": "Same -1 point shade, scored instead as tie-break WIN RATE against a simulated public field (public guess ~ market total + Normal(mean=+1.5, sd=6), declared before scoring): win-rate improvement in percentage points vs the served (unshaded) guess.",
+      "effect": -0.13676870748299336,
+      "effect_units": "accuracy_points",
+      "family": "tiebreaker_low_side_shading",
+      "interval": [
+        -0.9351796884942435,
+        0.6614039115646265
+      ],
+      "league": "nfl",
+      "notes": "Public field: mean offset +1.5, sd 6.0, 20000 Monte Carlo draws per game, common random numbers vs the served arm.",
+      "plain_summary": "Against a crowd of guessers who tend to pick a slightly-too-high final score, shading our own guess down by 1 point did not clearly win more tiebreakers than just using the market number.",
+      "probability_positive": 0.36175,
+      "recorded_at": "2026-09-11",
+      "reliability": -0.383923,
+      "sample_blocks": 17,
+      "sample_games": 294,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/tiebreaker_low_side_shading/20260911T023009Z/summary.json",
+      "standard_error": null
+    },
+    "tiebreaker_low_side_shading_minus2_ae": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero.",
+      "closing_ground": null,
+      "description": "Shade the tiebreaker last-game total guess 2 points below the market total. Mean absolute error improvement vs the served market-total guess, closest-total reading, 2009-2025.",
+      "effect": 0.034013605442176874,
+      "effect_units": "mae_improvement",
+      "family": "tiebreaker_low_side_shading",
+      "interval": [
+        -0.17407633596708583,
+        0.24834183673469404
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Guessing 2 points lower than the market total also landed a bit closer to the real score on average, though less clearly than the 1-point shade.",
+      "probability_positive": 0.61025,
+      "recorded_at": "2026-09-11",
+      "reliability": -0.383923,
+      "sample_blocks": 17,
+      "sample_games": 294,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/tiebreaker_low_side_shading/20260911T023009Z/summary.json",
+      "standard_error": null
+    },
+    "tiebreaker_low_side_shading_minus2_winrate": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero.",
+      "closing_ground": null,
+      "description": "-2 point shade, tie-break win rate vs the served guess against the declared simulated public field (mean +1.5, sd 6).",
+      "effect": -0.842823129251701,
+      "effect_units": "accuracy_points",
+      "family": "tiebreaker_low_side_shading",
+      "interval": [
+        -2.52390030506335,
+        0.8307735183904065
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Shading 2 points low did not win more tiebreakers than the plain market guess against a crowd that leans toward overs.",
+      "probability_positive": 0.1585,
+      "recorded_at": "2026-09-11",
+      "reliability": -0.383923,
+      "sample_blocks": 17,
+      "sample_games": 294,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/tiebreaker_low_side_shading/20260911T023009Z/summary.json",
+      "standard_error": null
+    },
+    "tiebreaker_low_side_shading_minus3_ae": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero (upper bound +0.277), so wrong_sign_resolved is inadmissible despite the negative point estimate.",
+      "closing_ground": null,
+      "description": "-3 point shade, mean absolute error improvement vs the served market-total guess, closest-total reading, 2009-2025.",
+      "effect": -0.047619047619047616,
+      "effect_units": "mae_improvement",
+      "family": "tiebreaker_low_side_shading",
+      "interval": [
+        -0.35839245640282374,
+        0.2770411506824551
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Guessing 3 points under the market total started to cost accuracy on average, though the result is still too uncertain to call it worse for sure.",
+      "probability_positive": 0.375625,
+      "recorded_at": "2026-09-11",
+      "reliability": -0.383923,
+      "sample_blocks": 17,
+      "sample_games": 294,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/tiebreaker_low_side_shading/20260911T023009Z/summary.json",
+      "standard_error": null
+    },
+    "tiebreaker_low_side_shading_minus3_winrate": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero (upper bound +0.231), so wrong_sign_resolved is inadmissible even though probability_positive is only 0.037.",
+      "closing_ground": null,
+      "description": "-3 point shade, tie-break win rate vs the served guess against the declared simulated public field (mean +1.5, sd 6).",
+      "effect": -2.1377551020408165,
+      "effect_units": "accuracy_points",
+      "family": "tiebreaker_low_side_shading",
+      "interval": [
+        -4.560610171682697,
+        0.2311247276029056
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Shading 3 points low leaned toward losing more tiebreakers than the plain market guess, but the result is still too uncertain to call it settled.",
+      "probability_positive": 0.037,
+      "recorded_at": "2026-09-11",
+      "reliability": -0.383923,
+      "sample_blocks": 17,
+      "sample_games": 294,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/tiebreaker_low_side_shading/20260911T023009Z/summary.json",
+      "standard_error": null
+    },
+    "tiebreaker_low_side_shading_minus4_ae": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero (upper bound +0.247).",
+      "closing_ground": null,
+      "description": "-4 point shade, mean absolute error improvement vs the served market-total guess, closest-total reading, 2009-2025.",
+      "effect": -0.1836734693877551,
+      "effect_units": "mae_improvement",
+      "family": "tiebreaker_low_side_shading",
+      "interval": [
+        -0.5993150684931506,
+        0.24670608108108139
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Guessing 4 points under the market total was worse on average than just using the market number, though this particular read of the result is still uncertain.",
+      "probability_positive": 0.1945,
+      "recorded_at": "2026-09-11",
+      "reliability": -0.383923,
+      "sample_blocks": 17,
+      "sample_games": 294,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/tiebreaker_low_side_shading/20260911T023009Z/summary.json",
+      "standard_error": null
+    },
+    "tiebreaker_low_side_shading_minus4_winrate": {
+      "category": "market",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Whole 95% interval [-6.782, -0.813] sits below zero: a 4-point low shade is resolvably worse than the served guess on tie-break win rate against the declared public field. This closes the -4 arm on this metric only; it does not close the -1/-2 arms, which are separate cells.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "-4 point shade, tie-break win rate vs the served guess against the declared simulated public field (mean +1.5, sd 6). Whole interval sits below zero.",
+      "effect": -3.7737414965986393,
+      "effect_units": "accuracy_points",
+      "family": "tiebreaker_low_side_shading",
+      "interval": [
+        -6.78234659565823,
+        -0.8128425814513137
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Shading the guess a full 4 points under the market total clearly won FEWER tiebreakers than just using the market number, against a crowd that leans toward overs -- shading that far is a mistake.",
+      "probability_positive": 0.005,
+      "recorded_at": "2026-09-11",
+      "reliability": -0.383923,
+      "sample_blocks": 17,
+      "sample_games": 294,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/tiebreaker_low_side_shading/20260911T023009Z/summary.json",
+      "standard_error": null
+    },
+    "tiebreaker_low_side_shading_model_lean_ae": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero.",
+      "closing_ground": null,
+      "description": "Shade the total by the already-served 0.1 x model-predicted-residual blend (nfl_ats.tiebreaker.TOTALS_RESIDUAL_WEIGHT, reused not re-derived) instead of a fixed offset, i.e. a shade proportional to the model's own under/over lean. Mean absolute error improvement vs the raw market-total guess, restricted to last-games-of-week with a walk-forward model prediction (2010-2025).",
+      "effect": -0.01416221534576443,
+      "effect_units": "mae_improvement",
+      "family": "tiebreaker_low_side_shading",
+      "interval": [
+        -0.04456170784008593,
+        0.01702080568536125
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Letting the computer model's own guess about whether a game will go over or under nudge the tiebreaker number did not clearly beat just using the market's own number.",
+      "probability_positive": 0.19,
+      "recorded_at": "2026-09-11",
+      "reliability": -0.383923,
+      "sample_blocks": 16,
+      "sample_games": 261,
+      "seasons": [
+        2010,
+        2025
+      ],
+      "source": "artifacts/tiebreaker_low_side_shading/20260911T023009Z/summary.json",
+      "standard_error": null
+    },
+    "tiebreaker_low_side_shading_model_lean_winrate": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero.",
+      "closing_ground": null,
+      "description": "Model-lean-proportional shade (0.1 x predicted_residual), tie-break win rate vs the served guess against the declared simulated public field (mean +1.5, sd 6), 2010-2025 model-covered games.",
+      "effect": -0.09944444444444485,
+      "effect_units": "accuracy_points",
+      "family": "tiebreaker_low_side_shading",
+      "interval": [
+        -0.34049422675026175,
+        0.1507144466027442
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Using the model's own lean to nudge the tiebreaker guess did not clearly win more tiebreakers than the plain market guess.",
+      "probability_positive": 0.21525,
+      "recorded_at": "2026-09-11",
+      "reliability": -0.383923,
+      "sample_blocks": 16,
+      "sample_games": 261,
+      "seasons": [
+        2010,
+        2025
+      ],
+      "source": "artifacts/tiebreaker_low_side_shading/20260911T023009Z/summary.json",
+      "standard_error": null
+    }
+  }
+}

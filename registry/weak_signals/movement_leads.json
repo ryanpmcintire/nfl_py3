@@ -1,0 +1,145 @@
+{
+  "family": "movement_leads",
+  "signals": {
+    "movement_leads_rising_total_dog": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked P+ 0.0 (0 of 20,000 resamples positive) but the interval's upper bound sits AT exactly 0.0, not strictly below it -- a discrete-mass artifact of only 6 flagged games out of 456 (many bootstrap resamples draw none of the 6 flagged-game weeks and score an exact 0.0 delta), NOT a smoothly resolved negative interval. Season-blocked [-0.455,-0.424] P+ 0.0 IS entirely negative, but the AND-rule (both blockings entirely below zero) fails on the week-blocked side's exact-zero boundary, so wrong_sign_resolved is inadmissible per the predeclared reporting contract. No size-matched control was run.",
+      "closing_ground": null,
+      "description": "LEAD-06: games where the total rose >=2.0 pts from the Tuesday open to the latest pre-16:00-ET-Sunday-deadline snapshot while the spread moved <0.5, candidate takes the underdog at the frozen Tuesday line, production pick elsewhere. Assigned rotation window [2020,2021].",
+      "effect": -0.43859649122807015,
+      "effect_units": "accuracy_points",
+      "family": "movement_leads",
+      "interval": [
+        -1.0964912280701753,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "docs/movement_leads_battery.md, cell 5 of 5. Only 6 games flagged in the entire [2020,2021] window (5 in 2020, 1 in 2021) -- an extremely small subgroup, so this reading is dominated by a handful of games and should not be read as a stable estimate in either direction. Latest pre-deadline checkpoint priority: tue_open < thu_pre_tnf < sat_midday < sun_early_close (sun_late_close/mon_pre_mnf excluded as post-16:00-ET-deadline). Positive control (perfect foresight) on the same 456-game window: +46.27 pts, P+ 1.0, matching movement_expansion_v1's own reported control on the identical window (+46.2719) -- harness cross-check passes.",
+      "plain_summary": "In the small number of games (6, out of 456) where the total climbed at least 2 points while the spread barely budged, betting the underdog did WORSE than the model's usual pick -- but with only 6 such games this is far too few to trust either way.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/movement_leads_battery/20260905T042928Z/metadata.json",
+      "standard_error": null
+    },
+    "movement_leads_sat_follow_1_0": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked P+ 0.931 (interval crosses zero, upper bound positive); season-blocked [+0.407,+3.279] P+ 1.0 (3 season-blocks, few blocks, near-degenerate). Week-blocked interval crosses zero so wrong_sign_resolved is inadmissible regardless of the one-sided season reading; no size-matched control was run. Within-week permutation null observed at the 92nd percentile.",
+      "closing_ground": null,
+      "description": "LEAD-07(b): follow the Wednesday-noon to Saturday-midday line move (>=1.0 pt, 2023-2025 intraday_hourly + historical_backfill sat_midday) instead of the production pick, graded at the frozen Tuesday line.",
+      "effect": 1.5006821282401093,
+      "effect_units": "accuracy_points",
+      "family": "movement_leads",
+      "interval": [
+        -0.40705563093622793,
+        3.4530386740331496
+      ],
+      "league": "nfl",
+      "notes": "docs/movement_leads_battery.md, cell 2 of 5. Population: games with both a resolvable Wed-noon and sat_midday reading, 2023-2025 (750 population, 733 graded, 54 week-blocks). NOT the assigned [2020,2021] rotation window (no Wednesday checkpoint exists there). Commensurable with observed_movement_*/movement_expansion_* but disclose as correlated, not pooled blind. Positive control (perfect foresight) on the joint day-part population: +46.93 pts, P+ 1.0.",
+      "plain_summary": "Following the line move that happened specifically between Wednesday noon and Saturday midday (when it was at least a point) beat the model's usual pick by about 1.5 accuracy points over 2023-2025, and leaned that way in roughly 93% of resamples.",
+      "probability_positive": 0.93065,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 733,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/movement_leads_battery/20260905T042928Z/metadata.json",
+      "standard_error": null
+    },
+    "movement_leads_sun_am_follow_1_0": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked P+ 0.910 (interval crosses zero); season-blocked [+0.412,+1.626] P+ 1.0 (3 season-blocks, few blocks). Week-blocked interval crosses zero so wrong_sign_resolved is inadmissible; no size-matched control was run. Within-week permutation null observed at the 88.5th percentile.",
+      "closing_ground": null,
+      "description": "LEAD-07(c): follow the Saturday-midday to Sunday-morning line move (>=1.0 pt, 2023-2025 intraday_hourly, real archive ceiling ~10:55 ET at min(kickoff, Sunday 16:00 ET)) instead of the production pick, graded at the frozen Tuesday line.",
+      "effect": 1.0914051841746248,
+      "effect_units": "accuracy_points",
+      "family": "movement_leads",
+      "interval": [
+        -0.4098360655737705,
+        2.657398452611214
+      ],
+      "league": "nfl",
+      "notes": "docs/movement_leads_battery.md, cell 3 of 5. Population: games with both a resolvable sat_midday and Sunday-morning-ceiling reading, 2023-2025 (750 population, 733 graded, 54 week-blocks). NOT the assigned [2020,2021] rotation window. Sunday-morning endpoint is the archive's real ~10:55 ET coverage ceiling (measured, docs/observed_movement_channel.md), not a literal 16:00 ET reading, though the requested cutoff is min(kickoff, Sunday 16:00 ET) per the owner deadline. Commensurable with observed_movement_*/movement_expansion_* but disclose as correlated. Positive control on the joint day-part population: +46.93 pts, P+ 1.0.",
+      "plain_summary": "Following the line move that happened specifically between Saturday midday and Sunday morning (when it was at least a point) beat the model's usual pick by about 1.1 accuracy points over 2023-2025, leaning that way in roughly 91% of resamples.",
+      "probability_positive": 0.90965,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 733,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/movement_leads_battery/20260905T042928Z/metadata.json",
+      "standard_error": null
+    },
+    "movement_leads_sun_vs_wed_per_point": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked P+ 0.928 (interval crosses zero); season-blocked [+0.0162,+0.2149] P+ 1.0 (only 3 season-blocks 2023/24/25, near-degenerate per the movement_expansion_v1 precedent). Week-blocked interval crosses zero so wrong_sign_resolved is inadmissible regardless of the one-sided season reading; no size-matched control was run (perfect-foresight control proves gross sensitivity only). Within-week permutation null observed at the 91st percentile. Direction matches the predeclared hypothesis (Sunday-AM per-point value +0.0802 > Wednesday per-point value -0.0139) but the resolution bar is not met.",
+      "closing_ground": null,
+      "description": "LEAD-07 primary cell: paired difference in per-point value (accuracy points earned per point of observed line movement, among each day-part's own >=1.0pt-eligible games) between the Saturday-to-Sunday-morning day-part and the Tuesday-to-Wednesday day-part, on the joint 2023-2025 population with all four checkpoints resolvable. Predeclared direction: positive (Sunday-morning moves carry more per-point value than Wednesday moves).",
+      "effect": 0.09411354473139369,
+      "effect_units": "accuracy_points",
+      "family": "movement_leads",
+      "interval": [
+        -0.031436060753682306,
+        0.21609935915281817
+      ],
+      "league": "nfl",
+      "notes": "docs/movement_leads_battery.md, cell 4 of 5, PRIMARY cell for the movement_leads_v1 rotation family record. UNIT CAVEAT, load-bearing: effect and interval are PER-POINT-OF-MOVEMENT RATES (accuracy points earned per point of observed line movement, i.e. paired_delta / mean(|move|) among each arm's own >=1.0pt-eligible subset), NOT a flat accuracy_points delta like every other accuracy_points entry in this registry. Do NOT pool this entry with plain accuracy_points deltas without rescaling; it is commensurable only with other explicitly per-point-value cells. n_wed_eligible=94, n_sun_am_eligible=72 (joint population 750, 2023-2025; NOT the assigned [2020,2021] rotation window -- no Wednesday checkpoint exists there, disclosed in the predeclaration doc). Positive control (perfect foresight) on the same joint population: +46.93 pts, P+ 1.0, proving harness sensitivity.",
+      "plain_summary": "Comparing the two ends of the week, a point of Sunday-morning line movement was worth more accuracy than a point of Tuesday-to-Wednesday movement -- consistent with the idea that later-week news (injuries, weather) carries more signal than early-week market flow -- and that direction held in about 93% of resamples, though the gap is still too small to call settled.",
+      "probability_positive": 0.92775,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 750,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/movement_leads_battery/20260905T042928Z/metadata.json",
+      "standard_error": null
+    },
+    "movement_leads_wed_follow_1_0": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked P+ 0.408 (interval crosses zero); season-blocked [-1.880,+1.124] P+ 0.413 (3 season-blocks 2023/24/25, few blocks); within-week permutation null observed at the 31st percentile (unremarkable). Neither AND-rule (wrong_sign_resolved needs both blockings entirely below zero) nor a size-matched control applies; stays unresolved.",
+      "closing_ground": null,
+      "description": "LEAD-01/LEAD-07(a): follow the Tuesday-open to Wednesday-noon line move (>=1.0 pt, 2023-2025 intraday_hourly archive) instead of the production pick, recomputed pick graded at the frozen Tuesday line; production pick kept below threshold.",
+      "effect": -0.1251564455569462,
+      "effect_units": "accuracy_points",
+      "family": "movement_leads",
+      "interval": [
+        -1.651894979162018,
+        1.5018773466833542
+      ],
+      "league": "nfl",
+      "notes": "docs/movement_leads_battery.md, cell 1 of 5. Population is the full 2023-2025 intraday_hourly-covered archive (816 games, 799 graded, 54 week-blocks), NOT the family's assigned rotation window [2020,2021] -- no Wednesday checkpoint exists before 2023 (measured, src/nfl_ats/odds_backfill.py has no wed_ decision label); disclosed at length in the predeclaration doc's Disclosed tension section. Commensurable with observed_movement_* / movement_expansion_* (same construction, same population family) but NOT identical -- disclose as correlated before pooling. Positive control (perfect foresight) on the same population resolved cleanly: +46.93 pts, P+ 1.0, proving harness sensitivity.",
+      "plain_summary": "Following the Tuesday-to-Wednesday line move (when it was at least a point) instead of the model's usual pick was basically a coin flip over 2023-2025 -- about 41% likely to have helped, not enough to call it an edge either way.",
+      "probability_positive": 0.40795,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/movement_leads_battery/20260905T042928Z/metadata.json",
+      "standard_error": null
+    }
+  }
+}

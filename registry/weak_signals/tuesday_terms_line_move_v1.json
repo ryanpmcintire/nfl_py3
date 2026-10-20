@@ -1,0 +1,33 @@
+{
+  "family": "tuesday_terms_line_move_v1",
+  "signals": {
+    "reddit_home_comment_ratio_elevated_tuesday_line_move": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Season-block interval [-0.0261,-0.0021] wholly below zero; week-block also wholly negative (P+ 0.018); accuracy companion wholly negative; decisive 4-14 on line move. Closes this Tuesday-base variant only; the four-term-base cell (pooled_signal_sixth_fit_vs_four_term) stays unresolved and the 2011-2025 regrade re-tests the term.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "reddit_home_comment_ratio_elevated added to the Tuesday-knowable base (model_logit+composition_flag_sum), LOSO 2020-2025, graded on close-minus-open line move toward the pick; accuracy companion -0.80 pts [-1.23,-0.39]",
+      "effect": -0.013,
+      "effect_units": "ats_points",
+      "family": "tuesday_terms_line_move_v1",
+      "interval": [
+        -0.0261,
+        -0.0021
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Adding fan-forum buzz to the Tuesday pick made the line move away from our picks, so this version is ruled out.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-23",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/tuesday_terms_line_move/20260923T205836Z/results.json",
+      "standard_error": null
+    }
+  }
+}

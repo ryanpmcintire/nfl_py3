@@ -1,0 +1,89 @@
+{
+  "family": "bp_rank_served_score_v1",
+  "signals": {
+    "bp_rank_foresight_control_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A control, not a closure: it demonstrates the instrument resolves a 41-point effect on 102 weeks and therefore bounds nothing at the 6-point scale the candidate arms live at.",
+      "closing_ground": null,
+      "description": "Perfect-foresight positive control inside the served Best Pick eligibility pool, 2020-2025 opener archive",
+      "effect": 41.1765,
+      "effect_units": "accuracy_points",
+      "family": "bp_rank_served_score_v1",
+      "interval": [
+        31.3725,
+        50.9804
+      ],
+      "league": "nfl",
+      "notes": "97.20% (104/107) inside the same eligibility pool.",
+      "plain_summary": "If the star always went on the game we later learned was right, it would win 97 weeks in 100 - the yardstick showing the test can see a big effect.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 102,
+      "sample_games": 102,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/best_pick_served_score_ranker/20260914T163425Z/summary.json",
+      "standard_error": null
+    },
+    "bp_rank_served_score_no_dispersion_vs_alpha2000": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign and no positive control bound; the foresight control on the same pool reads +41.18 [31.37, 50.98].",
+      "closing_ground": null,
+      "description": "Best Pick nominee ranked by the card's own served decision score inside the 6.5-or-less spread screen alone, dispersion screen removed, against the served alpha=2000 ranker, 2020-2025 opener archive",
+      "effect": 5.8824,
+      "effect_units": "accuracy_points",
+      "family": "bp_rank_served_score_v1",
+      "interval": [
+        -3.9216,
+        15.6863
+      ],
+      "league": "nfl",
+      "notes": "Companion cell to bp_rank_served_score_vs_alpha2000; separates the ranker change from the dispersion screen. 61.90% (65/105).",
+      "plain_summary": "Dropping the book-disagreement filter and simply starring the card's most confident small-spread pick scored about the same as keeping the filter.",
+      "probability_positive": 0.878675,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 102,
+      "sample_games": 102,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/best_pick_served_score_ranker/20260914T163425Z/summary.json",
+      "standard_error": null
+    },
+    "bp_rank_served_score_vs_alpha2000": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign (interval spans zero with the mass positive) and no positive control bound: the perfect-foresight control on the same pool reads +41.18 [31.37, 50.98], far above this effect, so it bounds nothing here.",
+      "closing_ground": null,
+      "description": "Best Pick nominee ranked by the card's own served decision score instead of the alpha=2000 candidate distance, same below-median dispersion pool and 6.5-or-less spread screen, 2020-2025 opener archive",
+      "effect": 5.9406,
+      "effect_units": "accuracy_points",
+      "family": "bp_rank_served_score_v1",
+      "interval": [
+        -1.9802,
+        13.8614
+      ],
+      "league": "nfl",
+      "notes": "Sixth reuse of the 107-week opener population for the Best Pick family; discount accordingly. Paired within week, 20000 draws, seed 20260914. A0 55.88% (57/102), A1 62.14% (64/103); nominee differs in 37 of 101 paired weeks, outcome in 16.",
+      "plain_summary": "Putting the star on the pick the card itself rates highest, instead of on a separate model's favourite, won about six more Best Picks per hundred weeks over 2020-2025.",
+      "probability_positive": 0.933575,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 101,
+      "sample_games": 101,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/best_pick_served_score_ranker/20260914T163425Z/summary.json",
+      "standard_error": null
+    }
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "family": "mod25e-e174",
+  "signals": {
+    "e174c mid-game trailer regime class-ratio reweight (RGM)": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Q2-Q4 gsr>300 trailing run/pass Geo class ratios, nested LOSO, 12 combos; held-out LL per query vs LOSO Geo pool, K=200",
+      "effect": 0.00334,
+      "effect_units": "log_loss_improvement",
+      "family": "mod25e-e174",
+      "interval": [
+        0.00292,
+        0.00379
+      ],
+      "league": "nfl",
+      "notes": "interval is 90 pct game bootstrap; 12 combos x 9 folds; effect per query; not installed",
+      "plain_summary": "Reweighting mid-game trailer play outcomes toward real improves per-play fit slightly in all 9 seasons but lowers trailer touchdown and first-down rates, so it does not close the trailer scoring gap.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e174/p2_an.txt",
+      "standard_error": null
+    },
+    "e174d TDR trailer play-mix reweight": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "9/9 folds positive; trims pass share only, does not extend drives; not installed",
+      "closing_ground": null,
+      "description": "Q2-Q4 trailers depth{1-8,9-16,17+} x down{1-2,3,4} lam 25 run/pass class ratio, nested LOSO; held-out LL per query v unadjusted; 48 combos x 9 folds",
+      "effect": 0.001,
+      "effect_units": "log_loss_improvement",
+      "family": "mod25e-e174",
+      "interval": [
+        0.0003,
+        0.0019
+      ],
+      "league": "nfl",
+      "notes": "interval is fold min-max not a bootstrap; not installed",
+      "plain_summary": "Reweighting trailer run/pass mix toward real fits each season slightly better but does not extend drives, so it cannot close the trailer scoring gap.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e174/tdr_fit.txt",
+      "standard_error": null
+    },
+    "e174e trailer 17+ 4th-down go rate sim v real residual": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "residual conflicts with FD4/FD5 matching real on real states (E174d); cells ignore time and exact deficit; needs sim play logs with distance",
+      "closing_ground": null,
+      "description": "Sim minus real 4th-down go rate on trailer 17+ drives Q2-Q4 gsr>300; within dist5 x yl4 cell residual after standardising states",
+      "effect": -2.2,
+      "effect_units": "rate_pp",
+      "family": "mod25e-e174",
+      "interval": [
+        -3.6,
+        -0.8
+      ],
+      "league": "nfl",
+      "notes": "effect in pp; 90pct game bootstrap; probability_positive is that of a positive sim-minus-real gap\n[2026-10-18T22:48:23.106241+00:00] effect_units retagged: 'accuracy_points' -> 'rate_pp'. Reason: units corrected on 2026-10-18: effect is a simulator-minus-real (or real-minus-served) gap in percentage points of an event rate, not pick accuracy",
+      "plain_summary": "Simulated far-behind teams go for it on fourth down about two points less often than real teams even in matching situations, but the fitted decision rule matches real, so the gap is upstream and unpinned.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-10-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2304,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "tests/scratch/e174/e174e.txt",
+      "standard_error": null
+    }
+  }
+}

@@ -657,7 +657,7 @@ FINDINGS: tuple[Finding, ...] = (
             "still has to happen is the one predeclared, scored pooling of a CHOSEN subset of "
             "that pile before any combined candidate can be judged honestly."
         ),
-        source="docs/pool_edge_plan.md (MOD-07), registry/weak_signals.json",
+        source="docs/pool_edge_plan.md (MOD-07), registry/weak_signals/",
         evergreen=True,
     ),
     Finding(
@@ -1314,7 +1314,7 @@ FINDINGS: tuple[Finding, ...] = (
             "run the equivalent per-metric test on NFL data, and that would need its own "
             "fresh, separately predeclared look rather than being answered by this result."
         ),
-        source="ROADMAP.md (RWB-01), registry/weak_signals.json",
+        source="ROADMAP.md (RWB-01), registry/weak_signals/",
         registry_keys=(
             "weak_signal:offseason_retention_per_metric_cfb",
             "weak_signal:offseason_retention_075_cfb",
@@ -1423,7 +1423,7 @@ FINDINGS: tuple[Finding, ...] = (
             "'What we're watching' below for the full, always-current list "
             "rather than a hand-typed one here that would only go stale again."
         ),
-        source="docs/experiment_pipeline.md, registry/weak_signals.json",
+        source="docs/experiment_pipeline.md, registry/weak_signals/",
         registry_keys=(
             "weak_signal:bias_battery_division_revenge_game",
             "weak_signal:cfb_bias_battery_rivalry_finale_proxy",
