@@ -14,20 +14,20 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 
 | Date        | Matchup    | ATS prediction   | Cover chance   |
 |:------------|:-----------|:-----------------|:---------------|
-| Thu, Oct 22 | NE at CHI  | CHI -2.5         | 50.1%          |
-| Sun, Oct 25 | CIN at BAL | CIN +2.5         | 51.9%          |
-| Sun, Oct 25 | CLE at TEN | CLE -1.5         | 52.5%          |
-| Sun, Oct 25 | DEN at ARI | DEN -4.5         | 50.3%          |
-| Sun, Oct 25 | GB at DET  | GB +3.5          | 57.9%          |
-| Sun, Oct 25 | IND at MIN | IND +6.5         | 58.0%          |
-| Sun, Oct 25 | KC at SEA  | SEA -2.5         | 50.4%          |
-| Sun, Oct 25 | LA at LV   | LA -4.5          | 57.6%          |
-| Sun, Oct 25 | MIA at NYJ | ★ NYJ -4.5       | 66.2%          |
-| Sun, Oct 25 | NYG at HOU | HOU -9.5         | 54.3%          |
-| Sun, Oct 25 | PIT at NO  | NO +3.5          | 56.4%          |
-| Sun, Oct 25 | SF at ATL  | SF -3.5          | 50.6%          |
-| Sun, Oct 25 | TB at CAR  | CAR -3.5         | 54.2%          |
-| Mon, Oct 26 | DAL at PHI | DAL -4.5         | 51.9%          |
+| Thu, Oct 22 | NE at CHI  | CHI -2.5         | 50.9%          |
+| Sun, Oct 25 | CIN at BAL | CIN +2.5         | 69.3%          |
+| Sun, Oct 25 | CLE at TEN | CLE -1.5         | 51.6%          |
+| Sun, Oct 25 | DEN at ARI | ARI +4.5         | 53.3%          |
+| Sun, Oct 25 | GB at DET  | GB +3.5          | 54.3%          |
+| Sun, Oct 25 | IND at MIN | IND +6.5         | 54.4%          |
+| Sun, Oct 25 | KC at SEA  | SEA -2.5         | 51.3%          |
+| Sun, Oct 25 | LA at LV   | LA -4.5          | 56.8%          |
+| Sun, Oct 25 | MIA at NYJ | ★ NYJ -4.5       | 67.0%          |
+| Sun, Oct 25 | NYG at HOU | HOU -9.5         | 57.8%          |
+| Sun, Oct 25 | PIT at NO  | NO +3.5          | 59.9%          |
+| Sun, Oct 25 | SF at ATL  | ATL +3.5         | 50.2%          |
+| Sun, Oct 25 | TB at CAR  | CAR -3.5         | 55.0%          |
+| Mon, Oct 26 | DAL at PHI | PHI +4.5         | 51.7%          |
 
 **Tiebreaker (last game, DAL at PHI):** PHI 18 - DAL 25, total 43 (market total 44) -- consistent with the DAL -4.5 pick.
 
@@ -38,9 +38,12 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 <!-- LATE_WEEK_REFRESH:START -->
 ## Late-week refresh
 
-1 pick changed since the Tuesday card. The new picks below replace the corresponding picks above; each keeps its original grading line. Cover chance uses the latest information available before the pick locked.
+4 picks changed since the Tuesday card. The new picks below replace the corresponding picks above; each keeps its original grading line. Cover chance uses the latest information available before the pick locked.
 
-| Matchup   | Previous pick   | New pick   | Cover chance   |
-|:----------|:----------------|:-----------|:---------------|
-| NE at CHI | NE              | CHI        | 50.1%          |
+| Matchup    | Previous pick   | New pick   | Cover chance   |
+|:-----------|:----------------|:-----------|:---------------|
+| DAL at PHI | DAL             | PHI        | 51.7%          |
+| DEN at ARI | DEN             | ARI        | 53.3%          |
+| NE at CHI  | NE              | CHI        | 50.9%          |
+| SF at ATL  | SF              | ATL        | 50.2%          |
 <!-- LATE_WEEK_REFRESH:END -->

@@ -49,11 +49,11 @@
   },
   "total_move_quote": {
     "books": 1,
-    "observed_at_utc": "2026-10-20T18:26:21.960527+00:00",
-    "path": "data\\market\\raw\\20261020T182621Z\\quotes.parquet",
-    "sha256": "8caf507920d7246096de0fcf5c6abb5535b223db12c13eac3df40c14386eed6f"
+    "observed_at_utc": "2026-10-21T22:00:56.730579+00:00",
+    "path": "data\\market\\raw\\20261021T220056Z\\quotes.parquet",
+    "sha256": "bee9f70de619c11f739ffa3ac37f0ec0115ef4e56bb5b22d62488e2abcac980b"
   },
-  "total_move_refreshed_at_utc": "2026-10-21T16:23:43.684682+00:00",
+  "total_move_refreshed_at_utc": "2026-10-21T22:16:01.917084+00:00",
   "total_move_slope": 0.8,
   "total_move_status": "zero_adjustment",
   "tuesday_total": 44.0,
