@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-20T22:55:01.717118+00:00`
+Refreshed at: `2026-10-21T00:08:59.525760+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-10-20T22:55:01.717118+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `89c8cad82bcb` — Republish the site with the latest settled results
-- Pending change set: 570 paths
-  - `M  CURRENT_PREDICTIONS.md`
+- Baseline commit: `32ce209651b4` — Week 7 locked from the agent-read pool board; registry split into per-family shards; validation v4 enrolled
+- Pending change set: 144 paths
   - `M  HANDOFF.md`
-  - `M  README.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
+  - `M  ROADMAP.md`
   - `M  docs/lanes/README.md`
-  - `M  docs/lanes/acc-u8-prediction-markets.md`
-  - `M  docs/lanes/acc-u9-beat-reporters.md`
-  - `A  docs/lanes/done/registry-split.md`
-  - `M  docs/lanes/independent-combination-validation.md`
-  - `A  docs/lanes/week7-lock-2026-10-20.md`
-  - `A  docs/mod24_u9_beat_grade.json`
-  - `M  docs/model.html`
-  - `A  registry/studies/combined_vs_raw_2026_v4.json`
-  - `D  registry/weak_signals.json`
-  - `A  registry/weak_signals/LEAD-71-unit2.json`
-  - `A  registry/weak_signals/LEAD-71-unit3.json`
-  - `A  registry/weak_signals/LEAD-71-unit4.json`
-  - `A  registry/weak_signals/LEAD-84-unit2.json`
-  - ...and 550 more
+  - `A  docs/lanes/lead99-llm-read.md`
+  - `M  scripts/capture_scheduler.py`
+  - `A  scripts/lead99_llm_read.py`
+  - `A  scripts/lead99_prompt.md`
+  - `?? an.csv`
+  - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
+  - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
+  - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
+  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
+  - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
+  - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
+  - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
+  - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
+  - ...and 124 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

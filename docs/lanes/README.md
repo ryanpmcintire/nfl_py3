@@ -20,6 +20,7 @@ modified lane when the prompt just says to continue.
 
 ## Active
 
+- [lead99-llm-read](lead99-llm-read.md) - 2026-10-20: blind sharp-style LLM read logged forward as a future fitted term; Week 7 Tuesday view recorded; 5 scheduled runs a week.
 - [week7-lock-2026-10-20](week7-lock-2026-10-20.md) - 2026-10-20: Week 7 board read by agent after the noon capture failed; locked and published; Best Pick NYJ -4.5 carried by situational adjustments; validation v4 enrolled.
 - [mod23-unit6-availability-history](mod23-unit6-availability-history.md) - 2026-10-16: own backup-QB games discounted: +0.40 pts both eras, pooled P+ 0.93; unit 6b (dose, non-QB) adds nothing; unresolved.
 - [armb-forward-log](armb-forward-log.md) - 2026-10-16: unit 6 arm B logged beside the served card Weeks 7-18 (Thu 19:10, Sun 11:10); score after Week 18 only.

@@ -445,6 +445,36 @@ SCHEDULE: tuple[Job, ...] = (
     ),
     *(
         Job(
+            f"lead99_llm_read_{view}_{day}_{at.replace(':', '')}",
+            day,
+            at,
+            30,
+            [
+                str(UV),
+                "run",
+                "--no-sync",
+                "python",
+                str(REPO / "scripts" / "lead99_llm_read.py"),
+                "run",
+                "--view",
+                view,
+            ],
+            True,
+            "LEAD-99 forward log: a blind sharp-style LLM read of every game against the pool "
+            "line, frozen prompt and model, recorded before each game's deadline. The Tuesday "
+            "view follows the lock; deadline views follow each inactives drop.",
+            added_on="2026-10-20",
+        )
+        for view, day, at in (
+            ("tuesday", "tue", "13:30"),
+            ("deadline", "thu", "18:00"),
+            ("deadline", "sun", "08:40"),
+            ("deadline", "sun", "11:40"),
+            ("deadline", "sun", "14:45"),
+        )
+    ),
+    *(
+        Job(
             f"draftcap_forward_log_{day}_{at.replace(':', '')}",
             day,
             at,
