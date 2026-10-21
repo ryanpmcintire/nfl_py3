@@ -11,7 +11,7 @@ and evaluates model choices with nested chronological walk-forward tests.
 
 > **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 
-Active model: weak stack (market residual). Its distinct close-graded chronological 2018-2025 evaluation classified **1,130 of 2,168 non-push games correctly (52.12%)**. The 95% range was 50.07%-54.05%. The model's baseline comparison is the separate opener-graded accuracy rule documented in `docs/opener_evaluation.md`.
+Active model: weak stack (market residual). Its distinct close-graded chronological 2018-2025 evaluation classified **1,138 of 2,168 non-push games correctly (52.49%)**. The 95% range was 50.49%-54.44%. The model's baseline comparison is the separate opener-graded accuracy rule documented in `docs/opener_evaluation.md`.
 
 **Production policy active:** one calibrated probability combines the model, situational evidence and available line movement to choose each side.
 
@@ -19,20 +19,20 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 
 | Date        | Matchup    | ATS prediction   | Cover chance   |
 |:------------|:-----------|:-----------------|:---------------|
-| Thu, Oct 22 | NE at CHI  | NE +2.5          | 50.1%          |
-| Sun, Oct 25 | CIN at BAL | CIN +2.5         | 51.4%          |
-| Sun, Oct 25 | CLE at TEN | CLE -1.5         | 52.0%          |
-| Sun, Oct 25 | DEN at ARI | DEN -4.5         | 50.8%          |
-| Sun, Oct 25 | GB at DET  | GB +3.5          | 58.6%          |
-| Sun, Oct 25 | IND at MIN | IND +6.5         | 58.7%          |
-| Sun, Oct 25 | KC at SEA  | SEA -2.5         | 51.1%          |
+| Thu, Oct 22 | NE at CHI  | CHI -2.5         | 50.1%          |
+| Sun, Oct 25 | CIN at BAL | CIN +2.5         | 51.9%          |
+| Sun, Oct 25 | CLE at TEN | CLE -1.5         | 52.5%          |
+| Sun, Oct 25 | DEN at ARI | DEN -4.5         | 50.3%          |
+| Sun, Oct 25 | GB at DET  | GB +3.5          | 57.9%          |
+| Sun, Oct 25 | IND at MIN | IND +6.5         | 58.0%          |
+| Sun, Oct 25 | KC at SEA  | SEA -2.5         | 50.4%          |
 | Sun, Oct 25 | LA at LV   | LA -4.5          | 57.6%          |
-| Sun, Oct 25 | MIA at NYJ | ★ NYJ -4.5       | 66.0%          |
-| Sun, Oct 25 | NYG at HOU | HOU -9.5         | 55.6%          |
-| Sun, Oct 25 | PIT at NO  | NO +3.5          | 57.1%          |
-| Sun, Oct 25 | SF at ATL  | SF -3.5          | 51.1%          |
-| Sun, Oct 25 | TB at CAR  | CAR -3.5         | 53.5%          |
-| Mon, Oct 26 | DAL at PHI | DAL -4.5         | 50.6%          |
+| Sun, Oct 25 | MIA at NYJ | ★ NYJ -4.5       | 66.2%          |
+| Sun, Oct 25 | NYG at HOU | HOU -9.5         | 54.3%          |
+| Sun, Oct 25 | PIT at NO  | NO +3.5          | 56.4%          |
+| Sun, Oct 25 | SF at ATL  | SF -3.5          | 50.6%          |
+| Sun, Oct 25 | TB at CAR  | CAR -3.5         | 54.2%          |
+| Mon, Oct 26 | DAL at PHI | DAL -4.5         | 51.9%          |
 
 [Open the standalone card](CURRENT_PREDICTIONS.md) for provenance and interpretation.
 <!-- CURRENT_PREDICTIONS:END -->
@@ -45,10 +45,10 @@ close. A close-graded number alone is never grounds to reject a candidate
 (see `AGENTS.md`); it is reported below only as the secondary figure it is.
 
 <!-- ACTIVE_MODEL_STATE:START -->
-Active model: `market_residual` with `weak_stack` features (`d9f3d948b9b79488`), regressor `ridge`, ridge alpha `10.0`, calibration `none`.
+Active model: `market_residual` with `weak_stack` features (`96785f7b490713e9`), regressor `ridge`, ridge alpha `10.0`, calibration `none`.
 
 - **Opener-graded, probability-rule accuracy (the pool-relevant grade -- picks lock Tuesday against a frozen line):** **53.36%** on **1,537 paired games**, week-blocked 95% interval [50.76%, 55.90%].
-- Close-graded accuracy (secondary -- the market's sharpest, and least representative, decision point): **52.12%** (1,130 of 2,168 non-push games), week-blocked 95% interval [50.07%, 54.05%].
+- Close-graded accuracy (secondary -- the market's sharpest, and least representative, decision point): **52.49%** (1,138 of 2,168 non-push games), week-blocked 95% interval [50.49%, 54.44%].
 
 Neither figure is a game-specific probability, and neither is proof of a profitable or stable market edge (see `AGENTS.md`).
 <!-- ACTIVE_MODEL_STATE:END -->
