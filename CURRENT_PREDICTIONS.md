@@ -1,8 +1,8 @@
 # NFL ATS predictions: 2026 Week 7
 
-Published from the synchronized weak stack model, 2026-10-21 16:17 UTC.
+Published from the synchronized weak stack model, 2026-10-22 21:17 UTC.
 
-<!-- publication: model_id=96785f7b490713e9 published_at_utc=2026-10-21T16:17:13.845618+00:00 -->
+<!-- publication: model_id=d1035c1c754b476c published_at_utc=2026-10-22T21:17:20.755427+00:00 -->
 
 > **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 
@@ -14,24 +14,24 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 
 | Date        | Matchup    | ATS prediction   | Cover chance   |
 |:------------|:-----------|:-----------------|:---------------|
-| Thu, Oct 22 | NE at CHI  | CHI -2.5         | 50.9%          |
-| Sun, Oct 25 | CIN at BAL | CIN +2.5         | 69.3%          |
+| Thu, Oct 22 | NE at CHI  | CHI -2.5         | 51.0%          |
+| Sun, Oct 25 | CIN at BAL | CIN +2.5         | 69.5%          |
 | Sun, Oct 25 | CLE at TEN | CLE -1.5         | 51.6%          |
-| Sun, Oct 25 | DEN at ARI | ARI +4.5         | 53.3%          |
+| Sun, Oct 25 | DEN at ARI | ARI +4.5         | 53.1%          |
 | Sun, Oct 25 | GB at DET  | GB +3.5          | 54.3%          |
-| Sun, Oct 25 | IND at MIN | IND +6.5         | 54.4%          |
-| Sun, Oct 25 | KC at SEA  | SEA -2.5         | 51.3%          |
-| Sun, Oct 25 | LA at LV   | LA -4.5          | 56.8%          |
+| Sun, Oct 25 | IND at MIN | IND +6.5         | 54.5%          |
+| Sun, Oct 25 | KC at SEA  | SEA -2.5         | 51.4%          |
+| Sun, Oct 25 | LA at LV   | LA -4.5          | 56.7%          |
 | Sun, Oct 25 | MIA at NYJ | ★ NYJ -4.5       | 67.0%          |
-| Sun, Oct 25 | NYG at HOU | HOU -9.5         | 57.8%          |
-| Sun, Oct 25 | PIT at NO  | NO +3.5          | 59.9%          |
-| Sun, Oct 25 | SF at ATL  | ATL +3.5         | 50.2%          |
-| Sun, Oct 25 | TB at CAR  | CAR -3.5         | 55.0%          |
+| Sun, Oct 25 | NYG at HOU | HOU -9.5         | 57.0%          |
+| Sun, Oct 25 | PIT at NO  | NO +3.5          | 60.1%          |
+| Sun, Oct 25 | SF at ATL  | ATL +3.5         | 50.1%          |
+| Sun, Oct 25 | TB at CAR  | CAR -3.5         | 55.3%          |
 | Mon, Oct 26 | DAL at PHI | PHI +4.5         | 51.7%          |
 
-**Tiebreaker (last game, DAL at PHI):** PHI 18 - DAL 25, total 43 (market total 44) -- consistent with the DAL -4.5 pick.
+**Tiebreaker (last game, DAL at PHI):** PHI 20 - DAL 24, total 44 (market total 44) -- consistent with the PHI +4.5 pick.
 
-**Source freshness: COMPLETE.** Complete: odds opener, odds refresh, injuries nflverse, injuries nflverse timestamps, inactives, projected lineups, referee assignments, pfr transactions, airnow weather. Degraded (allowed fallback): none. Blocked: none. Not due yet: none. Not set up: injuries sportradar. Budgets, fallbacks and source states: `docs/source_freshness_policy.md`.
+**Source freshness: COMPLETE.** Complete: odds opener, odds refresh, injuries nflverse, injuries nflverse timestamps, projected lineups, referee assignments, pfr transactions, airnow weather. Degraded (allowed fallback): none. Blocked: none. Not due yet: inactives. Not set up: injuries sportradar. Budgets, fallbacks and source states: `docs/source_freshness_policy.md`.
 
 `Cover chance` is the picked side's chance to cover. Cover chance is a fitted estimate, excluding ties. Across 1,503 past games with each season held out of fitting, strong estimates won 59% using only Tuesday's information and 60% once later line moves were known; slight estimates won 52% and 55%. These broad groups do not establish a large advantage for the single highest estimate.
 
@@ -43,7 +43,7 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 | Matchup    | Previous pick   | New pick   | Cover chance   |
 |:-----------|:----------------|:-----------|:---------------|
 | DAL at PHI | DAL             | PHI        | 51.7%          |
-| DEN at ARI | DEN             | ARI        | 53.3%          |
-| NE at CHI  | NE              | CHI        | 50.9%          |
-| SF at ATL  | SF              | ATL        | 50.2%          |
+| DEN at ARI | DEN             | ARI        | 53.1%          |
+| NE at CHI  | NE              | CHI        | 51.0%          |
+| SF at ATL  | SF              | ATL        | 50.1%          |
 <!-- LATE_WEEK_REFRESH:END -->
