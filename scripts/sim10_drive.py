@@ -824,6 +824,7 @@ class Engine:
         mu_free=(),
         dr=False,
         qstrata=False,
+        eoh="outcome",
     ):
         seg = with_mu(pd.read_parquet(OUT / "segments.parquet"))
         ops = pd.read_parquet(OUT / "openings.parquet")
@@ -835,7 +836,8 @@ class Engine:
         self.tilt = tuple(tilt)
         self.mu_free = set(mu_free)
         self.qstrata = bool(qstrata)
-        self.mu_only = {int(v) for v in os.environ.get("SIM10_MU_ONLY", "").split(",") if v}
+        self.eoh = eoh
+        self.score_k = [k for k, t in enumerate(OUT_TARGETS) if t != "el"]
         self.dr = bool(dr)
         self.pat = None
         if pat:
@@ -941,8 +943,13 @@ class Engine:
                 adj = u @ self.out_arr[idx[nz]] - u @ self.m_arr[idx[nz]]
                 tg = tg + adj * DR_MASK
             rg_ = regime(hf, secs)
-            if rg_ in self.mu_only:
+            if rg_ in self.mu_free and self.eoh == "mu":
                 w = tilt_weights(w, X[nz, 5:6], q[5:6])
+            elif rg_ in self.mu_free and self.eoh == "muscore":
+                sk = self.score_k
+                w = tilt_weights(
+                    w, np.c_[self.out_arr[idx[nz]][:, sk], X[nz, 5]], np.r_[tg[sk], q[5]]
+                )
             elif rg_ in self.mu_free:
                 w = tilt_weights(w, self.out_arr[idx[nz]], np.asarray(tg))
             else:
@@ -1114,12 +1121,22 @@ _W = {}
 
 
 def _init(
-    h, ho, g, hr=None, tilt=(5,), models=False, pat=False, mu_free=(), dr=False, qstrata=False
+    h,
+    ho,
+    g,
+    hr=None,
+    tilt=(5,),
+    models=False,
+    pat=False,
+    mu_free=(),
+    dr=False,
+    qstrata=False,
+    eoh="outcome",
 ):
     for k in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS", "NUMEXPR_NUM_THREADS"):
         os.environ[k] = "1"
     os.environ.setdefault("QBC", "1")
-    _W["eng"] = Engine(h, ho, g, hr, tilt, models, pat, mu_free, dr, qstrata)
+    _W["eng"] = Engine(h, ho, g, hr, tilt, models, pat, mu_free, dr, qstrata, eoh)
 
 
 def sim_world(task):
@@ -1796,7 +1813,7 @@ def cmd_sim(a):
     tilt = tuple(int(v) for v in a.tilt.split(",")) if a.tilt else ()
     mf = tuple(int(v) for v in a.mufree.split(",")) if a.mufree else ()
     G, P = sim_worlds(
-        (h, ho, g, hr, tilt, bool(a.models), bool(a.pat), mf, bool(a.dr), bool(a.qstrata)),
+        (h, ho, g, hr, tilt, bool(a.models), bool(a.pat), mf, bool(a.dr), bool(a.qstrata), a.eoh),
         a.worlds,
         a.seasons,
         a.seed,
@@ -1875,13 +1892,14 @@ def main():
     s.add_argument("--burn", type=int, default=2)
     s.add_argument("--workers", type=int, default=4)
     s.add_argument("--tilt", default="5")
-    s.add_argument("--models", type=int, default=0)
-    s.add_argument("--pat", type=int, default=0)
-    s.add_argument("--mufree", default="")
-    s.add_argument("--dr", type=int, default=0)
-    s.add_argument("--qstrata", type=int, default=0)
-    s.add_argument("--label", default="scott")
-    s.add_argument("--h", default="")
+    s.add_argument("--models", type=int, default=1)
+    s.add_argument("--pat", type=int, default=1)
+    s.add_argument("--mufree", default="1,4")
+    s.add_argument("--dr", type=int, default=1)
+    s.add_argument("--qstrata", type=int, default=1)
+    s.add_argument("--eoh", choices=("outcome", "mu", "muscore"), default="outcome")
+    s.add_argument("--label", default="sim10")
+    s.add_argument("--h", default=str(OUT / "bandwidths_week.json"))
     a = ap.parse_args()
     {
         "build": build,
