@@ -1,4 +1,7 @@
 # mod25e-e187-strength-var
+
+> SUPERSEDED 2026-10-24 by SIM-10 (docs/lanes/sim10-drive-resampler.md, scripts/sim10_drive.py): the play-level hook stack is no longer the generator engine; do not resume this queue.
+
 ## Goal
 Explain GZIDX 3-seed strength_re_var 59.7 -> 55.1 (-4.6 [-8.3,-1.0]; real ~58.0) although the hook only fixes the CLK clock delta (mod25c_noise.py:376).
 ## State

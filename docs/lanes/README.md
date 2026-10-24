@@ -20,14 +20,15 @@ modified lane when the prompt just says to continue.
 
 ## Active
 
+- [sim10-drive-resampler](sim10-drive-resampler.md) - 2026-10-24: drive-level resampler replaces the MOD-25e hook stack; most gates inside real intervals; strength transmission (~5%) is the open gap. The mod25e-* lanes below are superseded.
 - [lead99-llm-read](lead99-llm-read.md) - 2026-10-20: blind sharp-style LLM read logged forward as a future fitted term; Week 7 Tuesday view recorded; 5 scheduled runs a week.
 - [week7-lock-2026-10-20](week7-lock-2026-10-20.md) - 2026-10-20: Week 7 board read by agent after the noon capture failed; locked and published; Best Pick NYJ -4.5 carried by situational adjustments; validation v4 enrolled.
 - [mod23-unit6-availability-history](mod23-unit6-availability-history.md) - 2026-10-16: own backup-QB games discounted: +0.40 pts both eras, pooled P+ 0.93; unit 6b (dose, non-QB) adds nothing; unresolved.
 - [armb-forward-log](armb-forward-log.md) - 2026-10-16: unit 6 arm B logged beside the served card Weeks 7-18 (Thu 19:10, Sun 11:10); score after Week 18 only.
 - [lead98-price-skew](lead98-price-skew.md) - 2026-10-16: opener price skew as a fifth term: Tuesday +0.41 (P+ 0.91), full -0.20, Brier worse; not served.
 - [per-flag-weights](per-flag-weights.md) - 2026-10-16: Tuesday-fit coefficients same picks, Brier P+ 0.66, not served; card now quotes Tuesday and late-week landing rates.
-- [mod25e-e129-reach](mod25e-e129-reach.md) - 2026-10-16: E130 (URG2=2, yards redraw off) 3-seed run in flight.
-- [mod25e-e131-sdgap](mod25e-e131-sdgap.md) - 2026-10-16: margin variance +14.3 over real; only resolved part is 17+ Q4 leaders scoring in garbage time; BLS mechanism fit next.
+- [mod25e-e129-reach](mod25e-e129-reach.md) - superseded by SIM-10 (2026-10-24).
+- [mod25e-e131-sdgap](mod25e-e131-sdgap.md) - superseded by SIM-10 (2026-10-24).
 - [backup-offsite-timeout](backup-offsite-timeout.md) - 2026-10-16: restic job timed out 10-04 and 10-11; fix in progress.
 - [backlog execution](backlog-execution-2026-09-28.md) - 2026-09-28: operations fixes and truthful scheduler status verified; special-teams season-lagged builder produced 7,413 ratings across four declared fits; host verification awaits explicit approval.
 - [backlog research checkpoint](done/backlog-research-2026-09-28.md) - 2026-09-28: corrected frozen scorecard and pool chronology; completed four-cell precision replay and simulator terminal-rule repair/regrade.

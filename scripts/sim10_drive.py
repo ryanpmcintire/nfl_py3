@@ -835,6 +835,7 @@ class Engine:
         self.tilt = tuple(tilt)
         self.mu_free = set(mu_free)
         self.qstrata = bool(qstrata)
+        self.mu_only = {int(v) for v in os.environ.get("SIM10_MU_ONLY", "").split(",") if v}
         self.dr = bool(dr)
         self.pat = None
         if pat:
@@ -939,7 +940,10 @@ class Engine:
                 u = w1 / w1.sum()
                 adj = u @ self.out_arr[idx[nz]] - u @ self.m_arr[idx[nz]]
                 tg = tg + adj * DR_MASK
-            if regime(hf, secs) in self.mu_free:
+            rg_ = regime(hf, secs)
+            if rg_ in self.mu_only:
+                w = tilt_weights(w, X[nz, 5:6], q[5:6])
+            elif rg_ in self.mu_free:
                 w = tilt_weights(w, self.out_arr[idx[nz]], np.asarray(tg))
             else:
                 w = tilt_weights(w, np.c_[self.out_arr[idx[nz]], X[nz, 5]], np.r_[tg, q[5]])

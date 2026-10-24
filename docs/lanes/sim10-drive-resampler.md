@@ -1,46 +1,46 @@
 # SIM-10 drive-level resampler (replaces the hook stack as the generator engine)
 
 ## Goal
-Pass the MOD-25e generator gates against real 2009-17 games with one engine whose unit is a real
+Pass the generator gates against real 2009-17 games with one engine whose unit is a real
 possession segment (first snap to next first snap: drive, score, PAT, kick, return), drawn by game
-state. Owner 2026-10-24: keep working until it passes; no checkpoint stops.
+state. Owner 2026-10-24: keep working until it passes; no checkpoint stops; owner frustrated at
+7.5 h without a finish - bounded plan below, then lock and report.
 
-## State (2026-10-24, scripts/sim10_drive.py, artifacts/sim10/)
-Pipeline: build -> latfit -> real -> hgbsel -> outfit -> patfit -> fittilt -> sim.
-Best config: `sim --models 1 --pat 1 --mufree 1,4 --dr 1 --h bandwidths_week.json` (+ testing
-`--qstrata 1`). State dims: yl, sd, log secs-in-half, timeouts, season, week; per-phase bandwidths
-fitted by held-out likelihood of the tilted draw. Draw = kernel x clock-feasibility mask, then
-tilt to posterior strength (latent / s) and doubly-robust targets for TD/FG/def score (strength-
-tilted drawn mean + HGB(sim state) - HGB(drawn)); elapsed target = HGB(sim state). End-of-half
-phases tilt to outcomes only. PAT at exact post-TD score. OT state-only.
-Latents (latent_fit.json): drift phi by weighted LS on 15 within-season lags (off .9917, def 1);
-variances and off/def correlation moment-matched so the generator reproduces real LOGO
-covariances (off .00622, def .00245, cross -.00075).
-Outcome models: HGB (LOSO-selected), monotonic in strength for TD (+) and def score (-); stacking
-and per-phase intercepts rejected (worse held-out when cross-fitted); week feature rejected
-(held-out worse 6/8).
+## State (2026-10-24 evening, scripts/sim10_drive.py, artifacts/sim10/)
+Pipeline: build -> latfit -> real -> hgbsel -> outfit -> patfit -> fittilt -> sim. All artifacts
+exist; nothing needs rebuilding. Best committed config ("wk"):
+`sim --models 1 --pat 1 --mufree 1,4 --dr 1 --h artifacts/sim10/bandwidths_week.json --seed S
+--workers 11` (~10 min per seed; run in background, never two sims at once).
+Engine: kernel on yl, sd, log secs-in-half, timeouts, season, week (per-phase bandwidths fitted by
+held-out likelihood of the tilted draw) x clock-feasibility mask; tilt to posterior strength
+(latent / s, s=.969) and doubly-robust TD/FG/def-score targets + HGB elapsed; end-of-half phases
+(regimes 1,4 = last 2 min of each half) tilt outcomes only; PAT at exact post-TD score; OT
+state-only. Latents moment-matched to real LOGO covariances (latent_fit.json).
+Env options (experimental, off by default): SIM10_MU_ONLY=1,4 (end-of-half tilt strength only),
+SIM10_MU=pregame, SIM10_LATENT=<path>. CLI option --qstrata 1 (quarter strata; rejected).
 
-## Results (gate runs, 8x8 worlds; real 90% interval in brackets)
-wk config, seeds 11/12/13: margin SD 14.73/14.80/14.69 ok; noise 168 ok; mass3 .141 ok; pts ok;
-OT .061-.063 ok; ties .0031-.0036 (edge); home 2.08/2.12/2.41 [2.17,2.71]; Q4 slope -.080/-.080/
--.072 [-.080,-.039]; xq -21.5/-18.4/-17.9 [-17.7,6.6]; strength 48.7/50.9/46.9 [51.4,64.9];
-r2 w10-18 .128/.134/.117 [.131,.161]. Seed 12 is inside or delta-includes-zero on every gate.
-Remaining gap is one mechanism: strength transmission (game EPA responds ~.95 to latent; Q3
-under-responds .88 because its time-blind kernel mixes Q4 drives). Catch-up excess follows
-(persistence term ~.75 x strength). Testing quarter strata (wkq) for that.
+## Results (8x8 worlds; real 90% interval)
+wk, seeds 11/12/13 avg: passes margin SD, noise, mass 3/7/10/14, pts, OT, ties, home 2.20, Q4
+slope -.077. Fails: strength 48.8 [51.4,64.9], r2 w10-18 .126 [.131,.161], xq -19.3 [-17.7,6.6].
+All three = one mechanism: team strength transmits ~5% weak. Measured cause: game EPA responds .955
+to latent (should be 1); end-of-half plays (~8%) are not strength-matched (respond ~.5).
+SIM10_MU_ONLY=1,4 seed 12: strength 52.5 PASS, xq -14.2 PASS, home/Q4 pass, r2 .126 (delta CI
+includes 0), but mass3 .132 FAILS (end-of-half PAT/FG decisions lose their outcome targets).
+Seed 13 was running at handoff: artifacts/sim10/muonly_s13.log / gates.json.
 
-## Tried (condensed; details in commit messages and artifacts)
-PAT model (key numbers), OT rule-ended drives, clock-feasibility mask, doubly-robust targets,
-latent persistence moment-matching (+5 strength), week dimension (+r2 .116 -> .126 avg),
-DR restricted to scoring outcomes (DR biased elapsed -3 s), no strength tilt at half ends (ESS).
-Rejected: mean-matching tilt on yl/sd, stacking layers, phase-restricted DR, posterior-free mu,
-strength tilt in all phases, week as HGB feature.
-Diagnostics in scratchpad: diagpar.py (parallel draw logs; env DR, MUFREE), phan.py, epaph.py,
-q4an.py, qslope.py, homean.py. Under 1,000 games strength slopes are noise.
+## Tried and rejected (measured)
+Mean-matching tilt on yl/sd; stacking layers and per-phase intercepts (worse held-out when
+cross-fitted); phase-restricted DR; DR with held-out residuals (pts +1.2, xq -23.6); strength tilt
+in all phases with outcome targets; pregame-only strength; week as HGB feature; quarter strata
+(better xq/home, worse strength/r2). Diagnostics live in the session scratchpad (gone after clear):
+rebuild from descriptions in this lane if needed.
 
-## Next
-Read wkq_s11-13; if strength/r2/xq move inside, refit fittilt under quarter strata, rerun 3 seeds,
-then commit script + lane + ROADMAP and update the MOD-25e lanes.
+## Next (bounded; then lock, commit, push, report table to owner)
+1. Read muonly_s13. 2. Implement end-of-half tilt = strength AND scoring targets (td, fg, ds) but
+NOT elapsed (keeps PAT/FG decision structure, frees the clock to the kernel); run seeds 12, 13.
+3. Pick the config with the most gates passing over 3 seeds (wk is the fallback), set it as the
+CLI default, commit + push, report the pass/fail table. No further experiment rounds.
 
 ## Open
-OT strength-neutral (pool too small). Real strength 58 sits high in its own interval.
+OT strength-neutral (371-segment pool too small to tilt). Real strength 58 sits high in its own
+interval; sim is inside delta-CI on most seeds.

@@ -1,5 +1,8 @@
 # MOD-25e rebase queue onto GZIDX base
 
+> SUPERSEDED 2026-10-24 by SIM-10 (docs/lanes/sim10-drive-resampler.md, scripts/sim10_drive.py): the play-level hook stack is no longer the generator engine; do not resume this queue.
+
+
 ## Goal
 Queued 3-seed hooks were built on FD4/FD5 bases. New base is FD5+GZIDX (label ...gx2faldrggi, seeds s11-13 exist in artifacts/mod25e3). Each kept hook compares candidate v that base.
 

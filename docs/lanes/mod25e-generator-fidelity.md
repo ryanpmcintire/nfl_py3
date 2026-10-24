@@ -1,5 +1,8 @@
 # mod25e-generator-fidelity
 
+> SUPERSEDED 2026-10-24 by SIM-10 (docs/lanes/sim10-drive-resampler.md, scripts/sim10_drive.py): the play-level hook stack is no longer the generator engine; do not resume this queue.
+
+
 ## Goal
 Keep improving the MOD-25 game simulator until it passes its gates against real
 2009-17 games: margin SD band 13.97-14.87, non-strength noise near real 165,

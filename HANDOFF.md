@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-24T21:47:04.061634+00:00`
+Refreshed at: `2026-10-24T22:36:17.037924+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-10-24T21:47:04.061634+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `7dd52a698b13` — Republish the site with the latest settled results
-- Pending change set: 175 paths
+- Baseline commit: `5ea786cf13ad` — SIM-10: drive-level resampler replaces the play-level hook stack
+- Pending change set: 178 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - `M  ROADMAP.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
+  - `M  docs/lanes/README.md`
+  - `M  docs/lanes/mod25e-e187-strength-var.md`
+  - `M  docs/lanes/mod25e-gap-table.md`
   - `M  docs/lanes/mod25e-generator-fidelity.md`
   - `M  docs/lanes/mod25e-rebase-gzidx.md`
-  - `A  docs/lanes/sim10-drive-resampler.md`
+  - `M  docs/lanes/sim10-drive-resampler.md`
   - ` M docs/model.html`
-  - `A  scripts/sim10_drive.py`
+  - `M  scripts/sim10_drive.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
+  - `?? docs/lanes/stealmybitcoin-ctf.md`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
   - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
   - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
-  - ...and 155 more
+  - ...and 158 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

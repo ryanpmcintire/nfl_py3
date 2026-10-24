@@ -1,5 +1,8 @@
 # mod25e-gap-table (authoritative open gaps, base ...gx2faldrg = XFA+LDR+RG; read 2026-10-18 evening)
 
+> SUPERSEDED 2026-10-24 by SIM-10 (docs/lanes/sim10-drive-resampler.md, scripts/sim10_drive.py): the play-level hook stack is no longer the generator engine; do not resume this queue.
+
+
 ## Goal
 One ranked table so no agent is assigned work a later lane section already did. Sim v real, 3 seeds s11-13, base column of artifacts/mod25e3/e163_ldrg_vsXFA_boot.log and e163_ldrg_boot.log (measured). Zero crossing never closes; all rows are unresolved_below_power unless stated.
 
