@@ -1,8 +1,8 @@
 # NFL ATS predictions: 2026 Week 7
 
-Published from the synchronized weak stack model, 2026-10-23 16:19 UTC.
+Published from the synchronized weak stack model, 2026-10-24 16:23 UTC.
 
-<!-- publication: model_id=f78158f4d36fada9 published_at_utc=2026-10-23T16:19:05.092155+00:00 -->
+<!-- publication: model_id=e00ed27d97a671b6 published_at_utc=2026-10-24T16:23:08.001885+00:00 -->
 
 > **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 
@@ -15,21 +15,21 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 | Date        | Matchup    | ATS prediction   | Cover chance   |
 |:------------|:-----------|:-----------------|:---------------|
 | Thu, Oct 22 | NE at CHI  | CHI -2.5         | 50.1%          |
-| Sun, Oct 25 | CIN at BAL | CIN +2.5         | 51.1%          |
-| Sun, Oct 25 | CLE at TEN | CLE -1.5         | 57.3%          |
-| Sun, Oct 25 | DEN at ARI | ARI +4.5         | 50.5%          |
-| Sun, Oct 25 | GB at DET  | GB +3.5          | 54.3%          |
-| Sun, Oct 25 | IND at MIN | IND +6.5         | 57.2%          |
-| Sun, Oct 25 | KC at SEA  | SEA -2.5         | 54.2%          |
-| Sun, Oct 25 | LA at LV   | LA -4.5          | 51.1%          |
-| Sun, Oct 25 | MIA at NYJ | ★ NYJ -4.5       | 67.1%          |
-| Sun, Oct 25 | NYG at HOU | HOU -9.5         | 54.5%          |
-| Sun, Oct 25 | PIT at NO  | NO +3.5          | 60.0%          |
-| Sun, Oct 25 | SF at ATL  | ATL +3.5         | 52.9%          |
-| Sun, Oct 25 | TB at CAR  | CAR -3.5         | 55.4%          |
+| Sun, Oct 25 | CIN at BAL | CIN +2.5         | 51.2%          |
+| Sun, Oct 25 | CLE at TEN | CLE -1.5         | 57.1%          |
+| Sun, Oct 25 | DEN at ARI | ARI +4.5         | 50.2%          |
+| Sun, Oct 25 | GB at DET  | GB +3.5          | 54.4%          |
+| Sun, Oct 25 | IND at MIN | IND +6.5         | 57.1%          |
+| Sun, Oct 25 | KC at SEA  | SEA -2.5         | 53.8%          |
+| Sun, Oct 25 | LA at LV   | LV +4.5          | 50.0%          |
+| Sun, Oct 25 | MIA at NYJ | ★ NYJ -4.5       | 67.2%          |
+| Sun, Oct 25 | NYG at HOU | HOU -9.5         | 54.4%          |
+| Sun, Oct 25 | PIT at NO  | NO +3.5          | 59.9%          |
+| Sun, Oct 25 | SF at ATL  | ATL +3.5         | 53.1%          |
+| Sun, Oct 25 | TB at CAR  | CAR -3.5         | 56.0%          |
 | Mon, Oct 26 | DAL at PHI | DAL -4.5         | 54.3%          |
 
-**Tiebreaker (last game, DAL at PHI):** PHI 20 - DAL 24, total 44 (market total 44) -- consistent with the PHI +4.5 pick.
+**Tiebreaker (last game, DAL at PHI):** PHI 18 - DAL 25, total 43 (market total 44) -- consistent with the DAL -4.5 pick.
 
 **Source freshness: COMPLETE.** Complete: odds opener, odds refresh, injuries nflverse, injuries nflverse timestamps, inactives, projected lineups, referee assignments, pfr transactions, airnow weather. Degraded (allowed fallback): none. Blocked: none. Not due yet: none. Not set up: injuries sportradar. Budgets, fallbacks and source states: `docs/source_freshness_policy.md`.
 
@@ -38,11 +38,12 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 <!-- LATE_WEEK_REFRESH:START -->
 ## Late-week refresh
 
-3 picks changed since the Tuesday card. The new picks below replace the corresponding picks above; each keeps its original grading line. Cover chance uses the latest information available before the pick locked.
+4 picks changed since the Tuesday card. The new picks below replace the corresponding picks above; each keeps its original grading line. Cover chance uses the latest information available before the pick locked.
 
 | Matchup    | Previous pick   | New pick   | Cover chance   |
 |:-----------|:----------------|:-----------|:---------------|
-| DEN at ARI | DEN             | ARI        | 50.5%          |
+| DEN at ARI | DEN             | ARI        | 50.2%          |
+| LA at LV   | LA              | LV         | 50.0%          |
 | NE at CHI  | NE              | CHI        | 50.1%          |
-| SF at ATL  | SF              | ATL        | 52.9%          |
+| SF at ATL  | SF              | ATL        | 53.1%          |
 <!-- LATE_WEEK_REFRESH:END -->

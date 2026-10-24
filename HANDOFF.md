@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-24T14:37:26.339328+00:00`
+Refreshed at: `2026-10-24T16:29:02.274759+00:00`
 
 ## Start here
 
@@ -21,9 +21,10 @@ Refreshed at: `2026-10-24T14:37:26.339328+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `12bee3465a89` — Republish the site with the latest settled results
-- Pending change set: 167 paths
+- Baseline commit: `574c154639a3` — Republish the site with the latest settled results
+- Pending change set: 173 paths
   - `M  CURRENT_PREDICTIONS.md`
+  - ` M README.md`
   - ` M ROADMAP.md`
   - `M  docs/findings.html`
   - `M  docs/history.html`
@@ -31,6 +32,7 @@ Refreshed at: `2026-10-24T14:37:26.339328+00:00`
   - ` M docs/lanes/mod25e-generator-fidelity.md`
   - ` M docs/lanes/mod25e-rebase-gzidx.md`
   - `M  docs/model.html`
+  - `M  tiebreaker.json`
   - `?? an.csv`
   - `?? docs/lanes/sim10-drive-resampler.md`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
@@ -41,9 +43,7 @@ Refreshed at: `2026-10-24T14:37:26.339328+00:00`
   - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
   - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
   - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
-  - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
-  - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
-  - ...and 147 more
+  - ...and 153 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -52,18 +52,18 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `f78158f4d36fada9`
+- Model ID: `e00ed27d97a671b6`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261023T161429Z`)
+- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261024T161913Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card combines this with the coach component in one fitted calibrated probability, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,138 / 2,168 (52.49%)**
-- Linked forecast: **2026 Week 7**, created `2026-10-23T16:10:48.027798+00:00`
+- Linked forecast: **2026 Week 7**, created `2026-10-24T16:15:31.190804+00:00`
 
 The 52.49% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 7** from model `f78158f4d36fada9`, published `2026-10-23T16:19:05.092155+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 7** from model `e00ed27d97a671b6`, published `2026-10-24T16:23:08.001885+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 
