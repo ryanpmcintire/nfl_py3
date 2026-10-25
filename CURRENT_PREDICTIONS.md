@@ -1,8 +1,8 @@
 # NFL ATS predictions: 2026 Week 7
 
-Published from the synchronized weak stack model, 2026-10-24 16:23 UTC.
+Published from the synchronized weak stack model, 2026-10-25 16:15 UTC.
 
-<!-- publication: model_id=e00ed27d97a671b6 published_at_utc=2026-10-24T16:23:08.001885+00:00 -->
+<!-- publication: model_id=5b583a1cab58d615 published_at_utc=2026-10-25T16:15:56.559311+00:00 -->
 
 > **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 
@@ -15,17 +15,17 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 | Date        | Matchup    | ATS prediction   | Cover chance   |
 |:------------|:-----------|:-----------------|:---------------|
 | Thu, Oct 22 | NE at CHI  | CHI -2.5         | 50.1%          |
-| Sun, Oct 25 | CIN at BAL | CIN +2.5         | 51.2%          |
-| Sun, Oct 25 | CLE at TEN | CLE -1.5         | 57.1%          |
-| Sun, Oct 25 | DEN at ARI | ARI +4.5         | 50.2%          |
-| Sun, Oct 25 | GB at DET  | GB +3.5          | 54.4%          |
-| Sun, Oct 25 | IND at MIN | IND +6.5         | 57.1%          |
-| Sun, Oct 25 | KC at SEA  | SEA -2.5         | 53.8%          |
-| Sun, Oct 25 | LA at LV   | LV +4.5          | 50.0%          |
-| Sun, Oct 25 | MIA at NYJ | ★ NYJ -4.5       | 67.2%          |
+| Sun, Oct 25 | CIN at BAL | CIN +2.5         | 51.1%          |
+| Sun, Oct 25 | CLE at TEN | CLE -1.5         | 54.4%          |
+| Sun, Oct 25 | DEN at ARI | ARI +4.5         | 50.8%          |
+| Sun, Oct 25 | GB at DET  | DET -3.5         | 55.4%          |
+| Sun, Oct 25 | IND at MIN | IND +6.5         | 54.3%          |
+| Sun, Oct 25 | KC at SEA  | SEA -2.5         | 54.5%          |
+| Sun, Oct 25 | LA at LV   | LV +4.5          | 57.2%          |
+| Sun, Oct 25 | MIA at NYJ | ★ NYJ -4.5       | 62.1%          |
 | Sun, Oct 25 | NYG at HOU | HOU -9.5         | 54.4%          |
 | Sun, Oct 25 | PIT at NO  | NO +3.5          | 59.9%          |
-| Sun, Oct 25 | SF at ATL  | ATL +3.5         | 53.1%          |
+| Sun, Oct 25 | SF at ATL  | ATL +3.5         | 50.2%          |
 | Sun, Oct 25 | TB at CAR  | CAR -3.5         | 56.0%          |
 | Mon, Oct 26 | DAL at PHI | DAL -4.5         | 54.3%          |
 
@@ -38,12 +38,13 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 <!-- LATE_WEEK_REFRESH:START -->
 ## Late-week refresh
 
-4 picks changed since the Tuesday card. The new picks below replace the corresponding picks above; each keeps its original grading line. Cover chance uses the latest information available before the pick locked.
+5 picks changed since the Tuesday card. The new picks below replace the corresponding picks above; each keeps its original grading line. Cover chance uses the latest information available before the pick locked.
 
 | Matchup    | Previous pick   | New pick   | Cover chance   |
 |:-----------|:----------------|:-----------|:---------------|
-| DEN at ARI | DEN             | ARI        | 50.2%          |
-| LA at LV   | LA              | LV         | 50.0%          |
+| DEN at ARI | DEN             | ARI        | 50.8%          |
+| GB at DET  | GB              | DET        | 55.4%          |
+| LA at LV   | LA              | LV         | 57.2%          |
 | NE at CHI  | NE              | CHI        | 50.1%          |
-| SF at ATL  | SF              | ATL        | 53.1%          |
+| SF at ATL  | SF              | ATL        | 50.2%          |
 <!-- LATE_WEEK_REFRESH:END -->

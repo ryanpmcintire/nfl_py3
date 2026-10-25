@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-25T03:37:26.474049+00:00`
+Refreshed at: `2026-10-25T18:25:44.323520+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-10-25T03:37:26.474049+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `6efa7166c21c` — SIM-11: real-schedule protocol for the generator gates
-- Pending change set: 172 paths
-  - ` M CURRENT_PREDICTIONS.md`
-  - `M  HANDOFF.md`
-  - ` M docs/findings.html`
-  - ` M docs/history.html`
-  - ` M docs/index.html`
-  - ` M docs/model.html`
-  - ` M tiebreaker.json`
+- Baseline commit: `7e5ea940aa35` — Refresh handoff after SIM-11 schedule protocol
+- Pending change set: 187 paths
+  - `M  CURRENT_PREDICTIONS.md`
+  - ` M README.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - ` M docs/lanes/README.md`
+  - `M  docs/model.html`
+  - ` M scripts/lead99_llm_read.py`
+  - ` M src/nfl_ats/board_content.py`
+  - ` M src/nfl_ats/pick_probability.py`
+  - ` M src/nfl_ats/pick_probability_fit.py`
+  - `M  tiebreaker.json`
   - `?? an.csv`
+  - `?? docs/lanes/pick-chain-audit-2026.md`
   - `?? docs/lanes/stealmybitcoin-ctf.md`
+  - `?? docs/lanes/week7-sunday-checks-2026-10-25.md`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
   - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
-  - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
-  - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
-  - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
-  - ...and 152 more
+  - ...and 167 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -52,18 +52,18 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `e00ed27d97a671b6`
+- Model ID: `5b583a1cab58d615`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261024T161913Z`)
+- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261025T134322Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card combines this with the coach component in one fitted calibrated probability, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,138 / 2,168 (52.49%)**
-- Linked forecast: **2026 Week 7**, created `2026-10-24T17:44:55.419510+00:00`
+- Linked forecast: **2026 Week 7**, created `2026-10-25T16:09:23.624484+00:00`
 
 The 52.49% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 7** from model `e00ed27d97a671b6`, published `2026-10-24T17:51:08.755463+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 7** from model `5b583a1cab58d615`, published `2026-10-25T16:15:56.559311+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 
