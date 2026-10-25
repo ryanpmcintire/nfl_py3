@@ -506,6 +506,13 @@ TWO_MIN = 120.0
 Q4_SECS = 900.0
 
 
+def phase_of_state(half, secs):
+    if half == 3:
+        return 6
+    base = 0 if half == 1 else 3
+    return base + (0 if secs > Q4_SECS else (1 if secs > TWO_MIN else 2))
+
+
 def regime(half, secs):
     if half == 1:
         return 0 if secs > TWO_MIN else 1
@@ -811,6 +818,18 @@ def predict_outcome(t, mc, f):
     return 1.0 / (1.0 + math.exp(-(c0 + float(w @ z))))
 
 
+def strength_adjust(vals, gam, z):
+    vals = np.asarray(vals, dtype=np.float64)
+    out = vals.copy()
+    for k, t in enumerate(OUT_TARGETS):
+        if t == "el":
+            out[..., k] = vals[..., k] + gam[..., k] * z
+        else:
+            p = np.clip(vals[..., k], 1e-6, 1 - 1e-6)
+            out[..., k] = 1.0 / (1.0 + np.exp(-(np.log(p / (1 - p)) + gam[..., k] * z)))
+    return out
+
+
 class Engine:
     def __init__(
         self,
@@ -825,8 +844,24 @@ class Engine:
         dr=False,
         qstrata=False,
         eoh="outcome",
+        strength=None,
+        dr_oof=False,
+        dr_mu=True,
+        mu_label=False,
     ):
         seg = with_mu(pd.read_parquet(OUT / "segments.parquet"))
+        self.dr_mu = bool(dr_mu)
+        self.ptab = None
+        if mu_label:
+            eb = json.loads((OUT / "build_meta.json").read_text())["eiv_b"]
+            self.ptab = posterior_table(seg, eb)[0]
+        self.sgam = None
+        self.trace = None
+        if strength is not None:
+            self.sgam = np.array([strength["terms"][t]["gamma"] for t in OUT_TARGETS]).T
+            self.smbar = {
+                int(k): np.asarray(v, dtype=np.float64) for k, v in strength["mbar"].items()
+            }
         ops = pd.read_parquet(OUT / "openings.parquet")
         meta = json.loads((OUT / "build_meta.json").read_text())
         c = np.load(OUT / "csr.npz")
@@ -865,6 +900,17 @@ class Engine:
                         self.m_arr[sel, k] = m.predict(fx[sel])
                     else:
                         self.m_arr[sel, k] = m.predict_proba(fx[sel])[:, 1]
+            if dr_oof:
+                oo = pd.read_parquet(OUT / "oof_targets.parquet")
+                ri = oo.index.to_numpy()
+                self.m_arr[ri] = oo[OUT_TARGETS].to_numpy(np.float64)
+            if self.sgam is not None:
+                hv, sv = seg["half"].to_numpy(), seg["secs"].to_numpy(float)
+                ph = np.array([phase_of_state(a, b) for a, b in zip(hv, sv, strict=True)])
+                for hm in (0, 1):
+                    sel = np.flatnonzero((od["home"].to_numpy() == hm) & (hv < 3))
+                    z = seg["mu"].to_numpy(float)[sel] - self.smbar[hm][ph[sel]]
+                    self.m_arr[sel] = strength_adjust(self.m_arr[sel], self.sgam[ph[sel]], z)
         self.h_reg = None if not h_reg else [pad_h(h_reg[str(r)]["h"]) for r in range(5)]
         self.h = pad_h(h)
         self.h_ot = pad_h(h if h_ot is None else h_ot)
@@ -937,23 +983,36 @@ class Engine:
                 ]
             )
             tg = np.asarray([predict_outcome(t, m, f) for t, m in self.models[hm]])
+            if self.sgam is not None:
+                p_ = phase_of_state(hf, secs)
+                tg = strength_adjust(tg, self.sgam[p_], q[5] - self.smbar[hm][p_])
+            tg0 = tg
+            mt = q[5:6]
+            if self.ptab is not None:
+                cx_, cs_, m0_, m1_ = self.ptab[post_bin(hf, secs)]
+                mt = np.array([cx_ * q[5] + cs_ * (q[1] - (m1_ if hm == 1 else m0_))])
             if self.dr:
-                w1 = tilt_weights(w, X[nz, 5:6], q[5:6])
+                w1 = tilt_weights(w, X[nz, 5:6], mt) if self.dr_mu else w
                 u = w1 / w1.sum()
                 adj = u @ self.out_arr[idx[nz]] - u @ self.m_arr[idx[nz]]
                 tg = tg + adj * DR_MASK
             rg_ = regime(hf, secs)
             if rg_ in self.mu_free and self.eoh == "mu":
-                w = tilt_weights(w, X[nz, 5:6], q[5:6])
+                w = tilt_weights(w, X[nz, 5:6], mt)
             elif rg_ in self.mu_free and self.eoh == "muscore":
                 sk = self.score_k
                 w = tilt_weights(
-                    w, np.c_[self.out_arr[idx[nz]][:, sk], X[nz, 5]], np.r_[tg[sk], q[5]]
+                    w, np.c_[self.out_arr[idx[nz]][:, sk], X[nz, 5]], np.r_[tg[sk], mt]
                 )
             elif rg_ in self.mu_free:
                 w = tilt_weights(w, self.out_arr[idx[nz]], np.asarray(tg))
             else:
-                w = tilt_weights(w, np.c_[self.out_arr[idx[nz]], X[nz, 5]], np.r_[tg, q[5]])
+                w = tilt_weights(w, np.c_[self.out_arr[idx[nz]], X[nz, 5]], np.r_[tg, mt])
+            if self.trace is not None:
+                u = w / w.sum()
+                self.trace.append(
+                    np.r_[tg0, tg, u @ self.out_arr[idx[nz]], u @ X[nz, 5], 1.0 / (u @ u)]
+                )
         else:
             tdims = [d for d in self.tilt if d == 5 or fin[d]] if hf < 3 else []
             if tdims:
@@ -1132,11 +1191,31 @@ def _init(
     dr=False,
     qstrata=False,
     eoh="outcome",
+    strength=None,
+    dr_oof=False,
+    dr_mu=True,
+    mu_label=False,
 ):
     for k in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS", "NUMEXPR_NUM_THREADS"):
         os.environ[k] = "1"
     os.environ.setdefault("QBC", "1")
-    _W["eng"] = Engine(h, ho, g, hr, tilt, models, pat, mu_free, dr, qstrata, eoh)
+    _W["eng"] = Engine(
+        h,
+        ho,
+        g,
+        hr,
+        tilt,
+        models,
+        pat,
+        mu_free,
+        dr,
+        qstrata,
+        eoh,
+        strength,
+        dr_oof,
+        dr_mu,
+        mu_label,
+    )
 
 
 def sim_world(task):
@@ -1812,8 +1891,25 @@ def cmd_sim(a):
     h, ho, g, hr = load_h(a.h)
     tilt = tuple(int(v) for v in a.tilt.split(",")) if a.tilt else ()
     mf = tuple(int(v) for v in a.mufree.split(",")) if a.mufree else ()
+    st = json.loads(Path(a.strength).read_text()) if a.strength else None
     G, P = sim_worlds(
-        (h, ho, g, hr, tilt, bool(a.models), bool(a.pat), mf, bool(a.dr), bool(a.qstrata), a.eoh),
+        (
+            h,
+            ho,
+            g,
+            hr,
+            tilt,
+            bool(a.models),
+            bool(a.pat),
+            mf,
+            bool(a.dr),
+            bool(a.qstrata),
+            a.eoh,
+            st,
+            bool(a.droof),
+            bool(a.drmu),
+            bool(a.mulabel),
+        ),
         a.worlds,
         a.seasons,
         a.seed,
@@ -1898,6 +1994,10 @@ def main():
     s.add_argument("--dr", type=int, default=1)
     s.add_argument("--qstrata", type=int, default=1)
     s.add_argument("--eoh", choices=("outcome", "mu", "muscore"), default="outcome")
+    s.add_argument("--strength", default=str(REPO / "artifacts" / "sim11" / "strength_terms.json"))
+    s.add_argument("--droof", type=int, default=1)
+    s.add_argument("--drmu", type=int, default=0)
+    s.add_argument("--mulabel", type=int, default=1)
     s.add_argument("--label", default="sim10")
     s.add_argument("--h", default=str(OUT / "bandwidths_week.json"))
     a = ap.parse_args()

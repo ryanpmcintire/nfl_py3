@@ -20,6 +20,7 @@ modified lane when the prompt just says to continue.
 
 ## Active
 
+- [sim11-strength-transmission](sim11-strength-transmission.md) - 2026-10-24: label-matched strength draw locked as sim default; 13/14 gates (strength variance passes); late R2 .120 still short, recent-form latent is next.
 - [sim10-drive-resampler](done/sim10-drive-resampler.md) - LOCKED 2026-10-24: drive-level resampler, quarter strata default; 12/14 gates on the 3-seed mean; strength variance and late R2 still fail. The mod25e-* lanes below are superseded.
 - [lead99-llm-read](lead99-llm-read.md) - 2026-10-20: blind sharp-style LLM read logged forward as a future fitted term; Week 7 Tuesday view recorded; 5 scheduled runs a week.
 - [week7-lock-2026-10-20](week7-lock-2026-10-20.md) - 2026-10-20: Week 7 board read by agent after the noon capture failed; locked and published; Best Pick NYJ -4.5 carried by situational adjustments; validation v4 enrolled.
