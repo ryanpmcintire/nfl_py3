@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-25T02:49:16.426515+00:00`
+Refreshed at: `2026-10-25T02:49:38.559836+00:00`
 
 ## Start here
 
@@ -21,18 +21,14 @@ Refreshed at: `2026-10-25T02:49:16.426515+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `56abf1452df5` — Refresh handoff after SIM-10 lock
-- Pending change set: 176 paths
+- Baseline commit: `0df0a23d0aa3` — SIM-11: label-matched strength draw, 13 of 14 gates
+- Pending change set: 172 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - `M  ROADMAP.md`
+  - `M  HANDOFF.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/README.md`
-  - `A  docs/lanes/sim11-strength-transmission.md`
   - ` M docs/model.html`
-  - `M  scripts/sim10_drive.py`
-  - `A  scripts/sim11_strength.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? docs/lanes/stealmybitcoin-ctf.md`
@@ -43,7 +39,11 @@ Refreshed at: `2026-10-25T02:49:16.426515+00:00`
   - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
   - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
   - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
-  - ...and 156 more
+  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
+  - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
+  - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
+  - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
+  - ...and 152 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
