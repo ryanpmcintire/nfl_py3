@@ -1195,6 +1195,7 @@ def _init(
     dr_oof=False,
     dr_mu=True,
     mu_label=False,
+    real_sched=False,
 ):
     for k in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS", "NUMEXPR_NUM_THREADS"):
         os.environ[k] = "1"
@@ -1216,6 +1217,21 @@ def _init(
         dr_mu,
         mu_label,
     )
+    _W["rsched"] = real_schedules() if real_sched else None
+
+
+def real_schedules():
+    g = pd.read_parquet(OUT / "real_games.parquet")
+    out = {}
+    for s_, d in g.groupby("season"):
+        teams = sorted(set(d["home_team"]) | set(d["away_team"]))
+        ix = {t: i for i, t in enumerate(teams)}
+        d = d.sort_values(["week", "game_id"])
+        out[int(s_)] = [
+            (int(wk), ix[h], ix[a])
+            for wk, h, a in zip(d["week"], d["home_team"], d["away_team"], strict=True)
+        ]
+    return out
 
 
 def sim_world(task):
@@ -1229,10 +1245,15 @@ def sim_world(task):
     rng = np.random.default_rng(wseed)
     lat = gen.gen_world_latents(rng, n_seasons, fit, setting)
     gseeds = wseed.spawn(n_seasons)
+    rs = _W.get("rsched")
+    perm = rng.permutation(gen.N_TEAMS) if rs else None
     for sidx, (weekly, qb_out) in enumerate(lat):
-        sched = gen.make_schedule(rng)
-        ratings = gen.season_ratings(weekly, qb_out, fit, setting, 0.0, 0.0)
         season = SEASONS[(w * n_seasons + sidx) % len(SEASONS)]
+        if rs:
+            sched = [(wk, int(perm[h]), int(perm[a])) for wk, h, a in rs[season]]
+        else:
+            sched = gen.make_schedule(rng)
+        ratings = gen.season_ratings(weekly, qb_out, fit, setting, 0.0, 0.0)
         grng = np.random.default_rng(gseeds[sidx])
         sid = w * 1000 + sidx + 1
         for gi, (week, h, a) in enumerate(sched):
@@ -1909,6 +1930,7 @@ def cmd_sim(a):
             bool(a.droof),
             bool(a.drmu),
             bool(a.mulabel),
+            bool(a.realsched),
         ),
         a.worlds,
         a.seasons,
@@ -1998,6 +2020,7 @@ def main():
     s.add_argument("--droof", type=int, default=1)
     s.add_argument("--drmu", type=int, default=0)
     s.add_argument("--mulabel", type=int, default=1)
+    s.add_argument("--realsched", type=int, default=0)
     s.add_argument("--label", default="sim10")
     s.add_argument("--h", default=str(OUT / "bandwidths_week.json"))
     a = ap.parse_args()

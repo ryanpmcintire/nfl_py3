@@ -6,30 +6,36 @@ Get strength variance (SIM-10 47.2 v real 58.0 [51.4, 64.9]) and weeks 10-18 R2 
 Owner 2026-10-24: get them close to reality. ROADMAP SIM-11.
 
 ## State
-LOCKED as the CLI default 2026-10-24: `python scripts/sim10_drive.py sim --seed S --workers 11`
-= `--droof 1 --drmu 0 --mulabel 1 --strength artifacts/sim11/strength_terms.json` on top of the
-SIM-10 lock. Bare default seed 11 reproduces s11lab_s11 exactly (max gate diff 0.0, sim11_s11).
-3-seed mean (artifacts/sim10/s11lab_s1{1,2,3}/, logs artifacts/sim11/): 13/14. Strength 52.1/
-50.9/54.4 = 52.4 PASS; R2 .118/.125/.117 = .120 FAIL; tie .0033, xq -14.95, q4 -.076, mass3
-.1383 (all pass, near edges). Old SIM-10 config: `--strength "" --droof 0 --drmu 1 --mulabel 0`.
-Mechanisms: --mulabel tilts drawn drives' strength label to cx*theta + cs*(sd - mean)
-(posterior_table) with outcome targets at full theta; --strength per-phase terms
-(sim11_strength.py strfit; LOSO td loss .45914 raw v .45921 oos); --droof/--drmu 0 honest,
-strength-free DR residuals. Points per unit strength .94 -> 1.00 of real.
+LOCKED default (commit 0df0a23d): `python scripts/sim10_drive.py sim --seed S --workers 11`
+= `--droof 1 --drmu 0 --mulabel 1 --strength artifacts/sim11/strength_terms.json`; bare seed 11
+reproduces s11lab_s11 exactly. Random schedules (SIM-10 protocol), seeds 11-13: 13/14, strength
+52.4 PASS, R2 .120 FAIL. Old config: `--strength "" --droof 0 --drmu 1 --mulabel 0`.
+Flag `--realsched 1` (default 0): each sim season plays the matching real 2009-17 schedule
+(16 games, 17 weeks), teams randomly mapped to slots: the gates' own measurement design.
+3-seed means on real schedules (artifacts/sim10/rs_s1*, rs10_s1*): SIM-11 11/14 (fails strength
+49.8, R2 .116, q4 -.0806 v floor -.0797); SIM-10 config 9/14 (strength 46.6, R2 .116, xq -20.6,
+q4 -.084, mass14 .0510). Seed-level game-path noise ~1.5-2 strength points.
 
-## Tried (measured; probes 11x2 seed 21, artifacts/sim11/draws_<tag>.parquet)
-- Rejected: phase-scaled strength target (unstable); outcome-only tilt (team quality lost,
-  seed 11 strength 46.3, R2 .107, breaks mass3/q4/xq); drive-EPA target (redundant, 5x slower);
-  plays-per-drive target (per-play EPA .894 v .942). Code removed.
-- Special teams + no-play penalties: ~3% of real persistent margin strength (not modelled).
+## Tried (measured; probes 11x2 seed 21; probe per-phase noise ~+-.08)
+- Kept: label-matched strength target (tail effective sample 13-31 -> 75-232; TD target miss
+  5-8 pp -> .3), per-phase strength terms, OOF and state-only DR residuals.
+- Rejected: phase-scaled target; outcome-only tilt; drive-EPA and plays-per-drive targets;
+  label tilt in end-of-half regimes too (end2h points 2.83 v real 1.80, EPA all .917 v .942);
+  adjacent-season labels (label var +4.5% off, +17% def; not worth a rebuild); recalibrating
+  latent variance to simulated EPA (would hide the .94 transmission; compensating knob).
+- Form (weeks-scale team strength): opponent-adjusted offence lags 1-4 minus 9-15 +.97e-3
+  [+.10,+1.98] P+ .965 (2009-25); exact-likelihood LOSO, net adjusted EPA: 2009-17 best decay .8
+  (held-out +1.22 nats, form var 3.3e-3, season 8.9e-3); 2009-25 decay .8 +.27 nats, var 1.9e-3.
+  Real schedules make consecutive opponents dissimilar (opp strength cov lags 1-4 -.84 v -.37,
+  P .00), which hides form in raw EPA. Estimated R2 gain from form alone ~+6% (inferred).
 
 ## Next
-Unit 3, team-wide form latent. Weeks 10-18 R2 by predictor, real v sim: flat season-to-date .153
-v .145; last 3 games .087 v .068; EWMA (gate) .140 v .118. Real off x def cross-cov lags 1-4 v
-9-15: 2009-17 -.96 v -.47, 2018-25 -1.09 v -.69, 2009-25 diff -.45 [-1.02,+.13] P .91; sim
-flat. Single-profile fit cannot pin the decay (free fit degenerates; fixed .5-.8 gives net form
-var ~1e-3, P+ .67-.75); fit off, def, cross profiles jointly on 2009-25 before building.
-Generator: mod25_generator.gen_world_latents + sim10_drive.cmd_latfit (latent_fit.json).
+1. Adopt `--realsched 1` as the protocol for every new comparison (like-for-like with the
+   real gates); random schedules read strength 2.6 higher for SIM-11 (0.6 for SIM-10).
+2. Remaining persistent-strength deficit (real schedules): per-play EPA LOGO .88, margin LOGO
+   .88 of real. Engine per-play EPA transmission .94 is the main piece (within-outcome drives
+   come from teams ~2/3 as strong: shrunk labels); then excess catch-up (q4 -.076 v -.060),
+   special teams (~3%), form (R2).
 
 ## Open
-Persistent plays-per-game: real LOGO cov 3.56 v sim 0.8; not a gate.
+Persistent plays-per-game: real LOGO cov 3.56 v sim ~1.0; not a gate.

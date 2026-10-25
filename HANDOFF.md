@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-25T02:49:38.559836+00:00`
+Refreshed at: `2026-10-25T03:37:20.506713+00:00`
 
 ## Start here
 
@@ -21,14 +21,16 @@ Refreshed at: `2026-10-25T02:49:38.559836+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `0df0a23d0aa3` — SIM-11: label-matched strength draw, 13 of 14 gates
-- Pending change set: 172 paths
+- Baseline commit: `b0671b781a93` — Refresh handoff after SIM-11 lock
+- Pending change set: 174 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - `M  HANDOFF.md`
+  - `M  ROADMAP.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
+  - `M  docs/lanes/sim11-strength-transmission.md`
   - ` M docs/model.html`
+  - `M  scripts/sim10_drive.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? docs/lanes/stealmybitcoin-ctf.md`
@@ -41,9 +43,7 @@ Refreshed at: `2026-10-25T02:49:38.559836+00:00`
   - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
   - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
   - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
-  - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
-  - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
-  - ...and 152 more
+  - ...and 154 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
