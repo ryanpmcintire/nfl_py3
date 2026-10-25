@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-25T18:26:22.864168+00:00`
+Refreshed at: `2026-10-25T18:26:34.645424+00:00`
 
 ## Start here
 
@@ -21,15 +21,10 @@ Refreshed at: `2026-10-25T18:26:22.864168+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `d7d0b6d94904` — Republish the site with the latest settled results
-- Pending change set: 180 paths
-  - `M  docs/lanes/README.md`
-  - `A  docs/lanes/pick-chain-audit-2026.md`
-  - `A  registry/weak_signals/post_discovery_2026_stack_terms.json`
+- Baseline commit: `b95b4c61f0ed` — Count a situational flag only after it wins since discovery
+- Pending change set: 175 paths
+  - `M  HANDOFF.md`
   - ` M scripts/lead99_llm_read.py`
-  - `M  src/nfl_ats/board_content.py`
-  - `M  src/nfl_ats/pick_probability.py`
-  - `M  src/nfl_ats/pick_probability_fit.py`
   - `?? an.csv`
   - `?? docs/lanes/stealmybitcoin-ctf.md`
   - `?? docs/lanes/week7-sunday-checks-2026-10-25.md`
@@ -43,7 +38,12 @@ Refreshed at: `2026-10-25T18:26:22.864168+00:00`
   - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
   - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
   - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
-  - ...and 160 more
+  - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
+  - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
+  - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
+  - `?? registry/experiments/margin-backtest/20261008T161241Z.json`
+  - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
+  - ...and 155 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
