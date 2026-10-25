@@ -40,6 +40,7 @@ from nfl_ats.pick_probability import (
     CALIBRATED_PICK_PROBABILITY_COLUMN,
     calibrated_discrete_sweep,
     landing_rate_sentence,
+    rule_gate_sentence,
 )
 from nfl_ats.pick_refresh import (
     FOLLOW_NEWS_VETO_REASON,
@@ -2172,6 +2173,9 @@ def _build_headline_stats(
         f"card is tracked on fresh paired games against the former four-adjustment card "
         f"({prior_chain_text} in this archive)."
     )
+    gate_text = rule_gate_sentence(artifacts_root)
+    if gate_text:
+        selection_caveat_text = f"{selection_caveat_text} {gate_text}"
     prior_chain_caption = f"{games_text} · reference point, no interval attached."
     season_count = 0
     seasons_above_coin_flip = None

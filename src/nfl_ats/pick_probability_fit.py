@@ -12,6 +12,12 @@ import pandas as pd
 
 from nfl_ats.active_model import load_active_ats_model
 from nfl_ats.data import DataContractError
+from nfl_ats.features import _kickoff_utc
+from nfl_ats.forecast_cold_visitor_tilt_overlay import (
+    STATION_MAP_RELATIVE_PATH,
+    fetch_tuesday_noon_forecast_temps_fail_open,
+)
+from nfl_ats.forecast_weather_kn_warm_team_cold_late_tilt_overlay import games_for_forecast_fetch
 from nfl_ats.pbp08_matchup_flags import build_flag_table
 from nfl_ats.pbp08_protection_mismatch_tilt_overlay import latest_pbp_snapshot
 from nfl_ats.pick_probability import (
@@ -20,6 +26,7 @@ from nfl_ats.pick_probability import (
     COEFFICIENTS_FILENAME,
     CONFIDENCE_BAND_EDGES,
     COUNTED_FLAG_COLUMNS,
+    FLAG_DISCOVERY_DATES,
     FLAG_SUM_COLUMN,
     MARKET_MOVE_FEATURE_LEGACY,
     MARKET_MOVE_FEATURE_SUNDAY,
@@ -42,6 +49,7 @@ from nfl_ats.pick_probability import (
 )
 from nfl_ats.public_board import find_matching_opener_evaluation
 from nfl_ats.snapshots import latest_snapshot, load_snapshot
+from nfl_ats.splash_lines import load_splash_capture, splash_decision_lines
 
 FIT_FEATURES = ("model_logit", FLAG_SUM_COLUMN, MOVE_COLUMN, MOVE_AVAILABLE_COLUMN)
 FIT_RIDGE = 1e-3
@@ -184,6 +192,59 @@ def _protection_back_side(schedules: pd.DataFrame, data_root: Path) -> pd.DataFr
     return table[["game_id", "back_side"]].copy()
 
 
+def post_discovery_flag_records(
+    schedules: pd.DataFrame,
+    data_root: Path,
+    *,
+    incidents: pd.DataFrame,
+    protection: pd.DataFrame,
+) -> dict[str, tuple[int, int]]:
+
+    records = dict.fromkeys(COUNTED_FLAG_COLUMNS, (0, 0))
+    first_season = min(pd.Timestamp(date).year for date in FLAG_DISCOVERY_DATES.values())
+    result = pd.to_numeric(schedules["result"], errors="coerce")
+    games = schedules.loc[
+        schedules["game_type"].astype(str).eq("REG")
+        & pd.to_numeric(schedules["season"], errors="coerce").ge(first_season)
+        & result.notna()
+    ].copy()
+    lines: dict[str, float] = {}
+    for season, week in (
+        games[["season", "week"]].astype(int).drop_duplicates().itertuples(index=False)
+    ):
+        capture = load_splash_capture(data_root, int(season), int(week))
+        if capture is not None:
+            lines.update(splash_decision_lines(capture))
+    games["game_id"] = games["game_id"].astype(str)
+    games["opener_home_spread"] = games["game_id"].map(lines)
+    games = games.loc[games["opener_home_spread"].notna()].reset_index(drop=True)
+    if games.empty:
+        return records
+    games["kickoff"] = _kickoff_utc(games)
+    forecasts = fetch_tuesday_noon_forecast_temps_fail_open(
+        games_for_forecast_fetch(games, schedules),
+        data_root.resolve().parent / "registry" / STATION_MAP_RELATIVE_PATH,
+    )
+    flags = signed_composition_flags(
+        games,
+        schedules,
+        incidents=incidents,
+        forecasts_tuesday_noon=forecasts,
+        protection_back_side=protection,
+    )
+    joined = games.merge(flags, on="game_id", how="left", validate="one_to_one")
+    covered = np.sign(
+        pd.to_numeric(joined["result"], errors="coerce") - joined["opener_home_spread"]
+    )
+    gameday = pd.to_datetime(joined["gameday"], errors="coerce")
+    for column in COUNTED_FLAG_COLUMNS:
+        signed = np.sign(pd.to_numeric(joined[column], errors="coerce").fillna(0.0)) * covered
+        after = gameday.gt(pd.Timestamp(FLAG_DISCOVERY_DATES[column]))
+        fired = signed.loc[after & signed.ne(0.0)]
+        records[column] = (int(fired.gt(0.0).sum()), int(fired.lt(0.0).sum()))
+    return records
+
+
 def build_fit_population(
     artifacts_root: Path,
     data_root: Path,
@@ -265,6 +326,15 @@ def build_fit_population(
         protection_back_side=protection,
     )
     graded = graded.merge(flags, on="game_id", how="left", validate="one_to_one")
+    post_discovery = post_discovery_flag_records(
+        schedules, data_root, incidents=incidents, protection=protection
+    )
+    counted = [
+        column
+        for column in COUNTED_FLAG_COLUMNS
+        if post_discovery[column][0] > post_discovery[column][1]
+    ]
+    graded[FLAG_SUM_COLUMN] = graded[counted].astype(float).sum(axis=1).astype(float)
 
     market, market_artifact = _market_move_table(artifacts_root, market_move_feature_version)
     graded = graded.merge(market, on="game_id", how="left")
@@ -289,7 +359,12 @@ def build_fit_population(
         "ungraded_dropped": ungraded,
         "games_with_market_move": int(graded[MOVE_AVAILABLE_COLUMN].sum()),
         "seasons": sorted(int(value) for value in graded["season"].unique()),
-        "counted_flag_columns": list(COUNTED_FLAG_COLUMNS),
+        "counted_flag_columns": counted,
+        "candidate_flag_columns": list(COUNTED_FLAG_COLUMNS),
+        "flag_discovery_dates": dict(FLAG_DISCOVERY_DATES),
+        "post_discovery_flag_records": {
+            column: f"{wins}-{losses}" for column, (wins, losses) in post_discovery.items()
+        },
         "arrest_incidents": len(incidents),
         "forecast_rows": len(forecasts),
         "protection_rows": len(protection),
@@ -496,6 +571,7 @@ def fit_pick_probability(
         policy=PICK_PROBABILITY_POLICY,
         base_probability_policy=BASE_PROBABILITY_POLICY,
         market_move_feature_version=market_move_feature_version,
+        counted_flag_columns=tuple(provenance["counted_flag_columns"]),
     )
 
     directory = artifacts_root / PICK_PROBABILITY_ARTIFACT_ROOT / stamp

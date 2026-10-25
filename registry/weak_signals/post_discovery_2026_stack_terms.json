@@ -1,0 +1,89 @@
+{
+  "family": "post_discovery_2026_stack_terms",
+  "signals": {
+    "coach_fade_post_discovery_2026": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "11-20 post-discovery; Wilson interval upper bound above 50 percent so the wrong sign is not resolved; served weight removed by the post-discovery gate, research stays open",
+      "closing_ground": null,
+      "description": "Year-one head-coach fade flag graded only on games after its 2026-08-18 discovery, at the Splash opener",
+      "effect": -14.5,
+      "effect_units": "accuracy_points",
+      "family": "post_discovery_2026_stack_terms",
+      "interval": [
+        -29.0,
+        3.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.055,
+      "recorded_at": "2026-10-25",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 31,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "docs/lanes/pick-chain-audit-2026.md",
+      "standard_error": null
+    },
+    "post_discovery_flag_gate_forward_2026": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "54-23 vs 43-34 on 77 forward games; spec family designed after 2026 flag records were seen; five specs scored",
+      "closing_ground": null,
+      "description": "Served stack counting only flags with a winning post-discovery record, forward-chained 2026 weeks 2-6 versus the shared-sum stack",
+      "effect": 0.0216,
+      "effect_units": "log_loss_improvement",
+      "family": "post_discovery_2026_stack_terms",
+      "interval": [
+        0.0041,
+        0.0385
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.99,
+      "recorded_at": "2026-10-25",
+      "reliability": null,
+      "sample_blocks": 5,
+      "sample_games": 77,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "docs/lanes/pick-chain-audit-2026.md",
+      "standard_error": null
+    },
+    "protection_mismatch_post_discovery_2026": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "18-8 post-discovery; the only counted flag with a winning clean record",
+      "closing_ground": null,
+      "description": "Protection-mismatch flag graded only on games after its 2026-08-25 discovery, at the Splash opener",
+      "effect": 19.2,
+      "effect_units": "accuracy_points",
+      "family": "post_discovery_2026_stack_terms",
+      "interval": [
+        0.0,
+        34.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.974,
+      "recorded_at": "2026-10-25",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 26,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "docs/lanes/pick-chain-audit-2026.md",
+      "standard_error": null
+    }
+  }
+}

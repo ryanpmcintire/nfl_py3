@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-25T18:25:44.323520+00:00`
+Refreshed at: `2026-10-25T18:26:22.864168+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-10-25T18:25:44.323520+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `7e5ea940aa35` — Refresh handoff after SIM-11 schedule protocol
-- Pending change set: 187 paths
-  - `M  CURRENT_PREDICTIONS.md`
-  - ` M README.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - ` M docs/lanes/README.md`
-  - `M  docs/model.html`
+- Baseline commit: `d7d0b6d94904` — Republish the site with the latest settled results
+- Pending change set: 180 paths
+  - `M  docs/lanes/README.md`
+  - `A  docs/lanes/pick-chain-audit-2026.md`
+  - `A  registry/weak_signals/post_discovery_2026_stack_terms.json`
   - ` M scripts/lead99_llm_read.py`
-  - ` M src/nfl_ats/board_content.py`
-  - ` M src/nfl_ats/pick_probability.py`
-  - ` M src/nfl_ats/pick_probability_fit.py`
-  - `M  tiebreaker.json`
+  - `M  src/nfl_ats/board_content.py`
+  - `M  src/nfl_ats/pick_probability.py`
+  - `M  src/nfl_ats/pick_probability_fit.py`
   - `?? an.csv`
-  - `?? docs/lanes/pick-chain-audit-2026.md`
   - `?? docs/lanes/stealmybitcoin-ctf.md`
   - `?? docs/lanes/week7-sunday-checks-2026-10-25.md`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
   - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - ...and 167 more
+  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
+  - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
+  - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
+  - ...and 160 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

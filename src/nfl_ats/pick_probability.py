@@ -75,6 +75,18 @@ FLAG_COLUMNS: tuple[str, ...] = tuple(MEMBER_FLAG_COLUMNS[member] for member in 
 COUNTED_FLAG_COLUMNS: tuple[str, ...] = tuple(
     MEMBER_FLAG_COLUMNS[member] for member in COMPOSITION_ORDER if member not in OWNER_HELD_MEMBERS
 )
+MEMBER_DISCOVERY_DATES: dict[str, str] = {
+    COACH_FADE: "2026-08-18",
+    DIVISION_REVENGE_TILT: "2026-08-19",
+    PLAYER_ARRESTS_BACK_SIDE_POLICY: "2026-08-20",
+    FORECAST_COLD_VISITOR_TILT: "2026-08-20",
+    PBP08_PROTECTION_MISMATCH_TILT: "2026-08-25",
+    BYE_EDGE_FADE: "2026-09-02",
+    TANK_ZONE_FADE_TILT: "2026-09-02",
+}
+FLAG_DISCOVERY_DATES: dict[str, str] = {
+    MEMBER_FLAG_COLUMNS[member]: date for member, date in MEMBER_DISCOVERY_DATES.items()
+}
 
 FLAG_SUM_COLUMN = "composition_flag_sum"
 MOVE_COLUMN = "market_move_toward_home"
@@ -172,6 +184,7 @@ class PickProbabilityModel:
     policy: str = PICK_PROBABILITY_POLICY
     base_probability_policy: str | None = None
     market_move_feature_version: str = MARKET_MOVE_FEATURE_LEGACY
+    counted_flag_columns: tuple[str, ...] = COUNTED_FLAG_COLUMNS
 
     @property
     def lean_minimum(self) -> float:
@@ -255,7 +268,7 @@ class PickProbabilityModel:
             },
             "strength_bands": [band.to_dict() for band in self.strength_bands],
             "confidence_bands": [band.to_dict() for band in self.confidence_bands],
-            "counted_flag_columns": list(COUNTED_FLAG_COLUMNS),
+            "counted_flag_columns": list(self.counted_flag_columns),
             "held_members": sorted(OWNER_HELD_MEMBERS),
             "fitted_games": self.fitted_games,
             "fitted_seasons": list(self.fitted_seasons),
@@ -311,6 +324,9 @@ class PickProbabilityModel:
             if isinstance(confidence_raw, Sequence)
             else ()
         )
+        counted = counted_flag_columns_or_raise(
+            payload.get("counted_flag_columns", list(COUNTED_FLAG_COLUMNS)), artifact=artifact
+        )
         return cls(
             intercept=values[INTERCEPT_TERM],
             model_logit=values[MODEL_LOGIT_TERM],
@@ -329,7 +345,23 @@ class PickProbabilityModel:
                 else None
             ),
             market_move_feature_version=str(feature_version),
+            counted_flag_columns=counted,
         )
+
+
+def counted_flag_columns_or_raise(value: Any, *, artifact: str) -> tuple[str, ...]:
+
+    if not isinstance(value, Sequence) or isinstance(value, str):
+        raise PickProbabilitySourceError(
+            f"pick probability artifact {artifact} counts incompatible situational terms"
+        )
+    columns = tuple(str(column) for column in value)
+    ordered = tuple(column for column in COUNTED_FLAG_COLUMNS if column in columns)
+    if columns != ordered or len(set(columns)) != len(columns):
+        raise PickProbabilitySourceError(
+            f"pick probability artifact {artifact} counts incompatible situational terms"
+        )
+    return columns
 
 
 class ConfidenceLoader:
@@ -499,11 +531,16 @@ def load_pick_probability_model(artifacts_root: Path) -> PickProbabilityModel:
             raise PickProbabilitySourceError(
                 f"pick probability artifact {relative} uses an incompatible base probability"
             )
-        for source in (metadata, payload):
-            if source.get("counted_flag_columns") != list(COUNTED_FLAG_COLUMNS):
-                raise PickProbabilitySourceError(
-                    f"pick probability artifact {relative} counts incompatible situational terms"
-                )
+        counted = [
+            list(
+                counted_flag_columns_or_raise(source.get("counted_flag_columns"), artifact=relative)
+            )
+            for source in (metadata, payload)
+        ]
+        if counted[0] != counted[1]:
+            raise PickProbabilitySourceError(
+                f"pick probability artifact {relative} counts incompatible situational terms"
+            )
         if payload.get("held_members") != sorted(OWNER_HELD_MEMBERS):
             raise PickProbabilitySourceError(
                 f"pick probability artifact {relative} has incompatible held members"
@@ -777,6 +814,14 @@ def calibrated_pick_probability(
             )
     resolved_flags = _empty_flags(frame) if flags is None else flags.reset_index(drop=True).copy()
     resolved_flags["game_id"] = resolved_flags["game_id"].astype(str)
+    if set(model.counted_flag_columns).issubset(resolved_flags.columns):
+        resolved_flags[FLAG_SUM_COLUMN] = (
+            resolved_flags[list(model.counted_flag_columns)]
+            .apply(pd.to_numeric, errors="coerce")
+            .fillna(0.0)
+            .sum(axis=1)
+            .astype(float)
+        )
     resolved_move = _empty_move(frame) if move is None else move.reset_index(drop=True).copy()
     resolved_move["game_id"] = resolved_move["game_id"].astype(str)
     if model.market_move_feature_version == MARKET_MOVE_FEATURE_SUNDAY and (
@@ -969,6 +1014,56 @@ def calibrated_discrete_sweep(sweep: pd.DataFrame, predictions: pd.DataFrame) ->
     return result
 
 
+FLAG_READER_NAMES: dict[str, str] = {
+    "flag_coach": "year-one coach fade",
+    "flag_division": "division-revenge tilt",
+    "flag_arrests": "player-arrest rule",
+    "flag_bye": "bye-week rest-edge fade",
+    "flag_cold_visitor": "cold-visitor weather tilt",
+    "flag_protection": "protection-mismatch tilt",
+    "flag_tank_zone": "tank-zone fade",
+}
+
+
+def rule_gate_sentence(artifacts_root: Path) -> str:
+
+    try:
+        pointer = json.loads(
+            active_pick_probability_path(artifacts_root).read_text(encoding="utf-8")
+        )
+        directory = (artifacts_root / str(pointer["artifact"])).resolve()
+        metadata = json.loads((directory / METADATA_FILENAME).read_text(encoding="utf-8"))
+        records = metadata["post_discovery_flag_records"]
+        counted = set(metadata["counted_flag_columns"])
+    except (OSError, KeyError, TypeError, ValueError):
+        return ""
+    if not isinstance(records, Mapping):
+        return ""
+
+    def named(column: str) -> str:
+        return f"{FLAG_READER_NAMES.get(column, column)} ({records[column]})"
+
+    fired = [column for column in COUNTED_FLAG_COLUMNS if str(records.get(column, "0-0")) != "0-0"]
+    playing = [named(column) for column in fired if column in counted]
+    resting = [named(column) for column in fired if column not in counted]
+    waiting = [
+        FLAG_READER_NAMES.get(column, column)
+        for column in COUNTED_FLAG_COLUMNS
+        if column in records and column not in fired
+    ]
+    parts = [
+        "A situational rule counts toward a pick only after it has won more than it lost "
+        "on games played since it was found."
+    ]
+    if playing:
+        parts.append("Counting now: " + ", ".join(playing) + ".")
+    if resting:
+        parts.append("Sitting out: " + ", ".join(resting) + ".")
+    if waiting:
+        parts.append("Not yet tested on a new game: " + ", ".join(waiting) + ".")
+    return " ".join(parts)
+
+
 def landing_rate_sentence(model: PickProbabilityModel | None, *, move_used: bool = True) -> str:
 
     if model is None:
@@ -1036,6 +1131,7 @@ __all__ = [
     "load_pick_probability_model",
     "load_pick_probability_model_or_none",
     "market_move_toward_home",
+    "rule_gate_sentence",
     "signed_composition_flags",
     "signed_composition_flags_fail_open",
 ]
