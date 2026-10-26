@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-26T04:31:52.286609+00:00`
+Refreshed at: `2026-10-26T11:22:57.615493+00:00`
 
 ## Start here
 
@@ -21,14 +21,13 @@ Refreshed at: `2026-10-26T04:31:52.286609+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `16dd838a0e50` — Refresh handoff after the post-discovery flag gate
-- Pending change set: 179 paths
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - `M  docs/model.html`
+- Baseline commit: `452f9c59dc1a` — Republish the site with the latest settled results
+- Pending change set: 178 paths
+  - ` M docs/index.html`
+  - `A  docs/lanes/done/dependency-security-2026-10-26.md`
+  - `M  pyproject.toml`
   - ` M scripts/lead99_llm_read.py`
-  - `M  tiebreaker.json`
+  - `M  uv.lock`
   - `?? an.csv`
   - `?? docs/lanes/stealmybitcoin-ctf.md`
   - `?? docs/lanes/week7-sunday-checks-2026-10-25.md`
@@ -43,7 +42,8 @@ Refreshed at: `2026-10-26T04:31:52.286609+00:00`
   - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
   - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
   - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
-  - ...and 159 more
+  - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
+  - ...and 158 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
