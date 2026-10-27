@@ -1,0 +1,33 @@
+{
+  "family": "pool_relative_move_2026_10_27",
+  "signals": {
+    "pool_relative_move_term_loso_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval straddles zero with probability_positive 0.68; no wrong-sign resolution, no positive control; Brier improvement 0.000465 pp 0.676; accuracy +0.13 pt pp 0.56",
+      "closing_ground": null,
+      "description": "Four-term pick probability with move measured from the graded Tuesday open to the leader-book median at the lock cutoff, versus served Wednesday-on summed leader move; LOSO 2020-2025, 1503 games",
+      "effect": 0.000992,
+      "effect_units": "log_loss_improvement",
+      "family": "pool_relative_move_2026_10_27",
+      "interval": [
+        -0.003491,
+        0.005068
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Counting the Tuesday-to-Wednesday move and measuring from the graded line gave a slightly better held-out probability, far too small to resolve.",
+      "probability_positive": 0.6825,
+      "recorded_at": "2026-10-27",
+      "reliability": null,
+      "sample_blocks": 120,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/pool_relative_move/loso.py",
+      "standard_error": 0.002174
+    }
+  }
+}
