@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-27T04:31:30.108477+00:00`
+Refreshed at: `2026-10-27T18:55:44.709672+00:00`
 
 ## Start here
 
@@ -21,10 +21,9 @@ Refreshed at: `2026-10-27T04:31:30.108477+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `a4317504e138` — Upgrade pypdf, certifi and urllib3 to close Dependabot alerts
-- Pending change set: 184 paths
+- Baseline commit: `a73ae8376a95` — Republish the site with the latest settled results
+- Pending change set: 186 paths
   - `M  CURRENT_PREDICTIONS.md`
-  - ` M README.md`
   - `M  docs/findings.html`
   - `M  docs/history.html`
   - `M  docs/index.html`
@@ -43,7 +42,8 @@ Refreshed at: `2026-10-27T04:31:30.108477+00:00`
   - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
   - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
   - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
-  - ...and 164 more
+  - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
+  - ...and 166 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -57,13 +57,13 @@ trust live Git output after checkout.
 - Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261025T134322Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card combines this with the coach component in one fitted calibrated probability, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,138 / 2,168 (52.49%)**
-- Linked forecast: **2026 Week 7**, created `2026-10-26T16:11:02.031232+00:00`
+- Linked forecast: **2026 Week 7**, created `2026-10-27T18:40:27.622190+00:00`
 
 The 52.49% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 7** from model `5b583a1cab58d615`, published `2026-10-26T16:18:58.183014+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 7** from model `5b583a1cab58d615`, published `2026-10-27T18:48:16.860792+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 
