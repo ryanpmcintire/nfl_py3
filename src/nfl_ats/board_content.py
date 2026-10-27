@@ -506,6 +506,7 @@ class SeasonRecordStrip:
     week_record_text: str
     season_record_text: str
     best_pick_record_text: str | None
+    last_week_record_text: str | None = None
 
 
 @dataclass(frozen=True)
@@ -2473,6 +2474,17 @@ def _build_season_record(
         else ""
     )
     week_record_text = f"This week: {_record_text(week_wins, week_losses, week_pushes)}{week_tail}"
+    last_week_rows = (
+        season_rows.loc[pd.to_numeric(season_rows["week"], errors="coerce").eq(float(week) - 1)]
+        if week is not None and "week" in season_rows.columns
+        else season_rows.iloc[0:0]
+    )
+    last_wins, last_losses, last_pushes, _last_pending = _grade_decisions(last_week_rows, outcomes)
+    last_week_record_text = (
+        f"Last week: {_record_text(last_wins, last_losses, last_pushes)}"
+        if last_wins + last_losses + last_pushes > 0
+        else None
+    )
     season_record_text = (
         f"Season to date: {_record_text(season_wins, season_losses, season_pushes)}"
     )
@@ -2492,6 +2504,7 @@ def _build_season_record(
         week_record_text=week_record_text,
         season_record_text=season_record_text,
         best_pick_record_text=best_pick_record_text,
+        last_week_record_text=last_week_record_text,
     )
 
 

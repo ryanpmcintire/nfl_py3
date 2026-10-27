@@ -1634,9 +1634,15 @@ def _season_record_strip_html(content: BoardContent) -> str:
         if record.best_pick_record_text
         else ""
     )
+    last_week_html = (
+        f'<span class="record-chip">{escape(record.last_week_record_text)}</span>'
+        if record.last_week_record_text
+        else ""
+    )
     return (
         '<div class="season-record-strip">'
         f'<span class="record-chip">{escape(record.week_record_text)}</span>'
+        f"{last_week_html}"
         f'<span class="record-chip">{escape(record.season_record_text)}</span>'
         f"{best_pick_html}"
         "</div>"

@@ -228,6 +228,8 @@ def weather_block(week, run_at):
     for p in sorted(base.glob("*/*/*/forecasts.parquet")):
         f = pd.read_parquet(p)
         f = f[(f["week"] == week) & (f["fetch_status"] == "ok")]
+        if f.empty:
+            continue
         f = f[pd.to_datetime(f["captured_at_utc"], utc=True) <= pd.Timestamp(run_at)]
         for _, a in f.iterrows():
             k = (a["game_id"], a["product_id"])
@@ -280,16 +282,18 @@ def rest_block(prev, home, away, kick):
     return {"home_days_since_last_game": days(home), "away_days_since_last_game": days(away)}
 
 
-def team_names(run_at):
+def team_names(run_at, teams):
     names = {}
-    for d in stamp_dirs(ROOT / "data" / "market" / "raw", run_at)[-3:]:
+    for d in reversed(stamp_dirs(ROOT / "data" / "market" / "raw", run_at)):
         q = pd.read_parquet(
             d / "quotes.parquet",
             columns=["home_team", "home_team_name", "away_team", "away_team_name"],
         )
         for _, a in q.drop_duplicates().iterrows():
-            names[a["home_team"]] = a["home_team_name"]
-            names[a["away_team"]] = a["away_team_name"]
+            names.setdefault(a["home_team"], a["home_team_name"])
+            names.setdefault(a["away_team"], a["away_team_name"])
+        if set(teams) <= names.keys():
+            break
     return names
 
 
@@ -304,7 +308,7 @@ def build_packet(week, run_at):
     teams = sorted({g["home"] for g in games} | {g["away"] for g in games})
     mk = market_block(run_at, week_start)
     inj = injuries_block(teams, run_at)
-    nicks = team_names(run_at)
+    nicks = team_names(run_at, teams)
     hl, hl_at = headlines_block(
         {t: nicks[t] for t in teams}, run_at, week_start - timedelta(days=7)
     )
