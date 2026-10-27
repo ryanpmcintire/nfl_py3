@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-27T22:52:10.892036+00:00`
+Refreshed at: `2026-10-27T22:59:55.351079+00:00`
 
 ## Start here
 
@@ -21,9 +21,9 @@ Refreshed at: `2026-10-27T22:52:10.892036+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `4aef60f50704` — Lock Week 8 from the pool board and show last week's record on the board
+- Baseline commit: `9c952133c2c9` — Record the pool leader's pick pattern against line moves and the field
 - Pending change set: 185 paths
-  - `A  docs/lanes/pool-leader-romana.md`
+  - `M  docs/lanes/pool-leader-romana.md`
   - `?? an.csv`
   - `?? docs/lanes/stealmybitcoin-ctf.md`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
