@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-28T08:57:29.847887+00:00`
+Refreshed at: `2026-10-28T08:57:47.057767+00:00`
 
 ## Start here
 
@@ -21,9 +21,9 @@ Refreshed at: `2026-10-28T08:57:29.847887+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `124c25f332a6` — Record the 2026 forward read of the walk-forward student and flag it as in-sample
+- Baseline commit: `e241d3ff745e` — Bring the walk-forward forward-read script to the lint rules
 - Pending change set: 185 paths
-  - `M  scripts/mod25_wf_forward.py`
+  - `M  docs/lanes/README.md`
   - `?? an.csv`
   - `?? docs/lanes/stealmybitcoin-ctf.md`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
