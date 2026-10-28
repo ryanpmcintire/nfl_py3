@@ -106,6 +106,7 @@ def sim_chunk(n_worlds, n_seasons, seed, workers):
 
     sd.os.environ.setdefault("QBC", "1")
     sd.os.environ["SIM10_FORM"] = "0"
+    sd.os.environ["SIM10_HECARRY"] = "1"
     params = engine_params()
     ws = np.random.SeedSequence(seed).spawn(n_worlds)
     tasks = [(w, ws[w], n_seasons) for w in range(n_worlds)]
@@ -182,7 +183,7 @@ def produce_chunk(k, worlds, seasons, workers):
     games[["game_id", "world", "sidx", "lat_d", "dxo", "dxd"]].to_parquet(d_ / "latents.parquet")
     settings = {
         "locked_defaults": "sim --tilt 5 --models 1 --pat 1 --mufree 1,4 --dr 1 --qstrata 1"
-        " --eoh outcome --droof 1 --drmu 0 --mulabel 1 --realsched 0 --form 0",
+        " --eoh outcome --droof 1 --drmu 0 --mulabel 1 --realsched 0 --form 0 --hecarry 1",
         "strength": str(STRENGTH.relative_to(REPO)),
         "bandwidths": str(BANDWIDTHS.relative_to(REPO)),
         "latent_setting": gen.SETTING_DEFAULTS,

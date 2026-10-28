@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-28T01:04:34.461115+00:00`
+Refreshed at: `2026-10-28T01:16:43.669241+00:00`
 
 ## Start here
 
@@ -21,12 +21,11 @@ Refreshed at: `2026-10-28T01:04:34.461115+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `ac63b057feba` — Record the wide-grid robust base targets: both lose picks, Huber resolved wrong sign in 2020-25
-- Pending change set: 188 paths
-  - `A  docs/lanes/mod23-unit10r-robust-wide.md`
-  - `M  registry/weak_signals/mod23_unit10_robust_target_wide.json`
-  - `A  scripts/mod23_unit10r_wide.py`
-  - ` M scripts/sim10_drive.py`
+- Baseline commit: `1a93f417e23f` — Record the garbage-time label arm: no gain, overlaps the denoised-target T2
+- Pending change set: 187 paths
+  - `M  docs/lanes/sim11-strength-transmission.md`
+  - `M  scripts/mod25_v3_produce.py`
+  - `M  scripts/sim10_drive.py`
   - `?? an.csv`
   - `?? docs/lanes/stealmybitcoin-ctf.md`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
@@ -43,7 +42,8 @@ Refreshed at: `2026-10-28T01:04:34.461115+00:00`
   - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
   - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
   - `?? registry/experiments/margin-backtest/20261008T161241Z.json`
-  - ...and 168 more
+  - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
+  - ...and 167 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

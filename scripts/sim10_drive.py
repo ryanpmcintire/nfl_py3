@@ -914,6 +914,7 @@ class Engine:
         self.h_reg = None if not h_reg else [pad_h(h_reg[str(r)]["h"]) for r in range(5)]
         self.h = pad_h(h)
         self.h_ot = pad_h(h if h_ot is None else h_ot)
+        self.hecarry = os.environ.get("SIM10_HECARRY") == "1"
         X = design(seg)
         ok = seg["bad"].to_numpy() == 0
         self.strata = {}
@@ -959,7 +960,10 @@ class Engine:
             h = h.copy()
             h[1] = h[1] * math.exp(self.g * (math.log1p(secs) - L0))
         z = (((X[:, fin] - q[fin]) / h[fin]) ** 2).sum(axis=1)
-        z[hem & (X[:, 2] < q[2])] = np.inf
+        early = hem & (X[:, 2] < q[2])
+        if self.hecarry and hf == 2 and q[1] > 0:
+            early &= ~(X[:, 1] > 0)
+        z[early] = np.inf
         w = np.exp(-0.5 * (z - z.min()))
         nz = np.flatnonzero(w > 1e-12)
         w = w[nz]
@@ -1919,6 +1923,7 @@ def load_h(path):
 def cmd_sim(a):
     t0 = time.time()
     os.environ["SIM10_FORM"] = str(int(a.form))
+    os.environ["SIM10_HECARRY"] = str(int(a.hecarry))
     h, ho, g, hr = load_h(a.h)
     tilt = tuple(int(v) for v in a.tilt.split(",")) if a.tilt else ()
     mf = tuple(int(v) for v in a.mufree.split(",")) if a.mufree else ()
@@ -2032,6 +2037,7 @@ def main():
     s.add_argument("--mulabel", type=int, default=1)
     s.add_argument("--realsched", type=int, default=0)
     s.add_argument("--form", type=int, default=0)
+    s.add_argument("--hecarry", type=int, default=1)
     s.add_argument("--label", default="sim10")
     s.add_argument("--h", default=str(OUT / "bandwidths_week.json"))
     a = ap.parse_args()
