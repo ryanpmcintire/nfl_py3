@@ -28,6 +28,8 @@ q4 -.084, mass14 .0510). Seed-level game-path noise ~1.5-2 strength points.
   (held-out +1.22 nats, form var 3.3e-3, season 8.9e-3); 2009-25 decay .8 +.27 nats, var 1.9e-3.
   Real schedules make consecutive opponents dissimilar (opp strength cov lags 1-4 -.84 v -.37,
   P .00), which hides form in raw EPA. Estimated R2 gain from form alone ~+6% (inferred).
+- Diagnosis (measured, artifacts/sim11/draws_lab21.parquet): achieved drive mu on sim true strength slope .68 in every non-end-of-half phase (sd tgt .103 v a_mu .071); drive EPA slope already matches real (lab21 all .664 v real .658), so the .94 is the label-matched target's cx attenuation: real mu (posterior mean) has sd ~.07 < sim true sd .103, so deconvolved targets leave support (old mulabel 0 = TD miss, tail ESS 13-31). Resampling cannot repair it without new support or a joint outcome/mu target; no legit fix found.
+- Rejected 2026-10-27: additive form latent (`--form 1`, SIM10_FORM; ratio 3.3e-3/8.9e-3, decay .8, seed 11 realsched): margin_sd 15.61 (fail), noise_re_var 191 (fail), q4 -.044, mass_3/7 fail, strength 53.0 pass, R2 .111 (no gain). Variance added on top inflates noise. Flag left default 0 (mod25_generator.py gen_world_latents form_ratio, sim10_drive.py FORM_*).
 
 ## Next
 1. Adopt `--realsched 1` as the protocol for every new comparison (like-for-like with the

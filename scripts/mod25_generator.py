@@ -494,14 +494,21 @@ def gen_world_latents(rng, n_seasons, fit, setting):
         qb_out = np.zeros((18, N_TEAMS), dtype=bool)
         state = np.zeros(N_TEAMS, dtype=bool)
         cur = lat.copy()
+        form_ratio = setting.get("form_ratio", 0.0)
+        if form_ratio > 0.0:
+            fphi = setting["form_phi"]
+            fsd = sd * math.sqrt(form_ratio)
+            form = (rng.standard_normal((N_TEAMS, 2)) @ L.T) * fsd
         for w in range(18):
+            if form_ratio > 0.0 and w > 0:
+                form = fphi * form + (rng.standard_normal((N_TEAMS, 2)) @ L.T) * fsd * math.sqrt(1 - fphi**2)
             if w > 0:
                 phi = np.array([phi_o, phi_d])
                 innov = (rng.standard_normal((N_TEAMS, 2)) @ L.T) * sd * np.sqrt(1 - phi**2)
                 cur = phi * cur + innov
             u = rng.random(N_TEAMS)
             state = np.where(state, u < qb["p_stay_out"], u < qb["p_start_out"])
-            weekly[w] = cur
+            weekly[w] = cur + form if form_ratio > 0.0 else cur
             qb_out[w] = state
         lat = cur
         seasons.append((weekly, qb_out))

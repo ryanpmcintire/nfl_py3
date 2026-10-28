@@ -1,0 +1,61 @@
+{
+  "family": "pool_hook_term_2026_10_27",
+  "signals": {
+    "pool_hook_side_2026_whole_line_games": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "39 games, below power",
+      "closing_ground": null,
+      "description": "2026 whole-number Tuesday games: side receiving the extra half point at the pool line covered 22 of 39 (56.4pct); 5 of 39 landed on the Tuesday number",
+      "effect": 6.4,
+      "effect_units": "rate_pp",
+      "family": "pool_hook_term_2026_10_27",
+      "interval": [
+        -9.3,
+        22.1
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.79,
+      "recorded_at": "2026-10-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 39,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "tests/scratch/pool_hook/whole_2026.csv",
+      "standard_error": 8.0
+    },
+    "pool_hook_term_logloss_loso_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "improvement interval above zero but only 34 push rows carry the information and their flag and move terms are imputed; not a closure",
+      "closing_ground": null,
+      "description": "Hook term (logit discrete cover prob at simulated pool line minus at market line, prior-season push mass) added to four-term pick fit, LOSO, graded at simulated pool line; log loss improvement per row; push-game feature terms imputed neutral",
+      "effect": 0.00051,
+      "effect_units": "log_loss_improvement",
+      "family": "pool_hook_term_2026_10_27",
+      "interval": [
+        0.00011,
+        0.00094
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.996,
+      "recorded_at": "2026-10-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/pool_hook/out.txt",
+      "standard_error": 0.00022
+    }
+  }
+}

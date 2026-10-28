@@ -1220,6 +1220,11 @@ def _init(
     _W["rsched"] = real_schedules() if real_sched else None
 
 
+FORM_VAR_NET = 3.3e-3
+FORM_SEASON_VAR_NET = 8.9e-3
+FORM_DECAY = 0.8
+
+
 def real_schedules():
     g = pd.read_parquet(OUT / "real_games.parquet")
     out = {}
@@ -1241,6 +1246,9 @@ def sim_world(task):
     eng = _W["eng"]
     fit = load_latent_fit()
     setting = dict(gen.SETTING_DEFAULTS)
+    if os.environ.get("SIM10_FORM") == "1":
+        setting["form_ratio"] = FORM_VAR_NET / FORM_SEASON_VAR_NET
+        setting["form_phi"] = FORM_DECAY
     grows, prow, ptm = [], [], []
     rng = np.random.default_rng(wseed)
     lat = gen.gen_world_latents(rng, n_seasons, fit, setting)
@@ -1909,6 +1917,7 @@ def load_h(path):
 
 def cmd_sim(a):
     t0 = time.time()
+    os.environ["SIM10_FORM"] = str(int(a.form))
     h, ho, g, hr = load_h(a.h)
     tilt = tuple(int(v) for v in a.tilt.split(",")) if a.tilt else ()
     mf = tuple(int(v) for v in a.mufree.split(",")) if a.mufree else ()
@@ -2021,6 +2030,7 @@ def main():
     s.add_argument("--drmu", type=int, default=0)
     s.add_argument("--mulabel", type=int, default=1)
     s.add_argument("--realsched", type=int, default=0)
+    s.add_argument("--form", type=int, default=0)
     s.add_argument("--label", default="sim10")
     s.add_argument("--h", default=str(OUT / "bandwidths_week.json"))
     a = ap.parse_args()

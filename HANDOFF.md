@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-28T00:46:32.867693+00:00`
+Refreshed at: `2026-10-28T00:49:20.760344+00:00`
 
 ## Start here
 
@@ -21,13 +21,13 @@ Refreshed at: `2026-10-28T00:46:32.867693+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `26c5cd85f220` — Queue the pool hook term and the new model lanes
+- Baseline commit: `ce5d34405daf` — Record the public ticket share term: no held-out gain on 255 covered games
 - Pending change set: 193 paths
-  - `M  docs/lanes/README.md`
-  - `A  docs/lanes/public-ticket-term.md`
-  - `A  registry/weak_signals/public_ticket_term_2026_10_27.json`
-  - ` M scripts/mod25_generator.py`
-  - ` M scripts/sim10_drive.py`
+  - `A  docs/lanes/pool-hook-term.md`
+  - `M  docs/lanes/sim11-strength-transmission.md`
+  - `A  registry/weak_signals/pool_hook_term_2026_10_27.json`
+  - `M  scripts/mod25_generator.py`
+  - `M  scripts/sim10_drive.py`
   - `?? an.csv`
   - `?? docs/lanes/mod23-unit10b-draft-capital-v2.md`
   - `?? docs/lanes/mod23-unit10r-robust-wide.md`
