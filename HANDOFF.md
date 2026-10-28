@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-28T02:09:40.682864+00:00`
+Refreshed at: `2026-10-28T02:39:52.801986+00:00`
 
 ## Start here
 
@@ -21,12 +21,10 @@ Refreshed at: `2026-10-28T02:09:40.682864+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `65ab2b87c609` — Name the sim era mismatch: latent fitted 2009-17, gates checked on 2011-25
-- Pending change set: 188 paths
-  - `M  ROADMAP.md`
-  - `M  docs/lanes/mod25-v3-sim11-distill.md`
-  - `A  registry/weak_signals/mod25_distillation_v3.json`
-  - ` M scripts/sim10_drive.py`
+- Baseline commit: `d23943cccb03` — Record MOD-25 v3 distillation on SIM-11 worlds: proxy era +1.26, true era flat
+- Pending change set: 186 paths
+  - `M  docs/lanes/sim11-strength-transmission.md`
+  - `M  scripts/sim10_drive.py`
   - `?? an.csv`
   - `?? docs/lanes/stealmybitcoin-ctf.md`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
@@ -43,7 +41,9 @@ Refreshed at: `2026-10-28T02:09:40.682864+00:00`
   - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
   - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
   - `?? registry/experiments/margin-backtest/20261008T161241Z.json`
-  - ...and 168 more
+  - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
+  - `?? registry/experiments/margin-backtest/20261009T161053Z.json`
+  - ...and 166 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

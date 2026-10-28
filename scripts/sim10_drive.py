@@ -915,6 +915,14 @@ class Engine:
         self.h = pad_h(h)
         self.h_ot = pad_h(h if h_ot is None else h_ot)
         self.hecarry = os.environ.get("SIM10_HECARRY") == "1"
+        self.kst = (0.0, 0.0)
+        self.st_m = 0.0
+        self.stl = None
+        self.punt = None
+        if os.environ.get("SIM10_STFULL"):
+            st_j = json.loads(Path(os.environ["SIM10_STFULL"]).read_text())
+            self.st_m = float(st_j["fg_make_rate"])
+            self.punt = np.load(st_j["punt_flags"]).astype(bool)
         X = design(seg)
         ok = seg["bad"].to_numpy() == 0
         self.strata = {}
@@ -990,6 +998,12 @@ class Engine:
             if self.sgam is not None:
                 p_ = phase_of_state(hf, secs)
                 tg = strength_adjust(tg, self.sgam[p_], q[5] - self.smbar[hm][p_])
+            if self.st_m:
+                kk = self.kst[0 if hm == 1 else 1]
+                lg_ = math.log(self.st_m / (1.0 - self.st_m)) + kk
+                ml = 1.0 / (1.0 + math.exp(-lg_))
+                tg = np.array(tg, dtype=np.float64)
+                tg[2] = tg[2] * ml / self.st_m
             tg0 = tg
             mt = q[5:6]
             if self.ptab is not None:
@@ -1024,6 +1038,14 @@ class Engine:
         c = np.cumsum(w)
         k = min(int(np.searchsorted(c, rng.random() * c[-1], side="right")), len(nz) - 1)
         return idx[nz[k]]
+
+    def st_shift(self, pos, other, scored, j):
+        a, b = self.stl[pos], self.stl[other]
+        if scored:
+            return a[2] - b[3] if self.nsame[j] != 1 else b[2] - a[3]
+        if self.punt[j] and self.nsame[j] != 1:
+            return a[0] - b[1]
+        return 0.0
 
     def pat_points(self, sdv, gsecs, season, rng):
         m, r = self.pat
@@ -1118,6 +1140,8 @@ class Engine:
             ny = self.nyl[j]
             if not scored:
                 ny = ny + d if self.nsame[j] == 1 else ny - d
+            if self.stl is not None:
+                ny = ny + self.st_shift(pos, other, scored, j)
             yl = min(99.0, max(1.0, ny))
             if self.nsame[j] != 1:
                 pos = other
@@ -1258,6 +1282,12 @@ def sim_world(task):
     rng = np.random.default_rng(wseed)
     lat = gen.gen_world_latents(rng, n_seasons, fit, setting)
     gseeds = wseed.spawn(n_seasons)
+    stl = None
+    if os.environ.get("SIM10_STFULL"):
+        st_j = json.loads(Path(os.environ["SIM10_STFULL"]).read_text())
+        ch = np.array(st_j["chol"])
+        krng = np.random.default_rng(wseed.spawn(1)[0])
+        stl = krng.standard_normal((n_seasons, gen.N_TEAMS, ch.shape[0])) @ ch.T
     rs = _W.get("rsched")
     perm = rng.permutation(gen.N_TEAMS) if rs else None
     for sidx, (weekly, qb_out) in enumerate(lat):
@@ -1271,6 +1301,9 @@ def sim_world(task):
         sid = w * 1000 + sidx + 1
         for gi, (week, h, a) in enumerate(sched):
             rh, ra = ratings[week][h], ratings[week][a]
+            if stl is not None:
+                eng.stl = (stl[sidx][h], stl[sidx][a])
+                eng.kst = (float(stl[sidx][h][4]), float(stl[sidx][a][4]))
             hs, as_, ms, reg, ot, pl = eng.game(grng, (rh, ra), season, week)
             gidn = f"w{w:04d}s{sidx:02d}g{gi:03d}"
             dl = (rh[0] + ra[1]) - (ra[0] + rh[1])
@@ -1515,7 +1548,9 @@ def latent_logo_stats(fit, n_worlds=200, n_seasons=6, seed=5):
 def cmd_latfit(a):
     import mod25_generator as gen
 
-    plays = gen.load_real_plays(SEASONS)
+    lo_, hi_ = (int(v) for v in a.seasons.split("-")) if a.seasons else (SEASONS[0], SEASONS[-1])
+    fit_seasons = tuple(range(lo_, hi_ + 1))
+    plays = gen.load_real_plays(fit_seasons)
     tg = gen.team_game_epa(plays)
     res = {"off": gen.fit_ar1(tg, "off"), "def": gen.fit_ar1(tg, "dfn")}
     for k, c in (("off", "off"), ("def", "dfn")):
@@ -1579,8 +1614,9 @@ def cmd_latfit(a):
         "target": target.tolist(),
         "sim": latent_logo_stats(res, seed=6).tolist(),
     }
-    res["seasons"] = list(SEASONS)
-    (OUT / "latent_fit.json").write_text(json.dumps(res, indent=1))
+    res["seasons"] = list(fit_seasons)
+    dest = Path(a.out) if a.out else OUT / "latent_fit.json"
+    dest.write_text(json.dumps(res, indent=1))
     print(
         json.dumps(
             {
@@ -1924,6 +1960,7 @@ def cmd_sim(a):
     t0 = time.time()
     os.environ["SIM10_FORM"] = str(int(a.form))
     os.environ["SIM10_HECARRY"] = str(int(a.hecarry))
+    os.environ["SIM10_STFULL"] = a.stfull
     h, ho, g, hr = load_h(a.h)
     tilt = tuple(int(v) for v in a.tilt.split(",")) if a.tilt else ()
     mf = tuple(int(v) for v in a.mufree.split(",")) if a.mufree else ()
@@ -2002,7 +2039,9 @@ def main():
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("build")
     sub.add_parser("real")
-    sub.add_parser("latfit")
+    lf = sub.add_parser("latfit")
+    lf.add_argument("--seasons", default="")
+    lf.add_argument("--out", default="")
     sub.add_parser("outfit")
     sub.add_parser("hgbsel")
     sub.add_parser("patfit")
@@ -2038,6 +2077,7 @@ def main():
     s.add_argument("--realsched", type=int, default=0)
     s.add_argument("--form", type=int, default=0)
     s.add_argument("--hecarry", type=int, default=1)
+    s.add_argument("--stfull", default="")
     s.add_argument("--label", default="sim10")
     s.add_argument("--h", default=str(OUT / "bandwidths_week.json"))
     a = ap.parse_args()
