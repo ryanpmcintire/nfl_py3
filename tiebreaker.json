@@ -4,9 +4,9 @@
   "comparison_total_blend_k01": 46.48088812880586,
   "consistency_note": "consistent with the CHI +3.5 pick",
   "current_median_total": 46.5,
-  "forecast_artifact": "margin_predictions/2026-week-08-20261027T221329Z",
+  "forecast_artifact": "margin_predictions/2026-week-08-20261028T161244Z",
   "game_id": "2026_08_CHI_SEA",
-  "generated_at_utc": "2026-10-27T22:35:37.468064+00:00",
+  "generated_at_utc": "2026-10-28T16:21:08.214062+00:00",
   "guess_away": 22,
   "guess_home": 24,
   "home": "SEA",
@@ -14,7 +14,7 @@
   "lattice_centre_margin": 2.126181988430416,
   "market_total": 46.5,
   "method_note": "one lattice, one margin, one total -- see docs/tiebreaker.md",
-  "model_id": "592f1a4f32149797",
+  "model_id": "eb93af233338a714",
   "pick_cover_probability": 0.5975599936620228,
   "pick_push_probability": 0.0,
   "pick_side": "AWAY",
@@ -31,7 +31,7 @@
   "total_move_baseline": {
     "blended_total": 45.54939750895483,
     "consistency_note": "consistent with the CHI +3.5 pick",
-    "generated_at_utc": "2026-10-27T22:35:37.468064+00:00",
+    "generated_at_utc": "2026-10-28T16:21:08.214062+00:00",
     "guess_away": 22,
     "guess_home": 24,
     "lattice_centre_margin": 2.126181988430416,
@@ -42,9 +42,20 @@
     "pick_spread_line": 3.5,
     "served_total": 45.54939750895483
   },
-  "total_move_fit": null,
-  "total_move_slope": null,
-  "total_move_status": "tuesday_baseline",
+  "total_move_deadline_utc": "2026-11-01T21:00:00+00:00",
+  "total_move_fit": {
+    "path": "artifacts\\tiebreaker_total_move\\fit.json",
+    "sha256": "05f969696ef8a6486c963f828bde358ed1513c639ca377d4c59d3098273f7ea4"
+  },
+  "total_move_quote": {
+    "books": 1,
+    "observed_at_utc": "2026-10-28T22:00:14.749000+00:00",
+    "path": "data\\market\\raw\\20261028T220014Z\\quotes.parquet",
+    "sha256": "1b461e012f02b457b80012850a47f84492fac53d877fa82e608b4267e3a1bf99"
+  },
+  "total_move_refreshed_at_utc": "2026-10-28T22:15:19.188872+00:00",
+  "total_move_slope": 0.8,
+  "total_move_status": "zero_adjustment",
   "tuesday_total": 46.5,
   "week": 8
 }

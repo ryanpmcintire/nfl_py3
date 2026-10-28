@@ -19,7 +19,7 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 
 | Date        | Matchup    | ATS prediction   | Cover chance   |
 |:------------|:-----------|:-----------------|:---------------|
-| Thu, Oct 29 | CAR at GB  | CAR +3.5         | 50.6%          |
+| Thu, Oct 29 | CAR at GB  | CAR +3.5         | 50.7%          |
 | Sun, Nov 01 | ARI at DAL | ARI +6.5         | 51.2%          |
 | Sun, Nov 01 | ATL at TB  | ATL +2.5         | 50.4%          |
 | Sun, Nov 01 | BAL at BUF | BAL +3.5         | 53.2%          |
@@ -30,7 +30,7 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 | Sun, Nov 01 | LV at NYJ  | LV +1.5          | 57.3%          |
 | Sun, Nov 01 | MIN at DET | MIN +3.5         | 52.1%          |
 | Sun, Nov 01 | NE at MIA  | NE -7.5          | 50.5%          |
-| Sun, Nov 01 | PHI at WAS | PHI +4.5         | 50.7%          |
+| Sun, Nov 01 | PHI at WAS | PHI +4.5         | 50.9%          |
 | Sun, Nov 01 | TEN at CIN | CIN -10.5        | 51.8%          |
 | Mon, Nov 02 | CHI at SEA | ★ CHI +3.5       | 59.7%          |
 
@@ -45,7 +45,7 @@ close. A close-graded number alone is never grounds to reject a candidate
 (see `AGENTS.md`); it is reported below only as the secondary figure it is.
 
 <!-- ACTIVE_MODEL_STATE:START -->
-Active model: `market_residual` with `weak_stack` features (`592f1a4f32149797`), regressor `ridge`, ridge alpha `10.0`, calibration `none`.
+Active model: `market_residual` with `weak_stack` features (`eb93af233338a714`), regressor `ridge`, ridge alpha `10.0`, calibration `none`.
 
 - **Opener-graded, probability-rule accuracy (the pool-relevant grade -- picks lock Tuesday against a frozen line):** **53.36%** on **1,537 paired games**, week-blocked 95% interval [50.76%, 55.90%].
 - Close-graded accuracy (secondary -- the market's sharpest, and least representative, decision point): **52.52%** (1,146 of 2,182 non-push games), week-blocked 95% interval [50.39%, 54.65%].
