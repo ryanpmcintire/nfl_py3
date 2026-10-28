@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-28T01:29:36.702411+00:00`
+Refreshed at: `2026-10-28T01:38:00.130678+00:00`
 
 ## Start here
 
@@ -21,7 +21,7 @@ Refreshed at: `2026-10-28T01:29:36.702411+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `a16c2595ec2e` — Reject the latent rescale as a compensating constant; name the next sim mechanisms
+- Baseline commit: `b3c0a37353e9` — Decompose the sim strength deficit: special teams missing, defensive per-play persistence 12% short
 - Pending change set: 185 paths
   - `M  docs/lanes/sim11-strength-transmission.md`
   - `?? an.csv`
