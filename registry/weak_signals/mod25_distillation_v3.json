@@ -1,0 +1,145 @@
+{
+  "family": "mod25_distillation_v3",
+  "signals": {
+    "mod25_v3_hgb_proxy_2011_2019_acc": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "season-block interval straddles zero",
+      "closing_ground": null,
+      "description": "Gradient-boosted student, SBR-open proxy 2011-19",
+      "effect": 1.3,
+      "effect_units": "accuracy_points",
+      "family": "mod25_distillation_v3",
+      "interval": [
+        -0.313,
+        3.049
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "In 2011-2019 the boosted simulator-trained model went 1171-1060 against the base 1142-1089.",
+      "probability_positive": 0.936,
+      "recorded_at": "2026-10-28",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod25_pipeline_v3/grade_hgb_nomkt.json",
+      "standard_error": null
+    },
+    "mod25_v3_hgb_true_2020_2025_acc": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "season-block interval straddles zero",
+      "closing_ground": null,
+      "description": "Gradient-boosted student on the same synthetic games; true opener 2020-25",
+      "effect": -0.266,
+      "effect_units": "accuracy_points",
+      "family": "mod25_distillation_v3",
+      "interval": [
+        -1.731,
+        1.417
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The boosted simulator-trained model went 798-705 against the base 802-701 in 2020-2025.",
+      "probability_positive": 0.36,
+      "recorded_at": "2026-10-28",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod25_pipeline_v3/grade_hgb_nomkt.json",
+      "standard_error": null
+    },
+    "mod25_v3_ridge_proxy_2011_2019_acc": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "season-block interval straddles zero; 6 of 9 seasons positive",
+      "closing_ground": null,
+      "description": "Same student, SBR-open proxy 2011-19",
+      "effect": 1.255,
+      "effect_units": "accuracy_points",
+      "family": "mod25_distillation_v3",
+      "interval": [
+        -0.27,
+        3.021
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "In 2011-2019 the simulator-trained model won 28 more picks than the base model (1170-1061 v 1142-1089).",
+      "probability_positive": 0.933,
+      "recorded_at": "2026-10-28",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod25_pipeline_v3/grade_ridge_nomkt.json",
+      "standard_error": null
+    },
+    "mod25_v3_ridge_proxy_2011_2019_logloss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "positive interval but not a closing ground; true era flat",
+      "closing_ground": null,
+      "description": "Same student, recalibrated log loss, SBR-open proxy 2011-19",
+      "effect": 0.00133,
+      "effect_units": "log_loss_improvement",
+      "family": "mod25_distillation_v3",
+      "interval": [
+        0.00019,
+        0.00242
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "In 2011-2019 the simulator-trained model's probabilities were better in 8 of 9 seasons.",
+      "probability_positive": 0.989,
+      "recorded_at": "2026-10-28",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod25_pipeline_v3/grade_ridge_nomkt.json",
+      "standard_error": null
+    },
+    "mod25_v3_ridge_true_2020_2025_acc": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "season-block interval straddles zero",
+      "closing_ground": null,
+      "description": "Student distilled from 130,560 SIM-11 synthetic games (hecarry default), ridge, transferred as one fitted term; true opener 2020-25",
+      "effect": -0.067,
+      "effect_units": "accuracy_points",
+      "family": "mod25_distillation_v3",
+      "interval": [
+        -1.02,
+        1.107
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The model trained on the improved simulator's games matched the base model in 2020-2025 (801-702 v 802-701).",
+      "probability_positive": 0.398,
+      "recorded_at": "2026-10-28",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod25_pipeline_v3/grade_ridge_nomkt.json",
+      "standard_error": null
+    }
+  }
+}

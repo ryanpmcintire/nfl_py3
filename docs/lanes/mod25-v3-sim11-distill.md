@@ -23,3 +23,11 @@ Orchestrator launches full v3 after the SIM-11 agent finishes (see commands belo
 
 ## Open
 Teams per world, schedule: random (make_schedule), season-to-real-season map is SIM-11 default. Engine files must be frozen before the full run (engine_sha in each meta). 
+
+## Result 2026-10-27 (measured, artifacts/mod25_pipeline_v3/, run.log)
+Full run: 8 chunks x 16,320 = 130,560 SIM-11 games (hecarry 1, latent 2009-17), about 5 min per chunk at 11 workers. Grades against base (802-701 2020-25; 1142-1089 2011-19 SBR open), season-block bootstrap:
+- ridge_nomkt: true 801-702, -0.07 pts [-1.02, 1.11] P+ 0.40, recal log loss flat (P+ 0.52); proxy 1170-1061, +1.26 [-0.27, 3.02] P+ 0.93, recal log loss +0.00133 [0.00019, 0.00242] P+ 0.989 (8/9 seasons).
+- hgb_nomkt: true 798-705, -0.27 P+ 0.36; proxy 1171-1060, +1.30 P+ 0.94, log loss +0.00128 [0.00017, 0.0024] P+ 0.990.
+- Fitted distillation weight falls with training length: 0.70 (last train 2010) to 0.22 (2025).
+v2 for comparison: true +0.20 P+ 0.58, proxy +0.63 P+ 0.70. Recorded family mod25_distillation_v3 (5 cells, unresolved_below_power). Not served (true era flat).
+Next: rerun after the era-aligned latent (rsdef) if the sim screens adopt it; the generator was fitted on 2009-17 while 2020-25 is the scored era.
