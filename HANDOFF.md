@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-28T00:56:41.399407+00:00`
+Refreshed at: `2026-10-28T00:58:09.783682+00:00`
 
 ## Start here
 
@@ -21,14 +21,12 @@ Refreshed at: `2026-10-28T00:56:41.399407+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `43e2018dab7f` — Defer serving the pool hook term to the next validation re-enrollment
-- Pending change set: 191 paths
-  - `M  docs/lanes/sim11-strength-transmission.md`
-  - `M  scripts/mod25_generator.py`
-  - `M  scripts/sim10_drive.py`
+- Baseline commit: `f12e77c8316b` — Record the variance-preserving form split: strength and late R2 both fall
+- Pending change set: 188 paths
+  - `A  docs/lanes/mod25-v3-sim11-distill.md`
+  - `A  scripts/mod25_v3_produce.py`
   - `?? an.csv`
   - `?? docs/lanes/mod23-unit10r-robust-wide.md`
-  - `?? docs/lanes/mod25-v3-sim11-distill.md`
   - `?? docs/lanes/stealmybitcoin-ctf.md`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -43,7 +41,9 @@ Refreshed at: `2026-10-28T00:56:41.399407+00:00`
   - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
   - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
   - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
-  - ...and 171 more
+  - `?? registry/experiments/margin-backtest/20261008T161241Z.json`
+  - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
+  - ...and 168 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
