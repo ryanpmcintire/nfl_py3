@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-28T01:00:52.254407+00:00`
+Refreshed at: `2026-10-28T01:04:34.461115+00:00`
 
 ## Start here
 
@@ -21,11 +21,13 @@ Refreshed at: `2026-10-28T01:00:52.254407+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `ead2a2ff3688` — Bring the MOD-25 v3 adapter to the lint rules
-- Pending change set: 187 paths
-  - `A  registry/weak_signals/mod23_unit10_robust_target_wide.json`
+- Baseline commit: `ac63b057feba` — Record the wide-grid robust base targets: both lose picks, Huber resolved wrong sign in 2020-25
+- Pending change set: 188 paths
+  - `A  docs/lanes/mod23-unit10r-robust-wide.md`
+  - `M  registry/weak_signals/mod23_unit10_robust_target_wide.json`
+  - `A  scripts/mod23_unit10r_wide.py`
+  - ` M scripts/sim10_drive.py`
   - `?? an.csv`
-  - `?? docs/lanes/mod23-unit10r-robust-wide.md`
   - `?? docs/lanes/stealmybitcoin-ctf.md`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -41,9 +43,7 @@ Refreshed at: `2026-10-28T01:00:52.254407+00:00`
   - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
   - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
   - `?? registry/experiments/margin-backtest/20261008T161241Z.json`
-  - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
-  - `?? registry/experiments/margin-backtest/20261009T161053Z.json`
-  - ...and 167 more
+  - ...and 168 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

@@ -57,6 +57,62 @@
       "source": "artifacts/mod23_unit10r_wide/run.log",
       "standard_error": null
     },
+    "mod23_unit10r_wide_T_sbr_2011_2019": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Robust target arm T paired vs base, 2011-2019; 1132-1099 vs 1142-1089.",
+      "effect": -0.44822949350067237,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit10_robust_target_wide",
+      "interval": [
+        -2.0197486535008977,
+        1.1612326931665922
+      ],
+      "league": "nfl",
+      "notes": "Base fit with margin without non-offensive touchdowns and garbage-time scoring at a cut chosen leave-one-season-out on prior seasons, arm T; six looks in this family (three arms, two eras), ten cumulative with the four of mod23_unit10_robust_target. Overlaps acc-u5 arm T2 (scrimmage EPA, wp 0.05-0.95), which went -0.73 pts in 2020-25; not independent.",
+      "plain_summary": "Capping extreme game margins in training, or down-weighting them with a robust loss, moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.282,
+      "recorded_at": "2026-10-28",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod23_unit10r_wide/report_all.json",
+      "standard_error": null
+    },
+    "mod23_unit10r_wide_T_tuesday_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Robust target arm T paired vs base, 2020-2025; 789-714 vs 802-701.",
+      "effect": -0.8649367930805056,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit10_robust_target_wide",
+      "interval": [
+        -2.1512838306731434,
+        0.32916392363396973
+      ],
+      "league": "nfl",
+      "notes": "Base fit with margin without non-offensive touchdowns and garbage-time scoring at a cut chosen leave-one-season-out on prior seasons, arm T; six looks in this family (three arms, two eras), ten cumulative with the four of mod23_unit10_robust_target. Overlaps acc-u5 arm T2 (scrimmage EPA, wp 0.05-0.95), which went -0.73 pts in 2020-25; not independent.",
+      "plain_summary": "Capping extreme game margins in training, or down-weighting them with a robust loss, moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.0975,
+      "recorded_at": "2026-10-28",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit10r_wide/report_all.json",
+      "standard_error": null
+    },
     "mod23_unit10r_wide_W_sbr_2011_2019": {
       "category": "modeling",
       "classification": "unresolved_below_power",
