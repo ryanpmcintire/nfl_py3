@@ -51,10 +51,12 @@ def tuesday_open(features):
     market = mfq.market_frame()
     k = pd.to_datetime(features["kickoff"], utc=True)
     out = {}
-    for gid, kick in zip(features["game_id"], k):
+    for gid, kick in zip(features["game_id"], k, strict=False):
         et = kick.tz_convert("America/New_York").normalize()
         tue = et - pd.Timedelta(days=(et.weekday() - 1) % 7)
-        g = market.loc[market["game_id"].eq(gid) & market["observed_at_utc"].ge(tue.tz_convert("UTC"))]
+        g = market.loc[
+            market["game_id"].eq(gid) & market["observed_at_utc"].ge(tue.tz_convert("UTC"))
+        ]
         if not g.empty:
             first = g.sort_values("observed_at_utc").iloc[0]
             out[gid] = (float(first["market_line"]), first["observed_at_utc"].isoformat())
@@ -71,7 +73,7 @@ def set_lines(features, lines):
 
 
 def score_all(merged, arm):
-    comb_cols = mfq.FULL_COLS + ["distilled_margin", "season"]
+    comb_cols = [*mfq.FULL_COLS, "distilled_margin", "season"]
     mfq.CapturingTwoStage.captured.clear()
     mfq.score_week(merged, 1, comb_cols, mfq.CapturingTwoStage)
     first = mfq.CapturingTwoStage.captured[0]
@@ -105,12 +107,17 @@ def boot_pos(delta):
     d = np.asarray(delta, float)
     means = d[rng.integers(0, len(d), size=(BOOT, len(d)))].mean(axis=1)
     lo, hi = np.percentile(means, [2.5, 97.5])
-    return {"mean": float(d.mean()), "lo": float(lo), "hi": float(hi), "p_pos": float((means > 0).mean())}
+    return {
+        "mean": float(d.mean()),
+        "lo": float(lo),
+        "hi": float(hi),
+        "p_pos": float((means > 0).mean()),
+    }
 
 
 def metrics(df):
     y = df["y_home"].to_numpy(float)
-    out = {"n": int(len(df))}
+    out = {"n": len(df)}
     ph = {"base": df["p_base"].to_numpy(float), "arm": df["p_arm"].to_numpy(float)}
     pick = {k: v > 0.5 for k, v in ph.items()}
     corr = {k: (pick[k] == (y == 1)).astype(float) for k in pick}
@@ -118,8 +125,13 @@ def metrics(df):
     out["arm_record"] = f"{int(corr['arm'].sum())}-{int(len(y) - corr['arm'].sum())}"
     diff = pick["base"] != pick["arm"]
     out["flips"] = int(diff.sum())
-    out["flip_arm_W_L"] = f"{int((corr['arm'][diff] > corr['base'][diff]).sum())}-{int((corr['arm'][diff] < corr['base'][diff]).sum())}"
-    ll = {k: -(y * np.log(np.clip(v, 1e-6, 1)) + (1 - y) * np.log(np.clip(1 - v, 1e-6, 1))) for k, v in ph.items()}
+    arm_won = int((corr["arm"][diff] > corr["base"][diff]).sum())
+    arm_lost = int((corr["arm"][diff] < corr["base"][diff]).sum())
+    out["flip_arm_W_L"] = f"{arm_won}-{arm_lost}"
+    ll = {
+        k: -(y * np.log(np.clip(v, 1e-6, 1)) + (1 - y) * np.log(np.clip(1 - v, 1e-6, 1)))
+        for k, v in ph.items()
+    }
     br = {k: (v - y) ** 2 for k, v in ph.items()}
     out["logloss_base"] = float(ll["base"].mean())
     out["logloss_arm"] = float(ll["arm"].mean())
@@ -129,14 +141,21 @@ def metrics(df):
     out["logloss_gain"] = boot_pos(ll["base"] - ll["arm"])
     out["brier_gain"] = boot_pos(br["base"] - br["arm"])
     out["by_week_acc_diff_points"] = {
-        int(w): float(100 * (corr["arm"][df["week"].to_numpy() == w] - corr["base"][df["week"].to_numpy() == w]).mean())
+        int(w): float(
+            100
+            * (
+                corr["arm"][df["week"].to_numpy() == w] - corr["base"][df["week"].to_numpy() == w]
+            ).mean()
+        )
         for w in sorted(df["week"].unique())
     }
-    out["by_week_record_arm_base"] = {
-        int(w): f"{int(corr['arm'][df['week'].to_numpy() == w].sum())}-{int((df['week'] == w).sum() - corr['arm'][df['week'].to_numpy() == w].sum())}"
-        f" / {int(corr['base'][df['week'].to_numpy() == w].sum())}-{int((df['week'] == w).sum() - corr['base'][df['week'].to_numpy() == w].sum())}"
-        for w in sorted(df["week"].unique())
-    }
+    weeks = df["week"].to_numpy()
+    by_week = {}
+    for w in sorted(df["week"].unique()):
+        m = weeks == w
+        a_w, b_w, n_w = int(corr["arm"][m].sum()), int(corr["base"][m].sum()), int(m.sum())
+        by_week[int(w)] = f"{a_w}-{n_w - a_w} / {b_w}-{n_w - b_w}"
+    out["by_week_record_arm_base"] = by_week
     return out
 
 
@@ -153,14 +172,20 @@ def main():
     check = now26["game_id"].map(splash)
     diff = (check - now26["spread_line"]).abs()
     report = {
-        "games": int(len(now26)),
+        "games": len(now26),
         "splash_games": int(check.notna().sum()),
         "table_vs_splash_max_abs_diff": float(diff.max()),
         "table_vs_splash_n_diff": int((diff > 0).sum()),
     }
     openers = tuesday_open(now26)
     report["tuesday_open_available"] = len(openers)
-    variants = {"pool": {g: splash.get(g, l) for g, l in zip(now26["game_id"], now26["spread_line"])}, "open": {g: v[0] for g, v in openers.items()}}
+    variants = {
+        "pool": {
+            g: splash.get(g, line)
+            for g, line in zip(now26["game_id"], now26["spread_line"], strict=False)
+        },
+        "open": {g: v[0] for g, v in openers.items()},
+    }
     for arm in ARMS:
         d = dist[["game_id", arm]].rename(columns={arm: "distilled_margin"})
         for name in a.variants.split(","):
