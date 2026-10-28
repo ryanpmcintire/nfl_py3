@@ -1,0 +1,117 @@
+{
+  "family": "mod23_unit10b_draft_capital_v2",
+  "signals": {
+    "mod23_unit10b_draft_capital_v2_A_sbr_2013_2019_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Starter draft capital arm A paired vs base, 2013-2019; 887-844 vs 897-834.",
+      "effect": -0.5777007510109763,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit10b_draft_capital_v2",
+      "interval": [
+        -1.6939252336448598,
+        0.4043905257076834
+      ],
+      "league": "nfl",
+      "notes": "Corrected v2 (nflverse draft picks, pfr then gsis join). Base fit plus starter draft-capital inputs, arm A (offence/defence draft pick and years in league); four looks (two arms, two eras); cumulative look count with v1 is 8.",
+      "plain_summary": "Adding the draft pedigree and experience of last week's starters to the base inputs moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.1191,
+      "recorded_at": "2026-10-28",
+      "reliability": null,
+      "sample_blocks": 7,
+      "sample_games": 1731,
+      "seasons": [
+        2013,
+        2019
+      ],
+      "source": "artifacts/mod23_unit10b_v2/report_all.json",
+      "standard_error": null
+    },
+    "mod23_unit10b_draft_capital_v2_A_tuesday_2020_2025_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Starter draft capital arm A paired vs base, 2020-2025; 809-694 vs 802-701.",
+      "effect": 0.4657351962741184,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit10b_draft_capital_v2",
+      "interval": [
+        -0.6510416666666666,
+        1.7053206002728514
+      ],
+      "league": "nfl",
+      "notes": "Corrected v2 (nflverse draft picks, pfr then gsis join). Base fit plus starter draft-capital inputs, arm A (offence/defence draft pick and years in league); four looks (two arms, two eras); cumulative look count with v1 is 8.",
+      "plain_summary": "Adding the draft pedigree and experience of last week's starters to the base inputs moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.7499,
+      "recorded_at": "2026-10-28",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit10b_v2/report_all.json",
+      "standard_error": null
+    },
+    "mod23_unit10b_draft_capital_v2_B_sbr_2013_2019_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Starter draft capital arm B paired vs base, 2013-2019; 905-826 vs 897-834.",
+      "effect": 0.4621606008087811,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit10b_draft_capital_v2",
+      "interval": [
+        -0.8111239860950173,
+        1.6203703703703705
+      ],
+      "league": "nfl",
+      "notes": "Corrected v2 (nflverse draft picks, pfr then gsis join). Base fit plus starter draft-capital inputs, arm B (offence/defence draft pick only); four looks (two arms, two eras); cumulative look count with v1 is 8.",
+      "plain_summary": "Adding the draft pedigree and experience of last week's starters to the base inputs moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.75705,
+      "recorded_at": "2026-10-28",
+      "reliability": null,
+      "sample_blocks": 7,
+      "sample_games": 1731,
+      "seasons": [
+        2013,
+        2019
+      ],
+      "source": "artifacts/mod23_unit10b_v2/report_all.json",
+      "standard_error": null
+    },
+    "mod23_unit10b_draft_capital_v2_B_tuesday_2020_2025_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Starter draft capital arm B paired vs base, 2020-2025; 804-699 vs 802-701.",
+      "effect": 0.1330671989354624,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit10b_draft_capital_v2",
+      "interval": [
+        -0.47554347826086957,
+        0.7973421926910299
+      ],
+      "league": "nfl",
+      "notes": "Corrected v2 (nflverse draft picks, pfr then gsis join). Base fit plus starter draft-capital inputs, arm B (offence/defence draft pick only); four looks (two arms, two eras); cumulative look count with v1 is 8.",
+      "plain_summary": "Adding the draft pedigree and experience of last week's starters to the base inputs moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.59955,
+      "recorded_at": "2026-10-28",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit10b_v2/report_all.json",
+      "standard_error": null
+    }
+  }
+}

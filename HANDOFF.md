@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-28T00:50:15.782969+00:00`
+Refreshed at: `2026-10-28T00:52:44.931387+00:00`
 
 ## Start here
 
@@ -21,11 +21,15 @@ Refreshed at: `2026-10-28T00:50:15.782969+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `dce5f3dbfcde` — Record the strength-transmission diagnosis, the rejected additive form latent, and the pool hook term
-- Pending change set: 189 paths
-  - `M  scripts/mod25_generator.py`
+- Baseline commit: `6334bb0b96fd` — Wrap the form shock line in the generator to the line limit
+- Pending change set: 192 paths
+  - `A  docs/lanes/mod23-unit10b-draft-capital-v2.md`
+  - ` M docs/lanes/sim11-strength-transmission.md`
+  - `A  registry/weak_signals/mod23_unit10b_draft_capital_v2.json`
+  - `A  scripts/mod23_unit10b_v2.py`
+  - ` M scripts/mod25_generator.py`
+  - ` M scripts/sim10_drive.py`
   - `?? an.csv`
-  - `?? docs/lanes/mod23-unit10b-draft-capital-v2.md`
   - `?? docs/lanes/mod23-unit10r-robust-wide.md`
   - `?? docs/lanes/stealmybitcoin-ctf.md`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
@@ -39,11 +43,7 @@ Refreshed at: `2026-10-28T00:50:15.782969+00:00`
   - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
   - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
   - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
-  - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
-  - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
-  - `?? registry/experiments/margin-backtest/20261008T161241Z.json`
-  - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
-  - ...and 169 more
+  - ...and 172 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
