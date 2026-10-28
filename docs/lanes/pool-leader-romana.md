@@ -24,3 +24,4 @@ Find what the FTPL pool leader (ROMANA-EMPIRE, 70-37 through Week 7) does that o
 
 ## Open
 - None; the decision follows the held-out test.
+- Unit 3 (2026-10-27, measured, tests/scratch/pool_relative_move/pool_sim.py): history re-graded at a simulated pool line (Tuesday open; integer lines split +-0.5, matching 2026 where integer Tuesday lines were posted 0.5 off 38/39 times). 2023-25: served 444/799 (55.6%); pool-move fit 452 (56.6%) vs served refit 450 (56.3%), +0.17 pts all years P+ 0.55; pure follow-the-move 54.9%, >=1 pt 54.6%. Served side against the pool-relative move 146.5/649 moved games, 51.9% there (2026 live: 8-16, P(<=8|0.52)=0.05). 2026 against-move picks: 11 were a flag flipping the model side (3-8), 12 the model's own side (5-7); flags other than protection were dropped 10-25. Recorded pool_hook_simulated_move_fit_loso_2020_2025.

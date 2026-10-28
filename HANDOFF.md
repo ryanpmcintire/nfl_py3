@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-27T23:01:46.639965+00:00`
+Refreshed at: `2026-10-28T00:27:21.583978+00:00`
 
 ## Start here
 
@@ -21,10 +21,10 @@ Refreshed at: `2026-10-27T23:01:46.639965+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `7449f0c180ce` — Record why the card loses to the pool leader: picks against the pool-relative line move
+- Baseline commit: `95354a91b774` — Record the held-out pool-relative move test: unresolved, forward log next
 - Pending change set: 186 paths
   - `M  docs/lanes/pool-leader-romana.md`
-  - `A  registry/weak_signals/pool_relative_move_2026_10_27.json`
+  - `M  registry/weak_signals/pool_relative_move_2026_10_27.json`
   - `?? an.csv`
   - `?? docs/lanes/stealmybitcoin-ctf.md`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`

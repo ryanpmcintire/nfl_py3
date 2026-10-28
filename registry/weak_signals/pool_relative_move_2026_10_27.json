@@ -1,6 +1,34 @@
 {
   "family": "pool_relative_move_2026_10_27",
   "signals": {
+    "pool_hook_simulated_move_fit_loso_2020_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "simulated half-point pool line from the Tuesday open (integer lines split +-0.5); pool-relative move fit vs served refit graded at that line; interval straddles zero; no wrong-sign resolution, no positive control",
+      "closing_ground": null,
+      "description": "Four-term fit with move = lock-cutoff leader median minus a simulated half-point pool line, LOSO 2020-2025, graded at the simulated pool line; pure follow-the-move rules 54.3-54.7% vs served 55.4%",
+      "effect": 0.17,
+      "effect_units": "accuracy_points",
+      "family": "pool_relative_move_2026_10_27",
+      "interval": [
+        -1.9,
+        2.22
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Grading history at a pool-style half-point line, weighting the line move off the pool number did not beat the current card; plain follow-the-move was worse.",
+      "probability_positive": 0.554,
+      "recorded_at": "2026-10-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/pool_relative_move/pool_sim.py",
+      "standard_error": null
+    },
     "pool_relative_move_term_loso_2020_2025": {
       "category": "market",
       "classification": "unresolved_below_power",
