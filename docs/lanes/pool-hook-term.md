@@ -9,8 +9,11 @@ Script tests/scratch/pool_hook/hook.py, output tests/scratch/pool_hook/out.txt (
 ## Tried
 Pooled prior-season push mass within +-1 spread point; hook = logit(0.5(1-/+p0)); 2020 has no prior seasons so hook 0 there.
 
+## Rebuild (measured, 2026-10-27)
+rebuild.py/hook2.py/week8.py in tests/scratch/pool_hook; out2.txt, out_week8.txt. Rebuilt 34 push rows with served code paths (max diff 0.0 vs served on 1503 rows). Push model_logit was already real; 5 of 34 have a nonzero protection flag; none are in the served market-move table (move 0/0 as served). Result unchanged: accuracy +0.10 pts (P+ 0.585), Brier +0.00026 (P+ 0.997), log loss +0.00051 (P+ 0.996), hook coef 0.77-0.88. In-sample 54.62 pct vs OOS 54.81. Week 8 2026: 5 whole-number Tuesday games, mean abs hook contribution 0.085 logit, max 0.155. Recorded accuracy cell, replaced logloss cell.
+
 ## Next
-Served opener population drops pushes, so the graded fit has no hook information; 34 push games were added with neutral imputed flag/move terms. Rebuild push rows with real features before any serving decision. Hook coef near 1 matches the mechanism (it is partly mechanical).
+Hook coef near 1 matches the mechanism (partly mechanical). Serving needs per-game pool line capture and a push-inclusive fit population (market-move table lacks pushes).
 
 ## Open
 Does serving need the pool line captured per game (forward log)? 2020 prior-season p0 gap.

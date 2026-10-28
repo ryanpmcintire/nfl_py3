@@ -29,12 +29,40 @@
       "source": "tests/scratch/pool_hook/whole_2026.csv",
       "standard_error": 8.0
     },
+    "pool_hook_term_accuracy_loso_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval wide at 80 differing games; below power",
+      "closing_ground": null,
+      "description": "Same LOSO hook fit, accuracy points at simulated pool line with pushes rebuilt; cards differ on 80.5 weighted games, 41.0 vs 39.5 wins",
+      "effect": 0.098,
+      "effect_units": "accuracy_points",
+      "family": "pool_hook_term_2026_10_27",
+      "interval": [
+        -0.801,
+        1.005
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.585,
+      "recorded_at": "2026-10-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/pool_hook/out2.txt",
+      "standard_error": null
+    },
     "pool_hook_term_logloss_loso_2020_2025": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "improvement interval above zero but only 34 push rows carry the information and their flag and move terms are imputed; not a closure",
+      "classification_evidence": "gain concentrated on 661 whole-line rows and partly mechanical (coef 0.77-0.88 near 1); simulated pool line, not captured; not a closure",
       "closing_ground": null,
-      "description": "Hook term (logit discrete cover prob at simulated pool line minus at market line, prior-season push mass) added to four-term pick fit, LOSO, graded at simulated pool line; log loss improvement per row; push-game feature terms imputed neutral",
+      "description": "Hook term (logit discrete cover prob at simulated pool line minus at market line, prior-season push mass) added to four-term pick fit, LOSO, graded at simulated pool line; log loss improvement per row; 34 push rows rebuilt with served model_logit and flag_protection (move unavailable in served market table for all 34, so 0/0 as served)",
       "effect": 0.00051,
       "effect_units": "log_loss_improvement",
       "family": "pool_hook_term_2026_10_27",
@@ -54,7 +82,7 @@
         2020,
         2025
       ],
-      "source": "tests/scratch/pool_hook/out.txt",
+      "source": "tests/scratch/pool_hook/out2.txt",
       "standard_error": 0.00022
     }
   }
