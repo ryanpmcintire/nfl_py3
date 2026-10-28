@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-28T00:59:05.366991+00:00`
+Refreshed at: `2026-10-28T01:00:52.254407+00:00`
 
 ## Start here
 
@@ -21,9 +21,9 @@ Refreshed at: `2026-10-28T00:59:05.366991+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `6d07f3b53a0d` — Add the MOD-25 v3 adapter that feeds SIM-11 worlds to the distillation pipeline
+- Baseline commit: `ead2a2ff3688` — Bring the MOD-25 v3 adapter to the lint rules
 - Pending change set: 187 paths
-  - `M  scripts/mod25_v3_produce.py`
+  - `A  registry/weak_signals/mod23_unit10_robust_target_wide.json`
   - `?? an.csv`
   - `?? docs/lanes/mod23-unit10r-robust-wide.md`
   - `?? docs/lanes/stealmybitcoin-ctf.md`

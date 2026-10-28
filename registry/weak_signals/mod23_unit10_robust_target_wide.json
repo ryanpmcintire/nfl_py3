@@ -1,0 +1,117 @@
+{
+  "family": "mod23_unit10_robust_target_wide",
+  "signals": {
+    "mod23_unit10r_wide_H_sbr_2011_2019": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "season-block interval straddles zero",
+      "closing_ground": null,
+      "description": "Huber base target, wide epsilon grid, SBR-open proxy era",
+      "effect": -0.134,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit10_robust_target_wide",
+      "interval": [
+        -1.023,
+        0.678
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Down-weighting blowouts with a Huber fit changed little in 2011-2019 (1139-1092 v 1142-1089).",
+      "probability_positive": 0.351,
+      "recorded_at": "2026-10-28",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod23_unit10r_wide/run.log",
+      "standard_error": null
+    },
+    "mod23_unit10r_wide_H_tuesday_2020_2025": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "whole season-block interval below zero (-1.42, -0.32)",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Huber base target, wide epsilon grid, true opener era",
+      "effect": -0.865,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit10_robust_target_wide",
+      "interval": [
+        -1.415,
+        -0.322
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Down-weighting blowouts with a Huber fit lost picks in 2020-2025 (789-714 v 802-701), with the whole interval below zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-10-28",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit10r_wide/run.log",
+      "standard_error": null
+    },
+    "mod23_unit10r_wide_W_sbr_2011_2019": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "season-block interval straddles zero; q grid 0.4-1.0 inner LOSO",
+      "closing_ground": null,
+      "description": "Winsorized ats_margin target, wide q grid, base ridge alpha 10, SBR-open proxy era",
+      "effect": -0.717,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit10_robust_target_wide",
+      "interval": [
+        -1.921,
+        0.718
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Capping blowout margins in training lost picks in 2011-2019 (1126-1105 v 1142-1089).",
+      "probability_positive": 0.134,
+      "recorded_at": "2026-10-28",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod23_unit10r_wide/run.log",
+      "standard_error": null
+    },
+    "mod23_unit10r_wide_W_tuesday_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "season-block interval straddles zero; log loss 0.6942 v base 0.6969 but accuracy lower",
+      "closing_ground": null,
+      "description": "Winsorized ats_margin target, wide q grid, true opener era",
+      "effect": -0.998,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit10_robust_target_wide",
+      "interval": [
+        -2.475,
+        0.278
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Capping blowout margins lost picks in 2020-2025 (787-716 v 802-701) though its probabilities were slightly better.",
+      "probability_positive": 0.077,
+      "recorded_at": "2026-10-28",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit10r_wide/run.log",
+      "standard_error": null
+    }
+  }
+}
