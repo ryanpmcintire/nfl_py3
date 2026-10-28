@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-28T03:36:13.858191+00:00`
+Refreshed at: `2026-10-28T03:54:18.491102+00:00`
 
 ## Start here
 
@@ -21,9 +21,11 @@ Refreshed at: `2026-10-28T03:36:13.858191+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `9b172fa04f82` — Add the late field-goal decision fit to the sim (default off); mass_3 shortfall is not era
-- Pending change set: 186 paths
+- Baseline commit: `75897ab61696` — Add the Q4 score-state FG fit to the sim (default off): mass_3 passes with the era-aligned latent
+- Pending change set: 188 paths
+  - `M  ROADMAP.md`
   - `M  docs/lanes/sim11-strength-transmission.md`
+  - `M  scripts/mod25_v3_produce.py`
   - `M  scripts/sim10_drive.py`
   - `?? an.csv`
   - `?? docs/lanes/stealmybitcoin-ctf.md`
@@ -41,9 +43,7 @@ Refreshed at: `2026-10-28T03:36:13.858191+00:00`
   - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
   - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
   - `?? registry/experiments/margin-backtest/20261008T161241Z.json`
-  - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
-  - `?? registry/experiments/margin-backtest/20261009T161053Z.json`
-  - ...and 166 more
+  - ...and 168 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

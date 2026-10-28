@@ -2027,10 +2027,30 @@ def q4dec_fit(eng):
                 keep = gain > 0.0
                 if keep:
                     out[nm][f"{r}_{b_}"] = float(full)
-                print(nm, "regime", r, "bin", b_, "n", int(s_.sum()), "events", int(y[s_].sum()),
-                      "pred", round(float(m[s_].mean()), 4), "act", round(float(y[s_].mean()), 4),
-                      "coef", round(full, 3), "loso", round(min(coefs), 3), round(max(coefs), 3),
-                      "heldout_dLL", round(gain, 2), "kept", keep)
+                print(
+                    nm,
+                    "regime",
+                    r,
+                    "bin",
+                    b_,
+                    "n",
+                    int(s_.sum()),
+                    "events",
+                    int(y[s_].sum()),
+                    "pred",
+                    round(float(m[s_].mean()), 4),
+                    "act",
+                    round(float(y[s_].mean()), 4),
+                    "coef",
+                    round(full, 3),
+                    "loso",
+                    round(min(coefs), 3),
+                    round(max(coefs), 3),
+                    "heldout_dLL",
+                    round(gain, 2),
+                    "kept",
+                    keep,
+                )
     return out
 
 
@@ -2066,8 +2086,19 @@ def fgdec_fit(eng):
             newton(y[s_ & (season != yr)], off[s_ & (season != yr)], dec[s_ & (season != yr)])
             for yr in np.unique(season[s_])
         ]
-        print("regime", r, "n", int(s_.sum()), "decisive", int((s_ & (dec == 1)).sum()),
-              "coef", round(out[str(r)], 3), "loso range", round(min(loso), 3), round(max(loso), 3))
+        print(
+            "regime",
+            r,
+            "n",
+            int(s_.sum()),
+            "decisive",
+            int((s_ & (dec == 1)).sum()),
+            "coef",
+            round(out[str(r)], 3),
+            "loso range",
+            round(min(loso), 3),
+            round(max(loso), 3),
+        )
     return out
 
 
@@ -2076,8 +2107,24 @@ def sim_params(a):
     tilt = tuple(int(v) for v in a.tilt.split(",")) if a.tilt else ()
     mf = tuple(int(v) for v in a.mufree.split(",")) if a.mufree else ()
     st = json.loads(Path(a.strength).read_text()) if a.strength else None
-    return (h, ho, g, hr, tilt, bool(a.models), bool(a.pat), mf, bool(a.dr), bool(a.qstrata),
-            a.eoh, st, bool(a.droof), bool(a.drmu), bool(a.mulabel), bool(a.realsched))
+    return (
+        h,
+        ho,
+        g,
+        hr,
+        tilt,
+        bool(a.models),
+        bool(a.pat),
+        mf,
+        bool(a.dr),
+        bool(a.qstrata),
+        a.eoh,
+        st,
+        bool(a.droof),
+        bool(a.drmu),
+        bool(a.mulabel),
+        bool(a.realsched),
+    )
 
 
 def cmd_fgdec(a):
@@ -2094,6 +2141,7 @@ def cmd_q4dec(a):
 
 def cmd_sim(a):
     t0 = time.time()
+    os.environ["SIM10_LATENT"] = a.latent
     os.environ["SIM10_Q4DEC"] = a.q4dec
     os.environ["SIM10_FGDEC"] = a.fgdec
     os.environ["SIM10_FORM"] = str(int(a.form))
@@ -2217,7 +2265,8 @@ def main():
     s.add_argument("--hecarry", type=int, default=1)
     s.add_argument("--stfull", default="")
     s.add_argument("--fgdec", default="")
-    s.add_argument("--q4dec", default="")
+    s.add_argument("--q4dec", default=str(OUT / "q4dec_fg.json"))
+    s.add_argument("--latent", default=str(OUT / "latent_fit_2009_25.json"))
     s.add_argument("--label", default="sim10")
     s.add_argument("--h", default=str(OUT / "bandwidths_week.json"))
     fd = sub.add_parser("fgdec")
@@ -2227,8 +2276,9 @@ def main():
     for act in s._actions:
         if act.dest not in ("help", "label") and act.default is not None:
             for sp in (fd, qd):
-                sp.add_argument(*act.option_strings, default=act.default, type=act.type,
-                                choices=act.choices)
+                sp.add_argument(
+                    *act.option_strings, default=act.default, type=act.type, choices=act.choices
+                )
     a = ap.parse_args()
     {
         "build": build,
