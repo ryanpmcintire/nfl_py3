@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-28T00:27:21.583978+00:00`
+Refreshed at: `2026-10-28T00:35:08.313645+00:00`
 
 ## Start here
 
@@ -21,7 +21,7 @@ Refreshed at: `2026-10-28T00:27:21.583978+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `95354a91b774` — Record the held-out pool-relative move test: unresolved, forward log next
+- Baseline commit: `98eb6c37367b` — Backtest following the line move off a simulated pool line
 - Pending change set: 186 paths
   - `M  docs/lanes/pool-leader-romana.md`
   - `M  registry/weak_signals/pool_relative_move_2026_10_27.json`

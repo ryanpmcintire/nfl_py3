@@ -1,6 +1,34 @@
 {
   "family": "pool_relative_move_2026_10_27",
   "signals": {
+    "best_pick_moved_side_restriction_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "served Best Pick vs the same pick restricted to games the line moved toward, simulated pool lines; only 1 of 54 weeks differs",
+      "closing_ground": null,
+      "description": "Best Pick rules at simulated half-point pool lines 2023-2025: served 35-19, biggest move 33.9-20.1, biggest move toward a dog 35.2-18.8, served among line-moved-toward games 36-18",
+      "effect": 1.85,
+      "effect_units": "accuracy_points",
+      "family": "pool_relative_move_2026_10_27",
+      "interval": [
+        0.0,
+        5.56
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "In history our Best Pick already lands on a game the line moved toward in 53 of 54 weeks; restricting it changes one week.",
+      "probability_positive": 0.641,
+      "recorded_at": "2026-10-28",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 54,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "tests/scratch/pool_relative_move/best_pick_sim.py",
+      "standard_error": null
+    },
     "pool_hook_simulated_move_fit_loso_2020_2025": {
       "category": "market",
       "classification": "unresolved_below_power",
