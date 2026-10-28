@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-28T02:57:05.314986+00:00`
+Refreshed at: `2026-10-28T03:36:13.858191+00:00`
 
 ## Start here
 
@@ -21,7 +21,7 @@ Refreshed at: `2026-10-28T02:57:05.314986+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `49ab81f0932f` — Add era-aligned latent and special-teams options to the sim (default off); 3-seed screens recorded
+- Baseline commit: `9b172fa04f82` — Add the late field-goal decision fit to the sim (default off); mass_3 shortfall is not era
 - Pending change set: 186 paths
   - `M  docs/lanes/sim11-strength-transmission.md`
   - `M  scripts/sim10_drive.py`

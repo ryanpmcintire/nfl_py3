@@ -48,6 +48,8 @@ HALF_SECS = {1: 1800.0, 2: 1800.0}
 SUDDEN_DEATH = {2009, 2010, 2011}
 FG_POINTS = 3.0
 FG_DEC_LO = -FG_POINTS
+TD_PLUS_2PT = 8.0
+Q4_SD_EDGES = (-TD_PLUS_2PT, -FG_POINTS, 0.0, 1.0, FG_POINTS + 1.0, TD_PLUS_2PT + 1.0)
 
 
 def load_pbp():
@@ -920,6 +922,9 @@ class Engine:
         self.fgdec = None
         if os.environ.get("SIM10_FGDEC"):
             self.fgdec = json.loads(Path(os.environ["SIM10_FGDEC"]).read_text())
+        self.q4dec = None
+        if os.environ.get("SIM10_Q4DEC"):
+            self.q4dec = json.loads(Path(os.environ["SIM10_Q4DEC"]).read_text())
         self.kst = (0.0, 0.0)
         self.st_m = 0.0
         self.stl = None
@@ -1013,6 +1018,13 @@ class Engine:
                 cf_ = self.fgdec.get(str(regime(hf, secs)), 0.0)
                 tg = np.array(tg, dtype=np.float64)
                 tg[2] = 1.0 / (1.0 + math.exp(-(math.log(tg[2] / (1.0 - tg[2])) + cf_)))
+            if self.q4dec is not None and hf == 2 and secs <= Q4_SECS:
+                key_ = f"{regime(hf, secs)}_{q4_bin(q[1])}"
+                tg = np.array(tg, dtype=np.float64)
+                for k_, nm_ in ((1, "td"), (2, "fg")):
+                    cf_ = self.q4dec[nm_].get(key_, 0.0)
+                    if cf_:
+                        tg[k_] = 1.0 / (1.0 + math.exp(-(math.log(tg[k_] / (1.0 - tg[k_])) + cf_)))
             tg0 = tg
             mt = q[5:6]
             if self.ptab is not None:
@@ -1965,9 +1977,66 @@ def load_h(path):
     return h, ho, 0.0, None
 
 
+def q4_bin(sd):
+    return sum(sd >= e for e in Q4_SD_EDGES)
+
+
+def q4dec_fit(eng):
+    rows = []
+    for (hf, _hm, _qq), (idx, X, _hem) in eng.strata.items():
+        if hf != 2:
+            continue
+        secs = np.expm1(X[:, 2])
+        for r in range(len(idx)):
+            rg = regime(2, secs[r])
+            if rg in (3, 4):
+                rows.append((idx[r], rg, q4_bin(X[r, 1]), X[r, 6]))
+    R = np.array(rows)
+    ix, reg, bn, season = R[:, 0].astype(int), R[:, 1], R[:, 2], R[:, 3]
+
+    def newton(yy, oo):
+        b = 0.0
+        for _ in range(50):
+            p = 1 / (1 + np.exp(-(oo + b)))
+            b += (yy - p).sum() / ((p * (1 - p)).sum() + 1e-9)
+        return b
+
+    def ll(yy, oo, b):
+        p = np.clip(1 / (1 + np.exp(-(oo + b))), 1e-9, 1 - 1e-9)
+        return float((yy * np.log(p) + (1 - yy) * np.log(1 - p)).sum())
+
+    out = {"td": {}, "fg": {}}
+    for nm, k in (("td", 1), ("fg", 2)):
+        y = eng.out_arr[ix, k]
+        m = np.clip(eng.m_arr[ix, k], 1e-4, 1 - 1e-4)
+        off = np.log(m / (1 - m))
+        for r in (3, 4):
+            for b_ in range(len(Q4_SD_EDGES) + 1):
+                s_ = (reg == r) & (bn == b_)
+                if s_.sum() < 2 or y[s_].sum() < 1:
+                    continue
+                full = newton(y[s_], off[s_])
+                gain = 0.0
+                coefs = []
+                for yr in np.unique(season[s_]):
+                    tr = s_ & (season != yr)
+                    te = s_ & (season == yr)
+                    c_ = newton(y[tr], off[tr])
+                    coefs.append(c_)
+                    gain += ll(y[te], off[te], c_) - ll(y[te], off[te], 0.0)
+                keep = gain > 0.0
+                if keep:
+                    out[nm][f"{r}_{b_}"] = float(full)
+                print(nm, "regime", r, "bin", b_, "n", int(s_.sum()), "events", int(y[s_].sum()),
+                      "pred", round(float(m[s_].mean()), 4), "act", round(float(y[s_].mean()), 4),
+                      "coef", round(full, 3), "loso", round(min(coefs), 3), round(max(coefs), 3),
+                      "heldout_dLL", round(gain, 2), "kept", keep)
+    return out
+
+
 def fgdec_fit(eng):
     rows = []
-    for (hf, hm, qq), (idx, X, hem) in eng.strata.items():
+    for (hf, _hm, _qq), (idx, X, _hem) in eng.strata.items():
         if hf != 2:
             continue
         secs = np.expm1(X[:, 2])
@@ -2017,8 +2086,15 @@ def cmd_fgdec(a):
     Path(a.out).write_text(json.dumps(out, indent=1))
 
 
+def cmd_q4dec(a):
+    _init(*sim_params(a))
+    out = q4dec_fit(_W["eng"])
+    Path(a.out).write_text(json.dumps(out, indent=1))
+
+
 def cmd_sim(a):
     t0 = time.time()
+    os.environ["SIM10_Q4DEC"] = a.q4dec
     os.environ["SIM10_FGDEC"] = a.fgdec
     os.environ["SIM10_FORM"] = str(int(a.form))
     os.environ["SIM10_HECARRY"] = str(int(a.hecarry))
@@ -2141,14 +2217,18 @@ def main():
     s.add_argument("--hecarry", type=int, default=1)
     s.add_argument("--stfull", default="")
     s.add_argument("--fgdec", default="")
+    s.add_argument("--q4dec", default="")
     s.add_argument("--label", default="sim10")
     s.add_argument("--h", default=str(OUT / "bandwidths_week.json"))
     fd = sub.add_parser("fgdec")
     fd.add_argument("--out", default=str(OUT / "fgdec.json"))
+    qd = sub.add_parser("q4dec")
+    qd.add_argument("--out", default=str(OUT / "q4dec.json"))
     for act in s._actions:
         if act.dest not in ("help", "label") and act.default is not None:
-            fd.add_argument(*act.option_strings, default=act.default, type=act.type,
-                            choices=act.choices)
+            for sp in (fd, qd):
+                sp.add_argument(*act.option_strings, default=act.default, type=act.type,
+                                choices=act.choices)
     a = ap.parse_args()
     {
         "build": build,
@@ -2160,6 +2240,7 @@ def main():
         "real": cmd_real,
         "sim": cmd_sim,
         "fgdec": cmd_fgdec,
+        "q4dec": cmd_q4dec,
         "fit": cmd_fit,
         "fitreg": cmd_fitreg,
     }[a.cmd](a)
