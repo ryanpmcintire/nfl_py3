@@ -1,6 +1,34 @@
 {
   "family": "mod25_distillation_walkforward",
   "signals": {
+    "mod25_wf_hgb_forward_2026_w01_w07": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "in-sample base refit; interval straddles zero",
+      "closing_ground": null,
+      "description": "Walk-forward hgb student, T2026 state from 2009-2025, 2026 W1-7 at pool lines, 107 games, vs base",
+      "effect": -0.9346,
+      "effect_units": "accuracy_points",
+      "family": "mod25_distillation_walkforward",
+      "interval": [
+        -8.4112,
+        6.5421
+      ],
+      "league": "nfl",
+      "notes": "base and arm were scored with the current base model, which is refit weekly on 2026 results, so Weeks 1-7 are in-sample: base read 64-43 while the model-alone picks recorded before kickoff went 59-48. Not a clean forward read; redo from the per-week locked predictions.",
+      "plain_summary": "Scored against a base model already refit on these weeks, so this read does not count.",
+      "probability_positive": 0.351,
+      "recorded_at": "2026-10-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 107,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/sim10_wf/forward_2026/report.json",
+      "standard_error": null
+    },
     "mod25_wf_hgb_true_2020_2025_acc": {
       "category": "modeling",
       "classification": "unresolved_below_power",
@@ -27,6 +55,34 @@
         2025
       ],
       "source": "artifacts/sim10_wf/pipeline/grade_hgb_nomkt.json",
+      "standard_error": null
+    },
+    "mod25_wf_ridge_forward_2026_w01_w07": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "in-sample base refit; interval straddles zero",
+      "closing_ground": null,
+      "description": "Walk-forward ridge student, T2026 state from 2009-2025, 2026 W1-7 at pool lines, 107 games, vs base",
+      "effect": -0.9346,
+      "effect_units": "accuracy_points",
+      "family": "mod25_distillation_walkforward",
+      "interval": [
+        -7.4766,
+        5.6075
+      ],
+      "league": "nfl",
+      "notes": "base and arm were scored with the current base model, which is refit weekly on 2026 results, so Weeks 1-7 are in-sample: base read 64-43 while the model-alone picks recorded before kickoff went 59-48. Not a clean forward read; redo from the per-week locked predictions.",
+      "plain_summary": "Scored against a base model already refit on these weeks, so this read does not count.",
+      "probability_positive": 0.3395,
+      "recorded_at": "2026-10-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 107,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/sim10_wf/forward_2026/report.json",
       "standard_error": null
     },
     "mod25_wf_ridge_true_2020_2025_acc": {

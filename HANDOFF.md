@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-28T08:18:39.999930+00:00`
+Refreshed at: `2026-10-28T08:56:48.676489+00:00`
 
 ## Start here
 
@@ -21,9 +21,11 @@ Refreshed at: `2026-10-28T08:18:39.999930+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `f7dc9a6b9a4a` — Record the clean walk-forward synthetic-data test: no gain on 2020-25
-- Pending change set: 185 paths
-  - `M  docs/lanes/sim11-strength-transmission.md`
+- Baseline commit: `68c5bc9a982f` — Record the late-season R2 search: no fitted mechanism closes the last .002; drift, defence and QB shocks ruled out
+- Pending change set: 187 paths
+  - `M  docs/lanes/mod25-v3-sim11-distill.md`
+  - `M  registry/weak_signals/mod25_distillation_walkforward.json`
+  - `A  scripts/mod25_wf_forward.py`
   - `?? an.csv`
   - `?? docs/lanes/stealmybitcoin-ctf.md`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
@@ -41,9 +43,7 @@ Refreshed at: `2026-10-28T08:18:39.999930+00:00`
   - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
   - `?? registry/experiments/margin-backtest/20261008T161241Z.json`
   - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
-  - `?? registry/experiments/margin-backtest/20261009T161053Z.json`
-  - `?? registry/experiments/margin-backtest/20261010T160851Z.json`
-  - ...and 165 more
+  - ...and 167 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
