@@ -14,8 +14,9 @@ sys.path.insert(0, str(REPO / "scripts"))
 sys.path.insert(0, str(REPO / "src"))
 
 PBP_DIR = REPO / "data" / "pbp" / "raw" / "20260925T202544Z"
-OUT = REPO / "artifacts" / "sim10"
-SEASONS = tuple(range(2009, 2018))
+OUT = Path(os.environ.get("SIM10_OUT", str(REPO / "artifacts" / "sim10")))
+SEASON_WINDOW = [int(v) for v in os.environ.get("SIM10_SEASONS", "2009-2017").split("-")]
+SEASONS = tuple(range(SEASON_WINDOW[0], SEASON_WINDOW[-1] + 1))
 COLS = [
     "game_id",
     "play_id",

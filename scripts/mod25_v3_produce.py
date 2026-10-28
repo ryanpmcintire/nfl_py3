@@ -1,6 +1,7 @@
 import argparse
 import hashlib
 import json
+import os
 import sys
 import time
 from pathlib import Path
@@ -17,8 +18,12 @@ import sim10_drive as sd  # noqa: E402
 
 SYN = REPO / "data" / "processed" / "synthetic" / "sim11_v3"
 OUT = REPO / "artifacts" / "mod25_pipeline_v3"
-STRENGTH = REPO / "artifacts" / "sim11" / "strength_terms.json"
-BANDWIDTHS = sd.OUT / "bandwidths_week.json"
+STRENGTH = Path(
+    os.environ.get("MOD25_STRENGTH", str(REPO / "artifacts" / "sim11" / "strength_terms.json"))
+)
+BANDWIDTHS = Path(os.environ.get("MOD25_BANDWIDTHS", str(sd.OUT / "bandwidths_week.json")))
+LATENT = Path(os.environ.get("MOD25_LATENT", str(sd.OUT / "latent_fit_2009_25.json")))
+Q4DEC = Path(os.environ.get("MOD25_Q4DEC", str(sd.OUT / "q4dec_fg.json")))
 SEED_BASE = 8000
 ENGINE_FILES = ("sim10_drive.py", "mod25_generator.py", "mod25_pipeline.py")
 
@@ -107,8 +112,8 @@ def sim_chunk(n_worlds, n_seasons, seed, workers):
     sd.os.environ.setdefault("QBC", "1")
     sd.os.environ["SIM10_FORM"] = "0"
     sd.os.environ["SIM10_HECARRY"] = "1"
-    sd.os.environ["SIM10_LATENT"] = str(sd.OUT / "latent_fit_2009_25.json")
-    sd.os.environ["SIM10_Q4DEC"] = str(sd.OUT / "q4dec_fg.json")
+    sd.os.environ["SIM10_LATENT"] = str(LATENT)
+    sd.os.environ["SIM10_Q4DEC"] = str(Q4DEC)
     params = engine_params()
     ws = np.random.SeedSequence(seed).spawn(n_worlds)
     tasks = [(w, ws[w], n_seasons) for w in range(n_worlds)]
@@ -189,6 +194,9 @@ def produce_chunk(k, worlds, seasons, workers):
         " --latent latent_fit_2009_25.json --q4dec q4dec_fg.json",
         "strength": str(STRENGTH.relative_to(REPO)),
         "bandwidths": str(BANDWIDTHS.relative_to(REPO)),
+        "latent": str(LATENT.relative_to(REPO)),
+        "q4dec": str(Q4DEC.relative_to(REPO)),
+        "window": list(sd.SEASONS),
         "latent_setting": gen.SETTING_DEFAULTS,
     }
     meta = {

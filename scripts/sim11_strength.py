@@ -1,6 +1,7 @@
 import argparse
 import json
 import math
+import os
 import sys
 import time
 from pathlib import Path
@@ -13,7 +14,7 @@ sys.path.insert(0, str(REPO / "scripts"))
 sys.path.insert(0, str(REPO / "src"))
 import sim10_drive as sd  # noqa: E402
 
-OUT = REPO / "artifacts" / "sim11"
+OUT = Path(os.environ.get("SIM11_OUT", str(REPO / "artifacts" / "sim11")))
 PHASES = ["q1", "q2", "end1h", "q3", "q4", "end2h", "ot"]
 LOG = []
 GI = [0]
