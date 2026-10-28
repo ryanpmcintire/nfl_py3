@@ -17,3 +17,8 @@ Hook coef near 1 matches the mechanism (partly mechanical). Serving needs per-ga
 
 ## Open
 Does serving need the pool line captured per game (forward log)? 2020 prior-season p0 gap.
+
+## Serve attempt (2026-10-27) BLOCKED by source guard
+src/nfl_ats/independent_validation.py:38-49 PINNED_NAMES includes pick_probability.py, card_view.py, pick_refresh.py (read); _sources() also pins any name with model/margin or ending features.py/_overlay.py. Study combined_vs_raw_2026_w07_w18_v4 (frozen coefficients, enrollment 2026-10-20) would fail its source guard on any edit. No file edited. pick_probability_fit.py is not pinned but its FIT_FEATURES must match pick_probability.py. Decision needed: re-enroll v5 same session as the edit (per memory pinned-source rule), then implement. Design notes: hook2.py builds p0 from prior seasons within +-1 spread point (not a full discrete distribution); 2020 hook 0.
+
+Orchestrator decision 2026-10-27: serving needs edits to pinned files (independent_validation.py PINNED_NAMES: pick_probability.py, card_view.py, pick_refresh.py), which would void validation v4 (enrolled 2026-10-20, Weeks 7-18). The hook's value is calibration (accuracy +0.10 pts), not worth losing two prospective weeks alone. Bundle it with the next servable change that needs pinned edits (likely MOD-25 v3 distillation) and enroll v5 once, in the same session as the edit.

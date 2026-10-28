@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-28T00:54:33.740065+00:00`
+Refreshed at: `2026-10-28T00:56:06.425700+00:00`
 
 ## Start here
 
@@ -21,16 +21,15 @@ Refreshed at: `2026-10-28T00:54:33.740065+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `6fe53ba873b4` — Record starter draft capital v2 with the corrected draft join: no held-out gain
-- Pending change set: 193 paths
-  - `M  ROADMAP.md`
+- Baseline commit: `9c85675c587e` — Record the pool hook term with rebuilt push rows: calibration gain resolved
+- Pending change set: 192 paths
   - `M  docs/lanes/pool-hook-term.md`
   - ` M docs/lanes/sim11-strength-transmission.md`
-  - `M  registry/weak_signals/pool_hook_term_2026_10_27.json`
   - ` M scripts/mod25_generator.py`
   - ` M scripts/sim10_drive.py`
   - `?? an.csv`
   - `?? docs/lanes/mod23-unit10r-robust-wide.md`
+  - `?? docs/lanes/mod25-v3-sim11-distill.md`
   - `?? docs/lanes/stealmybitcoin-ctf.md`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -43,7 +42,8 @@ Refreshed at: `2026-10-28T00:54:33.740065+00:00`
   - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
   - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
   - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
-  - ...and 173 more
+  - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
+  - ...and 172 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
