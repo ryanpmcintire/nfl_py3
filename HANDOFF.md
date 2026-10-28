@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-28T05:17:48.497995+00:00`
+Refreshed at: `2026-10-28T08:12:30.949654+00:00`
 
 ## Start here
 
@@ -21,13 +21,10 @@ Refreshed at: `2026-10-28T05:17:48.497995+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `cbc226e24d09` — Record MOD-25 v4 and correct v3/v4: proxy-era gains are contaminated by the drive library
-- Pending change set: 189 paths
+- Baseline commit: `cdcbb421994c` — Add walk-forward generator states for MOD-25: library and fits from seasons before each test season
+- Pending change set: 186 paths
   - `M  docs/lanes/mod25-v3-sim11-distill.md`
-  - `M  scripts/mod25_v3_produce.py`
-  - `A  scripts/mod25_wf.py`
-  - `M  scripts/sim10_drive.py`
-  - `M  scripts/sim11_strength.py`
+  - `A  registry/weak_signals/mod25_distillation_walkforward.json`
   - `?? an.csv`
   - `?? docs/lanes/stealmybitcoin-ctf.md`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
@@ -43,7 +40,10 @@ Refreshed at: `2026-10-28T05:17:48.497995+00:00`
   - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
   - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
   - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
-  - ...and 169 more
+  - `?? registry/experiments/margin-backtest/20261008T161241Z.json`
+  - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
+  - `?? registry/experiments/margin-backtest/20261009T161053Z.json`
+  - ...and 166 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

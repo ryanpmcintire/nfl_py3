@@ -1,0 +1,61 @@
+{
+  "family": "mod25_distillation_walkforward",
+  "signals": {
+    "mod25_wf_hgb_true_2020_2025_acc": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "season-block interval straddles zero; 3/6 seasons positive (2025 +3.75, 2023 -3.38)",
+      "closing_ground": null,
+      "description": "Walk-forward synthetic student, gradient-boosted, same per-season states",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod25_distillation_walkforward",
+      "interval": [
+        -1.83,
+        1.8
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The boosted walk-forward simulator model tied the base model exactly in 2020-2025 (802-701).",
+      "probability_positive": 0.471,
+      "recorded_at": "2026-10-28",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim10_wf/pipeline/grade_hgb_nomkt.json",
+      "standard_error": null
+    },
+    "mod25_wf_ridge_true_2020_2025_acc": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "season-block interval straddles zero; 2/6 seasons positive (2024 +0.75, 2025 +2.25)",
+      "closing_ground": null,
+      "description": "Walk-forward synthetic student: for each test season T the SIM-11 drive library, outcome fits, strength terms, latent and q4dec are built from seasons < T; 65k games per T; ridge student as one fitted term; graded at the real opener",
+      "effect": -0.53,
+      "effect_units": "accuracy_points",
+      "family": "mod25_distillation_walkforward",
+      "interval": [
+        -1.84,
+        0.84
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Built cleanly from earlier seasons only, the simulator-trained model went 794-708 against the base 802-701 in 2020-2025.",
+      "probability_positive": 0.197,
+      "recorded_at": "2026-10-28",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim10_wf/pipeline/grade_ridge_nomkt.json",
+      "standard_error": null
+    }
+  }
+}
