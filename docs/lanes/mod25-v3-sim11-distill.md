@@ -31,3 +31,8 @@ Full run: 8 chunks x 16,320 = 130,560 SIM-11 games (hecarry 1, latent 2009-17), 
 - Fitted distillation weight falls with training length: 0.70 (last train 2010) to 0.22 (2025).
 v2 for comparison: true +0.20 P+ 0.58, proxy +0.63 P+ 0.70. Recorded family mod25_distillation_v3 (5 cells, unresolved_below_power). Not served (true era flat).
 Next: rerun after the era-aligned latent (rsdef) if the sim screens adopt it; the generator was fitted on 2009-17 while 2020-25 is the scored era.
+
+## v4 result and correction 2026-10-28 (measured)
+v4 = adopted SIM-11 default (era latent 2009-25, q4dec, hecarry), 130,560 games, artifacts/mod25_pipeline_v4/. True 2020-25: ridge 795-708 (-0.47, P+ .26), hgb 799-704 (-0.20, P+ .32), log loss flat. Proxy 2011-19: ridge 1179-1052 (+1.66 [0.18, 3.35], P+ .987), hgb +1.61 (P+ .990).
+CORRECTION (read): the generator's drive library is real 2009-17 drives (scripts/sim10_drive.py SEASONS, line 18), which contains the 2011-17 test seasons. The proxy-era gains of v3 and v4 are chronologically contaminated and do not count; registry cells re-annotated. The clean test is 2020-25 (library before the test era), where neither v3 (-0.07) nor v4 (-0.47) helps. v4's latent variance was fitted on 2009-25 (global parameters overlapping the test era; mild).
+Next: walk-forward library. For each test season T in 2020-25, build the drive library and latent fit from seasons < T only (extend the library past 2017), produce a smaller synthetic set per T, train, and score season T. That is the only admissible synthetic-data test of the current era.

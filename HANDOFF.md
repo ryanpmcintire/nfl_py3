@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-28T03:54:18.491102+00:00`
+Refreshed at: `2026-10-28T04:45:11.089259+00:00`
 
 ## Start here
 
@@ -21,12 +21,12 @@ Refreshed at: `2026-10-28T03:54:18.491102+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `75897ab61696` — Add the Q4 score-state FG fit to the sim (default off): mass_3 passes with the era-aligned latent
+- Baseline commit: `0e2afd7eaf32` — Adopt the era-aligned latent and Q4 FG fit as the sim default: 13/14 gates on the 6-seed mean
 - Pending change set: 188 paths
   - `M  ROADMAP.md`
-  - `M  docs/lanes/sim11-strength-transmission.md`
-  - `M  scripts/mod25_v3_produce.py`
-  - `M  scripts/sim10_drive.py`
+  - `M  docs/lanes/mod25-v3-sim11-distill.md`
+  - `M  registry/weak_signals/mod25_distillation_v3.json`
+  - `A  registry/weak_signals/mod25_distillation_v4.json`
   - `?? an.csv`
   - `?? docs/lanes/stealmybitcoin-ctf.md`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`

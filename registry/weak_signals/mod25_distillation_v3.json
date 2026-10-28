@@ -4,7 +4,7 @@
     "mod25_v3_hgb_proxy_2011_2019_acc": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "season-block interval straddles zero",
+      "classification_evidence": "chronologically contaminated",
       "closing_ground": null,
       "description": "Gradient-boosted student, SBR-open proxy 2011-19",
       "effect": 1.3,
@@ -15,8 +15,8 @@
         3.049
       ],
       "league": "nfl",
-      "notes": "",
-      "plain_summary": "In 2011-2019 the boosted simulator-trained model went 1171-1060 against the base 1142-1089.",
+      "notes": "the generator's drive library is real 2009-17 drives (sim10_drive.py SEASONS), which contains the 2011-17 test seasons: chronology not clean, not admissible as out-of-sample evidence",
+      "plain_summary": "The boosted 2011-2019 gain does not count: the simulator was built from those seasons' drives.",
       "probability_positive": 0.936,
       "recorded_at": "2026-10-28",
       "reliability": null,
@@ -60,7 +60,7 @@
     "mod25_v3_ridge_proxy_2011_2019_acc": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "season-block interval straddles zero; 6 of 9 seasons positive",
+      "classification_evidence": "chronologically contaminated",
       "closing_ground": null,
       "description": "Same student, SBR-open proxy 2011-19",
       "effect": 1.255,
@@ -71,8 +71,8 @@
         3.021
       ],
       "league": "nfl",
-      "notes": "",
-      "plain_summary": "In 2011-2019 the simulator-trained model won 28 more picks than the base model (1170-1061 v 1142-1089).",
+      "notes": "the generator's drive library is real 2009-17 drives (sim10_drive.py SEASONS), which contains the 2011-17 test seasons: chronology not clean, not admissible as out-of-sample evidence",
+      "plain_summary": "In 2011-2019 the simulator-trained model won 28 more picks than the base, but the simulator was built from those seasons' drives, so this does not count.",
       "probability_positive": 0.933,
       "recorded_at": "2026-10-28",
       "reliability": null,
@@ -88,7 +88,7 @@
     "mod25_v3_ridge_proxy_2011_2019_logloss": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "positive interval but not a closing ground; true era flat",
+      "classification_evidence": "chronologically contaminated",
       "closing_ground": null,
       "description": "Same student, recalibrated log loss, SBR-open proxy 2011-19",
       "effect": 0.00133,
@@ -99,8 +99,8 @@
         0.00242
       ],
       "league": "nfl",
-      "notes": "",
-      "plain_summary": "In 2011-2019 the simulator-trained model's probabilities were better in 8 of 9 seasons.",
+      "notes": "the generator's drive library is real 2009-17 drives (sim10_drive.py SEASONS), which contains the 2011-17 test seasons: chronology not clean, not admissible as out-of-sample evidence",
+      "plain_summary": "The 2011-2019 probability gain does not count: the simulator was built from those seasons' drives.",
       "probability_positive": 0.989,
       "recorded_at": "2026-10-28",
       "reliability": null,

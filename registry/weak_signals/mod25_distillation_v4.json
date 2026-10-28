@@ -1,0 +1,117 @@
+{
+  "family": "mod25_distillation_v4",
+  "signals": {
+    "mod25_v4_hgb_proxy_2011_2019_acc": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval above zero but chronologically contaminated",
+      "closing_ground": null,
+      "description": "Boosted student, SBR-open proxy 2011-19",
+      "effect": 1.61,
+      "effect_units": "accuracy_points",
+      "family": "mod25_distillation_v4",
+      "interval": [
+        0.22,
+        3.13
+      ],
+      "league": "nfl",
+      "notes": "the generator's drive library is real 2009-17 drives (sim10_drive.py SEASONS), which contains the 2011-17 test seasons: chronology not clean, not admissible as out-of-sample evidence",
+      "plain_summary": "In 2011-2019 the boosted simulator-trained model went 1178-1053, but the simulator was built from those seasons' drives, so this does not count.",
+      "probability_positive": 0.99,
+      "recorded_at": "2026-10-28",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod25_pipeline_v4/grade_hgb_nomkt.json",
+      "standard_error": null
+    },
+    "mod25_v4_hgb_true_2020_2025_acc": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "season-block interval straddles zero",
+      "closing_ground": null,
+      "description": "Boosted student on the same synthetic games; true opener 2020-25",
+      "effect": -0.2,
+      "effect_units": "accuracy_points",
+      "family": "mod25_distillation_v4",
+      "interval": [
+        -1.43,
+        1.54
+      ],
+      "league": "nfl",
+      "notes": "latent variance parameters fitted on 2009-25 overlap the test seasons",
+      "plain_summary": "The boosted simulator-trained model went 799-704 against the base 802-701 in 2020-2025.",
+      "probability_positive": 0.323,
+      "recorded_at": "2026-10-28",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod25_pipeline_v4/grade_hgb_nomkt.json",
+      "standard_error": null
+    },
+    "mod25_v4_ridge_proxy_2011_2019_acc": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval above zero but chronologically contaminated",
+      "closing_ground": null,
+      "description": "Same ridge student, SBR-open proxy 2011-19",
+      "effect": 1.66,
+      "effect_units": "accuracy_points",
+      "family": "mod25_distillation_v4",
+      "interval": [
+        0.18,
+        3.35
+      ],
+      "league": "nfl",
+      "notes": "the generator's drive library is real 2009-17 drives (sim10_drive.py SEASONS), which contains the 2011-17 test seasons: chronology not clean, not admissible as out-of-sample evidence",
+      "plain_summary": "In 2011-2019 the simulator-trained model went 1179-1052 against 1142-1089, but the simulator was built from those same seasons' drives, so this does not count.",
+      "probability_positive": 0.987,
+      "recorded_at": "2026-10-28",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod25_pipeline_v4/grade_ridge_nomkt.json",
+      "standard_error": null
+    },
+    "mod25_v4_ridge_true_2020_2025_acc": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "season-block interval straddles zero",
+      "closing_ground": null,
+      "description": "Student distilled from 130,560 games of the adopted SIM-11 default (era latent 2009-25, q4dec), ridge, one fitted term; true opener 2020-25",
+      "effect": -0.47,
+      "effect_units": "accuracy_points",
+      "family": "mod25_distillation_v4",
+      "interval": [
+        -1.92,
+        1.16
+      ],
+      "league": "nfl",
+      "notes": "latent variance parameters were fitted on 2009-25, which overlaps the test seasons (global parameters only)",
+      "plain_summary": "The model trained on the finished simulator's games went 795-708 against the base 802-701 in 2020-2025.",
+      "probability_positive": 0.255,
+      "recorded_at": "2026-10-28",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod25_pipeline_v4/grade_ridge_nomkt.json",
+      "standard_error": null
+    }
+  }
+}
