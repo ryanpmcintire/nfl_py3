@@ -31,6 +31,8 @@ q4 -.084, mass14 .0510). Seed-level game-path noise ~1.5-2 strength points.
 - Diagnosis (measured, artifacts/sim11/draws_lab21.parquet): achieved drive mu on sim true strength slope .68 in every non-end-of-half phase (sd tgt .103 v a_mu .071); drive EPA slope already matches real (lab21 all .664 v real .658), so the .94 is the label-matched target's cx attenuation: real mu (posterior mean) has sd ~.07 < sim true sd .103, so deconvolved targets leave support (old mulabel 0 = TD miss, tail ESS 13-31). Resampling cannot repair it without new support or a joint outcome/mu target; no legit fix found.
 - Rejected 2026-10-27: additive form latent (`--form 1`, SIM10_FORM; ratio 3.3e-3/8.9e-3, decay .8, seed 11 realsched): margin_sd 15.61 (fail), noise_re_var 191 (fail), q4 -.044, mass_3/7 fail, strength 53.0 pass, R2 .111 (no gain). Variance added on top inflates noise. Flag left default 0 (mod25_generator.py gen_world_latents form_ratio, sim10_drive.py FORM_*).
 
+- 2026-10-27 unit: candidate (a) skipped as the same family as the rejected outcome-only tilt (a residual tilt still reweights drives by outcome, whose response to strength is the .664 already matched). (b) variance-preserving split added as `--form 2` (SIM10_FORM=2; mod25_generator.py `form_preserve`: persistent scaled by sqrt(1-ratio), form added); results below.
+
 ## Next
 1. Adopt `--realsched 1` as the protocol for every new comparison (like-for-like with the
    real gates); random schedules read strength 2.6 higher for SIM-11 (0.6 for SIM-10).
@@ -41,3 +43,5 @@ q4 -.084, mass14 .0510). Seed-level game-path noise ~1.5-2 strength points.
 
 ## Open
 Persistent plays-per-game: real LOGO cov 3.56 v sim ~1.0; not a gate.
+
+2026-10-27 result: `--form 2` seed 11 realsched (artifacts/sim10/rsfp_s11) vs default (rs_s11): strength 40.5 v 48.6 [51.4,64.9], R2 .092 v .117 [.131,.161], noise_re 182.7 v 170.3 FAIL, q4 -.083 v -.073, margin_sd 14.94, xq -17.5, mass_7 .079 fail. Worse on every gate; no 3-seed run. Variance moved to form is not seen as persistent strength through the .68 transmission. Not default. Next: (c) excess catch-up, or a new-support transmission fix.

@@ -1246,7 +1246,8 @@ def sim_world(task):
     eng = _W["eng"]
     fit = load_latent_fit()
     setting = dict(gen.SETTING_DEFAULTS)
-    if os.environ.get("SIM10_FORM") == "1":
+    if os.environ.get("SIM10_FORM") in ("1", "2"):
+        setting["form_preserve"] = os.environ.get("SIM10_FORM") == "2"
         setting["form_ratio"] = FORM_VAR_NET / FORM_SEASON_VAR_NET
         setting["form_phi"] = FORM_DECAY
     grows, prow, ptm = [], [], []

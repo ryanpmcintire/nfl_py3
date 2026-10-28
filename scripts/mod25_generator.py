@@ -509,7 +509,8 @@ def gen_world_latents(rng, n_seasons, fit, setting):
                 cur = phi * cur + innov
             u = rng.random(N_TEAMS)
             state = np.where(state, u < qb["p_stay_out"], u < qb["p_start_out"])
-            weekly[w] = cur + form if form_ratio > 0.0 else cur
+            keep = math.sqrt(1.0 - form_ratio) if setting.get("form_preserve") else 1.0
+            weekly[w] = keep * cur + form if form_ratio > 0.0 else cur
             qb_out[w] = state
         lat = cur
         seasons.append((weekly, qb_out))
