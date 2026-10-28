@@ -46,6 +46,8 @@ DIMS = ["yl", "sd", "lt", "too", "tod", "x", "season", "week"]
 LAST_REG_WEEK = 17
 HALF_SECS = {1: 1800.0, 2: 1800.0}
 SUDDEN_DEATH = {2009, 2010, 2011}
+FG_POINTS = 3.0
+FG_DEC_LO = -FG_POINTS
 
 
 def load_pbp():
@@ -915,6 +917,9 @@ class Engine:
         self.h = pad_h(h)
         self.h_ot = pad_h(h if h_ot is None else h_ot)
         self.hecarry = os.environ.get("SIM10_HECARRY") == "1"
+        self.fgdec = None
+        if os.environ.get("SIM10_FGDEC"):
+            self.fgdec = json.loads(Path(os.environ["SIM10_FGDEC"]).read_text())
         self.kst = (0.0, 0.0)
         self.st_m = 0.0
         self.stl = None
@@ -1004,6 +1009,10 @@ class Engine:
                 ml = 1.0 / (1.0 + math.exp(-lg_))
                 tg = np.array(tg, dtype=np.float64)
                 tg[2] = tg[2] * ml / self.st_m
+            if self.fgdec is not None and hf == 2 and FG_DEC_LO <= q[1] <= 0.0:
+                cf_ = self.fgdec.get(str(regime(hf, secs)), 0.0)
+                tg = np.array(tg, dtype=np.float64)
+                tg[2] = 1.0 / (1.0 + math.exp(-(math.log(tg[2] / (1.0 - tg[2])) + cf_)))
             tg0 = tg
             mt = q[5:6]
             if self.ptab is not None:
@@ -1956,8 +1965,61 @@ def load_h(path):
     return h, ho, 0.0, None
 
 
+def fgdec_fit(eng):
+    rows = []
+    for (hf, hm, qq), (idx, X, hem) in eng.strata.items():
+        if hf != 2:
+            continue
+        secs = np.expm1(X[:, 2])
+        for r in range(len(idx)):
+            rg = regime(2, secs[r])
+            if rg in (3, 4):
+                rows.append((idx[r], rg, X[r, 1], X[r, 6]))
+    R = np.array(rows)
+    ix, reg, sd, season = R[:, 0].astype(int), R[:, 1], R[:, 2], R[:, 3]
+    dec = ((sd >= FG_DEC_LO) & (sd <= 0.0)).astype(float)
+    y = eng.out_arr[ix, 2]
+    m = np.clip(eng.m_arr[ix, 2], 1e-4, 1 - 1e-4)
+    off = np.log(m / (1 - m))
+
+    def newton(yy, oo, dd):
+        b = 0.0
+        for _ in range(50):
+            p = 1 / (1 + np.exp(-(oo + b * dd)))
+            b += ((yy - p) * dd).sum() / ((p * (1 - p) * dd * dd).sum() + 1e-9)
+        return b
+
+    out = {}
+    for r in (3, 4):
+        s_ = reg == r
+        out[str(r)] = float(newton(y[s_], off[s_], dec[s_]))
+        loso = [
+            newton(y[s_ & (season != yr)], off[s_ & (season != yr)], dec[s_ & (season != yr)])
+            for yr in np.unique(season[s_])
+        ]
+        print("regime", r, "n", int(s_.sum()), "decisive", int((s_ & (dec == 1)).sum()),
+              "coef", round(out[str(r)], 3), "loso range", round(min(loso), 3), round(max(loso), 3))
+    return out
+
+
+def sim_params(a):
+    h, ho, g, hr = load_h(a.h)
+    tilt = tuple(int(v) for v in a.tilt.split(",")) if a.tilt else ()
+    mf = tuple(int(v) for v in a.mufree.split(",")) if a.mufree else ()
+    st = json.loads(Path(a.strength).read_text()) if a.strength else None
+    return (h, ho, g, hr, tilt, bool(a.models), bool(a.pat), mf, bool(a.dr), bool(a.qstrata),
+            a.eoh, st, bool(a.droof), bool(a.drmu), bool(a.mulabel), bool(a.realsched))
+
+
+def cmd_fgdec(a):
+    _init(*sim_params(a))
+    out = fgdec_fit(_W["eng"])
+    Path(a.out).write_text(json.dumps(out, indent=1))
+
+
 def cmd_sim(a):
     t0 = time.time()
+    os.environ["SIM10_FGDEC"] = a.fgdec
     os.environ["SIM10_FORM"] = str(int(a.form))
     os.environ["SIM10_HECARRY"] = str(int(a.hecarry))
     os.environ["SIM10_STFULL"] = a.stfull
@@ -2078,8 +2140,15 @@ def main():
     s.add_argument("--form", type=int, default=0)
     s.add_argument("--hecarry", type=int, default=1)
     s.add_argument("--stfull", default="")
+    s.add_argument("--fgdec", default="")
     s.add_argument("--label", default="sim10")
     s.add_argument("--h", default=str(OUT / "bandwidths_week.json"))
+    fd = sub.add_parser("fgdec")
+    fd.add_argument("--out", default=str(OUT / "fgdec.json"))
+    for act in s._actions:
+        if act.dest not in ("help", "label") and act.default is not None:
+            fd.add_argument(*act.option_strings, default=act.default, type=act.type,
+                            choices=act.choices)
     a = ap.parse_args()
     {
         "build": build,
@@ -2090,6 +2159,7 @@ def main():
         "latfit": cmd_latfit,
         "real": cmd_real,
         "sim": cmd_sim,
+        "fgdec": cmd_fgdec,
         "fit": cmd_fit,
         "fitreg": cmd_fitreg,
     }[a.cmd](a)

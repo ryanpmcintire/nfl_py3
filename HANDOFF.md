@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-28T02:39:52.801986+00:00`
+Refreshed at: `2026-10-28T02:57:05.314986+00:00`
 
 ## Start here
 
@@ -21,7 +21,7 @@ Refreshed at: `2026-10-28T02:39:52.801986+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `d23943cccb03` — Record MOD-25 v3 distillation on SIM-11 worlds: proxy era +1.26, true era flat
+- Baseline commit: `49ab81f0932f` — Add era-aligned latent and special-teams options to the sim (default off); 3-seed screens recorded
 - Pending change set: 186 paths
   - `M  docs/lanes/sim11-strength-transmission.md`
   - `M  scripts/sim10_drive.py`
