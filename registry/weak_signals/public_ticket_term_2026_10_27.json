@@ -1,0 +1,114 @@
+{
+  "family": "public_ticket_term_2026_10_27",
+  "signals": {
+    "ptt_majority_ticket_cover": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Rate 125-124 (0.502), permutation p 1.0; far below power at 249 games; no resolved wrong sign, no positive control.",
+      "closing_ground": null,
+      "description": "Raw cover rate of the majority-ticket side, covered games 2020-2025, opener-graded, permutation null",
+      "effect": 0.2,
+      "effect_units": "rate_pp",
+      "family": "public_ticket_term_2026_10_27",
+      "interval": null,
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The side holding most spread tickets covered the opener 125 of 249 times, a coin flip.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-10-28",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 249,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/public_ticket/result.json",
+      "standard_error": null
+    },
+    "ptt_money_minus_ticket_allfit_zerofill_covered": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Coverage is about 18 percent of games (pre-lock ticket splits), so the fit is far below power; no resolved wrong sign across week and season blocks and no positive control, so no admissible closing ground.",
+      "closing_ground": null,
+      "description": "money minus ticket share, fifth term, fit on all games, zero-filled; LOSO 2020-2025 opener-graded; effect is Brier gain of base minus new (negative means the term hurts) on covered games",
+      "effect": -0.000613,
+      "effect_units": "brier_improvement",
+      "family": "public_ticket_term_2026_10_27",
+      "interval": [
+        -0.004882,
+        0.003648
+      ],
+      "league": "nfl",
+      "notes": "accuracy base 0.5324 new 0.5324; differ 10 base right 5 new right 5; coef positive folds 1 of 6; week-block bootstrap 4000",
+      "plain_summary": "Adding the public ticket split as a fitted term did not improve held-out calibration on the games with splits.",
+      "probability_positive": 0.3957,
+      "recorded_at": "2026-10-28",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 139,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/public_ticket/result.json",
+      "standard_error": null
+    },
+    "ptt_ticket_allfit_zerofill_covered": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Coverage is about 18 percent of games (pre-lock ticket splits), so the fit is far below power; no resolved wrong sign across week and season blocks and no positive control, so no admissible closing ground.",
+      "closing_ground": null,
+      "description": "ticket share minus 0.5, fifth term, fit on all games, zero-filled; LOSO 2020-2025 opener-graded; effect is Brier gain of base minus new (negative means the term hurts) on covered games",
+      "effect": -0.002159,
+      "effect_units": "brier_improvement",
+      "family": "public_ticket_term_2026_10_27",
+      "interval": [
+        -0.003737,
+        -0.000627
+      ],
+      "league": "nfl",
+      "notes": "accuracy base 0.5373 new 0.5255; differ 27 base right 15 new right 12; coef positive folds 4 of 6; week-block bootstrap 4000",
+      "plain_summary": "Adding the public ticket split as a fitted term did not improve held-out calibration on the games with splits.",
+      "probability_positive": 0.0025,
+      "recorded_at": "2026-10-28",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 255,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/public_ticket/result.json",
+      "standard_error": null
+    },
+    "ptt_ticket_coveredfit_covered": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Coverage is about 18 percent of games (pre-lock ticket splits), so the fit is far below power; no resolved wrong sign across week and season blocks and no positive control, so no admissible closing ground.",
+      "closing_ground": null,
+      "description": "ticket share minus 0.5, fifth term, fit on covered games only; LOSO 2020-2025 opener-graded; effect is Brier gain of base minus new (negative means the term hurts) on covered games",
+      "effect": -0.001854,
+      "effect_units": "brier_improvement",
+      "family": "public_ticket_term_2026_10_27",
+      "interval": [
+        -0.003345,
+        -0.000484
+      ],
+      "league": "nfl",
+      "notes": "accuracy base 0.5098 new 0.5255; differ 12 base right 4 new right 8; coef positive folds 5 of 6; week-block bootstrap 4000",
+      "plain_summary": "Adding the public ticket split as a fitted term did not improve held-out calibration on the games with splits.",
+      "probability_positive": 0.0045,
+      "recorded_at": "2026-10-28",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 255,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/public_ticket/result.json",
+      "standard_error": null
+    }
+  }
+}

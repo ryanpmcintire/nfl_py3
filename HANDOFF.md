@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-28T00:40:39.745924+00:00`
+Refreshed at: `2026-10-28T00:46:32.867693+00:00`
 
 ## Start here
 
@@ -21,11 +21,16 @@ Refreshed at: `2026-10-28T00:40:39.745924+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `19c1864cc6d4` — Backtest Best Pick rules against the pool leader's line-move pattern
-- Pending change set: 186 paths
-  - `M  ROADMAP.md`
+- Baseline commit: `26c5cd85f220` — Queue the pool hook term and the new model lanes
+- Pending change set: 193 paths
   - `M  docs/lanes/README.md`
+  - `A  docs/lanes/public-ticket-term.md`
+  - `A  registry/weak_signals/public_ticket_term_2026_10_27.json`
+  - ` M scripts/mod25_generator.py`
+  - ` M scripts/sim10_drive.py`
   - `?? an.csv`
+  - `?? docs/lanes/mod23-unit10b-draft-capital-v2.md`
+  - `?? docs/lanes/mod23-unit10r-robust-wide.md`
   - `?? docs/lanes/stealmybitcoin-ctf.md`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
@@ -38,12 +43,7 @@ Refreshed at: `2026-10-28T00:40:39.745924+00:00`
   - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
   - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
   - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
-  - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
-  - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
-  - `?? registry/experiments/margin-backtest/20261008T161241Z.json`
-  - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
-  - `?? registry/experiments/margin-backtest/20261009T161053Z.json`
-  - ...and 166 more
+  - ...and 173 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
