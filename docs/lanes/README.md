@@ -20,6 +20,11 @@ modified lane when the prompt just says to continue.
 
 ## Active
 
+- [week8-lock-2026-10-27](week8-lock-2026-10-27.md) - 2026-10-27: Week 8 board read by agent after the noon capture failed; locked, published, pushed; Best Pick CHI +3.5.
+- [pool-leader-romana](pool-leader-romana.md) - 2026-10-27: pool leader's edge is entirely the 24 games our card played against the line move (8-16; theirs 14-3); history says following the move does not beat the card; Best Pick backtests recorded.
+- [pool-hook-term](pool-hook-term.md) - 2026-10-27: half-point pool hook over whole-number market lines as a fitted term, graded at simulated pool lines.
+- [mod23-unit10b-draft-capital-v2](mod23-unit10b-draft-capital-v2.md) - 2026-10-27: starter draft capital with the combine match bug fixed via nflverse draft picks.
+- [mod23-unit10r-robust-wide](mod23-unit10r-robust-wide.md) - 2026-10-27: winsorized/Huber base target on the untested 0.4-0.8 grid plus a garbage-time/non-offensive-TD label.
 - [pick-chain-audit-2026](pick-chain-audit-2026.md) - 2026-10-25: whole-chain audit of the degraded 2026 card; flags were all found Aug-Sep 2026 so their history is in-sample; served stack now counts only flags with a winning post-discovery record (protection); GB@DET moved to DET before the lock.
 - [sim11-strength-transmission](sim11-strength-transmission.md) - 2026-10-24: label-matched strength draw locked as sim default; 13/14 gates (strength variance passes); late R2 .120 still short, recent-form latent is next.
 - [sim10-drive-resampler](done/sim10-drive-resampler.md) - LOCKED 2026-10-24: drive-level resampler, quarter strata default; 12/14 gates on the 3-seed mean; strength variance and late R2 still fail. The mod25e-* lanes below are superseded.
