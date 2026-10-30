@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-28T22:17:48.826750+00:00`
+Refreshed at: `2026-10-30T04:31:40.291049+00:00`
 
 ## Start here
 
@@ -21,8 +21,8 @@ Refreshed at: `2026-10-28T22:17:48.826750+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `3ed4f15dd077` — Refresh the lane index for the simulator and synthetic-data lanes
-- Pending change set: 195 paths
+- Baseline commit: `cec0c1d128b5` — Republish the site with the latest settled results
+- Pending change set: 207 paths
   - `M  CURRENT_PREDICTIONS.md`
   - ` M README.md`
   - `M  docs/findings.html`
@@ -43,7 +43,7 @@ Refreshed at: `2026-10-28T22:17:48.826750+00:00`
   - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
   - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
   - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
-  - ...and 175 more
+  - ...and 187 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -52,18 +52,18 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `eb93af233338a714`
+- Model ID: `f7c63c48cbd41504`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261028T161611Z`)
+- Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261029T211417Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card combines this with the coach component in one fitted calibrated probability, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,146 / 2,182 (52.52%)**
-- Linked forecast: **2026 Week 8**, created `2026-10-28T16:12:44.127552+00:00`
+- Linked forecast: **2026 Week 8**, created `2026-10-29T21:10:56.994839+00:00`
 
 The 52.52% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 8** from model `eb93af233338a714`, published `2026-10-28T16:21:08.214062+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 8** from model `f7c63c48cbd41504`, published `2026-10-29T21:18:45.965377+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 
