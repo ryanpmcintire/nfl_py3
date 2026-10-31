@@ -98,3 +98,11 @@ transaction_flag_features.py 2d8d25df); it stays frozen with 13 Week 6
 captures. v4 enrolled 22:48 UTC: registry/studies/combined_vs_raw_2026_v4.json,
 artifacts/prospective/independent_validation_v4/, 179 games Weeks 7-18,
 default study now v4; first capture recorded 14 Week 7 games.
+**Measured 2026-10-31:** v4 failed the source guard from 2026-10-26 (b95b4c61 edited
+pick_probability.py and pick_probability_fit.py on 10-25, post-discovery flag gate);
+it stays frozen with 14 Week 7 captures and is never blended. v5 enrolled
+11:32:33Z: registry/studies/combined_vs_raw_2026_v5.json,
+artifacts/prospective/independent_validation_v5/, 164 games Weeks 8-18 (Week 8
+Thursday CAR at GB excluded, kicked off before enrollment); default study and
+CLI protocol now v5. First capture via --run-job independent_validation_sat_1210:
+13 Week 8 games, source_unchanged=true. Any later edit to a pinned source stops v5.

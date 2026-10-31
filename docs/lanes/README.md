@@ -20,6 +20,7 @@ modified lane when the prompt just says to continue.
 
 ## Active
 
+- [week8-saturday-checks-2026-10-31](week8-saturday-checks-2026-10-31.md) - 2026-10-31: overnight crash recovered (F: NTFS repair, scheduler state lost); line moves, injury roundup, Saturday refresh; validation v5 enrolled.
 - [week8-lock-2026-10-27](week8-lock-2026-10-27.md) - 2026-10-27: Week 8 board read by agent after the noon capture failed; locked, published, pushed; Best Pick CHI +3.5.
 - [pool-leader-romana](pool-leader-romana.md) - 2026-10-27: pool leader's edge is entirely the 24 games our card played against the line move (8-16; theirs 14-3); history says following the move does not beat the card; Best Pick backtests recorded.
 - [pool-hook-term](pool-hook-term.md) - 2026-10-27: half-point pool hook over whole-number market lines as a fitted term, graded at simulated pool lines.
@@ -61,6 +62,7 @@ modified lane when the prompt just says to continue.
 
 ## Done
 
+- [why-this-pick-flipback](done/why-this-pick-flipback.md) - 2026-10-31: board explanation follows the explanation's own side after a flip back; prefix wording true before lock.
 - [registry-split](done/registry-split.md) - 2026-10-20: registry/weak_signals.json split into 392 per-family shards under registry/weak_signals/.
 - [card-table-ledger-sync](done/card-table-ledger-sync.md) - 2026-10-16: card table rewrites from the refresh ledger rows; card, board and alerts share the held Tuesday Best Pick until the Sunday re-nomination.
 - [one backlog](done/backlog-accounting.md) - 2026-09-28: one canonical list and count; unknown statuses fail visibly; selected-batch completion wording corrected.

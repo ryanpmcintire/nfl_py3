@@ -25,7 +25,7 @@ from nfl_ats.published_picks import game_deadlines
 from nfl_ats.tiebreaker import newest_schedules_path
 
 STUDY_ROOT = Path("prospective")
-DEFAULT_STUDY = "independent_validation_v4"
+DEFAULT_STUDY = "independent_validation_v5"
 RECIPE_KEYS = (
     "ats_method",
     "regressor",

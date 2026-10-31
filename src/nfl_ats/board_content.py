@@ -3339,7 +3339,7 @@ def _played_side_explanation(explanation: str, *, pick_team: str, model_team: st
     if pick_team == model_team:
         return explanation
     return (
-        f"{pick_team} was the side on the board when picks locked, so that is the pick. "
+        f"{pick_team} is the card's pick after the latest line and injury check. "
         f"The model's own read: {explanation}"
     )
 
@@ -3350,6 +3350,30 @@ def _explanation_with_qb_note(explanation: str, qb_note: str | None) -> str:
     if explanation == EXPLANATION_NOT_RECORDED_TEXT:
         return qb_note
     return f"{qb_note} {explanation}"
+
+
+def _load_pick_explanation_sides(forecast_dir: Path | None) -> dict[str, str]:
+
+    if forecast_dir is None:
+        return {}
+    path = forecast_dir / "explanations.json"
+    if not path.is_file():
+        return {}
+    try:
+        payload = read_json(path)
+    except (ValueError, OSError):
+        return {}
+    sides: dict[str, str] = {}
+    for item in payload.get("explanations") or []:
+        if not isinstance(item, Mapping):
+            continue
+        try:
+            explanation = PickExplanation.from_dict(item)
+        except Exception:
+            continue
+        if explanation.game_id and explanation.model_probability.pick_side:
+            sides[explanation.game_id] = explanation.model_probability.pick_side
+    return sides
 
 
 def _load_pick_explanations(forecast_dir: Path | None) -> dict[str, str]:
@@ -3768,6 +3792,7 @@ def load_board_content(
         arrest_snapshot_id=(view.arrest_overlay.snapshot_id if view is not None else None),
     )
     pick_explanations = _load_pick_explanations(forecast_dir)
+    pick_explanation_sides = _load_pick_explanation_sides(forecast_dir)
     tiebreaker_view = _load_tiebreaker_view(
         forecast_dir, artifacts.metadata, active=artifacts.active
     )
@@ -3904,7 +3929,7 @@ def load_board_content(
                         _played_side_explanation(
                             pick_explanations.get(game_id, EXPLANATION_NOT_RECORDED_TEXT),
                             pick_team=team,
-                            model_team=model_team,
+                            model_team=pick_explanation_sides.get(game_id, model_team),
                         ),
                         qb_notes.get(game_id),
                     )

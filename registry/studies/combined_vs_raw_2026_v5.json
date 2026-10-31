@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "study_id": "combined_vs_raw_2026_w08_w18_v5",
+  "season": 2026,
+  "start_week": 8,
+  "end_week": 18,
+  "game_type": "REG",
+  "primary_metric": "raw_minus_combined_brier",
+  "secondary_metrics": [
+    "log_loss",
+    "ats_accuracy",
+    "disagreement_record",
+    "reliability"
+  ],
+  "arms": [
+    "frozen_combined",
+    "raw",
+    "neutral_market"
+  ],
+  "line_policy": "original_pool_line_fixed_at_first_capture",
+  "capture_policy": "latest_eligible_capture_before_normal_pool_lock",
+  "coefficient_policy": "frozen_at_enrollment",
+  "raw_model_policy": "fixed_recipe_and_source_with_pregame_data_updates",
+  "interim_policy": "coverage_only_until_all_declared_games_are_final",
+  "missing_policy": "report_every_missing_game_and_block_complete_comparison",
+  "bootstrap_samples": 20000,
+  "bootstrap_seed": 20260928,
+  "confidence": 0.95,
+  "automatic_promotion": false,
+  "exclusions": "Historical development seasons, 2026 weeks 1-7, games kicking off before v5 enrollment, playoffs, and opener pushes for binary cover scoring. Push counts remain reported.",
+  "closure_policy": "Inconclusive results remain unresolved_below_power; terminal signal verdicts require admissible closing grounds through the research registry.",
+  "supersedes": {
+    "study_id": "combined_vs_raw_2026_w07_w18_v4",
+    "directory": "independent_validation_v4",
+    "reason": "pinned prediction sources changed on 2026-10-25 (pick_probability.py and pick_probability_fit.py, situational flags counted only after a winning post-discovery record, b95b4c61); v4 capture failed the source guard from 2026-10-26; v4 stays frozen with its Week 7 captures and is never blended with v5"
+  },
+  "cohort_policy": "declared season weeks restricted to games whose scheduled kickoff is after enrollment"
+}

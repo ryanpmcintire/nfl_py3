@@ -508,14 +508,14 @@ def register(
     study_choice = argparse.ArgumentParser(add_help=False)
     study_choice.add_argument(
         "--study",
-        default="independent_validation_v4",
-        help="study directory under artifacts/prospective; earlier: independent_validation_v3",
+        default="independent_validation_v5",
+        help="study directory under artifacts/prospective; earlier: independent_validation_v4",
     )
     study_enroll = study_actions.add_parser(
         "enroll", help="freeze the declared future cohort and model", parents=[study_choice]
     )
     study_enroll.add_argument(
-        "--protocol", type=Path, default=Path("registry/studies/combined_vs_raw_2026_v3.json")
+        "--protocol", type=Path, default=Path("registry/studies/combined_vs_raw_2026_v5.json")
     )
     study_enroll.set_defaults(handler=_cmd_independent_validation)
     study_capture = study_actions.add_parser(
