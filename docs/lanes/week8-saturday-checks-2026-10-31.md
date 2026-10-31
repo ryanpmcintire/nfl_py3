@@ -28,12 +28,15 @@ Saturday Week 8 check: scheduler health after the overnight crash, lineup/injury
 - Dry-run refresh-picks 11:13Z (scratch log, not recorded): one change, LAC at LA: LA -6.5 -> LAC +6.5 (home cover 48.9%, line 6.5 -> 6.0 toward LAC). consensus_movement challenger (off) would flip IND/JAX; not served.
 - Board defect found: "Why this pick" for ATL@TB, IND@JAX, ARI@DAL argues the Wednesday side after Friday's flip-back. Fix delegated: docs/lanes/why-this-pick-flipback.md.
 - independent_validation v4 stopped by its source guard since 2026-10-26 (b95b4c61 edited pick_probability.py 10-25); zero Week 8 captures. v5 protocol written: registry/studies/combined_vs_raw_2026_v5.json (Weeks 8-18). Enroll after the board fix lands, because pick_refresh.py and card_view.py are pinned.
+- 07:30 catch-up publish_site_fri_0030 pushed 4daa6b2a built from the live board view (LAC shown before the ledger had it); superseded 6 min later.
+- DONE 07:32: v5 enrolled (164 games, 13 Week 8 captured, source_unchanged). Commit 4d6bc8cd (board explanation fix + v5 defaults).
+- DONE 07:35: --run-job refresh_sat recorded PICK-CHANGE LAC at LA: LA -6.5 -> LAC +6.5 (51.1%), NOTIFY-OK jiepb3vNFUJj, PICK-CHANGE-PUBLISH 05cf1fcc pushed. Card late-week block: LAC and WAS. Board rows all match the card.
+- Lost scheduler state made sweep_missed replay every catch_up job's last window back to back (~50 sync_captures at ~4 min, blocking due jobs). 07:38 wrote data/scheduler_state.json rebuilt from scheduler_log.txt (1,617 runs, 60 days; pre-rebuild copy in the session scratchpad); the daemon merges the file after each job, so the sweep skips the rest.
 - git fsck --connectivity-only exit 0. backup_data --status: E: mirror 100% (1 pending); offsite snapshot 10-25 OK.
 
 ## Next
-- Fresh Bovada capture, dry-run refresh-picks, compare market vs pool lines per game.
-- Injury/lineup news roundup for the 13 remaining games (subagent writes its findings under ## Tried as one bullet block).
-- Board: one UI-20 improvement, publish-board, push. Sunday: refresh_sun 10:00 re-nominates the star; grep BEST-PICK-LEDGER sunday|PICK-CHANGE|NOTIFY for 2026-11-01.
+- Today's scheduled passes keep running (refresh_sat 10:30, lineups_sat 12:00, refresh_last_call_sat_1215, inactives/refresh 15:30-19:15). Grep 'PICK-CHANGE|NOTIFY' in data/scheduler_log.txt for 2026-10-31 to catch later flips.
+- Sunday: refresh_sun 10:00 re-nominates the star; grep 'BEST-PICK-LEDGER sunday|PICK-CHANGE|NOTIFY' for 2026-11-01 and tell the owner the final star and any changed picks. Lock Sun 4 PM ET. Then move this lane and week8-lock-2026-10-27 to done/.
 
 ## Open
 - F: online scan needs an elevated prompt: owner runs `chkdsk F: /scan` (read-only online scan) when convenient.
