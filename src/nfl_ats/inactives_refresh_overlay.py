@@ -265,7 +265,9 @@ def inactives_team_floor(data_root: Path, *, season: int) -> int | None:
     if not paths:
         return None
     try:
-        rosters = pd.read_parquet(paths[-1], columns=["season", "week", "team", "status", "game_type"])
+        rosters = pd.read_parquet(
+            paths[-1], columns=["season", "week", "team", "status", "game_type"]
+        )
     except (OSError, ValueError, KeyError):
         return None
     listed = rosters.loc[
@@ -274,7 +276,7 @@ def inactives_team_floor(data_root: Path, *, season: int) -> int | None:
     if listed.empty:
         return None
     per_team_week = listed.groupby(["season", "week", "team"]).size()
-    return int(math.floor(float(per_team_week.quantile(INACTIVES_FLOOR_QUANTILE))))
+    return math.floor(float(per_team_week.quantile(INACTIVES_FLOOR_QUANTILE)))
 
 
 def inactives_game_complete(
@@ -317,7 +319,7 @@ def inactives_partial_detail(data_root: Path, due_game_ids: frozenset[str]) -> s
         return ""
     return (
         f"{partial} of {len(newest_rows)} games already due are missing a team or list "
-        f"fewer than {'1' if not floor else floor} inactives for one"
+        f"fewer than {floor if floor else '1'} inactives for one"
     )
 
 

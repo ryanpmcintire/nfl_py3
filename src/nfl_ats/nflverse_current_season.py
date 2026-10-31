@@ -103,7 +103,9 @@ def load_seasons_frame(dataset: str, seasons: list[int]) -> pd.DataFrame:
 
 
 def _before_week(base: pd.DataFrame, season: int, before_week: int) -> pd.DataFrame:
-    future = base["season"].astype(int).eq(int(season)) & base["week"].astype(int).ge(int(before_week))
+    future = base["season"].astype(int).eq(int(season)) & base["week"].astype(int).ge(
+        int(before_week)
+    )
     return base.loc[~future]
 
 

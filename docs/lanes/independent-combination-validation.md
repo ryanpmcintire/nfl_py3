@@ -106,3 +106,9 @@ artifacts/prospective/independent_validation_v5/, 164 games Weeks 8-18 (Week 8
 Thursday CAR at GB excluded, kicked off before enrollment); default study and
 CLI protocol now v5. First capture via --run-job independent_validation_sat_1210:
 13 Week 8 games, source_unchanged=true. Any later edit to a pinned source stops v5.
+**Measured 2026-10-31 12:06Z:** v5 stopped the same morning by a deliberate pinned
+edit (sharp_book_movement_features.py missing-baseline fix; inactives_refresh_overlay.py
+format/lint). v5 frozen with 13 Week 8 captures. v6 enrolled:
+registry/studies/combined_vs_raw_2026_v6.json, artifacts/prospective/
+independent_validation_v6/, 164 games Weeks 8-18; first capture 13 games,
+source_unchanged=true. Default study and CLI protocol now v6.

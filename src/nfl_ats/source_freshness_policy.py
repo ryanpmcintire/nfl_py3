@@ -470,9 +470,7 @@ class SourcePolicyReport:
         def _names(ids: tuple[str, ...]) -> str:
             return ", ".join(humanize_identifier(i) for i in ids) if ids else "none"
 
-        partial = tuple(
-            row.source_id for row in self.sources if row.reason.startswith("partial ")
-        )
+        partial = tuple(row.source_id for row in self.sources if row.reason.startswith("partial "))
         partial_text = f"Partial lists: {_names(partial)}. " if partial else ""
         return (
             f"**Source freshness: {self.state.upper()}.** "
@@ -684,7 +682,9 @@ def observe_from_disk(
                 if policy.location.json_key
                 else policy.location.relative_path
             )
-        observations.append(SourceObservation(source_id, instant, detail, row_count, partial_detail))
+        observations.append(
+            SourceObservation(source_id, instant, detail, row_count, partial_detail)
+        )
     return tuple(observations)
 
 

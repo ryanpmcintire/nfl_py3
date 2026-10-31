@@ -134,7 +134,10 @@ def sharp_book_movement_features(
             raise DataContractError("Conflicting book lines at one observed timestamp")
         q = q.sort_values([*keys, "observed_at_utc"]).drop_duplicates(keys, keep="last")
         q["move"] = q.groupby(["game_id", "bookmaker_key"]).home_spread_line.diff()
-        q = q.loc[q.quote_as_of_utc.ge(q._wednesday) & q.move.notna()].copy()
+        q["_first_as_of"] = q.groupby(["game_id", "bookmaker_key"]).quote_as_of_utc.transform("min")
+        q = q.loc[
+            q.quote_as_of_utc.ge(q._wednesday) & q.move.notna() & q._first_as_of.lt(q._wednesday)
+        ].copy()
         moved = q.loc[q.bookmaker_key.isin(LEADER_BOOKS) & q.move.ne(0), "game_id"]
         result["leader_move_observed"] = result.game_id.isin(moved)
         books = q.groupby(["game_id", "bookmaker_key"], as_index=False).move.sum()
