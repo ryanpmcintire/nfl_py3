@@ -15,18 +15,18 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 | Date        | Matchup    | ATS prediction   | Cover chance   |
 |:------------|:-----------|:-----------------|:---------------|
 | Thu, Oct 29 | CAR at GB  | CAR +3.5         | 50.1%          |
-| Sun, Nov 01 | ARI at DAL | ARI +6.5         | 50.8%          |
+| Sun, Nov 01 | ARI at DAL | DAL -6.5         | 51.9%          |
 | Sun, Nov 01 | ATL at TB  | ATL +2.5         | 50.3%          |
-| Sun, Nov 01 | BAL at BUF | BAL +3.5         | 52.8%          |
+| Sun, Nov 01 | BAL at BUF | BAL +3.5         | 55.6%          |
 | Sun, Nov 01 | CLE at PIT | CLE +3.5         | 50.5%          |
-| Sun, Nov 01 | IND at JAX | IND +7.5         | 50.0%          |
+| Sun, Nov 01 | IND at JAX | JAX -7.5         | 58.2%          |
 | Sun, Nov 01 | KC at DEN  | DEN +1.5         | 60.2%          |
 | Sun, Nov 01 | LAC at LA  | LAC +6.5         | 51.1%          |
-| Sun, Nov 01 | LV at NYJ  | LV +1.5          | 56.9%          |
+| Sun, Nov 01 | LV at NYJ  | LV +1.5          | 54.2%          |
 | Sun, Nov 01 | MIN at DET | MIN +3.5         | 51.9%          |
 | Sun, Nov 01 | NE at MIA  | NE -7.5          | 50.0%          |
 | Sun, Nov 01 | PHI at WAS | WAS -4.5         | 52.4%          |
-| Sun, Nov 01 | TEN at CIN | CIN -10.5        | 63.0%          |
+| Sun, Nov 01 | TEN at CIN | CIN -10.5        | 65.6%          |
 | Mon, Nov 02 | CHI at SEA | ★ CHI +3.5       | 59.2%          |
 
 **Tiebreaker (last game, CHI at SEA):** SEA 24 - CHI 22, total 46 (market total 46.5) -- consistent with the CHI +3.5 pick.
@@ -38,10 +38,12 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 <!-- LATE_WEEK_REFRESH:START -->
 ## Late-week refresh
 
-2 picks changed since the Tuesday card. The new picks below replace the corresponding picks above; each keeps its original grading line. Cover chance uses the latest information available before the pick locked.
+4 picks changed since the Tuesday card. The new picks below replace the corresponding picks above; each keeps its original grading line. Cover chance uses the latest information available before the pick locked.
 
 | Matchup    | Previous pick   | New pick   | Cover chance   |
 |:-----------|:----------------|:-----------|:---------------|
+| ARI at DAL | ARI             | DAL        | 51.9%          |
+| IND at JAX | IND             | JAX        | 58.2%          |
 | LAC at LA  | LA              | LAC        | 51.1%          |
 | PHI at WAS | PHI             | WAS        | 52.4%          |
 <!-- LATE_WEEK_REFRESH:END -->
