@@ -37,13 +37,15 @@ Saturday Week 8 check: scheduler health after the overnight crash, lineup/injury
 - DONE 08:09: --run-job refresh_sat recorded ARI at DAL -> DAL -6.5 (51.9%) and IND at JAX -> JAX -7.5 (58.2%); NOTIFY-OK GAOJKHxz6jAw; PICK-CHANGE-PUBLISH 65fba627 pushed. Card late-week block: DAL, JAX, LAC, WAS. Board rows match. Fix commit 52555216.
 - Root of the missing baselines: Tuesday 18:25Z Odds Gap capture (20261027T182541Z-odds-gap-private) listed 1 game per book; Wed 9, Fri 13. 08:11 retry captured 13 games x 3 books; Bovada lines unchanged since 07:12.
 - git fsck --connectivity-only exit 0. backup_data --status: E: mirror 100% (1 pending); offsite snapshot 10-25 OK.
+- Second crash 08:25, reboot 12:59, scheduler auto-started 13:01; state file survived. 13:27 lineups_sat recorded NE at MIA -> MIA +7.5 (50%), NOTIFY-OK l4JpdyO5ee0o, pushed 8e11397c. Missed while down: odds_private_sat, refresh_last_call_sat_1215, prediction_markets_sat_1200.
+- DONE 16:53: Odds Gap root cause was our parser, not the source. scripts/capture_odds_gap_private.py kept only games within 4 days of the scan; the Tuesday response held all 14 games with WH and MyBookie. Fixed (commit 1bec13f4). Re-parsed 13 stored responses since 9/22 into `*-odds-gap-private-reparse` siblings (same observed time, capture_kind live, parse_kind reparse; clv.py:247 loads live only); every previously parsed row matched. Week 8 move term now 3 books (IND/JAX, LV/NYJ 2). --run-job refresh_sat recorded ATL at TB -> TB -2.5 (52.6%) and LAC at LA -> LA -6.5 (51.2%), NOTIFY-OK Z8CL3RtoqhuF, PICK-CHANGE-PUBLISH d0ebee0c pushed.
 
 ## Next
-- Verify the rebuild took: in data/scheduler_log.txt the CATCH-UP-RUN chain should end after sync_captures_mon_0330 (07:36 start), then beat_reporters_sat should run. If replays continue, stop daemon PID 15780 by PID, keep the rebuilt state file, restart via scripts/start_capture_scheduler.cmd.
 - draftcap_forward_log still fails (coefficients differ from artifacts/draftcap_forward/frozen.json since 10-22); Sunday 11:15 will fail again; Week 8 uncovered. Lane: draftcap-forward-log.md.
 - Today's scheduled passes keep running (refresh_sat 10:30, lineups_sat 12:00, refresh_last_call_sat_1215, inactives/refresh 15:30-19:15). Grep 'PICK-CHANGE|NOTIFY' in data/scheduler_log.txt for 2026-10-31 to catch later flips.
 - Sunday: refresh_sun 10:00 re-nominates the star; grep 'BEST-PICK-LEDGER sunday|PICK-CHANGE|NOTIFY' for 2026-11-01 and tell the owner the final star and any changed picks. Lock Sun 4 PM ET. Then move this lane and week8-lock-2026-10-27 to done/.
 
 ## Open
-- Tuesday Odds Gap capture returned 1 of 14 games, so William Hill and MyBookie lack Tuesday baselines all week and the served move term runs on Bovada alone. Find why the Tuesday lineshop page lists so few games (likely posted lines not yet up at 14:25 ET) and add a later Tuesday or Wednesday-morning capture before the Wednesday anchor.
+- Tuesday 11-03 14:25 odds_private_tue is the first live check of the parser fix: its JSON should report about 14 games per leader book.
+- Weeks 3-7 served the move term on Bovada alone; the recorded picks stand. Any 2026 forward read of the move term should be recomputed from the re-parsed quotes.
 - F: online scan needs an elevated prompt: owner runs `chkdsk F: /scan` (read-only online scan) when convenient.
