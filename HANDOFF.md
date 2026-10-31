@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-31T11:33:37.727620+00:00`
+Refreshed at: `2026-10-31T11:36:27.493355+00:00`
 
 ## Start here
 
@@ -21,16 +21,12 @@ Refreshed at: `2026-10-31T11:33:37.727620+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `4daa6b2a1c0a` — Republish the site with the latest settled results
-- Pending change set: 212 paths
-  - `M  docs/lanes/README.md`
-  - `A  docs/lanes/done/why-this-pick-flipback.md`
-  - `M  docs/lanes/independent-combination-validation.md`
-  - `A  docs/lanes/week8-saturday-checks-2026-10-31.md`
-  - `A  registry/studies/combined_vs_raw_2026_v5.json`
-  - `M  src/nfl_ats/board_content.py`
-  - `M  src/nfl_ats/cli_commands/prospective.py`
-  - `M  src/nfl_ats/independent_validation.py`
+- Baseline commit: `4d6bc8cd74fd` — Keep board explanations on the served side and enroll validation v5
+- Pending change set: 208 paths
+  - `M  CURRENT_PREDICTIONS.md`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - `M  tiebreaker.json`
   - `?? an.csv`
   - `?? docs/lanes/stealmybitcoin-ctf.md`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
@@ -43,7 +39,11 @@ Refreshed at: `2026-10-31T11:33:37.727620+00:00`
   - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
   - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
   - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
-  - ...and 192 more
+  - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
+  - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
+  - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
+  - `?? registry/experiments/margin-backtest/20261008T161241Z.json`
+  - ...and 188 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

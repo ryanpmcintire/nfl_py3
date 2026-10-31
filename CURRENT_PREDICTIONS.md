@@ -21,7 +21,7 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 | Sun, Nov 01 | CLE at PIT | CLE +3.5         | 50.5%          |
 | Sun, Nov 01 | IND at JAX | IND +7.5         | 50.0%          |
 | Sun, Nov 01 | KC at DEN  | DEN +1.5         | 60.2%          |
-| Sun, Nov 01 | LAC at LA  | LA -6.5          | 51.6%          |
+| Sun, Nov 01 | LAC at LA  | LAC +6.5         | 51.1%          |
 | Sun, Nov 01 | LV at NYJ  | LV +1.5          | 56.9%          |
 | Sun, Nov 01 | MIN at DET | MIN +3.5         | 51.9%          |
 | Sun, Nov 01 | NE at MIA  | NE -7.5          | 50.0%          |
@@ -38,9 +38,10 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 <!-- LATE_WEEK_REFRESH:START -->
 ## Late-week refresh
 
-1 pick changed since the Tuesday card. The new picks below replace the corresponding picks above; each keeps its original grading line. Cover chance uses the latest information available before the pick locked.
+2 picks changed since the Tuesday card. The new picks below replace the corresponding picks above; each keeps its original grading line. Cover chance uses the latest information available before the pick locked.
 
 | Matchup    | Previous pick   | New pick   | Cover chance   |
 |:-----------|:----------------|:-----------|:---------------|
+| LAC at LA  | LA              | LAC        | 51.1%          |
 | PHI at WAS | PHI             | WAS        | 52.4%          |
 <!-- LATE_WEEK_REFRESH:END -->
