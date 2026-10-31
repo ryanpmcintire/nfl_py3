@@ -35,6 +35,8 @@ Saturday Week 8 check: scheduler health after the overnight crash, lineup/injury
 - git fsck --connectivity-only exit 0. backup_data --status: E: mirror 100% (1 pending); offsite snapshot 10-25 OK.
 
 ## Next
+- Verify the rebuild took: in data/scheduler_log.txt the CATCH-UP-RUN chain should end after sync_captures_mon_0330 (07:36 start), then beat_reporters_sat should run. If replays continue, stop daemon PID 15780 by PID, keep the rebuilt state file, restart via scripts/start_capture_scheduler.cmd.
+- draftcap_forward_log still fails (coefficients differ from artifacts/draftcap_forward/frozen.json since 10-22); Sunday 11:15 will fail again; Week 8 uncovered. Lane: draftcap-forward-log.md.
 - Today's scheduled passes keep running (refresh_sat 10:30, lineups_sat 12:00, refresh_last_call_sat_1215, inactives/refresh 15:30-19:15). Grep 'PICK-CHANGE|NOTIFY' in data/scheduler_log.txt for 2026-10-31 to catch later flips.
 - Sunday: refresh_sun 10:00 re-nominates the star; grep 'BEST-PICK-LEDGER sunday|PICK-CHANGE|NOTIFY' for 2026-11-01 and tell the owner the final star and any changed picks. Lock Sun 4 PM ET. Then move this lane and week8-lock-2026-10-27 to done/.
 

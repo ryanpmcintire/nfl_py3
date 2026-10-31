@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-31T11:38:24.211961+00:00`
+Refreshed at: `2026-10-31T11:39:40.975545+00:00`
 
 ## Start here
 
@@ -21,7 +21,7 @@ Refreshed at: `2026-10-31T11:38:24.211961+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `05cf1fcc4fdc` — Republish the site with the latest settled results
+- Baseline commit: `dccfff4f4a7c` — Record the Saturday Week 8 checks and scheduler state recovery
 - Pending change set: 205 paths
   - `M  docs/lanes/week8-saturday-checks-2026-10-31.md`
   - `?? an.csv`
