@@ -34,11 +34,12 @@ def _rows(
     schedule = features.copy()
     schedule["kickoff"] = pd.to_datetime(schedule["kickoff"], utc=True)
     schedule = schedule.loc[schedule["kickoff"].gt(scanned)]
-    current = schedule.loc[schedule["kickoff"].lt(scanned + pd.Timedelta(days=4))]
-    if current.empty:
+    if schedule.empty:
         raise ValueError("No upcoming current-week games in local schedule")
-    week = current.sort_values("kickoff").iloc[0]
-    current = current.loc[current["season"].eq(week["season"]) & current["week"].eq(week["week"])]
+    week = schedule.sort_values("kickoff").iloc[0]
+    current = schedule.loc[
+        schedule["season"].eq(week["season"]) & schedule["week"].eq(week["week"])
+    ]
     ids = current.set_index(["home_team", "away_team"])
     rows: list[dict[str, Any]] = []
     for event in decoded.get("games", []):
