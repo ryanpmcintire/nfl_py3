@@ -1,8 +1,8 @@
 # NFL ATS predictions: 2026 Week 8
 
-Published from the synchronized weak stack model, 2026-10-31 17:20 UTC.
+Published from the synchronized weak stack model, 2026-10-31 17:58 UTC.
 
-<!-- publication: model_id=705999dd95246d39 published_at_utc=2026-10-31T17:20:08.513089+00:00 -->
+<!-- publication: model_id=42288c180e9470c0 published_at_utc=2026-10-31T17:58:59.435408+00:00 -->
 
 > **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 
@@ -16,13 +16,13 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 |:------------|:-----------|:-----------------|:---------------|
 | Thu, Oct 29 | CAR at GB  | CAR +3.5         | 50.1%          |
 | Sun, Nov 01 | ARI at DAL | DAL -6.5         | 51.8%          |
-| Sun, Nov 01 | ATL at TB  | ATL +2.5         | 50.2%          |
+| Sun, Nov 01 | ATL at TB  | TB -2.5          | 52.6%          |
 | Sun, Nov 01 | BAL at BUF | BAL +3.5         | 55.7%          |
 | Sun, Nov 01 | CLE at PIT | CLE +3.5         | 50.7%          |
 | Sun, Nov 01 | IND at JAX | JAX -7.5         | 57.5%          |
 | Sun, Nov 01 | KC at DEN  | DEN +1.5         | 60.1%          |
-| Sun, Nov 01 | LAC at LA  | LAC +6.5         | 51.5%          |
-| Sun, Nov 01 | LV at NYJ  | LV +1.5          | 54.3%          |
+| Sun, Nov 01 | LAC at LA  | LA -6.5          | 51.2%          |
+| Sun, Nov 01 | LV at NYJ  | LV +1.5          | 50.2%          |
 | Sun, Nov 01 | MIN at DET | MIN +3.5         | 52.6%          |
 | Sun, Nov 01 | NE at MIA  | MIA +7.5         | 50.0%          |
 | Sun, Nov 01 | PHI at WAS | WAS -4.5         | 52.5%          |
@@ -43,8 +43,8 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 | Matchup    | Previous pick   | New pick   | Cover chance   |
 |:-----------|:----------------|:-----------|:---------------|
 | ARI at DAL | ARI             | DAL        | 51.8%          |
+| ATL at TB  | ATL             | TB         | 52.6%          |
 | IND at JAX | IND             | JAX        | 57.5%          |
-| LAC at LA  | LA              | LAC        | 51.5%          |
 | NE at MIA  | NE              | MIA        | 50.0%          |
 | PHI at WAS | PHI             | WAS        | 52.5%          |
 <!-- LATE_WEEK_REFRESH:END -->
