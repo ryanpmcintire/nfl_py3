@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-10-31T17:28:10.303546+00:00`
+Refreshed at: `2026-10-31T17:30:52.813364+00:00`
 
 ## Start here
 
@@ -21,14 +21,10 @@ Refreshed at: `2026-10-31T17:28:10.303546+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `7a3594cdde30` — Record the Saturday recorded flips and the Tuesday Odds Gap coverage gap
-- Pending change set: 217 paths
-  - `M  CURRENT_PREDICTIONS.md`
-  - ` M README.md`
-  - `M  docs/findings.html`
+- Baseline commit: `8e11397c51c2` — Republish the site with the latest settled results
+- Pending change set: 213 paths
   - `M  docs/history.html`
   - `M  docs/index.html`
-  - `M  docs/model.html`
   - `M  tiebreaker.json`
   - `?? an.csv`
   - `?? docs/lanes/c-drive-space-2026-10-31.md`
@@ -43,7 +39,11 @@ Refreshed at: `2026-10-31T17:28:10.303546+00:00`
   - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
   - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
   - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
-  - ...and 197 more
+  - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
+  - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
+  - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
+  - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
+  - ...and 193 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
