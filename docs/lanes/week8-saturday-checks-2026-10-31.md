@@ -34,6 +34,8 @@ Saturday Week 8 check: scheduler health after the overnight crash, lineup/injury
 - Lost scheduler state made sweep_missed replay every catch_up job's last window back to back (~50 sync_captures at ~4 min, blocking due jobs). 07:38 wrote data/scheduler_state.json rebuilt from scheduler_log.txt (1,617 runs, 60 days; pre-rebuild copy in the session scratchpad); the daemon merges the file after each job, so the sweep skips the rest.
 - Owner asked why IND stays IND after a 2.5-pt move against it. Measured: the served move term read leader_median_net_move 0.0. Bovada moved +1.5 (Tue 8.5 -> Wed 10); William Hill and MyBookie were first captured Wed 22:00Z already at 10, so their only diffs were Friday's flat 10->10 and the median {1.5, 0, 0} = 0. That is why Wed refresh flipped IND/ARI/ATL to the home side (only Bovada had a diff) and Fri flipped them back.
 - Fix (sharp_book_movement_features.py): a book counts only if it has a reading before the Wednesday anchor. Training check on artifacts/sharp_book_weighted_movement/spread_quotes.parquet (2023-25): 7 of 2,397 book-game pairs lacked a baseline; the fix changes 2 of 799 training values (2024_14_CLE_PIT -0.5->0, 2025_11_GB_NYG 0->-0.25); frozen training artifact untouched, coefficients stay valid. Live Week 8: only Bovada has a baseline for every game. Dry run: IND at JAX -> JAX -7.5 (58.2%), ARI at DAL -> DAL -6.5 (51.9%); others hold. Gates: ruff/format/mypy clean on src, pytest 1645 passed. Validation v5 -> v6.
+- DONE 08:09: --run-job refresh_sat recorded ARI at DAL -> DAL -6.5 (51.9%) and IND at JAX -> JAX -7.5 (58.2%); NOTIFY-OK GAOJKHxz6jAw; PICK-CHANGE-PUBLISH 65fba627 pushed. Card late-week block: DAL, JAX, LAC, WAS. Board rows match. Fix commit 52555216.
+- Root of the missing baselines: Tuesday 18:25Z Odds Gap capture (20261027T182541Z-odds-gap-private) listed 1 game per book; Wed 9, Fri 13. 08:11 retry captured 13 games x 3 books; Bovada lines unchanged since 07:12.
 - git fsck --connectivity-only exit 0. backup_data --status: E: mirror 100% (1 pending); offsite snapshot 10-25 OK.
 
 ## Next
@@ -43,4 +45,5 @@ Saturday Week 8 check: scheduler health after the overnight crash, lineup/injury
 - Sunday: refresh_sun 10:00 re-nominates the star; grep 'BEST-PICK-LEDGER sunday|PICK-CHANGE|NOTIFY' for 2026-11-01 and tell the owner the final star and any changed picks. Lock Sun 4 PM ET. Then move this lane and week8-lock-2026-10-27 to done/.
 
 ## Open
+- Tuesday Odds Gap capture returned 1 of 14 games, so William Hill and MyBookie lack Tuesday baselines all week and the served move term runs on Bovada alone. Find why the Tuesday lineshop page lists so few games (likely posted lines not yet up at 14:25 ET) and add a later Tuesday or Wednesday-morning capture before the Wednesday anchor.
 - F: online scan needs an elevated prompt: owner runs `chkdsk F: /scan` (read-only online scan) when convenient.
