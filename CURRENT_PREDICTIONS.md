@@ -10,7 +10,7 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 
 **Production policy active:** one calibrated probability combines the model, situational evidence and available line movement to choose each side.
 
-**Best Pick of the week (★):** CHI +3.5 in CHI at SEA. The pool scores one Best Pick per regular-season week. This pick was the Tuesday star, held until the Sunday-morning re-nomination moves it.
+**Best Pick of the week (★):** CIN -10.5 in TEN at CIN. The pool scores one Best Pick per regular-season week. The star moved here on Sunday morning: it is provisionally the highest estimated chance to cover among games still open for changes at the spread the pool locked on Tuesday. Its estimated lead over the other picks is uncertain. Tuesday's Best Pick was CHI +3.5 in CHI at SEA.
 
 | Date        | Matchup    | ATS prediction   | Cover chance   |
 |:------------|:-----------|:-----------------|:---------------|
@@ -26,8 +26,8 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 | Sun, Nov 01 | MIN at DET | MIN +3.5         | 52.6%          |
 | Sun, Nov 01 | NE at MIA  | MIA +7.5         | 50.0%          |
 | Sun, Nov 01 | PHI at WAS | WAS -4.5         | 52.5%          |
-| Sun, Nov 01 | TEN at CIN | CIN -10.5        | 65.6%          |
-| Mon, Nov 02 | CHI at SEA | ★ CHI +3.5       | 59.3%          |
+| Sun, Nov 01 | TEN at CIN | ★ CIN -10.5      | 65.6%          |
+| Mon, Nov 02 | CHI at SEA | CHI +3.5         | 59.3%          |
 
 **Tiebreaker (last game, CHI at SEA):** SEA 24 - CHI 22, total 46 (market total 46.5) -- consistent with the CHI +3.5 pick.
 
@@ -37,6 +37,8 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 
 <!-- LATE_WEEK_REFRESH:START -->
 ## Late-week refresh
+
+The Best Pick moved to TEN at CIN on the Sunday refresh. It provisionally has the highest estimated chance to cover among games that have not kicked off at the spread the pool locked on Tuesday. Its estimated lead over the other picks is uncertain. Tuesday's Best Pick was CHI at SEA.
 
 5 picks changed since the Tuesday card. The new picks below replace the corresponding picks above; each keeps its original grading line. Cover chance uses the latest information available before the pick locked.
 
