@@ -1,0 +1,117 @@
+{
+  "family": "pool_offset_at_posting_2026",
+  "signals": {
+    "card_against_pool_offset_2026_w1_8": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Live 2026 Weeks 1-8 only; the archive grades at the Tuesday market open so it never contains a pool line off the market; interval reported, no closing ground",
+      "closing_ground": null,
+      "description": "Served card picks on the side the pool offset disfavors (pool line worse than the Tuesday market for the picked side), record at the pool line",
+      "effect": -22.73,
+      "effect_units": "accuracy_points",
+      "family": "pool_offset_at_posting_2026",
+      "interval": [
+        -36.85,
+        -1.85
+      ],
+      "league": "nfl",
+      "notes": "Tuesday market = median across books of each book's first spread quote at or after Tuesday noon ET (the pool's line freeze) of the game week; offset = market minus pool home line; graded at the Splash pool line from decisions.graded played arm results; card = last publication before each deadline. Looks: 4 cells, one family, declared after seeing the pool-relative move tally.",
+      "plain_summary": "Our picks that took the side getting the worse number versus the market went 6-16.",
+      "probability_positive": 0.017,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 22,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "docs/lanes/mod27-u6-pool-offset.md",
+      "standard_error": null
+    },
+    "pool_offset_side_all_2026_w1_8": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Live 2026 Weeks 1-8 only; the archive grades at the Tuesday market open so it never contains a pool line off the market; interval reported, no closing ground",
+      "closing_ground": null,
+      "description": "Side the pool line favors relative to the Tuesday-noon market consensus (offset at least 0.5), record at the pool line",
+      "effect": 12.07,
+      "effect_units": "accuracy_points",
+      "family": "pool_offset_at_posting_2026",
+      "interval": [
+        -0.8,
+        23.44
+      ],
+      "league": "nfl",
+      "notes": "Tuesday market = median across books of each book's first spread quote at or after Tuesday noon ET (the pool's line freeze) of the game week; offset = market minus pool home line; graded at the Splash pool line from decisions.graded played arm results; card = last publication before each deadline. Looks: 4 cells, one family, declared after seeing the pool-relative move tally.",
+      "plain_summary": "When the pool's line sat at least half a point off the betting market at posting time, the side getting the better number went 36-22.",
+      "probability_positive": 0.966,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 58,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "docs/lanes/mod27-u6-pool-offset.md",
+      "standard_error": null
+    },
+    "pool_offset_side_hook_2026_w1_8": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Live 2026 Weeks 1-8 only; the archive grades at the Tuesday market open so it never contains a pool line off the market; interval reported, no closing ground",
+      "closing_ground": null,
+      "description": "Hook subset: whole-number Tuesday market line with the pool line 0.5 off; side holding the hook, record at the pool line",
+      "effect": 9.09,
+      "effect_units": "accuracy_points",
+      "family": "pool_offset_at_posting_2026",
+      "interval": [
+        -5.59,
+        22.31
+      ],
+      "league": "nfl",
+      "notes": "Tuesday market = median across books of each book's first spread quote at or after Tuesday noon ET (the pool's line freeze) of the game week; offset = market minus pool home line; graded at the Splash pool line from decisions.graded played arm results; card = last publication before each deadline. Looks: 4 cells, one family, declared after seeing the pool-relative move tally.",
+      "plain_summary": "When the pool added a half point to a whole-number market line, the side getting that half point went 26-18.",
+      "probability_positive": 0.884,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 44,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "docs/lanes/mod27-u6-pool-offset.md",
+      "standard_error": null
+    },
+    "pool_offset_side_nonhook_2026_w1_8": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Live 2026 Weeks 1-8 only; the archive grades at the Tuesday market open so it never contains a pool line off the market; interval reported, no closing ground",
+      "closing_ground": null,
+      "description": "Non-hook subset: pool line off the Tuesday market by other amounts (e.g. 7.5 versus 8.5); side getting the better number, record at the pool line",
+      "effect": 21.43,
+      "effect_units": "accuracy_points",
+      "family": "pool_offset_at_posting_2026",
+      "interval": [
+        -4.65,
+        38.28
+      ],
+      "league": "nfl",
+      "notes": "Tuesday market = median across books of each book's first spread quote at or after Tuesday noon ET (the pool's line freeze) of the game week; offset = market minus pool home line; graded at the Splash pool line from decisions.graded played arm results; card = last publication before each deadline. Looks: 4 cells, one family, declared after seeing the pool-relative move tally.",
+      "plain_summary": "When the pool's line was off the market by a full point or more, the side getting the better number went 10-4.",
+      "probability_positive": 0.941,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 14,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "docs/lanes/mod27-u6-pool-offset.md",
+      "standard_error": null
+    }
+  }
+}

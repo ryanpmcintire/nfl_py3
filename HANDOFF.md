@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-02T15:33:48.889926+00:00`
+Refreshed at: `2026-11-02T15:36:53.834510+00:00`
 
 ## Start here
 
@@ -21,18 +21,13 @@ Refreshed at: `2026-11-02T15:33:48.889926+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `cb0bc9aed249` — Record the pool hook serve attempt and its signal-atlas blocker
-- Pending change set: 235 paths
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - `M  docs/lanes/acc-u8-prediction-markets.md`
-  - `A  docs/lanes/ui20-2026-11-02.md`
-  - `M  docs/model.html`
-  - `M  registry/weak_signals/mod24_prediction_markets.json`
-  - `A  scripts/mod24_u8_pm_term.py`
-  - `M  src/nfl_ats/board_site_content.py`
-  - `M  src/nfl_ats/board_terminal.py`
+- Baseline commit: `e0aad5585197` — Show each week's Tuesday-card record beside the final record on History
+- Pending change set: 230 paths
+  - `A  docs/lanes/late-flip-mechanism-2026-11-02.md`
+  - `M  docs/lanes/mod27-better-picks.md`
+  - `A  docs/lanes/mod27-u6-pool-offset.md`
+  - `A  registry/weak_signals/late_flip_mechanism_2026.json`
+  - `A  registry/weak_signals/pool_offset_at_posting_2026.json`
   - ` M src/nfl_ats/card_view.py`
   - ` M src/nfl_ats/pick_probability.py`
   - `?? an.csv`
@@ -43,7 +38,12 @@ Refreshed at: `2026-11-02T15:33:48.889926+00:00`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
   - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - ...and 215 more
+  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
+  - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
+  - ...and 210 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

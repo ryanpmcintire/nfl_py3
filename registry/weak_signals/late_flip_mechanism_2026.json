@@ -1,0 +1,61 @@
+{
+  "family": "late_flip_mechanism_2026",
+  "signals": {
+    "late_flip_final_vs_tuesday_side_2026_w2_8": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Final side 13-10 against Tuesday side 10-13; 23 looks in one family of two contrasts; interval far below resolving a small effect",
+      "closing_ground": null,
+      "description": "Accuracy of the final published card side minus the Tuesday card side over the 23 games whose side changed between Tuesday and the pool lock, Weeks 2-8 2026, graded at the pool line",
+      "effect": 13.04,
+      "effect_units": "accuracy_points",
+      "family": "late_flip_mechanism_2026",
+      "interval": [
+        -27.9,
+        53.9
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Games where the pick changed after Tuesday: the later pick went 13-10 and the Tuesday pick went 10-13, so the changes helped slightly but cannot be told from luck.",
+      "probability_positive": 0.729,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 7,
+      "sample_games": 23,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "docs/lanes/late-flip-mechanism-2026-11-02.md",
+      "standard_error": 20.9
+    },
+    "late_flip_move_driven_vs_other_final_accuracy_2026_w2_8": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Move-driven flips 7-4 versus non-move-driven 2-3; 16 games, two cells in the family",
+      "closing_ground": null,
+      "description": "Final-side accuracy for flips where the market-move term alone crosses 50% (11 games) minus flips where only the non-move terms cross (5 games), Weeks 2-8 2026",
+      "effect": 23.6,
+      "effect_units": "accuracy_points",
+      "family": "late_flip_mechanism_2026",
+      "interval": [
+        -28.0,
+        75.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Late pick changes caused by the line-movement term went 7-4; changes caused by injury and lineup information went 2-3. The gap is far too small a sample to separate from luck.",
+      "probability_positive": 0.8,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 7,
+      "sample_games": 16,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "docs/lanes/late-flip-mechanism-2026-11-02.md",
+      "standard_error": 26.3
+    }
+  }
+}

@@ -15,6 +15,11 @@ Owner 2026-11-02: get better at making picks. Repair the steps between the model
 5. Pool-relative forward log: lane mod27-u5-pool-move-log.md. DONE: scripts/pool_relative_move_forward_log.py, 8 scheduler jobs (pool_move_log_*), MANUAL-RUN OK, Week 8 backfill card 5-8 vs challenger 6-7; scheduler restarted 09:59 ET, code current.
 3. Beat-reporter capture health and 2024-26 rerun: lane mod27-u3-beat-reporters.md. DONE (verified docs/mod27_u3_beat_forward26.json): capture healthy (jobs beat_reporters_sat/sun/mon, 1,304 tagged 2026 posts). Fit 2020-25, scored 2026 Weeks 2-8 (104 games): base 61-43; +beat 59-45 (-1.92 pts, P+ .31; log loss gain +0.0103, P+ .90); +beat_lead 56-48 (-4.81, P+ .037, decisive 3-8). The 2024-25 lead result did not repeat. Not served; rerun after more weeks.
 
+6. Pool line off the market at posting: lane mod27-u6-pool-offset.md. MEASURED: the side getting the better number versus the Tuesday-noon market went 36-22 (hook 26-18, non-hook 10-4); card against it 6-16. Generalize the hook term once the branch passes.
+7. Late flips: lane late-flip-mechanism-2026-11-02.md. DONE: move-driven late flips 7-4; defect = one outlier pre-Wednesday book baseline (LV at NYJ). Guard test: lane move-baseline-guard.md (running).
+8. Prediction markets (acc-u8): term worse in 2025 (Polymarket -6.47 pts, P+ .011); not served.
+9. Dashboard: History shows final and Tuesday-card records per week (commit e0aad558, pushed).
+
 ## Next
 - After the Week 9 Tuesday lock: finish unit 4 (atlas), merge, activate, enroll v7.
 - Grade the pool-relative log weekly (`scripts/pool_relative_move_forward_log.py --grade`).
