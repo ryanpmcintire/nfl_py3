@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-02T15:56:55.623928+00:00`
+Refreshed at: `2026-11-02T16:02:05.627247+00:00`
 
 ## Start here
 
@@ -21,9 +21,19 @@ Refreshed at: `2026-11-02T15:56:55.623928+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `51f1806b866a` — Record the deadline-integration flag extension and its chronology leak
-- Pending change set: 224 paths
+- Baseline commit: `e12fae335d1f` — Record the two-stage pool hook design result before merging it
+- Pending change set: 234 paths
+  - `M  docs/findings.html`
+  - `M  docs/index.html`
   - `M  docs/lanes/mod27-u4-hook-serve.md`
+  - `A  registry/studies/combined_vs_raw_2026_v7.json`
+  - `M  registry/weak_signals/pool_hook_term_2026_10_27.json`
+  - `M  src/nfl_ats/card_view.py`
+  - `M  src/nfl_ats/cli_commands/prospective.py`
+  - `M  src/nfl_ats/independent_validation.py`
+  - `M  src/nfl_ats/pick_probability.py`
+  - `M  src/nfl_ats/pick_probability_fit.py`
+  - `A  src/nfl_ats/pool_hook.py`
   - `?? an.csv`
   - `?? docs/lanes/c-drive-space-2026-10-31.md`
   - `?? docs/lanes/machine-crashes-2026-10-31.md`
@@ -33,17 +43,7 @@ Refreshed at: `2026-11-02T15:56:55.623928+00:00`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
   - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
   - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
-  - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
-  - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
-  - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
-  - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
-  - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
-  - `?? registry/experiments/margin-backtest/20261008T161241Z.json`
-  - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
-  - ...and 204 more
+  - ...and 214 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

@@ -14,18 +14,20 @@ from nfl_ats.data import DataContractError
 from nfl_ats.io import atomic_json, run_id
 from nfl_ats.pick_probability import (
     FLAG_SUM_COLUMN,
+    MARKET_LINE_PROBABILITY_COLUMN,
     MODEL_HOME_PROBABILITY_COLUMN,
     MOVE_AVAILABLE_COLUMN,
     MOVE_COLUMN,
     PickProbabilityModel,
     load_pick_probability_model,
 )
+from nfl_ats.pool_hook import HOOK_COLUMN
 from nfl_ats.provenance import sha256_file
 from nfl_ats.published_picks import game_deadlines
 from nfl_ats.tiebreaker import newest_schedules_path
 
 STUDY_ROOT = Path("prospective")
-DEFAULT_STUDY = "independent_validation_v6"
+DEFAULT_STUDY = "independent_validation_v7"
 RECIPE_KEYS = (
     "ats_method",
     "regressor",
@@ -44,6 +46,7 @@ PINNED_NAMES = {
     "mass_preserving_lattice.py",
     "pick_probability.py",
     "pick_refresh.py",
+    "pool_hook.py",
     "prediction_safety.py",
     "snapshots.py",
     "source_policy.py",
@@ -280,10 +283,13 @@ def capture(
             "Independent-validation probability is not conditional on the original line"
         )
     combined = model.home_probability(
-        frame[MODEL_HOME_PROBABILITY_COLUMN],
+        frame[MARKET_LINE_PROBABILITY_COLUMN]
+        if model.has_pool_hook and MARKET_LINE_PROBABILITY_COLUMN in frame
+        else frame[MODEL_HOME_PROBABILITY_COLUMN],
         frame[FLAG_SUM_COLUMN],
         frame[MOVE_COLUMN],
         frame[MOVE_AVAILABLE_COLUMN],
+        frame[HOOK_COLUMN] if HOOK_COLUMN in frame and model.has_pool_hook else None,
     )
     deadlines = game_deadlines(raw)
     known = {row["game_id"] for row in enrollment["cohort"]}

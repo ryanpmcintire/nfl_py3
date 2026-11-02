@@ -47,6 +47,7 @@ from nfl_ats.player_arrests_back_side_overlay import (
     apply_player_arrests_back_side_overlay,
     load_latest_complete_arrest_snapshot,
 )
+from nfl_ats.pool_hook import served_hook_frame
 from nfl_ats.prospective_scoring import artifact_model_config
 from nfl_ats.published_picks import game_deadlines
 from nfl_ats.snapshots import latest_snapshot, load_snapshot, load_verified_snapshot
@@ -438,6 +439,7 @@ def _served_probability_frame(
     *,
     flags: pd.DataFrame | None,
     move: pd.DataFrame | None,
+    hook: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
 
     frame = final_predictions.reset_index(drop=True).copy()
@@ -450,7 +452,7 @@ def _served_probability_frame(
             frame[column] = frame["game_id"].map(lookup[column]).astype(float)
     if "base_probability_policy" in lookup.columns:
         frame["base_probability_policy"] = frame["game_id"].map(lookup["base_probability_policy"])
-    return attach_pick_probability(frame, model, flags=flags, move=move)
+    return attach_pick_probability(frame, model, flags=flags, move=move, hook=hook)
 
 
 def resolve_card_probabilities(
@@ -476,6 +478,7 @@ def resolve_card_probabilities(
     production_overlay: FourOverlayCompositionResult | None = None
     served_flags: pd.DataFrame | None = None
     served_move: pd.DataFrame | None = None
+    served_hook: pd.DataFrame | None = None
     if data_root is None:
         if require_fresh_arrest_overlay:
             raise FileNotFoundError("Four-overlay production policy requires a data root")
@@ -525,6 +528,13 @@ def resolve_card_probabilities(
             if require_fresh_arrest_overlay:
                 raise
             production_overlay = None
+        if pick_probability is not None and pick_probability.has_pool_hook:
+            try:
+                served_hook = served_hook_frame(
+                    predictions, data_root, dict(pick_probability.hook_push_mass)
+                )
+            except (FileNotFoundError, OSError, ValueError, KeyError, DataContractError):
+                served_hook = None
     final_predictions = (
         production_overlay.overlaid_predictions
         if production_overlay is not None
@@ -537,6 +547,7 @@ def resolve_card_probabilities(
             pick_probability,
             flags=served_flags,
             move=served_move,
+            hook=served_hook,
         )
     else:
         final_predictions = attach_displayed_confidence(final_predictions, displayed_confidence)

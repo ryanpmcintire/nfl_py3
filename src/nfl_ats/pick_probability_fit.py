@@ -47,11 +47,13 @@ from nfl_ats.pick_probability import (
     active_market_move_feature_version,
     signed_composition_flags,
 )
+from nfl_ats.pool_hook import HOOK_COLUMN, hook_rows, push_mass_table
 from nfl_ats.public_board import find_matching_opener_evaluation
 from nfl_ats.snapshots import latest_snapshot, load_snapshot
 from nfl_ats.splash_lines import load_splash_capture, splash_decision_lines
 
 FIT_FEATURES = ("model_logit", FLAG_SUM_COLUMN, MOVE_COLUMN, MOVE_AVAILABLE_COLUMN)
+HOOK_ROWS_FILENAME = "hook_rows.parquet"
 FIT_RIDGE = 1e-3
 FIT_ITERATIONS = 50
 MODEL_PROBABILITY_SOURCE = "home_cover_probability_at_open"
@@ -97,6 +99,25 @@ def _standardisers(train: pd.DataFrame) -> tuple[dict[str, float], dict[str, flo
     means = {name: float(train[name].mean()) for name in FIT_FEATURES}
     stds = {name: float(train[name].std(ddof=0)) or 1.0 for name in FIT_FEATURES}
     return means, stds
+
+
+def _fit_offset_coefficient(hook: np.ndarray, offset: np.ndarray, y: np.ndarray) -> float:
+    coefficient = 0.0
+    for _ in range(FIT_ITERATIONS):
+        p = 1.0 / (1.0 + np.exp(-np.clip(offset + coefficient * hook, -35.0, 35.0)))
+        gradient = float(hook @ (y - p)) - FIT_RIDGE * coefficient
+        curvature = float((hook * hook) @ (p * (1.0 - p))) + FIT_RIDGE
+        step = gradient / curvature
+        coefficient += step
+        if abs(step) < 1e-12:
+            break
+    return coefficient
+
+
+def _stage_one_logit(
+    frame: pd.DataFrame, beta: np.ndarray, means: dict[str, float], stds: dict[str, float]
+) -> np.ndarray:
+    return np.asarray(_design(frame, means, stds) @ beta, dtype=float)
 
 
 def _natural_coefficients(
@@ -250,6 +271,7 @@ def build_fit_population(
     data_root: Path,
     *,
     market_move_feature_version: str = MARKET_MOVE_FEATURE_LEGACY,
+    keep_pushes: bool = False,
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
 
     active = load_active_ats_model(artifacts_root)
@@ -299,7 +321,7 @@ def build_fit_population(
         )
 
     margin = pd.to_numeric(joined["margin_vs_open"], errors="coerce")
-    graded = joined.loc[margin.notna() & margin.ne(0.0)].reset_index(drop=True)
+    graded = joined.loc[margin.notna() & (margin.ne(0.0) | keep_pushes)].reset_index(drop=True)
     pushes = int(margin.eq(0.0).sum())
     ungraded = int(margin.isna().sum())
     graded["home_covered"] = (
@@ -354,7 +376,7 @@ def build_fit_population(
         "base_probability_policy": BASE_PROBABILITY_POLICY,
         "market_move_artifact": market_artifact,
         "market_move_feature_version": market_move_feature_version,
-        "graded_games": len(graded),
+        "graded_games": int(graded["margin_vs_open"].ne(0.0).sum()),
         "pushes_dropped": pushes,
         "ungraded_dropped": ungraded,
         "games_with_market_move": int(graded[MOVE_AVAILABLE_COLUMN].sum()),
@@ -478,11 +500,14 @@ def fit_pick_probability(
 
     if market_move_feature_version is None:
         market_move_feature_version = active_market_move_feature_version(artifacts_root)
-    population, provenance = build_fit_population(
+    every_row, provenance = build_fit_population(
         artifacts_root,
         data_root,
         market_move_feature_version=market_move_feature_version,
+        keep_pushes=True,
     )
+    push_table = push_mass_table(every_row)
+    population = every_row.loc[every_row["margin_vs_open"].ne(0.0)].reset_index(drop=True)
     if population.empty:
         raise PickProbabilitySourceError("the pick-probability fit population is empty")
 
@@ -492,10 +517,21 @@ def fit_pick_probability(
     natural = _natural_coefficients(beta, means, stds)
     population["in_sample_home_probability"] = _predict(population, beta, means, stds)
 
+    stacked = hook_rows(every_row)
+    stacked_frame = every_row.iloc[stacked["row"].to_numpy()].reset_index(drop=True)
+    stacked_offset = _stage_one_logit(stacked_frame, beta, means, stds)
+    hook_values = stacked[HOOK_COLUMN].to_numpy(dtype=float)
+    hook_target = stacked["home_covered"].to_numpy(dtype=float)
+    hook_coefficient = _fit_offset_coefficient(hook_values, stacked_offset, hook_target)
+    stacked["stage_one_logit_in_sample"] = stacked_offset
+
     seasons = sorted(int(value) for value in population["season"].unique())
     out_of_season = pd.Series(np.nan, index=population.index, dtype=float)
     out_of_season_tuesday = pd.Series(np.nan, index=population.index, dtype=float)
     fold_coefficients: dict[str, dict[str, float]] = {}
+    hook_fold_coefficients: dict[str, float] = {}
+    stacked["stage_one_logit_out_of_season"] = np.nan
+    stacked["hook_coefficient_out_of_season"] = np.nan
     for held in seasons:
         train = population.loc[population["season"].ne(held)]
         test = population.loc[population["season"].eq(held)]
@@ -513,6 +549,20 @@ def fit_pick_probability(
             tuesday_test, fold_beta, fold_means, fold_stds
         )
         fold_coefficients[str(held)] = _natural_coefficients(fold_beta, fold_means, fold_stds)
+        rest = stacked["season"].ne(held).to_numpy()
+        rest_frame = stacked_frame.loc[rest]
+        fold_hook = _fit_offset_coefficient(
+            hook_values[rest],
+            _stage_one_logit(rest_frame, fold_beta, fold_means, fold_stds),
+            hook_target[rest],
+        )
+        hook_fold_coefficients[str(held)] = fold_hook
+        held_rows = ~rest
+        held_logit = _stage_one_logit(
+            stacked_frame.loc[held_rows], fold_beta, fold_means, fold_stds
+        )
+        stacked.loc[held_rows, "stage_one_logit_out_of_season"] = held_logit
+        stacked.loc[held_rows, "hook_coefficient_out_of_season"] = fold_hook
     population["out_of_season_home_probability"] = out_of_season
     population["out_of_season_tuesday_home_probability"] = out_of_season_tuesday
     chronological = pd.Series(np.nan, index=population.index, dtype=float)
@@ -535,6 +585,18 @@ def fit_pick_probability(
             fold_beta, fold_means, fold_stds
         )
     population["chronological_home_probability"] = chronological
+    stacked["stage_one_out_of_season_home_probability"] = 1.0 / (
+        1.0 + np.exp(-stacked["stage_one_logit_out_of_season"])
+    )
+    stacked["two_stage_out_of_season_home_probability"] = 1.0 / (
+        1.0
+        + np.exp(
+            -(
+                stacked["stage_one_logit_out_of_season"]
+                + stacked["hook_coefficient_out_of_season"] * stacked[HOOK_COLUMN]
+            )
+        )
+    )
     population["neutral_market_probability"] = 0.5
     scored = population.loc[population["out_of_season_home_probability"].notna()].copy()
 
@@ -572,11 +634,14 @@ def fit_pick_probability(
         base_probability_policy=BASE_PROBABILITY_POLICY,
         market_move_feature_version=market_move_feature_version,
         counted_flag_columns=tuple(provenance["counted_flag_columns"]),
+        pool_hook=hook_coefficient,
+        hook_push_mass=tuple((float(a), float(b)) for a, b in sorted(push_table.items())),
     )
 
     directory = artifacts_root / PICK_PROBABILITY_ARTIFACT_ROOT / stamp
     directory.mkdir(parents=True, exist_ok=True)
     population.to_parquet(directory / "per_game.parquet", index=False)
+    stacked.to_parquet(directory / HOOK_ROWS_FILENAME, index=False)
     (directory / COEFFICIENTS_FILENAME).write_text(
         json.dumps(model.to_dict(), indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
@@ -589,6 +654,12 @@ def fit_pick_probability(
         "ridge": FIT_RIDGE,
         "records": records,
         "fold_coefficients": fold_coefficients,
+        "pool_hook_stage": {
+            "coefficient": hook_coefficient,
+            "fold_coefficients": hook_fold_coefficients,
+            "rows": len(stacked),
+            "rows_file": HOOK_ROWS_FILENAME,
+        },
         "chronological_coefficients": chronological_coefficients,
         "prediction_artifact": "per_game.parquet",
         "activated": activate,

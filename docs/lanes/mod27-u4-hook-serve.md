@@ -8,11 +8,13 @@ Serve the hook (pool half-point over a whole-number Tuesday market line) as one 
 - Measured in a copied artifacts root: gate passed (non-whole and all probabilities identical, 4 coefficients equal, 833-670 unchanged, hook coefficient 0.805, folds 0.77-0.87). Whole-number rows at simulated pool lines: log loss .68343 -> .68223, Brier .24520 -> .24459, probability_positive .994/.995; accuracy 726-596 -> 729-593 (185 changed picks).
 - Earlier stacked five-term design rolled back 2026-11-02 (472 vs 487 on non-whole games).
 
+- LIVE 2026-11-02 11:01 ET: branch merged; `nfl-ats fit-pick-probability` activated pick_probability/20261102T155750Z (four coefficients and all 1,503 per-game probabilities identical to 20261101T171318Z, opener 833-670, hook 0.805); atlas loads; refresh-picks dry run exit 0; pytest 452 passed; publish-board shows 833-670. Week 8 replay: the 9 non-hook games identical, 5 hook games moved 0.4-2.3 pts toward the hook side, no flips. Validation v7 enrolled (combined_vs_raw_2026_w09_w18_v7, 151 games, source_unchanged true); v6 stops at Week 8. Rollback: session scratchpad active_pick_probability.before_merge.json and active_signal_atlas.before_merge.json.
+
 ## Tried
 - Stacked five-term refit (regressed); two-stage (this commit).
 
 ## Next
-- Orchestrator: activation (merge, fit in production artifacts, atlas, publish) and the weak-signals record for pool_hook_term_2026_10_27.
+- Tuesday 14:47 ET check: Week 9 card built by weekly_lock with the hook term; v7 capture runs Sat/Sun.
 - Bundle the generalized offset term (lane mod27-u6-pool-offset.md) only if the same two-stage gate passes.
 
 ## Open

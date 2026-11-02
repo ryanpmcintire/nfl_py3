@@ -32,6 +32,11 @@ from nfl_ats.four_overlay_composition import (
 )
 from nfl_ats.mass_preserving_lattice import BASE_PROBABILITY_POLICY
 from nfl_ats.player_arrests_back_side_overlay import _broad_side_flags
+from nfl_ats.pool_hook import (
+    HOOK_COLUMN,
+    HOOK_DIRECTION_COLUMN,
+    HOOK_PUSH_MASS_COLUMN,
+)
 from nfl_ats.tank_zone_fade_tilt_overlay import OVERLAY_WEEK_MAX as TANK_ZONE_WEEK_MAX
 from nfl_ats.tank_zone_fade_tilt_overlay import OVERLAY_WEEK_MIN as TANK_ZONE_WEEK_MIN
 from nfl_ats.tank_zone_fade_tilt_overlay import tank_zone_flag_by_game
@@ -52,6 +57,7 @@ FLAG_SUM_TERM = "flag_sum"
 MOVE_TERM = "move_toward_home"
 MOVE_AVAILABLE_TERM = "move_available"
 INTERCEPT_TERM = "intercept"
+HOOK_TERM = "pool_hook"
 COEFFICIENT_TERMS = (
     INTERCEPT_TERM,
     MODEL_LOGIT_TERM,
@@ -92,6 +98,7 @@ FLAG_SUM_COLUMN = "composition_flag_sum"
 MOVE_COLUMN = "market_move_toward_home"
 MOVE_AVAILABLE_COLUMN = "market_move_available"
 MODEL_HOME_PROBABILITY_COLUMN = "model_home_cover_probability"
+MARKET_LINE_PROBABILITY_COLUMN = "market_line_home_cover_probability"
 CALIBRATED_HOME_PROBABILITY_COLUMN = "calibrated_home_cover_probability"
 CALIBRATED_PICK_PROBABILITY_COLUMN = "calibrated_pick_probability"
 CALIBRATED_PICK_SIDE_COLUMN = "calibrated_pick_side"
@@ -185,6 +192,12 @@ class PickProbabilityModel:
     base_probability_policy: str | None = None
     market_move_feature_version: str = MARKET_MOVE_FEATURE_LEGACY
     counted_flag_columns: tuple[str, ...] = COUNTED_FLAG_COLUMNS
+    pool_hook: float = 0.0
+    hook_push_mass: tuple[tuple[float, float], ...] = ()
+
+    @property
+    def has_pool_hook(self) -> bool:
+        return bool(self.hook_push_mass)
 
     @property
     def lean_minimum(self) -> float:
@@ -206,6 +219,7 @@ class PickProbabilityModel:
         flag_sum: pd.Series,
         move_toward_home: pd.Series,
         move_available: pd.Series,
+        pool_hook: pd.Series | None = None,
     ) -> pd.Series:
 
         stated = pd.to_numeric(model_home_probability, errors="coerce").clip(
@@ -219,6 +233,8 @@ class PickProbabilityModel:
             + self.move_toward_home * pd.to_numeric(move_toward_home, errors="coerce").fillna(0.0)
             + self.move_available * pd.to_numeric(move_available, errors="coerce").fillna(0.0)
         )
+        if pool_hook is not None:
+            z = z + self.pool_hook * pd.to_numeric(pool_hook, errors="coerce").fillna(0.0)
         bounded = np.clip(z.to_numpy(dtype=float), -35.0, 35.0)
         return pd.Series(1.0 / (1.0 + np.exp(-bounded)), index=stated.index, dtype=float)
 
@@ -265,7 +281,9 @@ class PickProbabilityModel:
                 FLAG_SUM_TERM: self.flag_sum,
                 MOVE_TERM: self.move_toward_home,
                 MOVE_AVAILABLE_TERM: self.move_available,
+                **({HOOK_TERM: self.pool_hook} if self.has_pool_hook else {}),
             },
+            "hook_push_mass": [list(pair) for pair in self.hook_push_mass],
             "strength_bands": [band.to_dict() for band in self.strength_bands],
             "confidence_bands": [band.to_dict() for band in self.confidence_bands],
             "counted_flag_columns": list(self.counted_flag_columns),
@@ -307,6 +325,9 @@ class PickProbabilityModel:
             raise PickProbabilitySourceError(
                 f"pick probability artifact {artifact} has a non-finite coefficient"
             )
+        hook_raw = payload.get("hook_push_mass") or []
+        hook_mass = tuple((float(pair[0]), float(pair[1])) for pair in hook_raw)
+        hook_coefficient = float(raw[HOOK_TERM]) if hook_mass and HOOK_TERM in raw else 0.0
         strength_raw = payload.get("strength_bands")
         if not isinstance(strength_raw, Sequence) or len(strength_raw) != len(STRENGTH_WORDS):
             raise PickProbabilitySourceError(
@@ -346,6 +367,8 @@ class PickProbabilityModel:
             ),
             market_move_feature_version=str(feature_version),
             counted_flag_columns=counted,
+            pool_hook=hook_coefficient,
+            hook_push_mass=hook_mass,
         )
 
 
@@ -478,7 +501,12 @@ def load_pick_probability_model(artifacts_root: Path) -> PickProbabilityModel:
             f"pick probability artifact {relative} names an unsupported policy or schema"
         )
     coefficients = payload.get("coefficients")
-    if not isinstance(coefficients, Mapping) or set(coefficients) != set(COEFFICIENT_TERMS):
+    allowed_terms = (
+        (frozenset(COEFFICIENT_TERMS), frozenset((*COEFFICIENT_TERMS, HOOK_TERM)))
+        if payload.get("hook_push_mass")
+        else (frozenset(COEFFICIENT_TERMS),)
+    )
+    if not isinstance(coefficients, Mapping) or set(coefficients) not in allowed_terms:
         raise PickProbabilitySourceError(
             f"pick probability artifact {relative} names unexpected coefficient terms"
         )
@@ -770,6 +798,7 @@ def calibrated_pick_probability(
     *,
     flags: pd.DataFrame | None = None,
     move: pd.DataFrame | None = None,
+    hook: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
 
     required = {"game_id", "home_team", "away_team", "home_cover_probability"}
@@ -845,11 +874,41 @@ def calibrated_pick_probability(
     joined[MOVE_AVAILABLE_COLUMN] = joined[MOVE_AVAILABLE_COLUMN].fillna(0.0)
 
     model_home = pd.to_numeric(joined["home_cover_probability"], errors="coerce")
+    joined[HOOK_COLUMN] = 0.0
+    base_home = model_home
+    if model.has_pool_hook and hook is not None:
+        resolved_hook = hook.reset_index(drop=True).copy()
+        resolved_hook["game_id"] = resolved_hook["game_id"].astype(str)
+        applied = (
+            joined[["game_id"]]
+            .merge(
+                resolved_hook[
+                    ["game_id", HOOK_COLUMN, HOOK_DIRECTION_COLUMN, HOOK_PUSH_MASS_COLUMN]
+                ],
+                on="game_id",
+                how="left",
+            )
+            .fillna(0.0)
+        )
+        joined[HOOK_COLUMN] = applied[HOOK_COLUMN].to_numpy(dtype=float)
+        direction = applied[HOOK_DIRECTION_COLUMN].to_numpy(dtype=float)
+        atom = applied[HOOK_PUSH_MASS_COLUMN].to_numpy(dtype=float)
+        stated = model_home.to_numpy(dtype=float)
+        at_market = np.where(
+            direction > 0,
+            stated / (1.0 - atom),
+            np.where(direction < 0, (stated - atom) / (1.0 - atom), stated),
+        )
+        base_home = pd.Series(
+            np.clip(at_market, PROBABILITY_EPSILON, 1.0 - PROBABILITY_EPSILON),
+            index=model_home.index,
+        )
     home_probability = model.home_probability(
-        model_home,
+        base_home,
         joined[FLAG_SUM_COLUMN],
         joined[MOVE_COLUMN],
         joined[MOVE_AVAILABLE_COLUMN],
+        joined[HOOK_COLUMN] if model.has_pool_hook else None,
     )
     pick_home = home_probability.ge(0.5)
     pick_probability = home_probability.where(pick_home, 1.0 - home_probability)
@@ -860,6 +919,8 @@ def calibrated_pick_probability(
             FLAG_SUM_COLUMN: joined[FLAG_SUM_COLUMN],
             MOVE_COLUMN: joined[MOVE_COLUMN],
             MOVE_AVAILABLE_COLUMN: joined[MOVE_AVAILABLE_COLUMN],
+            HOOK_COLUMN: joined[HOOK_COLUMN],
+            MARKET_LINE_PROBABILITY_COLUMN: base_home.to_numpy(dtype=float),
             CALIBRATED_HOME_PROBABILITY_COLUMN: home_probability,
             CALIBRATED_PICK_PROBABILITY_COLUMN: pick_probability.clip(lower=PICK_SIDE_FLOOR),
             CALIBRATED_PICK_SIDE_COLUMN: np.where(pick_home, "HOME", "AWAY"),
@@ -878,6 +939,7 @@ def attach_pick_probability(
     *,
     flags: pd.DataFrame | None = None,
     move: pd.DataFrame | None = None,
+    hook: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
 
     if model is None:
@@ -887,7 +949,7 @@ def attach_pick_probability(
         DISPLAYED_STRENGTH_WORD_COLUMN,
     )
 
-    served = calibrated_pick_probability(predictions, model, flags=flags, move=move)
+    served = calibrated_pick_probability(predictions, model, flags=flags, move=move, hook=hook)
     frame = predictions.reset_index(drop=True).copy()
     frame["game_id"] = frame["game_id"].astype(str)
     lookup = served.set_index("game_id")
@@ -898,6 +960,8 @@ def attach_pick_probability(
         FLAG_SUM_COLUMN,
         MOVE_COLUMN,
         MOVE_AVAILABLE_COLUMN,
+        HOOK_COLUMN,
+        MARKET_LINE_PROBABILITY_COLUMN,
         CALIBRATED_HOME_PROBABILITY_COLUMN,
         CALIBRATED_PICK_PROBABILITY_COLUMN,
     ):
