@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-02T21:59:20.944936+00:00`
+Refreshed at: `2026-11-02T21:59:34.902444+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-02T21:59:20.944936+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `32b6d0aea6a5` — SIM-11 frontier: true-strength outcome targets overstate the real outcome-strength curve
-- Pending change set: 243 paths
+- Baseline commit: `7cf0575e458d` — LEAD-80/81 forward collectors: travel interruptions and pool field tiebreaker capture
+- Pending change set: 244 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `A  docs/lanes/lead80-81-forward-capture-2026-11-02.md`
   - ` M docs/lanes/sim08-simulator-rebuild.md`
   - `M  docs/lanes/week9-lock-2026-11-03.md`
   - ` M docs/model.html`
-  - `A  scripts/capture_travel_interruptions.py`
   - ` M scripts/sim10_drive.py`
-  - `A  scripts/validate_pool_field_capture.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? docs/lanes/c-drive-space-2026-10-31.md`
   - `?? docs/lanes/machine-crashes-2026-10-31.md`
+  - `?? docs/lanes/pol12-totals-2026-11-02.md`
   - `?? docs/lanes/stealmybitcoin-ctf.md`
+  - `?? docs/lead89_option_policy.md`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
   - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - ...and 223 more
+  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
+  - ...and 224 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
