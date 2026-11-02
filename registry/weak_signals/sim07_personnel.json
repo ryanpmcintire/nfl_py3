@@ -1,0 +1,89 @@
+{
+  "family": "sim07_personnel",
+  "signals": {
+    "sim07_personnel_interaction_all": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "split-half covariance -1.4e-6 (interval -1.6e-5 to 2.3e-5), moment tau2 0; 18 cells, wide interval on r, no positive control",
+      "closing_ground": null,
+      "description": "SIM-07 offence personnel x defence DB package interaction in EPA/play, odd/even week split-half precision-weighted correlation over 18 cells, all pass and run plays",
+      "effect": -0.157,
+      "effect_units": "correlation",
+      "family": "sim07_personnel",
+      "interval": [
+        -0.51,
+        0.606
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Personnel by package interaction in EPA per play is not reliable across odd and even weeks; well-measured cells within about 0.015 EPA per play of zero",
+      "probability_positive": 0.455,
+      "recorded_at": "2026-11-02",
+      "reliability": -0.157,
+      "sample_blocks": null,
+      "sample_games": 2640,
+      "seasons": [
+        2016,
+        2025
+      ],
+      "source": "artifacts/sim07/summary.json",
+      "standard_error": 0.28
+    },
+    "sim07_personnel_interaction_pass": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "split-half covariance 3.2e-6 (interval -2.7e-5 to 3.4e-5), moment tau2 0; 18 cells, no positive control",
+      "closing_ground": null,
+      "description": "SIM-07 personnel x package interaction EPA/play, pass plays only",
+      "effect": 0.229,
+      "effect_units": "correlation",
+      "family": "sim07_personnel",
+      "interval": [
+        -0.471,
+        0.565
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Pass-play personnel by package interaction not reliably present across halves",
+      "probability_positive": 0.57,
+      "recorded_at": "2026-11-02",
+      "reliability": 0.229,
+      "sample_blocks": null,
+      "sample_games": 2640,
+      "seasons": [
+        2016,
+        2025
+      ],
+      "source": "artifacts/sim07/summary.json",
+      "standard_error": 0.28
+    },
+    "sim07_personnel_interaction_run": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "split-half covariance -1.8e-7 (interval -2.9e-5 to 2.6e-5), moment tau2 0; 18 cells, no positive control",
+      "closing_ground": null,
+      "description": "SIM-07 personnel x package interaction EPA/play, run plays only",
+      "effect": -0.008,
+      "effect_units": "correlation",
+      "family": "sim07_personnel",
+      "interval": [
+        -0.504,
+        0.497
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Run-play personnel by package interaction not reliably present across halves",
+      "probability_positive": 0.54,
+      "recorded_at": "2026-11-02",
+      "reliability": -0.008,
+      "sample_blocks": null,
+      "sample_games": 2640,
+      "seasons": [
+        2016,
+        2025
+      ],
+      "source": "artifacts/sim07/summary.json",
+      "standard_error": 0.26
+    }
+  }
+}
