@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-02T22:40:34.225581+00:00`
+Refreshed at: `2026-11-02T22:41:49.225973+00:00`
 
 ## Start here
 
@@ -21,15 +21,18 @@ Refreshed at: `2026-11-02T22:40:34.225581+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `ae5a4101b3af` — Backlog lane: SKY-05, PER-07, LEAD-59, SKY-01 and the SIM-11 joint-label confirmation
-- Pending change set: 237 paths
+- Baseline commit: `db8c3e05b03d` — Refresh the session handoff and README research state
+- Pending change set: 240 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - `M  HANDOFF.md`
+  - `M  ROADMAP.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
+  - `M  docs/lanes/lead59-officials-sweep-2026-11-02.md`
   - ` M docs/lanes/per07-staff-state-2026-11-02.md`
+  - ` M docs/lanes/sim11-strength-transmission.md`
   - ` M docs/model.html`
+  - `A  registry/weak_signals/lead59_type_trait_history_2009_fit_terms_v1.json`
   - ` M scripts/per07_first_game_fitted_term.py`
   - ` M scripts/sim08_market_anchored.py`
   - ` M tiebreaker.json`
@@ -40,10 +43,7 @@ Refreshed at: `2026-11-02T22:40:34.225581+00:00`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
-  - ...and 217 more
+  - ...and 220 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

@@ -1,0 +1,117 @@
+{
+  "family": "lead59_type_trait_history_2009_fit_terms_v1",
+  "signals": {
+    "lead59_dpi_tilt_fit_term_cumhist": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Accuracy CI [-0.729,+0.066] on only 6 decisive games; Brier CI [-0.00031,+0.00015]; year-over-year r 0.039; no closing ground applies.",
+      "closing_ground": null,
+      "description": "DPI-heavy referee (all prior games mean, as-of per-season quartile, 2009-2025) x pass-heavy home favorite, fitted term, LOSO 2020-2025, opener grade",
+      "effect": -0.266,
+      "effect_units": "accuracy_points",
+      "family": "lead59_type_trait_history_2009_fit_terms_v1",
+      "interval": [
+        -0.729,
+        0.066
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Using each referee's full prior history the DPI flag moves almost no picks; unresolved.",
+      "probability_positive": 0.0709,
+      "recorded_at": "2026-11-02",
+      "reliability": 0.0393,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/lead59_officials_sweep_rerun/summary.json",
+      "standard_error": null
+    },
+    "lead59_dpi_tilt_fit_term_hist2009": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Accuracy CI [-0.904,+0.604], Brier CI [-0.00100,+0.00042], 23 decisive games (variant 11 wins, served 12); trait year-over-year r 0.039 over 255 pairs, split-half Spearman-Brown 0.174; no closing ground applies.",
+      "closing_ground": null,
+      "description": "DPI-heavy referee (prior-season lag top quartile, traits and quartile edges from 2009-2025 referee history) x pass-heavy home favorite, one added fitted term on the served four-term probability, LOSO 2020-2025, opener grade",
+      "effect": -0.067,
+      "effect_units": "accuracy_points",
+      "family": "lead59_type_trait_history_2009_fit_terms_v1",
+      "interval": [
+        -0.904,
+        0.604
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "With 2009-2014 referee history added, the DPI-heavy crew flag still shows no measurable effect on the pick; not ready to serve.",
+      "probability_positive": 0.4627,
+      "recorded_at": "2026-11-02",
+      "reliability": 0.0393,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/lead59_officials_sweep_rerun/summary.json",
+      "standard_error": null
+    },
+    "lead59_holding_tilt_fit_term_cumhist": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Accuracy CI [-1.055,+0.532] on 24 decisive games; Brier CI [-0.00078,+0.00001]; split-half Spearman-Brown 0.576; no closing ground applies.",
+      "closing_ground": null,
+      "description": "Holding-heavy referee (all prior games mean, as-of per-season quartile, 2009-2025) x run-heavy home offense, fitted term, LOSO 2020-2025, opener grade",
+      "effect": -0.266,
+      "effect_units": "accuracy_points",
+      "family": "lead59_type_trait_history_2009_fit_terms_v1",
+      "interval": [
+        -1.055,
+        0.532
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Using each referee's full prior history the holding flag leans slightly negative but the range includes zero; unresolved.",
+      "probability_positive": 0.2404,
+      "recorded_at": "2026-11-02",
+      "reliability": 0.3514,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/lead59_officials_sweep_rerun/summary.json",
+      "standard_error": null
+    },
+    "lead59_holding_tilt_fit_term_hist2009": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Accuracy CI [-3.322,+0.259] on 65 decisive games (variant 23 wins, served 42), Brier CI [-0.00198,+0.00031]; whole interval not on the wrong side; trait year-over-year r 0.351 over 255 pairs, split-half Spearman-Brown 0.576, so reliability is not zero; no closing ground applies.",
+      "closing_ground": null,
+      "description": "Holding-heavy referee (prior-season lag top quartile, 2009-2025 history) x run-heavy home offense, one added fitted term on the served four-term probability, LOSO 2020-2025, opener grade",
+      "effect": -1.264,
+      "effect_units": "accuracy_points",
+      "family": "lead59_type_trait_history_2009_fit_terms_v1",
+      "interval": [
+        -3.322,
+        0.259
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "With 2009-2014 history the holding-heavy crew flag leans negative for the home pick but the range still includes zero; not ready to serve and not closed.",
+      "probability_positive": 0.0649,
+      "recorded_at": "2026-11-02",
+      "reliability": 0.3514,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/lead59_officials_sweep_rerun/summary.json",
+      "standard_error": null
+    }
+  }
+}

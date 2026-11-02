@@ -20,3 +20,11 @@ The 51-102 h triage estimate is stale: 1,535 of 1,536 games already parsed.
 
 ## Open
 Whether to merge the two run directories into one parquet for the downstream battery (owner/root decision).
+
+## Rerun 2026-11-02 (as-of table + type-trait terms, measured)
+- Table: load_officials(include_archive=True): 1,536 archive referee rows (6x256) + 2,896 nflverse; 0 duplicate game ids; 4 nflverse rows unjoined to schedules (2021-12-19 x3, 2023-01-02, pre-existing). Names: 40 archive-era, 29 nflverse-era, 16 shared; 72.6% of 2009-14 referee-games carry a name seen in 2015+. Unmerged candidate aliases (never guessed): Al/Alberto Riveron, Brad/Bradley Rogers.
+- Penalty types for 2009-14 did not exist (snapshot is 2015-25); fetched via nflreadpy pbp with the snapshot script's own function (tests/scratch/lead59/pen_2009_2014.parquet, ignored).
+- Script tests/scratch/lead59/run.py (ignored), output artifacts/lead59_officials_sweep_rerun/summary.json. Served fit has moved since 09-23, so variant A (2015+ history) rebaselines at DPI -0.466 P+ 0.137, holding -0.798 P+ 0.051 (not -0.133/-0.599).
+- Recorded 4 cells, family lead59_type_trait_history_2009_fit_terms_v1, all unresolved_below_power.
+## Next
+Owner/root: decide LEAD-59 done; commit nothing from this lane yet.
