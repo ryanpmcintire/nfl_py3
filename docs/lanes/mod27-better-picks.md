@@ -11,12 +11,13 @@ Owner 2026-11-02: get better at making picks. Repair the steps between the model
 ## Units
 1. No-nudge base through the played card: lane mod27-u1-home-nudge.md. DONE (verified harness reproduces 833-670): shift by season -1.49, -1.73, -0.92, -0.06, +0.46, +0.39, +0.37 (2020-26). Through the stack, no-nudge 819-684 vs served 833-670, disagreements 24-38 (2023-25 5-14); log loss P(no-nudge better) .68; 2026 forward 57-46 vs 58-45. Not served. The orchestrator's "only 2020-22" hypothesis held at the raw read but not through the stack. A fitted home term is not new: the stack intercept already is one.
 2. Clean 2026 move term and pool-relative tally through Week 8: lane mod27-u2-move-term-2026.md. DONE (verified agentU2/games.csv): clean quotes change 3 sides, served right on all 3 (clean 65-55 vs served 68-52); parser bug is not the cause. Card against the pool-relative move 6-13, with it 38-28 (P .017). Pool-relative stand-in (coef .145 from 2020-25 LOSO) vs served stack: 71-49 vs 68-52, 11 changed sides 7-4, log loss flat (P .44); not served. The forward log promised 10-27 was never built.
-4. Serve the MOD-26 pool hook term (P+ .997 Brier, .996 log loss; owner row 2026-10-27), the one validated change, with validation re-enrolled as v7 for Weeks 9-18: lane mod27-u4-hook-serve.md.
-5. Build the pool-relative forward log (challenger side beside the card each refresh, Weeks 9-18): lane mod27-u5-pool-move-log.md.
+4. Serve the MOD-26 pool hook term (P+ .997 Brier, .996 log loss): lane mod27-u4-hook-serve.md. BLOCKED by the signal atlas refit; parked on local branch mod27-hook-serve; production unchanged for the Week 9 lock.
+5. Pool-relative forward log: lane mod27-u5-pool-move-log.md. DONE: scripts/pool_relative_move_forward_log.py, 8 scheduler jobs (pool_move_log_*), MANUAL-RUN OK, Week 8 backfill card 5-8 vs challenger 6-7; scheduler restarted 09:59 ET, code current.
 3. Beat-reporter capture health and 2024-26 rerun: lane mod27-u3-beat-reporters.md. DONE (verified docs/mod27_u3_beat_forward26.json): capture healthy (jobs beat_reporters_sat/sun/mon, 1,304 tagged 2026 posts). Fit 2020-25, scored 2026 Weeks 2-8 (104 games): base 61-43; +beat 59-45 (-1.92 pts, P+ .31; log loss gain +0.0103, P+ .90); +beat_lead 56-48 (-4.81, P+ .037, decisive 3-8). The 2024-25 lead result did not repeat. Not served; rerun after more weeks.
 
 ## Next
-- Read each unit's verdict; any servable change goes in with the MOD-26 hook term under one validation re-enrollment (pinned-source rule), before the Tuesday weekly_lock where possible.
+- After the Week 9 Tuesday lock: finish unit 4 (atlas), merge, activate, enroll v7.
+- Grade the pool-relative log weekly (`scripts/pool_relative_move_forward_log.py --grade`).
 
 ## Open
 - None yet.
