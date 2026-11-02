@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-02T23:48:10.606432+00:00`
+Refreshed at: `2026-11-02T23:48:17.107823+00:00`
 
 ## Start here
 
@@ -21,10 +21,10 @@ Refreshed at: `2026-11-02T23:48:10.606432+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `2d38e3810a61` — SIM-11: adopt the joint-label target as the simulator default; 14/14 gates on the 6-seed mean
+- Baseline commit: `577e1056d34d` — SIM-11 done in the roadmap: 14/14 gates on the 6-seed mean with the joint-label target
 - Pending change set: 234 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - `M  ROADMAP.md`
+  - `M  HANDOFF.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
