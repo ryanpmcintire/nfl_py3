@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-02T21:56:15.334465+00:00`
+Refreshed at: `2026-11-02T21:56:47.017161+00:00`
 
 ## Start here
 
@@ -21,28 +21,28 @@ Refreshed at: `2026-11-02T21:56:15.334465+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `502ec46b3103` — SIM-06: a learned drive-outcome head beats the SIM-10 kernel on held-out drives
+- Baseline commit: `f4e8ef796de3` — Lint the SIM-06 learned-head script
 - Pending change set: 240 paths
   - ` M CURRENT_PREDICTIONS.md`
+  - `M  ROADMAP.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - ` M docs/lanes/lead89.md`
+  - `M  docs/lanes/lead89.md`
   - ` M docs/lanes/sim08-simulator-rebuild.md`
   - ` M docs/lanes/sim11-strength-transmission.md`
+  - `A  docs/lead89_stage_timed.md`
   - ` M docs/model.html`
-  - `M  scripts/sim06_learned_head.py`
+  - `A  registry/weak_signals/lead89_stage_timed_nominee_contrasts.json`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? docs/lanes/c-drive-space-2026-10-31.md`
   - `?? docs/lanes/machine-crashes-2026-10-31.md`
   - `?? docs/lanes/stealmybitcoin-ctf.md`
-  - `?? docs/lead89_stage_timed.md`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
   - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
   - ...and 220 more
 
 The baseline commit and pending paths were observed before the automatic refresh.

@@ -1,0 +1,1349 @@
+{
+  "family": "lead89_stage_timed_nominee_contrasts",
+  "signals": {
+    "lead89_stage_timed_sunday_vs_thursday_2020_nominee_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Nominee Brier gain, sunday nominee minus thursday nominee, 2020, decisive weeks, graded at the opener",
+      "effect": -0.06821155670678504,
+      "effect_units": "brier_improvement",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -0.14231117654686026,
+        -0.0029233917700695654
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.0191,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 17,
+      "seasons": [
+        2020,
+        2020
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_sunday_vs_thursday_2020_reward": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Weekly Best Pick reward, sunday nominee minus thursday nominee, 2020, paired by week, graded at the opener",
+      "effect": -29.41176470588235,
+      "effect_units": "accuracy_points",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -52.94117647058823,
+        -11.764705882352942
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.00155,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 17,
+      "seasons": [
+        2020,
+        2020
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_sunday_vs_thursday_2021_nominee_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Nominee Brier gain, sunday nominee minus thursday nominee, 2021, decisive weeks, graded at the opener",
+      "effect": 0.016282900672528307,
+      "effect_units": "brier_improvement",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -0.044815626751876746,
+        0.06910175259937879
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.7232,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2021,
+        2021
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_sunday_vs_thursday_2021_reward": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Weekly Best Pick reward, sunday nominee minus thursday nominee, 2021, paired by week, graded at the opener",
+      "effect": 5.555555555555555,
+      "effect_units": "accuracy_points",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -11.11111111111111,
+        22.22222222222222
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.708,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2021,
+        2021
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_sunday_vs_thursday_2022_nominee_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Nominee Brier gain, sunday nominee minus thursday nominee, 2022, decisive weeks, graded at the opener",
+      "effect": 0.007449939247764179,
+      "effect_units": "brier_improvement",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -0.05356326852099912,
+        0.06793846446925496
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.599,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 17,
+      "seasons": [
+        2022,
+        2022
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_sunday_vs_thursday_2022_reward": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Weekly Best Pick reward, sunday nominee minus thursday nominee, 2022, paired by week, graded at the opener",
+      "effect": 8.333333333333334,
+      "effect_units": "accuracy_points",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -11.11111111111111,
+        27.77777777777778
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.80615,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2022,
+        2022
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_sunday_vs_thursday_2023_nominee_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Nominee Brier gain, sunday nominee minus thursday nominee, 2023, decisive weeks, graded at the opener",
+      "effect": 0.03908890084082002,
+      "effect_units": "brier_improvement",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -0.019389457951640633,
+        0.10206859218453032
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.9036,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 17,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_sunday_vs_thursday_2023_reward": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Weekly Best Pick reward, sunday nominee minus thursday nominee, 2023, paired by week, graded at the opener",
+      "effect": 11.11111111111111,
+      "effect_units": "accuracy_points",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -11.11111111111111,
+        33.333333333333336
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.8425,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_sunday_vs_thursday_2024_nominee_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Nominee Brier gain, sunday nominee minus thursday nominee, 2024, decisive weeks, graded at the opener",
+      "effect": -0.02741493404583229,
+      "effect_units": "brier_improvement",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -0.07997833660851518,
+        0.024731157316865687
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.1537,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 17,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_sunday_vs_thursday_2024_reward": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Weekly Best Pick reward, sunday nominee minus thursday nominee, 2024, paired by week, graded at the opener",
+      "effect": -8.333333333333334,
+      "effect_units": "accuracy_points",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -30.555555555555557,
+        13.88888888888889
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.23099999999999998,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_sunday_vs_thursday_2025_nominee_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Nominee Brier gain, sunday nominee minus thursday nominee, 2025, decisive weeks, graded at the opener",
+      "effect": -0.005411847729149489,
+      "effect_units": "brier_improvement",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -0.061804238531386904,
+        0.04955607285856761
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.4258,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_sunday_vs_thursday_2025_reward": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Weekly Best Pick reward, sunday nominee minus thursday nominee, 2025, paired by week, graded at the opener",
+      "effect": -5.555555555555555,
+      "effect_units": "accuracy_points",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -22.22222222222222,
+        11.11111111111111
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.28535,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_sunday_vs_thursday_all_2020_2025_nominee_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Nominee Brier gain, sunday nominee minus thursday nominee, all_2020_2025, decisive weeks, graded at the opener",
+      "effect": -0.00614241450295908,
+      "effect_units": "brier_improvement",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -0.03241186525238573,
+        0.019073863145535164
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.3182,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 104,
+      "sample_games": 104,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_sunday_vs_thursday_all_2020_2025_reward": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Weekly Best Pick reward, sunday nominee minus thursday nominee, all_2020_2025, paired by week, graded at the opener",
+      "effect": -2.803738317757009,
+      "effect_units": "accuracy_points",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -11.682242990654206,
+        5.607476635514018
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.2668,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 107,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_sunday_vs_thursday_outer_2023_2025_nominee_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Nominee Brier gain, sunday nominee minus thursday nominee, outer_2023_2025, decisive weeks, graded at the opener",
+      "effect": 0.0019431572382711656,
+      "effect_units": "brier_improvement",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -0.030821508605247454,
+        0.03573506675594151
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.5494,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 52,
+      "sample_games": 52,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_sunday_vs_thursday_outer_2023_2025_reward": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Weekly Best Pick reward, sunday nominee minus thursday nominee, outer_2023_2025, paired by week, graded at the opener",
+      "effect": -0.9259259259259259,
+      "effect_units": "accuracy_points",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -12.962962962962964,
+        11.11111111111111
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.4452,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 54,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_sunday_vs_tuesday_2020_nominee_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Nominee Brier gain, sunday nominee minus tuesday nominee, 2020, decisive weeks, graded at the opener",
+      "effect": -0.03238949187897376,
+      "effect_units": "brier_improvement",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -0.12557054306635068,
+        0.06858196686729087
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.2524,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 14,
+      "sample_games": 14,
+      "seasons": [
+        2020,
+        2020
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_sunday_vs_tuesday_2020_reward": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Weekly Best Pick reward, sunday nominee minus tuesday nominee, 2020, paired by week, graded at the opener",
+      "effect": -8.823529411764707,
+      "effect_units": "accuracy_points",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -41.1764705882353,
+        26.470588235294116
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.31885,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 17,
+      "seasons": [
+        2020,
+        2020
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_sunday_vs_tuesday_2021_nominee_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Nominee Brier gain, sunday nominee minus tuesday nominee, 2021, decisive weeks, graded at the opener",
+      "effect": -0.009463469727837542,
+      "effect_units": "brier_improvement",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -0.09570993437158243,
+        0.07303423291881068
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.4281,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2021,
+        2021
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_sunday_vs_tuesday_2021_reward": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Weekly Best Pick reward, sunday nominee minus tuesday nominee, 2021, paired by week, graded at the opener",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -27.77777777777778,
+        27.77777777777778
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.50625,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2021,
+        2021
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_sunday_vs_tuesday_2022_nominee_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Nominee Brier gain, sunday nominee minus tuesday nominee, 2022, decisive weeks, graded at the opener",
+      "effect": 0.03607642301960568,
+      "effect_units": "brier_improvement",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -0.030650500489396854,
+        0.10339657241719001
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.8567,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 17,
+      "seasons": [
+        2022,
+        2022
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_sunday_vs_tuesday_2022_reward": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Weekly Best Pick reward, sunday nominee minus tuesday nominee, 2022, paired by week, graded at the opener",
+      "effect": 13.88888888888889,
+      "effect_units": "accuracy_points",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -5.555555555555555,
+        36.111111111111114
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.89785,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2022,
+        2022
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_sunday_vs_tuesday_2023_nominee_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Nominee Brier gain, sunday nominee minus tuesday nominee, 2023, decisive weeks, graded at the opener",
+      "effect": 0.029226901395442432,
+      "effect_units": "brier_improvement",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -0.07131511111987228,
+        0.12977498756451578
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.7133,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 17,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_sunday_vs_tuesday_2023_reward": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Weekly Best Pick reward, sunday nominee minus tuesday nominee, 2023, paired by week, graded at the opener",
+      "effect": 13.88888888888889,
+      "effect_units": "accuracy_points",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -16.666666666666668,
+        44.44444444444444
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.8067,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_sunday_vs_tuesday_2024_nominee_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Nominee Brier gain, sunday nominee minus tuesday nominee, 2024, decisive weeks, graded at the opener",
+      "effect": 4.314387206523804e-05,
+      "effect_units": "brier_improvement",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -0.07084153654045079,
+        0.06888598224379214
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.5059,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_sunday_vs_tuesday_2024_reward": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Weekly Best Pick reward, sunday nominee minus tuesday nominee, 2024, paired by week, graded at the opener",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -27.77777777777778,
+        27.77777777777778
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.50475,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_sunday_vs_tuesday_2025_nominee_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Nominee Brier gain, sunday nominee minus tuesday nominee, 2025, decisive weeks, graded at the opener",
+      "effect": 0.02353007303419042,
+      "effect_units": "brier_improvement",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -0.029125771125499456,
+        0.0805525863346437
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.7985,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_sunday_vs_tuesday_2025_reward": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Weekly Best Pick reward, sunday nominee minus tuesday nominee, 2025, paired by week, graded at the opener",
+      "effect": 5.555555555555555,
+      "effect_units": "accuracy_points",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -11.11111111111111,
+        22.22222222222222
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.71805,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_sunday_vs_tuesday_all_2020_2025_nominee_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Nominee Brier gain, sunday nominee minus tuesday nominee, all_2020_2025, decisive weeks, graded at the opener",
+      "effect": 0.008928226254526583,
+      "effect_units": "brier_improvement",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -0.023775350493125996,
+        0.040954922002959304
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.6963,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 102,
+      "sample_games": 102,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_sunday_vs_tuesday_all_2020_2025_reward": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Weekly Best Pick reward, sunday nominee minus tuesday nominee, all_2020_2025, paired by week, graded at the opener",
+      "effect": 4.205607476635514,
+      "effect_units": "accuracy_points",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -6.542056074766355,
+        15.42056074766355
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.7753,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 107,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_sunday_vs_tuesday_outer_2023_2025_nominee_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Nominee Brier gain, sunday nominee minus tuesday nominee, outer_2023_2025, decisive weeks, graded at the opener",
+      "effect": 0.01738066467990798,
+      "effect_units": "brier_improvement",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -0.026806759293688722,
+        0.061717084792229114
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.7828,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 53,
+      "sample_games": 53,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_sunday_vs_tuesday_outer_2023_2025_reward": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Weekly Best Pick reward, sunday nominee minus tuesday nominee, outer_2023_2025, paired by week, graded at the opener",
+      "effect": 6.481481481481482,
+      "effect_units": "accuracy_points",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -8.333333333333334,
+        21.296296296296298
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.8069500000000001,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 54,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_thursday_vs_tuesday_2020_nominee_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Nominee Brier gain, thursday nominee minus tuesday nominee, 2020, decisive weeks, graded at the opener",
+      "effect": 0.05837886210380317,
+      "effect_units": "brier_improvement",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -0.021850167536844406,
+        0.13745333569280313
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.9216,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 14,
+      "sample_games": 14,
+      "seasons": [
+        2020,
+        2020
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_thursday_vs_tuesday_2020_reward": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Weekly Best Pick reward, thursday nominee minus tuesday nominee, 2020, paired by week, graded at the opener",
+      "effect": 20.58823529411765,
+      "effect_units": "accuracy_points",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -11.764705882352942,
+        50.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.90315,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 17,
+      "seasons": [
+        2020,
+        2020
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_thursday_vs_tuesday_2021_nominee_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Nominee Brier gain, thursday nominee minus tuesday nominee, 2021, decisive weeks, graded at the opener",
+      "effect": -0.025746370400365846,
+      "effect_units": "brier_improvement",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -0.10497894030484778,
+        0.055861729532813244
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.2647,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2021,
+        2021
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_thursday_vs_tuesday_2021_reward": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Weekly Best Pick reward, thursday nominee minus tuesday nominee, 2021, paired by week, graded at the opener",
+      "effect": -5.555555555555555,
+      "effect_units": "accuracy_points",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -33.333333333333336,
+        22.22222222222222
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.35624999999999996,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2021,
+        2021
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_thursday_vs_tuesday_2022_nominee_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Nominee Brier gain, thursday nominee minus tuesday nominee, 2022, decisive weeks, graded at the opener",
+      "effect": 0.027642798047745155,
+      "effect_units": "brier_improvement",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -0.022145806321251855,
+        0.08018906804906127
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.8544,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2022,
+        2022
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_thursday_vs_tuesday_2022_reward": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Weekly Best Pick reward, thursday nominee minus tuesday nominee, 2022, paired by week, graded at the opener",
+      "effect": 5.555555555555555,
+      "effect_units": "accuracy_points",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -11.11111111111111,
+        22.22222222222222
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.70965,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2022,
+        2022
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_thursday_vs_tuesday_2023_nominee_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Nominee Brier gain, thursday nominee minus tuesday nominee, 2023, decisive weeks, graded at the opener",
+      "effect": -0.00986199944537759,
+      "effect_units": "brier_improvement",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -0.10164120035271833,
+        0.07946440153933539
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.4152,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 17,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_thursday_vs_tuesday_2023_reward": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Weekly Best Pick reward, thursday nominee minus tuesday nominee, 2023, paired by week, graded at the opener",
+      "effect": 2.7777777777777777,
+      "effect_units": "accuracy_points",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -25.0,
+        30.555555555555557
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.5740000000000001,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_thursday_vs_tuesday_2024_nominee_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Nominee Brier gain, thursday nominee minus tuesday nominee, 2024, decisive weeks, graded at the opener",
+      "effect": 0.014449874117487844,
+      "effect_units": "brier_improvement",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -0.05408369985028566,
+        0.07828237663428386
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.6711,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 17,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_thursday_vs_tuesday_2024_reward": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Weekly Best Pick reward, thursday nominee minus tuesday nominee, 2024, paired by week, graded at the opener",
+      "effect": 8.333333333333334,
+      "effect_units": "accuracy_points",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -16.666666666666668,
+        33.333333333333336
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.7484500000000001,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_thursday_vs_tuesday_2025_nominee_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Nominee Brier gain, thursday nominee minus tuesday nominee, 2025, decisive weeks, graded at the opener",
+      "effect": 0.0289419207633399,
+      "effect_units": "brier_improvement",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -0.004129339479304407,
+        0.07342741756858429
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.939,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_thursday_vs_tuesday_2025_reward": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Weekly Best Pick reward, thursday nominee minus tuesday nominee, 2025, paired by week, graded at the opener",
+      "effect": 11.11111111111111,
+      "effect_units": "accuracy_points",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        0.0,
+        27.77777777777778
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.9384,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 18,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_thursday_vs_tuesday_all_2020_2025_nominee_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Nominee Brier gain, thursday nominee minus tuesday nominee, all_2020_2025, decisive weeks, graded at the opener",
+      "effect": 0.01421949225756926,
+      "effect_units": "brier_improvement",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -0.01410053707608013,
+        0.04253473586225383
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.8317,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 102,
+      "sample_games": 102,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_thursday_vs_tuesday_all_2020_2025_reward": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Weekly Best Pick reward, thursday nominee minus tuesday nominee, all_2020_2025, paired by week, graded at the opener",
+      "effect": 7.009345794392523,
+      "effect_units": "accuracy_points",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -3.2710280373831777,
+        17.289719626168225
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.9115,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 107,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_thursday_vs_tuesday_outer_2023_2025_nominee_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Nominee Brier gain, thursday nominee minus tuesday nominee, outer_2023_2025, decisive weeks, graded at the opener",
+      "effect": 0.011518239291653702,
+      "effect_units": "brier_improvement",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -0.028394932975756827,
+        0.050568238889199736
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.7196,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 52,
+      "sample_games": 52,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    },
+    "lead89_stage_timed_thursday_vs_tuesday_outer_2023_2025_reward": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Weekly Best Pick reward, thursday nominee minus tuesday nominee, outer_2023_2025, paired by week, graded at the opener",
+      "effect": 7.407407407407407,
+      "effect_units": "accuracy_points",
+      "family": "lead89_stage_timed_nominee_contrasts",
+      "interval": [
+        -5.555555555555555,
+        20.37037037037037
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Compares locking the Best Pick on Tuesday, Thursday or Sunday using only information that existed at each of those times, to see what waiting is worth.",
+      "probability_positive": 0.86435,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 54,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/lead89_stage_timed.md",
+      "standard_error": null
+    }
+  }
+}
