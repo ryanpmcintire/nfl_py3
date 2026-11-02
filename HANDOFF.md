@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-02T15:56:05.649951+00:00`
+Refreshed at: `2026-11-02T15:56:55.623928+00:00`
 
 ## Start here
 
@@ -21,13 +21,9 @@ Refreshed at: `2026-11-02T15:56:05.649951+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `7f88f2cf483f` — Capture the market right after the pool's Tuesday freeze; fix the draft-capital log gate
-- Pending change set: 228 paths
-  - ` M docs/lanes/mod27-u4-hook-serve.md`
-  - `M  docs/lanes/mod27-u7-acquisitions.md`
-  - `M  registry/weak_signals/deadline_integration_drag_on_production.json`
-  - ` M src/nfl_ats/card_view.py`
-  - ` M src/nfl_ats/pick_probability.py`
+- Baseline commit: `51f1806b866a` — Record the deadline-integration flag extension and its chronology leak
+- Pending change set: 224 paths
+  - `M  docs/lanes/mod27-u4-hook-serve.md`
   - `?? an.csv`
   - `?? docs/lanes/c-drive-space-2026-10-31.md`
   - `?? docs/lanes/machine-crashes-2026-10-31.md`
@@ -43,7 +39,11 @@ Refreshed at: `2026-11-02T15:56:05.649951+00:00`
   - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
   - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
   - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
-  - ...and 208 more
+  - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
+  - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
+  - `?? registry/experiments/margin-backtest/20261008T161241Z.json`
+  - `?? registry/experiments/margin-backtest/20261008T210951Z.json`
+  - ...and 204 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
