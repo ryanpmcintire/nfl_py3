@@ -275,6 +275,7 @@ class SweepConfig:
     limit: int | None = None
     fallback_captures: int = DEFAULT_FALLBACK_CAPTURES
     retry_unparsed: bool = False
+    max_minutes: float | None = None
 
 
 def run_sweep(
@@ -318,6 +319,8 @@ def run_sweep(
     games_retry_no_new_capture = 0
     stopped_early = False
     stop_reason: str | None = None
+    started = time.monotonic()
+    deadline = None if config.max_minutes is None else started + config.max_minutes * 60.0
 
     for game in games.itertuples(index=False):
         pfr_id = str(game.pfr)
@@ -343,6 +346,11 @@ def run_sweep(
         if config.limit is not None and new_fetch_count >= config.limit:
             stopped_early = True
             stop_reason = "limit_reached"
+            continue
+
+        if deadline is not None and time.monotonic() >= deadline:
+            stopped_early = True
+            stop_reason = "max_minutes_reached"
             continue
 
         moment = now or datetime.now(UTC)
@@ -399,7 +407,7 @@ def run_sweep(
                 row = _keep_existing_page(existing, row)
             row["outcome"] = "cdx_fetch_failed"
             consecutive_failures += 1
-            _upsert_manifest_row(manifest_rows, row)
+            _record_row(snapshot_dir, manifest_rows, row)
             _write_manifest(snapshot_dir, manifest_rows, config)
             if consecutive_failures >= config.max_consecutive_failures:
                 stopped_early = True
@@ -425,7 +433,7 @@ def run_sweep(
                 per_season_html_on_disk[season] = per_season_html_on_disk.get(season, 0) + 1
             else:
                 row["outcome"] = "no_capture_found"
-            _upsert_manifest_row(manifest_rows, row)
+            _record_row(snapshot_dir, manifest_rows, row)
             _write_manifest(snapshot_dir, manifest_rows, config)
             continue
 
@@ -503,7 +511,7 @@ def run_sweep(
             )
             per_season_html_on_disk[season] = per_season_html_on_disk.get(season, 0) + 1
 
-        _upsert_manifest_row(manifest_rows, row)
+        _record_row(snapshot_dir, manifest_rows, row)
         _write_manifest(snapshot_dir, manifest_rows, config)
 
         if replay_failed and consecutive_failures >= config.max_consecutive_failures:
@@ -530,7 +538,14 @@ def run_sweep(
         project_root=REPO,
     )
 
+    elapsed = time.monotonic() - started
+    on_disk = sum(1 for r in manifest_rows if r.get("html_file") and r.get("officials_parsed"))
+    remaining = len(games) - on_disk
+    seconds_per_game = elapsed / new_fetch_count if new_fetch_count else 2 * config.delay_seconds
     summary = {
+        "items_remaining": remaining,
+        "estimated_hours_left": round(remaining * seconds_per_game / 3600.0, 2),
+        "elapsed_seconds": round(elapsed, 1),
         "run_id": config.run_id,
         "season_start": config.season_start,
         "season_end": config.season_end,
@@ -584,6 +599,22 @@ def _find_manifest_row(manifest_rows: list[dict[str, Any]], pfr_id: str) -> dict
         if row.get("pfr_id") == pfr_id:
             return row
     return None
+
+
+def _record_row(
+    snapshot_dir: Path, manifest_rows: list[dict[str, Any]], row: dict[str, Any]
+) -> None:
+    _upsert_manifest_row(manifest_rows, row)
+    entry = {
+        "at_utc": utc_now(),
+        "pfr_id": row.get("pfr_id"),
+        "game_id": row.get("game_id"),
+        "outcome": row.get("outcome"),
+        "capture": row.get("wayback_capture_timestamp"),
+        "officials_parsed": row.get("officials_parsed"),
+    }
+    with (snapshot_dir / "progress.jsonl").open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(entry) + "\n")
 
 
 def _upsert_manifest_row(manifest_rows: list[dict[str, Any]], row: dict[str, Any]) -> None:
@@ -741,6 +772,7 @@ def main(argv: list[str] | None = None) -> int:
             "re-parse the on-disk page first, then fetch newer captures only if still 0"
         ),
     )
+    parser.add_argument("--max-minutes", type=float, default=None)
     args = parser.parse_args(argv)
     if args.fallback_captures < 0:
         parser.error("--fallback-captures must be >= 0")
@@ -759,6 +791,7 @@ def main(argv: list[str] | None = None) -> int:
         limit=args.limit,
         fallback_captures=args.fallback_captures,
         retry_unparsed=args.retry_unparsed,
+        max_minutes=args.max_minutes,
     )
     summary = run_sweep(config)
     print(
@@ -774,7 +807,9 @@ def main(argv: list[str] | None = None) -> int:
         f"parsed_zero={summary['games_parsed_zero']} "
         f"fallback_fetches={summary['fallback_replay_fetches']} "
         f"retried_unparsed={summary['games_retried_unparsed']} "
-        f"stopped_early={summary['stopped_early']} stop_reason={summary['stop_reason']}"
+        f"stopped_early={summary['stopped_early']} stop_reason={summary['stop_reason']} "
+        f"items_remaining={summary['items_remaining']} "
+        f"estimated_hours_left={summary['estimated_hours_left']}"
     )
     return (
         1

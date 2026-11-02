@@ -57,6 +57,62 @@
       "source": "artifacts/sky01/lead_times.json",
       "standard_error": null
     },
+    "sky01_drift_net_adverse_share": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "negative net share, no refuted mechanism or positive control",
+      "closing_ground": null,
+      "description": "share of beat out-signal team-games with an adverse spread move before kickoff minus matched no-signal games",
+      "effect": -5.68,
+      "effect_units": "rate_pp",
+      "family": "sky01_news_availability",
+      "interval": [
+        -10.92,
+        -0.91
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Games with early reporter out-news saw the line move against that team slightly less often than comparable games without it.",
+      "probability_positive": 0.0125,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 503,
+      "seasons": [
+        2024,
+        2026
+      ],
+      "source": "artifacts/sky01/drift_weighted.json",
+      "standard_error": null
+    },
+    "sky01_drift_net_lead_beat_over_matched_games": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "net lead is negative against matched controls so the unconditional 37 h lead was ordinary drift; mechanism of signal-vs-market lag not refuted, only the lead claim; no closing ground",
+      "closing_ground": null,
+      "description": "median hours to first adverse spread move after beat out-signal minus same-week matched games without signal, same time to kickoff and role",
+      "effect": -22079.0,
+      "effect_units": "elapsed_seconds_bias",
+      "family": "sky01_news_availability",
+      "interval": [
+        -45373.0,
+        -6188.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "After a reporter says a player is out, the line moves against that team no sooner than in similar games with no such news.",
+      "probability_positive": 0.007,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 503,
+      "seasons": [
+        2024,
+        2026
+      ],
+      "source": "artifacts/sky01/drift_weighted.json",
+      "standard_error": null
+    },
     "sky01_official_to_adverse_line_move": {
       "category": "health",
       "classification": "unresolved_below_power",
@@ -251,6 +307,90 @@
         2025
       ],
       "source": "artifacts/sky01/fitted_term.json",
+      "standard_error": null
+    },
+    "sky01_weighted_term_accuracy_oos": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "decisive 8-8; unresolved below power",
+      "closing_ground": null,
+      "description": "snap-share weighted term accuracy points gain LOSO 2024-2025",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "sky01_news_availability",
+      "interval": [
+        -1.5009,
+        1.5009
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Picks changed by the weighted out-news term were right 8 times and wrong 8 times.",
+      "probability_positive": 0.459,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/sky01/drift_weighted.json",
+      "standard_error": null
+    },
+    "sky01_weighted_term_brier_oos": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "16 decisive games 8-8; fold coefficients +0.018 and +0.038 same sign; unresolved below power",
+      "closing_ground": null,
+      "description": "snap-share weighted home minus away out-signal term on four-term probability, LOSO 2024-2025, Brier gain",
+      "effect": 6.32e-05,
+      "effect_units": "brier_improvement",
+      "family": "sky01_news_availability",
+      "interval": [
+        -0.00149,
+        0.00142
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Weighting reporter out-news by how much each player normally plays changes the pick in 16 of 533 games with no net gain.",
+      "probability_positive": 0.5485,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/sky01/drift_weighted.json",
+      "standard_error": null
+    },
+    "sky01_weighted_term_logloss_oos": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved below power",
+      "closing_ground": null,
+      "description": "snap-share weighted term log loss gain LOSO 2024-2025",
+      "effect": 1.58e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "sky01_news_availability",
+      "interval": [
+        -0.00309,
+        0.0029
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Log loss is unchanged by the weighted out-news term.",
+      "probability_positive": 0.517,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/sky01/drift_weighted.json",
       "standard_error": null
     }
   }
