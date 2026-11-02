@@ -1,0 +1,89 @@
+{
+  "family": "mod09_drive_sequence",
+  "signals": {
+    "mod09_drive_sequence_term_vs_refit_four_term": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval spans zero, term coefficient right-signed in all six folds; sequence model worse than mean-only on drive-margin MSE (215.3 v 201.5) so the sequence is overfit, not a refuted mechanism",
+      "closing_ground": null,
+      "description": "MOD-09 MLP over each team's last K as-of offensive and defensive drives, one fitted term on the served four-term probability, LOSO 2020-2025, decisive games at the opener; log loss gain vs refit four-term baseline",
+      "effect": -0.000402,
+      "effect_units": "log_loss_improvement",
+      "family": "mod09_drive_sequence",
+      "interval": [
+        -0.0015,
+        0.0008
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "A small model reading each team's recent drive-by-drive results did not improve the pick probability beyond what the line already prices.",
+      "probability_positive": 0.273,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 105,
+      "sample_games": 1499,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod09/results.json",
+      "standard_error": 0.000604
+    },
+    "mod09_drive_sequence_vs_summary_term": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval spans zero; sequence ahead by 0.0004 log loss but behind on accuracy (-0.73 pts) and on drive-margin MSE; neither term beats the refit baseline",
+      "closing_ground": null,
+      "description": "MOD-09 head to head: sequence-term four-term probability minus summary-term four-term probability, same folds; log loss gain of sequence over summary",
+      "effect": 0.0004,
+      "effect_units": "log_loss_improvement",
+      "family": "mod09_drive_sequence",
+      "interval": [
+        -0.0009,
+        0.0017
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Reading drives as a sequence rather than an average made no reliable difference to the pick probability.",
+      "probability_positive": 0.7083,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 105,
+      "sample_games": 1499,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod09/results.json",
+      "standard_error": 0.000675
+    },
+    "mod09_drive_summary_term_vs_refit_four_term": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval spans zero; coefficient right-signed in all six folds; summary beats mean-only on drive-margin MSE (178.5 v 201.5) but is priced by the opener",
+      "closing_ground": null,
+      "description": "MOD-09 benchmark: ridge on trailing-mean drive net points (K and alpha by nested season-block CV), one fitted term on the served four-term probability, LOSO 2020-2025; log loss gain vs refit four-term baseline",
+      "effect": -0.000803,
+      "effect_units": "log_loss_improvement",
+      "family": "mod09_drive_sequence",
+      "interval": [
+        -0.002,
+        0.0005
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Average drive results over recent games add nothing the opening line does not already contain.",
+      "probability_positive": 0.1225,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 105,
+      "sample_games": 1499,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod09/results.json",
+      "standard_error": 0.000648
+    }
+  }
+}
