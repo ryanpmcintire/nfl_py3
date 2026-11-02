@@ -445,6 +445,35 @@ SCHEDULE: tuple[Job, ...] = (
     ),
     *(
         Job(
+            f"pool_move_log_{day}_{at.replace(':', '')}",
+            day,
+            at,
+            grace,
+            [
+                str(UV),
+                "run",
+                "--no-sync",
+                "python",
+                str(REPO / "scripts" / "pool_relative_move_forward_log.py"),
+            ],
+            True,
+            "Log the pool-relative move challenger's side beside the served card before each "
+            "pick deadline for the MOD-27 forward study.",
+            added_on="2026-11-02",
+        )
+        for day, at, grace in (
+            ("tue", "14:30", 90),
+            ("wed", "18:45", 60),
+            ("thu", "15:30", 60),
+            ("sat", "10:50", 40),
+            ("sat", "12:45", 10),
+            ("sun", "10:20", 60),
+            ("sun", "12:55", 4),
+            ("sun", "15:45", 14),
+        )
+    ),
+    *(
+        Job(
             f"lead99_llm_read_{view}_{day}_{at.replace(':', '')}",
             day,
             at,
