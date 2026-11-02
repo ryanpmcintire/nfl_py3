@@ -9,6 +9,9 @@ Built scripts/build_staff_state.py (no network, reads cached responses in data/r
 ## Tried
 Searched all 1,114 cached revisions for play-call text on coordinator lines: 0 hits, so playcaller facts come only from dated, cited change_validation notes.
 
+## Update (adjudication unit)
+artifacts/staff_state/adjudication_20261102/adjudication.json: 26 unadjudicated spell starts (25 state-only flips, 1 not-a-change PHI Moore Feb 2025), 7 known events given playcaller + dated cited quote (BUF Brady, LV23 Hardegree, CHI Brown, CHI Beatty [playcaller stays Brown], LV24 Turner, NYG Bullen, NYJ Harris), NYJ24 Manuel left unknown, 2026 playcallers for 32 teams from one ABC list (2026-09-03, single source). build_staff_state.py takes --adjudication; run result: 42/42 in-season OC/DC spells adjudicated, 12/12 known matched. Usable first-game-under-new-playcaller events 2022-25: 11 of 12 (8 offence, 3 defence); Beatty is a title change only.
+
 ## Next
 Consumers (playcaller_change_screen, overlay) not yet pointed at the table. Spells are keyed by state change, so a same-person interim-tag flip is its own spell (24 of 42 in-season OC/DC spells 2022-25 are state-only; 9 are person changes; 22 touch vacant/unlinked); 26 unadjudicated spell starts need review before counting as events.
 

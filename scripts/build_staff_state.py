@@ -166,21 +166,39 @@ def build_spells(observations: pd.DataFrame) -> pd.DataFrame:
     return frame
 
 
-def attach_adjudication(spells: pd.DataFrame, validation: dict[str, Any]) -> pd.DataFrame:
-    by_revision = {}
-    for change in validation["changes"]:
+def merge_adjudication(
+    validation: dict[str, Any], extra: dict[str, Any] | None
+) -> tuple[dict[str, Any], dict[tuple[int, str], dict[str, Any]]]:
+    merged = dict(validation)
+    merged["changes"] = list(validation["changes"])
+    overlay: dict[tuple[int, str], dict[str, Any]] = {}
+    if extra is None:
+        return merged, overlay
+    for change in extra["changes"]:
         revision = int(change["source_url"].rsplit("=", 1)[1])
-        by_revision[revision] = change
+        overlay[(revision, change["role"])] = change
+        if not change.get("supplements_existing"):
+            merged["changes"].append(change)
+    return merged, overlay
+
+
+def attach_adjudication(
+    spells: pd.DataFrame,
+    validation: dict[str, Any],
+    overlay: dict[tuple[int, str], dict[str, Any]],
+) -> pd.DataFrame:
+    by_key = {}
+    for change in validation["changes"]:
+        by_key[(int(change["source_url"].rsplit("=", 1)[1]), change["role"])] = change
     spells = spells.copy()
-    spells["adjudication"] = spells.first_revision_id.map(
-        lambda r: by_revision[r]["validation_status"] if r in by_revision else None
-    )
-    spells["independent_source"] = spells.first_revision_id.map(
-        lambda r: by_revision[r]["independent_source"] if r in by_revision else None
-    )
-    spells["independent_event_date"] = spells.first_revision_id.map(
-        lambda r: by_revision[r]["event_date"] if r in by_revision else None
-    )
+    keys = list(zip(spells.first_revision_id, spells.role))
+    spells["adjudication"] = [by_key[k]["validation_status"] if k in by_key else None for k in keys]
+    spells["independent_source"] = [
+        by_key[k]["independent_source"] if k in by_key else None for k in keys
+    ]
+    spells["independent_event_date"] = [
+        by_key[k]["event_date"] if k in by_key else None for k in keys
+    ]
     spells["playcaller_name"] = None
     spells["playcaller_side"] = None
     spells["playcaller_status"] = "unknown"
@@ -188,18 +206,40 @@ def attach_adjudication(spells: pd.DataFrame, validation: dict[str, Any]) -> pd.
     spells["playcaller_usable_from"] = pd.Series(
         pd.NaT, index=spells.index, dtype="datetime64[us, UTC]"
     )
+    citations: dict[tuple[int, str], dict[str, Any]] = {}
     for revision, (caller, status) in PLAYCALLER_CITATIONS.items():
-        change = by_revision[revision]
-        mask = spells.first_revision_id.eq(revision) & spells.role.isin(SIDE_BY_ROLE)
+        change = next(c for k, c in by_key.items() if k[0] == revision)
+        citations[(revision, change["role"])] = {
+            "playcaller": caller,
+            "playcaller_status": status,
+            "evidence": change["independent_source"] + " | " + change["validation_note"],
+            "published": None,
+        }
+    for key, change in overlay.items():
+        if change.get("playcaller") is None:
+            continue
+        evidence = change.get("playcaller_source") or change.get("independent_source")
+        quote = change.get("playcaller_source_quote") or change.get("validation_note")
+        citations[key] = {
+            "playcaller": change["playcaller"],
+            "playcaller_status": change["playcaller_status"],
+            "evidence": f"{evidence} | {quote}",
+            "published": change.get("playcaller_source_published"),
+            "inherited_from": change.get("playcaller_inherited_from_revision"),
+        }
+    for (revision, role), cite in citations.items():
+        mask = spells.first_revision_id.eq(revision) & spells.role.eq(role)
         if mask.sum() != 1:
-            raise ValueError(f"Playcaller citation {revision} does not match one spell")
-        spells.loc[mask, "playcaller_name"] = caller
-        spells.loc[mask, "playcaller_side"] = spells.loc[mask, "role"].map(SIDE_BY_ROLE)
-        spells.loc[mask, "playcaller_status"] = status
-        spells.loc[mask, "playcaller_evidence"] = (
-            change["independent_source"] + " | " + change["validation_note"]
-        )
-        spells.loc[mask, "playcaller_usable_from"] = spells.loc[mask, "first_observed_at"]
+            raise ValueError(f"Playcaller citation {revision} {role} does not match one spell")
+        spells.loc[mask, "playcaller_name"] = cite["playcaller"]
+        spells.loc[mask, "playcaller_side"] = SIDE_BY_ROLE[role]
+        spells.loc[mask, "playcaller_status"] = cite["playcaller_status"]
+        spells.loc[mask, "playcaller_evidence"] = cite["evidence"]
+        usable = spells.loc[mask, "first_observed_at"]
+        if cite["published"]:
+            end_of_day = pd.Timestamp(cite["published"], tz="UTC") + pd.Timedelta(days=1)
+            usable = usable.where(usable >= end_of_day, end_of_day)
+        spells.loc[mask, "playcaller_usable_from"] = usable
     return spells
 
 
@@ -279,15 +319,18 @@ def main() -> None:
         type=Path,
         default=ROOT / "20260907T213814366437Z" / "change_validation.json",
     )
+    parser.add_argument("--adjudication", type=Path, default=None)
     args = parser.parse_args()
     source = args.source or max(
         p for p in ROOT.iterdir() if (p / "coordinator_history.parquet").exists()
     )
     ingest = load_ingest()
     validation = json.loads(args.validation.read_text(encoding="utf-8"))
+    extra = json.loads(args.adjudication.read_text(encoding="utf-8")) if args.adjudication else None
+    validation, overlay = merge_adjudication(validation, extra)
     history = pd.read_parquet(source / "coordinator_history.parquet")
     observations = collect_observations(source, ingest)
-    spells = attach_adjudication(build_spells(observations), validation)
+    spells = attach_adjudication(build_spells(observations), validation, overlay)
     checks = validate(spells, observations, validation, history)
     stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%S%fZ")
     destination = OUT / stamp
@@ -297,6 +340,7 @@ def main() -> None:
     manifest = {
         "source_snapshot": str(source),
         "validation_file": str(args.validation),
+        "adjudication_file": None if args.adjudication is None else str(args.adjudication),
         "network_requests": 0,
         "spells": len(spells),
         "observations": len(observations),
