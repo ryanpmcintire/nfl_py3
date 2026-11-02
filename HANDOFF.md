@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-02T21:48:57.323098+00:00`
+Refreshed at: `2026-11-02T21:50:10.666515+00:00`
 
 ## Start here
 
@@ -21,17 +21,16 @@ Refreshed at: `2026-11-02T21:48:57.323098+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `e4a48a055658` — LEAD-76 done: rule-era margin prior run on the declared 2020-2025 opener population
+- Baseline commit: `32e08ab7d9ee` — SKY-03: pass-protection and coverage matchup interactions, reliability 0.07-0.34, fitted term unresolved
 - Pending change set: 240 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
+  - `M  docs/lanes/backlog-all-2026-11-02.md`
   - ` M docs/lanes/sim08-simulator-rebuild.md`
-  - `A  docs/lanes/sky03-matchups-2026-11-02.md`
+  - ` M docs/lanes/sim11-strength-transmission.md`
   - ` M docs/model.html`
-  - `A  registry/weak_signals/sky03_matchups.json`
-  - `A  scripts/sky03_matchups.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? docs/lanes/c-drive-space-2026-10-31.md`
@@ -43,6 +42,7 @@ Refreshed at: `2026-11-02T21:48:57.323098+00:00`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
   - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
   - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
   - ...and 220 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
