@@ -49,3 +49,6 @@ then implement and run the unchanged transition/policy replay in a fresh thread.
 Weekly records, differing-week results, exact paired null, Wilson intervals,
 IS/OOS/gaps and probability_positive remain uncomputed. Zero crossing closes
 nothing; no signal is adjudicated or closed. No serving, publishing or Git writes.
+## Unit 3 (stage-timed rebuild) - blocked on pin drift
+**Measured 2026-11-02:** `scripts/lead89_stage_timed.py` (Tuesday/Thursday = 11 injury+QB columns zeroed, stage-matched same-book median move, nested-LOSO Replay per stage; Sunday = production features, injury-clock-passing games only; nominee contrasts, 48 looks, declaration in `tests/scratch/codex/lead89_stage_timed/protocol_before_run.md`) fails at `Replay.__init__` with "Source model mismatch": `artifacts/active_ats_model.json` was re-activated today (model 9b7b41..., 12:10 ET) and `data/processed/game_features_weak_stack.parquet` rebuilt (sha 42d669..., 12:06) vs the pinned a3eedb.../b578fbea. The pinned feature table is not on disk (backup is Sep 8, sha 34acbe...). Zero outcomes read, nothing scored, nothing recorded.
+**Next:** owner/orchestrator decision: restore the Sep-29 feature table + active model (e.g. from the E: mirror) or re-baseline LOSO upstream on the new model (new pin, new look budget); then run the script unchanged.

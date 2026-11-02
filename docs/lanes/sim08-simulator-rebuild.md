@@ -47,6 +47,12 @@ source/input hashes, 30,006 simulations and actual-game losses. Any new mechanis
 or 2025+ rules extension needs a declaration before another endpoint is scored.
 Do not patch key-number masses, fit on these diagnostics, or promote this engine.
 
+## Declaration (2026-11-02)
+Unit 3 market-anchored sim is predeclared in `docs/sim08_market_anchored_declaration.md`
+(34 looks, primary L4 blend v served-only recalibration, 2020-2025 1,537 games, LOSO 6
+folds, planted positive control). Next: commit it, then build the anchored arm (no code
+comments), 20-game smoke, planted control, full run one job, <=4 workers.
+
 ## Open
 Finite-draw probability_positive of 0 or 1 is not impossibility or certainty.
 The deficient margin-3 mass and rollout calibration remain unresolved. Support
