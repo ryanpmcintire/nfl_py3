@@ -1,6 +1,90 @@
 {
   "family": "deadline_integration_drag_on_production",
   "signals": {
+    "deadline_drag_fifth_term_loso_2020_25": {
+      "category": "offfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval straddles zero; no refuted mechanism and no positive control bound; below power with about 50 flagged games.",
+      "closing_ground": null,
+      "description": "Deadline-integration flag as a fifth fitted term in the card probability, leave-one-season-out 2020-25, opener graded, unchanged flag code",
+      "effect": -0.1330671989,
+      "effect_units": "accuracy_points",
+      "family": "deadline_integration_drag_on_production",
+      "interval": [
+        -0.5277044854,
+        0.2020236053
+      ],
+      "league": "nfl",
+      "notes": "Flag 3 games 2020, 0 in 2021 (registry 2020-21 events not reproduced by current transaction index), 9 2022, 10 2023, 12 2024, 21 2025 incl 2026 none in wk1-8. Per-fold coef 0.05 to 0.34 all positive. Log loss 0.68746 vs 0.68719, Brier 0.24717 vs 0.24705. Month-end report date follows Tuesday opener on 15 of 81 team-game flags (6 of 2020-25 non-2014-19 ones): leak flag, see strict cell.",
+      "plain_summary": "Adding the trade-deadline flag to the card probability changed 12 sides and the changed picks went 5-7 versus 7-5 before, so overall accuracy fell 0.13 points; too few flagged games to settle it.",
+      "probability_positive": 0.18525,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 105,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:/Users/Ryan/AppData/Local/Temp/claude/F--Repos-nfl-py3/352ecbdc-246f-44c0-9f81-c287a6ef4436/scratchpad/agentL23/results.json",
+      "standard_error": null
+    },
+    "deadline_drag_fifth_term_loso_2022_25": {
+      "category": "offfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval straddles zero; no refuted mechanism and no positive control bound; below power with about 50 flagged games.",
+      "closing_ground": null,
+      "description": "Same fifth-term fit scored on the 2022-25 subset never measured by the registry entry",
+      "effect": -0.1910219,
+      "effect_units": "accuracy_points",
+      "family": "deadline_integration_drag_on_production",
+      "interval": [
+        -0.7511737,
+        0.2927044
+      ],
+      "league": "nfl",
+      "notes": "Subset of the all-years cell, same predictions; not an independent look.",
+      "plain_summary": "On the four newest seasons the trade-deadline flag flipped 12 picks that did slightly worse than before, a 0.19 point loss in accuracy; still too few games to settle it.",
+      "probability_positive": 0.19075,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 70,
+      "sample_games": 1047,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "C:/Users/Ryan/AppData/Local/Temp/claude/F--Repos-nfl-py3/352ecbdc-246f-44c0-9f81-c287a6ef4436/scratchpad/agentL23/results.json",
+      "standard_error": null
+    },
+    "deadline_drag_fifth_term_strict_chronology": {
+      "category": "offfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval straddles zero; no refuted mechanism and no positive control bound; below power with about 50 flagged games.",
+      "closing_ground": null,
+      "description": "Fifth-term fit with flags kept only where the report month ends before the game week's Tuesday opener",
+      "effect": 0.1330671989,
+      "effect_units": "accuracy_points",
+      "family": "deadline_integration_drag_on_production",
+      "interval": [
+        -0.3960461436,
+        0.6716029557
+      ],
+      "league": "nfl",
+      "notes": "43 flagged games. Per-fold coef 0.14 to 0.37 all positive. Log loss 0.68718 vs 0.68719; Brier 0.24702 vs 0.24705. Sensitivity of the primary cell, not independent.",
+      "plain_summary": "Keeping only trades that were certainly known before the opening line, the flag changed 22 picks that went 12-10 versus 10-12 before, a 0.13 point gain; small and unsettled.",
+      "probability_positive": 0.64675,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 105,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:/Users/Ryan/AppData/Local/Temp/claude/F--Repos-nfl-py3/352ecbdc-246f-44c0-9f81-c287a6ef4436/scratchpad/agentL23/results.json",
+      "standard_error": null
+    },
     "deadline_integration_drag_on_production": {
       "category": "offfield",
       "classification": "unresolved_below_power",
