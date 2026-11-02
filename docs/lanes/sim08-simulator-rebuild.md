@@ -57,3 +57,23 @@ comments), 20-game smoke, planted control, full run one job, <=4 workers.
 Finite-draw probability_positive of 0 or 1 is not impossibility or certainty.
 The deficient margin-3 mass and rollout calibration remain unresolved. Support
 failure closes no signal; these diagnostics authorize no weight or serving change.
+
+## Unit 3 build (2026-11-02, subagent)
+Built `scripts/sim08_market_anchored.py` (imports sim10_drive engine unmodified; `engine()` rebuilds locked
+defaults, `play()` calls `Engine.game` with ratings set from latents x_diff, x_env). Anchoring solve:
+`transmission_fit` (OLS of simulated margin/total on design latents, 2x2 inverse in `solve_latents`).
+Smoke: `python scripts/sim08_market_anchored.py smoke --design-n 1500 --draws 150 --x-diff-range 0.8 --x-env-range 0.5`
+-> tests/scratch/sim08_anchor/smoke.json. Positive control (as declared, planted on the LOSO
+recalibrated served logit, 500 reps): `... control --deltas 0.0005 0.0010 0.0020 0.0040 0.0080` ->
+control.json; detects all (pp>=0.90 in 100% of reps) because the planted gain is near-deterministic per game
+(caveat; a noisy plant would need an amendment). Engine 0.44 s/game-draw at 1 worker.
+Open before full run: per-fold kernel pool needs LOSO upstream (blocked per 9a0a951d); opener totals
+missing for 11 of 1537 games (spread-only fallback in `anchored_draws`).
+Smoke result (measured, fold 2025, 20 games, 150 draws, design 1500, x_diff +-0.8, x_env +-0.5): ANCHOR FAILED.
+Margin slope 17.2 (SE 0.9) fine but total response to x_env is non-monotone (linear R2 .074, quadratic .181;
+probe: total 70/47/59 at x_env -1/0/+1), so the 2x2 linear inverse put x_env at -0.3..-1.6 and sim totals 65-79
+v opener 36-55 (signed err +23.8). Margin mean err -2.7 (z rms 4.3). Cause: design range far outside engine
+support (s=0.969, real xq ~ +-0.2). Next: re-measure with design ranges from the sim-world xq distribution, fit
+total on x_env with |x_diff| term or monotone local lookup (a mechanism measured, not a knob), re-smoke.
+Cost: 0.26 s/game-draw design, 0.58 s/draw anchored (contended) -> 1000 draws x 1537 games = 100-250 h single
+worker; infeasible at declared 1000 draws, needs a declared amendment (draw count).
