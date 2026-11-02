@@ -2306,7 +2306,7 @@ def main():
     s.add_argument("--droof", type=int, default=1)
     s.add_argument("--drmu", type=int, default=0)
     s.add_argument("--mucurve", type=int, default=0)
-    s.add_argument("--joint", type=int, default=0)
+    s.add_argument("--joint", type=int, default=1)
     s.add_argument("--mulabel", type=int, default=1)
     s.add_argument("--realsched", type=int, default=0)
     s.add_argument("--form", type=int, default=0)

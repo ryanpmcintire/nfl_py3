@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-02T23:12:25.918572+00:00`
+Refreshed at: `2026-11-02T23:47:36.907219+00:00`
 
 ## Start here
 
@@ -21,15 +21,15 @@ Refreshed at: `2026-11-02T23:12:25.918572+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `4266ef68c9a1` — Refresh the session handoff and README research state
+- Baseline commit: `b2969445421c` — Backlog lane: owner-only actions and post-lock steps
 - Pending change set: 235 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/backlog-all-2026-11-02.md`
-  - ` M docs/lanes/sim11-strength-transmission.md`
+  - `M  docs/lanes/sim11-strength-transmission.md`
   - ` M docs/model.html`
+  - `M  scripts/sim10_drive.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? docs/lanes/c-drive-space-2026-10-31.md`
