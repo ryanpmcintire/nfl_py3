@@ -13,10 +13,9 @@ for _k in ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS", "NUMEXP
     os.environ[_k] = "1"
 sys.path.insert(0, str(REPO / "scripts"))
 
-import numpy as np
-import pandas as pd
-
-import sim10_drive as s10
+import numpy as np  # noqa: E402
+import pandas as pd  # noqa: E402
+import sim10_drive as s10  # noqa: E402
 
 warnings.filterwarnings("ignore")
 TRAIN = tuple(range(2018, 2024))
@@ -89,8 +88,14 @@ def kernel_fold(X, cls, half, home, he, lg, q_mask, p_mask, K, h, alpha, g, floo
 
 def head_features(seg):
     return np.c_[
-        seg["yl"], seg["sd"], np.log1p(seg["secs"].clip(lower=0.0)), seg["too"], seg["tod"],
-        seg["week"], seg["half"] - 1.0, seg["home"],
+        seg["yl"],
+        seg["sd"],
+        np.log1p(seg["secs"].clip(lower=0.0)),
+        seg["too"],
+        seg["tod"],
+        seg["week"],
+        seg["half"] - 1.0,
+        seg["home"],
     ].astype(np.float64)
 
 
@@ -105,8 +110,11 @@ def make_head(spec):
         return make_pipeline(
             StandardScaler(),
             MLPClassifier(
-                hidden_layer_sizes=tuple(spec["hidden"]), alpha=spec["alpha"],
-                early_stopping=True, random_state=0, max_iter=spec["max_iter"],
+                hidden_layer_sizes=tuple(spec["hidden"]),
+                alpha=spec["alpha"],
+                early_stopping=True,
+                random_state=0,
+                max_iter=spec["max_iter"],
             ),
         )
     ct = ColumnTransformer(
@@ -138,7 +146,10 @@ def reliability(P, y, bins=10):
     pf, yf = Pk.ravel(), Y.ravel()
     edges = np.quantile(pf, np.linspace(0, 1, bins + 1))
     bi = np.clip(np.searchsorted(edges, pf, side="right") - 1, 0, bins - 1)
-    rows = [[float(pf[bi == b].mean()), float(yf[bi == b].mean()), int((bi == b).sum())] for b in range(bins)]
+    rows = [
+        [float(pf[bi == b].mean()), float(yf[bi == b].mean()), int((bi == b).sum())]
+        for b in range(bins)
+    ]
     ece = float(sum(abs(r[0] - r[1]) * r[2] for r in rows) / len(pf))
     return {"deciles": rows, "ece": ece}
 
@@ -194,8 +205,18 @@ def main():
     cls, uniq = relabel(code, train)
     K = len(uniq)
     floor = 1.0 / (int(train.sum()) + K)
-    log("drives", len(seg), "train", int(train.sum()), "test", int(test.sum()), "K", K,
-        "unseen in test", int(((cls < 0) & test).sum()))
+    log(
+        "drives",
+        len(seg),
+        "train",
+        int(train.sum()),
+        "test",
+        int(test.sum()),
+        "K",
+        K,
+        "unseen in test",
+        int(((cls < 0) & test).sum()),
+    )
     grp = uniq // 10
     X = s10.design(seg)
     half, home = seg["half"].to_numpy(), seg["home"].to_numpy()
@@ -204,12 +225,22 @@ def main():
     gid = seg["game_id"].to_numpy()
     F = head_features(seg)
     ti = np.flatnonzero(test)
-    res = {"n_train": int(train.sum()), "n_test": int(test.sum()), "K": K,
-           "unseen_test": int(((cls < 0) & test).sum()), "floor": floor}
+    res = {
+        "n_train": int(train.sum()),
+        "n_test": int(test.sum()),
+        "K": K,
+        "unseen_test": int(((cls < 0) & test).sum()),
+        "floor": floor,
+    }
 
     bw = json.loads((REPO / "artifacts" / "sim10" / "bandwidths_week.json").read_text())
     hA, alphaA, gA = list(bw["h"]), float(bw["alpha"]), float(bw["g_sd"])
-    res["kernel_A"] = {"h": hA, "alpha": alphaA, "g": gA, "source": "artifacts/sim10/bandwidths_week.json fit on 2009-2017"}
+    res["kernel_A"] = {
+        "h": hA,
+        "alpha": alphaA,
+        "g": gA,
+        "source": "artifacts/sim10/bandwidths_week.json fit on 2009-2017",
+    }
 
     marg = np.bincount(cls[train], minlength=K) + 0.5
     marg = marg / marg.sum()
@@ -227,7 +258,8 @@ def main():
         tot, n = 0.0, 0
         for s in TRAIN:
             qm = qmask & (season == s)
-            p = kernel_fold(X, cls, half, home, he, lg, qm, train & (season != s), K, h, alpha, g, floor)
+            fit_mask = train & (season != s)
+            p = kernel_fold(X, cls, half, home, he, lg, qm, fit_mask, K, h, alpha, g, floor)
             tot += float(np.log(p).sum())
             n += int(qm.sum())
         return tot / n
@@ -286,7 +318,12 @@ def main():
     spec = specs[int(np.argmax(cvs))]
     res["head_cv"] = [{"spec": s, "cv_ll": c} for s, c in zip(specs, cvs, strict=True)]
     res["head_selected"] = spec
-    best_of = {k: max(((c, s) for c, s in zip(cvs, specs, strict=True) if s["kind"] == k), key=lambda t: t[0])[1] for k in ("mlp", "logit")}
+    best_of = {
+        k: max(
+            ((c, s) for c, s in zip(cvs, specs, strict=True) if s["kind"] == k), key=lambda t: t[0]
+        )[1]
+        for k in ("mlp", "logit")
+    }
 
     dists = {}
     for name, sp in (("selected", spec), ("mlp", best_of["mlp"]), ("logit", best_of["logit"])):
@@ -298,7 +335,8 @@ def main():
         "learned_selected": float(llH.mean()),
         "learned_mlp": float(np.log(pick(dists["mlp"], cls[ti], floor)).mean()),
         "learned_logit": float(np.log(pick(dists["logit"], cls[ti], floor)).mean()),
-        "kernel_A_locked_bw": float(llA.mean()), "kernel_B_train_refit": float(llB.mean()),
+        "kernel_A_locked_bw": float(llA.mean()),
+        "kernel_B_train_refit": float(llB.mean()),
         "marginal": float(llM.mean()),
     }
     rb = np.random.default_rng(1)
@@ -313,12 +351,15 @@ def main():
     res["test_diff_by_season"] = {
         str(s): {k: float(v[season[ti] == s].mean()) for k, v in comps.items()} for s in TEST
     }
-    res["n_test_games"] = int(len(np.unique(gt)))
+    res["n_test_games"] = len(np.unique(gt))
 
     PKA = kernel_fold(X, cls, half, home, he, lg, test, train, K, hA, alphaA, gA, floor, full=True)
     PKB = kernel_fold(X, cls, half, home, he, lg, test, train, K, hB, alphaB, gB, floor, full=True)
     for nm, P in (("learned", dists["selected"]), ("kernel_A", PKA), ("kernel_B", PKB)):
-        res[f"reliability_{nm}"] = {**reliability(P, cls[ti]), "by_outcome_group": group_reliability(P, cls[ti], grp)}
+        res[f"reliability_{nm}"] = {
+            **reliability(P, cls[ti]),
+            "by_outcome_group": group_reliability(P, cls[ti], grp),
+        }
     log("reliability done")
 
     per = {}
@@ -328,17 +369,22 @@ def main():
         pk = kernel_fold(X, cls, half, home, he, lg, te, tr, K, hB, alphaB, gB, floor)
         P = head_dist(spec, F[tr], cls[tr], F[te], K, floor)
         per[s] = (np.log(pick(P, cls[te], floor)), np.log(pk))
-        log("LOSO season", s, "learned", float(per[s][0].mean()), "kernelB", float(per[s][1].mean()))
+        log(
+            "LOSO season", s, "learned", float(per[s][0].mean()), "kernelB", float(per[s][1].mean())
+        )
     ps = np.array([per[s][0].mean() - per[s][1].mean() for s in ALL])
     dall = np.concatenate([per[s][0] - per[s][1] for s in ALL])
     gall = np.concatenate([gid[season == s] for s in ALL])
     res["loso_all_seasons"] = {
-        "per_season_learned_minus_kernelB": {str(s): float(v) for s, v in zip(ALL, ps, strict=True)},
+        "per_season_learned_minus_kernelB": {
+            str(s): float(v) for s, v in zip(ALL, ps, strict=True)
+        },
         "season_block_bootstrap": summ(boot_blocks(ps, rb)),
         "game_bootstrap": summ(boot_games(dall, gall, rb)),
         "learned_ll": float(np.concatenate([per[s][0] for s in ALL]).mean()),
         "kernel_B_ll": float(np.concatenate([per[s][1] for s in ALL]).mean()),
-        "n": int(len(dall)), "n_games": int(len(np.unique(gall))),
+        "n": len(dall),
+        "n_games": len(np.unique(gall)),
     }
     (ART / "results.json").write_text(json.dumps(res, indent=1))
     log("done")
