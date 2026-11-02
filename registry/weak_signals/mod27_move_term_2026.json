@@ -1,0 +1,61 @@
+{
+  "family": "mod27_move_term_2026",
+  "signals": {
+    "card_against_pool_move_tally_2026_w1_8": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Card accuracy when its side opposes the pool-relative move (leader median at deadline vs pool line) minus when it follows, 2026 Weeks 1-8 graded at the pool line",
+      "effect": -26.0,
+      "effect_units": "accuracy_points",
+      "family": "mod27_move_term_2026",
+      "interval": [
+        -50.0,
+        -2.0
+      ],
+      "league": "nfl",
+      "notes": "1 contrast, 85 graded moved games; descriptive, not a fit",
+      "plain_summary": "When the card took the side the market had moved away from versus the pool's line it went 6-13, and when it followed the move it went 38-28. A sizeable gap but only 19 games on one side, so it points toward following the move without settling it.",
+      "probability_positive": 0.017,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 85,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "docs/lanes/mod27-u2-move-term-2026.md",
+      "standard_error": 12.3
+    },
+    "move_term_clean_vs_served_2026_w1_8": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Clean multi-book move term (Odds Gap parser fixed) minus the move term as served, four-term side graded at the Splash pool line, 2026 Weeks 1-8",
+      "effect": -2.5,
+      "effect_units": "accuracy_points",
+      "family": "mod27_move_term_2026",
+      "interval": [
+        -5.3,
+        0.3
+      ],
+      "league": "nfl",
+      "notes": "Served move reconstructed from old code and live-only quotes by feed time, clean from all quotes at the deadline; feed final_probability backed out with active coefficients 20261101T171318Z; 1 contrast, 3 discordant games, Beta(1,1) posterior on discordant share",
+      "plain_summary": "If the pool-line move had been read from all three books all season, the card would have changed its side in only 3 of 120 graded games, and the original reading was right in all 3 (68-52 against 65-55). Too few changed games to say whether the clean reading is better or worse.",
+      "probability_positive": 0.0625,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 120,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "docs/lanes/mod27-u2-move-term-2026.md",
+      "standard_error": 1.44
+    }
+  }
+}

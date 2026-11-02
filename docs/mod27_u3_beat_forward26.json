@@ -1,0 +1,121 @@
+{
+ "coverage": {
+  "games": 104,
+  "covered_all": 93,
+  "covered_lead": 80,
+  "nonzero_all": 86,
+  "nonzero_lead": 67
+ },
+ "coefficients_full_fit_2020_25": {
+  "base": {
+   "model_logit": 0.2765096106298683,
+   "composition_flag_sum": 0.2599736444492194,
+   "market_move_toward_home": 0.2217778368427753,
+   "market_move_available": 0.03417442248117819
+  },
+  "beat": {
+   "model_logit": 0.2992138314745854,
+   "composition_flag_sum": 0.2589869314276853,
+   "market_move_toward_home": 0.22824698222332077,
+   "market_move_available": 0.03174624985265703,
+   "beat_all": -7.350701628992818
+  },
+  "beat_lead": {
+   "model_logit": 0.28695258917335936,
+   "composition_flag_sum": 0.2603757538576177,
+   "market_move_toward_home": 0.22203234104998482,
+   "market_move_available": 0.03051785041730981,
+   "beat_lead": -4.158674862432656
+  }
+ },
+ "levels": {
+  "base": {
+   "acc": 0.5865384615384616,
+   "brier": 0.24492918134084554,
+   "ll": 0.6827496043872737
+  },
+  "beat": {
+   "acc": 0.5673076923076923,
+   "brier": 0.24001674862178587,
+   "ll": 0.6724109672993701
+  },
+  "beat_lead": {
+   "acc": 0.5384615384615384,
+   "brier": 0.24555855369388857,
+   "ll": 0.6839604605449132
+  },
+  "market": {
+   "acc": 0.4519230769230769,
+   "brier": 0.25,
+   "ll": 0.6931471805599453
+  }
+ },
+ "served_final_probability_acc": 0.5673076923076923,
+ "n": 104,
+ "cells": {
+  "beat": {
+   "record_base": "61-43",
+   "record_arm": "59-45",
+   "decisive_up": 11,
+   "decisive_down": 13,
+   "accuracy": {
+    "effect": -0.019230769230769232,
+    "low": -0.09433962264150944,
+    "high": 0.05825242718446602,
+    "probability_positive": 0.312,
+    "se": 0.03805320508848417,
+    "blocks": 7
+   },
+   "brier_improvement": {
+    "effect": 0.004912432719059671,
+    "low": -0.0024679456814726353,
+    "high": 0.012999007167622348,
+    "probability_positive": 0.8916,
+    "se": 0.00397129804308488,
+    "blocks": 7
+   },
+   "ll_improvement": {
+    "effect": 0.010338637087903434,
+    "low": -0.0049613055725630135,
+    "high": 0.026907483724228964,
+    "probability_positive": 0.8998,
+    "se": 0.008099001557035537,
+    "blocks": 7
+   }
+  },
+  "beat_lead": {
+   "record_base": "61-43",
+   "record_arm": "56-48",
+   "decisive_up": 3,
+   "decisive_down": 8,
+   "accuracy": {
+    "effect": -0.04807692307692308,
+    "low": -0.09615384615384616,
+    "high": 0.0,
+    "probability_positive": 0.0368,
+    "se": 0.026078580996491033,
+    "blocks": 7
+   },
+   "brier_improvement": {
+    "effect": -0.0006293723530430307,
+    "low": -0.003778349056113885,
+    "high": 0.0027940991692932465,
+    "probability_positive": 0.3645,
+    "se": 0.0017333538026176017,
+    "blocks": 7
+   },
+   "ll_improvement": {
+    "effect": -0.0012108561576396049,
+    "low": -0.007630191271533665,
+    "high": 0.0056941679871532905,
+    "probability_positive": 0.3587,
+    "se": 0.0034796784612836367,
+    "blocks": 7
+   }
+  }
+ },
+ "pred_flips_vs_base": {
+  "beat": 24,
+  "beat_lead": 11
+ }
+}

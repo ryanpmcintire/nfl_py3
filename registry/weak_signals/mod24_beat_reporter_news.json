@@ -56,6 +56,62 @@
       ],
       "source": "docs/mod24_u9_beat_grade.json",
       "standard_error": 0.358
+    },
+    "mod27_beat_reporter_news_pickterm_all_fwd2026": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Forward 2026 weeks 2-8, fit 2020-25 not refit; wrong sign on accuracy but interval spans both sides; log loss and Brier improved (p+ 0.90); not a resolved wrong sign",
+      "closing_ground": null,
+      "description": "Beat-reporter availability loss differential as a fitted pick-probability term (all posts before deadline), forward 2026 wk2-8, fit 2020-25 no refit",
+      "effect": -1.92,
+      "effect_units": "accuracy_points",
+      "family": "mod24_beat_reporter_news",
+      "interval": [
+        -9.43,
+        5.83
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Using reporters' injury posts to adjust the pick, tested forward on this season's Weeks 2 to 8 (104 games) with a model fitted only on earlier years, changed 24 picks and went 59-45 versus 61-43 without them. Probabilities scored slightly better, picks slightly worse; far too few games to tell.",
+      "probability_positive": 0.312,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 7,
+      "sample_games": 104,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "docs/mod27_u3_beat_forward26.json",
+      "standard_error": 3.81
+    },
+    "mod27_beat_reporter_news_pickterm_lead_fwd2026": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Forward 2026 weeks 2-8, fit 2020-25; negative on accuracy (3 up, 8 down decisive) but interval reaches zero, and the 2024-25 lead cell was positive; no resolved wrong sign or positive control",
+      "closing_ground": null,
+      "description": "Beat-reporter availability loss differential, posts before Wednesday 18:00Z only, forward 2026 wk2-8, fit 2020-25 no refit",
+      "effect": -4.81,
+      "effect_units": "accuracy_points",
+      "family": "mod24_beat_reporter_news",
+      "interval": [
+        -9.62,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Using only reporter posts made before Wednesday evening, tested forward on this season's Weeks 2 to 8 (104 games), changed 11 picks and went 56-48 versus 61-43 without them (3 better, 8 worse). The earlier 2024-25 gain did not repeat, but 11 changed games is too few to settle it.",
+      "probability_positive": 0.0368,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 7,
+      "sample_games": 104,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "docs/mod27_u3_beat_forward26.json",
+      "standard_error": 2.61
     }
   }
 }

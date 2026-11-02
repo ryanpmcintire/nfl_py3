@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-02T13:58:22.500704+00:00`
+Refreshed at: `2026-11-02T14:55:17.517282+00:00`
 
 ## Start here
 
@@ -21,14 +21,17 @@ Refreshed at: `2026-11-02T13:58:22.500704+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `26ef35fb6ab6` — Republish the site with the latest settled results
-- Pending change set: 229 paths
-  - `A  docs/lanes/discrete-read-audit-2026-11-02.md`
-  - `A  docs/lanes/smooth-base-challenger-2026-11-02.md`
-  - `A  docs/lanes/week8-postmortem-2026-11-02.md`
-  - `A  registry/weak_signals/discrete_read_audit.json`
-  - `A  registry/weak_signals/smooth_base_challenger_2026_11_02.json`
-  - `A  registry/weak_signals/week8_postmortem_2026_11_02.json`
+- Baseline commit: `580824d9f8f4` — Record the Week 8 pick-chain postmortem and its layer readings
+- Pending change set: 232 paths
+  - `M  ROADMAP.md`
+  - `A  docs/lanes/mod27-better-picks.md`
+  - `A  docs/lanes/mod27-u1-home-nudge.md`
+  - `A  docs/lanes/mod27-u2-move-term-2026.md`
+  - `A  docs/lanes/mod27-u3-beat-reporters.md`
+  - `A  docs/mod27_u3_beat_forward26.json`
+  - `M  registry/weak_signals/mod24_beat_reporter_news.json`
+  - `A  registry/weak_signals/mod27_home_nudge.json`
+  - `A  registry/weak_signals/mod27_move_term_2026.json`
   - `?? an.csv`
   - `?? docs/lanes/c-drive-space-2026-10-31.md`
   - `?? docs/lanes/machine-crashes-2026-10-31.md`
@@ -40,10 +43,7 @@ Refreshed at: `2026-11-02T13:58:22.500704+00:00`
   - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
   - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
   - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
-  - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
-  - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
-  - ...and 209 more
+  - ...and 212 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
