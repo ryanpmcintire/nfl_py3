@@ -15,23 +15,23 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 
 **Production policy active:** one calibrated probability combines the model, situational evidence and available line movement to choose each side.
 
-**Best Pick of the week (★):** CIN -10.5 in TEN at CIN. The pool scores one Best Pick per regular-season week. This pick was provisionally chosen because it has the highest estimated chance to cover among eligible games. Its estimated lead over the other picks is uncertain.
+**Best Pick of the week (★):** CIN -10.5 in TEN at CIN. The pool scores one Best Pick per regular-season week. This pick was the star this card carried when the picks locked; once a game is past its deadline the star stays where the pool saw it.
 
 | Date        | Matchup    | ATS prediction   | Cover chance   |
 |:------------|:-----------|:-----------------|:---------------|
 | Thu, Oct 29 | CAR at GB  | CAR +3.5         | 50.1%          |
-| Sun, Nov 01 | ARI at DAL | DAL -6.5         | 51.8%          |
-| Sun, Nov 01 | ATL at TB  | TB -2.5          | 52.6%          |
+| Sun, Nov 01 | ARI at DAL | DAL -6.5         | 54.6%          |
+| Sun, Nov 01 | ATL at TB  | ATL +2.5         | 50.2%          |
 | Sun, Nov 01 | BAL at BUF | BAL +3.5         | 55.7%          |
 | Sun, Nov 01 | CLE at PIT | CLE +3.5         | 50.7%          |
 | Sun, Nov 01 | IND at JAX | JAX -7.5         | 57.5%          |
-| Sun, Nov 01 | KC at DEN  | DEN +1.5         | 60.1%          |
+| Sun, Nov 01 | KC at DEN  | DEN +1.5         | 57.4%          |
 | Sun, Nov 01 | LAC at LA  | LA -6.5          | 51.2%          |
-| Sun, Nov 01 | LV at NYJ  | LV +1.5          | 50.2%          |
+| Sun, Nov 01 | LV at NYJ  | NYJ -1.5         | 52.6%          |
 | Sun, Nov 01 | MIN at DET | MIN +3.5         | 52.6%          |
 | Sun, Nov 01 | NE at MIA  | MIA +7.5         | 50.0%          |
 | Sun, Nov 01 | PHI at WAS | WAS -4.5         | 52.5%          |
-| Sun, Nov 01 | TEN at CIN | ★ CIN -10.5      | 65.6%          |
+| Sun, Nov 01 | TEN at CIN | ★ CIN -10.5      | 70.4%          |
 | Mon, Nov 02 | CHI at SEA | CHI +3.5         | 59.3%          |
 
 [Open the standalone card](CURRENT_PREDICTIONS.md) for provenance and interpretation.
@@ -63,7 +63,7 @@ produce, the same way it already fails on a stale `HANDOFF.md`.
 ## Research state
 
 <!-- RESEARCH_STATE:START -->
-- **Weak-signal registry:** 8,010 results recorded -- 7,922 unresolved_below_power, 88 closed (78 refuted_mechanism, 10 bounded_by_control). An interval crossing zero is never by itself grounds to close a line of work; see `AGENTS.md`.
+- **Weak-signal registry:** 8,022 results recorded -- 7,934 unresolved_below_power, 88 closed (78 refuted_mechanism, 10 bounded_by_control). An interval crossing zero is never by itself grounds to close a line of work; see `AGENTS.md`.
 - **Rotation registry:** 455 declared research families -- 89 open, 1 confirmed/closed/retired, 365 declared for coverage only (no window yet).
 - **Prospective challengers:** 63 of 69 registered challengers are actively tracked prospectively (`artifacts/prospective/challengers.json`).
 <!-- RESEARCH_STATE:END -->

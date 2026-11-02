@@ -20,6 +20,7 @@ modified lane when the prompt just says to continue.
 
 ## Active
 
+- [backlog-all-2026-11-02](backlog-all-2026-11-02.md) - 2026-11-02: owner asked to finish all 57 open rows; triage in backlog-triage-g1..g6-2026-11-02.md; wave 1 running (reconcile, SIM-11 ST latent, LEAD-28/PER-07, SKY-01, LEAD-76, LEAD-89).
 - [week9-lock-2026-11-03](week9-lock-2026-11-03.md) - START HERE 2026-11-03: Tuesday board read (Chrome), weekly_lock with the pool hook term live, post-lock checks, tell the owner Week 9 and Week 8 final.
 - [mod27-better-picks](mod27-better-picks.md) - 2026-11-02: owner asked for better picks after Week 8 (4-9 Tuesday card); whole-chain audit, pool hook served two-stage (fd1d0278), pool line off the market 36-22 tracked weekly, many units measured and not served.
 - [sim11-strength-transmission](sim11-strength-transmission.md) - 2026-11-02: AR(1) form arm --form 3 rejected (10/14 gates v 13/14; late-season R2 no gain); default unchanged; next mechanism per the lane.

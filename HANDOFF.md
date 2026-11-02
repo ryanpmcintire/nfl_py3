@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-02T16:25:34.177051+00:00`
+Refreshed at: `2026-11-02T21:31:08.097826+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-02T16:25:34.177051+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `d83abe4f1405` — Index the Week 9, MOD-27 and SIM-11 lanes for the next session
-- Pending change set: 226 paths
+- Baseline commit: `816b8b154527` — Record the rejected SIM-11 form arm in the handoff lanes
+- Pending change set: 255 paths
+  - ` M CURRENT_PREDICTIONS.md`
+  - ` M README.md`
+  - `M  ROADMAP.md`
+  - ` M docs/findings.html`
+  - ` M docs/history.html`
+  - ` M docs/index.html`
   - `M  docs/lanes/README.md`
-  - `M  docs/lanes/sim11-strength-transmission.md`
-  - `M  docs/lanes/week9-lock-2026-11-03.md`
-  - `?? an.csv`
-  - `?? docs/lanes/c-drive-space-2026-10-31.md`
-  - `?? docs/lanes/machine-crashes-2026-10-31.md`
-  - `?? docs/lanes/stealmybitcoin-ctf.md`
-  - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
-  - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
-  - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
-  - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
-  - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
-  - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
-  - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
-  - ...and 206 more
+  - `A  docs/lanes/backlog-all-2026-11-02.md`
+  - `A  docs/lanes/backlog-triage-g1-2026-11-02.md`
+  - `A  docs/lanes/backlog-triage-g2-2026-11-02.md`
+  - `A  docs/lanes/backlog-triage-g3-2026-11-02.md`
+  - `A  docs/lanes/backlog-triage-g4-2026-11-02.md`
+  - `A  docs/lanes/backlog-triage-g5-2026-11-02.md`
+  - `A  docs/lanes/backlog-triage-g6-2026-11-02.md`
+  - `A  docs/lanes/coordinators-lead28-per07-2026-11-02.md`
+  - `M  docs/lanes/lead76.md`
+  - `A  docs/lanes/roadmap-reconcile-2026-11-02.md`
+  - `A  docs/lead76_inventory.md`
+  - ` M docs/model.html`
+  - `A  registry/weak_signals/lead76_rule_prior.json`
+  - ...and 235 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -57,13 +57,13 @@ trust live Git output after checkout.
 - Served-policy baseline (opener-graded probability rule, home-side push applied): **53.36%** on **1,537 games** (`opener_evaluation/20261101T151614Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card combines this with the coach component in one fitted calibrated probability, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,146 / 2,182 (52.52%)**
-- Linked forecast: **2026 Week 8**, created `2026-11-01T17:09:33.283593+00:00`
+- Linked forecast: **2026 Week 8**, created `2026-11-02T17:10:20.491642+00:00`
 
 The 52.52% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 8** from model `9b7b416622f7538b`, published `2026-11-01T17:16:24.334794+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 8** from model `9b7b416622f7538b`, published `2026-11-02T17:17:47.302697+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

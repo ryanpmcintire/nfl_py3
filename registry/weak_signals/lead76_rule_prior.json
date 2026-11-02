@@ -1,0 +1,89 @@
+{
+  "family": "lead76_rule_prior",
+  "signals": {
+    "lead76_rule_term_vs_recalibrated_served": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Served probability plus fitted rule-minus-pooled term vs served probability recalibrated alone, cover log loss, LOSO 2015-2021",
+      "effect": 0.00027,
+      "effect_units": "log_loss_improvement",
+      "family": "lead76_rule_prior",
+      "interval": [
+        -0.0001,
+        0.00093
+      ],
+      "league": "nfl",
+      "notes": "2 of 7 seasons positive; decisive games where the side differs from served: 58-49",
+      "plain_summary": "Adding the rule-era shape reading to the model's cover chance gave a tiny, uncertain gain over just rescaling the model's confidence.",
+      "probability_positive": 0.6705,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 7,
+      "sample_games": 1745,
+      "seasons": [
+        2015,
+        2021
+      ],
+      "source": "artifacts/lead76/results.json",
+      "standard_error": null
+    },
+    "lead76_rule_vs_pooled_prior_cover": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Rule-era conditioned discrete margin prior vs pooled 1999+ prior, cover log loss, season-block bootstrap, opener proxy 2015-2021",
+      "effect": 1.14e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "lead76_rule_prior",
+      "interval": [
+        7.8e-07,
+        2.56e-05
+      ],
+      "league": "nfl",
+      "notes": "Fitted era weight near 0 in every fold; 3 of 7 seasons positive; effect far below detectable size",
+      "plain_summary": "Splitting past games by extra-point and overtime rule era barely changes how likely a team is to cover a spread; the fitted weight on the rule-era games was near zero.",
+      "probability_positive": 0.979,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 7,
+      "sample_games": 1745,
+      "seasons": [
+        2015,
+        2021
+      ],
+      "source": "artifacts/lead76/results.json",
+      "standard_error": null
+    },
+    "lead76_rule_vs_pooled_whole_margin": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Whole-margin log score, rule-conditioned vs pooled prior tilted to model point, folds 2013-2021",
+      "effect": 2e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "lead76_rule_prior",
+      "interval": [
+        -0.0,
+        4e-05
+      ],
+      "league": "nfl",
+      "notes": "38 games dropped out of pooled support; 3 of 9 seasons positive",
+      "plain_summary": "Rule-era weighting leaves the odds of each exact final margin essentially unchanged.",
+      "probability_positive": 0.91875,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2277,
+      "seasons": [
+        2013,
+        2021
+      ],
+      "source": "artifacts/lead76/results.json",
+      "standard_error": null
+    }
+  }
+}

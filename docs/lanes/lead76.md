@@ -50,3 +50,6 @@ Obtain 1999-2008 score histories, verify the REG rules chronology, and supply au
 
 ## Open
 Rules checklist is inferred, not documentary evidence. Historical opener issuance/ingestion and cached prediction chronology remain unverified; no closure or serving decision.
+
+## Update 2026-11-02 (unit 2)
+**Measured:** 1999-2008 scores came from nflreadpy (2,500 games); pool 5,880 games 1999-2021. `scripts/lead76_rule_prior.py` ran once (exit 0); results in `artifacts/lead76/`, write-up `docs/lead76_inventory.md`. Rule vs pooled prior: +1.1e-5 log loss, pp 0.979, fitted era weight ~0; term vs recalibrated served pp 0.67; decisive 58-49. Recorded 3 cells, family lead76_rule_prior, unresolved_below_power. Next: rerun on authentic 2020-2025 openers when captured; add Elo arm; verify rule dates against primary documents.
