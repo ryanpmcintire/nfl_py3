@@ -84,6 +84,174 @@
       ],
       "source": "artifacts/per07/first_game_fitted_term.json",
       "standard_error": null
+    },
+    "PER07-ss-all-coefficient": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "fold coefficients -1.06 to -0.22, all negative; interval spans zero; mechanism not wrong-signed resolved",
+      "closing_ground": null,
+      "description": "Staff-state 11 events, fitted coefficient on first-game indicator, full sample",
+      "effect": -0.55029,
+      "effect_units": "correlation",
+      "family": "per07_first_game_new_playcaller_fitted_term",
+      "interval": [
+        -2.19368,
+        0.72308
+      ],
+      "league": "nfl",
+      "notes": "staff-state event set; 2 looks (all, offence-only); LOSO; opener; usable_from asserted",
+      "plain_summary": "Leans negative but far too uncertain with 11 games.",
+      "probability_positive": 0.1781,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/per07/first_game_fitted_term_staff_state.json",
+      "standard_error": null
+    },
+    "PER07-ss-all-oos-accuracy": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "11 flagged games; decisive 14 pick changes 7 right vs 7 baseline; no resolved wrong sign",
+      "closing_ground": null,
+      "description": "Staff-state 11 playcaller-change events, LOSO accuracy gain vs model-only",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "per07_first_game_new_playcaller_fitted_term",
+      "interval": [
+        -0.4701,
+        0.4749
+      ],
+      "league": "nfl",
+      "notes": "staff-state event set; 2 looks (all, offence-only); LOSO; opener; usable_from asserted",
+      "plain_summary": "With the cleaned list of 11 new-playcaller games, the extra term neither helped nor hurt held-out picks.",
+      "probability_positive": 0.449,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/per07/first_game_fitted_term_staff_state.json",
+      "standard_error": null
+    },
+    "PER07-ss-all-oos-logloss": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "11 flagged games; interval spans zero; in-sample gain 0.00027, gap 0.00062",
+      "closing_ground": null,
+      "description": "Staff-state 11 events, LOSO log loss gain vs model-only",
+      "effect": -0.00035327,
+      "effect_units": "log_loss_improvement",
+      "family": "per07_first_game_new_playcaller_fitted_term",
+      "interval": [
+        -0.00189054,
+        0.00094049
+      ],
+      "league": "nfl",
+      "notes": "staff-state event set; 2 looks (all, offence-only); LOSO; opener; usable_from asserted",
+      "plain_summary": "Held-out probabilities were essentially unchanged; 11 games cannot say.",
+      "probability_positive": 0.3277,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/per07/first_game_fitted_term_staff_state.json",
+      "standard_error": null
+    },
+    "PER07-ss-offence-coefficient": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "coefficient ~0, mixed-sign folds; interval spans zero",
+      "closing_ground": null,
+      "description": "Staff-state 8 offence events, fitted coefficient, full sample",
+      "effect": -5.72e-05,
+      "effect_units": "correlation",
+      "family": "per07_first_game_new_playcaller_fitted_term",
+      "interval": [
+        -1.61755,
+        1.63268
+      ],
+      "league": "nfl",
+      "notes": "staff-state event set; 2 looks (all, offence-only); LOSO; opener; usable_from asserted",
+      "plain_summary": "No detectable size either way with 8 games.",
+      "probability_positive": 0.48935,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/per07/first_game_fitted_term_staff_state.json",
+      "standard_error": null
+    },
+    "PER07-ss-offence-oos-accuracy": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "8 flagged games; decisive 5 pick changes 1 right vs 4 baseline; in-sample coefficient ~0 so loss is intercept refit noise, not a resolved mechanism",
+      "closing_ground": null,
+      "description": "Staff-state 8 offence playcaller-change events, LOSO accuracy gain vs model-only",
+      "effect": -0.1996,
+      "effect_units": "accuracy_points",
+      "family": "per07_first_game_new_playcaller_fitted_term",
+      "interval": [
+        -0.52118,
+        0.06711
+      ],
+      "league": "nfl",
+      "notes": "staff-state event set; 2 looks (all, offence-only); LOSO; opener; usable_from asserted",
+      "plain_summary": "Offence-only first games after a playcaller change did not help held-out picks; 8 games carry it.",
+      "probability_positive": 0.0497,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/per07/first_game_fitted_term_staff_state.json",
+      "standard_error": null
+    },
+    "PER07-ss-offence-oos-logloss": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "8 flagged games; interval spans zero",
+      "closing_ground": null,
+      "description": "Staff-state 8 offence events, LOSO log loss gain vs model-only",
+      "effect": -0.00024124,
+      "effect_units": "log_loss_improvement",
+      "family": "per07_first_game_new_playcaller_fitted_term",
+      "interval": [
+        -0.00076097,
+        0.00021872
+      ],
+      "league": "nfl",
+      "notes": "staff-state event set; 2 looks (all, offence-only); LOSO; opener; usable_from asserted",
+      "plain_summary": "Held-out probabilities barely moved; 8 games cannot say.",
+      "probability_positive": 0.15315,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/per07/first_game_fitted_term_staff_state.json",
+      "standard_error": null
     }
   }
 }

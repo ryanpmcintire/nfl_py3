@@ -17,3 +17,9 @@ Consumers (playcaller_change_screen, overlay) not yet pointed at the table. Spel
 
 ## Open
 Playcaller for interim OC/DC and HC-calls-plays cases needs dated team/news text (none on disk). 1 ingest row not reproduced by the scanner (not diagnosed). Effective start is the revision instant, not an employment date, except where an independent event_date is carried.
+
+## Update (staff-state fitted-term rerun)
+scripts/per07_first_game_fitted_term.py now takes --staff-state <parquet> (events = earliest playcaller-known spell per season/team/playcaller_name; first game whose Tuesday-noon-ET prediction time is after playcaller_usable_from, asserted at runtime; sets all and offence_only, looks=2; writes artifacts/per07/first_game_fitted_term_staff_state.json with difference_from_12_event_run). Launched in background (bash task bt1nxk2h5, 20,000 bootstrap draws x2 sets, slow). Not yet finished when written. Next: if the json exists, read it, then record cells under family per07_first_game_new_playcaller_fitted_term with weak-signals record (batch file, unresolved_below_power, no closing ground unless resolved wrong sign); if absent, rerun once in the background with the 4 thread env vars set to 1. Prior cells live in registry/weak_signals/per07_first_game_new_playcaller_fitted_term.json (2020-25, 1503 games).
+
+## Result (staff-state rerun, done)
+Run finished; artifacts/per07/first_game_fitted_term_staff_state.json. 6 cells PER07-ss-* recorded under per07_first_game_new_playcaller_fitted_term (unresolved_below_power). Next: none for this unit; consumers still not pointed at the table.
