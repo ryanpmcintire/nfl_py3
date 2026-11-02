@@ -43,4 +43,5 @@ Owner asked to finish every non-done ROADMAP row (57 of 98 on 2026-11-02, `scrip
 2. Commit verified lanes and ROADMAP edits at a clear point; push.
 
 ## Open
-- None needing the owner beyond the four OWNER-PHYSICAL items.
+- Owner-only physical actions (no agent route): PER-03 a SPORTRADAR_API_KEY or written NFL.com consent (triage g2); OPS-06 enable user lingering on the friend's server and approve the live sync (lane backup-offsite-timeout.md); SKY-02 a Kaggle API token at %USERPROFILE%/.kaggle/kaggle.json for Big Data Bowl tracking data (absent, checked 2026-11-02).
+- After the Week 9 lock: scheduler jobs in week9 lane step 3b; UI-20 improvement rides the lock publication.

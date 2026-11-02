@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-02T23:11:30.109672+00:00`
+Refreshed at: `2026-11-02T23:12:25.918572+00:00`
 
 ## Start here
 
@@ -21,13 +21,13 @@ Refreshed at: `2026-11-02T23:11:30.109672+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `37953b8080d5` — SIM-08: margin anchor passes on the engine's own support; total anchor biased; Amendment 1
+- Baseline commit: `4266ef68c9a1` — Refresh the session handoff and README research state
 - Pending change set: 235 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - `M  HANDOFF.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
+  - `M  docs/lanes/backlog-all-2026-11-02.md`
   - ` M docs/lanes/sim11-strength-transmission.md`
   - ` M docs/model.html`
   - ` M tiebreaker.json`
