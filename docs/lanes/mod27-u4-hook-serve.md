@@ -1,20 +1,22 @@
 # MOD-27 unit 4 - serve the MOD-26 pool hook term
 
 ## Goal
-Serve the hook (pool half-point over a whole-number Tuesday market line) as a fifth fitted term, base re-read at the market line so the hook counts once.
+Serve the hook (pool half-point over a whole-number Tuesday market line) as one fitted term without changing any pick where the hook cannot matter.
 
 ## State
-- Work parked on local branch `mod27-hook-serve` (commit d39b98d1, not pushed, not on master). Master and production unchanged: active pick_probability/20261101T171318Z, atlas loads, v6 source guard matches (CRLF restored on card_view.py and pick_probability.py after the branch checkout).
-- On the branch: src/nfl_ats/pool_hook.py (push table, stacking, Tuesday market line = first snapshot at or after the pool's Tuesday-noon ET freeze via tuesday_noon_et_cutoff_utc; the agent's underived 6-hour lookback removed), pick_probability.py (loader accepts the hook term only with a push table), pick_probability_fit.py (stacked push-inclusive fit; per_game.parquet, bands and graded_games use one row per game: the up row, opener pushes dropped, 1,503 games; stacked_fit_rows kept), card_view.py (hook fail-open, cannot drop flags or move), independent_validation.py (hook in recompute, pool_hook.py pinned, DEFAULT_STUDY v7), v7 protocol.
-- Measured: hook coef 0.808 (folds .77-.88), LOSO accuracy +0.098 pts P+ .585, Brier P+ .997, log loss P+ .996. Production loader dry run Week 8: 5 hook games, signs correct; CAR at GB and CLE at PIT flip to HOME from the refit (both coin flips). pytest 395 passed on the branch.
-- BLOCKER (measured): `nfl-ats fit-pick-probability` fails its atlas rebuild: "Signal atlas did not reproduce saved out_of_season probabilities". signal_atlas.py refits the four-term stack from per_game.parquet (FIT_FEATURES) and must reproduce the served fit; it does not know the stacked population or the hook.
+- Branch mod27-hook-serve (worktree F:\Repos\nfl_py3_wt_hook): d39b98d1 (hook term, loader, card, validation v7 protocol) and a5ce3a1e (signal atlas reproduces the stacked five-term fit from fit_population.parquet). Production is on master's four-term fit pick_probability/20261101T171318Z; v6 source guard matches; site shows 833-670.
+- 2026-11-02 merged and activated (pick_probability/20261102T154016Z): fit, atlas, refresh dry run, pytest 395 and publish all passed. Rolled back the same hour (merge aborted, pointers restored, site republished) because of a measured regression:
+  - Opener view, 1,503 games: new 819-684 vs served 833-670; hook term zeroed 824.
+  - Non-whole-number lines (hook is 0, 876 games): new 472 vs served 487; changed picks 34-49 (P(new better) .051). Whole-number lines (627): 347 vs 346.
+  - Cause (inferred from coefficients): the stacked push-inclusive fit counts each whole-number game twice and refits every term (model_logit .309 -> .249, flag_sum .319 -> .419, move_available .017 -> .083, intercept -.012 -> -.031). MOD-26 compared against a four-term model refit on the same stacked rows, never against the served fit.
 
 ## Tried
-- Pointer copy activation: loader rejected the fifth term, then the features list (fixed). Activated through the real command three times; each failed at the atlas and the pointer was rolled back each time.
+- Pointer-copy activation (loader fixes); three atlas failures before a5ce3a1e; one full activation rolled back for the regression above.
 
 ## Next
-- After the Week 9 Tuesday weekly_lock succeeds: on the branch, make signal_atlas.py reproduce the five-term stacked fit (or read the fit's saved out-of-season probabilities instead of refitting), then verify the whole chain on the branch: fit-pick-probability (activates + atlas), refresh-picks --dry-run, publish-board, pytest. Merge, activate, enroll v7 (start week = first week with no kicked-off game), restore CRLF if checkout rewrites pinned files.
-- The weekly run calls fit-pick-probability, so nothing from the branch reaches master until the atlas passes.
+- Two-stage design on the branch: keep the served four-term fit exactly (same population, coefficients and per-game probabilities), then fit only the hook coefficient leave-one-season-out on the stacked whole-number rows with the served logit as an offset. Gate: on non-whole-number games every probability equals the served one; report the hook coefficient per fold and the whole-number record at simulated pool lines against the served fit. Atlas: four-term reproduction unchanged, hook fixed as an offset.
+- Bundle the generalized offset term (lane mod27-u6-pool-offset.md, coefficient about 0.88) only if the same two-stage gate passes.
 
 ## Open
-- Strength bands now use the up row for whole-line games (away side holds the hook); a weighted version would use both.
+- Strength bands for whole-number games use one simulated pool line; a weighted version would use both.
+- Pinned files must keep the bytes v6/v7 enroll with; a checkout that rewrites line endings breaks the guard.

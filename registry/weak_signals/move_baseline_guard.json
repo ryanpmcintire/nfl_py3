@@ -1,0 +1,61 @@
+{
+  "family": "move_baseline_guard",
+  "signals": {
+    "move_baseline_guard_v1_median_baseline": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval straddles zero, probability_positive 0.115, 44 move values change, 10 disagreement games served 6-4 versus variant 4-6, no positive control",
+      "closing_ground": null,
+      "description": "Leader move as median of leader finals minus median of leader Wednesday baselines, leave-one-season-out against the served per-book-baseline leader median move",
+      "effect": -0.000323,
+      "effect_units": "log_loss_improvement",
+      "family": "move_baseline_guard",
+      "interval": [
+        -0.000882,
+        0.0002
+      ],
+      "league": "nfl",
+      "notes": "Looks: 2 variants plus chosen distance per fold. Replicated served LOSO 833-670.",
+      "plain_summary": "Using the middle of the leading books' Wednesday lines as the starting point for the move did not beat the current method on past seasons: it changed 44 move values, flipped 10 picks, and the current method went 6-4 on those against 4-6, with a slightly worse log loss. It cannot fix two-book games like LV at NYJ because the median of two differences equals the difference of two medians.",
+      "probability_positive": 0.115,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/move-baseline-guard.md",
+      "standard_error": 0.000276
+    },
+    "move_baseline_guard_v2_outlier_drop": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval straddles zero, probability_positive 0.10, inner selection picked no guard in 5 of 6 folds and distance 0 in 2023, 35 moves change, 6 disagreement games served 4-2 versus variant 2-4, no positive control",
+      "closing_ground": null,
+      "description": "Per-book leader moves with a book dropped when its Wednesday baseline departs from the all-book baseline median by more than a distance chosen from training seasons only",
+      "effect": -0.000266,
+      "effect_units": "log_loss_improvement",
+      "family": "move_baseline_guard",
+      "interval": [
+        -0.00071,
+        0.000131
+      ],
+      "league": "nfl",
+      "notes": "Distance chosen by inner leave-one-season-out log loss; full-data choice is no guard.",
+      "plain_summary": "Dropping a leading book whose starting line is far from the other books was not chosen by the training seasons in five of six folds, and the one fold that chose it did slightly worse out of season. Applied to 2026 live quotes it changes nothing, including LV at NYJ, where only two books had quotes and neither could be called the outlier.",
+      "probability_positive": 0.1005,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/move-baseline-guard.md",
+      "standard_error": 0.000214
+    }
+  }
+}

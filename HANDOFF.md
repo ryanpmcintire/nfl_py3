@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-02T15:36:53.834510+00:00`
+Refreshed at: `2026-11-02T15:48:56.042817+00:00`
 
 ## Start here
 
@@ -21,13 +21,16 @@ Refreshed at: `2026-11-02T15:36:53.834510+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `e0aad5585197` — Show each week's Tuesday-card record beside the final record on History
-- Pending change set: 230 paths
-  - `A  docs/lanes/late-flip-mechanism-2026-11-02.md`
-  - `M  docs/lanes/mod27-better-picks.md`
-  - `A  docs/lanes/mod27-u6-pool-offset.md`
-  - `A  registry/weak_signals/late_flip_mechanism_2026.json`
-  - `A  registry/weak_signals/pool_offset_at_posting_2026.json`
+- Baseline commit: `dbe1c47cd0a0` — Measure the pool line's offset from the market and the late-flip mechanism
+- Pending change set: 233 paths
+  - `M  docs/findings.html`
+  - `M  docs/index.html`
+  - `M  docs/lanes/mod27-u4-hook-serve.md`
+  - `M  docs/lanes/mod27-u6-pool-offset.md`
+  - `A  docs/lanes/move-baseline-guard.md`
+  - `A  registry/weak_signals/move_baseline_guard.json`
+  - `A  registry/weak_signals/pool_offset_term_generalized.json`
+  - `M  scripts/pool_relative_move_forward_log.py`
   - ` M src/nfl_ats/card_view.py`
   - ` M src/nfl_ats/pick_probability.py`
   - `?? an.csv`
@@ -40,10 +43,7 @@ Refreshed at: `2026-11-02T15:36:53.834510+00:00`
   - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
   - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
   - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
-  - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
-  - ...and 210 more
+  - ...and 213 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

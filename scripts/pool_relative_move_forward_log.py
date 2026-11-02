@@ -13,6 +13,7 @@ if str(REPO / "src") not in sys.path:
 
 from nfl_ats import pick_probability as pp  # noqa: E402
 from nfl_ats.clv import LIVE_CAPTURE_KIND, load_decision_quotes  # noqa: E402
+from nfl_ats.forecast_cold_visitor_tilt_overlay import tuesday_noon_et_cutoff_utc  # noqa: E402
 from nfl_ats.sharp_book_movement_features import LEADER_BOOKS  # noqa: E402
 
 ARTIFACTS = REPO / "artifacts"
@@ -115,6 +116,24 @@ def _leader_median(quotes, game_ids, cutoffs):
     return q.groupby("game_id")["home_spread_line"].median()
 
 
+def _tuesday_market(quotes, game_ids, kickoffs):
+    q = quotes.loc[quotes["market"].eq("spreads") & np.isfinite(quotes["home_spread_line"])].rename(
+        columns={"nflverse_game_id": "game_id"}
+    )
+    q = q.loc[q["game_id"].isin(game_ids)].copy()
+    q["freeze"] = q["game_id"].map(
+        {g: tuesday_noon_et_cutoff_utc(pd.Timestamp(k)) for g, k in kickoffs.items()}
+    )
+    q["kickoff"] = q["game_id"].map(kickoffs)
+    q = q.loc[q["observed_at_utc"].ge(q["freeze"]) & q["observed_at_utc"].lt(q["kickoff"])]
+    first = (
+        q.sort_values(["game_id", "bookmaker_key", "observed_at_utc"])
+        .groupby(["game_id", "bookmaker_key"])
+        .head(1)
+    )
+    return first.groupby("game_id")["home_spread_line"].median()
+
+
 def build(week, backfill):
     cards = _cards(week)
     pool, pool_file = _pool_lines(week)
@@ -154,6 +173,7 @@ def build(week, backfill):
         for g in ids
     }
     leader = _leader_median(quotes, set(ids), cutoffs)
+    tuesday = _tuesday_market(quotes, set(ids), {g: cards.at[g, "kickoff"] for g in ids})
     move_s = pd.Series(0.0, index=ids)
     avail_s = pd.Series(0.0, index=ids)
     by_feed = {}
@@ -176,6 +196,8 @@ def build(week, backfill):
         pool_line = pool.get(g)
         lead = leader.get(g, np.nan)
         pool_move = float(lead - pool_line) if pool_line is not None and np.isfinite(lead) else 0.0
+        tue = tuesday.get(g, np.nan)
+        offset = float(tue - pool_line) if pool_line is not None and np.isfinite(tue) else np.nan
         z_chal = float(_logit(p_served)) - cm * move_s[g] - ca * avail_s[g] + cc * pool_move
         p_chal = float(_sigmoid(z_chal))
         rows.append(
@@ -198,6 +220,11 @@ def build(week, backfill):
                 "served_move_available": float(avail_s[g]),
                 "challenger_home_probability": p_chal,
                 "challenger_side": "HOME" if p_chal >= 0.5 else "AWAY",
+                "tuesday_market_line": float(tue) if np.isfinite(tue) else np.nan,
+                "pool_offset": offset,
+                "offset_side": ("HOME" if offset > 0 else "AWAY" if offset < 0 else None)
+                if np.isfinite(offset)
+                else None,
                 "served_move_coefficient": cm,
                 "challenger_move_coefficient": cc,
             }
@@ -238,6 +265,15 @@ def grade():
     print(f"games logged {len(frozen)}, decided at the pool line {len(decided)}")
     print(f"card {cw}-{cl}, challenger {hw}-{hl}")
     print(f"sides differ {len(differ)}: card {dcw}-{dcl}, challenger {dhw}-{dhl}")
+    if "offset_side" in decided:
+        off = decided.loc[decided["offset_side"].notna()]
+        ow, ol = _record(off["offset_side"], off["settle"])
+        against = off.loc[off["card_side"].ne(off["offset_side"])]
+        aw, al = _record(against["card_side"], against["settle"])
+        print(
+            f"pool line off the Tuesday market {len(off)}: better-number side {ow}-{ol}, "
+            f"card against it {aw}-{al}"
+        )
     print(f"backfilled rows in the frozen set {int(decided['backfill'].sum())} of {len(decided)}")
     by_week = decided.groupby("week").apply(
         lambda d: pd.Series(

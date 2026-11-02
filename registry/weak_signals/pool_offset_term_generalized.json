@@ -1,0 +1,58 @@
+{
+  "family": "pool_offset_term_generalized",
+  "signals": {
+    "pool_offset_term_generalized_2026_changed_sides": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Frozen 2020-25 offset coefficient applied to 2026 weeks 3-8 real pool lines vs Tuesday-noon market lines",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "pool_offset_term_generalized",
+      "interval": null,
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Applying the fitted offset term to 2026 weeks 3-8 with the real pool and Tuesday market numbers (103 games, 51 with a gap of half a point or more) changes no pick: the average probability move is under one point and the card already sits within a point of even in the games it would touch. The offset side still went 36-22 live.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 103,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "tests/scratch/",
+      "standard_error": null
+    },
+    "pool_offset_term_generalized_logloss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Offset term (logit cover at pool line minus at market line) added to four-term fit, LOSO 2020-25, stacked offsets +-0.5 and +-1.0",
+      "effect": 0.00238,
+      "effect_units": "log_loss_improvement",
+      "family": "pool_offset_term_generalized",
+      "interval": [
+        0.00099,
+        0.00379
+      ],
+      "league": "nfl",
+      "notes": "accuracy +0.92 pts ci -0.64..2.38 P+ 0.869; 0.5 offsets only: logloss +0.00086 P+ 0.968, coef 0.69-0.87; 1.0 offsets only: logloss +0.00384 P+ 1.0, accuracy +2.09 P+ 0.991, coef 0.87-0.99; whole-number market lines only coef 0.18-0.38 logloss +0.00016 P+ 0.818. 12 metric looks across 4 populations. Scratch p1.py/p2.py agentPO.",
+      "plain_summary": "When the pool posts a number a half point or a full point off the market, adding a term for that gap improved the out-of-season probability fit on simulated 2020-25 offsets (log loss 0.68767 to 0.68529). The term's weight was steady at 0.85 to 0.96 per season, near the hook's 0.77-0.88. This is largely mechanical, since the target is graded at the pool line. Applied to 2026 weeks 3-8 it changes no pick.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 108,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/",
+      "standard_error": 0.0007
+    }
+  }
+}
