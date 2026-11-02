@@ -54,6 +54,7 @@ from nfl_ats.splash_lines import load_splash_capture, splash_decision_lines
 
 FIT_FEATURES = ("model_logit", FLAG_SUM_COLUMN, MOVE_COLUMN, MOVE_AVAILABLE_COLUMN)
 FITTED_FEATURES = (*FIT_FEATURES, HOOK_COLUMN)
+FIT_POPULATION_FILENAME = "fit_population.parquet"
 FIT_RIDGE = 1e-3
 FIT_ITERATIONS = 50
 MODEL_PROBABILITY_SOURCE = "home_cover_probability_at_open"
@@ -367,6 +368,7 @@ def build_fit_population(
         ),
         "stacked_fit_rows": len(graded),
         "pushes_kept": pushes,
+        "pushes_dropped": pushes,
         "ungraded_dropped": ungraded,
         "games_with_market_move": int(graded[MOVE_AVAILABLE_COLUMN].sum()),
         "seasons": sorted(int(value) for value in graded["season"].unique()),
@@ -596,6 +598,7 @@ def fit_pick_probability(
     directory = artifacts_root / PICK_PROBABILITY_ARTIFACT_ROOT / stamp
     directory.mkdir(parents=True, exist_ok=True)
     per_game.to_parquet(directory / "per_game.parquet", index=False)
+    population.to_parquet(directory / FIT_POPULATION_FILENAME, index=False)
     (directory / COEFFICIENTS_FILENAME).write_text(
         json.dumps(model.to_dict(), indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
@@ -662,6 +665,7 @@ def _record(correct: pd.Series) -> str:
 
 __all__ = [
     "FIT_FEATURES",
+    "FIT_POPULATION_FILENAME",
     "FIT_RIDGE",
     "MODEL_PROBABILITY_SOURCE",
     "build_fit_population",
