@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-02T15:48:56.042817+00:00`
+Refreshed at: `2026-11-02T15:52:01.597125+00:00`
 
 ## Start here
 
@@ -21,19 +21,17 @@ Refreshed at: `2026-11-02T15:48:56.042817+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `dbe1c47cd0a0` — Measure the pool line's offset from the market and the late-flip mechanism
-- Pending change set: 233 paths
-  - `M  docs/findings.html`
-  - `M  docs/index.html`
-  - `M  docs/lanes/mod27-u4-hook-serve.md`
-  - `M  docs/lanes/mod27-u6-pool-offset.md`
-  - `A  docs/lanes/move-baseline-guard.md`
-  - `A  registry/weak_signals/move_baseline_guard.json`
-  - `A  registry/weak_signals/pool_offset_term_generalized.json`
-  - `M  scripts/pool_relative_move_forward_log.py`
+- Baseline commit: `f58c97076436` — Roll back the pool hook activation and record why; log the pool offset weekly
+- Pending change set: 231 paths
+  - `M  docs/lanes/draftcap-forward-log.md`
+  - `M  docs/lanes/mod27-better-picks.md`
+  - `A  docs/lanes/mod27-u7-acquisitions.md`
+  - `M  scripts/capture_scheduler.py`
+  - `M  scripts/draftcap_forward_log.py`
   - ` M src/nfl_ats/card_view.py`
   - ` M src/nfl_ats/pick_probability.py`
   - `?? an.csv`
+  - `?? data/scheduler_heartbeat.tmp`
   - `?? docs/lanes/c-drive-space-2026-10-31.md`
   - `?? docs/lanes/machine-crashes-2026-10-31.md`
   - `?? docs/lanes/stealmybitcoin-ctf.md`
@@ -43,7 +41,9 @@ Refreshed at: `2026-11-02T15:48:56.042817+00:00`
   - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
   - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
   - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
-  - ...and 213 more
+  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
+  - ...and 211 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

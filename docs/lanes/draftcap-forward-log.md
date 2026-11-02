@@ -13,6 +13,9 @@ Scheduler jobs `draftcap_forward_log_thu_1915`, `draftcap_forward_log_sun_1115` 
 ## Tried
 - Week 7 run: combine match 63.8% plus name-key fallback to 71.8% (as unit10b); feature coverage 2026 = 1.0.
 
+- 2026-11-02 abort cause (measured): refit coefficients equal frozen to float noise (0.02733909161105847 vs 0.027339091611058446; -0.23024201922077514 vs -0.23024201922077533) but the sha256 of their JSON text differs, so the hash gate aborted every run since Week 8. Inputs unchanged (4630 rows, 3546 with features). Fix: freeze() compares coefficients with np.allclose against frozen.json and the payload keeps the frozen digest. In-season scoring still refits on completed games as declared; frozen set is the reference only. frozen.json untouched.
+- Week 8 not logged: the repaired job found every Week 8 game past_deadline; Week 8 is recorded as missed (no backfill support). Week 9 --dry ok (latest_snap_order 202608, snap feed now refreshes via forward_snaps).
+
 ## Next
 Let the scheduler run Thu/Sun Weeks 7-18. After Week 18 is final: score arm vs base on decisive games, paired, season/week-block bootstrap, accuracy, Brier, log loss v market-only; record through `weak-signals record` (family mod23_unit10_draft_capital, forward look). No interim performance reads.
 

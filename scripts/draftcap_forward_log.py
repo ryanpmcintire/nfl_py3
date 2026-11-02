@@ -55,9 +55,21 @@ def prior_provenance(features):
     f["order"] = f["season"].astype(int) * 100 + f["week"].astype(int)
     out = {}
     for side in ("home", "away"):
-        left = f[["game_id", "order", f"{side}_team"]].rename(columns={f"{side}_team": "team"}).astype({"team": object}).sort_values("order")
+        left = (
+            f[["game_id", "order", f"{side}_team"]]
+            .rename(columns={f"{side}_team": "team"})
+            .astype({"team": object})
+            .sort_values("order")
+        )
         right = tg[["team", "prior_order"]].astype({"team": object})
-        m = pd.merge_asof(left, right, left_on="order", right_on="prior_order", by="team", allow_exact_matches=False)
+        m = pd.merge_asof(
+            left,
+            right,
+            left_on="order",
+            right_on="prior_order",
+            by="team",
+            allow_exact_matches=False,
+        )
         used = m.loc[m["prior_order"].notna()]
         if not (used["prior_order"] < used["order"]).all():
             raise SystemExit("availability assertion failed")
@@ -66,12 +78,18 @@ def prior_provenance(features):
 
 
 def fit_frozen(features_with):
-    train = features_with.loc[features_with["season"].le(SEASON - 1) & features_with["result"].notna()]
+    train = features_with.loc[
+        features_with["season"].le(SEASON - 1) & features_with["result"].notna()
+    ]
     original = FEATURE_SETS[u3.SET_NAME]
     FEATURE_SETS[u3.SET_NAME] = FULL + ARM_COLUMNS
     try:
         model = clv.fit_margin_model(
-            train, target="market_residual", model_name="ridge", feature_profile=PROFILE, ridge_alpha=ALPHA
+            train,
+            target="market_residual",
+            model_name="ridge",
+            feature_profile=PROFILE,
+            ridge_alpha=ALPHA,
         )
     finally:
         FEATURE_SETS[u3.SET_NAME] = original
@@ -89,7 +107,10 @@ def fit_frozen(features_with):
 def freeze(table, digest, dry):
     if FROZEN_PATH.exists():
         frozen = json.loads(FROZEN_PATH.read_text())
-        if frozen["arm_coefficients_2026_sha256"] != digest:
+        reference = frozen["arm_coefficients_2026"]
+        if set(reference) != set(table) or not np.allclose(
+            [reference[c] for c in ARM_COLUMNS], [table[c] for c in ARM_COLUMNS]
+        ):
             raise SystemExit("draft capital arm coefficients differ from the enrolled frozen set")
         return frozen
     frozen = {
@@ -192,7 +213,8 @@ def record(week, now, dry):
     U["SNAP_FILE"] = M.current_season_snaps(week)
     adjusted = U["add_features"](features)
     table, digest, fit_max = fit_frozen(adjusted)
-    freeze(table, digest, dry)
+    frozen = freeze(table, digest, dry)
+    digest = frozen["arm_coefficients_2026_sha256"]
     prior, tg = prior_provenance(features)
     arm = score_arm(adjusted, week, FULL + ARM_COLUMNS)
     base = score_arm(features, week, FULL)
@@ -219,10 +241,18 @@ def record(week, now, dry):
             "arm_side": M.side_of(p_b),
             "base_home_cover_probability": p_0,
             "base_side": M.side_of(p_0),
-            "diff_dc_off_ovr": None if pd.isna(adj.loc[game_id, ARM_COLUMNS[0]]) else float(adj.loc[game_id, ARM_COLUMNS[0]]),
-            "diff_dc_def_ovr": None if pd.isna(adj.loc[game_id, ARM_COLUMNS[1]]) else float(adj.loc[game_id, ARM_COLUMNS[1]]),
-            "home_prior_game_order": None if pd.isna(prior["home"].loc[game_id]) else int(prior["home"].loc[game_id]),
-            "away_prior_game_order": None if pd.isna(prior["away"].loc[game_id]) else int(prior["away"].loc[game_id]),
+            "diff_dc_off_ovr": None
+            if pd.isna(adj.loc[game_id, ARM_COLUMNS[0]])
+            else float(adj.loc[game_id, ARM_COLUMNS[0]]),
+            "diff_dc_def_ovr": None
+            if pd.isna(adj.loc[game_id, ARM_COLUMNS[1]])
+            else float(adj.loc[game_id, ARM_COLUMNS[1]]),
+            "home_prior_game_order": None
+            if pd.isna(prior["home"].loc[game_id])
+            else int(prior["home"].loc[game_id]),
+            "away_prior_game_order": None
+            if pd.isna(prior["away"].loc[game_id])
+            else int(prior["away"].loc[game_id]),
         }
         if served_preds is not None and game_id in served_preds.index:
             sp = float(served_preds.loc[game_id, "home_cover_probability"])
@@ -250,14 +280,31 @@ def record(week, now, dry):
         "rows": rows,
     }
     if dry or not rows:
-        print(json.dumps({"dry": dry, "week": week, "refused": refused, "payload": {k: v for k, v in payload.items() if k != "rows"}, "rows": rows}, indent=1, default=str))
+        print(
+            json.dumps(
+                {
+                    "dry": dry,
+                    "week": week,
+                    "refused": refused,
+                    "payload": {k: v for k, v in payload.items() if k != "rows"},
+                    "rows": rows,
+                },
+                indent=1,
+                default=str,
+            )
+        )
         return
     RUNS_DIR.mkdir(parents=True, exist_ok=True)
     stamp = recorded.strftime("%Y%m%dT%H%M%SZ")
     path = RUNS_DIR / f"{SEASON}-week-{week:02d}-{stamp}.json"
     with open(path, "x") as handle:
         handle.write(json.dumps(payload, indent=1, default=str))
-    print(json.dumps({"path": str(path), "logged": [r["game_id"] for r in rows], "refused": refused}, indent=1))
+    print(
+        json.dumps(
+            {"path": str(path), "logged": [r["game_id"] for r in rows], "refused": refused},
+            indent=1,
+        )
+    )
 
 
 def status():
@@ -270,7 +317,9 @@ def status():
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Forward log of MOD-23 unit-10 arm B starter draft capital beside the same-pipeline base")
+    parser = argparse.ArgumentParser(
+        description="Forward log of MOD-23 unit-10 arm B starter draft capital beside the same-pipeline base"
+    )
     parser.add_argument("--week", type=int, default=None)
     parser.add_argument("--status", action="store_true")
     parser.add_argument("--dry", action="store_true")
@@ -282,7 +331,9 @@ def main():
     week = args.week
     if week is None:
         features = pd.read_parquet(u3.FEATURES, columns=["season", "week", "kickoff"])
-        sub = features.loc[features["season"].eq(SEASON) & features["week"].between(FIRST_WEEK, LAST_WEEK)]
+        sub = features.loc[
+            features["season"].eq(SEASON) & features["week"].between(FIRST_WEEK, LAST_WEEK)
+        ]
         upcoming = sub.loc[pd.to_datetime(sub["kickoff"], utc=True).gt(now)]
         if upcoming.empty:
             print("no upcoming 2026 week in range")
