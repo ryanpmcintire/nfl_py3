@@ -53,3 +53,6 @@ Rules checklist is inferred, not documentary evidence. Historical opener issuanc
 
 ## Update 2026-11-02 (unit 2)
 **Measured:** 1999-2008 scores came from nflreadpy (2,500 games); pool 5,880 games 1999-2021. `scripts/lead76_rule_prior.py` ran once (exit 0); results in `artifacts/lead76/`, write-up `docs/lead76_inventory.md`. Rule vs pooled prior: +1.1e-5 log loss, pp 0.979, fitted era weight ~0; term vs recalibrated served pp 0.67; decisive 58-49. Recorded 3 cells, family lead76_rule_prior, unresolved_below_power. Next: rerun on authentic 2020-2025 openers when captured; add Elo arm; verify rule dates against primary documents.
+
+## Update 2026-11-02 (unit 3, declared protocol)
+**Measured:** `scripts/lead76_declared.py` ran on the 1,537 real openers 2020-2025 with Elo arm and the 2025 overtime regime added; rule dates verified (URLs in `docs/lead76_inventory.md`). Rule vs pooled +1e-5 log loss pp 0.657; term hurts out of season (pp 0.0). 5 cells recorded (lead76_decl_*), unresolved_below_power. Looks 173 reported v 361 declared. Next: none required unless the owner wants per-fold declared cells; orchestrator may close definition of done.

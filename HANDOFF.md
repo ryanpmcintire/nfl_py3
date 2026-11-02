@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-02T21:44:02.578914+00:00`
+Refreshed at: `2026-11-02T21:47:03.522651+00:00`
 
 ## Start here
 
@@ -21,15 +21,19 @@ Refreshed at: `2026-11-02T21:44:02.578914+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `15de7a263117` — POOL-01 standing-aware Best Pick replay unresolved; Tuesday board read captures pool observables
-- Pending change set: 235 paths
+- Baseline commit: `da02856b393f` — SIM-11: neither remaining lever is admissible without an unmeasured constant; default unchanged
+- Pending change set: 241 paths
   - ` M CURRENT_PREDICTIONS.md`
+  - `M  ROADMAP.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
+  - `R  docs/lanes/lead76.md -> docs/lanes/done/lead76.md`
   - ` M docs/lanes/sim08-simulator-rebuild.md`
-  - `M  docs/lanes/sim11-strength-transmission.md`
+  - `M  docs/lead76_inventory.md`
   - ` M docs/model.html`
+  - `M  registry/weak_signals/lead76_rule_prior.json`
+  - `A  scripts/lead76_declared.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? docs/lanes/c-drive-space-2026-10-31.md`
@@ -39,11 +43,7 @@ Refreshed at: `2026-11-02T21:44:02.578914+00:00`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
   - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
-  - ...and 215 more
+  - ...and 221 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

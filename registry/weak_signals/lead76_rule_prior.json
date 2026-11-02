@@ -1,6 +1,146 @@
 {
   "family": "lead76_rule_prior",
   "signals": {
+    "lead76_decl_pool_vs_served_cover": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "below power: interval not resolved at 4-6 season blocks; mechanism not refuted, no positive control",
+      "closing_ground": null,
+      "description": "Discrete pooled-prior read at model point vs served opener probability, log loss",
+      "effect": 0.00264,
+      "effect_units": "log_loss_improvement",
+      "family": "lead76_rule_prior",
+      "interval": [
+        0.00091,
+        0.00431
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The served probabilities are overconfident; a pooled 1999-2019 margin shape at the same model point scores better. This is calibration, not a rule effect.",
+      "probability_positive": 0.99975,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/lead76_declared/results.json",
+      "standard_error": 0.0009
+    },
+    "lead76_decl_rule_vs_pool_cover": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "below power: interval not resolved at 4-6 season blocks; mechanism not refuted, no positive control",
+      "closing_ground": null,
+      "description": "Rule-era PMF vs pooled PMF at model point, 2020-2025 authentic openers, cover log loss",
+      "effect": 1e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "lead76_rule_prior",
+      "interval": [
+        -9.7e-06,
+        3.07e-05
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Adjusting the margin shape for extra-point and overtime rule eras changed nothing measurable on the real openers.",
+      "probability_positive": 0.657,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/lead76_declared/results.json",
+      "standard_error": 1.2389507591285572e-05
+    },
+    "lead76_decl_rule_vs_pool_margin_logscore": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "below power: interval not resolved at 4-6 season blocks; mechanism not refuted, no positive control",
+      "closing_ground": null,
+      "description": "Whole-margin log score, rule-era vs pooled PMF, 2020-2025 openers",
+      "effect": 0.00024,
+      "effect_units": "log_loss_improvement",
+      "family": "lead76_rule_prior",
+      "interval": [
+        8e-05,
+        0.00048
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The rule-era shape scores the exact final margin slightly better, by a tiny amount, in 5 of 6 seasons.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/lead76_declared/results.json",
+      "standard_error": 0.0001
+    },
+    "lead76_decl_term_vs_cal_chron": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "below power: interval not resolved at 4-6 season blocks; mechanism not refuted, no positive control",
+      "closing_ground": null,
+      "description": "Rule term added to recalibrated served probability, chronological folds 2022-2025",
+      "effect": -0.00152,
+      "effect_units": "log_loss_improvement",
+      "family": "lead76_rule_prior",
+      "interval": [
+        -0.00283,
+        -0.00022
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "As a fitted extra term the rule shape did not help and slightly hurt out of season; its weight was unstable because it is almost the same as the pooled read.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 4,
+      "sample_games": 1047,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts/lead76_declared/results.json",
+      "standard_error": 0.0006
+    },
+    "lead76_decl_term_vs_cal_loso": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "below power: interval not resolved at 4-6 season blocks; mechanism not refuted, no positive control",
+      "closing_ground": null,
+      "description": "Rule term vs recalibrated served, leave-one-season-out 2020-2025",
+      "effect": -0.00079,
+      "effect_units": "log_loss_improvement",
+      "family": "lead76_rule_prior",
+      "interval": [
+        -0.00156,
+        -7e-05
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Same result leave-one-season-out: the extra rule term gave no gain.",
+      "probability_positive": 0.00525,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/lead76_declared/results.json",
+      "standard_error": 0.0004
+    },
     "lead76_rule_term_vs_recalibrated_served": {
       "category": "modeling",
       "classification": "unresolved_below_power",
