@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-02T21:41:23.316300+00:00`
+Refreshed at: `2026-11-02T21:43:44.612815+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-02T21:41:23.316300+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `a287ea9cce4b` — Keep missing registry evidence and notes empty instead of the text None
-- Pending change set: 248 paths
+- Baseline commit: `98ed836014c9` — MOD-27 deadline flag dated by day, PER-07 first-game term, SKY-04 book lead-lag, LEAD-89 re-pinned
+- Pending change set: 240 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
   - `M  docs/lanes/backlog-all-2026-11-02.md`
-  - `M  docs/lanes/lead89.md`
-  - `A  docs/lanes/mod27-transaction-dates-2026-11-02.md`
+  - `A  docs/lanes/pool01-standing-aware-2026-11-02.md`
   - ` M docs/lanes/sim08-simulator-rebuild.md`
-  - `A  docs/lanes/sky04-lead-lag-2026-11-02.md`
+  - ` M docs/lanes/sim11-strength-transmission.md`
+  - `M  docs/lanes/week9-lock-2026-11-03.md`
   - ` M docs/model.html`
-  - `M  registry/weak_signals/deadline_integration_drag_on_production.json`
-  - `A  registry/weak_signals/per07_first_game_new_playcaller_fitted_term.json`
-  - `A  registry/weak_signals/sky04_lead_lag.json`
-  - `M  scripts/build_loso_upstream.py`
-  - `A  scripts/lead89_stage_features.py`
-  - `M  scripts/lead89_stage_timed.py`
-  - `A  scripts/mod27_transaction_dates.py`
-  - `A  scripts/per07_first_game_fitted_term.py`
-  - `A  scripts/sky04_lead_lag.py`
+  - `A  registry/weak_signals/pool01_standing_aware.json`
+  - `A  scripts/pool01_standing_aware.py`
   - ` M tiebreaker.json`
-  - ...and 228 more
+  - `?? an.csv`
+  - `?? docs/lanes/c-drive-space-2026-10-31.md`
+  - `?? docs/lanes/machine-crashes-2026-10-31.md`
+  - `?? docs/lanes/stealmybitcoin-ctf.md`
+  - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
+  - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
+  - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
+  - ...and 220 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

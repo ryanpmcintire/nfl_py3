@@ -1,0 +1,33 @@
+{
+  "family": "pool01_standing_aware",
+  "signals": {
+    "pool01_standing_aware_best_pick": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval spans zero; pool scoring and field size unknown; no closing ground",
+      "closing_ground": null,
+      "description": "Standing-aware Best Pick game choice by simulated expected final rank, sides unchanged, served vs top-probability Best Pick",
+      "effect": -0.0374,
+      "effect_units": "pool_points_per_week",
+      "family": "pool01_standing_aware",
+      "interval": [
+        -0.1121,
+        0.0374
+      ],
+      "league": "nfl",
+      "notes": "3 runs; 100 entrants bonus1 pen0 headline; sensitivity 1000 entrants pen1 P+ 0.111; rank gain -1.34/season P+ 0.173",
+      "plain_summary": null,
+      "probability_positive": 0.142,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 107,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pool_rank_replay/standing_aware_e100_b1p0_s3000_results.json",
+      "standard_error": 0.0376
+    }
+  }
+}
