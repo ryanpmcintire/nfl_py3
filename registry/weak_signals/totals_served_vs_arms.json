@@ -1,0 +1,61 @@
+{
+  "family": "totals_served_vs_arms",
+  "signals": {
+    "totals_joint_k01_vs_served_all_games": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval spans zero; no refuted mechanism, no positive control",
+      "closing_ground": null,
+      "description": "Joint k0.1 unshaded vs served joint k0.1 with -1 shade, continuous AE all REG games 2013-2025",
+      "effect": 0.0032,
+      "effect_units": "mae_improvement",
+      "family": "totals_served_vs_arms",
+      "interval": [
+        -0.0301,
+        0.0387
+      ],
+      "league": "nfl",
+      "notes": "6 of 13 seasons; shade only matters for the integer guess; 25 looks",
+      "plain_summary": "Dropping the one-point shade from the served total barely changes how close the total is on average across all games.",
+      "probability_positive": 0.58,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 3407,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "scripts/totals_model_eval.py",
+      "standard_error": null
+    },
+    "totals_wave2_shade_vs_served_last_game": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval spans zero; no refuted mechanism, no positive control",
+      "closing_ground": null,
+      "description": "Wave-2 k0.1 total with -1 shade vs served joint k0.1 with -1 shade, integer guess AE, last game of week 2013-2025",
+      "effect": 0.027,
+      "effect_units": "mae_improvement",
+      "family": "totals_served_vs_arms",
+      "interval": [
+        -0.031,
+        0.084
+      ],
+      "league": "nfl",
+      "notes": "7 of 13 seasons; positive=arm better than served; 25 looks",
+      "plain_summary": "An older total model with the same one-point shade guessed the week's last-game total slightly closer than the model now served, but the gap is far inside the noise.",
+      "probability_positive": 0.8005,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 226,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "scripts/totals_model_eval.py",
+      "standard_error": null
+    }
+  }
+}

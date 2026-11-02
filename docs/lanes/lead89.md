@@ -60,3 +60,6 @@ nothing; no signal is adjudicated or closed. No serving, publishing or Git write
 
 ## Unit 3 DONE (2026-11-02, third agent)
 Measured: control matched active table (0.0 diff, 4,902 rows); tuesday/thursday/stage_timed run; 48 cells recorded, family lead89_stage_timed_nominee_contrasts, unresolved_below_power. Thu-Tue prob_pos 0.912 (decisive 70-35-2 vs 62-42-3); Sun-Tue 0.775; Sun-Thu 0.267. Results docs/lead89_stage_timed.md, tests/scratch/codex/lead89_stage_timed/results.json. Next: orchestrator review; nothing served.
+
+## Option policy (2026-11-02, fourth agent)
+Measured: scripts/lead89_option_policy.py built and run; 107 weeks, 48 new cells recorded (family lead89_option_policy_contrasts, unresolved_below_power), 96 looks total. Policy v Tuesday +6.07 P+ 0.869 (69-36-2 v 62-42-3); v Thursday -0.93 P+ 0.410; v Sunday +1.87 [0.00,4.67] P+ 0.932 (8 weeks differ). Doc docs/lead89_option_policy.md. Next: orchestrator decides DoD; nothing served.
