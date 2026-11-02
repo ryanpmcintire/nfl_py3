@@ -77,3 +77,10 @@ support (s=0.969, real xq ~ +-0.2). Next: re-measure with design ranges from the
 total on x_env with |x_diff| term or monotone local lookup (a mechanism measured, not a knob), re-smoke.
 Cost: 0.26 s/game-draw design, 0.58 s/draw anchored (contended) -> 1000 draws x 1537 games = 100-250 h single
 worker; infeasible at declared 1000 draws, needs a declared amendment (draw count).
+
+## Unit 3 re-anchor (2026-11-02, subagent 2)
+Support from engine latents (support.json) x_diff +-0.5, x_env +-0.21; script now solves bounded joint quadratic
+(response/solve_latents), smoke takes --design-csv. Smoke 9,600 design/300 draws: margin err -0.41 z -0.97 pass;
+total +0.95 z +3.10 FAIL (persists across design size). Amendment 1 appended to the declaration (N=372, noisy plant).
+Next: smoke with design pool drawn from held-out fold contexts (code change to design_run pool), then the noisy
+control code, then the full run (one job, 4 workers). Per-fold LOSO kernel pool still open.

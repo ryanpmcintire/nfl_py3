@@ -168,4 +168,65 @@ pick. The shape gate (K, T, O) is reported whatever L4 shows.
 
 ## Amendments
 
-(none)
+### Amendment 1 (before any look), 2026-11-02
+
+No graded outcome, blend, or L-level metric has been computed. Smoke games were
+compared to opener lines and opener totals only (market quantities, not results).
+
+1. Design range. The first smoke used x_diff +-0.8, x_env +-0.5, outside the
+   engine's own support. The range is now the 0.1% and 99.9% quantiles of the
+   home-minus-away and mean-of-home-and-away expected-play-quality latents
+   (xq) that the locked engine generates: gen_world_latents plus season_ratings
+   from the locked latent fit, xq = (off_team + def_opp)/s with s = 0.969, over
+   40 worlds x 9 seasons on the engine's real schedules (92,160 games; the
+   engine's real schedules cover 2009-2017 only). Measured quantiles
+   (tests/scratch/sim08_anchor/support.json): x_diff 0.1%/1%/5%/25%/50%/75%/95%/99%/99.9%
+   = -0.498/-0.378/-0.267/-0.109/0.000/0.109/0.266/0.378/0.499 (sd 0.162);
+   x_env = -0.208/-0.157/-0.110/-0.046/-0.002/0.043/0.105/0.150/0.198 (sd 0.066);
+   corr -0.0005. Design box: x_diff in [-0.5, 0.5], x_env in [-0.21, 0.21],
+   uniform. Targets beyond the box are solved at the box edge (bounded solve).
+2. Transmission on that range (9,600 design games, 4 pooled seeds' draws;
+   2,400-game fit shown): margin = 2.21 + 38.2 x_diff + 4.3 x_env (SE 0.96, 2.3),
+   R2 0.400 linear, 0.401 quadratic: linear and monotone. Total is monotone
+   increasing in x_env (sextile means 42.3, 40.8, 42.8, 47.6, 51.1, 58.1) with
+   slope 47.4 (SE 2.4); the earlier non-monotone response was an artifact of
+   the out-of-support range. Total is U-shaped in x_diff (sextile means 51.3,
+   44.5, 46.3, 45.0, 45.5, 50.1; linear slope -0.02): blowout games score more.
+   Handling: a measured full quadratic in (x_diff, x_env) for both margin and
+   total (R2 total 0.141 linear to 0.198 quadratic), solved jointly by bounded
+   least squares; no hand constant.
+3. Re-smoke (fold 2025, same 20 games, design csv above). 150 draws, 2,400 design:
+   margin error -1.21 (z -2.92), total +0.79 (z +2.45). 300 draws, 9,600 design:
+   margin error -0.41 (SE 0.43, z -0.97, pass), total +0.95 (SE 0.31, z +3.10,
+   FAIL), per-game rms z 2.65 and 2.14 (above 1: fit uncertainty and context
+   mismatch add to MC). Larger design removed the margin bias; the total bias
+   persisted, so it is not design noise. Unresolved candidate cause: the design
+   pool draws (season, week) from the five training seasons while smoke games
+   carry the held-out season's own contexts. The full run therefore draws each
+   fold's design pool from the held-out fold's (season, week) contexts (schedule
+   facts, no outcomes), and the smoke is repeated on that pool before the full
+   run; a total bias above 2 z there blocks the run.
+4. Draw count. Measured 0.117-0.136 s per anchored draw at one worker
+   (smokes 2-4; 0.58 s in the contended first smoke is not used). Budget
+   4 workers x 6 h = 86,400 worker-s. Design: 9,600 games x 0.15 s x 6 folds
+   = 8,640 s. Remaining 77,760 s / (1,537 games x 0.136 s = 209 s per
+   draw-per-game) = 372 draws per game. Declared N = 372 (not 1,000: 1,000 needs
+   14.5 h at 4 workers). MC error at N = 372: cover probability SE
+   sqrt(0.25/372) = 0.026, logit SE 0.104; margin-mean SE 17.2/sqrt(372) = 0.89
+   points. Effect on the primary metric: MC noise in the sim logit adds about
+   w x 0.5 x 0.104 / sqrt(1537) = 0.0013 w to the SE of the pooled delta, versus
+   the bootstrap SE of about 0.0004, where w is the fitted blend weight on the
+   sim logit. Noise in the regressor attenuates w toward zero and cannot
+   create a positive delta; the verdict is reported with that attenuation, and
+   a null at this N is `unresolved_below_power`.
+5. Positive control. The deterministic plant (weight on the realised outcome)
+   overstated power: every delta was detected in 100% of replicates. Replace it
+   with a noisy plant: candidate logit c_i = recalibrated logit_i +
+   kappa (2y_i - 1) + e_i, e_i drawn independently per game and replicate with
+   sd equal to the measured sd of (sim logit - served logit) over the training
+   folds of the full run plus the MC logit SE of 0.104 in quadrature; kappa is
+   solved analytically (bisection) so the LOSO-fitted blend's expected
+   log-loss gain equals the target delta. The candidate passes through the same
+   LOSO blend fit and block bootstrap, 500 fresh-noise replicates per delta,
+   deltas 0.0010 and 0.0080. The control runs after the full run's training-fold
+   sd is known; a verdict is not issued before it.

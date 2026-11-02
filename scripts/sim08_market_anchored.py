@@ -104,15 +104,28 @@ def transmission_fit(D):
         out[f"{name}_se"] = np.sqrt(np.diag(np.linalg.inv(X.T @ X)) * r1.var(ddof=3)).tolist()
         out[f"{name}_r2_linear"] = float(1 - r1.var() / y.var())
         out[f"{name}_r2_quadratic"] = float(1 - r2.var() / y.var())
-        out[f"{name}_quad_coef"] = cq[3:].tolist()
+        out[f"{name}_quad_coef"] = cq.tolist()
     return out
 
 
+def response(fit, name, xd, xe):
+    c = fit[f"{name}_quad_coef"]
+    return c[0] + c[1] * xd + c[2] * xe + c[3] * xd**2 + c[4] * xe**2 + c[5] * xd * xe
+
+
 def solve_latents(fit, margin_target, total_target):
-    A = np.array([fit["margin_coef"][1:], fit["total_coef"][1:]])
-    b = np.array([margin_target - fit["margin_coef"][0], total_target - fit["total_coef"][0]])
-    x = np.linalg.solve(A, b)
-    return float(x[0]), float(x[1])
+    from scipy.optimize import least_squares
+
+    bx, be = fit["x_diff_range"], fit["x_env_range"]
+
+    def resid(v):
+        return [
+            response(fit, "margin", v[0], v[1]) - margin_target,
+            response(fit, "total", v[0], v[1]) - total_target,
+        ]
+
+    r = least_squares(resid, [0.0, 0.0], bounds=([-bx, -be], [bx, be]))
+    return float(r.x[0]), float(r.x[1])
 
 
 def solve_diff_only(fit, margin_target):
@@ -182,7 +195,10 @@ def cmd_smoke(a):
     eng = engine()
     t_engine = time.time() - t0
     t1 = time.time()
-    D = design_run(eng, pool, a.design_n, a.seed, a.x_diff_range, a.x_env_range)
+    if a.design_csv:
+        D = pd.read_csv(a.design_csv)
+    else:
+        D = design_run(eng, pool, a.design_n, a.seed, a.x_diff_range, a.x_env_range)
     t_design = time.time() - t1
     fit = transmission_fit(D)
     fit.update(
@@ -234,6 +250,17 @@ def cmd_smoke(a):
         ),
         "mean_signed_total_err": float(
             (R.loc[has_t, "sim_mean_total"] - R.loc[has_t, "total"]).mean()
+        ),
+        "margin_err_mean_z": float(
+            (R["sim_mean_margin"] - R["line"]).mean()
+            / ((R["sim_mean_margin"] - R["line"]).std(ddof=1) / np.sqrt(len(R)))
+        ),
+        "total_err_mean_z": float(
+            (R.loc[has_t, "sim_mean_total"] - R.loc[has_t, "total"]).mean()
+            / (
+                (R.loc[has_t, "sim_mean_total"] - R.loc[has_t, "total"]).std(ddof=1)
+                / np.sqrt(has_t.sum())
+            )
         ),
         "margin_z_rms": float(np.sqrt((R["margin_z"] ** 2).mean())),
         "total_z_rms": float(np.sqrt((R.loc[has_t, "total_z"] ** 2).mean())),
@@ -347,6 +374,7 @@ def main():
     s.add_argument("--design-n", type=int, default=2000, dest="design_n")
     s.add_argument("--x-diff-range", type=float, default=1.0, dest="x_diff_range")
     s.add_argument("--x-env-range", type=float, default=1.0, dest="x_env_range")
+    s.add_argument("--design-csv", default="", dest="design_csv")
     s.add_argument("--seed", type=int, default=8)
     s.add_argument("--out", default=str(SCRATCH / "smoke.json"))
     c = sub.add_parser("control")
