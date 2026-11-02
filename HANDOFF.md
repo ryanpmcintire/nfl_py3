@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-02T21:50:10.666515+00:00`
+Refreshed at: `2026-11-02T21:53:50.485196+00:00`
 
 ## Start here
 
@@ -21,16 +21,19 @@ Refreshed at: `2026-11-02T21:50:10.666515+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `32e08ab7d9ee` — SKY-03: pass-protection and coverage matchup interactions, reliability 0.07-0.34, fitted term unresolved
-- Pending change set: 240 paths
+- Baseline commit: `d660f6e411d0` — Backlog lane: LEAD-76 and SKY-03 results, orphaned filesystem find killed
+- Pending change set: 242 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/backlog-all-2026-11-02.md`
+  - `R  docs/lanes/lead66.md -> docs/lanes/done/lead66.md`
   - ` M docs/lanes/sim08-simulator-rebuild.md`
   - ` M docs/lanes/sim11-strength-transmission.md`
+  - `A  docs/lead66_unit2.md`
   - ` M docs/model.html`
+  - `M  registry/weak_signals/lead66_margin_pmf.json`
+  - `A  scripts/lead66_unit2.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? docs/lanes/c-drive-space-2026-10-31.md`
@@ -40,10 +43,7 @@ Refreshed at: `2026-11-02T21:50:10.666515+00:00`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
-  - ...and 220 more
+  - ...and 222 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

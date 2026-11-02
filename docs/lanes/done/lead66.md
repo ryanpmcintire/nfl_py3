@@ -21,7 +21,7 @@ ruff check/format and syntax/comment checks passed. All pooled exact log scores 
 market/served/model-centred zero-mass games = 26/69/81. No registry, serving or Git writes.
 
 ## Next
-Orchestrator: review source/protocol limitations, resolve RPS unit support, then run records serially.
+Unit 2 DONE (2026-11-02): see docs/lead66_unit2.md, scripts/lead66_unit2.py, 9 new cells recorded under lead66_margin_pmf. Orchestrator decides whether DoD is met and updates ROADMAP LEAD-66 (remaining gap: 2009-2010 have no proxy opener or walk-forward forecast).
 
 ## Open
 **Measured:** same-configuration secondary predictions lack 2009-2017; no secondary score or rebuild.
@@ -50,3 +50,6 @@ $lead66Common = @('--source', 'docs/lead66_unit1.md', '--effect-units', 'rps_imp
   --effect -0.0114091385 --interval-low -0.0190492490 --interval-high -0.0037943140 --probability-positive 0.0029 `
   --classification-evidence 'The whole six-season bootstrap 95 percent RPS-improvement interval is on the wrong side of zero.'
 ```
+
+## Unit 2 result
+Secondary 2011-2019 (2,302 games, proxy opens): RPS lattices worse than market residual by -0.371 [-0.563,-0.231] (recorded wrong_sign_resolved); model-centred vs served 0.0008 unresolved. Tail-repaired log score (KDE of 1999+ residuals mixed with lambda~0.58 by LOSO): lattices beat market residual +0.071/+0.073 nats (p=1.0); model-centred vs served -0.006 [-0.012,0.0026] primary, +0.0002 secondary. Primary RPS reproduced exactly; feature hash check bypassed in unit2 (table rebuilt since).

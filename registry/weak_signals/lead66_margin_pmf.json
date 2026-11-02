@@ -1,6 +1,258 @@
 {
   "family": "lead66_margin_pmf",
   "signals": {
+    "lead66_close_proxy_logscore_model_centred_vs_market": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Positive direction; nothing to close.",
+      "closing_ground": null,
+      "description": "2011-2019 tail-repaired log score: model-centred lattice vs market-centred residual PMF",
+      "effect": 0.071057,
+      "effect_units": "log_loss_improvement",
+      "family": "lead66_margin_pmf",
+      "interval": [
+        0.05575,
+        0.086853
+      ],
+      "league": "nfl",
+      "notes": "unit 2: tail-repaired exact log score and 2011-2019 close-proxy RPS second read; 9 new contrasts; chronological LOSO lambda; no serving change.",
+      "plain_summary": null,
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2302,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "docs/lead66_unit2.md",
+      "standard_error": null
+    },
+    "lead66_close_proxy_logscore_model_centred_vs_served": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval straddles zero both ways; no admissible closing ground.",
+      "closing_ground": null,
+      "description": "2011-2019 tail-repaired log score: model-centred vs served lattice",
+      "effect": 0.000174,
+      "effect_units": "log_loss_improvement",
+      "family": "lead66_margin_pmf",
+      "interval": [
+        -0.008564,
+        0.00856
+      ],
+      "league": "nfl",
+      "notes": "unit 2: tail-repaired exact log score and 2011-2019 close-proxy RPS second read; 9 new contrasts; chronological LOSO lambda; no serving change.",
+      "plain_summary": null,
+      "probability_positive": 0.5188,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2302,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "docs/lead66_unit2.md",
+      "standard_error": null
+    },
+    "lead66_close_proxy_logscore_served_vs_market": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Positive direction; nothing to close.",
+      "closing_ground": null,
+      "description": "2011-2019 tail-repaired log score: served lattice vs market-centred residual PMF",
+      "effect": 0.070883,
+      "effect_units": "log_loss_improvement",
+      "family": "lead66_margin_pmf",
+      "interval": [
+        0.056519,
+        0.0866
+      ],
+      "league": "nfl",
+      "notes": "unit 2: tail-repaired exact log score and 2011-2019 close-proxy RPS second read; 9 new contrasts; chronological LOSO lambda; no serving change.",
+      "plain_summary": null,
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2302,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "docs/lead66_unit2.md",
+      "standard_error": null
+    },
+    "lead66_close_proxy_rps_model_centred_vs_market": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "The whole nine-season bootstrap 95 percent RPS-improvement interval is on the wrong side of zero.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "2011-2019 close-proxy RPS: model-centred lattice vs market-centred residual PMF",
+      "effect": -0.370112,
+      "effect_units": "rps_improvement",
+      "family": "lead66_margin_pmf",
+      "interval": [
+        -0.53123,
+        -0.247006
+      ],
+      "league": "nfl",
+      "notes": "unit 2: tail-repaired exact log score and 2011-2019 close-proxy RPS second read; 9 new contrasts; chronological LOSO lambda; no serving change.",
+      "plain_summary": null,
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2302,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "docs/lead66_unit2.md",
+      "standard_error": null
+    },
+    "lead66_close_proxy_rps_model_centred_vs_served": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval straddles zero both ways; no admissible closing ground.",
+      "closing_ground": null,
+      "description": "2011-2019 close-proxy RPS: model-centred vs served lattice",
+      "effect": 0.000842,
+      "effect_units": "rps_improvement",
+      "family": "lead66_margin_pmf",
+      "interval": [
+        -0.018769,
+        0.032037
+      ],
+      "league": "nfl",
+      "notes": "unit 2: tail-repaired exact log score and 2011-2019 close-proxy RPS second read; 9 new contrasts; chronological LOSO lambda; no serving change.",
+      "plain_summary": null,
+      "probability_positive": 0.4942,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2302,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "docs/lead66_unit2.md",
+      "standard_error": null
+    },
+    "lead66_close_proxy_rps_served_vs_market": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "The whole nine-season bootstrap 95 percent RPS-improvement interval is on the wrong side of zero.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "2011-2019 close-proxy RPS: served lattice vs market-centred residual PMF",
+      "effect": -0.370954,
+      "effect_units": "rps_improvement",
+      "family": "lead66_margin_pmf",
+      "interval": [
+        -0.562674,
+        -0.230506
+      ],
+      "league": "nfl",
+      "notes": "unit 2: tail-repaired exact log score and 2011-2019 close-proxy RPS second read; 9 new contrasts; chronological LOSO lambda; no serving change.",
+      "plain_summary": null,
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2302,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "docs/lead66_unit2.md",
+      "standard_error": null
+    },
+    "lead66_logscore_model_centred_vs_market": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Positive direction; nothing to close.",
+      "closing_ground": null,
+      "description": "2020-2025 tail-repaired log score: model-centred lattice vs market-centred residual PMF",
+      "effect": 0.066871,
+      "effect_units": "log_loss_improvement",
+      "family": "lead66_margin_pmf",
+      "interval": [
+        0.055212,
+        0.078167
+      ],
+      "league": "nfl",
+      "notes": "unit 2: tail-repaired exact log score and 2011-2019 close-proxy RPS second read; 9 new contrasts; chronological LOSO lambda; no serving change.",
+      "plain_summary": null,
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead66_unit2.md",
+      "standard_error": null
+    },
+    "lead66_logscore_model_centred_vs_served": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval includes zero; probability_positive 0.0661 is not a resolved wrong sign; no admissible closing ground.",
+      "closing_ground": null,
+      "description": "2020-2025 tail-repaired log score: model-centred vs served lattice",
+      "effect": -0.006216,
+      "effect_units": "log_loss_improvement",
+      "family": "lead66_margin_pmf",
+      "interval": [
+        -0.012005,
+        0.00257
+      ],
+      "league": "nfl",
+      "notes": "unit 2: tail-repaired exact log score and 2011-2019 close-proxy RPS second read; 9 new contrasts; chronological LOSO lambda; no serving change.",
+      "plain_summary": null,
+      "probability_positive": 0.0661,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead66_unit2.md",
+      "standard_error": null
+    },
+    "lead66_logscore_served_vs_market": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Positive direction; nothing to close.",
+      "closing_ground": null,
+      "description": "2020-2025 tail-repaired log score: served lattice vs market-centred residual PMF",
+      "effect": 0.073087,
+      "effect_units": "log_loss_improvement",
+      "family": "lead66_margin_pmf",
+      "interval": [
+        0.065638,
+        0.08007
+      ],
+      "league": "nfl",
+      "notes": "unit 2: tail-repaired exact log score and 2011-2019 close-proxy RPS second read; 9 new contrasts; chronological LOSO lambda; no serving change.",
+      "plain_summary": null,
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lead66_unit2.md",
+      "standard_error": null
+    },
     "lead66_model_centred_lattice_vs_market_residual": {
       "category": "modeling",
       "classification": "refuted_mechanism",
