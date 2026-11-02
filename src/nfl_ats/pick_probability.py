@@ -551,12 +551,7 @@ def load_pick_probability_model(artifacts_root: Path) -> PickProbabilityModel:
                 f"pick probability artifact {relative} opener evaluation names another model"
             )
         expected_features = [MODEL_LOGIT_TERM, FLAG_SUM_COLUMN, MOVE_COLUMN, MOVE_AVAILABLE_COLUMN]
-        allowed_features = (
-            (expected_features, [*expected_features, HOOK_COLUMN])
-            if payload.get("hook_push_mass")
-            else (expected_features,)
-        )
-        if metadata.get("features") not in allowed_features:
+        if metadata.get("features") != expected_features:
             raise PickProbabilitySourceError(
                 f"pick probability artifact {relative} names unexpected features"
             )

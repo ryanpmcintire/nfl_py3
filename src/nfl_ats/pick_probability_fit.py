@@ -47,14 +47,13 @@ from nfl_ats.pick_probability import (
     active_market_move_feature_version,
     signed_composition_flags,
 )
-from nfl_ats.pool_hook import HOOK_COLUMN, push_mass_table, stack_pool_lines
+from nfl_ats.pool_hook import HOOK_COLUMN, hook_rows, push_mass_table
 from nfl_ats.public_board import find_matching_opener_evaluation
 from nfl_ats.snapshots import latest_snapshot, load_snapshot
 from nfl_ats.splash_lines import load_splash_capture, splash_decision_lines
 
 FIT_FEATURES = ("model_logit", FLAG_SUM_COLUMN, MOVE_COLUMN, MOVE_AVAILABLE_COLUMN)
-FITTED_FEATURES = (*FIT_FEATURES, HOOK_COLUMN)
-FIT_POPULATION_FILENAME = "fit_population.parquet"
+HOOK_ROWS_FILENAME = "hook_rows.parquet"
 FIT_RIDGE = 1e-3
 FIT_ITERATIONS = 50
 MODEL_PROBABILITY_SOURCE = "home_cover_probability_at_open"
@@ -91,25 +90,42 @@ def _fit_logit(x: np.ndarray, y: np.ndarray, ridge: float) -> np.ndarray:
 
 def _design(frame: pd.DataFrame, means: dict[str, float], stds: dict[str, float]) -> np.ndarray:
     columns: list[Any] = [np.ones(len(frame))]
-    for name in FITTED_FEATURES:
+    for name in FIT_FEATURES:
         columns.append(((frame[name].astype(float) - means[name]) / stds[name]).to_numpy())
     return np.column_stack(columns)
 
 
 def _standardisers(train: pd.DataFrame) -> tuple[dict[str, float], dict[str, float]]:
-    means = {name: float(train[name].mean()) for name in FITTED_FEATURES}
-    stds = {name: float(train[name].std(ddof=0)) or 1.0 for name in FITTED_FEATURES}
+    means = {name: float(train[name].mean()) for name in FIT_FEATURES}
+    stds = {name: float(train[name].std(ddof=0)) or 1.0 for name in FIT_FEATURES}
     return means, stds
+
+
+def _fit_offset_coefficient(hook: np.ndarray, offset: np.ndarray, y: np.ndarray) -> float:
+    coefficient = 0.0
+    for _ in range(FIT_ITERATIONS):
+        p = 1.0 / (1.0 + np.exp(-np.clip(offset + coefficient * hook, -35.0, 35.0)))
+        gradient = float(hook @ (y - p)) - FIT_RIDGE * coefficient
+        curvature = float((hook * hook) @ (p * (1.0 - p))) + FIT_RIDGE
+        step = gradient / curvature
+        coefficient += step
+        if abs(step) < 1e-12:
+            break
+    return coefficient
+
+
+def _stage_one_logit(
+    frame: pd.DataFrame, beta: np.ndarray, means: dict[str, float], stds: dict[str, float]
+) -> np.ndarray:
+    return np.asarray(_design(frame, means, stds) @ beta, dtype=float)
 
 
 def _natural_coefficients(
     beta: np.ndarray, means: dict[str, float], stds: dict[str, float]
 ) -> dict[str, float]:
-    natural = {
-        name: float(beta[index + 1] / stds[name]) for index, name in enumerate(FITTED_FEATURES)
-    }
+    natural = {name: float(beta[index + 1] / stds[name]) for index, name in enumerate(FIT_FEATURES)}
     intercept = float(beta[0])
-    for index, name in enumerate(FITTED_FEATURES):
+    for index, name in enumerate(FIT_FEATURES):
         intercept -= float(beta[index + 1]) * means[name] / stds[name]
     natural["intercept"] = intercept
     return natural
@@ -255,6 +271,7 @@ def build_fit_population(
     data_root: Path,
     *,
     market_move_feature_version: str = MARKET_MOVE_FEATURE_LEGACY,
+    keep_pushes: bool = False,
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
 
     active = load_active_ats_model(artifacts_root)
@@ -304,15 +321,21 @@ def build_fit_population(
         )
 
     margin = pd.to_numeric(joined["margin_vs_open"], errors="coerce")
-    graded = joined.loc[margin.notna()].reset_index(drop=True)
+    graded = joined.loc[margin.notna() & (margin.ne(0.0) | keep_pushes)].reset_index(drop=True)
     pushes = int(margin.eq(0.0).sum())
     ungraded = int(margin.isna().sum())
+    graded["home_covered"] = (
+        pd.to_numeric(graded["margin_vs_open"], errors="coerce").gt(0.0).astype(float)
+    )
     stated = pd.to_numeric(graded[MODEL_PROBABILITY_SOURCE], errors="coerce").clip(
         PROBABILITY_EPSILON, 1.0 - PROBABILITY_EPSILON
     )
     graded["model_probability"] = stated
     graded["model_logit"] = np.log(stated / (1.0 - stated))
     graded["model_pick_home"] = stated.ge(0.5)
+    graded["model_correct"] = (
+        graded["model_pick_home"].astype(float).eq(graded["home_covered"]).astype(float)
+    )
 
     incidents = _arrest_incidents(data_root)
     forecasts = _forecast_temperatures(data_root)
@@ -345,14 +368,7 @@ def build_fit_population(
     graded[MOVE_AVAILABLE_COLUMN] = raw_move.notna().astype(float)
     graded[MOVE_COLUMN] = raw_move.fillna(0.0)
 
-    push_table = push_mass_table(graded)
-    graded = stack_pool_lines(graded)
-    graded["model_correct"] = (
-        graded["model_pick_home"].astype(float).eq(graded["home_covered"]).astype(float)
-    )
-
     provenance = {
-        "hook_push_mass": [[line, mass] for line, mass in sorted(push_table.items())],
         "opener_evaluation": str(opener_directory.relative_to(artifacts_root)).replace("\\", "/"),
         "opener_evaluation_model_id": str(opener_metadata.get("active_model_id") or ""),
         "active_model_id": str((active or {}).get("model_id") or ""),
@@ -360,14 +376,7 @@ def build_fit_population(
         "base_probability_policy": BASE_PROBABILITY_POLICY,
         "market_move_artifact": market_artifact,
         "market_move_feature_version": market_move_feature_version,
-        "graded_games": int(
-            (
-                graded["pool_line"].ge(graded["tue_open_home_spread"])
-                & graded["margin_vs_open"].ne(0)
-            ).sum()
-        ),
-        "stacked_fit_rows": len(graded),
-        "pushes_kept": pushes,
+        "graded_games": int(graded["margin_vs_open"].ne(0.0).sum()),
         "pushes_dropped": pushes,
         "ungraded_dropped": ungraded,
         "games_with_market_move": int(graded[MOVE_AVAILABLE_COLUMN].sum()),
@@ -491,11 +500,14 @@ def fit_pick_probability(
 
     if market_move_feature_version is None:
         market_move_feature_version = active_market_move_feature_version(artifacts_root)
-    population, provenance = build_fit_population(
+    every_row, provenance = build_fit_population(
         artifacts_root,
         data_root,
         market_move_feature_version=market_move_feature_version,
+        keep_pushes=True,
     )
+    push_table = push_mass_table(every_row)
+    population = every_row.loc[every_row["margin_vs_open"].ne(0.0)].reset_index(drop=True)
     if population.empty:
         raise PickProbabilitySourceError("the pick-probability fit population is empty")
 
@@ -505,10 +517,21 @@ def fit_pick_probability(
     natural = _natural_coefficients(beta, means, stds)
     population["in_sample_home_probability"] = _predict(population, beta, means, stds)
 
+    stacked = hook_rows(every_row)
+    stacked_frame = every_row.iloc[stacked["row"].to_numpy()].reset_index(drop=True)
+    stacked_offset = _stage_one_logit(stacked_frame, beta, means, stds)
+    hook_values = stacked[HOOK_COLUMN].to_numpy(dtype=float)
+    hook_target = stacked["home_covered"].to_numpy(dtype=float)
+    hook_coefficient = _fit_offset_coefficient(hook_values, stacked_offset, hook_target)
+    stacked["stage_one_logit_in_sample"] = stacked_offset
+
     seasons = sorted(int(value) for value in population["season"].unique())
     out_of_season = pd.Series(np.nan, index=population.index, dtype=float)
     out_of_season_tuesday = pd.Series(np.nan, index=population.index, dtype=float)
     fold_coefficients: dict[str, dict[str, float]] = {}
+    hook_fold_coefficients: dict[str, float] = {}
+    stacked["stage_one_logit_out_of_season"] = np.nan
+    stacked["hook_coefficient_out_of_season"] = np.nan
     for held in seasons:
         train = population.loc[population["season"].ne(held)]
         test = population.loc[population["season"].eq(held)]
@@ -526,6 +549,20 @@ def fit_pick_probability(
             tuesday_test, fold_beta, fold_means, fold_stds
         )
         fold_coefficients[str(held)] = _natural_coefficients(fold_beta, fold_means, fold_stds)
+        rest = stacked["season"].ne(held).to_numpy()
+        rest_frame = stacked_frame.loc[rest]
+        fold_hook = _fit_offset_coefficient(
+            hook_values[rest],
+            _stage_one_logit(rest_frame, fold_beta, fold_means, fold_stds),
+            hook_target[rest],
+        )
+        hook_fold_coefficients[str(held)] = fold_hook
+        held_rows = ~rest
+        held_logit = _stage_one_logit(
+            stacked_frame.loc[held_rows], fold_beta, fold_means, fold_stds
+        )
+        stacked.loc[held_rows, "stage_one_logit_out_of_season"] = held_logit
+        stacked.loc[held_rows, "hook_coefficient_out_of_season"] = fold_hook
     population["out_of_season_home_probability"] = out_of_season
     population["out_of_season_tuesday_home_probability"] = out_of_season_tuesday
     chronological = pd.Series(np.nan, index=population.index, dtype=float)
@@ -548,14 +585,20 @@ def fit_pick_probability(
             fold_beta, fold_means, fold_stds
         )
     population["chronological_home_probability"] = chronological
+    stacked["stage_one_out_of_season_home_probability"] = 1.0 / (
+        1.0 + np.exp(-stacked["stage_one_logit_out_of_season"])
+    )
+    stacked["two_stage_out_of_season_home_probability"] = 1.0 / (
+        1.0
+        + np.exp(
+            -(
+                stacked["stage_one_logit_out_of_season"]
+                + stacked["hook_coefficient_out_of_season"] * stacked[HOOK_COLUMN]
+            )
+        )
+    )
     population["neutral_market_probability"] = 0.5
-    per_game = population.loc[
-        population["pool_line"].ge(population["tue_open_home_spread"])
-        & population["margin_vs_open"].ne(0)
-    ].reset_index(drop=True)
-    if per_game["game_id"].duplicated().any():
-        raise PickProbabilitySourceError("the pick-probability per-game view repeats a game")
-    scored = per_game.loc[per_game["out_of_season_home_probability"].notna()].copy()
+    scored = population.loc[population["out_of_season_home_probability"].notna()].copy()
 
     strength = tuple(
         _strength_bands(
@@ -584,21 +627,21 @@ def fit_pick_probability(
         move_available=natural[MOVE_AVAILABLE_COLUMN],
         strength_bands=strength,
         confidence_bands=confidence,
-        fitted_games=len(per_game),
+        fitted_games=len(population),
         fitted_seasons=tuple(seasons),
         artifact=relative,
         policy=PICK_PROBABILITY_POLICY,
         base_probability_policy=BASE_PROBABILITY_POLICY,
         market_move_feature_version=market_move_feature_version,
         counted_flag_columns=tuple(provenance["counted_flag_columns"]),
-        pool_hook=natural[HOOK_COLUMN],
-        hook_push_mass=tuple((float(a), float(b)) for a, b in provenance["hook_push_mass"]),
+        pool_hook=hook_coefficient,
+        hook_push_mass=tuple((float(a), float(b)) for a, b in sorted(push_table.items())),
     )
 
     directory = artifacts_root / PICK_PROBABILITY_ARTIFACT_ROOT / stamp
     directory.mkdir(parents=True, exist_ok=True)
-    per_game.to_parquet(directory / "per_game.parquet", index=False)
-    population.to_parquet(directory / FIT_POPULATION_FILENAME, index=False)
+    population.to_parquet(directory / "per_game.parquet", index=False)
+    stacked.to_parquet(directory / HOOK_ROWS_FILENAME, index=False)
     (directory / COEFFICIENTS_FILENAME).write_text(
         json.dumps(model.to_dict(), indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
@@ -607,15 +650,21 @@ def fit_pick_probability(
         "policy": PICK_PROBABILITY_POLICY,
         "created_at_utc": (now or datetime.now(UTC)).astimezone(UTC).isoformat(),
         "command": "nfl-ats fit-pick-probability",
-        "features": list(FITTED_FEATURES),
+        "features": list(FIT_FEATURES),
         "ridge": FIT_RIDGE,
         "records": records,
         "fold_coefficients": fold_coefficients,
+        "pool_hook_stage": {
+            "coefficient": hook_coefficient,
+            "fold_coefficients": hook_fold_coefficients,
+            "rows": len(stacked),
+            "rows_file": HOOK_ROWS_FILENAME,
+        },
         "chronological_coefficients": chronological_coefficients,
         "prediction_artifact": "per_game.parquet",
         "activated": activate,
         "validation_metrics": {
-            column: _probability_metrics(per_game, column)
+            column: _probability_metrics(population, column)
             for column in (
                 "model_probability",
                 "neutral_market_probability",
@@ -639,7 +688,7 @@ def fit_pick_probability(
         "artifact": relative,
         "policy": PICK_PROBABILITY_POLICY,
         "schema_version": SCHEMA_VERSION,
-        "fitted_games": len(per_game),
+        "fitted_games": len(population),
         "fitted_seasons": seasons,
         "active_model_id": provenance["active_model_id"],
         "base_probability_policy": BASE_PROBABILITY_POLICY,
@@ -665,7 +714,6 @@ def _record(correct: pd.Series) -> str:
 
 __all__ = [
     "FIT_FEATURES",
-    "FIT_POPULATION_FILENAME",
     "FIT_RIDGE",
     "MODEL_PROBABILITY_SOURCE",
     "build_fit_population",

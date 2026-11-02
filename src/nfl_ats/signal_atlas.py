@@ -12,13 +12,7 @@ import pandas as pd
 from scipy.stats import binomtest
 
 from nfl_ats.pick_probability import BASE_PROBABILITY_POLICY
-from nfl_ats.pick_probability_fit import (
-    FIT_FEATURES,
-    FIT_POPULATION_FILENAME,
-    FIT_RIDGE,
-    _fit_logit,
-)
-from nfl_ats.pool_hook import HOOK_COLUMN
+from nfl_ats.pick_probability_fit import FIT_FEATURES, FIT_RIDGE, _fit_logit
 
 ATLAS_POINTER = "active_signal_atlas.json"
 LABELS = {
@@ -132,7 +126,7 @@ def _fit_predict(
 
 
 def _paired_predictions(
-    frame: pd.DataFrame, declaration: dict[str, Any], view: pd.Series | None = None
+    frame: pd.DataFrame, declaration: dict[str, Any]
 ) -> tuple[pd.DataFrame, list[dict[str, Any]]]:
     pairs = frame[
         [
@@ -182,8 +176,6 @@ def _paired_predictions(
             raise ValueError(f"Signal atlas did not reproduce saved {evaluation} probabilities")
         if not pairs[f"{evaluation}_full"].isna().equals(pairs[f"{evaluation}_reduced"].isna()):
             raise ValueError("Signal atlas full and reduced populations differ")
-    if view is not None:
-        pairs = pairs.loc[view].reset_index(drop=True)
     return pairs, coefficients
 
 
@@ -429,31 +421,19 @@ def build_signal_atlas(artifacts_root: Path, registry_root: Path) -> Path:
         raise ValueError("Signal atlas source has invalid weeks or base probabilities")
     if len(frame) != metadata["graded_games"]:
         raise ValueError("Signal atlas source population differs from its metadata")
-    fixed = [HOOK_COLUMN] if HOOK_COLUMN in metadata.get("features", []) else []
-    fit_frame = frame
-    view = None
-    if fixed:
-        fit_frame = pd.read_parquet(source / FIT_POPULATION_FILENAME).reset_index(drop=True)
-        if not np.isfinite(fit_frame[[*required, *fixed]].to_numpy(dtype=float)).all():
-            raise ValueError("Signal atlas stacked source contains missing or nonfinite features")
-        view = fit_frame["pool_line"].ge(fit_frame["tue_open_home_spread"]) & fit_frame[
-            "margin_vs_open"
-        ].ne(0)
-        if not fit_frame.loc[view, "game_id"].reset_index(drop=True).equals(frame["game_id"]):
-            raise ValueError("Signal atlas stacked source disagrees with the one-row-per-game view")
     signals = sorted({family["signal"] for family in declaration["families"]})
     pairs_by_signal: dict[str, pd.DataFrame] = {}
     coefficients: list[dict[str, Any]] = []
     for signal in signals:
         signal_declaration = {
             "evaluations": declaration["evaluations"],
-            "full_features": [*declaration["full_features"], *fixed],
-            "reduced_features": [name for name in FIT_FEATURES if name != signal] + fixed,
+            "full_features": declaration["full_features"],
+            "reduced_features": [name for name in FIT_FEATURES if name != signal],
             "chronological_minimum_training_seasons": declaration[
                 "chronological_minimum_training_seasons"
             ],
         }
-        signal_pairs, signal_coefficients = _paired_predictions(fit_frame, signal_declaration, view)
+        signal_pairs, signal_coefficients = _paired_predictions(frame, signal_declaration)
         for entry in signal_coefficients:
             entry["signal"] = signal
         coefficients.extend(signal_coefficients)
@@ -493,7 +473,7 @@ def build_signal_atlas(artifacts_root: Path, registry_root: Path) -> Path:
                 "signal_label": SIGNAL_LABELS.get(signal, signal),
                 "split_label": SPLIT_LABELS.get(family["split"], family["split"]),
                 "cells": family["cells"],
-                "reduced_features": [name for name in FIT_FEATURES if name != signal] + fixed,
+                "reduced_features": [name for name in FIT_FEATURES if name != signal],
                 "evaluations": evaluations,
                 "look_count": look_inventory["arm_cell_evaluation_combinations"],
                 "look_inventory": look_inventory,
@@ -532,12 +512,7 @@ def build_signal_atlas(artifacts_root: Path, registry_root: Path) -> Path:
         "source_artifact": source.relative_to(artifacts_root.resolve()).as_posix(),
         "source_hashes": {
             name: _hash(source / name)
-            for name in (
-                "per_game.parquet",
-                "metadata.json",
-                "coefficients.json",
-                *([FIT_POPULATION_FILENAME] if fixed else []),
-            )
+            for name in ("per_game.parquet", "metadata.json", "coefficients.json")
         },
         "declaration_sha256": _hash(declaration_path),
         "split_library_sha256": _hash(split_path),

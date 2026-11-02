@@ -58,31 +58,28 @@ def push_mass_table(frame: pd.DataFrame) -> dict[float, float]:
     return table
 
 
-def stack_pool_lines(frame: pd.DataFrame) -> pd.DataFrame:
-    work = frame.reset_index(drop=True).copy()
+def hook_rows(frame: pd.DataFrame) -> pd.DataFrame:
+    work = frame.reset_index(drop=True)
     line = work["tue_open_home_spread"].astype(float)
     margin = work["margin_vs_open"].astype(float) + line
-    whole = whole_mask(line)
+    whole = np.flatnonzero(whole_mask(line))
     prior = np.full(len(work), np.nan)
     cache: dict[tuple[int, float], float] = {}
-    for index in np.flatnonzero(whole):
+    for index in whole:
         key = (int(work["season"].iloc[index]), float(line.iloc[index]))
         if key not in cache:
             earlier = work["season"].lt(key[0]).to_numpy()
             cache[key] = push_mass_at(margin[earlier], line[earlier], key[1])
         prior[index] = cache[key]
-    up = work.copy()
-    up["pool_line"] = np.where(whole, line + POOL_OFFSET, line)
-    up[HOOK_COLUMN] = hook_value(np.where(whole, 1.0, 0.0), prior)
-    down = work.loc[whole].copy()
-    down["pool_line"] = line[whole] - POOL_OFFSET
-    down[HOOK_COLUMN] = hook_value(np.full(len(down), -1.0), prior[whole])
-    stacked = pd.concat([up, down], ignore_index=True)
-    stacked_margin = stacked["margin_vs_open"].astype(float) + stacked[
-        "tue_open_home_spread"
-    ].astype(float)
-    stacked["home_covered"] = stacked_margin.gt(stacked["pool_line"]).astype(float)
-    return stacked
+    pieces = []
+    for direction in (1.0, -1.0):
+        piece = work.iloc[whole][["game_id", "season"]].copy()
+        piece["row"] = whole
+        piece["pool_line"] = line.iloc[whole].to_numpy() + direction * POOL_OFFSET
+        piece[HOOK_COLUMN] = hook_value(np.full(len(whole), direction), prior[whole])
+        piece["home_covered"] = (margin.iloc[whole].to_numpy() > piece["pool_line"]).astype(float)
+        pieces.append(piece)
+    return pd.concat(pieces, ignore_index=True)
 
 
 def tuesday_market_lines(

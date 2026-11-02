@@ -84,6 +84,34 @@
       ],
       "source": "tests/scratch/pool_hook/out2.txt",
       "standard_error": 0.00022
+    },
+    "pool_hook_two_stage_log_loss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Hook coefficient fit leave-one-season-out on whole-number rows at pool lines M+0.5 and M-0.5 with the served four-term logit as offset; paired log-loss gain over the served fit",
+      "effect": 0.0012011,
+      "effect_units": "log_loss_improvement",
+      "family": "pool_hook_term_2026_10_27",
+      "interval": [
+        0.0002307,
+        0.00226172
+      ],
+      "league": "nfl",
+      "notes": "Bootstrap over 661 whole-number games, 10000 resamples; 2020 has no earlier season so its hook is 0; accuracy gain 729-593 vs 726-596, probability_positive .571",
+      "plain_summary": "Adding the half-point hook on whole-number lines to the served pick chance lowers the average miss slightly on seasons held out of fitting (about 0.0012 in log loss); it is very likely positive but small, and it changes 185 of 1,322 simulated pool-line picks for a net 3 more correct.",
+      "probability_positive": 0.9941,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 661,
+      "seasons": [
+        2021,
+        2025
+      ],
+      "source": "artifacts/pick_probability hook_rows.parquet (mod27-hook-serve two-stage fit)",
+      "standard_error": 0.00055
     }
   }
 }
