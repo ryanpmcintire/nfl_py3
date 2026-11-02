@@ -44,3 +44,5 @@ Evidence: `.tmp/backlog-execution-20260928/process-ownership.json` and
 Which `.tmp` review outputs remain needed by active work? What regeneration cost is acceptable for evaluator
 caches? Which superseded runs are referenced by registries or published evidence? Do current data and
 artifact backups cover every candidate before any future mutation?
+
+**2026-11-02 measured:** `scripts/artifact_retention.py` (read-only, replaces the deleted planner) wrote `docs/artifact_retention.md`. Totals: 262,871 files, 68,886,471,636 bytes (64.2 GiB); referenced 5.63 GB, unreferenced stamped 33.6 GB, unstamped 29.6 GB. Top: data/raw 29.7 GiB, artifacts/mod25e3 17.2 GiB, data/processed 5.4 GiB, artifacts/rehearsal_lockday 2.1 GiB, data/cfb 1.6 GiB. Next: owner exact-directory approval for any candidate (artifacts/mod25e3 first); check backup coverage before mutation.

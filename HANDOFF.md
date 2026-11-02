@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-02T21:32:51.253708+00:00`
+Refreshed at: `2026-11-02T21:33:48.020385+00:00`
 
 ## Start here
 
@@ -21,17 +21,17 @@ Refreshed at: `2026-11-02T21:32:51.253708+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `fcfb53a64f2a` — Record backlog wave 1 progress in the master lane
-- Pending change set: 239 paths
+- Baseline commit: `9a0a951d2954` — SIM-08 unit 3 predeclaration; LEAD-89 stage-timed script blocked on the LOSO upstream pin
+- Pending change set: 238 paths
   - ` M CURRENT_PREDICTIONS.md`
+  - `M  docs/artifact_retention.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/lead89.md`
-  - `M  docs/lanes/sim08-simulator-rebuild.md`
+  - `M  docs/lanes/artifact-retention-inventory.md`
+  - `M  docs/lanes/backlog-all-2026-11-02.md`
   - ` M docs/model.html`
-  - `A  docs/sim08_market_anchored_declaration.md`
-  - `A  scripts/lead89_stage_timed.py`
+  - `A  scripts/artifact_retention.py`
   - ` M scripts/sim10_drive.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
@@ -43,7 +43,7 @@ Refreshed at: `2026-11-02T21:32:51.253708+00:00`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
   - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
   - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
-  - ...and 219 more
+  - ...and 218 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
