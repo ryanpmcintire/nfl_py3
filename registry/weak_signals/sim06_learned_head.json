@@ -1,0 +1,33 @@
+{
+  "family": "sim06_learned_head",
+  "signals": {
+    "sim06_learned_head_vs_kernel_heldout_2024_25": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Gradient-trained MLP drive-outcome head minus SIM-10 kernel (train-refit bandwidths) held-out multiclass log loss, 94 classes, trained 2018-23, scored 2024-25 drives; positive favours learned head",
+      "effect": 0.0577,
+      "effect_units": "log_loss_improvement",
+      "family": "sim06_learned_head",
+      "interval": [
+        0.0456,
+        0.0701
+      ],
+      "league": "nfl",
+      "notes": "game-cluster bootstrap 4000; 8-season LOSO season-block bootstrap mean 0.0560 [0.0495,0.0627]; vs locked-bandwidth kernel 0.0671 [0.0540,0.0813]",
+      "plain_summary": "On unseen 2024-25 drives the learned head assigns the real drive outcome higher probability than the kernel resampler; drive-level only, no engine swap.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 2,
+      "sample_games": 543,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/sim06/results.json",
+      "standard_error": 0.0062
+    }
+  }
+}
