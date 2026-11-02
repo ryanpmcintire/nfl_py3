@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-02T16:07:29.298135+00:00`
+Refreshed at: `2026-11-02T16:14:27.483236+00:00`
 
 ## Start here
 
@@ -21,11 +21,13 @@ Refreshed at: `2026-11-02T16:07:29.298135+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `3218a47d9ff5` — Record the pre-lock review of the served pool hook term
-- Pending change set: 226 paths
-  - `M  docs/lanes/hook-review-2026-11-02.md`
-  - `M  docs/lanes/mod27-u4-hook-serve.md`
-  - `M  registry/weak_signals/pool_hook_term_2026_10_27.json`
+- Baseline commit: `d7229c2e9c31` — Confirm the pool hook evidence leak-free and record the review decisions
+- Pending change set: 228 paths
+  - `M  docs/lanes/mod27-better-picks.md`
+  - `M  docs/lanes/sim11-strength-transmission.md`
+  - `A  docs/lanes/week9-lock-2026-11-03.md`
+  - `M  scripts/mod25_generator.py`
+  - `M  scripts/sim10_drive.py`
   - `?? an.csv`
   - `?? docs/lanes/c-drive-space-2026-10-31.md`
   - `?? docs/lanes/machine-crashes-2026-10-31.md`
@@ -41,9 +43,7 @@ Refreshed at: `2026-11-02T16:07:29.298135+00:00`
   - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
   - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
   - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
-  - `?? registry/experiments/margin-backtest/20261007T160921Z.json`
-  - `?? registry/experiments/margin-backtest/20261008T005355Z.json`
-  - ...and 206 more
+  - ...and 208 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

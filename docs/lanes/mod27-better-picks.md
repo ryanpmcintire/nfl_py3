@@ -27,6 +27,8 @@ fl_py3_wt_hook.
 13. Mid-season acquisitions: repeat of LEAD-23; extension 2022-25 not served (strict 835-668 vs 833-670); month-end chronology leak in the research flag. Draft-capital forward log repaired (float-noise hash gate). Tuesday 12:10 ET odds capture added.
 
 ## Next
+- Week 9 operations and post-lock checks: lane week9-lock-2026-11-03.md.
+- Deferred: generalized pool-offset term as a two-stage stage-2 term (no 2026 side changes; needs a pinned edit, so bundle with the next one and re-enroll validation); thin-book move repair (LV at NYJ had two leader books); day-level transaction dates for the deadline flag.
 - After the Week 9 Tuesday lock: finish unit 4 (atlas), merge, activate, enroll v7.
 - Grade the pool-relative log weekly (`scripts/pool_relative_move_forward_log.py --grade`).
 

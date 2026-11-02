@@ -1296,7 +1296,11 @@ def sim_world(task):
     eng = _W["eng"]
     fit = load_latent_fit()
     setting = dict(gen.SETTING_DEFAULTS)
-    if os.environ.get("SIM10_FORM") in ("1", "2"):
+    if os.environ.get("SIM10_FORM") == "3":
+        ff = json.loads((REPO / "artifacts" / "sim11" / "form_fit.json").read_text())
+        setting["form_var"] = [ff["eras"]["2009_2025"]["var_off"], ff["eras"]["2009_2025"]["var_def"]]
+        setting["form_phi"] = ff["phi"]
+    elif os.environ.get("SIM10_FORM") in ("1", "2"):
         setting["form_preserve"] = os.environ.get("SIM10_FORM") == "2"
         setting["form_ratio"] = FORM_VAR_NET / FORM_SEASON_VAR_NET
         setting["form_phi"] = FORM_DECAY
