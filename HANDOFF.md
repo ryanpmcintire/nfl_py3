@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-02T22:37:00.773435+00:00`
+Refreshed at: `2026-11-02T22:37:29.329891+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-02T22:37:00.773435+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `e4dc465d8b77` — Refresh the session handoff and README research state
-- Pending change set: 242 paths
+- Baseline commit: `7164e885f687` — LEAD-59 officials archive complete for 2009-2014; SKY-01 market lead is ordinary drift
+- Pending change set: 238 paths
   - ` M CURRENT_PREDICTIONS.md`
+  - `M  HANDOFF.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `A  docs/lanes/lead59-officials-sweep-2026-11-02.md`
   - ` M docs/lanes/per07-staff-state-2026-11-02.md`
-  - `M  docs/lanes/sky01-news-availability.md`
   - ` M docs/model.html`
-  - `M  registry/weak_signals/sky01_news_availability.json`
-  - `M  scripts/officials_wayback_sweep.py`
   - ` M scripts/per07_first_game_fitted_term.py`
   - ` M scripts/sim08_market_anchored.py`
   - ` M scripts/sim10_drive.py`
-  - `A  scripts/sky01_drift_weighted.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? docs/lanes/c-drive-space-2026-10-31.md`
   - `?? docs/lanes/machine-crashes-2026-10-31.md`
   - `?? docs/lanes/stealmybitcoin-ctf.md`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
-  - ...and 222 more
+  - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
+  - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
+  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
+  - ...and 218 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
