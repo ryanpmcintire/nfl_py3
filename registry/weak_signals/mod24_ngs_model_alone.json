@@ -15,7 +15,7 @@
         0.0011073733221228725
       ],
       "league": "nfl",
-      "notes": "None",
+      "notes": "",
       "plain_summary": "Checks whether adding tracked passing, rushing and receiving measures of each team improves the quality of the model's own cover probabilities.",
       "probability_positive": 0.2888,
       "recorded_at": "2026-10-01",
@@ -43,7 +43,7 @@
         0.00034348123607329966
       ],
       "league": "nfl",
-      "notes": "None",
+      "notes": "",
       "plain_summary": "Checks whether adding tracked passing, rushing and receiving measures of each team improves the quality of the model's own cover probabilities.",
       "probability_positive": 0.0997,
       "recorded_at": "2026-10-01",
@@ -71,7 +71,7 @@
         0.0006369530661409408
       ],
       "league": "nfl",
-      "notes": "None",
+      "notes": "",
       "plain_summary": "Checks whether adding tracked passing, rushing and receiving measures of each team improves the quality of the model's own cover probabilities.",
       "probability_positive": 0.1917,
       "recorded_at": "2026-10-01",

@@ -482,7 +482,7 @@ def signal_from_payload(
     probability_positive_payload = payload.get("probability_positive")
     reliability = payload.get("reliability")
     closing_ground = payload.get("closing_ground")
-    evidence = str(payload.get("classification_evidence", ""))
+    evidence = str(payload.get("classification_evidence") or "")
     validate_closure(
         name,
         classification=str(classification),
@@ -516,7 +516,7 @@ def signal_from_payload(
         closing_ground=None if closing_ground is None else str(closing_ground),
         reliability=None if reliability is None else float(reliability),
         family=None if payload.get("family") is None else str(payload["family"]),
-        notes=str(payload.get("notes", "")),
+        notes=str(payload.get("notes") or ""),
         plain_summary=(
             None if payload.get("plain_summary") is None else str(payload["plain_summary"])
         ),

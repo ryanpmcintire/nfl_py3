@@ -4,7 +4,7 @@
     "mod27_home_nudge_off_fwd2026_logloss": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "None",
+      "classification_evidence": "",
       "closing_ground": null,
       "description": "Fit 2020-25, scored on 2026 weeks 2-8 played games",
       "effect": 0.002838,
@@ -15,7 +15,7 @@
         0.010338
       ],
       "league": "nfl",
-      "notes": "None",
+      "notes": "",
       "plain_summary": "Dropping the home-field nudge that is added to the model's projected margin before the key-number read. The nudge was large and favoured the away side in 2020-22, then turned to favour home from 2024. Positive means picks without the nudge scored better than the served picks, graded out of season against the opening line.",
       "probability_positive": 0.76,
       "recorded_at": "2026-11-02",
@@ -32,7 +32,7 @@
     "mod27_home_nudge_off_loso_2020_22_logloss": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "None",
+      "classification_evidence": "",
       "closing_ground": null,
       "description": "Same, 2020-22 half (declared before looking)",
       "effect": -0.000264,
@@ -43,7 +43,7 @@
         0.000534
       ],
       "league": "nfl",
-      "notes": "None",
+      "notes": "",
       "plain_summary": "Dropping the home-field nudge that is added to the model's projected margin before the key-number read. The nudge was large and favoured the away side in 2020-22, then turned to favour home from 2024. Positive means picks without the nudge scored better than the served picks, graded out of season against the opening line.",
       "probability_positive": 0.261,
       "recorded_at": "2026-11-02",
@@ -60,7 +60,7 @@
     "mod27_home_nudge_off_loso_2020_25_accuracy": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "None",
+      "classification_evidence": "",
       "closing_ground": null,
       "description": "Stack refit with no-nudge base, LOSO, pick accuracy points vs served (819-684 vs 833-670; 62 disagreements, no-nudge 24-38)",
       "effect": -0.9315,
@@ -71,7 +71,7 @@
         0.0668
       ],
       "league": "nfl",
-      "notes": "None",
+      "notes": "",
       "plain_summary": "Dropping the home-field nudge that is added to the model's projected margin before the key-number read. The nudge was large and favoured the away side in 2020-22, then turned to favour home from 2024. Positive means picks without the nudge scored better than the served picks, graded out of season against the opening line.",
       "probability_positive": 0.028,
       "recorded_at": "2026-11-02",
@@ -88,7 +88,7 @@
     "mod27_home_nudge_off_loso_2020_25_logloss": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "None",
+      "classification_evidence": "",
       "closing_ground": null,
       "description": "Stack refit with no-nudge base, leave-one-season-out, log loss vs served",
       "effect": 0.000135,
@@ -99,7 +99,7 @@
         0.00074
       ],
       "league": "nfl",
-      "notes": "None",
+      "notes": "",
       "plain_summary": "Dropping the home-field nudge that is added to the model's projected margin before the key-number read. The nudge was large and favoured the away side in 2020-22, then turned to favour home from 2024. Positive means picks without the nudge scored better than the served picks, graded out of season against the opening line.",
       "probability_positive": 0.679,
       "recorded_at": "2026-11-02",
@@ -116,7 +116,7 @@
     "mod27_home_nudge_off_loso_2023_25_logloss": {
       "category": "modeling",
       "classification": "unresolved_below_power",
-      "classification_evidence": "None",
+      "classification_evidence": "",
       "closing_ground": null,
       "description": "Same, 2023-25 half (declared before looking)",
       "effect": 0.000487,
@@ -127,7 +127,7 @@
         0.001354
       ],
       "league": "nfl",
-      "notes": "None",
+      "notes": "",
       "plain_summary": "Dropping the home-field nudge that is added to the model's projected margin before the key-number read. The nudge was large and favoured the away side in 2020-22, then turned to favour home from 2024. Positive means picks without the nudge scored better than the served picks, graded out of season against the opening line.",
       "probability_positive": 0.8675,
       "recorded_at": "2026-11-02",

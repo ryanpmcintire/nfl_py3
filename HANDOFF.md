@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-02T21:35:04.331237+00:00`
+Refreshed at: `2026-11-02T21:41:19.770055+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-02T21:35:04.331237+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `6b4b2f615dd6` — POL-11: Week 8 card and ledger agree; Weeks 2-8 refreshed sides 20-12 where Tuesday would have gone 12-20
-- Pending change set: 235 paths
+- Baseline commit: `0f021240a5e1` — SIM-11: special-teams FG-make latent screened and not adopted (10/14 gates v default 11/14, seed 11)
+- Pending change set: 253 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/sim11-strength-transmission.md`
+  - ` M docs/lanes/backlog-all-2026-11-02.md`
+  - ` M docs/lanes/lead89.md`
+  - ` M docs/lanes/sim08-simulator-rebuild.md`
   - ` M docs/model.html`
-  - `M  scripts/sim10_drive.py`
+  - ` M registry/weak_signals/deadline_integration_drag_on_production.json`
+  - `M  registry/weak_signals/mod24_ngs_model_alone.json`
+  - `M  registry/weak_signals/mod27_home_nudge.json`
+  - `M  registry/weak_signals/sky01_news_availability.json`
+  - ` M scripts/build_loso_upstream.py`
+  - ` M scripts/lead89_stage_timed.py`
+  - `M  src/nfl_ats/cli_commands/registry.py`
+  - `M  src/nfl_ats/weak_signals.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? docs/lanes/c-drive-space-2026-10-31.md`
   - `?? docs/lanes/machine-crashes-2026-10-31.md`
-  - `?? docs/lanes/stealmybitcoin-ctf.md`
-  - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
-  - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
-  - ...and 215 more
+  - ...and 233 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

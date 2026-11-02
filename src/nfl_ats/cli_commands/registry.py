@@ -310,7 +310,7 @@ def _cmd_weak_signals_record_batch(args: argparse.Namespace) -> None:
         raise ValueError(f"batch file {args.batch!r} is unreadable: {error}") from error
     if not isinstance(payload, dict) or not isinstance(payload.get("cells"), list):
         raise ValueError("batch file must be an object with a cells array")
-    shared = {key: payload.get(key) for key in _BATCH_SHARED_FIELDS}
+    shared = {key: payload[key] for key in _BATCH_SHARED_FIELDS if payload.get(key) is not None}
     recorded: list[str] = []
     for index, raw in enumerate(payload["cells"]):
         if not isinstance(raw, dict):
