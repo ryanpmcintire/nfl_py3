@@ -1,0 +1,173 @@
+{
+  "family": "sky03_matchups",
+  "signals": {
+    "sky03_A_team_slope_split_half_offense": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "odd v even week interaction slope across 32 offenses; reliability not resolved to zero",
+      "closing_ground": null,
+      "description": "one fitted term: interaction EPA from shrunk pregame team traits, expanding-window coefficients, leave-one-season-out over 2020-2025, graded at the opener, 1 look (two interaction units summed)",
+      "effect": 0.07380406331941572,
+      "effect_units": "correlation",
+      "family": "sky03_matchups",
+      "interval": [
+        -0.2688301516207277,
+        0.400210754064615
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether pass protection against the opposing pass rush, and receivers against coverage, matter beyond each side's own strength for the pick probability.",
+      "probability_positive": 0.656,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sky03/fitted_term.json",
+      "standard_error": null
+    },
+    "sky03_B_team_slope_split_half_offense": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "odd v even week interaction slope across 32 offenses; reliability not resolved to zero",
+      "closing_ground": null,
+      "description": "one fitted term: interaction EPA from shrunk pregame team traits, expanding-window coefficients, leave-one-season-out over 2020-2025, graded at the opener, 1 look (two interaction units summed)",
+      "effect": 0.3401539375067424,
+      "effect_units": "correlation",
+      "family": "sky03_matchups",
+      "interval": [
+        -0.07587804677952881,
+        0.6361419972889354
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether pass protection against the opposing pass rush, and receivers against coverage, matter beyond each side's own strength for the pick probability.",
+      "probability_positive": 0.946,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sky03/fitted_term.json",
+      "standard_error": null
+    },
+    "sky03_matchup_ins_brier": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "in-sample gain near zero",
+      "closing_ground": null,
+      "description": "one fitted term: interaction EPA from shrunk pregame team traits, expanding-window coefficients, leave-one-season-out over 2020-2025, graded at the opener, 1 look (two interaction units summed)",
+      "effect": 1.7037444226239174e-05,
+      "effect_units": "brier_improvement",
+      "family": "sky03_matchups",
+      "interval": [
+        -0.00019926198876321714,
+        0.00023773811499096524
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether pass protection against the opposing pass rush, and receivers against coverage, matter beyond each side's own strength for the pick probability.",
+      "probability_positive": 0.563,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sky03/fitted_term.json",
+      "standard_error": null
+    },
+    "sky03_matchup_oos_accuracy": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "decisive 38 games, term 14-24; fold coefficients -0.081,-0.109,-0.030,+0.017,-0.033,+0.021 change sign; mechanism sign unresolved",
+      "closing_ground": null,
+      "description": "one fitted term: interaction EPA from shrunk pregame team traits, expanding-window coefficients, leave-one-season-out over 2020-2025, graded at the opener, 1 look (two interaction units summed)",
+      "effect": -0.6653359946773121,
+      "effect_units": "accuracy_points",
+      "family": "sky03_matchups",
+      "interval": [
+        -1.5302727877578177,
+        0.1330671989354624
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether pass protection against the opposing pass rush, and receivers against coverage, matter beyond each side's own strength for the pick probability.",
+      "probability_positive": 0.039,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sky03/fitted_term.json",
+      "standard_error": null
+    },
+    "sky03_matchup_oos_brier": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "fold coefficients -0.081,-0.109,-0.030,+0.017,-0.033,+0.021 change sign; mechanism sign unresolved",
+      "closing_ground": null,
+      "description": "one fitted term: interaction EPA from shrunk pregame team traits, expanding-window coefficients, leave-one-season-out over 2020-2025, graded at the opener, 1 look (two interaction units summed)",
+      "effect": -0.0004286335572265105,
+      "effect_units": "brier_improvement",
+      "family": "sky03_matchups",
+      "interval": [
+        -0.0008812852673371585,
+        3.3388532413822874e-05
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether pass protection against the opposing pass rush, and receivers against coverage, matter beyond each side's own strength for the pick probability.",
+      "probability_positive": 0.0335,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sky03/fitted_term.json",
+      "standard_error": null
+    },
+    "sky03_matchup_oos_logloss": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "fold coefficients -0.081,-0.109,-0.030,+0.017,-0.033,+0.021 change sign; mechanism sign unresolved",
+      "closing_ground": null,
+      "description": "one fitted term: interaction EPA from shrunk pregame team traits, expanding-window coefficients, leave-one-season-out over 2020-2025, graded at the opener, 1 look (two interaction units summed)",
+      "effect": -0.0008774878732352468,
+      "effect_units": "log_loss_improvement",
+      "family": "sky03_matchups",
+      "interval": [
+        -0.0018139965329185793,
+        8.681628338365612e-05
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether pass protection against the opposing pass rush, and receivers against coverage, matter beyond each side's own strength for the pick probability.",
+      "probability_positive": 0.034,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sky03/fitted_term.json",
+      "standard_error": null
+    }
+  }
+}
