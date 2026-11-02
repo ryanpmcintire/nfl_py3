@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-02T21:31:26.805539+00:00`
+Refreshed at: `2026-11-02T21:32:08.957247+00:00`
 
 ## Start here
 
@@ -21,18 +21,16 @@ Refreshed at: `2026-11-02T21:31:26.805539+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `ac26999b8da1` — Triage all open backlog rows and close the ones already finished
-- Pending change set: 239 paths
+- Baseline commit: `470093baab2c` — SKY-01: beat-reporter news leads official designations by a median 45.6 h; fitted term unresolved
+- Pending change set: 237 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `A  docs/lanes/sky01-news-availability.md`
+  - `M  docs/lanes/backlog-all-2026-11-02.md`
+  - ` M docs/lanes/lead89.md`
   - ` M docs/model.html`
-  - `A  docs/sky01_news_availability.md`
-  - `A  registry/weak_signals/sky01_news_availability.json`
   - ` M scripts/sim10_drive.py`
-  - `A  scripts/sky01_news_availability.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? docs/lanes/c-drive-space-2026-10-31.md`
@@ -43,7 +41,9 @@ Refreshed at: `2026-11-02T21:31:26.805539+00:00`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
   - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
   - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
-  - ...and 219 more
+  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
+  - ...and 217 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
