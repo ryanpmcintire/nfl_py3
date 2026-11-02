@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-02T22:37:29.329891+00:00`
+Refreshed at: `2026-11-02T22:39:41.502694+00:00`
 
 ## Start here
 
@@ -21,18 +21,18 @@ Refreshed at: `2026-11-02T22:37:29.329891+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `7164e885f687` — LEAD-59 officials archive complete for 2009-2014; SKY-01 market lead is ordinary drift
+- Baseline commit: `339707f7c919` — Refresh the session handoff and README research state
 - Pending change set: 238 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - `M  HANDOFF.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
   - ` M docs/lanes/per07-staff-state-2026-11-02.md`
+  - `M  docs/lanes/sim11-strength-transmission.md`
   - ` M docs/model.html`
   - ` M scripts/per07_first_game_fitted_term.py`
   - ` M scripts/sim08_market_anchored.py`
-  - ` M scripts/sim10_drive.py`
+  - `M  scripts/sim10_drive.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? docs/lanes/c-drive-space-2026-10-31.md`

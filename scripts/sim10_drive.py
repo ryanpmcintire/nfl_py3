@@ -921,6 +921,22 @@ class Engine:
         self.h_ot = pad_h(h if h_ot is None else h_ot)
         self.hecarry = os.environ.get("SIM10_HECARRY") == "1"
         self.mucurve = os.environ.get("SIM10_MUCURVE") == "1" and self.ptab is not None
+        self.joint = None
+        if os.environ.get("SIM10_JOINT") == "1" and self.ptab is not None:
+            vs_ = json.loads(Path("artifacts/sim11/frontier.json").read_text())["true_strength_sd"] ** 2
+            okj = (seg["bad"].to_numpy() == 0) & (seg["half"].to_numpy() < 3)
+            bj = np.array(
+                [post_bin(h_, s_) for h_, s_ in zip(seg["half"].to_numpy(), seg["secs"].to_numpy(), strict=True)]
+            )
+            xj = seg["x"].to_numpy(float)
+            self.joint = {}
+            for k_ in range(7):
+                mj = okj & (bj == k_)
+                if mj.sum() < 2:
+                    continue
+                v_ = float((self.ptab[k_][0] * xj[mj]).var())
+                r_ = v_ / vs_
+                self.joint[k_] = (r_, math.sqrt(v_ * (1.0 - r_)))
         self.fgdec = None
         if os.environ.get("SIM10_FGDEC"):
             self.fgdec = json.loads(Path(os.environ["SIM10_FGDEC"]).read_text())
@@ -1038,7 +1054,13 @@ class Engine:
             mt = q[5:6]
             if self.ptab is not None:
                 cx_, cs_, m0_, m1_ = self.ptab[post_bin(hf, secs)]
-                mt = np.array([cx_ * q[5] + cs_ * (q[1] - (m1_ if hm == 1 else m0_))])
+                if self.joint is not None and post_bin(hf, secs) in self.joint:
+                    r_, sn_ = self.joint[post_bin(hf, secs)]
+                    cx_ = r_
+                    nz_ = sn_ * rng.standard_normal()
+                else:
+                    nz_ = 0.0
+                mt = np.array([cx_ * q[5] + cs_ * (q[1] - (m1_ if hm == 1 else m0_)) + nz_])
             if self.dr:
                 w1 = tilt_weights(w, X[nz, 5:6], mt) if self.dr_mu else w
                 u = w1 / w1.sum()
@@ -2170,6 +2192,7 @@ def cmd_sim(a):
     os.environ["SIM10_STFULL"] = a.stfull
     os.environ["SIM10_ST"] = a.st
     os.environ["SIM10_MUCURVE"] = str(int(a.mucurve))
+    os.environ["SIM10_JOINT"] = str(int(a.joint))
     h, ho, g, hr = load_h(a.h)
     tilt = tuple(int(v) for v in a.tilt.split(",")) if a.tilt else ()
     mf = tuple(int(v) for v in a.mufree.split(",")) if a.mufree else ()
@@ -2283,6 +2306,7 @@ def main():
     s.add_argument("--droof", type=int, default=1)
     s.add_argument("--drmu", type=int, default=0)
     s.add_argument("--mucurve", type=int, default=0)
+    s.add_argument("--joint", type=int, default=0)
     s.add_argument("--mulabel", type=int, default=1)
     s.add_argument("--realsched", type=int, default=0)
     s.add_argument("--form", type=int, default=0)
