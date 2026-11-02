@@ -10,6 +10,7 @@ from typing import Any
 from nfl_ats import registry_explorer
 from nfl_ats.cli_common import _print_json
 from nfl_ats.io import file_lock
+from nfl_ats.research_proposals import register as register_research_proposals
 from nfl_ats.rotation import (
     GRADE_POOLS,
     MAX_WINDOW_SIZE,
@@ -975,3 +976,5 @@ def register(
         ),
     )
     rotation_set_plain_summary.set_defaults(handler=_cmd_rotation_set_plain_summary)
+
+    register_research_proposals(subparsers)

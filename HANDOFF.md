@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-02T22:23:58.891775+00:00`
+Refreshed at: `2026-11-02T22:29:04.128442+00:00`
 
 ## Start here
 
@@ -21,28 +21,28 @@ Refreshed at: `2026-11-02T22:23:58.891775+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `af4b8b5d62a6` — PER-07: dated staff-state table with vacancy, interim and documented playcaller fields
+- Baseline commit: `6c2c0e5198a2` — PER-07: adjudicate in-season staff changes and playcallers with dated sources
 - Pending change set: 243 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - ` M ROADMAP.md`
+  - `M  ROADMAP.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - ` M docs/lanes/backlog-all-2026-11-02.md`
-  - `M  docs/lanes/per07-staff-state-2026-11-02.md`
+  - `M  docs/lanes/backlog-all-2026-11-02.md`
+  - `A  docs/lanes/sky05-research-gate-2026-11-02.md`
   - ` M docs/model.html`
-  - `M  scripts/build_staff_state.py`
+  - `A  registry/proposals/sim08_market_anchored.json`
+  - ` M scripts/per07_first_game_fitted_term.py`
   - ` M scripts/sim08_market_anchored.py`
   - ` M scripts/sim10_drive.py`
-  - ` M src/nfl_ats/cli_commands/registry.py`
+  - `M  src/nfl_ats/cli_commands/registry.py`
+  - `A  src/nfl_ats/research_proposals.py`
+  - `M  tests/fixtures/cli_contract.json`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? docs/lanes/c-drive-space-2026-10-31.md`
   - `?? docs/lanes/machine-crashes-2026-10-31.md`
-  - `?? docs/lanes/sky05-research-gate-2026-11-02.md`
   - `?? docs/lanes/stealmybitcoin-ctf.md`
-  - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
-  - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - ...and 223 more
 
 The baseline commit and pending paths were observed before the automatic refresh.

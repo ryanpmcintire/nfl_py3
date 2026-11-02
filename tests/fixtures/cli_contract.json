@@ -114,6 +114,7 @@
         "predict",
         "rotation",
         "weak-signals",
+        "research",
         "anytime",
         "waterfall-feed",
         "weekly-run"
@@ -410,6 +411,10 @@
         {
           "name": "weak-signals",
           "help": "track effects too small for their own test to resolve, and pool them (docs/pool_edge_plan.md); a below-power result is kept, never deleted"
+        },
+        {
+          "name": "research",
+          "help": "record an approved, fixed-budget research proposal per weak-signals family and check recorded looks against it; does not block weak-signals record"
         },
         {
           "name": "anytime",
