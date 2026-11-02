@@ -1,0 +1,61 @@
+{
+  "family": "week8_postmortem_2026_11_02",
+  "signals": {
+    "late_refresh_flip_after_last_feed_2026": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Wilson interval crosses zero; no positive control; post-hoc cell from an 18-look layer audit",
+      "closing_ground": null,
+      "description": "Card side differs from the last pre-deadline waterfall feed (late refresh flips after the final feed), graded at the Splash opener, 2026 Weeks 1-8: 2-6 (Weeks 3-8 0-4)",
+      "effect": -25.0,
+      "effect_units": "accuracy_points",
+      "family": "week8_postmortem_2026_11_02",
+      "interval": [
+        -42.85,
+        9.07
+      ],
+      "league": "nfl",
+      "notes": "Week 8: Sunday 12:43 refresh_trigger_log_sun flips ATL and NYJ both lost; looks: 6 layers x 3 spans",
+      "plain_summary": "Picks changed in the last hours before kickoff have gone 2-6 this season; too few to tell yet.",
+      "probability_positive": 0.09,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 8,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "docs/lanes/week8-postmortem-2026-11-02.md",
+      "standard_error": null
+    },
+    "probability_rule_median_shift_flips_2026": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval is below zero on 11 post-hoc games among 18 looks, while 2020-25 flips went 112-92 (P .92); not a closure without a pre-registered forward test",
+      "closing_ground": null,
+      "description": "Games where the residual-sample median probability-rule shift (+0.36 to +0.45 toward home in 2026) flips the model residual side, graded at the Splash opener, 2026 Weeks 1-8: 2-9 (Weeks 3-8 1-7)",
+      "effect": -31.82,
+      "effect_units": "accuracy_points",
+      "family": "week8_postmortem_2026_11_02",
+      "interval": [
+        -44.86,
+        -2.3
+      ],
+      "league": "nfl",
+      "notes": "Discrete read audit found the lattice tilt matches the mean while this shift is a median; docs/lanes/discrete-read-audit-2026-11-02.md",
+      "plain_summary": "The small home-team nudge applied to every pick changed 11 picks this season and they went 2-9; in earlier seasons the same nudge helped.",
+      "probability_positive": 0.019,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 11,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "docs/lanes/week8-postmortem-2026-11-02.md",
+      "standard_error": null
+    }
+  }
+}

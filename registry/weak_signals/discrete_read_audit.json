@@ -1,0 +1,33 @@
+{
+  "family": "discrete_read_audit",
+  "signals": {
+    "discrete_vs_smooth_side_2020_25": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Binomial on 239 disagreements, 108 discrete wins, exact p(<=108)=0.077; interval includes zero; closes nothing",
+      "closing_ground": null,
+      "description": "Served discrete margin read minus smooth read opener accuracy, 2020-25, 239 disagreement games, 108-131",
+      "effect": -1.53,
+      "effect_units": "accuracy_points",
+      "family": "discrete_read_audit",
+      "interval": [
+        -3.55,
+        0.49
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The discrete read picked the other side from the smooth read in 239 games and won 108; about a 7 percent chance it is better.",
+      "probability_positive": 0.069,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/discrete-read-audit-2026-11-02.md",
+      "standard_error": 1.03
+    }
+  }
+}

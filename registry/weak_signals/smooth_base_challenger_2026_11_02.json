@@ -1,0 +1,61 @@
+{
+  "family": "smooth_base_challenger_2026_11_02",
+  "signals": {
+    "smooth_base_vs_discrete_four_term_fwd": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Smooth-margin base replacing discrete base as model_logit in the four-term pick probability stack, 2026 forward fit 2020-25 served-extras; effect is smooth minus discrete log-loss improvement",
+      "effect": -0.003282,
+      "effect_units": "log_loss_improvement",
+      "family": "smooth_base_challenger_2026_11_02",
+      "interval": [
+        -0.007303,
+        -0.0004
+      ],
+      "league": "nfl",
+      "notes": "4 looks (2 bases x LOSO and 2026 forward) plus chained and recomputed-extras variants; discrete leads; no closing ground claimed",
+      "plain_summary": null,
+      "probability_positive": 0.008,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 104,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "docs/lanes/smooth-base-challenger-2026-11-02.md",
+      "standard_error": null
+    },
+    "smooth_base_vs_discrete_four_term_loso": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Smooth-margin base replacing discrete base as model_logit in the four-term pick probability stack, LOSO 2020-25 four-term stack; effect is smooth minus discrete log-loss improvement",
+      "effect": -0.000507,
+      "effect_units": "log_loss_improvement",
+      "family": "smooth_base_challenger_2026_11_02",
+      "interval": [
+        -0.001462,
+        0.000448
+      ],
+      "league": "nfl",
+      "notes": "4 looks (2 bases x LOSO and 2026 forward) plus chained and recomputed-extras variants; discrete leads; no closing ground claimed",
+      "plain_summary": null,
+      "probability_positive": 0.1457,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/smooth-base-challenger-2026-11-02.md",
+      "standard_error": null
+    }
+  }
+}
