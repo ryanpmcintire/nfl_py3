@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-02T22:40:27.236768+00:00`
+Refreshed at: `2026-11-02T22:40:34.225581+00:00`
 
 ## Start here
 
@@ -21,13 +21,13 @@ Refreshed at: `2026-11-02T22:40:27.236768+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `8f8b6cedd9fd` — SIM-11: joint-label target passes 13/14 gates on seed 11 v default 10/14
+- Baseline commit: `ae5a4101b3af` — Backlog lane: SKY-05, PER-07, LEAD-59, SKY-01 and the SIM-11 joint-label confirmation
 - Pending change set: 237 paths
   - ` M CURRENT_PREDICTIONS.md`
+  - `M  HANDOFF.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/backlog-all-2026-11-02.md`
   - ` M docs/lanes/per07-staff-state-2026-11-02.md`
   - ` M docs/model.html`
   - ` M scripts/per07_first_game_fitted_term.py`
