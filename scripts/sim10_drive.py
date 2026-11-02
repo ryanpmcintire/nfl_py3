@@ -920,6 +920,7 @@ class Engine:
         self.h = pad_h(h)
         self.h_ot = pad_h(h if h_ot is None else h_ot)
         self.hecarry = os.environ.get("SIM10_HECARRY") == "1"
+        self.mucurve = os.environ.get("SIM10_MUCURVE") == "1" and self.ptab is not None
         self.fgdec = None
         if os.environ.get("SIM10_FGDEC"):
             self.fgdec = json.loads(Path(os.environ["SIM10_FGDEC"]).read_text())
@@ -992,6 +993,10 @@ class Engine:
         if self.models is not None and hf < 3:
             secs = math.expm1(q[2])
             gs = secs + 1800.0 if hf == 1 else secs
+            qm = q[5]
+            if self.mucurve:
+                cx_, cs_, m0_, m1_ = self.ptab[post_bin(hf, secs)]
+                qm = cx_ * q[5] + cs_ * (q[1] - (m1_ if hm == 1 else m0_))
             f = np.array(
                 [
                     [
@@ -1001,7 +1006,7 @@ class Engine:
                         hf,
                         q[3],
                         q[4],
-                        q[5],
+                        qm,
                         q[6],
                         gs,
                         q[1] * (GAME_SECS - gs) / GAME_SECS,
@@ -1011,7 +1016,7 @@ class Engine:
             tg = np.asarray([predict_outcome(t, m, f) for t, m in self.models[hm]])
             if self.sgam is not None:
                 p_ = phase_of_state(hf, secs)
-                tg = strength_adjust(tg, self.sgam[p_], q[5] - self.smbar[hm][p_])
+                tg = strength_adjust(tg, self.sgam[p_], qm - self.smbar[hm][p_])
             if self.st_m:
                 kk = self.kst[0 if hm == 1 else 1]
                 lg_ = math.log(self.st_m / (1.0 - self.st_m)) + kk
@@ -2164,6 +2169,7 @@ def cmd_sim(a):
     os.environ["SIM10_HECARRY"] = str(int(a.hecarry))
     os.environ["SIM10_STFULL"] = a.stfull
     os.environ["SIM10_ST"] = a.st
+    os.environ["SIM10_MUCURVE"] = str(int(a.mucurve))
     h, ho, g, hr = load_h(a.h)
     tilt = tuple(int(v) for v in a.tilt.split(",")) if a.tilt else ()
     mf = tuple(int(v) for v in a.mufree.split(",")) if a.mufree else ()
@@ -2276,6 +2282,7 @@ def main():
     s.add_argument("--strength", default=str(REPO / "artifacts" / "sim11" / "strength_terms.json"))
     s.add_argument("--droof", type=int, default=1)
     s.add_argument("--drmu", type=int, default=0)
+    s.add_argument("--mucurve", type=int, default=0)
     s.add_argument("--mulabel", type=int, default=1)
     s.add_argument("--realsched", type=int, default=0)
     s.add_argument("--form", type=int, default=0)
