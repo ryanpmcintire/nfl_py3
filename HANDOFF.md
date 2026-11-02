@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-02T22:56:50.790349+00:00`
+Refreshed at: `2026-11-02T22:57:07.695035+00:00`
 
 ## Start here
 
@@ -21,18 +21,15 @@ Refreshed at: `2026-11-02T22:56:50.790349+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `e3eca215244b` — Refresh the session handoff and README research state
-- Pending change set: 239 paths
+- Baseline commit: `5474aaf579a8` — PER-07 done: first game under a new playcaller on the adjudicated event set
+- Pending change set: 236 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - `M  ROADMAP.md`
+  - `M  HANDOFF.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/per07-staff-state-2026-11-02.md`
   - ` M docs/lanes/sim11-strength-transmission.md`
   - ` M docs/model.html`
-  - `M  registry/weak_signals/per07_first_game_new_playcaller_fitted_term.json`
-  - `M  scripts/per07_first_game_fitted_term.py`
   - ` M scripts/sim08_market_anchored.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
@@ -43,7 +40,10 @@ Refreshed at: `2026-11-02T22:56:50.790349+00:00`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
   - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - ...and 219 more
+  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
+  - ...and 216 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
