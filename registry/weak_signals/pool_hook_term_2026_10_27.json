@@ -112,6 +112,34 @@
       ],
       "source": "artifacts/pick_probability hook_rows.parquet (mod27-hook-serve two-stage fit)",
       "standard_error": 0.00055
+    },
+    "pool_hook_two_stage_log_loss_leak_free": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Two-stage pool hook log loss gain over the four-term fit on whole-number rows at simulated pool lines, hook values for training rows built from push mass excluding the held-out season",
+      "effect": 0.001231,
+      "effect_units": "log_loss_improvement",
+      "family": "pool_hook_term_2026_10_27",
+      "interval": [
+        0.000316,
+        0.002238
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Rebuilding the half-point hook with the held-out season fully removed from the training history still improves the pick probability: log loss .68343 to .68220, 727-595 versus 726-596, about the same as the earlier .00120 gain.",
+      "probability_positive": 0.9966,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 661,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:/Users/Ryan/AppData/Local/Temp/claude/F--Repos-nfl-py3/352ecbdc-246f-44c0-9f81-c287a6ef4436/scratchpad/agentHL/leakfree.py",
+      "standard_error": null
     }
   }
 }

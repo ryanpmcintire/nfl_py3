@@ -20,3 +20,4 @@ Serve the hook (pool half-point over a whole-number Tuesday market line) as one 
 ## Open
 - Strength bands for whole-number games use one simulated pool line.
 - Pinned files must keep v6/v7 enrolled bytes.
+- Review (lane hook-review-2026-11-02.md): no blocking findings. Leak-free re-measure holds: log loss gain .00123 [.00032, .00224] P+ .9966, Brier P+ .998, 727-595 vs 726-596; folds .74-.85. Decisions: the v7 capture pairs the enrolled coefficient with the live push table, which is derived from the fixed 2020-25 population, so Tuesday's check compares the new artifact's hook_push_mass with 20261102T155750Z; the late-hook risk is covered by the Tuesday 12:10 ET odds capture before the 14:20 lock.
