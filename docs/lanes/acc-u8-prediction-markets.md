@@ -63,3 +63,15 @@ Kalshi: disagreement games 124, market side 65-59 v served 59-65; market side +3
 Poly: disagreement 81, market 43-38; market +0.59 [-5.83,6.46] P+ .567; minus served +2.94 [-8.76,14.12] P+ .710. LL const .6991 served .6992 market .7033 combined .7097. Combined-minus-served -2.35 [-14.8,8.8] P+ .342. Coef mkt 0.38.
 Looks 12 (2 sources x market-only, served, combined LL, 3 acc cells), family mod24_prediction_markets. 6 cells recorded unresolved_below_power (u8_*_deadline_*).
 Next: 2026 weeks once served per-game 2026 rows exist (then true LOSO); Poly 2024 moneyline-only term.
+
+## Declared before outcomes (2026-11-02, family mod24_prediction_markets, script scripts/mod24_u8_pm_term.py)
+Status of unit: backfill done (log "done", unmatched kalshi 188 / poly 235), scheduler job prediction_markets_{tue,wed,thu}_1200 exists (capture_scheduler.py:568). No job to add.
+Term z = logit(p_pm) - logit(p_book). p_pm = discrete conditional home cover probability (nfl_ats.mass_preserving_lattice.band_read, prior-season pool seasons<2025) at the pool line L with tilt = the prediction-market deadline-point implied home margin (sign fixed by corr with L, asserted >0.9). p_book = same read with tilt = L + market_move_toward_home (book view at the pick deadline; move=0 when unavailable). Price ts asserted <= min(kickoff, Sunday 16:00 ET) of the game. L = per_game tue_open_home_spread (2025), feed market_line (2026, Splash line).
+Population: decisive games (result != L) with a deadline price. Arms per source (kalshi, poly): served alone (2025 out_of_season_tuesday_home_probability; 2026 feed final_probability), served + b*z fitted. Folds: 2025 leave-one-week-out; fit-2025 -> score 2026 forward. 2024 poly has no spread price so it is out.
+Metrics: record vs served side, accuracy points paired (week-block bootstrap), log loss, Brier, P+ of combined-minus-served, decisive disagreement record, coefficient per fold. Looks: 2 sources x (LOWO 2025, forward 2026) x (LL, Brier, acc) = 12 cells + disagreement.
+
+## Result 2026-11-02 (measured, scripts/mod24_u8_pm_term.py; prices asserted <= min(kickoff, Sun 4PM ET) 2025 and <= feed deadline 2026)
+z sd ~0.10 logit (small). Kalshi LOWO 2025 n267: served 53.18% LL .6936 Brier .2502; +z 48.31% LL .6975 Brier .2522; acc -4.87 [-11.61,+1.50] P+ .062; flipped 79, 33-46 v 46-33; coef z mean 1.36 (1.03..1.74) over 18 folds. Fwd (fit 2025, score 2026) n41: -7.32 [-30,+12.5] P+ .265, flipped 7 2-5; LL .6615 -> .6840.
+Poly LOWO 2025 n170: served 53.53% LL .6882; +z 47.06% LL .7023; -6.47 [-12.14,-0.59] P+ .011; flipped 33, 11-22; coef z 0.06 (-0.64..0.63) unstable. Fwd n41: +2.44 [-6.25,+20] P+ .60, flipped 3 2-1; LL .6615 -> .6578.
+Looks 4 acc cells recorded (family mod24_prediction_markets, unresolved_below_power, u8_*_term_*); LL/Brier reported unrecorded. Caveat: 2026 served p = feed final_probability (home), 2026 n small (41 of ~79 with deadline price + decisive + feed row). Not served; no flip.
+Next: rerun as 2026 weeks settle (script reruns as-is); a second held-out season is impossible before 2026 completes.

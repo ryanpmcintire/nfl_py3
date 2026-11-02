@@ -430,6 +430,7 @@ class SeasonSoFar:
     nothing_settled_text: str | None
     week_by_week_text: str = ""
     week_records: tuple[tuple[int, int, int, int], ...] = ()
+    tuesday_week_records: tuple[tuple[int, int, int, int], ...] = ()
 
     @property
     def has_rows(self) -> bool:
@@ -447,13 +448,15 @@ def _settled_pick_counts(rows: Sequence[HistoryPickRow]) -> tuple[int, int, int]
     return wins, losses, pushes
 
 
-def _week_records(rows: Sequence[HistoryPickRow]) -> tuple[tuple[int, int, int, int], ...]:
+def _week_records(
+    rows: Sequence[HistoryPickRow], *, minimum_weeks: int = 2
+) -> tuple[tuple[int, int, int, int], ...]:
     records = []
     for week in sorted({row.week for row in rows if row.week is not None}):
         wins, losses, pushes = _settled_pick_counts([row for row in rows if row.week == week])
         if wins + losses + pushes:
             records.append((int(week), wins, losses, pushes))
-    return tuple(records) if len(records) >= 2 else ()
+    return tuple(records) if len(records) >= minimum_weeks else ()
 
 
 def _week_by_week_text(rows: Sequence[HistoryPickRow]) -> str:
@@ -546,6 +549,7 @@ def _build_season_so_far(
     *,
     season: int | None,
     tiebreaker_text: str,
+    tuesday_picks: Sequence[HistoryPickRow] = (),
 ) -> SeasonSoFar:
 
     season_rows = [row for row in picks if season is None or row.season == season]
@@ -598,6 +602,10 @@ def _build_season_so_far(
         nothing_settled_text=None,
         week_by_week_text=_week_by_week_text(season_rows),
         week_records=_week_records(season_rows),
+        tuesday_week_records=_week_records(
+            [row for row in tuesday_picks if season is None or row.season == season],
+            minimum_weeks=1,
+        ),
     )
 
 
@@ -1671,6 +1679,18 @@ def _load_history_page_content(
         picks = ()
         primary_error = primary_error or str(error) or "primary ledger could not be settled"
     try:
+        from nfl_ats.clv import load_paper_decisions
+
+        tuesday_picks = _history_pick_rows(
+            artifacts_root,
+            load_paper_decisions(artifacts_root),
+            outcomes,
+            now=generated_at,
+            close_reference=close_reference,
+        )
+    except (ValueError, OSError, DataContractError):
+        tuesday_picks = ()
+    try:
         challengers_ledger = load_challenger_decisions(artifacts_root)
     except (ValueError, OSError) as error:
         challengers_ledger = pd.DataFrame()
@@ -1695,6 +1715,7 @@ def _load_history_page_content(
         assessments,
         season=board.ticker_chrome.season,
         tiebreaker_text=_season_tiebreaker_text(artifacts_root, active, outcomes),
+        tuesday_picks=tuesday_picks,
     )
     grade_caption = HISTORY_GRADE_CAPTION if (season_grades or week_grades) else ""
     if archived_week_grades:

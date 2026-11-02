@@ -2333,16 +2333,36 @@ def _season_so_far_challenger_row_html(row: SeasonChallengerRecord) -> str:
 
 
 def _week_strip_html(block: SeasonSoFar) -> str:
+    tuesday = {item[0]: item[1:] for item in block.tuesday_week_records}
     chips = []
+    changed = False
     for week, wins, losses, pushes in block.week_records:
         record = f"{wins}-{losses}-{pushes}" if pushes else f"{wins}-{losses}"
         tone = "up" if wins > losses else "down" if losses > wins else "even"
+        early = tuesday.get(week)
+        early_html = ""
+        if early is not None and early != (wins, losses, pushes):
+            changed = True
+            early_record = (
+                f"{early[0]}-{early[1]}-{early[2]}" if early[2] else f"{early[0]}-{early[1]}"
+            )
+            early_html = f'<span class="wk-name">Tuesday card {early_record}</span>'
         chips.append(
-            f'<li class="wk-chip {tone}"><span class="wk-name">Week {week}</span>'
-            f'<span class="wk-record">{record}</span></li>'
+            f'<li class="wk-chip {tone}"><span class="wk-name">Week {week} final</span>'
+            f'<span class="wk-record">{record}</span>{early_html}</li>'
         )
+    note = (
+        '<p class="policy-note">Final is the card after any late changes. Tuesday card is '
+        "the picks as first posted, which is what you have if you entered Tuesday and never "
+        "changed a pick.</p>"
+        if changed
+        else ""
+    )
     return (
-        '<ul class="week-strip" aria-label="Card record, week by week">' + "".join(chips) + "</ul>"
+        '<ul class="week-strip" aria-label="Card record, week by week">'
+        + "".join(chips)
+        + "</ul>"
+        + note
     )
 
 

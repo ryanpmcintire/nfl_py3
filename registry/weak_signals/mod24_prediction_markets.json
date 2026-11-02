@@ -85,6 +85,62 @@
       "source": "scripts/mod24_u8_grade_deadline.py",
       "standard_error": 3.18
     },
+    "u8_kalshi_term_fwd2026": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Prediction-market implied home cover probability at the pool line minus book-implied (opener plus book move), added as one fitted term to the four-term served probability; metric combined minus served accuracy points, week-block bootstrap. Kalshi, fit 2025 score 2026; flipped 7 picks 2-5 v 5-2.",
+      "effect": -7.32,
+      "effect_units": "accuracy_points",
+      "family": "mod24_prediction_markets",
+      "interval": [
+        -30.0,
+        12.5
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Fit on 2025 and applied to 2026 games so far, the Kalshi term changed 7 picks (2-5 vs 5-2); only 41 games, far too few to say.",
+      "probability_positive": 0.265,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 41,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "scripts/mod24_u8_pm_term.py",
+      "standard_error": 10.8
+    },
+    "u8_kalshi_term_lowo2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Prediction-market implied home cover probability at the pool line minus book-implied (opener plus book move), added as one fitted term to the four-term served probability; metric combined minus served accuracy points, week-block bootstrap. Kalshi, leave-one-week-out 2025; flipped 79 picks 33-46 v served 46-33; coef 1.36 (1.03-1.74).",
+      "effect": -4.87,
+      "effect_units": "accuracy_points",
+      "family": "mod24_prediction_markets",
+      "interval": [
+        -11.61,
+        1.5
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Adding the Kalshi price gap to the pick probability, tested week by week in 2025, changed 79 picks and made the record worse (33-46 vs 46-33 for the old picks), about 5 points of accuracy lower.",
+      "probability_positive": 0.062,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "scripts/mod24_u8_pm_term.py",
+      "standard_error": 3.34
+    },
     "u8_poly_deadline_combined_minus_served": {
       "category": "market",
       "classification": "unresolved_below_power",
@@ -168,6 +224,62 @@
       ],
       "source": "scripts/mod24_u8_grade_deadline.py",
       "standard_error": 3.15
+    },
+    "u8_poly_term_fwd2026": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Prediction-market implied home cover probability at the pool line minus book-implied (opener plus book move), added as one fitted term to the four-term served probability; metric combined minus served accuracy points, week-block bootstrap. Polymarket, fit 2025 score 2026; flipped 3 picks 2-1 v 1-2.",
+      "effect": 2.44,
+      "effect_units": "accuracy_points",
+      "family": "mod24_prediction_markets",
+      "interval": [
+        -6.25,
+        20.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Fit on 2025 and applied to 2026 games so far, the Polymarket term changed 3 picks (2-1 vs 1-2); only 41 games, far too few to say.",
+      "probability_positive": 0.6,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 41,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "scripts/mod24_u8_pm_term.py",
+      "standard_error": 6.7
+    },
+    "u8_poly_term_lowo2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Prediction-market implied home cover probability at the pool line minus book-implied (opener plus book move), added as one fitted term to the four-term served probability; metric combined minus served accuracy points, week-block bootstrap. Polymarket, leave-one-week-out 2025; flipped 33 picks 11-22 v 22-11; coef 0.06 (-0.64..0.63).",
+      "effect": -6.47,
+      "effect_units": "accuracy_points",
+      "family": "mod24_prediction_markets",
+      "interval": [
+        -12.14,
+        -0.59
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Adding the Polymarket price gap to the pick probability, tested week by week in 2025, changed 33 picks and made the record worse (11-22 vs 22-11), about 6 points lower.",
+      "probability_positive": 0.011,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 170,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "scripts/mod24_u8_pm_term.py",
+      "standard_error": 3.23
     }
   }
 }
