@@ -19,3 +19,9 @@ Root verifies, commits ROADMAP.md and this lane. Consider declaring a LEAD-66 ta
 
 ## Open
 MOD-18 flip rests on its done-when sentence; its older "open next" half-point items are now carried by MOD-26/MOD-27 (inferred).
+
+## Pass 2 (2026-11-02)
+Edited 21 rows (note `reconciled (pass 2)` in last column). Inventory after: 56/98 done, 42 remaining.
+- Flipped done: OPS-02 (inventory shipped; no-pruning policy, F: 1,037 GB free). Moved to in-progress: LEAD-80, LEAD-81 (collectors built, scheduler jobs after the 2026-11-03 lock).
+- Kept with named remainder: SKY-01/03/04/05, SIM-06/07/08/11 (moonshot or heavy step pending), PER-07, LEAD-28, LEAD-29, POL-10, POL-11, POL-12, POOL-01, MOD-27, MOD-17, MKT-08 (forward-only or next pinned edit; earliest scoring Week 9 / Jan 2027).
+- Open: SIM-07 flip depends on the control_summary.json power result.

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-02T22:16:16.324356+00:00`
+Refreshed at: `2026-11-02T22:17:01.988106+00:00`
 
 ## Start here
 
@@ -21,15 +21,15 @@ Refreshed at: `2026-11-02T22:16:16.324356+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `48e9d51622c3` — Refresh the session handoff and README research state
+- Baseline commit: `b5259d0bf265` — SIM-11: outcome targets at the engine's label strength double-shrink transmission; not adopted
 - Pending change set: 235 paths
   - ` M CURRENT_PREDICTIONS.md`
+  - `M  ROADMAP.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/sim11-strength-transmission.md`
+  - `M  docs/lanes/roadmap-reconcile-2026-11-02.md`
   - ` M docs/model.html`
-  - `M  scripts/sim10_drive.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? docs/lanes/c-drive-space-2026-10-31.md`
