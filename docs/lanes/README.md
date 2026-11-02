@@ -20,6 +20,9 @@ modified lane when the prompt just says to continue.
 
 ## Active
 
+- [week9-lock-2026-11-03](week9-lock-2026-11-03.md) - START HERE 2026-11-03: Tuesday board read (Chrome), weekly_lock with the pool hook term live, post-lock checks, tell the owner Week 9 and Week 8 final.
+- [mod27-better-picks](mod27-better-picks.md) - 2026-11-02: owner asked for better picks after Week 8 (4-9 Tuesday card); whole-chain audit, pool hook served two-stage (fd1d0278), pool line off the market 36-22 tracked weekly, many units measured and not served.
+- [sim11-strength-transmission](sim11-strength-transmission.md) - 2026-11-02: form (AR(1)) arm --form 3 three-seed gate run launched; compare when artifacts/sim10/rsform_s13/gates.json exists.
 - [week8-saturday-checks-2026-10-31](week8-saturday-checks-2026-10-31.md) - 2026-10-31: overnight crash recovered (F: NTFS repair, scheduler state lost); line moves, injury roundup, Saturday refresh; validation v5 enrolled.
 - [week8-lock-2026-10-27](week8-lock-2026-10-27.md) - 2026-10-27: Week 8 board read by agent after the noon capture failed; locked, published, pushed; Best Pick CHI +3.5.
 - [pool-leader-romana](pool-leader-romana.md) - 2026-10-27: pool leader's edge is entirely the 24 games our card played against the line move (8-16; theirs 14-3); history says following the move does not beat the card; Best Pick backtests recorded.
