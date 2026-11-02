@@ -1,0 +1,257 @@
+{
+  "family": "sky01_news_availability",
+  "signals": {
+    "sky01_beat_lead_over_official": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "None",
+      "closing_ground": null,
+      "description": "median seconds from first beat out-signal to later event, bootstrap over player-weeks; unconditional line drift not controlled",
+      "effect": 164269.514,
+      "effect_units": "elapsed_seconds_bias",
+      "family": "sky01_news_availability",
+      "interval": [
+        161577.919,
+        167057.771
+      ],
+      "league": "nfl",
+      "notes": "None",
+      "plain_summary": "news availability timing",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2679,
+      "seasons": [
+        2024,
+        2026
+      ],
+      "source": "artifacts/sky01/lead_times.json",
+      "standard_error": null
+    },
+    "sky01_beat_to_adverse_line_move": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "None",
+      "closing_ground": null,
+      "description": "median seconds from first beat out-signal to later event, bootstrap over player-weeks; unconditional line drift not controlled",
+      "effect": 134566.0,
+      "effect_units": "elapsed_seconds_bias",
+      "family": "sky01_news_availability",
+      "interval": [
+        114808.2395,
+        146829.63462499998
+      ],
+      "league": "nfl",
+      "notes": "None",
+      "plain_summary": "news availability timing",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2120,
+      "seasons": [
+        2024,
+        2026
+      ],
+      "source": "artifacts/sky01/lead_times.json",
+      "standard_error": null
+    },
+    "sky01_official_to_adverse_line_move": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "None",
+      "closing_ground": null,
+      "description": "median seconds from first beat out-signal to later event, bootstrap over player-weeks; unconditional line drift not controlled",
+      "effect": 97837.0,
+      "effect_units": "elapsed_seconds_bias",
+      "family": "sky01_news_availability",
+      "interval": [
+        89738.0,
+        97837.0
+      ],
+      "league": "nfl",
+      "notes": "None",
+      "plain_summary": "news availability timing",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1313,
+      "seasons": [
+        2024,
+        2026
+      ],
+      "source": "artifacts/sky01/lead_times.json",
+      "standard_error": null
+    },
+    "sky01_term_ins_accuracy_gain_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": null,
+      "closing_ground": null,
+      "description": "pre-opener beat out-count differential as one offset-logit term on served four-term probability, LOSO over 2024-2025, ins, graded at opener",
+      "effect": 0.18761726078799248,
+      "effect_units": "accuracy_points",
+      "family": "sky01_news_availability",
+      "interval": [
+        -0.37523452157598497,
+        0.9380863039399625
+      ],
+      "league": "nfl",
+      "notes": null,
+      "plain_summary": "news availability timing",
+      "probability_positive": 0.606,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/sky01/fitted_term.json",
+      "standard_error": null
+    },
+    "sky01_term_ins_brier_gain": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "None",
+      "closing_ground": null,
+      "description": "pre-opener beat out-count differential as one offset-logit term on served four-term probability, LOSO over 2024-2025, ins, graded at opener",
+      "effect": 2.0845678001701126e-05,
+      "effect_units": "brier_improvement",
+      "family": "sky01_news_availability",
+      "interval": [
+        -0.00038262299841877034,
+        0.00045330212464330343
+      ],
+      "league": "nfl",
+      "notes": "None",
+      "plain_summary": "news availability timing",
+      "probability_positive": 0.5455,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/sky01/fitted_term.json",
+      "standard_error": null
+    },
+    "sky01_term_ins_logloss_gain": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "None",
+      "closing_ground": null,
+      "description": "pre-opener beat out-count differential as one offset-logit term on served four-term probability, LOSO over 2024-2025, ins, graded at opener",
+      "effect": 4.9219217659048565e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "sky01_news_availability",
+      "interval": [
+        -0.0007421283120194306,
+        0.0009343847324069269
+      ],
+      "league": "nfl",
+      "notes": "None",
+      "plain_summary": "news availability timing",
+      "probability_positive": 0.5385,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/sky01/fitted_term.json",
+      "standard_error": null
+    },
+    "sky01_term_oos_accuracy_gain_points": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "None",
+      "closing_ground": null,
+      "description": "pre-opener beat out-count differential as one offset-logit term on served four-term probability, LOSO over 2024-2025, oos, graded at opener",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "sky01_news_availability",
+      "interval": [
+        -0.7504690431519699,
+        0.7504690431519699
+      ],
+      "league": "nfl",
+      "notes": "None",
+      "plain_summary": "news availability timing",
+      "probability_positive": 0.413,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/sky01/fitted_term.json",
+      "standard_error": null
+    },
+    "sky01_term_oos_brier_gain": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "None",
+      "closing_ground": null,
+      "description": "pre-opener beat out-count differential as one offset-logit term on served four-term probability, LOSO over 2024-2025, oos, graded at opener",
+      "effect": -0.00017795275678457462,
+      "effect_units": "brier_improvement",
+      "family": "sky01_news_availability",
+      "interval": [
+        -0.0010288838822334033,
+        0.0005552365866470987
+      ],
+      "league": "nfl",
+      "notes": "None",
+      "plain_summary": "news availability timing",
+      "probability_positive": 0.3345,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/sky01/fitted_term.json",
+      "standard_error": null
+    },
+    "sky01_term_oos_logloss_gain": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "None",
+      "closing_ground": null,
+      "description": "pre-opener beat out-count differential as one offset-logit term on served four-term probability, LOSO over 2024-2025, oos, graded at opener",
+      "effect": -0.00036533976223209407,
+      "effect_units": "log_loss_improvement",
+      "family": "sky01_news_availability",
+      "interval": [
+        -0.0021782675457703553,
+        0.0010985093136160562
+      ],
+      "league": "nfl",
+      "notes": "None",
+      "plain_summary": "news availability timing",
+      "probability_positive": 0.3315,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/sky01/fitted_term.json",
+      "standard_error": null
+    }
+  }
+}

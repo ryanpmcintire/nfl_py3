@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-02T21:31:08.097826+00:00`
+Refreshed at: `2026-11-02T21:31:26.805539+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-02T21:31:08.097826+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `816b8b154527` — Record the rejected SIM-11 form arm in the handoff lanes
-- Pending change set: 255 paths
+- Baseline commit: `ac26999b8da1` — Triage all open backlog rows and close the ones already finished
+- Pending change set: 239 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - ` M README.md`
-  - `M  ROADMAP.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/README.md`
-  - `A  docs/lanes/backlog-all-2026-11-02.md`
-  - `A  docs/lanes/backlog-triage-g1-2026-11-02.md`
-  - `A  docs/lanes/backlog-triage-g2-2026-11-02.md`
-  - `A  docs/lanes/backlog-triage-g3-2026-11-02.md`
-  - `A  docs/lanes/backlog-triage-g4-2026-11-02.md`
-  - `A  docs/lanes/backlog-triage-g5-2026-11-02.md`
-  - `A  docs/lanes/backlog-triage-g6-2026-11-02.md`
-  - `A  docs/lanes/coordinators-lead28-per07-2026-11-02.md`
-  - `M  docs/lanes/lead76.md`
-  - `A  docs/lanes/roadmap-reconcile-2026-11-02.md`
-  - `A  docs/lead76_inventory.md`
+  - `A  docs/lanes/sky01-news-availability.md`
   - ` M docs/model.html`
-  - `A  registry/weak_signals/lead76_rule_prior.json`
-  - ...and 235 more
+  - `A  docs/sky01_news_availability.md`
+  - `A  registry/weak_signals/sky01_news_availability.json`
+  - ` M scripts/sim10_drive.py`
+  - `A  scripts/sky01_news_availability.py`
+  - ` M tiebreaker.json`
+  - `?? an.csv`
+  - `?? docs/lanes/c-drive-space-2026-10-31.md`
+  - `?? docs/lanes/machine-crashes-2026-10-31.md`
+  - `?? docs/lanes/stealmybitcoin-ctf.md`
+  - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
+  - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
+  - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
+  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
+  - ...and 219 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
