@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-02T21:57:29.676334+00:00`
+Refreshed at: `2026-11-02T21:57:57.077361+00:00`
 
 ## Start here
 
@@ -21,16 +21,16 @@ Refreshed at: `2026-11-02T21:57:29.676334+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `d87abf9a8ea4` — LEAD-89: later Best Pick stages lean better on stage-timed inputs; option policy still to build
-- Pending change set: 237 paths
+- Baseline commit: `24dab1d6bad1` — Backlog lane: LEAD-66, SIM-06 and LEAD-89 results; wave 3 running
+- Pending change set: 236 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/backlog-all-2026-11-02.md`
   - ` M docs/lanes/sim08-simulator-rebuild.md`
-  - ` M docs/lanes/sim11-strength-transmission.md`
+  - `M  docs/lanes/sim11-strength-transmission.md`
   - ` M docs/model.html`
+  - `A  scripts/sim11_frontier.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? docs/lanes/c-drive-space-2026-10-31.md`
@@ -43,7 +43,7 @@ Refreshed at: `2026-11-02T21:57:29.676334+00:00`
   - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
   - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
   - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
-  - ...and 217 more
+  - ...and 216 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
