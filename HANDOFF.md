@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-02T22:05:38.948802+00:00`
+Refreshed at: `2026-11-02T22:07:15.488829+00:00`
 
 ## Start here
 
@@ -21,16 +21,17 @@ Refreshed at: `2026-11-02T22:05:38.948802+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `f4c26e5fe6e4` — Refresh the session handoff and README research state
+- Baseline commit: `367a752a2e13` — POL-10: prospective scorecard caught up through Week 8; schedule it weekly after the lock
 - Pending change set: 239 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/pol10-prospective-2026.md`
+  - `M  docs/lanes/backlog-all-2026-11-02.md`
   - ` M docs/lanes/sim08-simulator-rebuild.md`
-  - `M  docs/lanes/week9-lock-2026-11-03.md`
+  - `M  docs/lanes/sim09-urgency-stakes.md`
   - ` M docs/model.html`
+  - `A  scripts/sim07_control.py`
   - ` M scripts/sim10_drive.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
@@ -42,7 +43,6 @@ Refreshed at: `2026-11-02T22:05:38.948802+00:00`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
   - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
   - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
   - ...and 219 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
