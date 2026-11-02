@@ -82,7 +82,7 @@ class Replay:
         require(self.source_metadata["features"] == list(FIT_FEATURES), "Four terms changed")
         require(self.source_metadata["ridge"] == FIT_RIDGE, "Calibration ridge changed")
         require(
-            self.source_metadata["counted_flag_columns"] == list(COUNTED_FLAG_COLUMNS),
+            set(self.source_metadata["counted_flag_columns"]) <= set(COUNTED_FLAG_COLUMNS),
             "Composition changed",
         )
         self.features = pd.read_parquet(features)

@@ -1,0 +1,117 @@
+{
+  "family": "sky04_lead_lag",
+  "signals": {
+    "sky04_leader_early_move_ins_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "in-sample gain near zero; 165 of 799 games carry a nonzero term at hourly cadence",
+      "closing_ground": null,
+      "description": "one fitted term: follower median minus leader median home spread at Tuesday noon, leave-one-season-out over 2023-2025, graded at the opener, 1 look",
+      "effect": 2.57e-05,
+      "effect_units": "brier_improvement",
+      "family": "sky04_lead_lag",
+      "interval": [
+        -0.0002979,
+        0.0003232
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether a move by the books that usually post new numbers first, not yet matched by the others at Tuesday noon, adds to the pick probability.",
+      "probability_positive": 0.56,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sky04/fitted_term.json",
+      "standard_error": null
+    },
+    "sky04_leader_early_move_oos_accuracy": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "19 decisive games, term 6-13; interval below power",
+      "closing_ground": null,
+      "description": "one fitted term: follower median minus leader median home spread at Tuesday noon, leave-one-season-out over 2023-2025, graded at the opener, 1 look",
+      "effect": -0.8761,
+      "effect_units": "accuracy_points",
+      "family": "sky04_lead_lag",
+      "interval": [
+        -2.0025,
+        0.1252
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether a move by the books that usually post new numbers first, not yet matched by the others at Tuesday noon, adds to the pick probability.",
+      "probability_positive": 0.042,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sky04/fitted_term.json",
+      "standard_error": null
+    },
+    "sky04_leader_early_move_oos_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "out-of-season loss comes from fold coefficients that flip sign (-0.43, 0.18, 0.09); the mechanism sign is not resolved, in-sample p+ 0.56",
+      "closing_ground": null,
+      "description": "one fitted term: follower median minus leader median home spread at Tuesday noon, leave-one-season-out over 2023-2025, graded at the opener, 1 look",
+      "effect": -0.0010568,
+      "effect_units": "brier_improvement",
+      "family": "sky04_lead_lag",
+      "interval": [
+        -0.0018618,
+        -0.0003162
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether a move by the books that usually post new numbers first, not yet matched by the others at Tuesday noon, adds to the pick probability.",
+      "probability_positive": 0.0015,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sky04/fitted_term.json",
+      "standard_error": null
+    },
+    "sky04_leader_early_move_oos_logloss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "fold coefficients flip sign; mechanism sign unresolved",
+      "closing_ground": null,
+      "description": "one fitted term: follower median minus leader median home spread at Tuesday noon, leave-one-season-out over 2023-2025, graded at the opener, 1 look",
+      "effect": -0.0020708,
+      "effect_units": "log_loss_improvement",
+      "family": "sky04_lead_lag",
+      "interval": [
+        -0.0037171,
+        -0.000402
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether a move by the books that usually post new numbers first, not yet matched by the others at Tuesday noon, adds to the pick probability.",
+      "probability_positive": 0.0085,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sky04/fitted_term.json",
+      "standard_error": null
+    }
+  }
+}

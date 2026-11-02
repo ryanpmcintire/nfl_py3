@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-02T21:41:19.770055+00:00`
+Refreshed at: `2026-11-02T21:41:23.316300+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-02T21:41:19.770055+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `0f021240a5e1` — SIM-11: special-teams FG-make latent screened and not adopted (10/14 gates v default 11/14, seed 11)
-- Pending change set: 253 paths
+- Baseline commit: `a287ea9cce4b` — Keep missing registry evidence and notes empty instead of the text None
+- Pending change set: 248 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - ` M docs/lanes/backlog-all-2026-11-02.md`
-  - ` M docs/lanes/lead89.md`
+  - `M  docs/lanes/backlog-all-2026-11-02.md`
+  - `M  docs/lanes/lead89.md`
+  - `A  docs/lanes/mod27-transaction-dates-2026-11-02.md`
   - ` M docs/lanes/sim08-simulator-rebuild.md`
+  - `A  docs/lanes/sky04-lead-lag-2026-11-02.md`
   - ` M docs/model.html`
-  - ` M registry/weak_signals/deadline_integration_drag_on_production.json`
-  - `M  registry/weak_signals/mod24_ngs_model_alone.json`
-  - `M  registry/weak_signals/mod27_home_nudge.json`
-  - `M  registry/weak_signals/sky01_news_availability.json`
-  - ` M scripts/build_loso_upstream.py`
-  - ` M scripts/lead89_stage_timed.py`
-  - `M  src/nfl_ats/cli_commands/registry.py`
-  - `M  src/nfl_ats/weak_signals.py`
+  - `M  registry/weak_signals/deadline_integration_drag_on_production.json`
+  - `A  registry/weak_signals/per07_first_game_new_playcaller_fitted_term.json`
+  - `A  registry/weak_signals/sky04_lead_lag.json`
+  - `M  scripts/build_loso_upstream.py`
+  - `A  scripts/lead89_stage_features.py`
+  - `M  scripts/lead89_stage_timed.py`
+  - `A  scripts/mod27_transaction_dates.py`
+  - `A  scripts/per07_first_game_fitted_term.py`
+  - `A  scripts/sky04_lead_lag.py`
   - ` M tiebreaker.json`
-  - `?? an.csv`
-  - `?? docs/lanes/c-drive-space-2026-10-31.md`
-  - `?? docs/lanes/machine-crashes-2026-10-31.md`
-  - ...and 233 more
+  - ...and 228 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

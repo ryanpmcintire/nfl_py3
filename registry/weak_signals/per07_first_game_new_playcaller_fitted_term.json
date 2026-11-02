@@ -1,0 +1,89 @@
+{
+  "family": "per07_first_game_new_playcaller_fitted_term",
+  "signals": {
+    "PER07-fitted-coefficient": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Coefficient near zero with wide interval; fold coefficients range -0.69 to +0.46",
+      "closing_ground": null,
+      "description": "Fitted coefficient on first-game-new-playcaller indicator, full sample",
+      "effect": -0.00110098,
+      "effect_units": "correlation",
+      "family": "per07_first_game_new_playcaller_fitted_term",
+      "interval": [
+        -1.3156519,
+        1.5188925
+      ],
+      "league": "nfl",
+      "notes": "12 flagged games of 1503; 3 looks; LOSO; opener; OOS decisive pick changes 14 (3 right vs baseline 11) include intercept-refit noise on unflagged games",
+      "plain_summary": "The size of the first-game-after-a-new-playcaller effect is too uncertain to say which way it points.",
+      "probability_positive": 0.4902,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/per07/first_game_fitted_term.json",
+      "standard_error": null
+    },
+    "PER07-fitted-oos-accuracy": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Only 12 flagged games; OOS loss driven by intercept refit on unflagged games and mixed-sign fold coefficients, not a resolved wrong-sign mechanism",
+      "closing_ground": null,
+      "description": "First game under new playcaller fitted logit term, LOSO accuracy gain vs model-only",
+      "effect": -0.5322687957,
+      "effect_units": "accuracy_points",
+      "family": "per07_first_game_new_playcaller_fitted_term",
+      "interval": [
+        -1.0046885,
+        -0.0665325
+      ],
+      "league": "nfl",
+      "notes": "12 flagged games of 1503; 3 looks; LOSO; opener; OOS decisive pick changes 14 (3 right vs baseline 11) include intercept-refit noise on unflagged games",
+      "plain_summary": "Adding the first game after a new playcaller to the pick formula did not help picks in held-out seasons; only 12 games carry the idea, so it stays open.",
+      "probability_positive": 0.0082,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/per07/first_game_fitted_term.json",
+      "standard_error": null
+    },
+    "PER07-fitted-oos-logloss": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Same 12 flagged games; loss reflects refit noise, not a resolved wrong sign",
+      "closing_ground": null,
+      "description": "First game under new playcaller fitted logit term, LOSO log loss gain vs model-only",
+      "effect": -0.00123823,
+      "effect_units": "log_loss_improvement",
+      "family": "per07_first_game_new_playcaller_fitted_term",
+      "interval": [
+        -0.00250636,
+        -0.00018545
+      ],
+      "league": "nfl",
+      "notes": "12 flagged games of 1503; 3 looks; LOSO; opener; OOS decisive pick changes 14 (3 right vs baseline 11) include intercept-refit noise on unflagged games",
+      "plain_summary": "The extra term made held-out probabilities very slightly worse, but just 12 games carry it.",
+      "probability_positive": 0.00835,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/per07/first_game_fitted_term.json",
+      "standard_error": null
+    }
+  }
+}

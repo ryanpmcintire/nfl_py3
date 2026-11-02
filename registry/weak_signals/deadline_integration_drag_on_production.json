@@ -1,6 +1,90 @@
 {
   "family": "deadline_integration_drag_on_production",
   "signals": {
+    "deadline_drag_dayfix_fifth_term_loso_2020_25": {
+      "category": "offfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval not wholly on the wrong side of zero; no positive control; about 45 flagged games, below power.",
+      "closing_ground": null,
+      "description": "Deadline-integration flag with day-level transaction dates (article publish time, strictly before Tuesday noon ET prediction timestamp, asserted at runtime) as a fifth fitted term, LOSO 2020-25, opener graded",
+      "effect": -0.3992,
+      "effect_units": "accuracy_points",
+      "family": "deadline_integration_drag_on_production",
+      "interval": [
+        -0.9415,
+        0.066
+      ],
+      "league": "nfl",
+      "notes": "Fixed 827-676 vs base 833-670; flagged games 45; coef per fold -0.09 -0.11 -0.01 -0.09 0.00 +0.49 unstable sign; in-sample acc .5516 vs OOS .5502 gap .0013; log loss .68877 vs .68719; 5 looks.",
+      "plain_summary": "With transactions dated to the day, adding the deadline flag changed 8 sides and the changed picks went 1-7 versus 7-1 before, so accuracy fell 0.40 points; 45 flagged games is too few to settle it.",
+      "probability_positive": 0.02925,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 105,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod27_transaction_dates/results.json",
+      "standard_error": 0.25
+    },
+    "deadline_drag_dayfix_fifth_term_loso_2022_25": {
+      "category": "offfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval not wholly on the wrong side of zero; no positive control; about 45 flagged games, below power.",
+      "closing_ground": null,
+      "description": "Same as day-level fifth term, 2022-25 subset",
+      "effect": -0.5731,
+      "effect_units": "accuracy_points",
+      "family": "deadline_integration_drag_on_production",
+      "interval": [
+        -1.4125,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Subset look 2 of 5.",
+      "plain_summary": "On 2022-25 alone the day-dated deadline flag lowered accuracy 0.57 points; too few flagged games to settle it.",
+      "probability_positive": 0.0235,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 105,
+      "sample_games": 1047,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod27_transaction_dates/results.json",
+      "standard_error": 0.4
+    },
+    "deadline_drag_dayfix_vs_leaky_month_end": {
+      "category": "offfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval not wholly on the wrong side of zero; no positive control; about 45 flagged games, below power.",
+      "closing_ground": null,
+      "description": "Day-level dated flag versus month-end dated flag, both as fifth fitted term LOSO 2020-25",
+      "effect": -0.2661,
+      "effect_units": "accuracy_points",
+      "family": "deadline_integration_drag_on_production",
+      "interval": [
+        -0.9321,
+        0.3358
+      ],
+      "league": "nfl",
+      "notes": "Look 3 of 5. Only 3 of 81 team-game flags (3 transactions) actually postdate the Tuesday noon prediction timestamp at day level; month-end rule flagged 15.",
+      "plain_summary": "Fixing the transaction dates moved 20 picks; the month-end version got 12-8 on them and the day-level version 8-12, a 0.27 point loss.",
+      "probability_positive": 0.1805,
+      "recorded_at": "2026-11-02",
+      "reliability": null,
+      "sample_blocks": 105,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod27_transaction_dates/results.json",
+      "standard_error": 0.32
+    },
     "deadline_drag_fifth_term_loso_2020_25": {
       "category": "offfield",
       "classification": "unresolved_below_power",

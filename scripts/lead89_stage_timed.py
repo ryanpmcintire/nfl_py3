@@ -59,9 +59,15 @@ def prepare(replay: Replay, stage: str, zero: bool) -> None:
     replay.raw_cache.clear()
     replay.input_cache.clear()
     replay.fold_audits.clear()
-    for frame in (replay.features, replay.games):
-        for column in INJURY_ZEROED:
-            frame[column] = 0.0 if zero else frame[column]
+    if zero:
+        staged = pd.read_parquet(OUTPUT / f"stage_features_{stage}.parquet").set_index("game_id")
+        cases = pd.read_parquet(OUTPUT / f"stage_cases_{stage}.parquet")
+        for frame in (replay.features, replay.games):
+            known = frame.game_id.isin(staged.index)
+            for column in INJURY_ZEROED:
+                mapped = frame.game_id.map(staged[column])
+                frame[column] = np.where(known, mapped, frame[column])
+        print(stage, cases.case.value_counts().to_dict())
     table = stage_moves(stage)
     move = (
         replay.games.game_id.map(table["move"])
@@ -181,7 +187,7 @@ def main() -> None:
     clocks["decision_at"] = pd.to_datetime(clocks.decision_at, utc=True)
     with threadpool_limits(limits=1):
         replay = Replay(
-            Path("artifacts/pick_probability/20260929T192747Z"),
+            Path("artifacts/pick_probability/20261102T171412Z"),
             FEATURES,
             Path("data/raw/20260929T191306Z/schedules.parquet"),
             Path("data/pbp/raw/20260929T191306Z"),
@@ -190,7 +196,7 @@ def main() -> None:
         arms, metas = {}, {}
         for stage in ("sunday", "tuesday", "thursday"):
             arms[stage], metas[stage] = run_stage(replay, stage, plan[stage])
-    baseline = pd.read_parquet("artifacts/loso_upstream/20260929T235904133782Z/predictions.parquet")
+    baseline = pd.read_parquet("artifacts/loso_upstream/20261102T213642884071Z/predictions.parquet")
     outcome = baseline[["game_id", "home_covered"]]
     audit_rows, picks, summaries = [], {}, {}
     for stage in STAGES:
@@ -223,7 +229,7 @@ def main() -> None:
                 "stage": stage,
                 "stage_games": int(all_games),
                 "eligible_games": int(eligible.game_id.nunique()),
-                "injury_inputs": "none (current-week reports not yet published)"
+                "injury_inputs": "reconstructed as known at the stage cutoff (carry rule)"
                 if plan[stage]
                 else "date_modified at or before decision",
                 "injury_clock_violations": leaks,
