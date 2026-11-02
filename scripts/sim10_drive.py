@@ -934,6 +934,9 @@ class Engine:
             st_j = json.loads(Path(os.environ["SIM10_STFULL"]).read_text())
             self.st_m = float(st_j["fg_make_rate"])
             self.punt = np.load(st_j["punt_flags"]).astype(bool)
+        if os.environ.get("SIM10_ST"):
+            st_j = json.loads(Path(os.environ["SIM10_ST"]).read_text())
+            self.st_m = float(st_j["fg_make_rate"])
         X = design(seg)
         ok = seg["bad"].to_numpy() == 0
         self.strata = {}
@@ -1314,6 +1317,12 @@ def sim_world(task):
         ch = np.array(st_j["chol"])
         krng = np.random.default_rng(wseed.spawn(1)[0])
         stl = krng.standard_normal((n_seasons, gen.N_TEAMS, ch.shape[0])) @ ch.T
+    kst = None
+    if os.environ.get("SIM10_ST"):
+        st_j = json.loads(Path(os.environ["SIM10_ST"]).read_text())
+        sg = math.sqrt(float(st_j["fg_make_logit_pv"][1]))
+        krng = np.random.default_rng(wseed.spawn(1)[0])
+        kst = krng.normal(0.0, sg, (n_seasons, gen.N_TEAMS))
     rs = _W.get("rsched")
     perm = rng.permutation(gen.N_TEAMS) if rs else None
     for sidx, (weekly, qb_out) in enumerate(lat):
@@ -1327,6 +1336,8 @@ def sim_world(task):
         sid = w * 1000 + sidx + 1
         for gi, (week, h, a) in enumerate(sched):
             rh, ra = ratings[week][h], ratings[week][a]
+            if kst is not None:
+                eng.kst = (float(kst[sidx][h]), float(kst[sidx][a]))
             if stl is not None:
                 eng.stl = (stl[sidx][h], stl[sidx][a])
                 eng.kst = (float(stl[sidx][h][4]), float(stl[sidx][a][4]))
@@ -2152,6 +2163,7 @@ def cmd_sim(a):
     os.environ["SIM10_FORM"] = str(int(a.form))
     os.environ["SIM10_HECARRY"] = str(int(a.hecarry))
     os.environ["SIM10_STFULL"] = a.stfull
+    os.environ["SIM10_ST"] = a.st
     h, ho, g, hr = load_h(a.h)
     tilt = tuple(int(v) for v in a.tilt.split(",")) if a.tilt else ()
     mf = tuple(int(v) for v in a.mufree.split(",")) if a.mufree else ()
@@ -2269,6 +2281,7 @@ def main():
     s.add_argument("--form", type=int, default=0)
     s.add_argument("--hecarry", type=int, default=1)
     s.add_argument("--stfull", default="")
+    s.add_argument("--st", default="")
     s.add_argument("--fgdec", default="")
     s.add_argument("--q4dec", default=str(OUT / "q4dec_fg.json"))
     s.add_argument("--latent", default=str(OUT / "latent_fit_2009_25.json"))
