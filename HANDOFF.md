@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-02T22:01:04.410807+00:00`
+Refreshed at: `2026-11-02T22:01:53.155843+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-02T22:01:04.410807+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `9534ddbe5bba` — Refresh the session handoff
-- Pending change set: 246 paths
+- Baseline commit: `f9fba6328923` — LEAD-89 done: retain-the-option Best Pick policy; POL-12 totals compared with the served tiebreaker
+- Pending change set: 237 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - `M  HANDOFF.md`
-  - `M  README.md`
-  - `M  ROADMAP.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/lead89.md`
-  - `A  docs/lanes/pol12-totals-2026-11-02.md`
+  - `M  docs/lanes/backlog-all-2026-11-02.md`
   - ` M docs/lanes/sim08-simulator-rebuild.md`
-  - `A  docs/lead89_option_policy.md`
   - ` M docs/model.html`
-  - `A  registry/weak_signals/lead89_option_policy_contrasts.json`
-  - `A  registry/weak_signals/totals_served_vs_arms.json`
-  - `A  scripts/lead89_option_policy.py`
   - ` M scripts/sim10_drive.py`
-  - `A  scripts/totals_model_eval.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? docs/lanes/c-drive-space-2026-10-31.md`
-  - ...and 226 more
+  - `?? docs/lanes/machine-crashes-2026-10-31.md`
+  - `?? docs/lanes/stealmybitcoin-ctf.md`
+  - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
+  - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
+  - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
+  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
+  - ...and 217 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
