@@ -1,0 +1,257 @@
+{
+  "family": "mod41_residual_load_u3_injury_mechanism",
+  "signals": {
+    "mod41_u3_resid_load_given_inj_DB_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap, 15 looks (8 mediation arms recorded, 7 first-stage slopes in injury-count units not recordable).",
+      "closing_ground": null,
+      "description": "Residual recent workload added to served logit plus Out/Doubtful count differential for group DB (home minus away, same-week report), LOSO 2020-25, opener grade, log loss gain vs that base; decisive 199-178; residual coefficient -0.0444; in-sample gap 0.00028.",
+      "effect": 0.004188448476878381,
+      "effect_units": "log_loss_improvement",
+      "family": "mod41_residual_load_u3_injury_mechanism",
+      "interval": [
+        -0.0010355897933317481,
+        0.009448272999964613
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Tests whether the recent-workload effect survives once the team's missing players at one position group are accounted for; if it shrinks, workload acts through injuries.",
+      "probability_positive": 0.955,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1142,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod41/unit3_injury_mechanism.json",
+      "standard_error": 0.0026744547942082553
+    },
+    "mod41_u3_resid_load_given_inj_DL_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap, 15 looks (8 mediation arms recorded, 7 first-stage slopes in injury-count units not recordable).",
+      "closing_ground": null,
+      "description": "Residual recent workload added to served logit plus Out/Doubtful count differential for group DL (home minus away, same-week report), LOSO 2020-25, opener grade, log loss gain vs that base; decisive 206-182; residual coefficient -0.0440; in-sample gap 0.00026.",
+      "effect": 0.004131657434246372,
+      "effect_units": "log_loss_improvement",
+      "family": "mod41_residual_load_u3_injury_mechanism",
+      "interval": [
+        -0.0011128158473403787,
+        0.009435228745477316
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Tests whether the recent-workload effect survives once the team's missing players at one position group are accounted for; if it shrinks, workload acts through injuries.",
+      "probability_positive": 0.948,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1142,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod41/unit3_injury_mechanism.json",
+      "standard_error": 0.0026908277022494116
+    },
+    "mod41_u3_resid_load_given_inj_LB_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap, 15 looks (8 mediation arms recorded, 7 first-stage slopes in injury-count units not recordable).",
+      "closing_ground": null,
+      "description": "Residual recent workload added to served logit plus Out/Doubtful count differential for group LB (home minus away, same-week report), LOSO 2020-25, opener grade, log loss gain vs that base; decisive 201-170; residual coefficient -0.0436; in-sample gap 0.00045.",
+      "effect": 0.0038696653673726544,
+      "effect_units": "log_loss_improvement",
+      "family": "mod41_residual_load_u3_injury_mechanism",
+      "interval": [
+        -0.0013840196153953625,
+        0.009251037647791806
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Tests whether the recent-workload effect survives once the team's missing players at one position group are accounted for; if it shrinks, workload acts through injuries.",
+      "probability_positive": 0.934,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1142,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod41/unit3_injury_mechanism.json",
+      "standard_error": 0.002713024812037543
+    },
+    "mod41_u3_resid_load_given_inj_OL_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap, 15 looks (8 mediation arms recorded, 7 first-stage slopes in injury-count units not recordable).",
+      "closing_ground": null,
+      "description": "Residual recent workload added to served logit plus Out/Doubtful count differential for group OL (home minus away, same-week report), LOSO 2020-25, opener grade, log loss gain vs that base; decisive 211-191; residual coefficient -0.0439; in-sample gap 0.00029.",
+      "effect": 0.004084080907916343,
+      "effect_units": "log_loss_improvement",
+      "family": "mod41_residual_load_u3_injury_mechanism",
+      "interval": [
+        -0.0012302239502396256,
+        0.00934157158092003
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Tests whether the recent-workload effect survives once the team's missing players at one position group are accounted for; if it shrinks, workload acts through injuries.",
+      "probability_positive": 0.946,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1142,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod41/unit3_injury_mechanism.json",
+      "standard_error": 0.002696886615091749
+    },
+    "mod41_u3_resid_load_given_inj_QB_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap, 15 looks (8 mediation arms recorded, 7 first-stage slopes in injury-count units not recordable).",
+      "closing_ground": null,
+      "description": "Residual recent workload added to served logit plus Out/Doubtful count differential for group QB (home minus away, same-week report), LOSO 2020-25, opener grade, log loss gain vs that base; decisive 193-175; residual coefficient -0.0442; in-sample gap 0.00020.",
+      "effect": 0.004229824558375617,
+      "effect_units": "log_loss_improvement",
+      "family": "mod41_residual_load_u3_injury_mechanism",
+      "interval": [
+        -0.0010796965821844638,
+        0.009588766723978537
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Tests whether the recent-workload effect survives once the team's missing players at one position group are accounted for; if it shrinks, workload acts through injuries.",
+      "probability_positive": 0.947,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1142,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod41/unit3_injury_mechanism.json",
+      "standard_error": 0.0027215467617762758
+    },
+    "mod41_u3_resid_load_given_inj_RB_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap, 15 looks (8 mediation arms recorded, 7 first-stage slopes in injury-count units not recordable).",
+      "closing_ground": null,
+      "description": "Residual recent workload added to served logit plus Out/Doubtful count differential for group RB (home minus away, same-week report), LOSO 2020-25, opener grade, log loss gain vs that base; decisive 211-188; residual coefficient -0.0439; in-sample gap 0.00019.",
+      "effect": 0.004181060825181548,
+      "effect_units": "log_loss_improvement",
+      "family": "mod41_residual_load_u3_injury_mechanism",
+      "interval": [
+        -0.0010885131373099932,
+        0.009474644653170975
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Tests whether the recent-workload effect survives once the team's missing players at one position group are accounted for; if it shrinks, workload acts through injuries.",
+      "probability_positive": 0.95,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1142,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod41/unit3_injury_mechanism.json",
+      "standard_error": 0.002694683109816573
+    },
+    "mod41_u3_resid_load_given_inj_all_groups_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap, 15 looks (8 mediation arms recorded, 7 first-stage slopes in injury-count units not recordable).",
+      "closing_ground": null,
+      "description": "Residual recent workload added to served logit plus Out/Doubtful count differential for group all_groups (home minus away, same-week report), LOSO 2020-25, opener grade, log loss gain vs that base; decisive 162-149; residual coefficient -0.0441; in-sample gap 0.00019.",
+      "effect": 0.0041880043079912666,
+      "effect_units": "log_loss_improvement",
+      "family": "mod41_residual_load_u3_injury_mechanism",
+      "interval": [
+        -0.0010483172579944244,
+        0.00953307259383117
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Tests whether the recent-workload effect survives once the team's missing players at one position group are accounted for; if it shrinks, workload acts through injuries.",
+      "probability_positive": 0.945,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1142,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod41/unit3_injury_mechanism.json",
+      "standard_error": 0.002699334145873876
+    },
+    "mod41_u3_resid_load_given_inj_none_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap, 15 looks (8 mediation arms recorded, 7 first-stage slopes in injury-count units not recordable).",
+      "closing_ground": null,
+      "description": "Residual recent workload added to served logit plus Out/Doubtful count differential for group none (home minus away, same-week report), LOSO 2020-25, opener grade, log loss gain vs that base; decisive 209-193; residual coefficient -0.0439; in-sample gap 0.00031.",
+      "effect": 0.004058555850872891,
+      "effect_units": "log_loss_improvement",
+      "family": "mod41_residual_load_u3_injury_mechanism",
+      "interval": [
+        -0.0011994092671537059,
+        0.00940229075599631
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Tests whether the recent-workload effect survives once the team's missing players at one position group are accounted for; if it shrinks, workload acts through injuries.",
+      "probability_positive": 0.945,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1142,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod41/unit3_injury_mechanism.json",
+      "standard_error": 0.002704515312028065
+    },
+    "mod41_u3_resid_load_given_inj_receivers_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap, 15 looks (8 mediation arms recorded, 7 first-stage slopes in injury-count units not recordable).",
+      "closing_ground": null,
+      "description": "Residual recent workload added to served logit plus Out/Doubtful count differential for group receivers (home minus away, same-week report), LOSO 2020-25, opener grade, log loss gain vs that base; decisive 173-171; residual coefficient -0.0434; in-sample gap 0.00034.",
+      "effect": 0.003928951034363637,
+      "effect_units": "log_loss_improvement",
+      "family": "mod41_residual_load_u3_injury_mechanism",
+      "interval": [
+        -0.001253279164418697,
+        0.009242988725555146
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Tests whether the recent-workload effect survives once the team's missing players at one position group are accounted for; if it shrinks, workload acts through injuries.",
+      "probability_positive": 0.938,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1142,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod41/unit3_injury_mechanism.json",
+      "standard_error": 0.002677619359687205
+    }
+  }
+}

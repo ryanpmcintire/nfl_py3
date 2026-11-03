@@ -27,6 +27,7 @@ SHARP_CUTOFF_ET = (12, 30)
 TERMS = (
     *("sky03", "sky03_separated", "sky04", "env02", "sky01", "sky01snap", "surface"),
     "mod35_cold_exposure",
+    "mod41_residual_load",
 )
 
 
@@ -848,6 +849,54 @@ def mod35_week(week, games, now):
     return pd.Series(x, dtype=float), fr, ts
 
 
+def mod41_frozen():
+    path = OUT / "mod41_residual_load" / "frozen_coefficients.json"
+    body = json.loads(path.read_text())
+    assert body["no_2026_outcomes"] is True
+    keys = ("b_logit_per_unit", "intercept", "decomposition_beta_const_own_opp")
+    assert body["coefficient_hash"] == sha_obj({k: body[k] for k in keys})
+    body["b_logit_per_point"] = body["b_logit_per_unit"]
+    return body
+
+
+def mod41_week(week, games, now):
+    import mod41_freeze_residual_load as f41
+
+    fr = mod41_frozen()
+    pbp = f41.latest_pbp(ROOT / "data" / "pbp" / "raw")
+    t = f41.season_team_games(pbp, SEASON)
+    assert int(t.week.max()) < week
+    t = t[t.week < week]
+    st = f41.team_state(t)
+    b0, b_own, b_opp = fr["decomposition_beta_const_own_opp"]
+    x = {}
+    ts = {
+        "pbp_snapshot": pbp.name,
+        "trait_data_through_week": int(t.week.max()),
+        "per_game": {},
+        "missing": [],
+    }
+    for r in games.itertuples():
+        if r.home_team not in st.index or r.away_team not in st.index:
+            ts["missing"].append({"game_id": r.game_id, "reason": "team without prior games"})
+            continue
+        h, a = st.loc[r.home_team], st.loc[r.away_team]
+        if not (bool(h.ok) and bool(a.ok)):
+            ts["missing"].append({"game_id": r.game_id, "reason": "fewer than 4 prior games"})
+            continue
+        s_total = float(h.load_total - a.load_total)
+        s_own = float(h.own_td - a.own_td)
+        s_opp = float(h.opp3 - a.opp3)
+        x[r.game_id] = s_total - (b0 + b_own * s_own + b_opp * s_opp)
+        ts["per_game"][r.game_id] = {
+            "s_load_total": s_total,
+            "s_own_tempo": s_own,
+            "s_opp_tempo": s_opp,
+            "residual": x[r.game_id],
+        }
+    return pd.Series(x, dtype=float), fr, ts
+
+
 def combine(term, games, x, fr):
     out = []
     if term == "env02":
@@ -931,6 +980,8 @@ def main():
                 x, fr, ts = surface_week(week, games, now)
             elif term == "mod35_cold_exposure":
                 x, fr, ts = mod35_week(week, games, now)
+            elif term == "mod41_residual_load":
+                x, fr, ts = mod41_week(week, games, now)
             else:
                 x, fr, ts = sky01_week(week, games, now, term)
         except SystemExit:

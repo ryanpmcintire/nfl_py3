@@ -23,6 +23,7 @@ TERM_DIRS = [
     "sky01snap",
     "surface",
     "mod35_cold_exposure",
+    "mod41_residual_load",
 ]
 CFB_EXCLUDED = ["xlg12_cfb_v1", "xlg12_cfb_v2"]
 

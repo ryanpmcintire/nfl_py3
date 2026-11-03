@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T21:06:00.811543+00:00`
+Refreshed at: `2026-11-03T21:06:57.572249+00:00`
 
 ## Start here
 
@@ -21,13 +21,18 @@ Refreshed at: `2026-11-03T21:06:00.811543+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `7d20ce783c55` — Refresh session handoff
-- Pending change set: 254 paths
+- Baseline commit: `6473bc403ac0` — Master lane state 16:15
+- Pending change set: 258 paths
   - ` M config/source_policies.json`
-  - `M  docs/lanes/backlog-all-2026-11-02.md`
-  - ` M docs/lanes/mod-41-mod41-cumulative-workload.md`
+  - ` M docs/lanes/lead-103-read-block-ablation.md`
+  - `M  docs/lanes/mod-41-mod41-cumulative-workload.md`
   - ` M docs/lanes/sim-12-sim12-ingame-exits.md`
-  - ` M scripts/forward_terms_week.py`
+  - `A  registry/weak_signals/mod41_residual_load_u3_injury_mechanism.json`
+  - `M  scripts/forward_ledger.py`
+  - `M  scripts/forward_terms_week.py`
+  - ` M scripts/mod24_more_games.py`
+  - `A  scripts/mod41_freeze_residual_load.py`
+  - `A  scripts/mod41_unit3_injury_mechanism.py`
   - ` M scripts/sim10_drive.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
@@ -38,12 +43,7 @@ Refreshed at: `2026-11-03T21:06:00.811543+00:00`
   - `?? docs/move_reasons.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
-  - ...and 234 more
+  - ...and 238 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
