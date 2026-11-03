@@ -1483,6 +1483,9 @@ def _late_week_change_reason(
     return sentence
 
 
+late_week_change_reason = _late_week_change_reason
+
+
 def _latest_revision_by_game(revisions: pd.DataFrame) -> dict[str, dict[str, Any]]:
 
     if revisions.empty:
@@ -4423,6 +4426,7 @@ __all__ = [
     "WeekChangeRow",
     "WeekChangesPanel",
     "injury_report_state",
+    "late_week_change_reason",
     "load_board_content",
     "verify_number_provenance",
 ]

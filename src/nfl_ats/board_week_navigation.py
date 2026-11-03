@@ -117,14 +117,17 @@ def _readiness(
 
 
 def archive_boards(
-    content: SiteContent, data_root: Path | None, generated_at: datetime
+    content: SiteContent,
+    data_root: Path | None,
+    generated_at: datetime,
+    artifacts_root: Path | None = None,
 ) -> tuple[BoardContent, ...]:
     resolved_data_root = data_root or Path(os.environ.get("NFL_ATS_DATA_DIR", "data"))
     try:
         current = _current_week(resolved_data_root, generated_at)
     except (OSError, ValueError, KeyError):
         return ()
-    return build_archived_boards(content, resolved_data_root, current)
+    return build_archived_boards(content, resolved_data_root, current, artifacts_root)
 
 
 def _archive_markup(boards: tuple[BoardContent, ...]) -> str:

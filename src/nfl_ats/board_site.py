@@ -26,7 +26,7 @@ def build_site(
         require_fresh_arrest_overlay=require_fresh_arrest_overlay,
     )
 
-    archives = board_week_navigation.archive_boards(content, data_root, generated)
+    archives = board_week_navigation.archive_boards(content, data_root, generated, artifacts_root)
     pages = {
         board_terminal.PICKS_PAGE: board_terminal.render(content.board),
         board_terminal.MODEL_PAGE: board_terminal.render_model_page(content.model),

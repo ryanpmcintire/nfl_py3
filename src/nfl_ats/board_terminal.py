@@ -1156,6 +1156,7 @@ def _board_section(content: BoardContent, *, archived: bool = False) -> str:
         "&middot; every pool card played "
         "&middot; click a row to inspect</span>"
         "</div>"
+        f"{_changed_strip_html(content, archived=archived)}"
         f"{_board_sort_toggle_html()}"
         f"{'' if archived else _copy_sheet_html(content)}"
         f"{column_guide}"
@@ -1590,6 +1591,35 @@ def _week_change_side_html(team: str, best: bool, *, ahead: bool = False) -> str
     star = '<span class="star">&#9733;</span>' if best else ""
     flag = '<span class="flip-pill">not in the picks table yet</span>' if ahead else ""
     return f"{star}{escape(team)}{flag}"
+
+
+def _changed_strip_html(content: BoardContent, *, archived: bool = False) -> str:
+    panel = content.week_changes
+    if not panel.comparable:
+        return ""
+    if not panel.rows:
+        return (
+            '<p class="policy-note changed-strip"><b>Changed since Tuesday</b> &mdash; '
+            "No changes since Tuesday.</p>"
+        )
+    link = ', <a href="#changed-h">details below</a>'
+    items = []
+    for row in panel.rows:
+        if row.side_moved:
+            star = " The Best Pick moved with it." if row.now_best and not row.was_best else ""
+            lead = f"{row.matchup}: {row.was_team} to {row.now_team}."
+            items.append(f"{lead} {row.reason}{star}")
+        elif row.now_best and not row.was_best:
+            items.append(f"{row.matchup}: now the Best Pick. {row.reason}")
+        else:
+            items.append(f"{row.matchup}: no longer the Best Pick. {row.reason}")
+    lines = "".join(
+        f'<span class="game-sub" style="display:block;">{escape(i)}</span>' for i in items
+    )
+    return (
+        '<div class="policy-note changed-strip"><b>Changed since Tuesday</b> &mdash; '
+        f"{count_noun(len(items), 'game')} changed{'' if archived else link}.{lines}</div>"
+    )
 
 
 def _week_changes_section(content: BoardContent) -> str:

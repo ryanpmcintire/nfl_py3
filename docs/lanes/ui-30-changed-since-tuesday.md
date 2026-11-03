@@ -14,3 +14,7 @@ First unit: Add a short strip above the picks listing each changed game, previou
 
 ## Open
 Data: Pick-revision ledger (local). Zero crossing closes nothing; one fitted probability selects the side; weights, cut points and alphas chosen leave-one-season-out; every cell counted as a look; unresolved results go through nfl-ats weak-signals record with a closing ground; graded at the opener (opener as model input, with intercept-only and line-move-only controls) on the same market and simple-model baselines. Look count and family declared before any sign is seen.
+
+## Unit 1 done 2026-11-03T21:25Z
+Strip at top of the board column (board_terminal.py _changed_strip_html, called from _board_section); data from content.week_changes. Archived weeks now get their own panel from the pick-revision ledger (board_archive.py _archived_changes; artifacts_root threaded via board_site/board_week_navigation). Week 9: "No changes since Tuesday."; Week 8: 5 games changed. No cover-chance-change line (no derivable threshold wired; quote_step in board_move_reason.py exists). Archive reasons are generic. 390px not rendered, by CSS read only. Not published/committed.
+Next: cover-chance changes beyond quote_step; render at 390.

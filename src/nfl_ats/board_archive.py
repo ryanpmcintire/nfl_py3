@@ -6,8 +6,17 @@ from pathlib import Path
 
 import pandas as pd
 
-from nfl_ats.board_content import AttributionPanel, BoardContent, GameDive, GameRow
+from nfl_ats.board_content import (
+    AttributionPanel,
+    BoardContent,
+    GameDive,
+    GameRow,
+    WeekChangeRow,
+    WeekChangesPanel,
+    late_week_change_reason,
+)
 from nfl_ats.board_site_content import HistoryPickRow, SiteContent
+from nfl_ats.pick_refresh import load_pick_revisions
 from nfl_ats.tiebreaker import newest_schedules_path
 
 
@@ -65,9 +74,57 @@ def _dive(game: GameRow) -> GameDive:
     )
 
 
+def _archived_changes(
+    revisions: pd.DataFrame, games: tuple[GameRow, ...], season: int, week: int
+) -> WeekChangesPanel:
+    if revisions.empty:
+        return WeekChangesPanel()
+    mask = revisions["season"].astype(float).eq(season) & revisions["week"].astype(float).eq(week)
+    week_rows = revisions.loc[mask].sort_values("revision_recorded_at_utc")
+    if week_rows.empty:
+        return WeekChangesPanel()
+    first = {str(r["game_id"]): r for _, r in week_rows.drop_duplicates("game_id").iterrows()}
+    last = {
+        str(r["game_id"]): r
+        for _, r in week_rows.drop_duplicates("game_id", keep="last").iterrows()
+    }
+    rows = []
+    for game in games:
+        if game.game_id not in first:
+            continue
+        was_side = str(first[game.game_id].get("previous_pick_side") or "")
+        now_side = str(last[game.game_id].get("new_pick_side") or "")
+        if was_side not in ("HOME", "AWAY") or now_side not in ("HOME", "AWAY"):
+            continue
+        if was_side == now_side:
+            continue
+        rows.append(
+            WeekChangeRow(
+                game_id=game.game_id,
+                matchup=f"{game.away} at {game.home}",
+                when_text="",
+                was_team=game.home if was_side == "HOME" else game.away,
+                was_best=False,
+                now_team=game.home if now_side == "HOME" else game.away,
+                now_best=game.is_best,
+                reason=late_week_change_reason(last[game.game_id]),
+            )
+        )
+    return WeekChangesPanel(comparable=True, summary="", rows=tuple(rows))
+
+
 def build_archived_boards(
-    content: SiteContent, data_root: Path, current: tuple[int, int]
+    content: SiteContent,
+    data_root: Path,
+    current: tuple[int, int],
+    artifacts_root: Path | None = None,
 ) -> tuple[BoardContent, ...]:
+    revisions = pd.DataFrame()
+    if artifacts_root is not None:
+        try:
+            revisions = load_pick_revisions(artifacts_root)
+        except (ValueError, OSError):
+            revisions = pd.DataFrame()
     grouped: dict[tuple[int, int], list[HistoryPickRow]] = {}
     for row in content.history.picks:
         if row.season is not None and row.week is not None and (row.season, row.week) < current:
@@ -102,6 +159,7 @@ def build_archived_boards(
                 flip_count=0,
                 strong_count=0,
                 calibrated_probability=False,
+                week_changes=_archived_changes(revisions, games, season, week),
             )
         )
     return tuple(boards)
