@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T21:43:46.784569+00:00`
+Refreshed at: `2026-11-03T21:43:52.174713+00:00`
 
 ## Start here
 
@@ -21,14 +21,12 @@ Refreshed at: `2026-11-03T21:43:46.784569+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `b497f05b3236` — Republish the site with the latest settled results
-- Pending change set: 255 paths
+- Baseline commit: `1516f3ae5f29` — LEAD-106 injury-language read builder (frozen prompt; 331-row stratified set; scoring pending; review: unmatched snap-count rows must not count as not played)
+- Pending change set: 254 paths
+  - `M  HANDOFF.md`
   - ` M config/source_policies.json`
   - ` M docs/lanes/lead-102-name-blinded-control-read.md`
-  - `M  docs/lanes/lead-106-injury-language-read.md`
   - ` M docs/lanes/mkt-25-opener-revision-size.md`
-  - `A  scripts/lead106_injury_language.py`
-  - `A  scripts/lead106_prompt.md`
   - ` M scripts/mkt25_opener_revision.py`
   - ` M scripts/sim10_drive.py`
   - `?? an.csv`
@@ -43,7 +41,9 @@ Refreshed at: `2026-11-03T21:43:46.784569+00:00`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
   - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
   - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
-  - ...and 235 more
+  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
+  - ...and 234 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
