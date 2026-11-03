@@ -1,16 +1,21 @@
 # MOD-43
 
 ## Goal
-Quarterback in-season learning curve: starts index for rookie and first-year starters as a margin term (ROADMAP MOD-43).
+QB in-season learning curve: does EPA/play rise with start index (young or new-to-team QBs) and is it priced at the opener (ROADMAP MOD-43).
 
 ## State
-Added 2026-11-03 (backlog expansion 5), unmeasured, nothing run. Mechanism: Young starters improve over their first dozen starts faster than the opener's season-lagged rating assumes; the gap should be largest in weeks 4-12. Fitted term: log(starts+1) times the rookie flag, difference home minus away, entering the margin ridge.
+Unit 1 done 2026-11-03 21:36Z via scripts/mod43_qb_learning_curve.py (outputs tests/scratch/mod43/: curve_cells.csv, result.json). Starter = most dropbacks per team game, REG 2009-2025; EPA/dropback minus season mean; within-QB (FE) dropback-weighted slope on log(1+starts), QB-cluster bootstrap 2000 draws. Early = within 1 season of debut (career) or of stint start (team), debut/stint observed after 2009; veteran = rest observed. Declared before looking.
+Curve (EPA/db per log-start): career early +0.021 [0.002,0.040] P+ .987 (157 QBs, 2161 g; odd/even seasons +.009/+.013); career veteran -0.030 [-0.058,-0.005] P+ .009; team early +0.011 [-0.001,0.023] P+ .96 (split halves -.010/+.025); team veteran -0.014 [-0.048,0.021] P+ .22.
+Feature: slope (LOSO, other seasons) x (log1p starts now - log1p starts at season start) of prior-game starter, home minus away. Opener 2020-25, n 1503, LOSO logit:
+career: decisive 135 flips, aug 69-66 vs served; LL oos .69217 vs served .69216 (dLL -0.00001 [-0.0012,0.0012] P+ .48); in-sample-minus-oos gap -0.00055; seasons+ 3/6; W-L 803-700 vs served 800-703.
+team: decisive 81, aug 37-44; dLL -0.00054 [-0.0012,0.0001] P+ .056; seasons+ 0/6; W-L 793-710.
+Intercept-only LL .69328. Looks: 4 curve cells + 2 pick terms = 6, family mod43_qb_learning_curve, all recorded unresolved_below_power.
 
 ## Tried
-Novelty check only. Nearest: PER-12 (return from absence), PER-11 (acquired players), MOD-22; grep 'learning curve' found only LEAD-28 text. Differs: Development within a season, not absence or arrival.
+One definition of early/start/projection; prior-game starter as pregame QB proxy.
 
 ## Next
-First unit: Estimate EPA per dropback versus start index for first-year starters 2009-2025, then LOSO add-one on the opener residual with a permutation null over weeks.
+Per-fold coefficients are in result.json coef; check weeks 4-12 only; projection with Bayes-shrunk per-QB slopes; actual-starter-known (depth chart) instead of prior starter.
 
 ## Open
-Data: nflverse rosters and play-by-play EPA per dropback (free). Zero crossing closes nothing; one fitted probability selects the side; weights, cut points and alphas chosen leave-one-season-out; every cell counted as a look; unresolved results go through nfl-ats weak-signals record with a closing ground; graded at the opener (opener as model input, with intercept-only and line-move-only controls) on the same market and simple-model baselines. Look count and family declared before any sign is seen.
+Curve is real for early-career (positive, odd/even consistent) but vets negative (age/regression to mean?), and no pricing gap detected: opener already absorbs it or power is lacking.

@@ -1,0 +1,173 @@
+{
+  "family": "mod43_qb_learning_curve",
+  "signals": {
+    "mod43 career curve term on served logit opener": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "LOSO log loss improvement of served plus projected QB EPA change (career index), 2020-25",
+      "effect": -1.33e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "mod43_qb_learning_curve",
+      "interval": [
+        -0.00119,
+        0.00118
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.484,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod43/result.json",
+      "standard_error": null
+    },
+    "mod43 career-start curve first 2 seasons": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "within-QB EPA per dropback slope on log(1+career starts), debut observed, QB-cluster bootstrap",
+      "effect": 0.0212,
+      "effect_units": "epa_per_play",
+      "family": "mod43_qb_learning_curve",
+      "interval": [
+        0.0024,
+        0.0399
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.987,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2161,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "tests/scratch/mod43/result.json",
+      "standard_error": null
+    },
+    "mod43 career-start curve veterans": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "same slope for QBs beyond 2 seasons since debut",
+      "effect": -0.0304,
+      "effect_units": "epa_per_play",
+      "family": "mod43_qb_learning_curve",
+      "interval": [
+        -0.0583,
+        -0.0047
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.0085,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 3530,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "tests/scratch/mod43/result.json",
+      "standard_error": null
+    },
+    "mod43 team-start curve first 2 seasons with team": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "slope on log(1+starts with current team)",
+      "effect": 0.0106,
+      "effect_units": "epa_per_play",
+      "family": "mod43_qb_learning_curve",
+      "interval": [
+        -0.0009,
+        0.0233
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.9635,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 3957,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "tests/scratch/mod43/result.json",
+      "standard_error": null
+    },
+    "mod43 team-start curve term on served logit opener": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "LOSO log loss improvement of served plus projected QB EPA change (team index), 2020-25",
+      "effect": -0.000543,
+      "effect_units": "log_loss_improvement",
+      "family": "mod43_qb_learning_curve",
+      "interval": [
+        -0.00123,
+        0.000122
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.0555,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod43/result.json",
+      "standard_error": null
+    },
+    "mod43 team-start curve veterans with team": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "slope on log(1+starts with team), beyond 2 seasons",
+      "effect": -0.0138,
+      "effect_units": "epa_per_play",
+      "family": "mod43_qb_learning_curve",
+      "interval": [
+        -0.0477,
+        0.0212
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.2195,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2594,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "tests/scratch/mod43/result.json",
+      "standard_error": null
+    }
+  }
+}
