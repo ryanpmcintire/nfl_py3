@@ -140,6 +140,230 @@
       ],
       "source": "artifacts/per16",
       "standard_error": 0.044
+    },
+    "per16_u2_2026_read_vs_ctrl_coach_logloss_q": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "2026 wording read gain in log loss vs position x practice cells plus coach offset, 87 Questionable rows",
+      "effect": -0.00099,
+      "effect_units": "log_loss_improvement",
+      "family": "per16_team_designation_habit",
+      "interval": [
+        -0.0536,
+        0.0512
+      ],
+      "league": "nfl",
+      "notes": "Unit 2 looks: 4 reliability cells, 8 ladder comparisons x 2 metrics, 2 selection tests, 5 arms x 2 subsets x 2 metrics 2026 = 46 plus unit 1 count. Questionable only; verified rows only; OL has no verified rows (0.2%); verified skill players play more than unverified (appearance in play-by-play), so levels are biased up.",
+      "plain_summary": "On 87 Questionable rows the wording read no longer beats habit plus practice and position.",
+      "probability_positive": 0.489,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 87,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/per16/unit2_*.json",
+      "standard_error": null
+    },
+    "per16_u2_q_coach_over_ctrl_brier": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Coach offset on top of position x practice cells vs those cells alone, Brier, held out",
+      "effect": 0.00193,
+      "effect_units": "brier_improvement",
+      "family": "per16_team_designation_habit",
+      "interval": [
+        0.00085,
+        0.00302
+      ],
+      "league": "nfl",
+      "notes": "Unit 2 looks: 4 reliability cells, 8 ladder comparisons x 2 metrics, 2 selection tests, 5 arms x 2 subsets x 2 metrics 2026 = 46 plus unit 1 count. Questionable only; verified rows only; OL has no verified rows (0.2%); verified skill players play more than unverified (appearance in play-by-play), so levels are biased up.",
+      "plain_summary": "Coach habit adds a small Brier gain over the position-aware ladder.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 9575,
+      "seasons": [
+        2016,
+        2025
+      ],
+      "source": "artifacts/per16/unit2_*.json",
+      "standard_error": null
+    },
+    "per16_u2_q_coach_over_ctrl_logloss": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Coach offset on top of position x practice cells vs those cells alone, held out",
+      "effect": 0.00142,
+      "effect_units": "log_loss_improvement",
+      "family": "per16_team_designation_habit",
+      "interval": [
+        -0.0028,
+        0.0051
+      ],
+      "league": "nfl",
+      "notes": "Unit 2 looks: 4 reliability cells, 8 ladder comparisons x 2 metrics, 2 selection tests, 5 arms x 2 subsets x 2 metrics 2026 = 46 plus unit 1 count. Questionable only; verified rows only; OL has no verified rows (0.2%); verified skill players play more than unverified (appearance in play-by-play), so levels are biased up.",
+      "plain_summary": "Coach habit's extra gain over the position-aware ladder is small in log loss.",
+      "probability_positive": 0.7575,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 9575,
+      "seasons": [
+        2016,
+        2025
+      ],
+      "source": "artifacts/per16/unit2_*.json",
+      "standard_error": null
+    },
+    "per16_u2_q_coach_splithalf_controlled": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Questionable coach split-half residual correlation after designation x practice x position-group cell rate",
+      "effect": 0.4082,
+      "effect_units": "correlation",
+      "family": "per16_team_designation_habit",
+      "interval": [
+        0.3059,
+        0.4997
+      ],
+      "league": "nfl",
+      "notes": "Unit 2 looks: 4 reliability cells, 8 ladder comparisons x 2 metrics, 2 selection tests, 5 arms x 2 subsets x 2 metrics 2026 = 46 plus unit 1 count. Questionable only; verified rows only; OL has no verified rows (0.2%); verified skill players play more than unverified (appearance in play-by-play), so levels are biased up.",
+      "plain_summary": "Coach habit survives the position and practice controls.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 366,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/per16/unit2_*.json",
+      "standard_error": null
+    },
+    "per16_u2_q_coach_yoy_controlled": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Questionable coach yoy same team residual correlation after position x practice controls",
+      "effect": 0.3008,
+      "effect_units": "correlation",
+      "family": "per16_team_designation_habit",
+      "interval": [
+        0.1725,
+        0.4174
+      ],
+      "league": "nfl",
+      "notes": "Unit 2 looks: 4 reliability cells, 8 ladder comparisons x 2 metrics, 2 selection tests, 5 arms x 2 subsets x 2 metrics 2026 = 46 plus unit 1 count. Questionable only; verified rows only; OL has no verified rows (0.2%); verified skill players play more than unverified (appearance in play-by-play), so levels are biased up.",
+      "plain_summary": "Coach habit carries to the next season after controls.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 273,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/per16/unit2_*.json",
+      "standard_error": null
+    },
+    "per16_u2_q_ctrl_coach_vs_dxp_logloss": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Position x practice cells plus shrunk coach offset vs designation x practice ladder, held out",
+      "effect": 0.00723,
+      "effect_units": "log_loss_improvement",
+      "family": "per16_team_designation_habit",
+      "interval": [
+        0.0026,
+        0.0115
+      ],
+      "league": "nfl",
+      "notes": "Unit 2 looks: 4 reliability cells, 8 ladder comparisons x 2 metrics, 2 selection tests, 5 arms x 2 subsets x 2 metrics 2026 = 46 plus unit 1 count. Questionable only; verified rows only; OL has no verified rows (0.2%); verified skill players play more than unverified (appearance in play-by-play), so levels are biased up.",
+      "plain_summary": "Position-aware coach prior beats the practice ladder on held-out seasons.",
+      "probability_positive": 0.998,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 9575,
+      "seasons": [
+        2016,
+        2025
+      ],
+      "source": "artifacts/per16/unit2_*.json",
+      "standard_error": null
+    },
+    "per16_u2_q_verified_vs_unverified_skill_appearance": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Play-by-play appearance rate of unverified minus verified Questionable QB/RB/WR/TE rows, season x group x practice strata",
+      "effect": -19.27,
+      "effect_units": "rate_pp",
+      "family": "per16_team_designation_habit",
+      "interval": [
+        -23.87,
+        -14.6
+      ],
+      "league": "nfl",
+      "notes": "Unit 2 looks: 4 reliability cells, 8 ladder comparisons x 2 metrics, 2 selection tests, 5 arms x 2 subsets x 2 metrics 2026 = 46 plus unit 1 count. Questionable only; verified rows only; OL has no verified rows (0.2%); verified skill players play more than unverified (appearance in play-by-play), so levels are biased up.",
+      "plain_summary": "Rows without an id match play less, so verified play rates run high.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 5600,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/per16/unit2_*.json",
+      "standard_error": null
+    },
+    "per16_u2_team_habit_verified_vs_unverified": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Team-season appearance residual correlation between verified and unverified skill rows",
+      "effect": 0.0353,
+      "effect_units": "correlation",
+      "family": "per16_team_designation_habit",
+      "interval": [
+        -0.1613,
+        0.2343
+      ],
+      "league": "nfl",
+      "notes": "Unit 2 looks: 4 reliability cells, 8 ladder comparisons x 2 metrics, 2 selection tests, 5 arms x 2 subsets x 2 metrics 2026 = 46 plus unit 1 count. Questionable only; verified rows only; OL has no verified rows (0.2%); verified skill players play more than unverified (appearance in play-by-play), so levels are biased up.",
+      "plain_summary": "Too few team-seasons to say whether the habit shows in unverified rows.",
+      "probability_positive": 0.6365,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 84,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/per16/unit2_*.json",
+      "standard_error": null
     }
   }
 }

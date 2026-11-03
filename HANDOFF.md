@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T23:28:13.669884+00:00`
+Refreshed at: `2026-11-03T23:29:13.176057+00:00`
 
 ## Start here
 
@@ -21,12 +21,21 @@ Refreshed at: `2026-11-03T23:28:13.669884+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `c75ec3bf90ce` — ENG-58 flex audit: 42 real kickoff moves (34 graded, opener grades unaffected; 2026 CHI-GB wk5 flex logged in time); risk: forward guards read kickoff from the static features build, so a flex after a rebuild could let a record be written after the real kickoff
-- Pending change set: 251 paths
-  - `M  HANDOFF.md`
+- Baseline commit: `4e9cfadb47cf` — Refresh session handoff
+- Pending change set: 260 paths
   - ` M config/source_policies.json`
   - ` M docs/lanes/mod-10-graph-rating-base-input.md`
   - ` M docs/lanes/mod-54-mirrored-home-away-training-rows.md`
+  - `M  docs/lanes/per-16-team-reporting-habit-designation-play-rate.md`
+  - ` M registry/weak_signals/mod54_mirrored_rows.json`
+  - `M  registry/weak_signals/per16_team_designation_habit.json`
+  - ` M scripts/forward_terms_week.py`
+  - ` M scripts/lead106_injury_language.py`
+  - ` M scripts/lead99_llm_read.py`
+  - ` M scripts/mod24_forward_log.py`
+  - ` M scripts/mod25_wfj_forward.py`
+  - ` M scripts/mod27_pool_offset_observed.py`
+  - `A  scripts/per16_unit2_confounds.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
@@ -34,16 +43,7 @@ Refreshed at: `2026-11-03T23:28:13.669884+00:00`
   - `?? docs/lanes/machine-crashes-2026-10-31.md`
   - `?? docs/lanes/stealmybitcoin-ctf.md`
   - `?? docs/move_reasons.json`
-  - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
-  - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
-  - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
-  - ...and 231 more
+  - ...and 240 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
