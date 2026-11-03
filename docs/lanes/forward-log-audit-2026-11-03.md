@@ -35,3 +35,11 @@ Root: add forward_terms + travel_interruptions jobs post-lock (week9 lane 3b); d
 
 ## Open
 Whether LEAD-64 deserves a job given n=3 power; draftcap row ID (not named in ROADMAP).
+
+## 2026-11-03 draftcap arm-coefficient gate failure (diagnosis)
+
+- Cause (measured): scripts/draftcap_forward_log.py refits the arm coefficients every run and, before 7f88f2cf (11-02 10:51), compared a sha256 of the JSON dump to the enrolled digest. Refit today: diff_dc_off_ovr 0.027339091611058446 vs frozen 0.02733909161105847, diff_dc_def_ovr -0.23024201922077533 vs -0.23024201922077514 (1e-16 float noise); digest 41f7f3ca... vs enrolled 37d1a0a8.... Every run since 10-22 aborted (10-22, 10-25, 10-29, 11-01).
+- frozen.json untouched since enrolment 2026-10-18 18:50 (not overwritten, not re-enrolled). Same coefficients, so the refit scores the frozen set to 1e-16.
+- Repair already committed in 7f88f2cf: numeric np.allclose against the frozen coefficients. Verified today: `draftcap_forward_log.py --dry --week 9` passes the gate and prints Week 9 rows. Thu 11-05 19:15 and Sun 11-08 11:15 are the draftcap jobs. No edit needed this session.
+- Week 8: no week-08 run file exists in artifacts/draftcap_forward/runs (only 3 Week 7 files). The 11-02 10:50 MANUAL-RUN "OK" printed an empty-logged result: every game was past deadline or had an outcome, so nothing was written. Week 8 is lost and no non-prospective row exists to flag.
+- Open: ruff reports pre-existing E402/B905/E501 in this script (not from the gate fix); left alone.

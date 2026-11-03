@@ -24,7 +24,7 @@ MOS_ROOT = ROOT / "data" / "raw" / "forecast_archive" / "mos_bulletins" / "MEX"
 STATION_MAP = ROOT / "registry" / "reference" / "stadium_station_map.csv"
 MARKET_ROOT = ROOT / "data" / "market" / "raw"
 SHARP_CUTOFF_ET = (12, 30)
-TERMS = ("sky03", "sky04", "env02")
+TERMS = ("sky03", "sky04", "env02", "sky01", "sky01snap", "surface")
 
 
 def sha_file(path):
@@ -511,6 +511,153 @@ def env02_week(week, games, now):
     return pd.Series(x, dtype=float), fr, ts
 
 
+def sky01_frozen(term):
+    path = OUT / term / "frozen_coefficients.json"
+    if path.exists():
+        return json.loads(path.read_text())
+    if term == "sky01":
+        src = ROOT / "artifacts" / "sky01" / "fitted_term.json"
+        b = json.loads(src.read_text())["pooled_coefficient"]
+        name = "sky01_beat_out_count_differential"
+        seasons = [2024, 2025]
+    else:
+        src = ROOT / "artifacts" / "sky01" / "drift_weighted.json"
+        b = json.loads(src.read_text())["weighted_term"]["pooled_coefficient"]
+        name = "sky01_snap_share_weighted_beat_out_differential"
+        seasons = [2024, 2025]
+    body = {
+        "term": name,
+        "b_logit_per_unit": b,
+        "b_logit_per_point": b,
+        "b_fit_seasons": seasons,
+        "b_source_file": str(src.relative_to(ROOT)),
+        "b_source_sha256": sha_file(src),
+        "no_2026_outcomes": True,
+    }
+    body["coefficient_hash"] = sha_obj({"b_logit_per_point": b})
+    body["created_at_utc"] = now_utc().isoformat()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(body, indent=1))
+    return body
+
+
+def newest(pattern):
+    hits = sorted(glob.glob(str(ROOT / pattern)))
+    if not hits:
+        raise FileNotFoundError(pattern)
+    return Path(hits[-1])
+
+
+def sky01_week(week, games, now, term):
+    import sky01_drift_weighted as dw
+    import sky01_news_availability as base
+
+    fr = sky01_frozen(term)
+    sched_file = newest("data/raw/*/schedules.parquet")
+    base.SCHED = sched_file
+    s = base.schedule()
+    tg = base.team_games(s)
+    p = base.beat_rows(tg)
+    p = p[p.created_at <= pd.Timestamp(now)]
+    g = games[["game_id", "home_team", "away_team"]].copy()
+    g["home_team"] = g.home_team.map(base.alias)
+    g["away_team"] = g.away_team.map(base.alias)
+    snap_info = {}
+    if term == "sky01":
+        v = base.feature(p, g)
+    else:
+        snap_dir = newest("data/players/raw/*/snap_counts.parquet").parent
+        dw.SNAPS = snap_dir / "snap_counts.parquet"
+        dw.ROSTERS = snap_dir / "weekly_rosters.parquet"
+        ps, sm = dw.prior_share()
+        v, src, cov = dw.weighted_feature(p, g, ps, sm)
+        snap_info = {
+            "snap_counts_file": str(dw.SNAPS.relative_to(ROOT)),
+            "weekly_rosters_file": str(dw.ROSTERS.relative_to(ROOT)),
+            "weight_source_counts": {k: int(n) for k, n in src.items()},
+            "weight_positive_share": cov,
+            "weight_rule": "in-season mean snap share through the prior week, else prior-season mean share, else 0",  # noqa: E501
+        }
+    x = pd.Series(np.asarray(v, dtype=float), index=games.game_id.values)
+    posts = ROOT / "data" / "processed" / "beat_reporter_posts.parquet"
+    pre = p[p.opener_ts.isin(g_openers(s, games)) & (p.created_at < p.opener_ts)]
+    ts = {
+        "beat_posts_file": str(posts.relative_to(ROOT)),
+        "beat_posts_file_sha256": sha_file(posts),
+        "beat_posts_max_created_at_utc": str(p.created_at.max()),
+        "schedule_file": str(sched_file.relative_to(ROOT)),
+        "post_rule": "out-class beat posts with created_at before Tuesday 12:00 ET opener of the game week and at or after the team's previous kickoff; created_at also at or before run time",  # noqa: E501
+        "posts_counted_for_week": len(pre),
+        **snap_info,
+    }
+    return x, fr, ts
+
+
+def g_openers(s, games):
+    return s[s.game_id.isin(games.game_id)].opener_ts.unique()
+
+
+def surface_frozen():
+    path = OUT / "surface" / "frozen_coefficients.json"
+    if path.exists():
+        return json.loads(path.read_text())
+    import surface_switch_fitted_term as sw
+    from line_move_yardstick_paired_eval import _design, _standardise
+
+    from nfl_ats.pick_probability_fit import FIT_FEATURES, FIT_RIDGE, _fit_logit
+    from nfl_ats.snapshots import latest_snapshot, load_snapshot
+
+    snap = latest_snapshot(ROOT / "data" / "raw")
+    schedules, _ = load_snapshot(snap)
+    flags = sw.point_in_time_surface_switch_flags(schedules)
+    pop = pd.read_parquet(sw.EXTENDED_POPULATION_PATH)
+    pop["game_id"] = pop["game_id"].astype(str)
+    pop = pop.merge(flags, on="game_id", how="left")
+    pop[sw.NEW_TERM] = pop[sw.NEW_TERM].fillna(0.0)
+    assert int(pop.season.max()) < SEASON
+    feats = (*FIT_FEATURES, sw.NEW_TERM)
+    means, stds = _standardise(pop, feats)
+    beta = _fit_logit(
+        _design(pop, feats, means, stds), pop["home_covered"].astype(float).to_numpy(), FIT_RIDGE
+    )
+    b = float(beta[len(feats)] / stds[sw.NEW_TERM])
+    body = {
+        "term": "surface_switch_flag_pit",
+        "b_logit_per_point": b,
+        "five_term_fit_games": len(pop),
+        "fit_seasons": [int(pop.season.min()), int(pop.season.max())],
+        "flag_games_in_fit": int(pop[sw.NEW_TERM].sum()),
+        "fit_population": str(sw.EXTENDED_POPULATION_PATH.relative_to(ROOT)),
+        "fit_population_sha256": sha_file(sw.EXTENDED_POPULATION_PATH),
+        "no_2026_outcomes": True,
+    }
+    body["coefficient_hash"] = sha_obj({"b_logit_per_point": b})
+    body["created_at_utc"] = now_utc().isoformat()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(body, indent=1))
+    return body
+
+
+def surface_week(week, games, now):
+    import surface_switch_fitted_term as sw
+
+    from nfl_ats.snapshots import latest_snapshot, load_snapshot
+
+    fr = surface_frozen()
+    snap = latest_snapshot(ROOT / "data" / "raw")
+    schedules, _ = load_snapshot(snap)
+    flags = sw.point_in_time_surface_switch_flags(schedules)
+    x = flags.set_index("game_id")[sw.NEW_TERM].reindex(games.game_id.values)
+    ts = {
+        "schedule_snapshot": snap.snapshot_id,
+        "schedule_file_sha256": sha_file(snap.schedules_path),
+        "rule": "flag is 1 when the game's venue surface is turf and the away team's modal home surface from games strictly before the game date is grass; venue surface comes from the published schedule, history from completed earlier games",  # noqa: E501
+        "flag_games": [gid for gid, v in x.items() if v == 1.0],
+        "games_without_flag_row": [gid for gid, v in x.items() if pd.isna(v)],
+    }
+    return x, fr, ts
+
+
 def combine(term, games, x, fr):
     out = []
     if term == "env02":
@@ -578,8 +725,12 @@ def main():
                 x, fr, ts = sky03_week(week, games, not a.no_fetch)
             elif term == "sky04":
                 x, fr, ts = sky04_week(week, games, now)
-            else:
+            elif term == "env02":
                 x, fr, ts = env02_week(week, games, now)
+            elif term == "surface":
+                x, fr, ts = surface_week(week, games, now)
+            else:
+                x, fr, ts = sky01_week(week, games, now, term)
         except SystemExit:
             raise
         except Exception as ex:

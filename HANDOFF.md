@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T13:35:22.550763+00:00`
+Refreshed at: `2026-11-03T14:35:51.790813+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-03T13:35:22.550763+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `5a2ca157f7bb` — Backlog wave 2026-11-03: MOD-17 done; SKY, MOD-10, SIM-06/07, ENV-02, LEAD-28/61, pool and forward-log units
-- Pending change set: 247 paths
-  - `M  ROADMAP.md`
+- Baseline commit: `3a7ae4bf7ee9` — POOL-01, POL-05, POL-08 done on the measured pool; SIM-09 variants unblocked
+- Pending change set: 234 paths
   - `M  docs/lanes/backlog-all-2026-11-02.md`
-  - `A  docs/lanes/forward-log-audit-2026-11-03.md`
-  - `M  docs/lanes/pool01-standing-aware-2026-11-02.md`
-  - `A  docs/lanes/scheduler-batch-2026-11-03.md`
-  - `M  docs/lanes/sim09-urgency-stakes.md`
-  - `M  registry/weak_signals/pool01_standing_aware.json`
-  - `M  scripts/mod25d_variance.py`
-  - `M  scripts/mod25e_desp.py`
-  - `M  scripts/mod25e_rulestr.py`
-  - `A  scripts/nv_path.py`
-  - `A  scripts/pool01_field_best_pick.py`
-  - `A  scripts/pool01_forward_sim.py`
-  - `M  scripts/sim09_f3.py`
-  - `M  scripts/sim09_personnel.py`
-  - `M  scripts/sim09_u4d.py`
-  - `M  scripts/sim09_urgency.py`
+  - `M  docs/lanes/forward-log-audit-2026-11-03.md`
+  - `M  docs/lanes/forward-terms-2026-11-03.md`
+  - `M  scripts/forward_terms_week.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - ...and 227 more
+  - `?? docs/lanes/c-drive-space-2026-10-31.md`
+  - `?? docs/lanes/machine-crashes-2026-10-31.md`
+  - `?? docs/lanes/stealmybitcoin-ctf.md`
+  - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
+  - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
+  - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
+  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
+  - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
+  - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
+  - ...and 214 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
