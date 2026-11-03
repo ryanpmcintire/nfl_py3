@@ -1,0 +1,201 @@
+{
+  "family": "mod51_served_base_retest",
+  "signals": {
+    "mod51_mod40_cpoe_ryoe_sum_served": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval straddles zero both sides; no positive control; no resolved wrong sign.",
+      "closing_ground": null,
+      "description": "Served base (out_of_season_home_probability, artifacts/pick_probability/20261103T195411Z), LOSO 2020-25, opener grade; raw-base cell is the original study. MOD-40 CPOE+RYOE gap sum added to the served logit; decisive 193 flips, term +7 wins net; coef negative 6/6 folds",
+      "effect": 0.0004,
+      "effect_units": "log_loss_improvement",
+      "family": "mod51_served_base_retest",
+      "interval": [
+        -0.00169,
+        0.00247
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Gap term still adds nothing measurable on the true served probability.",
+      "probability_positive": 0.637,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.59,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod-51-served-base-retest-of-new-pregame-terms.md",
+      "standard_error": null
+    },
+    "mod51_mod42_cont_x_pressure_served": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval straddles zero both sides; no positive control; no resolved wrong sign.",
+      "closing_ground": null,
+      "description": "Served base (out_of_season_home_probability, artifacts/pick_probability/20261103T195411Z), LOSO 2020-25, opener grade; raw-base cell is the original study. MOD-42 line continuity + continuity x pressure on the served logit; decisive 195 flips, term 86-109",
+      "effect": -0.00079,
+      "effect_units": "log_loss_improvement",
+      "family": "mod51_served_base_retest",
+      "interval": [
+        -0.00338,
+        0.00177
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Continuity terms still do not help on the served probability.",
+      "probability_positive": 0.281,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.062,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod-51-served-base-retest-of-new-pregame-terms.md",
+      "standard_error": null
+    },
+    "mod51_mod43_career_curve_served": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval straddles zero both sides; no positive control; no resolved wrong sign.",
+      "closing_ground": null,
+      "description": "Served base (out_of_season_home_probability, artifacts/pick_probability/20261103T195411Z), LOSO 2020-25, opener grade; raw-base cell is the original study. MOD-43 QB career learning-curve term on the served logit; decisive 59, term 28-31; coef positive 6/6",
+      "effect": -3e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "mod51_served_base_retest",
+      "interval": [
+        -0.00105,
+        0.00099
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "QB learning-curve term adds nothing on the served probability.",
+      "probability_positive": 0.472,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod-51-served-base-retest-of-new-pregame-terms.md",
+      "standard_error": null
+    },
+    "mod51_mod44_coach_states_served": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval straddles zero both sides; no positive control; no resolved wrong sign.",
+      "closing_ground": null,
+      "description": "Served base (out_of_season_home_probability, artifacts/pick_probability/20261103T195411Z), LOSO 2020-25, opener grade; raw-base cell is the original study. MOD-44 first-year + interim coach states on the served logit; decisive 135, term 63-72; interim coef positive 6/6, first-year negative 6/6",
+      "effect": -0.00019,
+      "effect_units": "log_loss_improvement",
+      "family": "mod51_served_base_retest",
+      "interval": [
+        -0.00224,
+        0.00187
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Coach tenure states still add nothing on the served probability.",
+      "probability_positive": 0.427,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod-51-served-base-retest-of-new-pregame-terms.md",
+      "standard_error": null
+    },
+    "mod51_mod45_tempo_scale_served": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval straddles zero both sides; no positive control; no resolved wrong sign.",
+      "closing_ground": null,
+      "description": "Served base (out_of_season_home_probability, artifacts/pick_probability/20261103T195411Z), LOSO 2020-25, opener grade; raw-base cell is the original study. MOD-45 tempo scale term (logit shift of the scaled vs base discrete read) on the served logit; decisive 145, term 81-64; coef unit-scale unstable (tiny delta)",
+      "effect": -0.00031,
+      "effect_units": "log_loss_improvement",
+      "family": "mod51_served_base_retest",
+      "interval": [
+        -0.0027,
+        0.00202
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Tempo width scaling does not improve the served probability.",
+      "probability_positive": 0.397,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.69,
+      "sample_blocks": 6,
+      "sample_games": 1492,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod-51-served-base-retest-of-new-pregame-terms.md",
+      "standard_error": null
+    },
+    "mod51_mod46_run_adj_skew_served": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval straddles zero both sides; no positive control; no resolved wrong sign.",
+      "closing_ground": null,
+      "description": "Served base (out_of_season_home_probability, artifacts/pick_probability/20261103T195411Z), LOSO 2020-25, opener grade; raw-base cell is the original study. MOD-46 favourite run-share trait pool read minus control read on the served logit; decisive 254, term 131-123; placebo arm gets +0.00234 P+ .833 (253, 140-113); coef negative 6/6 incl placebo",
+      "effect": 0.00231,
+      "effect_units": "log_loss_improvement",
+      "family": "mod51_served_base_retest",
+      "interval": [
+        -0.00278,
+        0.00745
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Run-share skew gains the same as its placebo on the served probability.",
+      "probability_positive": 0.822,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.787,
+      "sample_blocks": 6,
+      "sample_games": 1491,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod-51-served-base-retest-of-new-pregame-terms.md",
+      "standard_error": null
+    },
+    "mod51_mod47_short_week_interaction_served": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval straddles zero both sides; no positive control; no resolved wrong sign.",
+      "closing_ground": null,
+      "description": "Served base (out_of_season_home_probability, artifacts/pick_probability/20261103T195411Z), LOSO 2020-25, opener grade; raw-base cell is the original study. MOD-47 z x short interaction on the served logit; decisive 126, interaction 57 served 69; zs coef positive 6/6 (+.39..+.81)",
+      "effect": 0.00029,
+      "effect_units": "log_loss_improvement",
+      "family": "mod51_served_base_retest",
+      "interval": [
+        -0.0019,
+        0.00238
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Short-week confidence slope not separable on the served probability.",
+      "probability_positive": 0.603,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1415,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod-51-served-base-retest-of-new-pregame-terms.md",
+      "standard_error": null
+    }
+  }
+}
