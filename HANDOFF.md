@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T22:28:12.542059+00:00`
+Refreshed at: `2026-11-03T22:28:49.975046+00:00`
 
 ## Start here
 
@@ -21,15 +21,17 @@ Refreshed at: `2026-11-03T22:28:12.542059+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `012545cbd58c` — Refresh session handoff
-- Pending change set: 254 paths
+- Baseline commit: `ff530a077522` — UI-32: game detail says when the line sits next to 3 or 7, how often games land exactly there (push chance from the served calibrated sweep at that line), and whether that lands on the pick's side; 8 of 15 Week 9 games
+- Pending change set: 257 paths
   - ` M ROADMAP.md`
   - ` M config/source_policies.json`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
   - ` M docs/lanes/done/eng-56-final-score-reconciliation.md`
   - ` M docs/lanes/sim-21-drive-length-decomposition.md`
-  - `M  docs/lanes/ui-32-key-number-chip.md`
+  - `M  docs/model.html`
   - ` M scripts/sim10_drive.py`
-  - `M  src/nfl_ats/board_content.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
@@ -41,9 +43,7 @@ Refreshed at: `2026-11-03T22:28:12.542059+00:00`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
   - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
-  - ...and 234 more
+  - ...and 237 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
