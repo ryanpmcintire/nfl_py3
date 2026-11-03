@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T22:48:21.610645+00:00`
+Refreshed at: `2026-11-03T22:48:58.404915+00:00`
 
 ## Start here
 
@@ -21,15 +21,13 @@ Refreshed at: `2026-11-03T22:48:21.610645+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `5a7deb20314b` — Refresh session handoff
-- Pending change set: 255 paths
+- Baseline commit: `8860729fd54f` — MOD-49 unit 2: pre-declared averaged-window MOD-41 term gives the honest estimate (+.00131 log loss, P+ .78, decisive 91-89, fold signs 6/6); frozen as mod41_avgwin_served and Week 9 logged before kickoff
+- Pending change set: 254 paths
+  - `M  HANDOFF.md`
   - ` M config/source_policies.json`
-  - `M  docs/lanes/mod-49-mod41-construction-sensitivity.md`
+  - ` M docs/lanes/eng-57-registry-base-tag.md`
+  - ` M docs/lanes/lead-111-phrase-ablation-of-the-injury-read.md`
   - ` M docs/lanes/sim-21-drive-length-decomposition.md`
-  - `M  registry/weak_signals/mod49_mod41_construction.json`
-  - `M  scripts/forward_ledger.py`
-  - `M  scripts/forward_terms_week.py`
-  - `A  scripts/mod49_avgwin.py`
   - ` M scripts/sim10_drive.py`
   - ` M src/nfl_ats/board_terminal.py`
   - ` M src/nfl_ats/dashboard/findings_content.py`
@@ -43,7 +41,9 @@ Refreshed at: `2026-11-03T22:48:21.610645+00:00`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
-  - ...and 235 more
+  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
+  - ...and 234 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
