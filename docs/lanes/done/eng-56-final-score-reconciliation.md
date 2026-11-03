@@ -1,16 +1,16 @@
 # ENG-56
 
 ## Goal
-Final-score reconciliation: nflverse scores and margins against a second free archive for every graded game (ROADMAP ENG-56).
+Final-score reconciliation: nflverse finals vs a second free archive for every graded game (ROADMAP ENG-56).
 
 ## State
-Added 2026-11-03 (backlog expansion 7), not started, nothing run. Mechanism: One wrong final, overtime or moved-game score flips a cover grade in every grade. Fitted term: none; integrity check. Data: nflverse and one free second archive, to be named in the unit.
+Unit 1 done 2026-11-03 (date 5:2x PM). scripts/eng56_score_reconcile.py -> artifacts/eng56/reconciliation.csv (4217 games 2011-2026 scored, REG+post). Sources (both allowed): SBR archive (sbr_odds.parquet, 2011-2021, 2957 games) and nflverse pbp last-play scores (data/pbp/raw/20261103T172043Z, same upstream org so only partly independent). Measured: SBR 2956/2957 exact; pbp 4216/4217 exact. Diffs: 2016_04_KC_PIT (SBR away 7 vs nflverse 14; PIT 43 KC 14 is correct, SBR typo) and 2011_13_DET_NO (pbp 37-23 vs 31-17, pbp has bad rows; nflverse correct). Grade changes at nflverse close, SBR open/close, open_close opener (260 games), 2026 pool line first/last capture (121 games): 0. No cited number moves.
 
 ## Tried
-Novelty check only. Nearest: ENG-46 (registry backfill), week-1 covers settled lane; grep 'second source' found none. Differs: independent score source.
+SBR sign convention is same as nflverse spread_line (no negation). Pool lines from data/splash/2026_week*.json.
 
 ## Next
-First unit for one agent: Name the second free source, diff finals 2013-2026, count differences and those that change a cover grade or push, and re-grade any affected result.
+Openers for 2022-2026 not in the compared set beyond open_close (260) and pool (121); a Tuesday-opener rerun adds nothing since scores equal. PFR box-score source not captured on disk. Close lane.
 
 ## Open
-Rules: Audit only; findings reported as measured with counts; no tuned constant; any affected result is re-run, not patched. Look count and family declared before any sign is seen.
+Two-source agreement means the archive tells nothing about nflverse errors shared by both; independence limited.

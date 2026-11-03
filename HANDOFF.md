@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T22:33:43.874545+00:00`
+Refreshed at: `2026-11-03T22:34:09.467936+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-03T22:33:43.874545+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `ee182f078817` — UI-34: each History week chip says how the crowd and our card played the half-point games and how they covered; POOL-09: the field's half-point lean does not scale with the half point's value (slope -1.27 pp, P+ .28); POOL-10: field Best Picks lean to favourites (+16 pp), hook concentration small
-- Pending change set: 262 paths
-  - ` M ROADMAP.md`
+- Baseline commit: `c0b570377b19` — Republish the site with the latest settled results
+- Pending change set: 260 paths
+  - `M  ROADMAP.md`
   - ` M config/source_policies.json`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - ` M docs/lanes/backlog-all-2026-11-02.md`
-  - ` M docs/lanes/done/eng-56-final-score-reconciliation.md`
+  - `M  docs/lanes/backlog-all-2026-11-02.md`
+  - `M  docs/lanes/done/eng-56-final-score-reconciliation.md`
+  - `A  docs/lanes/eng-57-registry-base-tag.md`
+  - `A  docs/lanes/mkt-28-served-base-retest-of-opener-revision-terms.md`
+  - `A  docs/lanes/mod-48-mod41-serving-bar-and-forward-plan.md`
+  - `A  docs/lanes/mod-49-mod41-construction-sensitivity.md`
+  - `A  docs/lanes/mod-50-mod41-early-season-carryover.md`
+  - `A  docs/lanes/mod-51-served-base-retest-of-new-pregame-terms.md`
+  - `A  docs/lanes/mod-52-mod41-season-and-week-stability.md`
   - ` M docs/lanes/sim-21-drive-length-decomposition.md`
+  - `A  docs/lanes/sim-25-pool-stratum-by-score-sign-and-clock.md`
+  - `A  docs/lanes/sim-26-prevent-defense-yardage-shape.md`
+  - `A  docs/lanes/ui-35-calibration-in-plain-words.md`
+  - `A  scripts/eng56_score_reconcile.py`
   - ` M scripts/sim10_drive.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - `?? docs/lanes/c-drive-space-2026-10-31.md`
-  - `?? docs/lanes/eng-57-registry-base-tag.md`
-  - `?? docs/lanes/machine-crashes-2026-10-31.md`
-  - `?? docs/lanes/mkt-28-served-base-retest-of-opener-revision-terms.md`
-  - `?? docs/lanes/mod-48-mod41-serving-bar-and-forward-plan.md`
-  - `?? docs/lanes/mod-49-mod41-construction-sensitivity.md`
-  - `?? docs/lanes/mod-50-mod41-early-season-carryover.md`
-  - `?? docs/lanes/mod-51-served-base-retest-of-new-pregame-terms.md`
-  - `?? docs/lanes/mod-52-mod41-season-and-week-stability.md`
-  - ...and 242 more
+  - ...and 240 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
