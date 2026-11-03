@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T23:23:47.890284+00:00`
+Refreshed at: `2026-11-03T23:24:45.332582+00:00`
 
 ## Start here
 
@@ -21,15 +21,13 @@ Refreshed at: `2026-11-03T23:23:47.890284+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `f8aebe7633e6` — MOD-54 unit 2: with the penalty matched to the doubled rows, mirrored home/away training gives 2020-25 +0.86 acc pts (P+ .90, decisive 124-111) and better log loss (.6941 v .6969); 2011-19 flat; halving the penalty alone hurts (-0.93); unresolved
-- Pending change set: 255 paths
+- Baseline commit: `ca03636661e5` — UI-37: each game's detail lists both teams' rest days (bye, Thursday or Monday game, short week) and the road team's travel distance, as facts only
+- Pending change set: 253 paths
   - ` M config/source_policies.json`
+  - `M  docs/findings.html`
+  - `M  docs/index.html`
   - ` M docs/lanes/mod-10-graph-rating-base-input.md`
   - ` M docs/lanes/mod-54-mirrored-home-away-training-rows.md`
-  - `M  docs/lanes/ui-37-rest-and-travel-facts-on-each-row.md`
-  - `M  src/nfl_ats/board_content.py`
-  - `A  src/nfl_ats/board_schedule_facts.py`
-  - `M  src/nfl_ats/board_terminal.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
@@ -43,7 +41,9 @@ Refreshed at: `2026-11-03T23:23:47.890284+00:00`
   - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
   - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
   - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
-  - ...and 235 more
+  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
+  - ...and 233 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
