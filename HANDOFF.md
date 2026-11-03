@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T04:42:57.402664+00:00`
+Refreshed at: `2026-11-03T04:43:35.563369+00:00`
 
 ## Start here
 
@@ -21,13 +21,13 @@ Refreshed at: `2026-11-03T04:42:57.402664+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `97ece5507c55` — Refresh the session handoff and README research state
+- Baseline commit: `75f1cf91fbf2` — SIM-06: learned head in the engine passes 6/14 gates v 13/14 for the default on seed 11; not adopted
 - Pending change set: 234 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/sim06-learned-head-2026-11-02.md`
+  - `M  docs/lanes/backlog-all-2026-11-02.md`
   - ` M docs/model.html`
   - ` M tiebreaker.json`
   - `?? an.csv`
