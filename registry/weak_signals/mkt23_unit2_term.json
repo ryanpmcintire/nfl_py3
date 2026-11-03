@@ -1,0 +1,89 @@
+{
+  "family": "mkt23_unit2_term",
+  "signals": {
+    "mkt23_unit2_c_direction_vs_refit_base": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "LOSO 2023-25, n 799, 9 looks; no power control or mechanism refutation; deadline-view term, unknown at the Tuesday pick",
+      "closing_ground": null,
+      "description": "LOSO logistic terms on base logit; log loss gain vs refit base; 9 looks",
+      "effect": -0.0014981368259651747,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt23_unit2_term",
+      "interval": [
+        -0.0036307637206308397,
+        0.0006573704643823132
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the direction of the Tuesday-to-deadline spread move, alone or for one-team total moves, improves the out-of-season cover probability at the opener.",
+      "probability_positive": 0.078,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/mkt23/unit2_term.json",
+      "standard_error": 0.001083147259525125
+    },
+    "mkt23_unit2_d_one_team_direction_vs_refit_base": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "LOSO 2023-25, n 799, 9 looks; no power control or mechanism refutation; deadline-view term, unknown at the Tuesday pick",
+      "closing_ground": null,
+      "description": "LOSO logistic terms on base logit; log loss gain vs refit base; 9 looks",
+      "effect": -0.0015609851864623616,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt23_unit2_term",
+      "interval": [
+        -0.0047237222721834005,
+        0.0017231031868445747
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the direction of the Tuesday-to-deadline spread move, alone or for one-team total moves, improves the out-of-season cover probability at the opener.",
+      "probability_positive": 0.1625,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/mkt23/unit2_term.json",
+      "standard_error": 0.0016262256649259392
+    },
+    "mkt23_unit2_e_both_vs_refit_base": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "LOSO 2023-25, n 799, 9 looks; no power control or mechanism refutation; deadline-view term, unknown at the Tuesday pick",
+      "closing_ground": null,
+      "description": "LOSO logistic terms on base logit; log loss gain vs refit base; 9 looks",
+      "effect": -0.002241894767688342,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt23_unit2_term",
+      "interval": [
+        -0.005562629958594587,
+        0.0012940036591280227
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the direction of the Tuesday-to-deadline spread move, alone or for one-team total moves, improves the out-of-season cover probability at the opener.",
+      "probability_positive": 0.1045,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/mkt23/unit2_term.json",
+      "standard_error": 0.0017287587902646445
+    }
+  }
+}

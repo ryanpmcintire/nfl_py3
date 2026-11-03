@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T21:07:45.824997+00:00`
+Refreshed at: `2026-11-03T21:08:29.702377+00:00`
 
 ## Start here
 
@@ -21,15 +21,14 @@ Refreshed at: `2026-11-03T21:07:45.824997+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `fe397854d8c1` — MOD-41 residual workload frozen as a forward term (coef -0.0439 logit per play, LOSO -0.0395..-0.0501); Week 9 record written before kickoff; injury-designation mediation leaves it unchanged (unresolved)
-- Pending change set: 256 paths
+- Baseline commit: `46e690dc4be5` — ENG-50 online stacker dry replay (one fold; void as a card comparison: the ENG-49 ledger served column is the candidates' record-time base, not the played card)
+- Pending change set: 253 paths
   - ` M config/source_policies.json`
-  - `M  docs/lanes/eng-50-online-forward-stacker.md`
   - ` M docs/lanes/lead-103-read-block-ablation.md`
-  - ` M docs/lanes/mkt-23-spread-total-move-decomposition.md`
+  - `M  docs/lanes/mkt-23-spread-total-move-decomposition.md`
   - ` M docs/lanes/sim-12-sim12-ingame-exits.md`
-  - `A  registry/weak_signals/eng50_online_stacker.json`
-  - `A  scripts/eng50_online_stacker.py`
+  - `A  registry/weak_signals/mkt23_unit2_term.json`
+  - `A  scripts/mkt23_unit2_term.py`
   - ` M scripts/mod24_more_games.py`
   - ` M scripts/sim10_drive.py`
   - `?? an.csv`
@@ -43,7 +42,8 @@ Refreshed at: `2026-11-03T21:07:45.824997+00:00`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
   - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - ...and 236 more
+  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
+  - ...and 233 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
