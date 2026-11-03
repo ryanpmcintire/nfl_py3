@@ -1,0 +1,33 @@
+{
+  "family": "mod47_global_calibration",
+  "signals": {
+    "mod47_global_loso_slope_shrink_on_served": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "LOSO global logistic recalibration (slope+intercept fit on other seasons) of the served out-of-season probability, opener grade",
+      "effect": -0.00021,
+      "effect_units": "log_loss_improvement",
+      "family": "mod47_global_calibration",
+      "interval": [
+        -0.00077,
+        0.00035
+      ],
+      "league": "nfl",
+      "notes": "served slope 0.922 [0.507,1.363]; 6 looks in family",
+      "plain_summary": null,
+      "probability_positive": 0.206,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mod47_unit2_global_calibration.py",
+      "standard_error": 0.00028
+    }
+  }
+}
