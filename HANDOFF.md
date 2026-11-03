@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T22:27:48.310660+00:00`
+Refreshed at: `2026-11-03T22:28:12.542059+00:00`
 
 ## Start here
 
@@ -21,15 +21,15 @@ Refreshed at: `2026-11-03T22:27:48.310660+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `575fd6456f2e` — Master lane state: served probability calibrated; raw-vs-served base label issue recorded
-- Pending change set: 253 paths
-  - `M  HANDOFF.md`
+- Baseline commit: `012545cbd58c` — Refresh session handoff
+- Pending change set: 254 paths
   - ` M ROADMAP.md`
   - ` M config/source_policies.json`
   - ` M docs/lanes/done/eng-56-final-score-reconciliation.md`
   - ` M docs/lanes/sim-21-drive-length-decomposition.md`
+  - `M  docs/lanes/ui-32-key-number-chip.md`
   - ` M scripts/sim10_drive.py`
-  - ` M src/nfl_ats/board_content.py`
+  - `M  src/nfl_ats/board_content.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
@@ -43,7 +43,7 @@ Refreshed at: `2026-11-03T22:27:48.310660+00:00`
   - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
   - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
   - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
-  - ...and 233 more
+  - ...and 234 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

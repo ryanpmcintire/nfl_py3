@@ -5,7 +5,7 @@ import os
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass, field, replace
 from datetime import UTC, date, datetime, timedelta
-from math import ceil, comb, isnan
+from math import ceil, comb, isclose, isfinite, isnan
 from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo
@@ -32,7 +32,7 @@ from nfl_ats.four_overlay_composition import (
     SPREAD_GAP_ZONE_FADE,
 )
 from nfl_ats.home_side_location import center_offsets_from_metadata
-from nfl_ats.key_line_pick_read import pick_overrides_from_metadata
+from nfl_ats.key_line_pick_read import KEY_LINE_ATOMS, pick_overrides_from_metadata
 from nfl_ats.lineup_view import TeamLineup, load_lineups
 from nfl_ats.market_decomposition import FAMILY_PHRASES
 from nfl_ats.pick_probability import (
@@ -3668,6 +3668,45 @@ def _played_side_explanation(explanation: str, *, pick_team: str, model_team: st
     )
 
 
+KEY_NUMBER_NOTE_REACH = 0.5
+
+
+def _key_number_note(
+    sweep: pd.DataFrame, game_id: str, pick_team: str, home: str, market_spread: float
+) -> str | None:
+    required = {"game_id", "alternative_line", "push_probability"}
+    if sweep.empty or not required.issubset(sweep.columns) or isnan(market_spread):
+        return None
+    rows = sweep.loc[sweep["game_id"].astype(str).eq(game_id)]
+    pick_line = market_spread * (-1.0 if pick_team == home else 1.0)
+    size = abs(market_spread)
+    for key in KEY_LINE_ATOMS:
+        gap = size - key
+        if abs(gap) > KEY_NUMBER_NOTE_REACH:
+            continue
+        target = key if market_spread >= 0 else -key
+        matches = [
+            float(push)
+            for line, push in zip(rows["alternative_line"], rows["push_probability"], strict=True)
+            if isclose(float(line), target)
+        ]
+        if len(matches) != 1:
+            return None
+        chance = matches[0]
+        if not isfinite(chance):
+            return None
+        landing = f"about {chance:.0%} of games like this land exactly on {key:g}"
+        if gap == 0:
+            return f"This line is {key:g}, a common winning margin: {landing}, which is a push."
+        helps = pick_line * gap > 0
+        side = "your side" if helps else "the other side"
+        return (
+            f"This line sits next to {key:g}, a common winning margin: {landing}, "
+            f"which lands on {side}."
+        )
+    return None
+
+
 def _explanation_with_qb_note(explanation: str, qb_note: str | None) -> str:
     if not qb_note:
         return explanation
@@ -4262,17 +4301,27 @@ def load_board_content(
                 flip_line=flip_line_value,
                 flip_held=flip_held_value,
                 flip_reason=flip_reason_value,
-                explanation_text=(
-                    f"{team} was the side on the board when picks locked, so that remains the pick."
-                    if calibrated_mass and frozen_pick is not None
-                    else _explanation_with_qb_note(
-                        _played_side_explanation(
-                            pick_explanations.get(game_id, EXPLANATION_NOT_RECORDED_TEXT),
-                            pick_team=team,
-                            model_team=pick_explanation_sides.get(game_id, model_team),
+                explanation_text=" ".join(
+                    part
+                    for part in (
+                        (
+                            f"{team} was the side on the board when picks locked, "
+                            "so that remains the pick."
+                            if calibrated_mass and frozen_pick is not None
+                            else _explanation_with_qb_note(
+                                _played_side_explanation(
+                                    pick_explanations.get(game_id, EXPLANATION_NOT_RECORDED_TEXT),
+                                    pick_team=team,
+                                    model_team=pick_explanation_sides.get(game_id, model_team),
+                                ),
+                                qb_notes.get(game_id),
+                            )
                         ),
-                        qb_notes.get(game_id),
+                        _key_number_note(served_sweep, game_id, team, home_team, market_spread)
+                        if calibrated_mass
+                        else None,
                     )
+                    if part
                 ),
                 market_now=market_now[0] if market_now is not None else None,
                 market_now_books=market_now[1] if market_now is not None else 0,
