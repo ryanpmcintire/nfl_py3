@@ -230,3 +230,34 @@ compared to opener lines and opener totals only (market quantities, not results)
    LOSO blend fit and block bootstrap, 500 fresh-noise replicates per delta,
    deltas 0.0010 and 0.0080. The control runs after the full run's training-fold
    sd is known; a verdict is not issued before it.
+
+### Amendment 2 (before any look), 2026-11-02
+
+No graded outcome, blend, or L-level metric has been computed. Smoke games were
+compared to opener lines and opener totals only.
+
+1. Engine. The anchored arm runs the SIM-11 default engine (joint-label target,
+   SIM10_JOINT=1, commit 2d38e381). The scripted engine setup had left the flag
+   unset in smokes 1-4; it is now set in `engine()`.
+2. Support on that engine (tests/scratch/sim08_anchor/support_joint.json, 40 worlds
+   x 9 seasons, 92,160 games, same method as Amendment 1). x_diff 0.1%/1%/5%/25%/
+   50%/75%/95%/99%/99.9% = -0.492/-0.380/-0.267/-0.109/0.001/0.109/0.267/0.376/
+   0.502 (sd 0.162); x_env = -0.205/-0.153/-0.107/-0.041/0.003/0.047/0.111/0.155/
+   0.205 (sd 0.066); corr 0.007. The latents are generated independently of the
+   rollout engine, so the support is unchanged and the box stays +-0.5, +-0.21.
+3. Transmission (9,600 design games, linear fit, SE in brackets): margin = 1.93 +
+   37.5 (0.47) x_diff + 3.9 (1.1) x_env, R2 0.403; total = 45.7 + 2.5 (0.47) x_diff +
+   47.1 (1.1) x_env, R2 0.162 linear, 0.172 quadratic. Margin and total are
+   linear-monotone as before; the anchor still uses the full quadratic.
+4. Design contexts. Each fold's design pool draws (season, week) from the held-out
+   fold's own pregame contexts (schedule facts only; implemented as
+   `--heldout-pool 1`). This makes Amendment 1 item 3's rule operative.
+5. Smoke on that pool (fold 2025, same 20 games, 300 draws, 9,600 design):
+   margin error -0.65 (z -1.56), total error +0.14 (z +0.38). Both within Monte
+   Carlo error; the total bias (+0.95, z +3.10) is gone. The engine change and the
+   pool change were made together, so their separate contributions are not
+   separated (inferred cause: the training-season context pool).
+6. Noisy planted control (item 5 of Amendment 1) is coded (`control --noisy 1`):
+   kappa bisection on the LOSO two-column blend (recalibrated served logit,
+   candidate), noise sd = sqrt(train_sd^2 + (2/sqrt(draws))^2). The execution run on
+   the 20-game smoke population only shows it runs; it is not a verdict.

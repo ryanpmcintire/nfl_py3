@@ -84,3 +84,19 @@ Support from engine latents (support.json) x_diff +-0.5, x_env +-0.21; script no
 total +0.95 z +3.10 FAIL (persists across design size). Amendment 1 appended to the declaration (N=372, noisy plant).
 Next: smoke with design pool drawn from held-out fold contexts (code change to design_run pool), then the noisy
 control code, then the full run (one job, 4 workers). Per-fold LOSO kernel pool still open.
+
+## Unit 3 re-anchor 2 (2026-11-02, subagent 3)
+Code: engine() now sets SIM10_JOINT=1 (new default; was unset in old smokes = pre-SIM-11 engine), `support` command,
+`smoke --heldout-pool 1 --save-design`, per-game sim_home_cover/loss stored, `control --noisy 1` (Amendment 1 item 5:
+kappa bisection on LOSO blend, sd = sqrt(train_sd^2 + (2/sqrt(draws))^2); --sd-from-smoke or --train-sd).
+Support on joint engine (tests/scratch/sim08_anchor/support_joint.json, 92,160 games): x_diff 0.1/1/5/25/50/75/95/99/99.9% =
+-0.492/-0.380/-0.267/-0.109/0.001/0.109/0.267/0.376/0.502; x_env -0.205/-0.153/-0.107/-0.041/0.003/0.047/0.111/0.155/0.205;
+sd 0.162/0.066, corr 0.007. Unchanged vs old (latents are engine-independent); box stays +-0.5/+-0.21.
+Smoke5 (joint, held-out-fold pool, 9600 design, 300 draws, 20 games) launched PID 33748 (python child; parent 33164),
+out smoke5.json/log, design saved design_joint_heldout.csv. Next: read z, then noisy control on smoke population.
+Result (measured): smoke5 and identical-seed rerun smoke6: margin err -0.645 (z -1.56), total err +0.145 (z +0.38), pass.
+Total bias cleared by held-out-fold context pool (confounded with joint-engine switch, inferred). 0.116 s/draw, 36 GB free.
+Transmission: margin 1.93+37.5 xd+3.9 xe (R2 .403); total 45.7+2.5 xd+47.1 xe (R2 .162, quad .172). Amendment 2 appended.
+Noisy control coded and executed (smoke6 population, 20 reps, not a look): deltas .001/.008 kappa .017/.045, realized .00044/.0071.
+Next: per-fold LOSO kernel pool decision, then full run (one job, 4 workers, N=372, heldout-pool per fold); control verdict
+only after full-run train sd. No processes left running.

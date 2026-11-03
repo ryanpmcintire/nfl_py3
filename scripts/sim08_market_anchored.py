@@ -41,6 +41,8 @@ ENGINE_DEFAULTS = {
     "q4dec": str(sd.OUT / "q4dec_fg.json"),
     "latent": str(sd.OUT / "latent_fit_2009_25.json"),
     "h": str(sd.OUT / "bandwidths_week.json"),
+    "joint": 1,
+    "mucurve": 0,
 }
 
 
@@ -50,6 +52,8 @@ def engine():
     os.environ["SIM10_Q4DEC"] = a.q4dec
     os.environ["SIM10_FGDEC"] = a.fgdec
     os.environ["SIM10_FORM"] = "0"
+    os.environ["SIM10_JOINT"] = str(int(a.joint))
+    os.environ["SIM10_MUCURVE"] = str(int(a.mucurve))
     os.environ["SIM10_HECARRY"] = str(int(a.hecarry))
     os.environ["SIM10_STFULL"] = a.stfull
     os.environ["SIM10_ST"] = a.st
@@ -172,6 +176,44 @@ def free_gb():
     return m.ullAvailPhys / 2**30
 
 
+def cmd_support(a):
+    import mod25_generator as gen
+
+    os.environ.setdefault("QBC", "1")
+    os.environ["SIM10_LATENT"] = ENGINE_DEFAULTS["latent"]
+    fit = sd.load_latent_fit()
+    setting = dict(gen.SETTING_DEFAULTS)
+    s_ = None
+    eng = engine()
+    s_ = eng.s
+    xd, xe = [], []
+    ws = np.random.SeedSequence(a.seed).spawn(a.worlds)
+    for w in range(a.worlds):
+        rng = np.random.default_rng(ws[w])
+        for weekly, qb_out in gen.gen_world_latents(rng, a.seasons, fit, setting):
+            rt = gen.season_ratings(weekly, qb_out, fit, setting, 0.0, 0.0)
+            for wk, h, aw in gen.make_schedule(rng):
+                rh, ra = rt[wk][h], rt[wk][aw]
+                xh = (rh[0] + ra[1]) / s_
+                xa = (ra[0] + rh[1]) / s_
+                xd.append(xh - xa)
+                xe.append(0.5 * (xh + xa))
+    qs = [0.001, 0.01, 0.05, 0.25, 0.5, 0.75, 0.95, 0.99, 0.999]
+    xd, xe = np.array(xd), np.array(xe)
+    out = {
+        "n": len(xd),
+        "s": s_,
+        "q": qs,
+        "xdiff": np.quantile(xd, qs).tolist(),
+        "xenv": np.quantile(xe, qs).tolist(),
+        "sd": [float(xd.std()), float(xe.std())],
+        "corr": float(np.corrcoef(xd, xe)[0, 1]),
+        "min_max": [float(xd.min()), float(xd.max()), float(xe.min()), float(xe.max())],
+    }
+    Path(a.out).write_text(json.dumps(out, indent=1))
+    print(json.dumps(out, indent=1))
+
+
 def cmd_probe(a):
     eng = engine()
     rng = np.random.default_rng(1)
@@ -191,7 +233,8 @@ def cmd_smoke(a):
     frame = load_frame()
     held = a.held_out
     train = frame[frame["season"] != held]
-    pool = list(zip(train["season"], train["week"], strict=True))
+    pool_frame = frame[frame["season"] == held] if a.heldout_pool else train
+    pool = list(zip(pool_frame["season"], pool_frame["week"], strict=True))
     eng = engine()
     t_engine = time.time() - t0
     t1 = time.time()
@@ -200,6 +243,8 @@ def cmd_smoke(a):
     else:
         D = design_run(eng, pool, a.design_n, a.seed, a.x_diff_range, a.x_env_range)
     t_design = time.time() - t1
+    if a.save_design:
+        D.to_csv(a.save_design, index=False)
     fit = transmission_fit(D)
     fit.update(
         {
@@ -231,6 +276,8 @@ def cmd_smoke(a):
                 "sim_margin_se": float(out[:, 0].std(ddof=1) / np.sqrt(len(out))),
                 "sim_total_se": float(out[:, 1].std(ddof=1) / np.sqrt(len(out))),
                 "ot_rate": float(out[:, 2].mean()),
+                "sim_home_cover": float((out[:, 0] > r["line"]).mean()),
+                "sim_home_loss": float((out[:, 0] < r["line"]).mean()),
             }
         )
     t_sim = time.time() - t2
@@ -314,6 +361,112 @@ def three_way(cond, push):
     return (1 - push) * cond, push, (1 - push) * (1 - cond)
 
 
+def noisy_candidate(recal_logit, y, kappa, sd, rng):
+    return recal_logit + kappa * (2.0 * y - 1.0) + rng.normal(0.0, sd, len(y))
+
+
+def blend_delta(recal_logit, cand, y, nonpush, seasons, push, outcome, ll_base):
+    X = np.column_stack([recal_logit, cand])
+    p, _ = loso_cond(X, y, nonpush, seasons)
+    ll = base.three_way_score(*three_way(p, push), outcome)[0]
+    return float(np.mean(ll_base - ll))
+
+
+def solve_kappa(recal_logit, y, nonpush, seasons, push, outcome, ll_base, sd, delta, seed, reps):
+    def expected(kappa):
+        vals = []
+        for r in range(reps):
+            rg = np.random.default_rng(seed + r)
+            c = noisy_candidate(recal_logit, y, kappa, sd, rg)
+            vals.append(blend_delta(recal_logit, c, y, nonpush, seasons, push, outcome, ll_base))
+        return float(np.mean(vals))
+
+    lo, hi = 0.0, 2.0
+    for _ in range(18):
+        mid = 0.5 * (lo + hi)
+        if expected(mid) < delta:
+            lo = mid
+        else:
+            hi = mid
+    return 0.5 * (lo + hi)
+
+
+def cmd_control_noisy(a):
+    frame = base.load_games()
+    cov, push, los = base.baseline_three_way(frame)
+    outcome = frame["outcome"].to_numpy()
+    seasons = frame["season"].to_numpy()
+    nonpush = outcome != "push"
+    y = (outcome == "cover").astype(float)
+    served = base.safe_logit(cov / np.clip(cov + los, base.EPS, None))
+    if a.sd_from_smoke:
+        sm = json.loads(Path(a.sd_from_smoke).read_text())
+        pg = pd.DataFrame(sm["per_game"])
+        pg["sim_logit"] = base.safe_logit(
+            (pg["sim_home_cover"] / (pg["sim_home_cover"] + pg["sim_home_loss"])).to_numpy()
+        )
+        pos = {g: i for i, g in enumerate(frame["game_id"])}
+        idx = np.array([pos[g] for g in pg["game_id"]])
+        train_sd = float(np.std(pg["sim_logit"].to_numpy() - served[idx], ddof=1))
+        draws = int(sm["draws"])
+    else:
+        train_sd = a.train_sd
+        draws = a.draws
+    mc_se = 2.0 / np.sqrt(draws)
+    sd = float(np.sqrt(train_sd**2 + mc_se**2))
+    key = (frame["season"].astype(str) + "_" + frame["week"].astype(str)).to_numpy()
+    _, inv = np.unique(key, return_inverse=True)
+    nb = int(inv.max()) + 1
+    rng = np.random.default_rng(a.seed)
+    recal, _ = loso_cond(served[:, None], y, nonpush, seasons)
+    recal_logit = base.safe_logit(recal)
+    ll_base = base.three_way_score(*three_way(recal, push), outcome)[0]
+    results = []
+    for delta in a.deltas:
+        kappa = solve_kappa(
+            recal_logit,
+            y,
+            nonpush,
+            seasons,
+            push,
+            outcome,
+            ll_base,
+            sd,
+            delta,
+            a.seed,
+            a.kappa_reps,
+        )
+        pps, realized = np.empty(a.replicates), np.empty(a.replicates)
+        for r in range(a.replicates):
+            rg = np.random.default_rng(a.seed * 100003 + r)
+            c = noisy_candidate(recal_logit, y, kappa, sd, rg)
+            X = np.column_stack([recal_logit, c])
+            p, _ = loso_cond(X, y, nonpush, seasons)
+            d = ll_base - base.three_way_score(*three_way(p, push), outcome)[0]
+            realized[r] = d.mean()
+            bs = np.bincount(inv, weights=d, minlength=nb)
+            bn = np.bincount(inv, minlength=nb).astype(float)
+            outer = rng.integers(0, nb, nb)
+            wts = rng.multinomial(nb, np.full(nb, 1.0 / nb), size=a.inner)
+            pps[r] = float(np.mean((wts @ bs[outer]) / (wts @ bn[outer]) > 0.0))
+        det = float(np.mean(pps >= 0.90))
+        results.append(
+            {
+                "target_delta": delta,
+                "kappa": kappa,
+                "noise_sd": sd,
+                "train_sd": train_sd,
+                "mc_logit_se": mc_se,
+                "mean_realized_delta": float(realized.mean()),
+                "detect_rate_pp_ge_0.90": det,
+                "median_pp": float(np.median(pps)),
+                "detected": bool(det >= 0.80),
+            }
+        )
+        print(json.dumps(results[-1]), flush=True)
+    Path(a.out).write_text(json.dumps(results, indent=1))
+
+
 def cmd_control(a):
     frame = base.load_games()
     cov, push, los = base.baseline_three_way(frame)
@@ -375,17 +528,34 @@ def main():
     s.add_argument("--x-diff-range", type=float, default=1.0, dest="x_diff_range")
     s.add_argument("--x-env-range", type=float, default=1.0, dest="x_env_range")
     s.add_argument("--design-csv", default="", dest="design_csv")
+    s.add_argument("--heldout-pool", type=int, default=0, dest="heldout_pool")
+    s.add_argument("--save-design", default="", dest="save_design")
     s.add_argument("--seed", type=int, default=8)
     s.add_argument("--out", default=str(SCRATCH / "smoke.json"))
+    u = sub.add_parser("support")
+    u.add_argument("--worlds", type=int, default=40)
+    u.add_argument("--seasons", type=int, default=9)
+    u.add_argument("--seed", type=int, default=8)
+    u.add_argument("--out", default=str(SCRATCH / "support_joint.json"))
     c = sub.add_parser("control")
     c.add_argument("--deltas", type=float, nargs="+", default=[0.0010, 0.0080])
     c.add_argument("--replicates", type=int, default=500)
     c.add_argument("--inner", type=int, default=1000)
+    c.add_argument("--noisy", type=int, default=0)
+    c.add_argument("--train-sd", type=float, default=0.0, dest="train_sd")
+    c.add_argument("--sd-from-smoke", default="", dest="sd_from_smoke")
+    c.add_argument("--draws", type=int, default=372)
+    c.add_argument("--kappa-reps", type=int, default=6, dest="kappa_reps")
     c.add_argument("--seed", type=int, default=8)
     c.add_argument("--out", default=str(SCRATCH / "control.json"))
     a = ap.parse_args()
     SCRATCH.mkdir(parents=True, exist_ok=True)
-    {"probe": cmd_probe, "smoke": cmd_smoke, "control": cmd_control}[a.cmd](a)
+    if a.cmd == "control" and a.noisy:
+        cmd_control_noisy(a)
+        return
+    {"probe": cmd_probe, "smoke": cmd_smoke, "control": cmd_control, "support": cmd_support}[a.cmd](
+        a
+    )
 
 
 if __name__ == "__main__":

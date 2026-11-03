@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T00:34:33.946932+00:00`
+Refreshed at: `2026-11-03T00:35:10.308108+00:00`
 
 ## Start here
 
@@ -21,19 +21,19 @@ Refreshed at: `2026-11-03T00:34:33.946932+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `009a8ce7767a` — SIM-07 positive control: the split-half instrument cannot detect a personnel interaction of relevant size
+- Baseline commit: `aea66baccc83` — Refresh the session handoff and README research state
 - Pending change set: 239 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - `M  HANDOFF.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
+  - `M  docs/lanes/backlog-all-2026-11-02.md`
   - ` M docs/lanes/mod25-v3-sim11-distill.md`
-  - ` M docs/lanes/sim08-simulator-rebuild.md`
+  - `M  docs/lanes/sim08-simulator-rebuild.md`
   - ` M docs/model.html`
-  - ` M docs/sim08_market_anchored_declaration.md`
+  - `M  docs/sim08_market_anchored_declaration.md`
   - ` M scripts/mod25_v3_produce.py`
-  - ` M scripts/sim08_market_anchored.py`
+  - `M  scripts/sim08_market_anchored.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? docs/lanes/c-drive-space-2026-10-31.md`
