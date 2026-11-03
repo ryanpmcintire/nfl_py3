@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T21:54:38.849810+00:00`
+Refreshed at: `2026-11-03T21:55:19.461658+00:00`
 
 ## Start here
 
@@ -21,19 +21,14 @@ Refreshed at: `2026-11-03T21:54:38.849810+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `0df8dc0af419` — Refresh session handoff
-- Pending change set: 257 paths
+- Baseline commit: `31ddb9070a02` — Dashboard round 7: plain Findings labels ("Chance of improvement", "With the signal / Without"), plain even-chance note, "Pick breakdown" tag, plain no-slider note; SIM-21 sim scoring gap is symmetric in score sign and mostly after the draw kernel; MKT-27 the served lattice ignores the total and a total-conditioned lattice does not beat it
+- Pending change set: 252 paths
   - ` M config/source_policies.json`
-  - `M  docs/lanes/mkt-27-total-level-variance.md`
+  - `M  docs/findings.html`
+  - `M  docs/index.html`
   - ` M docs/lanes/mod-45-tempo-pair-spread.md`
-  - `M  docs/lanes/sim-21-drive-length-decomposition.md`
-  - `M  docs/lanes/ui20-2026-11-03.md`
   - ` M docs/lanes/xlg-14-xlg14-cfb-first-discovery.md`
-  - `A  registry/weak_signals/mkt27_total_lattice.json`
-  - `A  scripts/mkt27_total_lattice.py`
   - ` M scripts/sim10_drive.py`
-  - `A  scripts/sim21_gap_decomposition.py`
-  - `M  src/nfl_ats/board_terminal.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
@@ -43,7 +38,12 @@ Refreshed at: `2026-11-03T21:54:38.849810+00:00`
   - `?? docs/move_reasons.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
-  - ...and 237 more
+  - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
+  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
+  - ...and 232 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
