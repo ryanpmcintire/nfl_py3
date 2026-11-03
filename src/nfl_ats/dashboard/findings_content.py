@@ -231,17 +231,18 @@ def ladder_rungs(played_chain_accuracy: float | None) -> tuple[str, ...]:
 
     played = f"{played_chain_accuracy:.1%}" if played_chain_accuracy is not None else None
     rungs = [
-        "Coin flip: 50%. The model's current opener and close grades are on The Model page.",
+        "Coin flip: 50%. The model's own scores against the opening and closing lines "
+        "are in the headline numbers above.",
     ]
     if played is not None:
         rungs.append(
-            f"Played chain (model alone \u2192 coach fade \u2192 arrests): {played} measured "
-            f"on {POLICY_GRADED_GAMES:,} paired games \u2014 the measured history under the "
-            "crowned expectation."
+            f"Our card as played (model alone, then the coach-fade and arrest rules): "
+            f"{played} on {POLICY_GRADED_GAMES:,} past games, scored at the opening line. "
+            "This is the record behind the planning figure."
         )
     rungs.append(
-        f"Fix-up rules: paired +{OVERLAY_UNION_PAIRED_EFFECT_POINTS:.2f} points on "
-        f"reused data ("
+        f"Adjustment rules: +{OVERLAY_UNION_PAIRED_EFFECT_POINTS:.2f} points over the model "
+        f"alone, measured on games already used to build the rules ("
         f"{_humanize_probability_positive(OVERLAY_UNION_PAIRED_PROBABILITY_POSITIVE)}); its "
         f"{OVERLAY_UNION_ARCHIVE_SCORE_FRACTION:.1%} archive score is inflated by picking the "
         f"best of {OVERLAY_UNION_SUBSET_COUNT} similar combinations, and a fair out-of-sample "
@@ -250,16 +251,16 @@ def ladder_rungs(played_chain_accuracy: float | None) -> tuple[str, ...]:
         f"discounted in the {PLAYED_CARD_EXPECTATION_HERO} expectation."
     )
     rungs.append(
-        "Movement rule (market-follow on >=1pt moves via refresh): composed "
+        "Line-move rule (follow the books when the line moves a point or more): "
         f"+{MOVEMENT_COMPOSED_EFFECT_POINTS:.2f} points (week to week "
         f"{_humanize_probability_positive(MOVEMENT_COMPOSED_WEEK_P_PLUS)}, season to season "
         f"{_humanize_probability_positive(MOVEMENT_COMPOSED_SEASON_P_PLUS)}) "
-        "\u2014 an attribution upper bound on already-looked-at data."
+        "\u2014 an upper bound, because the games were already looked at."
     )
     rungs.append(
         f"Best documented long-run bettors: roughly {BETTORS_VS_CLOSE_BAND}% against "
-        f"the close. Measured pregame ceiling: about {MEASURED_CEILING_PCT}% (total-leak "
-        f"control); the older {PREMEASUREMENT_GUESS_BAND}% "
+        f"the close. Measured pregame ceiling: about {MEASURED_CEILING_PCT}% (found with a "
+        f"test that uses information no real pick has); the older {PREMEASUREMENT_GUESS_BAND}% "
         "band was the pre-measurement guess."
     )
     rungs.append(

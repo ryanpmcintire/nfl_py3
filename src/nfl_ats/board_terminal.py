@@ -1918,6 +1918,28 @@ def _grading_rule_kpi(label: str, value: float | None) -> str:
     )
 
 
+ARM_SUMMARY_LINE_NAMES = {"close-grade": "closing line", "opener-grade": "opening line"}
+
+
+def _plain_arm_summary(sentence: str) -> str:
+    kept = []
+    for part in sentence.rstrip(".").split(". "):
+        if part.startswith("interval [") or "registry evidence entr" in part:
+            continue
+        if part.startswith("best evidence "):
+            part = "Strongest test: " + part.removeprefix("best evidence ")
+        elif part.startswith("registered evidence "):
+            part = "Likely real: " + part.removeprefix("registered evidence ").removesuffix(
+                " likely real"
+            )
+        for grade_word, line_name in ARM_SUMMARY_LINE_NAMES.items():
+            prefix = grade_word + " track record "
+            if part.startswith(prefix):
+                part = "Against the " + line_name + ": " + part.removeprefix(prefix)
+        kept.append(part)
+    return ". ".join(kept) + "." if kept else ""
+
+
 def _ledger_evidence_html(row: ModelLedgerRowView) -> str:
 
     if not row.evidence:
@@ -1995,7 +2017,7 @@ def _model_ledger_row_html(row: ModelLedgerRowView) -> str:
         f'<td data-label="Interval">{interval}</td>'
         f'<td data-label="Evidence">{_ledger_evidence_html(row)}</td>'
         f'<td data-label="Summary"><p class="game-sub" style="margin:0;">'
-        f"{escape(row.summary_sentence)}</p>{agreement}</td>"
+        f"{escape(_plain_arm_summary(row.summary_sentence))}</p>{agreement}</td>"
         "</tr>"
     )
 
@@ -2382,7 +2404,8 @@ def render_model_page(content: ModelPageContent) -> str:
         + _headline_section(content.headline)
         + '<details class="line-tools" style="margin-top:12px;"><summary>The selection discount, '
         f'in numbers</summary><div style="margin-top:8px;">{ladder_html}</div></details>'
-        + f'<p class="policy-note">Realistic ceiling: {escape(content.ceiling_text)}</p>'
+        + '<p class="policy-note">Planning range for an excellent model against the frozen line: '
+        f"{escape(content.ceiling_text)}</p>"
         + '<section aria-labelledby="howgood-h"><div class="section-head">'
         '<h2 id="howgood-h">How it&#39;s done</h2>'
         '<span class="sub">season by season, the simple sign rule vs. the rule we actually '

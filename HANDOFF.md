@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T22:49:24.426269+00:00`
+Refreshed at: `2026-11-03T22:50:41.495222+00:00`
 
 ## Start here
 
@@ -21,18 +21,15 @@ Refreshed at: `2026-11-03T22:49:24.426269+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `d8b18431e02c` — Refresh session handoff
-- Pending change set: 254 paths
+- Baseline commit: `d61d35b4bb0c` — ENG-57: base tag side table for 973 cells recorded since 11-03 (385 raw model, 88 served card, 190 CFB); pooled summaries mix bases and are descriptive only; pool --base filter queued
+- Pending change set: 252 paths
   - ` M config/source_policies.json`
-  - `M  docs/lanes/eng-57-registry-base-tag.md`
   - ` M docs/lanes/lead-111-phrase-ablation-of-the-injury-read.md`
   - ` M docs/lanes/sim-21-drive-length-decomposition.md`
-  - ` M docs/lanes/ui20-2026-11-03.md`
-  - `A  registry/weak_signals_base_tags.csv`
-  - `A  scripts/eng57_base_tags.py`
+  - `M  docs/lanes/ui20-2026-11-03.md`
   - ` M scripts/sim10_drive.py`
-  - ` M src/nfl_ats/board_terminal.py`
-  - ` M src/nfl_ats/dashboard/findings_content.py`
+  - `M  src/nfl_ats/board_terminal.py`
+  - `M  src/nfl_ats/dashboard/findings_content.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
@@ -43,7 +40,10 @@ Refreshed at: `2026-11-03T22:49:24.426269+00:00`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
-  - ...and 234 more
+  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
+  - ...and 232 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
