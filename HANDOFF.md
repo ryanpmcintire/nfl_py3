@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T20:52:00.268427+00:00`
+Refreshed at: `2026-11-03T20:54:27.044660+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-03T20:52:00.268427+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `1872fafe7dee` — Republish the site with the latest settled results
-- Pending change set: 274 paths
-  - `M  ROADMAP.md`
+- Baseline commit: `1bfe11884f34` — Backlog round 4 (12 rows, inventory 65/152); PER-13 frozen term, XLG-15 CFB trait reliability, MOD-41 unit 2 components: all unresolved
+- Pending change set: 246 paths
   - ` M config/source_policies.json`
-  - `A  docs/lanes/eng-50-online-forward-stacker.md`
-  - `A  docs/lanes/eng-51-opener-input-provenance-guard.md`
-  - `A  docs/lanes/lead-100-lead99-repeat-read-ensemble.md`
-  - `A  docs/lanes/lead-101-news-delta-read.md`
-  - `A  docs/lanes/lead-102-name-blinded-control-read.md`
-  - `A  docs/lanes/lead-103-read-block-ablation.md`
-  - `A  docs/lanes/lead-104-read-revision-path.md`
-  - `A  docs/lanes/lead-105-tiebreak-total-read.md`
-  - `A  docs/lanes/mkt-23-spread-total-move-decomposition.md`
-  - `M  docs/lanes/mod-41-mod41-cumulative-workload.md`
-  - `M  docs/lanes/per-13-per13-week17-rest-hazard.md`
-  - `A  docs/lanes/pool-05-ownership-proxy-v2.md`
-  - `M  docs/lanes/sim08-spec-a-terminal-2026-11-03.md`
-  - `A  docs/lanes/ui-28-week-strip-field-percentile.md`
-  - `A  docs/lanes/ui-29-where-we-trail-leader.md`
-  - `M  docs/lanes/xlg-15-xlg15-reliability-transfer.md`
-  - `M  docs/lead64_freshness_audit.md`
-  - `A  registry/weak_signals/mod41_cumulative_workload_u2.json`
-  - ...and 254 more
+  - `M  docs/lanes/backlog-all-2026-11-02.md`
+  - `M  docs/lanes/engine-patch-queue-2026-11-03.md`
+  - `?? an.csv`
+  - `?? data/pool_observables/20261103T130853Z/manifest.json`
+  - `?? data/pool_observables/20261103T130853Z/observations.json`
+  - `?? docs/lanes/c-drive-space-2026-10-31.md`
+  - `?? docs/lanes/machine-crashes-2026-10-31.md`
+  - `?? docs/lanes/stealmybitcoin-ctf.md`
+  - `?? docs/move_reasons.json`
+  - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
+  - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
+  - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
+  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
+  - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
+  - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
+  - ...and 226 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
