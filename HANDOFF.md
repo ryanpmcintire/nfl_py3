@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T21:49:38.312177+00:00`
+Refreshed at: `2026-11-03T21:50:21.557911+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-03T21:49:38.312177+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `5207ecef834f` — LEAD-106 unit 2 id-join rescore (87% verified outcomes): injury-wording read beats the designation ladder, log loss +.065 [.014,.130] P+ .998; vs designation x practice ladder +.036 [-.002,.083] P+ .96; unresolved
-- Pending change set: 260 paths
-  - `M  ROADMAP.md`
+- Baseline commit: `afae57390950` — Backlog round 6: 13 new rows (MOD-45/46, MKT-26/27, PER-14/15, SIM-20/21, POOL-08, LEAD-107, ENG-53, UI-32/33); inventory 65/179
+- Pending change set: 249 paths
   - ` M config/source_policies.json`
   - `M  docs/lanes/backlog-all-2026-11-02.md`
-  - `A  docs/lanes/eng-53-trait-reliability-table.md`
-  - `A  docs/lanes/lead-107-read-dispersion-weight.md`
-  - `A  docs/lanes/mkt-26-move-size-dispersion.md`
-  - `A  docs/lanes/mkt-27-total-level-variance.md`
-  - `A  docs/lanes/mod-45-tempo-pair-spread.md`
-  - `A  docs/lanes/mod-46-favourite-lead-skew.md`
-  - `A  docs/lanes/per-14-coordinator-mover-portability.md`
-  - `A  docs/lanes/per-15-minor-return-ramp.md`
-  - `A  docs/lanes/pool-08-hook-side-field-share.md`
-  - `A  docs/lanes/sim-20-coordinator-halftime-hook.md`
-  - `A  docs/lanes/sim-21-drive-length-decomposition.md`
-  - `A  docs/lanes/ui-32-key-number-chip.md`
-  - `A  docs/lanes/ui-33-pick-depends-on-status.md`
+  - ` M docs/lanes/xlg-14-xlg14-cfb-first-discovery.md`
   - ` M scripts/sim10_drive.py`
+  - ` M src/nfl_ats/board_terminal.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - ...and 240 more
+  - `?? docs/lanes/c-drive-space-2026-10-31.md`
+  - `?? docs/lanes/machine-crashes-2026-10-31.md`
+  - `?? docs/lanes/stealmybitcoin-ctf.md`
+  - `?? docs/move_reasons.json`
+  - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
+  - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
+  - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
+  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
+  - ...and 229 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
