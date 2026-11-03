@@ -164,3 +164,5 @@ None. Decided 2026-09-23 (root): the served fitted probability keeps the unmodif
 ## Audit 2026-11-03 (forward v historical)
 
 No historical part remains: window split (weeks 1-4 +2.50 P+ 0.977; weeks 5-18 -0.70 P+ 0.099), week-gated variant per-season (+1.82/+0.85/+0.40/-0.75/-0.75/+1.87), continuity split, and both fit-level looks are measured and recorded. Remaining is forward only: the variant differs from served on about 58 of 1,503 historical games (about 10 per season), so by Week 18 2026 only about 10 differing games accrue; paired decisive record cannot resolve +0.5 points. Prospective all-games score today 56/104, P+ 0.763 v coin (not the paired contrast). Needs end-of-season paired read plus pooling with later seasons.
+
+2026-11-03 pooling: LEAD-65 forward appends and decision rule are declared in docs/forward_pooling_declaration_2026-11-03.md (frozen arm, estimator, power season, invalidation).

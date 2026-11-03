@@ -23,3 +23,5 @@ Row definition (table with provenance) met 2026-11-02; fitted term unresolved_be
 
 ## Unit 4 (2026-11-03, measured)
 scripts/sky01_snap_repair.py -> artifacts/sky01/snap_repair.json. Unmatched 287 of 1,028 scored out-rows: 171 veterans with earlier-season snaps but none last season or earlier this season (injury returns), 74 rookies/first snaps, 26 pfr id never in snaps (practice squad), 16 no player-table id (about 3 rows name-recoverable). Not mainly rookies, not a join bug. Repair: LOSO ridge-free OLS expectation (last observed share, gap, draft round, position group). Re-run: OOS Brier -0.000097 [-0.00122,+0.00087] P+ 0.46, log loss -0.000237 P+ 0.44, decisive 10 (6-4), in-sample +0.0000055, gap +0.000102 (declared: +0.000063, P+ 0.55, 8-8). Recorded as one look. Not refrozen. Recommend keep frozen variant; repaired adds no signal.
+
+2026-11-03 pooling: SKY-01 forward appends and decision rule are declared in docs/forward_pooling_declaration_2026-11-03.md (frozen arm, estimator, power season, invalidation).

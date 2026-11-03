@@ -1,6 +1,90 @@
 {
   "family": "mod10_graph_term",
   "signals": {
+    "graph term warm-up fix acc": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Receiver created-reception and contested-catch lineup term, 2022 warm-up only, 25-target minimum, scored 2023-2025 decisive games vs base 416-383",
+      "effect": -0.5006,
+      "effect_units": "accuracy_points",
+      "family": "mod10_graph_term",
+      "interval": [
+        -1.9012,
+        0.8816
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Warm-up fix did not help; effect near zero, slightly negative",
+      "probability_positive": 0.2065,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/mod10_graph_term/report_warm.json",
+      "standard_error": null
+    },
+    "graph term warm-up fix brier": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Receiver created-reception and contested-catch lineup term, 2022 warm-up only, 25-target minimum, scored 2023-2025 decisive games vs base 416-383",
+      "effect": -0.000382,
+      "effect_units": "brier_improvement",
+      "family": "mod10_graph_term",
+      "interval": [
+        -0.001092,
+        0.000241
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Warm-up fix did not help; effect near zero, slightly negative",
+      "probability_positive": 0.1195,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/mod10_graph_term/report_warm.json",
+      "standard_error": null
+    },
+    "graph term warm-up fix log loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Receiver created-reception and contested-catch lineup term, 2022 warm-up only, 25-target minimum, scored 2023-2025 decisive games vs base 416-383",
+      "effect": -0.00081,
+      "effect_units": "log_loss_improvement",
+      "family": "mod10_graph_term",
+      "interval": [
+        -0.002266,
+        0.00045
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Warm-up fix did not help; effect near zero, slightly negative",
+      "probability_positive": 0.10725,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/mod10_graph_term/report_warm.json",
+      "standard_error": null
+    },
     "mod10_graph_term_acc": {
       "category": "modeling",
       "classification": "unresolved_below_power",
