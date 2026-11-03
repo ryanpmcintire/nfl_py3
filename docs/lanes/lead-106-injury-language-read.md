@@ -22,3 +22,7 @@ Next: when raw/ has 9 batch files, run `scripts/lead106_injury_language.py score
 Mechanism if positive: expected-availability term in player availability features only, never a side rule.
 Open: wording signal limited (only practice phrase, body part, headlines since late Sept).
 - 2026-11-03 16:43 ET (root review): 33.5% of player-weeks did not match the snap counts and were labelled "not played"; a name-match miss is not a missed game. The scoring unit must score matched rows only (report the unmatched rate by designation) or fix the join before reading Brier or log loss.
+
+## Unit 1 result (2026-11-03)
+Read vs designation ladder, log_loss_improvement on P(plays) 0.075 [0.019, 0.137] P+ .9995; Brier +0.026 [0.009, 0.047]; snap-share MAE +0.061 [0.039, 0.082]. Headline rows (228) 0.110 [0.032, 0.206]. Vs designation x practice ladder: 0.048 [0.003, 0.093] P+ .98. Halves even/odd weeks both positive (.027/.134). Caveats: Out/Doubtful trivial (nobody played); gain comes from Questionable/none; unmatched names counted as not played. Recorded as lead106_injury_language_p_plays. Next: forward capture of the same read for Week 9+, then test as availability input.
+- 2026-11-03 16:44 ET (root): the 0.075 gain is NOT trusted until rescored: outcomes label unmatched names as not played (33.5% of rows). Next unit: join injuries to snap counts by player id (nflverse players crosswalk gsis_id <-> pfr_id), rescore matched rows, report by designation.

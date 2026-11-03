@@ -230,4 +230,5 @@ def main():
     print("total looks", looks)
 
 
-main()
+if __name__ == "__main__":
+    main()

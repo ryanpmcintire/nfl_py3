@@ -1,0 +1,33 @@
+{
+  "family": "lead106",
+  "signals": {
+    "lead106_injury_language_p_plays": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval positive but one season, 2 split halves both positive (even .027, odd .134), stratified sample; availability term only, no side rule",
+      "closing_ground": null,
+      "description": "Frozen LLM read of injury-report wording (designation, injury, practice wording, pre-kickoff headlines) vs designation ladder fit on prior weeks; P(plays), 331 stratified player-weeks, 2026 wk2-8",
+      "effect": 0.0752,
+      "effect_units": "log_loss_improvement",
+      "family": "lead106",
+      "interval": [
+        0.0188,
+        0.1374
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.9995,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 49,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/score.json",
+      "standard_error": 0.031
+    }
+  }
+}

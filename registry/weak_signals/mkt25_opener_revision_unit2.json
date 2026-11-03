@@ -1,0 +1,481 @@
+{
+  "family": "mkt25_opener_revision_unit2",
+  "signals": {
+    "mkt25u2_asym_blowout_term_dLL_vs_served": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "LOSO 2020-25 n 1415; asym_blowout component; flips 88 new side 42-46; seasons positive 1/6; halves -0.00064/-0.00042; week-block bootstrap",
+      "closing_ground": null,
+      "description": "Unit 2: asymmetry by prior-cover sign and blowout size, position-weighted injury news with weights from prior seasons, rating windows 8/12/17; LOSO terms on the served logit graded at opener",
+      "effect": -0.00052,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt25_opener_revision_unit2",
+      "interval": [
+        -0.00116,
+        0.00012
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether asymmetric, position-weighted or window-varied opener revision beyond the prior cover adds to the opener-graded pick probability.",
+      "probability_positive": 0.061,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mkt25_unit2.py; tests/scratch/mkt25_unit2_out.txt",
+      "standard_error": null
+    },
+    "mkt25u2_asym_sign_term_dLL_vs_served": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "LOSO 2020-25 n 1415; asym_sign component; flips 157 new side 75-82; seasons positive 3/6; halves -0.00004/-0.00133; week-block bootstrap",
+      "closing_ground": null,
+      "description": "Unit 2: asymmetry by prior-cover sign and blowout size, position-weighted injury news with weights from prior seasons, rating windows 8/12/17; LOSO terms on the served logit graded at opener",
+      "effect": -0.0007,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt25_opener_revision_unit2",
+      "interval": [
+        -0.00198,
+        0.00046
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether asymmetric, position-weighted or window-varied opener revision beyond the prior cover adds to the opener-graded pick probability.",
+      "probability_positive": 0.127,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mkt25_unit2.py; tests/scratch/mkt25_unit2_out.txt",
+      "standard_error": null
+    },
+    "mkt25u2_diff_blowout": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "slope(cm_out)-slope(cm_in); n 1415; split-half -0.0058/-0.0389; week-block bootstrap",
+      "closing_ground": null,
+      "description": "Unit 2: asymmetry by prior-cover sign and blowout size, position-weighted injury news with weights from prior seasons, rating windows 8/12/17; LOSO terms on the served logit graded at opener",
+      "effect": -0.0234,
+      "effect_units": "slope_difference",
+      "family": "mkt25_opener_revision_unit2",
+      "interval": [
+        -0.0398,
+        -0.0063
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether asymmetric, position-weighted or window-varied opener revision beyond the prior cover adds to the opener-graded pick probability.",
+      "probability_positive": 0.004,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mkt25_unit2.py; tests/scratch/mkt25_unit2_out.txt",
+      "standard_error": null
+    },
+    "mkt25u2_diff_sign": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "slope(cm_pos)-slope(cm_neg); n 1415; split-half -0.0262/-0.0114; week-block bootstrap",
+      "closing_ground": null,
+      "description": "Unit 2: asymmetry by prior-cover sign and blowout size, position-weighted injury news with weights from prior seasons, rating windows 8/12/17; LOSO terms on the served logit graded at opener",
+      "effect": -0.0184,
+      "effect_units": "slope_difference",
+      "family": "mkt25_opener_revision_unit2",
+      "interval": [
+        -0.0395,
+        0.003
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether asymmetric, position-weighted or window-varied opener revision beyond the prior cover adds to the opener-graded pick probability.",
+      "probability_positive": 0.043,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mkt25_unit2.py; tests/scratch/mkt25_unit2_out.txt",
+      "standard_error": null
+    },
+    "mkt25u2_ecm_w12_term_dLL_vs_served": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "LOSO 2020-25 n 1415; e_cm window 12; flips 75 new side 35-40; seasons positive 1/6; halves -0.00124/-0.00008; week-block bootstrap",
+      "closing_ground": null,
+      "description": "Unit 2: asymmetry by prior-cover sign and blowout size, position-weighted injury news with weights from prior seasons, rating windows 8/12/17; LOSO terms on the served logit graded at opener",
+      "effect": -0.00065,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt25_opener_revision_unit2",
+      "interval": [
+        -0.00117,
+        -0.00012
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether asymmetric, position-weighted or window-varied opener revision beyond the prior cover adds to the opener-graded pick probability.",
+      "probability_positive": 0.009,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mkt25_unit2.py; tests/scratch/mkt25_unit2_out.txt",
+      "standard_error": null
+    },
+    "mkt25u2_ecm_w17_term_dLL_vs_served": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "LOSO 2020-25 n 1415; e_cm window 17; flips 125 new side 61-64; seasons positive 3/6; halves -0.00121/0.00028; week-block bootstrap",
+      "closing_ground": null,
+      "description": "Unit 2: asymmetry by prior-cover sign and blowout size, position-weighted injury news with weights from prior seasons, rating windows 8/12/17; LOSO terms on the served logit graded at opener",
+      "effect": -0.00045,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt25_opener_revision_unit2",
+      "interval": [
+        -0.00149,
+        0.00057
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether asymmetric, position-weighted or window-varied opener revision beyond the prior cover adds to the opener-graded pick probability.",
+      "probability_positive": 0.188,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mkt25_unit2.py; tests/scratch/mkt25_unit2_out.txt",
+      "standard_error": null
+    },
+    "mkt25u2_ecm_w8_term_dLL_vs_served": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "LOSO 2020-25 n 1415; e_cm window 8; flips 75 new side 33-42; seasons positive 3/6; halves -0.00082/-0.00004; week-block bootstrap",
+      "closing_ground": null,
+      "description": "Unit 2: asymmetry by prior-cover sign and blowout size, position-weighted injury news with weights from prior seasons, rating windows 8/12/17; LOSO terms on the served logit graded at opener",
+      "effect": -0.00042,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt25_opener_revision_unit2",
+      "interval": [
+        -0.00099,
+        0.00014
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether asymmetric, position-weighted or window-varied opener revision beyond the prior cover adds to the opener-graded pick probability.",
+      "probability_positive": 0.079,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mkt25_unit2.py; tests/scratch/mkt25_unit2_out.txt",
+      "standard_error": null
+    },
+    "mkt25u2_posnews_term_dLL_vs_served": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "LOSO 2020-25 n 1415; e after cm + weighted news; flips 119 new side 59-60; seasons positive 3/6; halves -0.00116/0.00028; week-block bootstrap",
+      "closing_ground": null,
+      "description": "Unit 2: asymmetry by prior-cover sign and blowout size, position-weighted injury news with weights from prior seasons, rating windows 8/12/17; LOSO terms on the served logit graded at opener",
+      "effect": -0.00043,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt25_opener_revision_unit2",
+      "interval": [
+        -0.0015,
+        0.00053
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether asymmetric, position-weighted or window-varied opener revision beyond the prior cover adds to the opener-graded pick probability.",
+      "probability_positive": 0.205,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mkt25_unit2.py; tests/scratch/mkt25_unit2_out.txt",
+      "standard_error": null
+    },
+    "mkt25u2_slope_cm_in": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "R~cm_in (w17); n 1415; split-half 0.0856/0.1141; week-block bootstrap",
+      "closing_ground": null,
+      "description": "Unit 2: asymmetry by prior-cover sign and blowout size, position-weighted injury news with weights from prior seasons, rating windows 8/12/17; LOSO terms on the served logit graded at opener",
+      "effect": 0.1005,
+      "effect_units": "logit_coefficient",
+      "family": "mkt25_opener_revision_unit2",
+      "interval": [
+        0.0787,
+        0.1231
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether asymmetric, position-weighted or window-varied opener revision beyond the prior cover adds to the opener-graded pick probability.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mkt25_unit2.py; tests/scratch/mkt25_unit2_out.txt",
+      "standard_error": null
+    },
+    "mkt25u2_slope_cm_neg": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "R~cm_neg (w17); n 1415; split-half 0.0834/0.0855; week-block bootstrap",
+      "closing_ground": null,
+      "description": "Unit 2: asymmetry by prior-cover sign and blowout size, position-weighted injury news with weights from prior seasons, rating windows 8/12/17; LOSO terms on the served logit graded at opener",
+      "effect": 0.0846,
+      "effect_units": "logit_coefficient",
+      "family": "mkt25_opener_revision_unit2",
+      "interval": [
+        0.0645,
+        0.105
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether asymmetric, position-weighted or window-varied opener revision beyond the prior cover adds to the opener-graded pick probability.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mkt25_unit2.py; tests/scratch/mkt25_unit2_out.txt",
+      "standard_error": null
+    },
+    "mkt25u2_slope_cm_out": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "R~cm_out (w17); n 1415; split-half 0.0798/0.0752; week-block bootstrap",
+      "closing_ground": null,
+      "description": "Unit 2: asymmetry by prior-cover sign and blowout size, position-weighted injury news with weights from prior seasons, rating windows 8/12/17; LOSO terms on the served logit graded at opener",
+      "effect": 0.077,
+      "effect_units": "logit_coefficient",
+      "family": "mkt25_opener_revision_unit2",
+      "interval": [
+        0.0595,
+        0.0978
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether asymmetric, position-weighted or window-varied opener revision beyond the prior cover adds to the opener-graded pick probability.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mkt25_unit2.py; tests/scratch/mkt25_unit2_out.txt",
+      "standard_error": null
+    },
+    "mkt25u2_slope_cm_pos": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "R~cm_pos (w17); n 1415; split-half 0.0572/0.0741; week-block bootstrap",
+      "closing_ground": null,
+      "description": "Unit 2: asymmetry by prior-cover sign and blowout size, position-weighted injury news with weights from prior seasons, rating windows 8/12/17; LOSO terms on the served logit graded at opener",
+      "effect": 0.0662,
+      "effect_units": "logit_coefficient",
+      "family": "mkt25_opener_revision_unit2",
+      "interval": [
+        0.0474,
+        0.0847
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether asymmetric, position-weighted or window-varied opener revision beyond the prior cover adds to the opener-graded pick probability.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mkt25_unit2.py; tests/scratch/mkt25_unit2_out.txt",
+      "standard_error": null
+    },
+    "mkt25u2_slope_cm_w12": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "R~cm window 12; n 1415; split-half 0.0523/0.0557; week-block bootstrap",
+      "closing_ground": null,
+      "description": "Unit 2: asymmetry by prior-cover sign and blowout size, position-weighted injury news with weights from prior seasons, rating windows 8/12/17; LOSO terms on the served logit graded at opener",
+      "effect": 0.0541,
+      "effect_units": "logit_coefficient",
+      "family": "mkt25_opener_revision_unit2",
+      "interval": [
+        0.0444,
+        0.0647
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether asymmetric, position-weighted or window-varied opener revision beyond the prior cover adds to the opener-graded pick probability.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mkt25_unit2.py; tests/scratch/mkt25_unit2_out.txt",
+      "standard_error": null
+    },
+    "mkt25u2_slope_cm_w17": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "R~cm window 17; n 1415; split-half 0.0507/0.0546; week-block bootstrap",
+      "closing_ground": null,
+      "description": "Unit 2: asymmetry by prior-cover sign and blowout size, position-weighted injury news with weights from prior seasons, rating windows 8/12/17; LOSO terms on the served logit graded at opener",
+      "effect": 0.0528,
+      "effect_units": "logit_coefficient",
+      "family": "mkt25_opener_revision_unit2",
+      "interval": [
+        0.0422,
+        0.0634
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether asymmetric, position-weighted or window-varied opener revision beyond the prior cover adds to the opener-graded pick probability.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mkt25_unit2.py; tests/scratch/mkt25_unit2_out.txt",
+      "standard_error": null
+    },
+    "mkt25u2_slope_cm_w8": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "R~cm window 8; n 1415; split-half 0.0502/0.0537; week-block bootstrap",
+      "closing_ground": null,
+      "description": "Unit 2: asymmetry by prior-cover sign and blowout size, position-weighted injury news with weights from prior seasons, rating windows 8/12/17; LOSO terms on the served logit graded at opener",
+      "effect": 0.0521,
+      "effect_units": "logit_coefficient",
+      "family": "mkt25_opener_revision_unit2",
+      "interval": [
+        0.0426,
+        0.0616
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether asymmetric, position-weighted or window-varied opener revision beyond the prior cover adds to the opener-graded pick probability.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mkt25_unit2.py; tests/scratch/mkt25_unit2_out.txt",
+      "standard_error": null
+    },
+    "mkt25u2_slope_wlevel": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "R~wlevel; n 1415; split-half 0.8387/0.6116; week-block bootstrap",
+      "closing_ground": null,
+      "description": "Unit 2: asymmetry by prior-cover sign and blowout size, position-weighted injury news with weights from prior seasons, rating windows 8/12/17; LOSO terms on the served logit graded at opener",
+      "effect": 0.7035,
+      "effect_units": "logit_coefficient",
+      "family": "mkt25_opener_revision_unit2",
+      "interval": [
+        0.5495,
+        0.8743
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether asymmetric, position-weighted or window-varied opener revision beyond the prior cover adds to the opener-graded pick probability.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mkt25_unit2.py; tests/scratch/mkt25_unit2_out.txt",
+      "standard_error": null
+    },
+    "mkt25u2_slope_wnews": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "R~wnews; n 1415; split-half 0.1932/0.0649; week-block bootstrap",
+      "closing_ground": null,
+      "description": "Unit 2: asymmetry by prior-cover sign and blowout size, position-weighted injury news with weights from prior seasons, rating windows 8/12/17; LOSO terms on the served logit graded at opener",
+      "effect": 0.1198,
+      "effect_units": "logit_coefficient",
+      "family": "mkt25_opener_revision_unit2",
+      "interval": [
+        -0.05,
+        0.2893
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether asymmetric, position-weighted or window-varied opener revision beyond the prior cover adds to the opener-graded pick probability.",
+      "probability_positive": 0.919,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mkt25_unit2.py; tests/scratch/mkt25_unit2_out.txt",
+      "standard_error": null
+    }
+  }
+}
