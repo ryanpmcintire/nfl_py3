@@ -1,0 +1,89 @@
+{
+  "family": "mod42_ol_continuity",
+  "signals": {
+    "mod42_ol_cont": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "OL continuity term cont added to served logit, LOSO 2020-25 at opener",
+      "effect": -0.00067,
+      "effect_units": "log_loss_improvement",
+      "family": "mod42_ol_continuity",
+      "interval": [
+        -0.00126,
+        -7e-05
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Line continuity did not improve out-of-season log loss over the served probability.",
+      "probability_positive": 0.014,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.056,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mod42_ol_continuity.py",
+      "standard_error": 0.0003
+    },
+    "mod42_ol_cont_x_pressure": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "OL continuity term cont_x_pressure added to served logit, LOSO 2020-25 at opener",
+      "effect": -0.00106,
+      "effect_units": "log_loss_improvement",
+      "family": "mod42_ol_continuity",
+      "interval": [
+        -0.00324,
+        0.0011
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Line continuity did not improve out-of-season log loss over the served probability.",
+      "probability_positive": 0.178,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.056,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mod42_ol_continuity.py",
+      "standard_error": 0.00112
+    },
+    "mod42_ol_new": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "OL continuity term new added to served logit, LOSO 2020-25 at opener",
+      "effect": -0.00015,
+      "effect_units": "log_loss_improvement",
+      "family": "mod42_ol_continuity",
+      "interval": [
+        -0.00191,
+        0.00159
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Line continuity did not improve out-of-season log loss over the served probability.",
+      "probability_positive": 0.44,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.056,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mod42_ol_continuity.py",
+      "standard_error": 0.00089
+    }
+  }
+}
