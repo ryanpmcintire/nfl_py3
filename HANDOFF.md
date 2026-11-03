@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T22:38:14.610839+00:00`
+Refreshed at: `2026-11-03T22:39:18.840248+00:00`
 
 ## Start here
 
@@ -21,17 +21,15 @@ Refreshed at: `2026-11-03T22:38:14.610839+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `b7d2623cf91a` — Refresh session handoff
-- Pending change set: 256 paths
+- Baseline commit: `80334608f94f` — MOD-48: anytime-valid forward bar would need ~170 weeks at MOD-41's effect size (5% chance within 2026); serving to be decided on out-of-season evidence plus robustness checks; not served for Week 9
+- Pending change set: 253 paths
   - ` M config/source_policies.json`
-  - `M  docs/lanes/mod-48-mod41-serving-bar-and-forward-plan.md`
   - ` M docs/lanes/mod-49-mod41-construction-sensitivity.md`
   - ` M docs/lanes/sim-21-drive-length-decomposition.md`
-  - ` M docs/lanes/ui-35-calibration-in-plain-words.md`
-  - `A  scripts/mod48_power.py`
+  - `M  docs/lanes/ui-35-calibration-in-plain-words.md`
   - ` M scripts/sim10_drive.py`
-  - ` M src/nfl_ats/board_site_content.py`
-  - ` M src/nfl_ats/board_terminal.py`
+  - `M  src/nfl_ats/board_site_content.py`
+  - `M  src/nfl_ats/board_terminal.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
@@ -43,7 +41,9 @@ Refreshed at: `2026-11-03T22:38:14.610839+00:00`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
   - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - ...and 236 more
+  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
+  - ...and 233 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

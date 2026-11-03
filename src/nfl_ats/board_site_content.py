@@ -441,6 +441,7 @@ class SeasonSoFar:
     leader_split_text: str = ""
     leader_split_note: str = ""
     leader_split_games: tuple[tuple[str, str, str, str, str], ...] = ()
+    calibration_rows: tuple[tuple[str, int, str, str], ...] = ()
 
     @property
     def has_rows(self) -> bool:
@@ -684,6 +685,30 @@ def _season_challenger_rows(
     return tuple(row for _, row in differing), summary
 
 
+CALIBRATION_BAND_COUNT = 3
+
+
+def _calibration_rows(
+    rows: Sequence[HistoryPickRow],
+) -> tuple[tuple[str, int, str, str], ...]:
+    graded = [
+        (row.confidence, bool(row.correct))
+        for row in rows
+        if row.status == "settled" and row.correct is not None and row.confidence is not None
+    ]
+    if len(graded) < CALIBRATION_BAND_COUNT * 2:
+        return ()
+    graded.sort(key=lambda item: item[0])
+    out = []
+    for band in np.array_split(np.arange(len(graded)), CALIBRATION_BAND_COUNT):
+        chunk = [graded[i] for i in band]
+        low, high = chunk[0][0], chunk[-1][0]
+        stated = sum(item[0] for item in chunk) / len(chunk)
+        covered = sum(item[1] for item in chunk) / len(chunk)
+        out.append((f"{low:.0%} to {high:.0%}", len(chunk), f"{stated:.0%}", f"{covered:.0%}"))
+    return tuple(out)
+
+
 def _build_season_so_far(
     picks: Sequence[HistoryPickRow],
     assessments: Sequence[ChallengerAssessment],
@@ -753,6 +778,7 @@ def _build_season_so_far(
         leader_split_text=leader_split[0],
         leader_split_note=leader_split[1],
         leader_split_games=leader_split[2],
+        calibration_rows=_calibration_rows(season_rows),
         tuesday_week_records=_week_records(
             [row for row in tuesday_picks if season is None or row.season == season],
             minimum_weeks=1,

@@ -2586,6 +2586,29 @@ def _week_strip_html(block: SeasonSoFar) -> str:
     )
 
 
+def _calibration_html(block: SeasonSoFar) -> str:
+    if not block.calibration_rows:
+        return ""
+    body = "".join(
+        "<tr>"
+        f'<td data-label="Chance the card gave">{escape(band)}</td>'
+        f'<td data-label="Picks">{games}</td>'
+        f'<td data-label="Average chance given">{escape(stated)}</td>'
+        f'<td data-label="Actually covered">{escape(covered)}</td>'
+        "</tr>"
+        for band, games, stated, covered in block.calibration_rows
+    )
+    return (
+        '<details class="policy-note"><summary class="micro" style="cursor:pointer;">'
+        "When the card says X%, how often did it cover?</summary>"
+        "<p>Finished picks this season, split into three equal groups by the chance the "
+        "card gave. Each group is small, so a few games can move its share a lot.</p>"
+        '<div class="board-scroll"><table class="board"><thead><tr>'
+        "<th>Chance the card gave</th><th>Picks</th><th>Average chance given</th>"
+        f"<th>Actually covered</th></tr></thead><tbody>{body}</tbody></table></div></details>"
+    )
+
+
 def _leader_split_html(block: SeasonSoFar) -> str:
     if not block.leader_split_text:
         return ""
@@ -2653,6 +2676,7 @@ def _season_so_far_section_html(block: SeasonSoFar | None) -> str:
         ),
         f'<p class="policy-note">{escape(block.caveat_text)}</p>',
         f'<p class="policy-note">{escape(block.tiebreaker_text)}</p>',
+        _calibration_html(block),
         _leader_split_html(block),
     ]
     if block.challengers:

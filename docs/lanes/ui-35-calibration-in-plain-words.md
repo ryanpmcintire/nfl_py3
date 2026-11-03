@@ -1,16 +1,16 @@
 # UI-35
 
 ## Goal
-Calibration in plain words on the History page: when the card said about 55 to 60 percent, how often did that side cover (ROADMAP UI-35).
+Calibration in plain words on the History page: when the card said X percent, how often did that side cover.
 
 ## State
-Added 2026-11-03 (backlog expansion 8), not started, nothing run. Mechanism: A pool player who sees 57 percent wants to know whether that number can be trusted. MOD-47 measured the served probability well calibrated (slope .92). Display only the settled reliability bands from the served probability, not an edge claim.
+Unit 1 done 2026-11-03 ~17:50 local. No such pick-level table existed (Model page only has home-cover reliability from the backtest). Added a fold "When the card says X%, how often did it cover?" in the season-so-far section: board_site_content.py `_calibration_rows` / `SeasonSoFar.calibration_rows`, board_terminal.py `_calibration_html`. Three equal-count bands of displayed_score (frozen ledger) over settled 2026 picks. Rendered: 50-53% n41 avg 51 covered 44; 53-56% n40 avg 55 covered 62; 56-70% n40 avg 59 covered 55. Not published or committed.
 
 ## Tried
-Novelty check only. Nearest: UI-32, UI-28, MOD-47, served-probability-calibration-2026 lane. Differs: a reader-facing reliability table; the lane measures it but nothing shows it.
+No out-of-season sentence: the MOD-47 Unit 2 numbers (slope .92) live only in the lane, no stored artifact.
 
 ## Next
-First unit for one agent: Add a small plain table to the History view: four confidence bands, games, and share that covered, from the served probability at the opener, with a one-line sentence on the gap between the number and the share and no fitted model shown.
+Orchestrator: review, publish-board, commit. Optional unit 2: store the out-of-season reliability bins as an artifact, then add the one-line sentence.
 
 ## Open
-Rules: Display only measured claims, in the current design system and plain words; no ids, hashes or research jargon in reader text; no side rule. Look count and family declared before any sign is seen.
+Look count: 3 bands, one family.
