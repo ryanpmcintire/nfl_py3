@@ -968,7 +968,12 @@ def _market_now_html(game: GameRow, market_text: str, move_cls: str) -> str:
     reason = (
         f'<span class="game-sub">{escape(game.move_reason)}</span>' if game.move_reason else ""
     )
-    return main + sub + reason
+    forecast = (
+        f'<span class="game-sub">{escape(game.forecast_text)}</span>'
+        if game.forecast_text and not game.final
+        else ""
+    )
+    return main + sub + reason + forecast
 
 
 def _board_section(content: BoardContent, *, archived: bool = False) -> str:

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T19:57:38.214973+00:00`
+Refreshed at: `2026-11-03T19:59:54.467419+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-03T19:57:38.214973+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `f3c07865cfdf` — MOD-40 NGS process gap (reliable trait, priced at the opener); ENG-48 anytime-valid forward monitor
-- Pending change set: 265 paths
+- Baseline commit: `53c118c18f4f` — MKT-22 trait pricing audit and SIM-16 pregame attrition: both unresolved
+- Pending change set: 262 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M config/source_policies.json`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/backlog-all-2026-11-02.md`
-  - `M  docs/lanes/mkt-22-mkt22-trait-pricing-audit.md`
-  - `M  docs/lanes/sim-16-sim16-attrition-expectation.md`
+  - ` M docs/lanes/mod-41-mod41-cumulative-workload.md`
   - ` M docs/lanes/sim08-spec-a-terminal-2026-11-03.md`
+  - `M  docs/lanes/ui-27-ui27-forecast-chip.md`
   - ` M docs/lead64_freshness_audit.md`
   - ` M docs/model.html`
-  - `A  registry/weak_signals/mkt22_move_follows_traits.json`
-  - `A  registry/weak_signals/sim16_pregame_attrition.json`
-  - `A  scripts/mkt22_trait_pricing.py`
   - ` M scripts/sim10_situational.py`
-  - `A  scripts/sim16_attrition.py`
-  - ` M src/nfl_ats/board_content.py`
-  - ` M src/nfl_ats/board_terminal.py`
+  - `M  src/nfl_ats/board_content.py`
+  - `A  src/nfl_ats/board_forecast.py`
+  - `M  src/nfl_ats/board_terminal.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
-  - ...and 245 more
+  - `?? data/pool_observables/20261103T130853Z/manifest.json`
+  - `?? data/pool_observables/20261103T130853Z/observations.json`
+  - `?? docs/lanes/c-drive-space-2026-10-31.md`
+  - `?? docs/lanes/machine-crashes-2026-10-31.md`
+  - ...and 242 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -63,7 +63,7 @@ The 52.50% figure is the distinct secondary close-grade historical classificatio
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 9** from model `efbf163b09e987a0`, published `2026-11-03T19:55:24.785244+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 9** from model `efbf163b09e987a0`, published `2026-11-03T19:58:47.243474+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

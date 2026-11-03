@@ -14,3 +14,7 @@ First unit: Add a chip to the game row and phone drawer, render at 1440 and 390 
 
 ## Open
 Data: data/raw/forecast_archive and roof tables. Zero crossing closes nothing; record unresolved results with a closing ground.
+
+## Unit 1 result (2026-11-03)
+Built src/nfl_ats/board_forecast.py (MEX bulletin nearest kickoff, cached before kickoff and run time; schedule roof dome/closed shows Indoors; missing roof or station shows nothing), GameRow.forecast_text, rendered as game-sub under Books now. Rendered at 390 and 1440 in tests/scratch/ui-audit-2026-11-03/site10. Not published. Matchup column was too narrow, so the chip sits in Books now.
+Next: publish with the next board publish; add Wednesday refresh if a newer bulletin lands (bulletins are biweekly).
