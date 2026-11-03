@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T21:04:56.875275+00:00`
+Refreshed at: `2026-11-03T21:05:02.510432+00:00`
 
 ## Start here
 
@@ -21,20 +21,13 @@ Refreshed at: `2026-11-03T21:04:56.875275+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `402d2feb1482` — Republish the site with the latest settled results
-- Pending change set: 259 paths
+- Baseline commit: `a174b7e4d93f` — POOL-05 ownership v2 (slot and team add nothing; unresolved), MKT-23 move decomposition (one-team implied-total moves follow 57.8%, P+ .95; unresolved), ENG-51 opener-pool reruns (LEAD-66 RPS wrong sign resolved; MOD-24 u8 survives in direction)
+- Pending change set: 252 paths
+  - `M  HANDOFF.md`
   - ` M config/source_policies.json`
-  - `M  docs/lanes/eng-51-opener-input-provenance-guard.md`
-  - `M  docs/lanes/mkt-23-spread-total-move-decomposition.md`
   - ` M docs/lanes/mod-41-mod41-cumulative-workload.md`
-  - `M  docs/lanes/pool-05-ownership-proxy-v2.md`
   - ` M docs/lanes/sim-12-sim12-ingame-exits.md`
-  - `A  registry/weak_signals/eng51_open_pool_rerun.json`
-  - `A  registry/weak_signals/mkt23_move_decomposition.json`
-  - `A  registry/weak_signals/pool05_ownership_v2.json`
   - ` M scripts/forward_terms_week.py`
-  - `A  scripts/mkt23_move_decomposition.py`
-  - `A  scripts/pool05_ownership_v2.py`
   - ` M scripts/sim10_drive.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
@@ -43,7 +36,14 @@ Refreshed at: `2026-11-03T21:04:56.875275+00:00`
   - `?? docs/lanes/machine-crashes-2026-10-31.md`
   - `?? docs/lanes/stealmybitcoin-ctf.md`
   - `?? docs/move_reasons.json`
-  - ...and 239 more
+  - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
+  - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
+  - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
+  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
+  - ...and 232 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
