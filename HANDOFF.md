@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-02T23:49:28.234160+00:00`
+Refreshed at: `2026-11-03T00:34:27.908661+00:00`
 
 ## Start here
 
@@ -21,14 +21,20 @@ Refreshed at: `2026-11-02T23:49:28.234160+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `19d5dfbb5896` — Refresh the session handoff and README research state
-- Pending change set: 234 paths
+- Baseline commit: `ffe996da66bb` — Backlog lane: SIM-11 done; MOD-25 and SIM-08 restarted on the new engine
+- Pending change set: 240 paths
   - ` M CURRENT_PREDICTIONS.md`
+  - `M  ROADMAP.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/backlog-all-2026-11-02.md`
+  - ` M docs/lanes/mod25-v3-sim11-distill.md`
+  - ` M docs/lanes/sim08-simulator-rebuild.md`
+  - `M  docs/lanes/sim09-urgency-stakes.md`
   - ` M docs/model.html`
+  - ` M docs/sim08_market_anchored_declaration.md`
+  - ` M scripts/mod25_v3_produce.py`
+  - ` M scripts/sim08_market_anchored.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? docs/lanes/c-drive-space-2026-10-31.md`
@@ -37,13 +43,7 @@ Refreshed at: `2026-11-02T23:49:28.234160+00:00`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
-  - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
-  - ...and 214 more
+  - ...and 220 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
