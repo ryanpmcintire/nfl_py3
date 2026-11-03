@@ -112,6 +112,118 @@
       ],
       "source": "artifacts/sim10_wf/pipeline/grade_ridge_nomkt.json",
       "standard_error": null
+    },
+    "mod25_wfj_hgb_acc": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval spans zero; below power, joint-engine walk-forward, library before each test season",
+      "closing_ground": null,
+      "description": "Joint-engine walk-forward hgb student v base, opener accuracy 816-687 v 802-701",
+      "effect": 0.9315,
+      "effect_units": "accuracy_points",
+      "family": "mod25_distillation_walkforward",
+      "interval": [
+        -0.411,
+        2.7511
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.8283,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim10_wf/pipeline_joint/grade_hgb_nomkt.json",
+      "standard_error": 0.8066581632653061
+    },
+    "mod25_wfj_hgb_logloss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval spans zero; below power, joint-engine walk-forward, library before each test season",
+      "closing_ground": null,
+      "description": "Joint-engine walk-forward hgb student recalibrated log loss gain",
+      "effect": 0.0001806,
+      "effect_units": "log_loss_improvement",
+      "family": "mod25_distillation_walkforward",
+      "interval": [
+        -0.0006713,
+        0.0011221
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.6468,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim10_wf/pipeline_joint/grade_hgb_nomkt.json",
+      "standard_error": 0.00045750000000000006
+    },
+    "mod25_wfj_ridge_acc": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval spans zero; below power, joint-engine walk-forward, library before each test season",
+      "closing_ground": null,
+      "description": "Joint-engine walk-forward ridge student v base, opener accuracy 798-705 v 802-701",
+      "effect": -0.2661,
+      "effect_units": "accuracy_points",
+      "family": "mod25_distillation_walkforward",
+      "interval": [
+        -1.5775,
+        1.1465
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.337,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim10_wf/pipeline_joint/grade_ridge_nomkt.json",
+      "standard_error": 0.6948979591836736
+    },
+    "mod25_wfj_ridge_logloss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval spans zero; below power, joint-engine walk-forward, library before each test season",
+      "closing_ground": null,
+      "description": "Joint-engine walk-forward ridge student recalibrated log loss gain",
+      "effect": -4.76e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "mod25_distillation_walkforward",
+      "interval": [
+        -0.0008353,
+        0.0007273
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.4584,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim10_wf/pipeline_joint/grade_ridge_nomkt.json",
+      "standard_error": 0.00039862244897959185
     }
   }
 }

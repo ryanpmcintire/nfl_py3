@@ -112,6 +112,7 @@ def sim_chunk(n_worlds, n_seasons, seed, workers):
     sd.os.environ.setdefault("QBC", "1")
     sd.os.environ["SIM10_FORM"] = "0"
     sd.os.environ["SIM10_HECARRY"] = "1"
+    sd.os.environ["SIM10_JOINT"] = os.environ.get("MOD25_JOINT", "1")
     sd.os.environ["SIM10_LATENT"] = str(LATENT)
     sd.os.environ["SIM10_Q4DEC"] = str(Q4DEC)
     params = engine_params()

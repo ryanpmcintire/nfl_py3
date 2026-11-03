@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T00:39:15.206303+00:00`
+Refreshed at: `2026-11-03T04:30:43.401406+00:00`
 
 ## Start here
 
@@ -21,16 +21,16 @@ Refreshed at: `2026-11-03T00:39:15.206303+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `e64b37f33f6d` — SIM-06 step 2: learned drive-outcome head wired into the engine behind --head (default off)
+- Baseline commit: `c1d37e5243d9` — Backlog lane: heavy queue order after MOD-25
 - Pending change set: 236 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/backlog-all-2026-11-02.md`
-  - ` M docs/lanes/mod25-v3-sim11-distill.md`
+  - `M  docs/lanes/mod25-v3-sim11-distill.md`
   - ` M docs/model.html`
-  - ` M scripts/mod25_v3_produce.py`
+  - `M  registry/weak_signals/mod25_distillation_walkforward.json`
+  - `M  scripts/mod25_v3_produce.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? docs/lanes/c-drive-space-2026-10-31.md`
