@@ -52,6 +52,7 @@ from nfl_ats.board_site_content import (
     WatchingLeadView,
 )
 from nfl_ats.lineup_view import TeamLineup
+from nfl_ats.model_weak_spots import likely_real
 from nfl_ats.public_board import humanize_identifier
 from nfl_ats.spread_explorer import SPREAD_EXPLORER_STEP
 
@@ -1918,6 +1919,7 @@ def _grading_rule_kpi(label: str, value: float | None) -> str:
     )
 
 
+POINTS_PER_UNIT = 100
 ARM_SUMMARY_LINE_NAMES = {"close-grade": "closing line", "opener-grade": "opening line"}
 
 
@@ -1969,18 +1971,47 @@ def _ledger_evidence_html(row: ModelLedgerRowView) -> str:
             f"&middot; {pp}{classification}</span>"
         )
 
-    shown = row.evidence[:_LEDGER_EVIDENCE_INLINE_LIMIT]
-    rest = row.evidence[_LEDGER_EVIDENCE_INLINE_LIMIT:]
-    chips = "".join(chip(item) for item in shown)
-    if rest:
-        chips += (
-            f'<details class="evidence-more"><summary>+{len(rest)} more</summary>'
-            f"{''.join(chip(item) for item in rest)}</details>"
-        )
-    return chips
+    scored = [item for item in row.evidence if item.probability_positive is not None]
+    strongest = max(scored, key=lambda item: item.probability_positive, default=None)
+    count = len(row.evidence)
+    parts = [f"{count} supporting comparison{'' if count == 1 else 's'}"]
+    if strongest is not None:
+        lead = "the strongest is" if count > 1 else "it is"
+        parts.append(f"{lead} {_humanize_probability_positive(strongest.probability_positive)}")
+    if strongest is not None and strongest.classification:
+        parts.append(_humanize_classification(strongest.classification))
+    headline = escape("; ".join(parts))
+    if count == 1:
+        return f'<span class="game-sub">{headline}</span>'
+    return (
+        f'<span class="game-sub">{headline}</span>'
+        f'<details class="evidence-more"><summary>Show each comparison</summary>'
+        f"{''.join(chip(item) for item in row.evidence)}</details>"
+    )
 
 
-_LEDGER_EVIDENCE_INLINE_LIMIT = 3
+def _points(value: float | None) -> str:
+    return "--" if value is None else f"{value * POINTS_PER_UNIT:+.1f} points"
+
+
+def _points_range(lower: float | None, upper: float | None) -> str:
+    if lower is None or upper is None:
+        return "--"
+    return f"{lower * POINTS_PER_UNIT:+.1f} to {upper * POINTS_PER_UNIT:+.1f} points"
+
+
+def _season_timing_points_text(timing: Any) -> str:
+    if not timing.available:
+        return timing.summary
+    return (
+        f"Early-season games minus late-season games, how often the model was right: "
+        f"{_points(timing.accuracy_gap)} (resampled range "
+        f"{_points_range(timing.accuracy_gap_lower, timing.accuracy_gap_upper)}; "
+        f"{likely_real(timing.accuracy_gap_probability_positive)}). Stated confidence moved "
+        f"{_points(timing.confidence_gap)} over the same split (resampled range "
+        f"{_points_range(timing.confidence_gap_lower, timing.confidence_gap_upper)}; "
+        f"{likely_real(timing.confidence_gap_probability_positive)})."
+    )
 
 
 def _ledger_interval_text(row: ModelLedgerRowView) -> str:
@@ -2384,7 +2415,7 @@ def render_model_page(content: ModelPageContent) -> str:
                 for row in season_timing.rows
             )
             + "</tbody></table></div>"
-            + f'<p class="policy-note">{escape(season_timing.summary)}</p>'
+            + f'<p class="policy-note">{escape(_season_timing_points_text(season_timing))}</p>'
             + f'<p class="policy-note">{escape(season_timing.plain)}</p>'
         )
     else:

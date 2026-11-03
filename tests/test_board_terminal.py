@@ -564,9 +564,7 @@ def test_model_page_ledger_evidence_collapses_past_the_inline_limit(
     many_evidence_rows = [row for row in site_content.model.rows if len(row.evidence) > 3]
     if many_evidence_rows:
         assert "evidence-more" in html
-        assert f"+{len(many_evidence_rows[0].evidence) - 3} more" in html or any(
-            f"+{len(row.evidence) - 3} more" in html for row in many_evidence_rows
-        )
+        assert f"{len(many_evidence_rows[0].evidence)} supporting comparisons" in html
 
 
 def test_model_page_ledger_table_uses_a_fixed_layout(site_content: SiteContent) -> None:

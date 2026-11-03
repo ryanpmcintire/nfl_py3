@@ -250,7 +250,7 @@ class GameRow:
             return ""
         size = POOL_EDGE_SHORT.get(abs(self.pool_edge), f"{abs(self.pool_edge):g} pts")
         word = "better" if self.pool_edge > 0 else "worse"
-        effect = f", {self.pool_effect_text}% to cover" if self.pool_effect_text else ""
+        effect = f", {self.pool_effect_text} points to cover" if self.pool_effect_text else ""
         return f"{size} {word} than Tuesday{effect}"
 
     @property
