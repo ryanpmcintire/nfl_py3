@@ -1,0 +1,139 @@
+{
+  "family": "sim18_lead_protection_unit2",
+  "signals": {
+    "sim18_oc_drive_multiplier_loso_heldout": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Shrunk OC-spell leader drive-duration multiplier (other seasons) vs held-out spell-season mean ratio, weighted correlation",
+      "effect": 0.183,
+      "effect_units": "correlation",
+      "family": "sim18_lead_protection_unit2",
+      "interval": [
+        0.103,
+        0.262
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Out of season, a coordinator's past drive-length habit when ahead predicts his next season's drive length, slightly.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.403,
+      "sample_blocks": 402,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim18/unit2.json",
+      "standard_error": null
+    },
+    "sim18_oc_tempo_quality_adjusted_reliability": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "OC spell lead-state sec/play residual adjusted for prior-game offense and defense EPA ratings; season t to t+1 correlation",
+      "effect": 0.508,
+      "effect_units": "correlation",
+      "family": "sim18_lead_protection_unit2",
+      "interval": null,
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "A coordinator's habit of burning clock when ahead survives adjusting for how good the team is.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.692,
+      "sample_blocks": 217,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim18/unit2.json",
+      "standard_error": null
+    },
+    "sim18_run_share_trait_opener_pick_term": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Adjusted OC run-share trait gap (home minus away) added to served logit, LOSO 2020-25 opener; log loss improvement vs served",
+      "effect": 9.16e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "sim18_lead_protection_unit2",
+      "interval": [
+        -0.002587,
+        0.002614
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "A team's tendency to run when ahead does not move the pick at the opening line.",
+      "probability_positive": 0.5318,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.787,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim18/unit2.json",
+      "standard_error": null
+    },
+    "sim18_sec_trait_opener_pick_term": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Adjusted OC sec/play trait gap added to served logit, LOSO 2020-25 opener; log loss improvement vs served",
+      "effect": -0.0010925,
+      "effect_units": "log_loss_improvement",
+      "family": "sim18_lead_protection_unit2",
+      "interval": [
+        -0.002265,
+        5.52e-05
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "A team's clock-burning pace when ahead does not help the pick at the opening line.",
+      "probability_positive": 0.0304,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.692,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim18/unit2.json",
+      "standard_error": null
+    },
+    "sim18_sec_trait_q4_margin_compression": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Leader-minus-trailer adjusted OC sec/play trait vs final margin minus Q4-start lead (leader-signed), controlling Q4 lead size",
+      "effect": -0.0655,
+      "effect_units": "correlation",
+      "family": "sim18_lead_protection_unit2",
+      "interval": null,
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Teams that run more clock when ahead do not hold bigger leads; their leads shrink slightly more.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.692,
+      "sample_blocks": null,
+      "sample_games": 3455,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/sim18/unit2.json",
+      "standard_error": null
+    }
+  }
+}

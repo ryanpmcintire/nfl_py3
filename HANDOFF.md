@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T21:44:44.357056+00:00`
+Refreshed at: `2026-11-03T21:45:40.376498+00:00`
 
 ## Start here
 
@@ -21,12 +21,13 @@ Refreshed at: `2026-11-03T21:44:44.357056+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `9593701c2e73` — MKT-25 unit 2: the opener follows small and non-cover margins more, no over-revision after big covers, nothing mispriced; LEAD-102 blinded read: names barely move the read (r .856, mean -.009); LEAD-106 first score (pending an id-based outcome join)
+- Baseline commit: `0fc39cea5061` — Refresh session handoff
 - Pending change set: 250 paths
-  - `M  HANDOFF.md`
   - ` M config/source_policies.json`
-  - ` M docs/lanes/sim-18-lead-protection.md`
+  - `M  docs/lanes/sim-18-lead-protection.md`
+  - `A  registry/weak_signals/sim18_lead_protection_unit2.json`
   - ` M scripts/sim10_drive.py`
+  - `A  scripts/sim18_unit2_multiplier.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
@@ -42,7 +43,6 @@ Refreshed at: `2026-11-03T21:44:44.357056+00:00`
   - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
   - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
   - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
-  - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
   - ...and 230 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
