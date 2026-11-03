@@ -1,0 +1,80 @@
+{
+  "family": "sim09_tier_a_e5",
+  "signals": {
+    "sim09_tierA_crzf_vs_crzhk_strength_re": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tier A e5 crzf vs crzhk seeds 11-13, strength RE variance delta; fails cond 3: strength -7.4xSD, r2 -2.4xSD away from real; q4 slope -5.7xSD toward real",
+      "effect": -3.6882,
+      "effect_units": "slope_difference",
+      "family": "sim09_tier_a_e5",
+      "interval": null,
+      "league": "nfl",
+      "notes": "SIM-09 adoption rule; seed SD .5; 9 gate metrics counted as looks; no closing ground",
+      "plain_summary": null,
+      "probability_positive": null,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 3,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "docs/lanes/sim09-tier-a-runs-2026-11-03.md",
+      "standard_error": null
+    },
+    "sim09_tierA_crzs_vs_crzhk_strength_re": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tier A e5 crzs vs crzhk seeds 11-13, strength RE variance delta; no gate moves beyond 2xSD; not adopted, no demonstrated gain",
+      "effect": 0.2718,
+      "effect_units": "slope_difference",
+      "family": "sim09_tier_a_e5",
+      "interval": null,
+      "league": "nfl",
+      "notes": "SIM-09 adoption rule; seed SD .5; 9 gate metrics counted as looks; no closing ground",
+      "plain_summary": null,
+      "probability_positive": null,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 3,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "docs/lanes/sim09-tier-a-runs-2026-11-03.md",
+      "standard_error": null
+    },
+    "sim09_tierA_u4e_vs_crzhk_strength_re": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tier A e5 u4e vs crzhk seeds 11-13, strength RE variance delta; fails cond 3: strength -21.4xSD, r2 -6.4xSD, pts -5.6xSD away from real",
+      "effect": -10.6874,
+      "effect_units": "slope_difference",
+      "family": "sim09_tier_a_e5",
+      "interval": null,
+      "league": "nfl",
+      "notes": "SIM-09 adoption rule; seed SD .5; 9 gate metrics counted as looks; no closing ground",
+      "plain_summary": null,
+      "probability_positive": null,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 3,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "docs/lanes/sim09-tier-a-runs-2026-11-03.md",
+      "standard_error": null
+    }
+  }
+}

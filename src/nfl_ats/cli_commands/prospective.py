@@ -19,6 +19,7 @@ from nfl_ats.cli_common import (
 )
 from nfl_ats.clv import live_close_reference, load_paper_decisions, week_blocked_bootstrap
 from nfl_ats.data import DataContractError
+from nfl_ats.independent_validation import DEFAULT_STUDY as VALIDATION_STUDY
 from nfl_ats.io import atomic_csv, atomic_parquet, run_id
 from nfl_ats.paired_prospective import paired_prospective_report
 from nfl_ats.prospective_crew import (
@@ -508,8 +509,8 @@ def register(
     study_choice = argparse.ArgumentParser(add_help=False)
     study_choice.add_argument(
         "--study",
-        default="independent_validation_v6",
-        help="study directory under artifacts/prospective; earlier: independent_validation_v5",
+        default=VALIDATION_STUDY,
+        help="study directory under artifacts/prospective; defaults to the enrolled study",
     )
     study_enroll = study_actions.add_parser(
         "enroll", help="freeze the declared future cohort and model", parents=[study_choice]

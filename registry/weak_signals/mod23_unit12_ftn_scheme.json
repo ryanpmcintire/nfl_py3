@@ -1,0 +1,173 @@
+{
+  "family": "mod23_unit12_ftn_scheme",
+  "signals": {
+    "mod23_unit12_scheme_2023_25_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; block bootstrap interval reported; 3 scored seasons.",
+      "closing_ground": null,
+      "description": "FTN scheme aggregates v served base, 428-371 v 416-383 (v2 supersedes the underived-constant run)",
+      "effect": 1.5019,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit12_ftn_scheme",
+      "interval": [
+        -2.4112,
+        5.3576
+      ],
+      "league": "nfl",
+      "notes": "Base ridge alpha 10 plus 15 FTN team scheme aggregates, EWMA span 8 (served, purged_cv.TEAM_STATE_SPAN), prior-game shrinkage to the prior league mean with per-feature weight from 2022 variance components replacing the min-3 cutoff, one fit, 2022 warm-up, scored 2023-2025.",
+      "plain_summary": "Adding how often teams use play action, motion, blitzes and similar habits did not improve the fair opener picks.",
+      "probability_positive": 0.7605,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/mod23_unit12_ftn_scheme_v2/report.json",
+      "standard_error": null
+    },
+    "mod23_unit12_scheme_2023_25_accuracy_diff_forward2026_w01_07": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground: interval spans zero, no positive control; game-level bootstrap P+ reported; coefficients frozen before 2026 scoring.",
+      "closing_ground": null,
+      "description": "Team scheme ridge term (FTN 2022-25 fit, frozen before 2026) vs served at the opener, 2026 Weeks 1-7, accuracy_points",
+      "effect": -7.142857142857143,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit12_ftn_scheme",
+      "interval": [
+        -17.346938775510203,
+        3.061224489795918
+      ],
+      "league": "nfl",
+      "notes": "Forward 2026 W1-7, frozen coefficients, served locked margin shifted by term, mapped through the locked line sweep at the Tuesday opener; decisive arm 10-17 v served 17-10.",
+      "plain_summary": null,
+      "probability_positive": 0.0734,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 98,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/forward_2026_ftn_terms/report.json",
+      "standard_error": null
+    },
+    "mod23_unit12_scheme_2023_25_brier_gain": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; block bootstrap interval reported; 3 scored seasons.",
+      "closing_ground": null,
+      "description": "FTN scheme aggregates v served base, Brier (v2 supersedes the underived-constant run)",
+      "effect": -0.0038,
+      "effect_units": "brier_improvement",
+      "family": "mod23_unit12_ftn_scheme",
+      "interval": [
+        -0.0106,
+        0.0027
+      ],
+      "league": "nfl",
+      "notes": "Base ridge alpha 10 plus 15 FTN team scheme aggregates, EWMA span 8 (served, purged_cv.TEAM_STATE_SPAN), prior-game shrinkage to the prior league mean with per-feature weight from 2022 variance components replacing the min-3 cutoff, one fit, 2022 warm-up, scored 2023-2025.",
+      "plain_summary": "Adding how often teams use play action, motion, blitzes and similar habits did not improve the fair opener picks.",
+      "probability_positive": 0.135,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/mod23_unit12_ftn_scheme_v2/report.json",
+      "standard_error": null
+    },
+    "mod23_unit12_scheme_2023_25_brier_gain_forward2026_w01_07": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground: interval spans zero, no positive control; game-level bootstrap P+ reported; coefficients frozen before 2026 scoring.",
+      "closing_ground": null,
+      "description": "Team scheme ridge term (FTN 2022-25 fit, frozen before 2026) vs served at the opener, 2026 Weeks 1-7, brier_gain",
+      "effect": -0.00621028238720612,
+      "effect_units": "brier_improvement",
+      "family": "mod23_unit12_ftn_scheme",
+      "interval": [
+        -0.021310937450666506,
+        0.008605753992406644
+      ],
+      "league": "nfl",
+      "notes": "Forward 2026 W1-7, frozen coefficients, served locked margin shifted by term, mapped through the locked line sweep at the Tuesday opener; decisive arm 10-17 v served 17-10.",
+      "plain_summary": null,
+      "probability_positive": 0.2068,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 98,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/forward_2026_ftn_terms/report.json",
+      "standard_error": null
+    },
+    "mod23_unit12_scheme_2023_25_logloss_gain": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; block bootstrap interval reported; 3 scored seasons.",
+      "closing_ground": null,
+      "description": "FTN scheme aggregates v served base, log loss (v2 supersedes the underived-constant run)",
+      "effect": -0.0094,
+      "effect_units": "log_loss_improvement",
+      "family": "mod23_unit12_ftn_scheme",
+      "interval": [
+        -0.0243,
+        0.0047
+      ],
+      "league": "nfl",
+      "notes": "Base ridge alpha 10 plus 15 FTN team scheme aggregates, EWMA span 8 (served, purged_cv.TEAM_STATE_SPAN), prior-game shrinkage to the prior league mean with per-feature weight from 2022 variance components replacing the min-3 cutoff, one fit, 2022 warm-up, scored 2023-2025.",
+      "plain_summary": "Adding how often teams use play action, motion, blitzes and similar habits did not improve the fair opener picks.",
+      "probability_positive": 0.1015,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/mod23_unit12_ftn_scheme_v2/report.json",
+      "standard_error": null
+    },
+    "mod23_unit12_scheme_2023_25_logloss_gain_forward2026_w01_07": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground: interval spans zero, no positive control; game-level bootstrap P+ reported; coefficients frozen before 2026 scoring.",
+      "closing_ground": null,
+      "description": "Team scheme ridge term (FTN 2022-25 fit, frozen before 2026) vs served at the opener, 2026 Weeks 1-7, log_loss_gain",
+      "effect": -0.012135733789592856,
+      "effect_units": "log_loss_improvement",
+      "family": "mod23_unit12_ftn_scheme",
+      "interval": [
+        -0.04334274798831949,
+        0.018385968772141714
+      ],
+      "league": "nfl",
+      "notes": "Forward 2026 W1-7, frozen coefficients, served locked margin shifted by term, mapped through the locked line sweep at the Tuesday opener; decisive arm 10-17 v served 17-10.",
+      "plain_summary": null,
+      "probability_positive": 0.21945,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 98,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/forward_2026_ftn_terms/report.json",
+      "standard_error": null
+    }
+  }
+}

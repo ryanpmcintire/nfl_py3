@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T16:33:32.492350+00:00`
+Refreshed at: `2026-11-03T17:15:33.565277+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-03T16:33:32.492350+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `81e044616565` — Format-only: ruff format on nine scripts touched today; backlog lane start-here note
-- Pending change set: 237 paths
-  - `M  HANDOFF.md`
+- Baseline commit: `b81ebe5ad4d4` — Refresh the session handoff and README research state
+- Pending change set: 277 paths
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - ` M docs/model.html`
-  - ` M scripts/capture_scheduler.py`
-  - `?? an.csv`
-  - `?? data/pool_observables/20261103T130853Z/manifest.json`
-  - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - `?? docs/lanes/c-drive-space-2026-10-31.md`
-  - `?? docs/lanes/machine-crashes-2026-10-31.md`
-  - `?? docs/lanes/stealmybitcoin-ctf.md`
-  - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
-  - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
-  - ...and 217 more
+  - `M  docs/lanes/backlog-all-2026-11-02.md`
+  - `A  docs/lanes/done/officials-wayback-test-2026-11-03.md`
+  - `R  docs/lanes/week8-lock-2026-10-27.md -> docs/lanes/done/week8-lock-2026-10-27.md`
+  - `R  docs/lanes/week8-postmortem-2026-11-02.md -> docs/lanes/done/week8-postmortem-2026-11-02.md`
+  - `R  docs/lanes/week8-saturday-checks-2026-10-31.md -> docs/lanes/done/week8-saturday-checks-2026-10-31.md`
+  - ` M docs/lanes/engine-patch-queue-2026-11-03.md`
+  - `M  docs/lanes/mod10-graph-reliability-2026-11-03.md`
+  - `M  docs/lanes/mod23-unit11-2026-11-03.md`
+  - `A  docs/lanes/mod23-unit12-ftn-scheme-2026-11-03.md`
+  - `A  docs/lanes/mod23-unit13-2026-11-03.md`
+  - `A  docs/lanes/mod25-next-2026-11-03.md`
+  - ` M docs/lanes/sim07-power-2026-11-03.md`
+  - ` M docs/lanes/sim08-spec-a-terminal-2026-11-03.md`
+  - ` M docs/lanes/sim09-tier-a-runs-2026-11-03.md`
+  - ` M docs/lanes/sky03-matchups-2026-11-02.md`
+  - ` M docs/lanes/week9-lock-2026-11-03.md`
+  - `A  docs/lanes/week9-market-check-2026-11-03.md`
+  - ...and 257 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

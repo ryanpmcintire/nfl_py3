@@ -365,4 +365,5 @@ def main():
         (OUT / "report.json").write_text(json.dumps(results, indent=2))
 
 
-main()
+if __name__ == "__main__":
+    main()

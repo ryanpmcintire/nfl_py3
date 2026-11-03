@@ -1,0 +1,61 @@
+{
+  "family": "mod23_unit13_matchup_products",
+  "signals": {
+    "mod23_unit13_matchup_A_pass_rush_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model plus matchup products (A_pass_rush), paired vs base, 2020-2025; 795-708 vs 802-701.",
+      "effect": -0.4657351962741184,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit13_matchup_products",
+      "interval": [
+        -1.096774193548387,
+        0.28735632183908044
+      ],
+      "league": "nfl",
+      "notes": "Base ridge alpha 10 plus offense-times-opposing-defense EPA product terms, leave-one-season-out at the opener; two arms, one era, two looks.",
+      "plain_summary": "Letting a team's offense interact with the opposing defense moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.0953,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit13_matchup/report.json",
+      "standard_error": null
+    },
+    "mod23_unit13_matchup_B_total_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model plus matchup products (B_total), paired vs base, 2020-2025; 795-708 vs 802-701.",
+      "effect": -0.4657351962741184,
+      "effect_units": "accuracy_points",
+      "family": "mod23_unit13_matchup_products",
+      "interval": [
+        -1.6645326504481435,
+        0.9103641456582633
+      ],
+      "league": "nfl",
+      "notes": "Base ridge alpha 10 plus offense-times-opposing-defense EPA product terms, leave-one-season-out at the opener; two arms, one era, two looks.",
+      "plain_summary": "Letting a team's offense interact with the opposing defense moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.2461,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod23_unit13_matchup/report.json",
+      "standard_error": null
+    }
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "family": "mod10_graph_coverage",
+  "signals": {
+    "mod10_graph_coverage_reliability_def_cover3_share": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive is interval side (1/0.5/0), not bootstrap P+, sample_games counts team-seasons.",
+      "closing_ground": null,
+      "description": "Odd v even week Spearman-Brown reliability 2022-25, defense Cover-3 share of dropbacks; gate 0.436",
+      "effect": 0.9170682253084831,
+      "effect_units": "correlation",
+      "family": "mod10_graph_coverage",
+      "interval": [
+        0.8826412290192,
+        0.9414399795641347
+      ],
+      "league": "nfl",
+      "notes": "Participation coverage labels (FTN has none), dropbacks only; LOSO and 2026 forward not run: served-grade coverage matchup already recorded in mod23_unit5_coverage_matchup, 2026 participation absent.",
+      "plain_summary": "Tests whether defences' coverage habits and offences' results against them are stable enough for a coverage matchup term.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 128,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts/mod10_graph_coverage/report.json",
+      "standard_error": null
+    },
+    "mod10_graph_coverage_reliability_def_man_share": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive is interval side (1/0.5/0), not bootstrap P+, sample_games counts team-seasons.",
+      "closing_ground": null,
+      "description": "Odd v even week Spearman-Brown reliability 2022-25, defense man-coverage share of dropbacks; gate 0.436",
+      "effect": 0.9423205193464599,
+      "effect_units": "correlation",
+      "family": "mod10_graph_coverage",
+      "interval": [
+        0.9227726237890779,
+        0.9576472859299413
+      ],
+      "league": "nfl",
+      "notes": "Participation coverage labels (FTN has none), dropbacks only; LOSO and 2026 forward not run: served-grade coverage matchup already recorded in mod23_unit5_coverage_matchup, 2026 participation absent.",
+      "plain_summary": "Tests whether defences' coverage habits and offences' results against them are stable enough for a coverage matchup term.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 128,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts/mod10_graph_coverage/report.json",
+      "standard_error": null
+    },
+    "mod10_graph_coverage_reliability_off_man_minus_zone_epa_gap": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive is interval side (1/0.5/0), not bootstrap P+, sample_games counts team-seasons.",
+      "closing_ground": null,
+      "description": "Odd v even week Spearman-Brown reliability 2022-25, offense EPA per dropback vs man minus vs zone; gate 0.436",
+      "effect": -0.16902947007845895,
+      "effect_units": "correlation",
+      "family": "mod10_graph_coverage",
+      "interval": [
+        -0.6870022935207443,
+        0.17102998839530045
+      ],
+      "league": "nfl",
+      "notes": "Participation coverage labels (FTN has none), dropbacks only; LOSO and 2026 forward not run: served-grade coverage matchup already recorded in mod23_unit5_coverage_matchup, 2026 participation absent.",
+      "plain_summary": "Tests whether defences' coverage habits and offences' results against them are stable enough for a coverage matchup term.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 128,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts/mod10_graph_coverage/report.json",
+      "standard_error": null
+    }
+  }
+}

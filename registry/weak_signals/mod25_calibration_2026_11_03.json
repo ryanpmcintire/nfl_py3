@@ -1,0 +1,89 @@
+{
+  "family": "mod25_calibration_2026_11_03",
+  "signals": {
+    "mod25_wfj_hgb_calibration_slope_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "overconfident in-sample pooled slope; per-season slope range -0.11 to 1.04; probability_positive is P(slope>0)",
+      "closing_ground": null,
+      "description": "Student home-cover probability calibration slope (logit scale, 1 is calibrated), n 1503; base slope 0.335 [0.134,0.513]",
+      "effect": 0.43,
+      "effect_units": "logit_coefficient",
+      "family": "mod25_calibration_2026_11_03",
+      "interval": [
+        0.129,
+        0.699
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod25-next-2026-11-03.md",
+      "standard_error": null
+    },
+    "mod25_wfj_hgb_calibration_slope_2026_w01_w07": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval covers 1 and the 2020-25 slope; the 2026 log loss deficit v served (0.6756 v 0.6704) is within calibration noise at n 102",
+      "closing_ground": null,
+      "description": "Student slope on 2026 W1-7 reconstruction, n 102; base slope 1.742 [0.298,3.430]",
+      "effect": 1.749,
+      "effect_units": "logit_coefficient",
+      "family": "mod25_calibration_2026_11_03",
+      "interval": [
+        0.11,
+        3.891
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.99,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 1,
+      "sample_games": 102,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "docs/lanes/mod25-next-2026-11-03.md",
+      "standard_error": null
+    },
+    "mod25_wfj_hgb_raw_logloss_gain_vs_base_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "gain positive but base raw log loss 0.6969 and student 0.6944 both worse than 0.6931 coin; 6 season blocks; not a serving decision",
+      "closing_ground": null,
+      "description": "Raw uncalibrated log loss, joint hgb student minus base at the opener, season-block bootstrap",
+      "effect": 0.00256,
+      "effect_units": "log_loss_improvement",
+      "family": "mod25_calibration_2026_11_03",
+      "interval": [
+        0.00046,
+        0.00515
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.9912,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod25-next-2026-11-03.md",
+      "standard_error": null
+    }
+  }
+}

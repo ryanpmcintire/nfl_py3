@@ -1,0 +1,257 @@
+{
+  "family": "mod10_graph_blitz",
+  "signals": {
+    "mod10_graph_blitz_Brier": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from season-week block bootstrap.",
+      "closing_ground": null,
+      "description": "Served opener grade 2023-25, blitz matchup term v base, Brier",
+      "effect": 0.00030714019326626526,
+      "effect_units": "brier_improvement",
+      "family": "mod10_graph_blitz",
+      "interval": [
+        -0.00339885521334407,
+        0.003894383219118536
+      ],
+      "league": "nfl",
+      "notes": "Defense blitz tendency x QB catchable-rate deviation, prior-weeks only, 2022 warm-up; expanding past-only served harness.",
+      "plain_summary": "Tests whether an offense with an accurate quarterback is under-priced against a defense that blitzes more than average.",
+      "probability_positive": 0.56725,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/mod10_graph_term/report_blitz.json",
+      "standard_error": null
+    },
+    "mod10_graph_blitz_Brier_forward2026_w01_07": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground: interval spans zero, no positive control; game-level bootstrap P+ reported; coefficients frozen before 2026 scoring.",
+      "closing_ground": null,
+      "description": "Blitz x QB catchable term (frozen before 2026) vs served at the opener, 2026 Weeks 1-7, brier_gain",
+      "effect": 0.0008963136629734968,
+      "effect_units": "brier_improvement",
+      "family": "mod10_graph_blitz",
+      "interval": [
+        -0.006817401894726009,
+        0.00851472794865083
+      ],
+      "league": "nfl",
+      "notes": "Forward 2026 W1-7, frozen coefficients, served locked margin shifted by term, mapped through the locked line sweep at the Tuesday opener; decisive arm 7-9 v served 9-7.",
+      "plain_summary": null,
+      "probability_positive": 0.59145,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 102,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/forward_2026_ftn_terms/report.json",
+      "standard_error": null
+    },
+    "mod10_graph_blitz_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from season-week block bootstrap.",
+      "closing_ground": null,
+      "description": "Served opener grade 2023-25, blitz matchup term v base, accuracy",
+      "effect": 0.8760951188986232,
+      "effect_units": "accuracy_points",
+      "family": "mod10_graph_blitz",
+      "interval": [
+        -2.7399828767123284,
+        4.489058603491273
+      ],
+      "league": "nfl",
+      "notes": "Defense blitz tendency x QB catchable-rate deviation, prior-weeks only, 2022 warm-up; expanding past-only served harness.",
+      "plain_summary": "Tests whether an offense with an accurate quarterback is under-priced against a defense that blitzes more than average.",
+      "probability_positive": 0.66725,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/mod10_graph_term/report_blitz.json",
+      "standard_error": null
+    },
+    "mod10_graph_blitz_accuracy_forward2026_w01_07": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground: interval spans zero, no positive control; game-level bootstrap P+ reported; coefficients frozen before 2026 scoring.",
+      "closing_ground": null,
+      "description": "Blitz x QB catchable term (frozen before 2026) vs served at the opener, 2026 Weeks 1-7, accuracy_points",
+      "effect": -1.9607843137254901,
+      "effect_units": "accuracy_points",
+      "family": "mod10_graph_blitz",
+      "interval": [
+        -9.803921568627452,
+        5.882352941176471
+      ],
+      "league": "nfl",
+      "notes": "Forward 2026 W1-7, frozen coefficients, served locked margin shifted by term, mapped through the locked line sweep at the Tuesday opener; decisive arm 7-9 v served 9-7.",
+      "plain_summary": null,
+      "probability_positive": 0.2633,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 102,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/forward_2026_ftn_terms/report.json",
+      "standard_error": null
+    },
+    "mod10_graph_blitz_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from season-week block bootstrap.",
+      "closing_ground": null,
+      "description": "Served opener grade 2023-25, blitz matchup term v base, log loss",
+      "effect": 0.00028379472935115545,
+      "effect_units": "log_loss_improvement",
+      "family": "mod10_graph_blitz",
+      "interval": [
+        -0.007328992596176557,
+        0.007646783080281937
+      ],
+      "league": "nfl",
+      "notes": "Defense blitz tendency x QB catchable-rate deviation, prior-weeks only, 2022 warm-up; expanding past-only served harness.",
+      "plain_summary": "Tests whether an offense with an accurate quarterback is under-priced against a defense that blitzes more than average.",
+      "probability_positive": 0.53175,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/mod10_graph_term/report_blitz.json",
+      "standard_error": null
+    },
+    "mod10_graph_blitz_log_loss_forward2026_w01_07": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground: interval spans zero, no positive control; game-level bootstrap P+ reported; coefficients frozen before 2026 scoring.",
+      "closing_ground": null,
+      "description": "Blitz x QB catchable term (frozen before 2026) vs served at the opener, 2026 Weeks 1-7, log_loss_gain",
+      "effect": 0.0019771005379205123,
+      "effect_units": "log_loss_improvement",
+      "family": "mod10_graph_blitz",
+      "interval": [
+        -0.013650704045611266,
+        0.017384589451441508
+      ],
+      "league": "nfl",
+      "notes": "Forward 2026 W1-7, frozen coefficients, served locked margin shifted by term, mapped through the locked line sweep at the Tuesday opener; decisive arm 7-9 v served 9-7.",
+      "plain_summary": null,
+      "probability_positive": 0.59885,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 102,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/forward_2026_ftn_terms/report.json",
+      "standard_error": null
+    },
+    "mod10_graph_blitz_reliability_def_blitz_rate": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from season-week block bootstrap.",
+      "closing_ground": null,
+      "description": "Odd v even week Spearman-Brown reliability 2022-25, defense blitz rate; gate 0.436",
+      "effect": 0.8547470288240296,
+      "effect_units": "correlation",
+      "family": "mod10_graph_blitz",
+      "interval": [
+        0.7773568546539832,
+        0.9052745871518544
+      ],
+      "league": "nfl",
+      "notes": "Defense blitz tendency x QB catchable-rate deviation, prior-weeks only, 2022 warm-up; expanding past-only served harness.",
+      "plain_summary": "Tests whether an offense with an accurate quarterback is under-priced against a defense that blitzes more than average.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 128,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts/mod10_graph_term/report_blitz.json",
+      "standard_error": null
+    },
+    "mod10_graph_blitz_reliability_qb_blitz_gap": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from season-week block bootstrap.",
+      "closing_ground": null,
+      "description": "Odd v even week Spearman-Brown reliability 2022-25, QB EPA gap blitz v no blitz; gate 0.436",
+      "effect": -0.021541990235567764,
+      "effect_units": "correlation",
+      "family": "mod10_graph_blitz",
+      "interval": [
+        -0.5812407551406767,
+        0.3492080683466619
+      ],
+      "league": "nfl",
+      "notes": "Defense blitz tendency x QB catchable-rate deviation, prior-weeks only, 2022 warm-up; expanding past-only served harness.",
+      "plain_summary": "Tests whether an offense with an accurate quarterback is under-priced against a defense that blitzes more than average.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 127,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts/mod10_graph_term/report_blitz.json",
+      "standard_error": null
+    },
+    "mod10_graph_blitz_reliability_qb_catchable": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from season-week block bootstrap.",
+      "closing_ground": null,
+      "description": "Odd v even week Spearman-Brown reliability 2022-25, QB catchable rate; gate 0.436",
+      "effect": 0.6864771651058981,
+      "effect_units": "correlation",
+      "family": "mod10_graph_blitz",
+      "interval": [
+        0.5775695846702018,
+        0.7702256076112246
+      ],
+      "league": "nfl",
+      "notes": "Defense blitz tendency x QB catchable-rate deviation, prior-weeks only, 2022 warm-up; expanding past-only served harness.",
+      "plain_summary": "Tests whether an offense with an accurate quarterback is under-priced against a defense that blitzes more than average.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 142,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts/mod10_graph_term/report_blitz.json",
+      "standard_error": null
+    }
+  }
+}

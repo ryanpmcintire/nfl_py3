@@ -1,0 +1,145 @@
+{
+  "family": "sky03_matchup_separated",
+  "signals": {
+    "sky03_sep_rel_A_defense": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "reliability measurement, not an effect test; no closing ground",
+      "closing_ground": null,
+      "description": "separated pair slope A defense: odd v even weeks, 32 teams, opponent-adjusted and script-adjusted residual",
+      "effect": 0.4846043304641523,
+      "effect_units": "correlation",
+      "family": "sky03_matchup_separated",
+      "interval": [
+        0.11044080809196839,
+        0.7507355290547516
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the matchup between a team's passing game and the opposing defense, after removing opponent strength and game flow, adds to the pick probability.",
+      "probability_positive": 0.9925,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.4846043304641523,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sky03/separated/term.json",
+      "standard_error": null
+    },
+    "sky03_sep_rel_A_offense": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "reliability measurement, not an effect test; no closing ground",
+      "closing_ground": null,
+      "description": "separated pair slope A offense: odd v even weeks, 32 teams, opponent-adjusted and script-adjusted residual",
+      "effect": -0.037572117860878544,
+      "effect_units": "correlation",
+      "family": "sky03_matchup_separated",
+      "interval": [
+        -0.37350851636282956,
+        0.2706725165814866
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the matchup between a team's passing game and the opposing defense, after removing opponent strength and game flow, adds to the pick probability.",
+      "probability_positive": 0.3865,
+      "recorded_at": "2026-11-03",
+      "reliability": -0.037572117860878544,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sky03/separated/term.json",
+      "standard_error": null
+    },
+    "sky03_sep_rel_B_defense": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "reliability measurement, not an effect test; no closing ground",
+      "closing_ground": null,
+      "description": "separated pair slope B defense: odd v even weeks, 32 teams, opponent-adjusted and script-adjusted residual",
+      "effect": 0.30647424324470507,
+      "effect_units": "correlation",
+      "family": "sky03_matchup_separated",
+      "interval": [
+        0.014266245317066207,
+        0.5435990771633379
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the matchup between a team's passing game and the opposing defense, after removing opponent strength and game flow, adds to the pick probability.",
+      "probability_positive": 0.978,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.30647424324470507,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sky03/separated/term.json",
+      "standard_error": null
+    },
+    "sky03_sep_rel_B_offense": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "reliability measurement, not an effect test; no closing ground",
+      "closing_ground": null,
+      "description": "separated pair slope B offense: odd v even weeks, 32 teams, opponent-adjusted and script-adjusted residual",
+      "effect": 0.6130573363581641,
+      "effect_units": "correlation",
+      "family": "sky03_matchup_separated",
+      "interval": [
+        0.3927221003529712,
+        0.784530862736562
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the matchup between a team's passing game and the opposing defense, after removing opponent strength and game flow, adds to the pick probability.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.6130573363581641,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sky03/separated/term.json",
+      "standard_error": null
+    },
+    "sky03_sep_term_oos_brier": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "fold coefficients all positive (0.20 to 0.33), OOS accuracy -0.4 pts, decisive 38-44; interval spans zero; no control bound or wrong-sign resolution; reliability field is the mean of the four separated slope split-half r",
+      "closing_ground": null,
+      "description": "separation unit: crossed team effects plus win-probability script slope; 4 reliability looks and 1 summed term, LOSO 2020-2025, opener",
+      "effect": 0.00018542075201549355,
+      "effect_units": "brier_improvement",
+      "family": "sky03_matchup_separated",
+      "interval": [
+        -0.0005253101336308579,
+        0.0009149252844040934
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the matchup between a team's passing game and the opposing defense, after removing opponent strength and game flow, adds to the pick probability.",
+      "probability_positive": 0.672,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.3416409480515357,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sky03/separated/term.json",
+      "standard_error": null
+    }
+  }
+}
