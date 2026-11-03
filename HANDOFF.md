@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T20:54:27.044660+00:00`
+Refreshed at: `2026-11-03T20:54:35.679647+00:00`
 
 ## Start here
 
@@ -21,11 +21,10 @@ Refreshed at: `2026-11-03T20:54:27.044660+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `1bfe11884f34` — Backlog round 4 (12 rows, inventory 65/152); PER-13 frozen term, XLG-15 CFB trait reliability, MOD-41 unit 2 components: all unresolved
+- Baseline commit: `14acd87ff13a` — SIM-09 stakes arm not adopted (13->10, 14->14, 13->11); master lane state
 - Pending change set: 246 paths
+  - `M  HANDOFF.md`
   - ` M config/source_policies.json`
-  - `M  docs/lanes/backlog-all-2026-11-02.md`
-  - `M  docs/lanes/engine-patch-queue-2026-11-03.md`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
@@ -43,6 +42,7 @@ Refreshed at: `2026-11-03T20:54:27.044660+00:00`
   - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
   - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
   - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
+  - `?? registry/experiments/margin-backtest/20261006T223128Z.json`
   - ...and 226 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
