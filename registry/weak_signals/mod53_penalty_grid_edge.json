@@ -15,16 +15,16 @@
         1.3374944271065536
       ],
       "league": "nfl",
-      "notes": "Base model, same 88 inputs, past-only weekly refits, opener input; selection by inner leave-one-season-out; three arms (A extended penalty grid, P principal components 1..30, I intercept-only control) by two eras, six looks.",
+      "notes": "",
       "plain_summary": "Choosing the base model's shrinkage or rank inside each past-only window moved picks against the opener by an unresolved amount.",
       "probability_positive": 0.329,
       "recorded_at": "2026-11-03",
       "reliability": null,
-      "sample_blocks": 9,
-      "sample_games": 2231,
+      "sample_blocks": null,
+      "sample_games": null,
       "seasons": [
-        2020,
-        2025
+        2011,
+        2019
       ],
       "source": "artifacts/mod53_unit1/report.json",
       "standard_error": null
@@ -71,25 +71,25 @@
         1.4719329441187687
       ],
       "league": "nfl",
-      "notes": "Base model, same 88 inputs, past-only weekly refits, opener input; selection by inner leave-one-season-out; three arms (A extended penalty grid, P principal components 1..30, I intercept-only control) by two eras, six looks.",
+      "notes": "",
       "plain_summary": "Choosing the base model's shrinkage or rank inside each past-only window moved picks against the opener by an unresolved amount.",
       "probability_positive": 0.28775,
       "recorded_at": "2026-11-03",
       "reliability": null,
-      "sample_blocks": 9,
-      "sample_games": 2231,
+      "sample_blocks": null,
+      "sample_games": null,
       "seasons": [
-        2020,
-        2025
+        2011,
+        2019
       ],
       "source": "artifacts/mod53_unit1/report.json",
       "standard_error": null
     },
     "mod53_unit1_reduced_rank_pca_inner_loso_tuesday_2020_2025_accuracy_diff": {
       "category": "modeling",
-      "classification": "unresolved_below_power",
-      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
-      "closing_ground": null,
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Whole 95% interval below zero on the 2020-25 opener grade: squared-error-bracketed shrinkage of the base ridge lowers pick accuracy (same precedent as the MOD-23 u16 elastic-net cell); the 2011-19 proxy cell stays unresolved.",
+      "closing_ground": "wrong_sign_resolved",
       "description": "Base model reduced_rank_pca_inner_loso, paired vs base ridge alpha 10, 2020-2025; 766-737 vs 802-701.",
       "effect": -2.395209580838323,
       "effect_units": "accuracy_points",
@@ -99,13 +99,13 @@
         -0.7649513212795549
       ],
       "league": "nfl",
-      "notes": "Base model, same 88 inputs, past-only weekly refits, opener input; selection by inner leave-one-season-out; three arms (A extended penalty grid, P principal components 1..30, I intercept-only control) by two eras, six looks.",
+      "notes": "",
       "plain_summary": "Choosing the base model's shrinkage or rank inside each past-only window moved picks against the opener by an unresolved amount.",
       "probability_positive": 0.0003,
       "recorded_at": "2026-11-03",
       "reliability": null,
-      "sample_blocks": 6,
-      "sample_games": 1503,
+      "sample_blocks": null,
+      "sample_games": null,
       "seasons": [
         2020,
         2025
@@ -127,25 +127,25 @@
         0.7606263982102909
       ],
       "league": "nfl",
-      "notes": "Base model, same 88 inputs, past-only weekly refits, opener input; selection by inner leave-one-season-out; three arms (A extended penalty grid, P principal components 1..30, I intercept-only control) by two eras, six looks.",
+      "notes": "",
       "plain_summary": "Choosing the base model's shrinkage or rank inside each past-only window moved picks against the opener by an unresolved amount.",
       "probability_positive": 0.2069,
       "recorded_at": "2026-11-03",
       "reliability": null,
-      "sample_blocks": 9,
-      "sample_games": 2231,
+      "sample_blocks": null,
+      "sample_games": null,
       "seasons": [
-        2020,
-        2025
+        2011,
+        2019
       ],
       "source": "artifacts/mod53_unit1/report.json",
       "standard_error": null
     },
     "mod53_unit1_ridge_extended_grid_inner_loso_tuesday_2020_2025_accuracy_diff": {
       "category": "modeling",
-      "classification": "unresolved_below_power",
-      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
-      "closing_ground": null,
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Whole 95% interval below zero on the 2020-25 opener grade: squared-error-bracketed shrinkage of the base ridge lowers pick accuracy (same precedent as the MOD-23 u16 elastic-net cell); the 2011-19 proxy cell stays unresolved.",
+      "closing_ground": "wrong_sign_resolved",
       "description": "Base model ridge_extended_grid_inner_loso, paired vs base ridge alpha 10, 2020-2025; 768-735 vs 802-701.",
       "effect": -2.2621423819028608,
       "effect_units": "accuracy_points",
@@ -155,13 +155,13 @@
         -1.6286644951140066
       ],
       "league": "nfl",
-      "notes": "Base model, same 88 inputs, past-only weekly refits, opener input; selection by inner leave-one-season-out; three arms (A extended penalty grid, P principal components 1..30, I intercept-only control) by two eras, six looks.",
+      "notes": "",
       "plain_summary": "Choosing the base model's shrinkage or rank inside each past-only window moved picks against the opener by an unresolved amount.",
       "probability_positive": 0.0,
       "recorded_at": "2026-11-03",
       "reliability": null,
-      "sample_blocks": 6,
-      "sample_games": 1503,
+      "sample_blocks": null,
+      "sample_games": null,
       "seasons": [
         2020,
         2025

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T23:08:25.593058+00:00`
+Refreshed at: `2026-11-03T23:10:00.618734+00:00`
 
 ## Start here
 
@@ -21,11 +21,12 @@ Refreshed at: `2026-11-03T23:08:25.593058+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `a66b8cb9ca8c` — MOD-53 registry cells (recorded by the running unit)
+- Baseline commit: `3bc40f56e68f` — Refresh session handoff
 - Pending change set: 251 paths
-  - `M  HANDOFF.md`
   - ` M config/source_policies.json`
-  - ` M docs/lanes/mod-53-ridge-penalty-grid-edge-and-reduced-rank.md`
+  - `M  docs/lanes/mod-53-ridge-penalty-grid-edge-and-reduced-rank.md`
+  - `M  registry/weak_signals/mod53_penalty_grid_edge.json`
+  - `A  scripts/mod53_penalty_grid.py`
   - ` M scripts/sim10_drive.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
@@ -42,7 +43,6 @@ Refreshed at: `2026-11-03T23:08:25.593058+00:00`
   - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
   - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
   - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
   - ...and 231 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
