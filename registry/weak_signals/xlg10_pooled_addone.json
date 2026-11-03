@@ -6,18 +6,18 @@
       "classification": "unresolved_below_power",
       "classification_evidence": "Interval includes zero; no resolved wrong sign and no positive control, so unresolved_below_power.",
       "closing_ground": null,
-      "description": "Add-one away_rest to the 14 shared inputs, ridge alpha 10, accuracy points vs 14-input base at the opener, cfb; flips 23-13",
-      "effect": 0.2127,
+      "description": "Add-one away_rest to the 14 shared inputs, ridge alpha 10, accuracy points vs 14-input base at the opener (opener model input), cfb; flips 31-38",
+      "effect": -0.1489,
       "effect_units": "accuracy_points",
       "family": "xlg10_pooled_addone",
       "interval": [
-        -0.022,
-        0.4541
+        -0.5344,
+        0.1857
       ],
       "league": "cfb",
-      "notes": "Decisive first: 23-13 (variant wins-losses on flipped games). Family xlg10_pooled_addone, 5 arms x 2 leagues x 3 metrics = 30 looks; scripts/xlg10_addone.py via scripts/pooled_screen.py.",
+      "notes": "Rerun 2026-11-03 on the opener-input guarded harness; replaces the closing-line-input cell. Decisive first: 31-38 (variant wins-losses on flipped games). Family xlg10_pooled_addone, 30 looks; scripts/xlg10_addone.py via scripts/pooled_screen.py.",
       "plain_summary": "Adding this rest or bye input to the shared model changed a handful of picks; the net accuracy change was small and could not be told apart from none.",
-      "probability_positive": 0.945,
+      "probability_positive": 0.189,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
@@ -27,25 +27,25 @@
         2025
       ],
       "source": "artifacts/pooled_screen/xlg10_*.json",
-      "standard_error": 0.1215
+      "standard_error": 0.1801
     },
     "xlg10_addone_away_rest_nfl_accuracy": {
       "category": "modeling",
       "classification": "unresolved_below_power",
       "classification_evidence": "Interval includes zero; no resolved wrong sign and no positive control, so unresolved_below_power.",
       "closing_ground": null,
-      "description": "Add-one away_rest to the 14 shared inputs, ridge alpha 10, accuracy points vs 14-input base at the opener, nfl; flips 5-9",
-      "effect": -0.2661,
+      "description": "Add-one away_rest to the 14 shared inputs, ridge alpha 10, accuracy points vs 14-input base at the opener (opener model input), nfl; flips 18-18",
+      "effect": 0.0,
       "effect_units": "accuracy_points",
       "family": "xlg10_pooled_addone",
       "interval": [
-        -0.8678,
-        0.2601
+        -0.6614,
+        0.7224
       ],
       "league": "nfl",
-      "notes": "Decisive first: 5-9 (variant wins-losses on flipped games). Family xlg10_pooled_addone, 5 arms x 2 leagues x 3 metrics = 30 looks; scripts/xlg10_addone.py via scripts/pooled_screen.py.",
+      "notes": "Rerun 2026-11-03 on the opener-input guarded harness; replaces the closing-line-input cell. Decisive first: 18-18 (variant wins-losses on flipped games). Family xlg10_pooled_addone, 30 looks; scripts/xlg10_addone.py via scripts/pooled_screen.py.",
       "plain_summary": "Adding this rest or bye input to the shared model changed a handful of picks; the net accuracy change was small and could not be told apart from none.",
-      "probability_positive": 0.132,
+      "probability_positive": 0.472,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
@@ -55,25 +55,25 @@
         2025
       ],
       "source": "artifacts/pooled_screen/xlg10_*.json",
-      "standard_error": 0.2877
+      "standard_error": 0.3514
     },
     "xlg10_addone_bye_diff_cfb_accuracy": {
       "category": "modeling",
       "classification": "unresolved_below_power",
       "classification_evidence": "Interval includes zero; no resolved wrong sign and no positive control, so unresolved_below_power.",
       "closing_ground": null,
-      "description": "Add-one bye_diff to the 14 shared inputs, ridge alpha 10, accuracy points vs 14-input base at the opener, cfb; flips 34-24",
-      "effect": 0.2127,
+      "description": "Add-one bye_diff to the 14 shared inputs, ridge alpha 10, accuracy points vs 14-input base at the opener (opener model input), cfb; flips 35-31",
+      "effect": 0.0851,
       "effect_units": "accuracy_points",
       "family": "xlg10_pooled_addone",
       "interval": [
-        -0.1201,
-        0.5412
+        -0.2688,
+        0.4478
       ],
       "league": "cfb",
-      "notes": "Decisive first: 34-24 (variant wins-losses on flipped games). Family xlg10_pooled_addone, 5 arms x 2 leagues x 3 metrics = 30 looks; scripts/xlg10_addone.py via scripts/pooled_screen.py.",
+      "notes": "Rerun 2026-11-03 on the opener-input guarded harness; replaces the closing-line-input cell. Decisive first: 35-31 (variant wins-losses on flipped games). Family xlg10_pooled_addone, 30 looks; scripts/xlg10_addone.py via scripts/pooled_screen.py.",
       "plain_summary": "Adding this rest or bye input to the shared model changed a handful of picks; the net accuracy change was small and could not be told apart from none.",
-      "probability_positive": 0.884,
+      "probability_positive": 0.666,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
@@ -83,25 +83,25 @@
         2025
       ],
       "source": "artifacts/pooled_screen/xlg10_*.json",
-      "standard_error": 0.1687
+      "standard_error": 0.1808
     },
     "xlg10_addone_bye_diff_nfl_accuracy": {
       "category": "modeling",
       "classification": "unresolved_below_power",
       "classification_evidence": "Interval includes zero; no resolved wrong sign and no positive control, so unresolved_below_power.",
       "closing_ground": null,
-      "description": "Add-one bye_diff to the 14 shared inputs, ridge alpha 10, accuracy points vs 14-input base at the opener, nfl; flips 6-3",
-      "effect": 0.1996,
+      "description": "Add-one bye_diff to the 14 shared inputs, ridge alpha 10, accuracy points vs 14-input base at the opener (opener model input), nfl; flips 6-5",
+      "effect": 0.0665,
       "effect_units": "accuracy_points",
       "family": "xlg10_pooled_addone",
       "interval": [
-        -0.1987,
-        0.5949
+        -0.4016,
+        0.5309
       ],
       "league": "nfl",
-      "notes": "Decisive first: 6-3 (variant wins-losses on flipped games). Family xlg10_pooled_addone, 5 arms x 2 leagues x 3 metrics = 30 looks; scripts/xlg10_addone.py via scripts/pooled_screen.py.",
+      "notes": "Rerun 2026-11-03 on the opener-input guarded harness; replaces the closing-line-input cell. Decisive first: 6-5 (variant wins-losses on flipped games). Family xlg10_pooled_addone, 30 looks; scripts/xlg10_addone.py via scripts/pooled_screen.py.",
       "plain_summary": "Adding this rest or bye input to the shared model changed a handful of picks; the net accuracy change was small and could not be told apart from none.",
-      "probability_positive": 0.804,
+      "probability_positive": 0.57,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
@@ -111,25 +111,25 @@
         2025
       ],
       "source": "artifacts/pooled_screen/xlg10_*.json",
-      "standard_error": 0.2024
+      "standard_error": 0.2364
     },
     "xlg10_addone_home_rest_cfb_accuracy": {
       "category": "modeling",
       "classification": "unresolved_below_power",
       "classification_evidence": "Interval includes zero; no resolved wrong sign and no positive control, so unresolved_below_power.",
       "closing_ground": null,
-      "description": "Add-one home_rest to the 14 shared inputs, ridge alpha 10, accuracy points vs 14-input base at the opener, cfb; flips 38-33",
-      "effect": 0.1063,
+      "description": "Add-one home_rest to the 14 shared inputs, ridge alpha 10, accuracy points vs 14-input base at the opener (opener model input), cfb; flips 111-125",
+      "effect": -0.2977,
       "effect_units": "accuracy_points",
       "family": "xlg10_pooled_addone",
       "interval": [
-        -0.2234,
-        0.4637
+        -0.8804,
+        0.2749
       ],
       "league": "cfb",
-      "notes": "Decisive first: 38-33 (variant wins-losses on flipped games). Family xlg10_pooled_addone, 5 arms x 2 leagues x 3 metrics = 30 looks; scripts/xlg10_addone.py via scripts/pooled_screen.py.",
+      "notes": "Rerun 2026-11-03 on the opener-input guarded harness; replaces the closing-line-input cell. Decisive first: 111-125 (variant wins-losses on flipped games). Family xlg10_pooled_addone, 30 looks; scripts/xlg10_addone.py via scripts/pooled_screen.py.",
       "plain_summary": "Adding this rest or bye input to the shared model changed a handful of picks; the net accuracy change was small and could not be told apart from none.",
-      "probability_positive": 0.712,
+      "probability_positive": 0.155,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
@@ -139,25 +139,25 @@
         2025
       ],
       "source": "artifacts/pooled_screen/xlg10_*.json",
-      "standard_error": 0.1753
+      "standard_error": 0.2983
     },
     "xlg10_addone_home_rest_nfl_accuracy": {
       "category": "modeling",
       "classification": "unresolved_below_power",
       "classification_evidence": "Interval includes zero; no resolved wrong sign and no positive control, so unresolved_below_power.",
       "closing_ground": null,
-      "description": "Add-one home_rest to the 14 shared inputs, ridge alpha 10, accuracy points vs 14-input base at the opener, nfl; flips 7-8",
-      "effect": -0.0665,
+      "description": "Add-one home_rest to the 14 shared inputs, ridge alpha 10, accuracy points vs 14-input base at the opener (opener model input), nfl; flips 14-20",
+      "effect": -0.3992,
       "effect_units": "accuracy_points",
       "family": "xlg10_pooled_addone",
       "interval": [
-        -0.6623,
-        0.4667
+        -1.1251,
+        0.3239
       ],
       "league": "nfl",
-      "notes": "Decisive first: 7-8 (variant wins-losses on flipped games). Family xlg10_pooled_addone, 5 arms x 2 leagues x 3 metrics = 30 looks; scripts/xlg10_addone.py via scripts/pooled_screen.py.",
+      "notes": "Rerun 2026-11-03 on the opener-input guarded harness; replaces the closing-line-input cell. Decisive first: 14-20 (variant wins-losses on flipped games). Family xlg10_pooled_addone, 30 looks; scripts/xlg10_addone.py via scripts/pooled_screen.py.",
       "plain_summary": "Adding this rest or bye input to the shared model changed a handful of picks; the net accuracy change was small and could not be told apart from none.",
-      "probability_positive": 0.358,
+      "probability_positive": 0.12,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
@@ -167,25 +167,25 @@
         2025
       ],
       "source": "artifacts/pooled_screen/xlg10_*.json",
-      "standard_error": 0.288
+      "standard_error": 0.3634
     },
     "xlg10_addone_rest_bye_bundle_cfb_accuracy": {
       "category": "modeling",
       "classification": "unresolved_below_power",
       "classification_evidence": "Interval includes zero; no resolved wrong sign and no positive control, so unresolved_below_power.",
       "closing_ground": null,
-      "description": "Add-one rest_bye_bundle to the 14 shared inputs, ridge alpha 10, accuracy points vs 14-input base at the opener, cfb; flips 73-61",
-      "effect": 0.2552,
+      "description": "Add-one rest_bye_bundle to the 14 shared inputs, ridge alpha 10, accuracy points vs 14-input base at the opener (opener model input), cfb; flips 187-178",
+      "effect": 0.1914,
       "effect_units": "accuracy_points",
       "family": "xlg10_pooled_addone",
       "interval": [
-        -0.2118,
-        0.7514
+        -0.6517,
+        1.0
       ],
       "league": "cfb",
-      "notes": "Decisive first: 73-61 (variant wins-losses on flipped games). Family xlg10_pooled_addone, 5 arms x 2 leagues x 3 metrics = 30 looks; scripts/xlg10_addone.py via scripts/pooled_screen.py.",
+      "notes": "Rerun 2026-11-03 on the opener-input guarded harness; replaces the closing-line-input cell. Decisive first: 187-178 (variant wins-losses on flipped games). Family xlg10_pooled_addone, 30 looks; scripts/xlg10_addone.py via scripts/pooled_screen.py.",
       "plain_summary": "Adding this rest or bye input to the shared model changed a handful of picks; the net accuracy change was small and could not be told apart from none.",
-      "probability_positive": 0.838,
+      "probability_positive": 0.667,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
@@ -195,25 +195,25 @@
         2025
       ],
       "source": "artifacts/pooled_screen/xlg10_*.json",
-      "standard_error": 0.2457
+      "standard_error": 0.4181
     },
     "xlg10_addone_rest_bye_bundle_nfl_accuracy": {
       "category": "modeling",
       "classification": "unresolved_below_power",
       "classification_evidence": "Interval includes zero; no resolved wrong sign and no positive control, so unresolved_below_power.",
       "closing_ground": null,
-      "description": "Add-one rest_bye_bundle to the 14 shared inputs, ridge alpha 10, accuracy points vs 14-input base at the opener, nfl; flips 14-15",
-      "effect": -0.0665,
+      "description": "Add-one rest_bye_bundle to the 14 shared inputs, ridge alpha 10, accuracy points vs 14-input base at the opener (opener model input), nfl; flips 37-29",
+      "effect": 0.5323,
       "effect_units": "accuracy_points",
       "family": "xlg10_pooled_addone",
       "interval": [
-        -0.8655,
-        0.6707
+        -0.4073,
+        1.5203
       ],
       "league": "nfl",
-      "notes": "Decisive first: 14-15 (variant wins-losses on flipped games). Family xlg10_pooled_addone, 5 arms x 2 leagues x 3 metrics = 30 looks; scripts/xlg10_addone.py via scripts/pooled_screen.py.",
+      "notes": "Rerun 2026-11-03 on the opener-input guarded harness; replaces the closing-line-input cell. Decisive first: 37-29 (variant wins-losses on flipped games). Family xlg10_pooled_addone, 30 looks; scripts/xlg10_addone.py via scripts/pooled_screen.py.",
       "plain_summary": "Adding this rest or bye input to the shared model changed a handful of picks; the net accuracy change was small and could not be told apart from none.",
-      "probability_positive": 0.4,
+      "probability_positive": 0.848,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
@@ -223,25 +223,25 @@
         2025
       ],
       "source": "artifacts/pooled_screen/xlg10_*.json",
-      "standard_error": 0.3919
+      "standard_error": 0.4863
     },
     "xlg10_addone_short_week_diff_cfb_accuracy": {
       "category": "modeling",
       "classification": "unresolved_below_power",
       "classification_evidence": "Interval includes zero; no resolved wrong sign and no positive control, so unresolved_below_power.",
       "closing_ground": null,
-      "description": "Add-one short_week_diff to the 14 shared inputs, ridge alpha 10, accuracy points vs 14-input base at the opener, cfb; flips 38-33",
-      "effect": 0.1063,
+      "description": "Add-one short_week_diff to the 14 shared inputs, ridge alpha 10, accuracy points vs 14-input base at the opener (opener model input), cfb; flips 51-31",
+      "effect": 0.4254,
       "effect_units": "accuracy_points",
       "family": "xlg10_pooled_addone",
       "interval": [
-        -0.2574,
-        0.4799
+        -0.0206,
+        0.8602
       ],
       "league": "cfb",
-      "notes": "Decisive first: 38-33 (variant wins-losses on flipped games). Family xlg10_pooled_addone, 5 arms x 2 leagues x 3 metrics = 30 looks; scripts/xlg10_addone.py via scripts/pooled_screen.py.",
+      "notes": "Rerun 2026-11-03 on the opener-input guarded harness; replaces the closing-line-input cell. Decisive first: 51-31 (variant wins-losses on flipped games). Family xlg10_pooled_addone, 30 looks; scripts/xlg10_addone.py via scripts/pooled_screen.py.",
       "plain_summary": "Adding this rest or bye input to the shared model changed a handful of picks; the net accuracy change was small and could not be told apart from none.",
-      "probability_positive": 0.698,
+      "probability_positive": 0.971,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
@@ -251,25 +251,25 @@
         2025
       ],
       "source": "artifacts/pooled_screen/xlg10_*.json",
-      "standard_error": 0.1881
+      "standard_error": 0.2186
     },
     "xlg10_addone_short_week_diff_nfl_accuracy": {
       "category": "modeling",
       "classification": "unresolved_below_power",
       "classification_evidence": "Interval includes zero; no resolved wrong sign and no positive control, so unresolved_below_power.",
       "closing_ground": null,
-      "description": "Add-one short_week_diff to the 14 shared inputs, ridge alpha 10, accuracy points vs 14-input base at the opener, nfl; flips 8-6",
-      "effect": 0.1331,
+      "description": "Add-one short_week_diff to the 14 shared inputs, ridge alpha 10, accuracy points vs 14-input base at the opener (opener model input), nfl; flips 23-14",
+      "effect": 0.5988,
       "effect_units": "accuracy_points",
       "family": "xlg10_pooled_addone",
       "interval": [
-        -0.3349,
-        0.6045
+        -0.1357,
+        1.3853
       ],
       "league": "nfl",
-      "notes": "Decisive first: 8-6 (variant wins-losses on flipped games). Family xlg10_pooled_addone, 5 arms x 2 leagues x 3 metrics = 30 looks; scripts/xlg10_addone.py via scripts/pooled_screen.py.",
+      "notes": "Rerun 2026-11-03 on the opener-input guarded harness; replaces the closing-line-input cell. Decisive first: 23-14 (variant wins-losses on flipped games). Family xlg10_pooled_addone, 30 looks; scripts/xlg10_addone.py via scripts/pooled_screen.py.",
       "plain_summary": "Adding this rest or bye input to the shared model changed a handful of picks; the net accuracy change was small and could not be told apart from none.",
-      "probability_positive": 0.646,
+      "probability_positive": 0.924,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
@@ -279,7 +279,7 @@
         2025
       ],
       "source": "artifacts/pooled_screen/xlg10_*.json",
-      "standard_error": 0.2396
+      "standard_error": 0.393
     },
     "xlg10_bye_diff_openinput_cfb_accuracy": {
       "category": "modeling",

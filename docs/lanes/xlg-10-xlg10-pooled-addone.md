@@ -23,3 +23,18 @@ Next: role arm needs a same-construction check; accuracy gains in bye_diff remai
 
 ## ROOT CORRECTION 2026-11-03 13:55
 - The pooled harness used the closing spread_line as model input while grading at the opener (scripts/mod24_more_games.py:63-73), so these results include close-minus-open line movement unavailable on Tuesday; not evidence for the served model until the opener-input rerun (see docs/lanes/mod24-more-games-2026-11-03.md).
+
+## RERUN 2026-11-03 17:05 (measured, opener-input guarded harness; supersedes every number above)
+Pre-fix determination (read): artifacts xlg10_* written 13:05-13:12 (bye_diff rerun 13:59), registry cells 13:13 and 14:02; harness fix committed 14:05 (35f7f070); all unit 1 and unit 2 numbers above used the closing line as input, except the bye_diff open-input cells recorded 14:02. Reran all 8 arms (scripts/xlg10_addone.py, xlg10_addone2.py unchanged). Base is now 754-749 NFL opener (was 786-717).
+Accuracy pts [95%] P+ (flips W-L), pooled het z. Old pre-fix values struck.
+- home_rest: NFL -0.40 [-1.13,+0.32] .12 (14-20), CFB -0.30 .15; pooled -0.34 [-0.79,+0.11] .07. ~~pooled +0.06 .66~~ pre-fix
+- away_rest: NFL +0.00 [-0.66,+0.72] .47 (18-18), CFB -0.15 .19; pooled -0.12 [-0.43,+0.20] .23. ~~pooled +0.14 .89~~ pre-fix
+- bye_diff: NFL +0.07 .57 (6-5), CFB +0.09 .67; pooled +0.08 [-0.20,+0.36] .71. ~~pooled +0.21 .95~~ pre-fix
+- short_week_diff: NFL +0.60 [-0.14,+1.39] .92 (23-14), CFB +0.43 [-0.02,+0.86] .97 (51-31); pooled +0.47 [+0.09,+0.84] P+ .99, het -0.39. ~~pooled +0.12 .78~~ pre-fix. Only arm that rose; LL pooled -0.00022 P+ .04 (worse).
+- rest_bye_bundle: NFL +0.53 [-0.41,+1.52] .85 (37-29), CFB +0.19 .67; pooled +0.34 [-0.29,+0.96] .86. ~~pooled +0.16 .78~~ pre-fix
+- fumble_lost_diff: NFL -0.40 [-1.20,+0.39] .14 (16-22), CFB -0.17 .30; pooled -0.27 [-0.77,+0.24] .15. ~~NFL -0.73 .03 (20-31), pooled -0.19 .18~~
+- int_rate_diff: NFL -0.27 .24 (14-18), CFB +0.15 [-0.11,+0.44] .85 (25-18); pooled +0.10 [-0.16,+0.37] .78. ~~NFL -0.33 .11, CFB -0.09 .00 (0-4)~~
+- turnover_bundle: NFL -0.40 [-1.54,+0.67] .22 (25-31), CFB -0.26 .23; pooled -0.29 [-0.88,+0.29] .16. ~~NFL -1.06 [-2.18,-0.07] .02 (21-37)~~
+Pooled log loss P+ now: home .13, away .03, bye .06, short .04, bundle .04, fumble .22, int .02, turnover .06 (all arms worse or flat on LL; no arm improves it).
+Intercept-only control (constant pick, scripts/pooled_screen.py with a scratch callable): vs the 14-input base NFL opener +0.20 [-2.65,+2.90] P+ .52, CFB +1.11 [-0.49,+2.68] .92, pooled +0.88 .89; LL gain pooled +0.00185 [+0.00017,+0.00352] P+ .98. So the base ridge itself is not distinguishable from a constant on accuracy and has worse LL than a constant at the opener; every arm effect (<=0.6 pts) is below what this control shows noise to be (interval half-width ~2.7 NFL).
+Conclusions changed: short_week_diff goes from unremarkable to the only accuracy candidate (pooled P+ .99, CFB .97) but LL worse; bye_diff and away_rest lose their P+ (.95, .89 -> .71, .23); rest/bye bundle and all three turnover arms turn negative or flat (the NFL turnover cells at P+ .02-.03 were close-line artefacts). Nothing closes (no refuted mechanism, no positive control bound). 16 accuracy cells re-recorded with --replace (10 unit 1, 6 unit 2); bye_diff open-input cells from 14:02 kept. Next: short_week_diff needs a leave-one-season-out check and served-path grade before any use; LL/Brier cells still unrecorded.

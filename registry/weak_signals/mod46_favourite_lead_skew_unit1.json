@@ -1,0 +1,117 @@
+{
+  "family": "mod46_favourite_lead_skew_unit1",
+  "signals": {
+    "mod46_graded_run_adj_loso_add": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Favourite OC run-share trait tercile-restricted discrete lattice added to own control read, LOSO, opener 2020-25, 1491 games",
+      "effect": 0.002809,
+      "effect_units": "log_loss_improvement",
+      "family": "mod46_favourite_lead_skew_unit1",
+      "interval": [
+        -0.002814,
+        0.008299
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Run-heavy favourite offences gain about the same as the placebo arm (+.0028).",
+      "probability_positive": 0.836,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.787,
+      "sample_blocks": 6,
+      "sample_games": 1491,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod46/summary.json and shape.csv",
+      "standard_error": null
+    },
+    "mod46_graded_sec_adj_loso_add": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Favourite OC sec/play trait tercile-restricted discrete lattice added to own control read, LOSO, opener 2020-25, 1491 games",
+      "effect": -0.001973,
+      "effect_units": "log_loss_improvement",
+      "family": "mod46_favourite_lead_skew_unit1",
+      "interval": [
+        -0.004708,
+        0.000593
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Slower favourite offences do not improve the lattice read; placebo arm gives +.0016.",
+      "probability_positive": 0.0675,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.692,
+      "sample_blocks": 6,
+      "sample_games": 1491,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod46/summary.json and shape.csv",
+      "standard_error": null
+    },
+    "mod46_shape_run_adj_mass7_2013_19": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Favourite mass at margin 7, high minus low run-share tercile, closing line 2013-19 (descriptive)",
+      "effect": -5.3,
+      "effect_units": "rate_pp",
+      "family": "mod46_favourite_lead_skew_unit1",
+      "interval": [
+        -9.2,
+        -1.4
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Perm p .006 across 32 looks and 0 of 7 seasons positive; does not replicate in 2020-25 (0.0 pp).",
+      "probability_positive": 0.002,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.787,
+      "sample_blocks": 7,
+      "sample_games": 1126,
+      "seasons": [
+        2013,
+        2019
+      ],
+      "source": "artifacts/mod46/summary.json and shape.csv",
+      "standard_error": null
+    },
+    "mod46_shape_run_adj_mass7_opener": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Favourite mass at margin 7, high minus low run-share tercile, within season x spread bin, opener 2020-25",
+      "effect": 0.0,
+      "effect_units": "rate_pp",
+      "family": "mod46_favourite_lead_skew_unit1",
+      "interval": [
+        -4.3,
+        4.6
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "No difference in the mass at 7 on the opener sample.",
+      "probability_positive": 0.496,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.787,
+      "sample_blocks": 6,
+      "sample_games": 991,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod46/summary.json and shape.csv",
+      "standard_error": null
+    }
+  }
+}

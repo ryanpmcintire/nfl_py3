@@ -6,18 +6,18 @@
       "classification": "unresolved_below_power",
       "classification_evidence": "Interval includes zero; no resolved wrong sign and no positive control, so unresolved_below_power.",
       "closing_ground": null,
-      "description": "Add-one fumble_lost_diff to the 14 shared inputs, ridge alpha 10, accuracy points vs 14-input base at the opener, cfb; flips 63-64",
-      "effect": -0.0213,
+      "description": "Add-one fumble_lost_diff to the 14 shared inputs, ridge alpha 10, accuracy points vs 14-input base at the opener (opener model input), cfb; flips 134-142",
+      "effect": -0.1701,
       "effect_units": "accuracy_points",
       "family": "xlg10_pooled_addone_unit2",
       "interval": [
-        -0.4853,
-        0.4338
+        -0.8444,
+        0.483
       ],
       "league": "cfb",
-      "notes": "Decisive first: 63-64 (variant wins-losses on flipped games). Family xlg10_pooled_addone_unit2, 3 arms x 2 leagues x 3 metrics = 18 looks; scripts/xlg10_addone2.py via scripts/pooled_screen.py.",
+      "notes": "Rerun 2026-11-03 on the opener-input guarded harness; replaces the closing-line-input cell. Decisive first: 134-142 (variant wins-losses on flipped games). Family xlg10_pooled_addone_unit2, 18 looks; scripts/xlg10_addone2.py via scripts/pooled_screen.py.",
       "plain_summary": "Adding this turnover input to the shared model changed a handful of picks; the net accuracy change was small and could not be told apart from none.",
-      "probability_positive": 0.458,
+      "probability_positive": 0.304,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
@@ -27,25 +27,25 @@
         2025
       ],
       "source": "artifacts/pooled_screen/xlg10_*.json",
-      "standard_error": 0.2304
+      "standard_error": 0.3351
     },
     "xlg10u2_fumble_lost_diff_nfl_accuracy": {
       "category": "onfield",
       "classification": "unresolved_below_power",
       "classification_evidence": "Interval includes zero; no resolved wrong sign and no positive control, so unresolved_below_power.",
       "closing_ground": null,
-      "description": "Add-one fumble_lost_diff to the 14 shared inputs, ridge alpha 10, accuracy points vs 14-input base at the opener, nfl; flips 20-31",
-      "effect": -0.7319,
+      "description": "Add-one fumble_lost_diff to the 14 shared inputs, ridge alpha 10, accuracy points vs 14-input base at the opener (opener model input), nfl; flips 16-22",
+      "effect": -0.3992,
       "effect_units": "accuracy_points",
       "family": "xlg10_pooled_addone_unit2",
       "interval": [
-        -1.5947,
-        0.0666
+        -1.1992,
+        0.3922
       ],
       "league": "nfl",
-      "notes": "Decisive first: 20-31 (variant wins-losses on flipped games). Family xlg10_pooled_addone_unit2, 3 arms x 2 leagues x 3 metrics = 18 looks; scripts/xlg10_addone2.py via scripts/pooled_screen.py.",
+      "notes": "Rerun 2026-11-03 on the opener-input guarded harness; replaces the closing-line-input cell. Decisive first: 16-22 (variant wins-losses on flipped games). Family xlg10_pooled_addone_unit2, 18 looks; scripts/xlg10_addone2.py via scripts/pooled_screen.py.",
       "plain_summary": "Adding this turnover input to the shared model changed a handful of picks; the net accuracy change was small and could not be told apart from none.",
-      "probability_positive": 0.03,
+      "probability_positive": 0.138,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
@@ -55,25 +55,25 @@
         2025
       ],
       "source": "artifacts/pooled_screen/xlg10_*.json",
-      "standard_error": 0.4157
+      "standard_error": 0.3977
     },
     "xlg10u2_int_rate_diff_cfb_accuracy": {
       "category": "onfield",
       "classification": "unresolved_below_power",
       "classification_evidence": "Interval includes zero; no resolved wrong sign and no positive control, so unresolved_below_power.",
       "closing_ground": null,
-      "description": "Add-one int_rate_diff to the 14 shared inputs, ridge alpha 10, accuracy points vs 14-input base at the opener, cfb; flips 0-4",
-      "effect": -0.0851,
+      "description": "Add-one int_rate_diff to the 14 shared inputs, ridge alpha 10, accuracy points vs 14-input base at the opener (opener model input), cfb; flips 25-18",
+      "effect": 0.1489,
       "effect_units": "accuracy_points",
       "family": "xlg10_pooled_addone_unit2",
       "interval": [
-        -0.1732,
-        -0.0207
+        -0.1103,
+        0.4374
       ],
       "league": "cfb",
-      "notes": "Decisive first: 0-4 (variant wins-losses on flipped games). Family xlg10_pooled_addone_unit2, 3 arms x 2 leagues x 3 metrics = 18 looks; scripts/xlg10_addone2.py via scripts/pooled_screen.py.",
+      "notes": "Rerun 2026-11-03 on the opener-input guarded harness; replaces the closing-line-input cell. Decisive first: 25-18 (variant wins-losses on flipped games). Family xlg10_pooled_addone_unit2, 18 looks; scripts/xlg10_addone2.py via scripts/pooled_screen.py.",
       "plain_summary": "Adding this turnover input to the shared model changed a handful of picks; the net accuracy change was small and could not be told apart from none.",
-      "probability_positive": 0.0,
+      "probability_positive": 0.847,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
@@ -83,25 +83,25 @@
         2025
       ],
       "source": "artifacts/pooled_screen/xlg10_*.json",
-      "standard_error": 0.052261232824770694
+      "standard_error": 0.1422
     },
     "xlg10u2_int_rate_diff_nfl_accuracy": {
       "category": "onfield",
       "classification": "unresolved_below_power",
       "classification_evidence": "Interval includes zero; no resolved wrong sign and no positive control, so unresolved_below_power.",
       "closing_ground": null,
-      "description": "Add-one int_rate_diff to the 14 shared inputs, ridge alpha 10, accuracy points vs 14-input base at the opener, nfl; flips 10-15",
-      "effect": -0.3327,
+      "description": "Add-one int_rate_diff to the 14 shared inputs, ridge alpha 10, accuracy points vs 14-input base at the opener (opener model input), nfl; flips 14-18",
+      "effect": -0.2661,
       "effect_units": "accuracy_points",
       "family": "xlg10_pooled_addone_unit2",
       "interval": [
-        -0.9309,
-        0.2696
+        -1.0688,
+        0.5281
       ],
       "league": "nfl",
-      "notes": "Decisive first: 10-15 (variant wins-losses on flipped games). Family xlg10_pooled_addone_unit2, 3 arms x 2 leagues x 3 metrics = 18 looks; scripts/xlg10_addone2.py via scripts/pooled_screen.py.",
+      "notes": "Rerun 2026-11-03 on the opener-input guarded harness; replaces the closing-line-input cell. Decisive first: 14-18 (variant wins-losses on flipped games). Family xlg10_pooled_addone_unit2, 18 looks; scripts/xlg10_addone2.py via scripts/pooled_screen.py.",
       "plain_summary": "Adding this turnover input to the shared model changed a handful of picks; the net accuracy change was small and could not be told apart from none.",
-      "probability_positive": 0.114,
+      "probability_positive": 0.24,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
@@ -111,25 +111,25 @@
         2025
       ],
       "source": "artifacts/pooled_screen/xlg10_*.json",
-      "standard_error": 0.31
+      "standard_error": 0.4075
     },
     "xlg10u2_turnover_bundle_cfb_accuracy": {
       "category": "onfield",
       "classification": "unresolved_below_power",
       "classification_evidence": "Interval includes zero; no resolved wrong sign and no positive control, so unresolved_below_power.",
       "closing_ground": null,
-      "description": "Add-one turnover_bundle to the 14 shared inputs, ridge alpha 10, accuracy points vs 14-input base at the opener, cfb; flips 64-66",
-      "effect": -0.0425,
+      "description": "Add-one turnover_bundle to the 14 shared inputs, ridge alpha 10, accuracy points vs 14-input base at the opener (opener model input), cfb; flips 139-151",
+      "effect": -0.2552,
       "effect_units": "accuracy_points",
       "family": "xlg10_pooled_addone_unit2",
       "interval": [
-        -0.5014,
-        0.4089
+        -0.9285,
+        0.4472
       ],
       "league": "cfb",
-      "notes": "Decisive first: 64-66 (variant wins-losses on flipped games). Family xlg10_pooled_addone_unit2, 3 arms x 2 leagues x 3 metrics = 18 looks; scripts/xlg10_addone2.py via scripts/pooled_screen.py.",
+      "notes": "Rerun 2026-11-03 on the opener-input guarded harness; replaces the closing-line-input cell. Decisive first: 139-151 (variant wins-losses on flipped games). Family xlg10_pooled_addone_unit2, 18 looks; scripts/xlg10_addone2.py via scripts/pooled_screen.py.",
       "plain_summary": "Adding this turnover input to the shared model changed a handful of picks; the net accuracy change was small and could not be told apart from none.",
-      "probability_positive": 0.423,
+      "probability_positive": 0.231,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
@@ -139,25 +139,25 @@
         2025
       ],
       "source": "artifacts/pooled_screen/xlg10_*.json",
-      "standard_error": 0.2353
+      "standard_error": 0.3476
     },
     "xlg10u2_turnover_bundle_nfl_accuracy": {
       "category": "onfield",
       "classification": "unresolved_below_power",
       "classification_evidence": "Interval includes zero; no resolved wrong sign and no positive control, so unresolved_below_power.",
       "closing_ground": null,
-      "description": "Add-one turnover_bundle to the 14 shared inputs, ridge alpha 10, accuracy points vs 14-input base at the opener, nfl; flips 21-37",
-      "effect": -1.0645,
+      "description": "Add-one turnover_bundle to the 14 shared inputs, ridge alpha 10, accuracy points vs 14-input base at the opener (opener model input), nfl; flips 25-31",
+      "effect": -0.3992,
       "effect_units": "accuracy_points",
       "family": "xlg10_pooled_addone_unit2",
       "interval": [
-        -2.1812,
-        -0.0665
+        -1.5426,
+        0.6703
       ],
       "league": "nfl",
-      "notes": "Decisive first: 21-37 (variant wins-losses on flipped games). Family xlg10_pooled_addone_unit2, 3 arms x 2 leagues x 3 metrics = 18 looks; scripts/xlg10_addone2.py via scripts/pooled_screen.py.",
+      "notes": "Rerun 2026-11-03 on the opener-input guarded harness; replaces the closing-line-input cell. Decisive first: 25-31 (variant wins-losses on flipped games). Family xlg10_pooled_addone_unit2, 18 looks; scripts/xlg10_addone2.py via scripts/pooled_screen.py.",
       "plain_summary": "Adding this turnover input to the shared model changed a handful of picks; the net accuracy change was small and could not be told apart from none.",
-      "probability_positive": 0.018,
+      "probability_positive": 0.224,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": null,
@@ -167,7 +167,7 @@
         2025
       ],
       "source": "artifacts/pooled_screen/xlg10_*.json",
-      "standard_error": 0.5344
+      "standard_error": 0.5654
     }
   }
 }
