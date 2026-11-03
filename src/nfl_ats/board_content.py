@@ -2234,7 +2234,7 @@ def _build_headline_stats(
     gate_text = rule_gate_sentence(artifacts_root)
     if gate_text:
         selection_caveat_text = f"{selection_caveat_text} {gate_text}"
-    prior_chain_caption = f"{games_text} · reference point, no interval attached."
+    prior_chain_caption = f"{games_text} · a reference point, no margin of error shown."
     season_count = 0
     seasons_above_coin_flip = None
     raw_model_season_note = None
@@ -2251,7 +2251,8 @@ def _build_headline_stats(
         )
     if close_ci is not None and close_correct is not None and close_games is not None:
         close_grade_caption = (
-            f"{int(close_correct):,} / {int(close_games):,} non-push · 95% range "
+            f"{int(close_correct):,} right of {int(close_games):,} games that did not tie "
+            "the line · 95% range "
             f"[{close_ci[0]:.2f}%, {close_ci[1]:.2f}%]."
         )
     else:

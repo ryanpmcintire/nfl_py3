@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T22:05:12.670354+00:00`
+Refreshed at: `2026-11-03T22:06:11.727976+00:00`
 
 ## Start here
 
@@ -21,17 +21,17 @@ Refreshed at: `2026-11-03T22:05:12.670354+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `95ec02a1e35b` — Master lane state
+- Baseline commit: `eb0b4a2e0266` — Refresh session handoff
 - Pending change set: 255 paths
-  - `M  HANDOFF.md`
   - ` M config/source_policies.json`
   - ` M docs/lanes/mod-46-favourite-lead-skew.md`
-  - ` M docs/lanes/ui20-2026-11-03.md`
+  - `M  docs/lanes/ui20-2026-11-03.md`
+  - ` M docs/lanes/xlg-10-xlg10-pooled-addone.md`
   - ` M registry/weak_signals/xlg10_pooled_addone.json`
   - ` M registry/weak_signals/xlg10_pooled_addone_unit2.json`
   - ` M scripts/sim10_drive.py`
-  - ` M src/nfl_ats/board_content.py`
-  - ` M src/nfl_ats/board_terminal.py`
+  - `M  src/nfl_ats/board_content.py`
+  - `M  src/nfl_ats/board_terminal.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`

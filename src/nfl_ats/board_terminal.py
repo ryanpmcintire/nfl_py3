@@ -531,7 +531,7 @@ def _headline_section(headline: HeadlineStats) -> str:
         '<h2 id="stats-h">Headline accuracy</h2>'
         '<span class="sub">source: this week\'s published forecast</span></div>'
         '<div class="headline-block"><div class="headline-main">'
-        '<span class="label">Played policy &middot; archive score</span>'
+        '<span class="label">Our played card &middot; past seasons vs the opening line</span>'
         f'<span class="value">{headline.played_card_value_text}</span>'
         f'<span class="foot">{escape(headline.played_card_foot_text)}</span>'
         f'<span class="foot">{PLAIN_MODEL_NAME}</span>'
@@ -543,15 +543,16 @@ def _headline_section(headline: HeadlineStats) -> str:
         f"{_prospective_scoreboard_html(headline)}"
         "</div></div>"
         '<div class="kpi-grid">'
-        '<div class="kpi"><span class="label">Coach-to-arrests chain &middot; prior</span>'
+        '<div class="kpi"><span class="label">'
+        "Previous card &middot; same games vs the opening line</span>"
         f'<span class="value muted">{headline.prior_chain_value_text}</span>'
         f'<span class="foot">{escape(headline.prior_chain_caption)}</span></div>'
-        '<div class="kpi"><span class="label">Model alone &middot; opener grade baseline</span>'
+        '<div class="kpi"><span class="label">Model alone &middot; vs the opening line</span>'
         f'<span class="value good">{headline.raw_model_value_text}</span>'
         f"{_season_shape_html(headline)}"
         f'<span class="foot">{raw_model_ci}</span>'
         "</div>"
-        '<div class="kpi"><span class="label">Active model &middot; close grade</span>'
+        '<div class="kpi"><span class="label">Active model &middot; vs the closing line</span>'
         f'<span class="value muted">{headline.close_grade_value_text}</span>'
         f'<span class="foot">{escape(headline.close_grade_caption)}</span></div>'
         "</div>"
@@ -564,9 +565,9 @@ def _headline_section(headline: HeadlineStats) -> str:
         f"<p>{escape(headline.refresh_chain_caption)}</p></div></div>"
         '<div class="policy-note" style="margin-top:1px;border-left-color:var(--line);">'
         f"Active model <b>{PLAIN_MODEL_NAME}</b>"
-        ". Four stats, four roles: headline archive score, the prior chain it's tracked "
-        "against, the model-alone baseline it's built on, and the model's own close-graded "
-        "classification. Full source-and-date detail is at the bottom of this page.</div>"
+        ". The four numbers: our card as played, the previous card it is compared with, "
+        "the model with no adjustments, and the model scored against the closing line. "
+        "Full source detail is at the bottom of this page.</div>"
         "</section>"
     )
 
@@ -2745,8 +2746,8 @@ def render_history_page(content: HistoryPageContent) -> str:
         + _page_lead(
             "HISTORY",
             "Recorded picks, settled honestly",
-            "The primary ledger at its frozen decision/opener line, plus running "
-            "prospective challenger assessments.",
+            "Every pick we posted, graded against the line the pool locked on Tuesday, "
+            "plus the newer ideas we are testing on live games.",
         )
         + _season_so_far_section_html(content.season_so_far)
         + '<section aria-labelledby="history-picks-h"><div class="section-head">'
@@ -3278,10 +3279,13 @@ def _signal_atlas_family_panel_html(
         )
         + gap_html
         + '<p class="atlas-footnote">'
-        f"Related views include {inventory_html}. These overlap and are not independent evidence. "
-        f"No best time window was selected. The main count is {len(metrics)} versions &times; "
-        f"{cells_per_view} time windows &times; {len(evaluations)} evaluation views. "
-        f"Intervals use {bootstrap_draws:,} resamples.</p></details>"
+        f"We compared {len(metrics)} versions &times; {cells_per_view} time windows &times; "
+        f"{len(evaluations)} ways of scoring and picked no best window. "
+        "The other counts overlap and are not independent evidence.</p>"
+        '<details class="policy-note"><summary class="micro" style="cursor:pointer;">'
+        "All counts</summary>"
+        f"<p>{inventory_html}. Intervals use {bootstrap_draws:,} resamples.</p></details>"
+        "</details>"
         '<details class="atlas-details"><summary>Scoring and calibration</summary>'
         + _atlas_metrics_html(metrics)
         + "</details></div></div>"
