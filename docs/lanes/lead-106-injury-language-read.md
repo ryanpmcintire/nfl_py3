@@ -14,3 +14,11 @@ First unit: Run a frozen prompt over the stored captures, compare Brier on reali
 
 ## Open
 Data: Official injury report text captured (free). Zero crossing closes nothing; one fitted probability selects the side; weights, cut points and alphas chosen leave-one-season-out; every cell counted as a look; unresolved results go through nfl-ats weak-signals record with a closing ground; graded at the opener (opener as model input, with intercept-only and line-move-only controls) on the same market and simple-model baselines. Look count and family declared before any sign is seen.
+
+## Unit 1 progress (2026-11-03 ~16:50 local)
+Built scripts/lead106_injury_language.py (freeze/run/score) and scripts/lead106_prompt.md (sha256 08170f6d8428c4b31db2b67062172140f3b45a999d05bafa70eb6008061b3d2c). Population 2459 player-weeks (nflverse injuries 2026 wk1-8, outcome from forward_snaps; unmatched names count as not played, matched rate .66; Out/Doubtful never appear in snaps). Sample 331 rows weeks 2-8: all 228 headline-bearing rows plus up to 100 per designation (budget declared, seed from prompt hash). Read model claude-opus-5-5, no tools, 40 rows per batch, outputs in artifacts/lead106_injury_language/raw. Ladder baselines: designation, designation x practice, expanding prior weeks, add-one smoothing; bootstrap over team-week clusters, 2000 reps, stratum-weighted.
+State: run launched in background (task bd4w5zxgi, log artifacts/lead106_injury_language/run.log), not yet confirmed finished. Do not rerun finished batches (script skips them).
+Next: when raw/ has 9 batch files, run `scripts/lead106_injury_language.py score`, record log_loss_improvement via nfl-ats weak-signals record (unresolved_below_power unless refuted), fill results here.
+Mechanism if positive: expected-availability term in player availability features only, never a side rule.
+Open: wording signal limited (only practice phrase, body part, headlines since late Sept).
+- 2026-11-03 16:43 ET (root review): 33.5% of player-weeks did not match the snap counts and were labelled "not played"; a name-match miss is not a missed game. The scoring unit must score matched rows only (report the unmatched rate by designation) or fix the join before reading Brier or log loss.

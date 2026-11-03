@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T21:43:27.123056+00:00`
+Refreshed at: `2026-11-03T21:43:46.784569+00:00`
 
 ## Start here
 
@@ -21,15 +21,14 @@ Refreshed at: `2026-11-03T21:43:27.123056+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `bcd19bff6c9b` — Dashboard: leader-split fold summary is one short line (the coverage note moves inside, no longer all caps on phones); long-table filter reads 'Filter this table'
-- Pending change set: 259 paths
+- Baseline commit: `b497f05b3236` — Republish the site with the latest settled results
+- Pending change set: 255 paths
   - ` M config/source_policies.json`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
   - ` M docs/lanes/lead-102-name-blinded-control-read.md`
-  - ` M docs/lanes/lead-106-injury-language-read.md`
-  - `M  docs/model.html`
+  - `M  docs/lanes/lead-106-injury-language-read.md`
+  - ` M docs/lanes/mkt-25-opener-revision-size.md`
+  - `A  scripts/lead106_injury_language.py`
+  - `A  scripts/lead106_prompt.md`
   - ` M scripts/mkt25_opener_revision.py`
   - ` M scripts/sim10_drive.py`
   - `?? an.csv`
@@ -43,7 +42,8 @@ Refreshed at: `2026-11-03T21:43:27.123056+00:00`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
   - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - ...and 239 more
+  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
+  - ...and 235 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
