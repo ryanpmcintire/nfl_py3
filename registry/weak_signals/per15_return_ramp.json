@@ -1,0 +1,61 @@
+{
+  "family": "per15_return_ramp",
+  "signals": {
+    "per15_x_unweighted": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "served plus unweighted expected snap shortfall of returning starters, LOSO 2020-25, opener grade; 276 flips 129-147. Deadline-view term: Friday report is after the opener.",
+      "effect": -0.0011511,
+      "effect_units": "log_loss_improvement",
+      "family": "per15_return_ramp",
+      "interval": [
+        -0.003741,
+        0.001525
+      ],
+      "league": "nfl",
+      "notes": "31 looks in family (28 snap cells, 3 arms)",
+      "plain_summary": null,
+      "probability_positive": 0.198,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/per15/result.json",
+      "standard_error": null
+    },
+    "per15_x_value": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "served plus position-value-weighted expected snap shortfall of returning starters (Friday not-Out), LOSO 2020-25, opener grade; 154 flips 78-76; 1155 of 1503 games carry feature. Deadline-view term: Friday report is after the opener.",
+      "effect": -6.6e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "per15_return_ramp",
+      "interval": [
+        -0.001159,
+        0.000935
+      ],
+      "league": "nfl",
+      "notes": "31 looks in family (28 snap cells, 3 arms)",
+      "plain_summary": null,
+      "probability_positive": 0.4315,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/per15/result.json",
+      "standard_error": null
+    }
+  }
+}
