@@ -57,6 +57,34 @@
       "source": "artifacts/pool_rank_replay/forward_sim_results.json",
       "standard_error": null
     },
+    "pool01_standing_aware_forward_real_rivals": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "policies differ on 3 of 1200 paths; model probs assumed calibrated; rival skill reliability 0.075 interval -0.23 to 0.29; no positive control",
+      "closing_ground": null,
+      "description": "Standing-aware Best Pick vs served, forward from rank 19 / 65 points, real rival season totals (241 read plus 9 resampled), rival skill shrunk by measured split-half reliability 0.075; 0 side flips",
+      "effect": 0.1667,
+      "effect_units": "payout_first_pp",
+      "family": "pool01_standing_aware",
+      "interval": [
+        0.0,
+        0.375
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.97465,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 1200,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_rank_replay/forward_sim_real_rivals_results.json",
+      "standard_error": null
+    },
     "pool01_standing_aware_observed_tiebreak": {
       "category": "modeling",
       "classification": "unresolved_below_power",

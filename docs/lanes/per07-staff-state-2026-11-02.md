@@ -23,3 +23,14 @@ scripts/per07_first_game_fitted_term.py now takes --staff-state <parquet> (event
 
 ## Result (staff-state rerun, done)
 Run finished; artifacts/per07/first_game_fitted_term_staff_state.json. 6 cells PER07-ss-* recorded under per07_first_game_new_playcaller_fitted_term (unresolved_below_power). Next: none for this unit; consumers still not pointed at the table.
+
+## 2026-11-03 coordinators_tue snapshot check (read-only)
+Snapshot 20261103T123300Z vs 20261031T112746Z: coordinator_history.parquet identical (3,162 rows each, outer merge diff 0; newest 2026 revision 2026-10-23 SEA, unchanged). Within-2026 OC/DC person values: no team shows more than one person (no personnel change; only same-person revision re-captures). No firing, resignation or playcaller handoff, so nothing takes effect Week 9. Overlay (interim_playcaller_first_game_back_overlay) reads events from the latest */change_validation.json (20260924T194157799750Z: 16 changes, 0 in season 2026), counts only staff_change/playcaller_role; zero 2026 events, so it would not fire for Week 9. Caveat: staff_state table not yet wired to the overlay, and playcaller handoffs inside an unchanged OC are invisible to the snapshot (single 2026-09-03 source).
+
+## 2026-11-03 change_validation wiring (LEAD-29 data path)
+Overlay contract (read): load_counted_playcaller_change_events takes the lexically last data/raw/coordinators/*/change_validation.json, reads payload["changes"], counts only validation_status staff_change or playcaller_role, uses season, team, revision_at (naive UTC) as the event instant; no other field.
+Writer: scripts/per07_write_change_validation.py (ruff clean). Carries the latest file's changes verbatim, drops any revision_at not before the write time, appends in-season OC/DC person changes from the newest staff_state parquet (status from the adjudication, else unadjudicated_staff_state_person_change, which the overlay ignores). Stamped dir = write time; never backdated.
+Run 2026-11-03T16:06:24Z: data/raw/coordinators/20261103T160624919493Z/change_validation.json, 16 carried, 0 added; overlay parser on it: 12 counted events, 0 in 2026.
+Job entry for the root to add to scripts/capture_scheduler.py (between coordinators_tue 07:30 and weekly_lock 12:20):
+    Job("change_validation_tue", "tue", "07:45", 30, [str(UV), "run", "--no-sync", "python", str(REPO / "scripts" / "per07_write_change_validation.py")], True, "Writes a stamped change_validation.json from the staff-state table after the Tuesday coordinator ingest so the first-game-back overlay sees an in-season change before the noon lock.", added_on="2026-11-03", requires=("coordinators_tue",)),
+Caveat: staff_state parquet is rebuilt only by scripts/build_staff_state.py; the job should be preceded by a rebuild (add that to the same argv chain or a prior Job) or new in-season changes are not seen.

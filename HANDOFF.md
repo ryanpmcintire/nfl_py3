@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T16:05:18.909880+00:00`
+Refreshed at: `2026-11-03T16:07:17.565830+00:00`
 
 ## Start here
 
@@ -21,16 +21,18 @@ Refreshed at: `2026-11-03T16:05:18.909880+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `a1b96b0156fe` — Engine repair queue prepared; SIM-09 port; MOD-27 observed offsets; LEAD-75/80/81 measurements
-- Pending change set: 243 paths
+- Baseline commit: `1e65cc239ea1` — LEAD-75 capture retry; LEAD-81 classifier v2
+- Pending change set: 245 paths
+  - `M  ROADMAP.md`
+  - `M  docs/lanes/backlog-all-2026-11-02.md`
   - ` M docs/lanes/engine-patch-queue-2026-11-03.md`
-  - `M  docs/lanes/lead75.md`
-  - `M  docs/lanes/lead80-81-forward-capture-2026-11-02.md`
-  - ` M docs/lanes/per07-staff-state-2026-11-02.md`
-  - ` M docs/lanes/pool01-standing-aware-2026-11-02.md`
-  - `M  scripts/capture_paired_wind_forecast.py`
-  - `M  scripts/capture_travel_interruptions.py`
-  - ` M scripts/pool01_forward_sim.py`
+  - `M  docs/lanes/per07-staff-state-2026-11-02.md`
+  - `M  docs/lanes/pool01-standing-aware-2026-11-02.md`
+  - ` M docs/lanes/sim09-tier-a-runs-2026-11-03.md`
+  - `M  registry/weak_signals/pool01_standing_aware.json`
+  - `A  scripts/per07_write_change_validation.py`
+  - `M  scripts/pool01_forward_sim.py`
+  - `A  scripts/pool01_weekly_points.py`
   - ` M scripts/sim10_drive.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
@@ -41,9 +43,7 @@ Refreshed at: `2026-11-03T16:05:18.909880+00:00`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
-  - ...and 223 more
+  - ...and 225 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

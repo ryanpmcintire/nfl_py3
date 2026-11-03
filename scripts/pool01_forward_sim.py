@@ -10,6 +10,8 @@ from nfl_ats.evidence_conventions import probability_positive_from_draws
 K = 1000.0
 OUT = Path("artifacts/pool_rank_replay")
 FIELD_FILE = Path("data/splash/field/2026_field_best_picks_w01-08.parquet")
+WEEKLY_FILE = Path("data/splash/field/2026_weekly_points_w01-08.parquet")
+WEEKLY_JSON = OUT / "weekly_points_field.json"
 
 
 def load_games():
@@ -38,13 +40,16 @@ def load_games():
     return pd.DataFrame(rows)
 
 
-def draw_week(games, rng, S, E, idx=None):
+def draw_week(games, rng, S, E, idx=None, delta=None):
     if idx is None:
         idx = rng.integers(0, len(games["p"]), size=(S, 15))
     p, sh, uo, ut = (games[k][idx] for k in ("p", "share", "u_o", "u_t"))
     cover = rng.random(p.shape) < p
     thr = np.where(cover, sh, 1.0 - sh)
-    pts = (rng.random((S, E, 15), dtype=np.float32) < thr[:, None, :]).sum(axis=2).astype(float)
+    tp = thr[:, None, :]
+    if delta is not None:
+        tp = np.clip(tp + delta[None, :, None], 0.0, 1.0)
+    pts = (rng.random((S, E, 15), dtype=np.float32) < tp).sum(axis=2).astype(float)
     eo, et = np.exp(uo), np.exp(ut)
     z = (eo + et).sum(axis=1, keepdims=True)
     rate = (np.where(cover, eo, et) / z).sum(axis=1)
@@ -65,26 +70,45 @@ def share_given_key(field_key, ours_key):
     return np.where(ours_key >= top, 1.0 / (1.0 + level), 0.0)
 
 
-def past_state(df, rng, E, S, our_points, our_rank):
+def rival_table(our_points):
+    w = pd.read_parquet(WEEKLY_FILE)
+    meta = json.loads(WEEKLY_JSON.read_text())
+    tot = w["total"].to_numpy(float)
+    mine = int(np.where(tot == our_points)[0][0])
+    tot = np.delete(tot, mine)
+    n_games = float(sum(meta["games_per_week"]))
+    rate = tot / n_games
+    r = meta["split_half_spearman_brown"]
+    var_obs = float(rate.var(ddof=1))
+    dmean = r * (rate - rate.mean())
+    dsd = float(np.sqrt(r * (1.0 - r) * var_obs))
+    return tot, dmean, dsd
+
+
+def past_state(df, rng, E, S, our_points, our_rank, table):
+    tot, dmean, dsd = table
+    unknown = E - len(tot)
     our_bp = 0.0
-    pts = np.zeros((S, E))
     bp = np.zeros((S, E))
     for _, g in df.groupby("week"):
         cov = g["cov_o"].to_numpy()
-        thr = np.where(cov, g["share"].to_numpy(), 1.0 - g["share"].to_numpy())
-        pts += (rng.random((S, E, len(g)), dtype=np.float32) < thr[None, None, :]).sum(axis=2)
         won = np.where(cov, g["bp_o"], g["bp_t"]).sum()
         rate = won / float((g["bp_o"] + g["bp_t"]).sum())
         bp += rng.random((S, E)) < rate
         our_bp += float(cov[int(np.argmax(g["p"].to_numpy()))])
+    src = np.concatenate(
+        [np.tile(np.arange(len(tot)), (S, 1)), rng.integers(0, len(tot), (S, unknown))], axis=1
+    )
+    pts = tot[src]
     key = pts * K + bp
     ours = our_points * K + our_bp
     ok = (key > ours).sum(axis=1) == (our_rank - 1)
-    return pts[ok], bp[ok], our_bp
+    return pts[ok], bp[ok], dmean[src][ok], dsd, our_bp
 
 
-def run_path(games, pts0, bp0, our_bp0, our_points, rng, weeks, E, inner):
-    draws = [draw_week(games, rng, 1, E) for _ in range(weeks)]
+def run_path(games, pts0, bp0, dm, dsd, our_bp0, our_points, rng, weeks, E, inner):
+    delta = dm + dsd * rng.standard_normal(E)
+    draws = [draw_week(games, rng, 1, E, delta=delta) for _ in range(weeks)]
     idxs = None
     out = {}
     for policy in ("served", "aware"):
@@ -103,7 +127,7 @@ def run_path(games, pts0, bp0, our_bp0, our_points, rng, weeks, E, inner):
                 ]
                 inn[0]["cover"] = np.repeat(d["cover"], inner, axis=0)
                 for _ in range(k + 1, weeks):
-                    inn.append(draw_week(games, rng, inner, E))
+                    inn.append(draw_week(games, rng, inner, E, delta=delta))
                 fkey = (
                     (rp[None, :] + sum(i["pts"] for i in inn)) * K
                     + rb[None, :]
@@ -158,18 +182,23 @@ def main():
     games = {k: df[k].to_numpy() for k in ("p", "share", "u_o", "u_t")}
     rng = np.random.default_rng(a.seed)
     E = a.entries - 1
-    kept_p, kept_b, drawn, have = [], [], 0, 0
+    table = rival_table(a.points)
+    kept_p, kept_b, kept_d, drawn, have = [], [], [], 0, 0
     while have < a.paths:
-        pp, bb, our_bp = past_state(df, rng, E, 2000, a.points, a.rank)
+        pp, bb, dd, dsd, our_bp = past_state(df, rng, E, 2000, a.points, a.rank, table)
         kept_p.append(pp)
         kept_b.append(bb)
+        kept_d.append(dd)
         have += len(pp)
         drawn += 2000
     pts0 = np.concatenate(kept_p)[: a.paths]
     bp0 = np.concatenate(kept_b)[: a.paths]
+    dm0 = np.concatenate(kept_d)[: a.paths]
     rows = []
     for i in range(a.paths):
-        r, _ = run_path(games, pts0[i], bp0[i], our_bp, a.points, rng, a.weeks, E, a.inner)
+        r, _ = run_path(
+            games, pts0[i], bp0[i], dm0[i], dsd, our_bp, a.points, rng, a.weeks, E, a.inner
+        )
         rows.append(r)
         if a.smoke and i >= 1:
             break
@@ -197,7 +226,7 @@ def main():
         "paths_where_policies_differ": int((res["gain"] != 0).sum()),
     }
     if not a.smoke:
-        (OUT / "forward_sim_results.json").write_text(json.dumps(out, indent=2) + "\n")
+        (OUT / "forward_sim_real_rivals_results.json").write_text(json.dumps(out, indent=2) + "\n")
     print(json.dumps(out, indent=2))
 
 

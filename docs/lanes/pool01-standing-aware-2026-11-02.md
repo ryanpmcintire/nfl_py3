@@ -32,3 +32,13 @@ Fit field best-pick game shares once more weeks of `best_picks` are captured; si
 - Caveats: model probs assumed calibrated (inflates P(first)); future-game features bootstrapped from W1-8; full-fit BP coefficients used in sim; W8 standings page not read, rival points simulated.
 ## Next
 Read Week 8 standings for real rival scores; replace bootstrap with real remaining schedule.
+
+## Real weekly points and rerun (2026-11-03)
+- Parsed data/splash/field/2026_weekly_points_w01-08.parquet via scripts/pool01_weekly_points.py -> artifacts/pool_rank_replay/weekly_points_field.json (241 of 250 entries; games/week 16,16,16,16,15,14,14,14).
+- Measured: field hit rate 0.483; total sd 5.38 v binomial 5.50 (ratio 0.98, no over-dispersion); per-week sd 1.75-2.00 v binomial 1.87-2.00. Odd/even split-half r 0.039, Spearman-Brown 0.075 [-0.23, 0.29]: entry skill essentially unmeasurable at 8 weeks. Our 65 pts: 15 read entries above, 9 tied (incl. us), percentile ~92 (z +1.21).
+- scripts/pool01_forward_sim.py now uses real rival season totals (our row removed, 9 unread rivals resampled from read totals), rival skill offsets = SB reliability x (rate - mean), posterior sd sqrt(r(1-r)var); rejection to rank 19. Output -> forward_sim_real_rivals_results.json.
+- Full run (--paths 1200 --inner 200) was STILL RUNNING at hand-back (PIDs 17688, 30408; stdout in scratchpad fs.out). Not yet read or recorded.
+## Next
+When artifacts/pool_rank_replay/forward_sim_real_rivals_results.json exists: read it, compare to 18.5% [16.3,20.7] / aware +0.375 pp / BP value +1.38 pp, run `nfl-ats weak-signals record` family pool01_standing_aware (name pool01_standing_aware_forward_real_rivals, payout_first_pp, unresolved_below_power, source the json), decide whether Week 15 revisit trigger changes. Kill leftover PIDs if still alive.
+## Rerun result (2026-11-03, measured)
+forward_sim_real_rivals_results.json (1200 paths, inner 200): P(first) served 6.67% [5.29, 8.08], aware 6.83% [5.42, 8.33], gain +0.167 pp [0.0, 0.375] P+ 0.975 but policies differ on 3 of 1200 paths; BP tiebreak value +0.59 pp [0.27, 0.95]. Earlier simulated-rival result was 18.5% / +0.375 pp / BP +1.38 pp: real rivals (15 above us, 9 tied, near-zero skill spread) cut P(first) about 2.8x. Recorded pool01_standing_aware_forward_real_rivals (unresolved_below_power). Week 15 revisit trigger: unchanged in kind (aware choice is noise-level; BP matters only as tiebreak), but P(first) base is ~7% not 18%; the earlier figure is superseded. Processes reaped.
