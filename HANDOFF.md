@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T23:28:01.713271+00:00`
+Refreshed at: `2026-11-03T23:28:13.669884+00:00`
 
 ## Start here
 
@@ -21,13 +21,12 @@ Refreshed at: `2026-11-03T23:28:01.713271+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `83593d521ff2` — Republish the site with the latest settled results
-- Pending change set: 252 paths
+- Baseline commit: `c75ec3bf90ce` — ENG-58 flex audit: 42 real kickoff moves (34 graded, opener grades unaffected; 2026 CHI-GB wk5 flex logged in time); risk: forward guards read kickoff from the static features build, so a flex after a rebuild could let a record be written after the real kickoff
+- Pending change set: 251 paths
+  - `M  HANDOFF.md`
   - ` M config/source_policies.json`
-  - `M  docs/lanes/eng-58-flexed-and-rescheduled-games-audit.md`
   - ` M docs/lanes/mod-10-graph-rating-base-input.md`
   - ` M docs/lanes/mod-54-mirrored-home-away-training-rows.md`
-  - `A  scripts/eng58_flex_audit.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
@@ -43,7 +42,8 @@ Refreshed at: `2026-11-03T23:28:01.713271+00:00`
   - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
   - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
   - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
-  - ...and 232 more
+  - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
+  - ...and 231 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
