@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T22:28:49.975046+00:00`
+Refreshed at: `2026-11-03T22:29:56.780925+00:00`
 
 ## Start here
 
@@ -21,16 +21,16 @@ Refreshed at: `2026-11-03T22:28:49.975046+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `ff530a077522` — UI-32: game detail says when the line sits next to 3 or 7, how often games land exactly there (push chance from the served calibrated sweep at that line), and whether that lands on the pick's side; 8 of 15 Week 9 games
+- Baseline commit: `28bd48e1053c` — Republish the site with the latest settled results
 - Pending change set: 257 paths
   - ` M ROADMAP.md`
   - ` M config/source_policies.json`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
   - ` M docs/lanes/done/eng-56-final-score-reconciliation.md`
+  - `M  docs/lanes/mod-41-mod41-cumulative-workload.md`
   - ` M docs/lanes/sim-21-drive-length-decomposition.md`
-  - `M  docs/model.html`
+  - ` M docs/lanes/sim-24-next-drive-start-field-by-previous-drive.md`
+  - `A  registry/weak_signals/mod41_residual_load_u6_served_base.json`
+  - `A  scripts/mod41_unit6_served_base.py`
   - ` M scripts/sim10_drive.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`

@@ -1,0 +1,61 @@
+{
+  "family": "mod41_residual_load_u6_served_base",
+  "signals": {
+    "mod41_u6_served_base_accuracy_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap; 2 looks (ll, acc) on the true served base; within-week permutation p 0.002.",
+      "closing_ground": null,
+      "description": "Same fit, accuracy gain in points; decisive 157-131 of 288",
+      "effect": 1.7298735861610126,
+      "effect_units": "accuracy_points",
+      "family": "mod41_residual_load_u6_served_base",
+      "interval": [
+        -0.6606449949263246,
+        4.325477757356566
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Pick accuracy change from adding recent workload to the served probability.",
+      "probability_positive": 0.919,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod41/unit6_served_base.json",
+      "standard_error": 1.2719700898680846
+    },
+    "mod41_u6_served_base_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap; 2 looks (ll, acc) on the true served base; within-week permutation p 0.002.",
+      "closing_ground": null,
+      "description": "Residual recent-load term added to logit of the served out-of-season probability, LOSO 2020-25, opener grade; decisive 157-131 of 288; in-sample gap 0.0003; coef -0.044 stable 6/6",
+      "effect": 0.004036998482444987,
+      "effect_units": "log_loss_improvement",
+      "family": "mod41_residual_load_u6_served_base",
+      "interval": [
+        -0.001178074068586421,
+        0.009363148521929768
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Tests whether recent workload adds to the pick probability the card already serves.",
+      "probability_positive": 0.94,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod41/unit6_served_base.json",
+      "standard_error": 0.002689087395539844
+    }
+  }
+}

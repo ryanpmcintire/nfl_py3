@@ -54,3 +54,12 @@ scripts/mod41_unit5_base_addone.py (modes true, proxy, true_control), artifacts/
 - Base route ll gain +.0014 vs combine route +.0041 (different baselines: ridge base ll .6969 vs served logit): base route carries a third of it, none in accuracy.
 5 cells recorded (family mod41_residual_load_u5_base_addone, unit5_weak_signals_batch.json), unresolved_below_power. 5 looks.
 Next: 2011-13 proxy not run (warm-up); feature scale not tuned.
+
+## Unit 6 done 2026-11-03 ~17:30 (true served base)
+scripts/mod41_unit6_served_base.py, artifacts/mod41/unit6_served_base.json. Base = logit(out_of_season_home_probability) from artifacts/pick_probability/20261103T195411Z (stored served record 829-674, ll .68670; raw model 802-701). Units 1-4 base was the raw model.
+- LOSO refit base (usable-adjusted) acc .5516, ll .68692, Brier .24689. Term: ll .68288 (gain +.00404 [-.00118,.00936] p+ .940); acc +1.73 pts [-0.66,4.33] p+ .919; Brier .24488; decisive 157-131 of 288 (54.5%); in-sample gain .00434, gap .00030; intercept-only ll .69328. Coef on served logit .921 (.83-1.03), residual -.0439 stable 6/6 (-.0401 to -.0493). Within-week permutation (500) p .002, null mean -.00035.
+- Raw base (unit 2): ll +.0041 p+ .95, acc +2.66 p+ .97, decisive 209-193; survives on served base with ~same ll gain, smaller acc gain.
+- Frozen forward term fit on raw model logit (fit_base: opener_evaluation per_game, served_logit_coefficient .339); forward scoring applies it to a different probability scale than the card's four-term fit. Describe only; not modified.
+2 cells recorded (family mod41_residual_load_u6_served_base, unit6_weak_signals_batch.json), unresolved_below_power.
+Next: refit frozen term on the true served logit (new artifact, not overwriting) before forward scoring.
+- 2026-11-03 17:29 ET (root decision): unit 6 survives on the true served base (ll +.00404 P+ .94, acc +1.73 P+ .92, decisive 157-131, perm p .002, coef negative 6/6). NOT served now: serving needs a pinned fifth term in pick_probability.py and a v8 enrolment days after v7, and MOD-41 has many looks across units 1-6; the forward ledger and ENG-48 monitor decide. Unit 7 re-freezes the term on the served scale as a new forward term (mod41_residual_load_served) so Week 9 is logged before Thursday kickoff; the raw-scale frozen term stays as written.
