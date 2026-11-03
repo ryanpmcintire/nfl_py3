@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T22:46:59.343482+00:00`
+Refreshed at: `2026-11-03T22:47:31.806945+00:00`
 
 ## Start here
 
@@ -21,14 +21,15 @@ Refreshed at: `2026-11-03T22:46:59.343482+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `a804ecb3496c` — MOD-50: carrying MOD-41 workload into weeks 1-4 does not help; the prior-season carry coefficient is opposite in sign (+.065 [.022,.112]) so the in-season signal does not cross the offseason; unresolved
-- Pending change set: 252 paths
+- Baseline commit: `01199c542f6b` — SIM-26: no prevent-defense shape (leading defenses allow more explosives late; no stable DC trait); sim matches 11/12 score cells but understates the final-9-minute TD surge (real +.15 v sim +.08), pointing to trailing hurry-up
+- Pending change set: 253 paths
+  - `M  HANDOFF.md`
   - ` M config/source_policies.json`
   - ` M docs/lanes/mod-49-mod41-construction-sensitivity.md`
   - ` M docs/lanes/sim-21-drive-length-decomposition.md`
-  - `M  docs/lanes/sim-26-prevent-defense-yardage-shape.md`
+  - ` M scripts/forward_ledger.py`
+  - ` M scripts/forward_terms_week.py`
   - ` M scripts/sim10_drive.py`
-  - `A  scripts/sim26_prevent_shape.py`
   - ` M src/nfl_ats/board_terminal.py`
   - ` M src/nfl_ats/dashboard/findings_content.py`
   - `?? an.csv`
@@ -42,8 +43,7 @@ Refreshed at: `2026-11-03T22:46:59.343482+00:00`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
   - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
-  - ...and 232 more
+  - ...and 233 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
