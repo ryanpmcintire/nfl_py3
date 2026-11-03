@@ -1,0 +1,285 @@
+{
+  "family": "mod07_joint_stack",
+  "signals": {
+    "mod07_joint_stack_loso_log_loss_gain": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; whole interval of the joint cell is not on the wrong side of zero (probability_positive from week-blocked bootstrap); 11 gain cells, 5-penalty grid, 6 outer folds, single pre-declared construction.",
+      "closing_ground": null,
+      "description": "One ridge logistic, offset logit(served out_of_season_home_probability) plus 9 frozen forward terms standardised, penalty by inner LOSO, outer LOSO 2020-25 opener grade. Decisive 77-87 of 164 (joint behind); correct 819 v served 829; in-sample gain 0.00424, gap -0.00564; sum of individual gains 0.00005",
+      "effect": -0.0014056207308708391,
+      "effect_units": "log_loss_improvement",
+      "family": "mod07_joint_stack",
+      "interval": [
+        -0.004334308001944303,
+        0.0013981016783892568
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.1775,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod07_joint_stack/stack_result.json",
+      "standard_error": null
+    },
+    "mod07_joint_stack_single_env02": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; whole interval of the joint cell is not on the wrong side of zero (probability_positive from week-blocked bootstrap); 11 gain cells, 5-penalty grid, 6 outer folds, single pre-declared construction.",
+      "closing_ground": null,
+      "description": "Same LOSO ridge procedure with env02 alone. Decisive 11-10 of 21",
+      "effect": -0.0005104255366783798,
+      "effect_units": "log_loss_improvement",
+      "family": "mod07_joint_stack",
+      "interval": [
+        -0.0011507912266700195,
+        8.767797162566295e-05
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.052,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 227,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod07_joint_stack/stack_result.json",
+      "standard_error": null
+    },
+    "mod07_joint_stack_single_mod35_cold_exposure": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; whole interval of the joint cell is not on the wrong side of zero (probability_positive from week-blocked bootstrap); 11 gain cells, 5-penalty grid, 6 outer folds, single pre-declared construction.",
+      "closing_ground": null,
+      "description": "Same LOSO ridge procedure with mod35_cold_exposure alone. Decisive 40-47 of 87",
+      "effect": 0.0002605696747044304,
+      "effect_units": "log_loss_improvement",
+      "family": "mod07_joint_stack",
+      "interval": [
+        -0.0011645289528555943,
+        0.0016076822223049319
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.646,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 741,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod07_joint_stack/stack_result.json",
+      "standard_error": null
+    },
+    "mod07_joint_stack_single_mod41_avgwin_served": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; whole interval of the joint cell is not on the wrong side of zero (probability_positive from week-blocked bootstrap); 11 gain cells, 5-penalty grid, 6 outer folds, single pre-declared construction.",
+      "closing_ground": null,
+      "description": "Same LOSO ridge procedure with mod41_avgwin_served alone. Decisive 82-82 of 164",
+      "effect": 0.0013252854240538786,
+      "effect_units": "log_loss_improvement",
+      "family": "mod07_joint_stack",
+      "interval": [
+        -0.0020210479779463842,
+        0.004504126559719417
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.7835,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 944,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod07_joint_stack/stack_result.json",
+      "standard_error": null
+    },
+    "mod07_joint_stack_single_sky01": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; whole interval of the joint cell is not on the wrong side of zero (probability_positive from week-blocked bootstrap); 11 gain cells, 5-penalty grid, 6 outer folds, single pre-declared construction.",
+      "closing_ground": null,
+      "description": "Same LOSO ridge procedure with sky01 alone. Decisive 7-5 of 12",
+      "effect": -4.974987872482659e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "mod07_joint_stack",
+      "interval": [
+        -0.00021374250022737637,
+        0.00010356274276708892
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.2805,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod07_joint_stack/stack_result.json",
+      "standard_error": null
+    },
+    "mod07_joint_stack_single_sky01snap": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; whole interval of the joint cell is not on the wrong side of zero (probability_positive from week-blocked bootstrap); 11 gain cells, 5-penalty grid, 6 outer folds, single pre-declared construction.",
+      "closing_ground": null,
+      "description": "Same LOSO ridge procedure with sky01snap alone. Decisive 7-6 of 13",
+      "effect": -4.052380142687637e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "mod07_joint_stack",
+      "interval": [
+        -0.00019276035875887603,
+        0.0001086317518336568
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.2955,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod07_joint_stack/stack_result.json",
+      "standard_error": null
+    },
+    "mod07_joint_stack_single_sky03": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; whole interval of the joint cell is not on the wrong side of zero (probability_positive from week-blocked bootstrap); 11 gain cells, 5-penalty grid, 6 outer folds, single pre-declared construction.",
+      "closing_ground": null,
+      "description": "Same LOSO ridge procedure with sky03 alone. Decisive 23-23 of 46",
+      "effect": -0.0004392554153380391,
+      "effect_units": "log_loss_improvement",
+      "family": "mod07_joint_stack",
+      "interval": [
+        -0.0013007357052122687,
+        0.00043908212863431103
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.165,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod07_joint_stack/stack_result.json",
+      "standard_error": null
+    },
+    "mod07_joint_stack_single_sky03_separated": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; whole interval of the joint cell is not on the wrong side of zero (probability_positive from week-blocked bootstrap); 11 gain cells, 5-penalty grid, 6 outer folds, single pre-declared construction.",
+      "closing_ground": null,
+      "description": "Same LOSO ridge procedure with sky03_separated alone. Decisive 57-52 of 109",
+      "effect": 0.00030855753164684693,
+      "effect_units": "log_loss_improvement",
+      "family": "mod07_joint_stack",
+      "interval": [
+        -0.0010266608108988674,
+        0.0016558456423957785
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.6755,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod07_joint_stack/stack_result.json",
+      "standard_error": null
+    },
+    "mod07_joint_stack_single_sky04": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; whole interval of the joint cell is not on the wrong side of zero (probability_positive from week-blocked bootstrap); 11 gain cells, 5-penalty grid, 6 outer folds, single pre-declared construction.",
+      "closing_ground": null,
+      "description": "Same LOSO ridge procedure with sky04 alone. Decisive 17-8 of 25",
+      "effect": -0.0006871415838431576,
+      "effect_units": "log_loss_improvement",
+      "family": "mod07_joint_stack",
+      "interval": [
+        -0.0012877120723949534,
+        -0.00012394509893600794
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.009,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 799,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod07_joint_stack/stack_result.json",
+      "standard_error": null
+    },
+    "mod07_joint_stack_single_surface": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; whole interval of the joint cell is not on the wrong side of zero (probability_positive from week-blocked bootstrap); 11 gain cells, 5-penalty grid, 6 outer folds, single pre-declared construction.",
+      "closing_ground": null,
+      "description": "Same LOSO ridge procedure with surface alone. Decisive 8-7 of 15",
+      "effect": -0.00011696123931306617,
+      "effect_units": "log_loss_improvement",
+      "family": "mod07_joint_stack",
+      "interval": [
+        -0.0002982064692751093,
+        5.9113856295542714e-05
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.0965,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod07_joint_stack/stack_result.json",
+      "standard_error": null
+    }
+  }
+}

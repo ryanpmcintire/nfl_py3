@@ -34,3 +34,11 @@ As-of join: for prediction timestamp T take, per (season, week, gsis_id), the la
 ## PER-03 still needs
 - A Friday ~20:00 ET snapshot (scheduler change, orchestrator) to separate Friday-report timing from Saturday capture; today pre-Saturday is unmeasurable.
 - Per-day practice (Wed/Thu/Fri) history and pre-2026 revision replay: owner action SPORTRADAR_API_KEY or written NFL.com consent.
+
+## Unit 3 result (2026-11-03 22:57 UTC): long-form revisions + late-change measure
+- scripts/per03_revision_history.py reads data/processed/injury_revisions_2026.parquet (fetch time = manifest fetched_utc per snapshot, via unit 2) and writes artifacts/per03/revisions_2026.parquet: 8,528 rows (3,387 change, 5,141 first_appearance), one per (week, team, gsis_id, field) with field_group (report_status, practice_status, practice_detail, body_part), old_value, new_value, first_seen_utc, first_seen_dow_et.
+- Change rows by ET day first seen (wk1-8): Wed 10, Thu 148, Fri 522, Sat 1,464, Sun 243 (all field groups); by group: report_status Sat 872/Sun 95/Thu 56/Fri 12; practice_status Fri 472/Sat 624/Sun 56/Thu 28. Observation clock is mostly one 10:00 UTC capture per day, so a change is dated to the next capture, not its true time. Spot-check of PIT, DAL, WAS, CLE players matched snapshot sequence.
+- Late change (measured, wk1-8, designation changed after first seen, before kickoff): Out 0/464, Doubtful 0/36, Questionable 18/516 (.035; 13 to Out, 5 cleared). All 18 first seen Sunday (Sun capture). Friday-to-Saturday changes are not separable: designations first appear Saturday.
+- Line move (descriptive, 116 games with Tue 12:00 ET to min(kickoff, Sun 16:00 ET) median-book spread): 10 team-games with a late net change and nonzero move; direction agreement 4/10 (.40), permutation null (within-week shuffled moves, 20000) mean .50, P(null >= obs) .83. Unresolved_below_power; nothing recorded (no admissible cell; n=10).
+- Feeds, as inputs only: LEAD-106 wording read can be re-run on each revision with as-of observed_at < T (new Questionable/Out text and body part appear in report_status/body_part rows); PER-15 return status uses practice_status Limited->Full rows and report_status cleared rows with first_seen_utc as availability. No pick rule implied.
+- Next: Friday ~20:00 ET snapshot to resolve Friday-vs-Saturday timing (orchestrator scheduler).
