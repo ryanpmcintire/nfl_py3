@@ -1,0 +1,453 @@
+{
+  "family": "mod44_coach_tenure",
+  "signals": {
+    "mod44_established_2011-19_resid": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Team-perspective cover residual vs served probability, state established, 2011-19",
+      "effect": 0.186,
+      "effect_units": "rate_pp",
+      "family": "mod44_coach_tenure",
+      "interval": [
+        -1.514,
+        1.886
+      ],
+      "league": "nfl",
+      "notes": "MOD-44 unit 1; 18 looks; opener grade, proxy era SBR open",
+      "plain_summary": null,
+      "probability_positive": 0.585,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 3448,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "scripts/mod44_coach_tenure.py",
+      "standard_error": 0.867
+    },
+    "mod44_established_2020-25_resid": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Team-perspective cover residual vs served probability, state established, 2020-25",
+      "effect": 0.488,
+      "effect_units": "rate_pp",
+      "family": "mod44_coach_tenure",
+      "interval": [
+        -1.555,
+        2.53
+      ],
+      "league": "nfl",
+      "notes": "MOD-44 unit 1; 18 looks; opener grade, proxy era SBR open",
+      "plain_summary": null,
+      "probability_positive": 0.68,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2311,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mod44_coach_tenure.py",
+      "standard_error": 1.042
+    },
+    "mod44_first_year_2011-19_resid": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Team-perspective cover residual vs served probability, state first_year, 2011-19",
+      "effect": -1.153,
+      "effect_units": "rate_pp",
+      "family": "mod44_coach_tenure",
+      "interval": [
+        -4.376,
+        2.07
+      ],
+      "league": "nfl",
+      "notes": "MOD-44 unit 1; 18 looks; opener grade, proxy era SBR open",
+      "plain_summary": null,
+      "probability_positive": 0.242,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 949,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "scripts/mod44_coach_tenure.py",
+      "standard_error": 1.644
+    },
+    "mod44_first_year_2020-25_resid": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Team-perspective cover residual vs served probability, state first_year, 2020-25",
+      "effect": -2.61,
+      "effect_units": "rate_pp",
+      "family": "mod44_coach_tenure",
+      "interval": [
+        -6.841,
+        1.621
+      ],
+      "league": "nfl",
+      "notes": "MOD-44 unit 1; 18 looks; opener grade, proxy era SBR open",
+      "plain_summary": null,
+      "probability_positive": 0.113,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 622,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mod44_coach_tenure.py",
+      "standard_error": 2.159
+    },
+    "mod44_games_slope_per_game_2011-19_resid": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Team-perspective cover residual vs served probability, state games_slope_per_game, 2011-19",
+      "effect": -0.317,
+      "effect_units": "rate_pp",
+      "family": "mod44_coach_tenure",
+      "interval": [
+        -0.989,
+        0.356
+      ],
+      "league": "nfl",
+      "notes": "MOD-44 unit 1; 18 looks; opener grade, proxy era SBR open",
+      "plain_summary": null,
+      "probability_positive": 0.178,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1014,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "scripts/mod44_coach_tenure.py",
+      "standard_error": 0.343
+    },
+    "mod44_games_slope_per_game_2020-25_resid": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Team-perspective cover residual vs served probability, state games_slope_per_game, 2020-25",
+      "effect": 0.678,
+      "effect_units": "rate_pp",
+      "family": "mod44_coach_tenure",
+      "interval": [
+        -0.095,
+        1.45
+      ],
+      "league": "nfl",
+      "notes": "MOD-44 unit 1; 18 looks; opener grade, proxy era SBR open",
+      "plain_summary": null,
+      "probability_positive": 0.957,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 695,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mod44_coach_tenure.py",
+      "standard_error": 0.394
+    },
+    "mod44_interim_2011-19_resid": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Team-perspective cover residual vs served probability, state interim, 2011-19",
+      "effect": 6.966,
+      "effect_units": "rate_pp",
+      "family": "mod44_coach_tenure",
+      "interval": [
+        -5.779,
+        19.711
+      ],
+      "league": "nfl",
+      "notes": "MOD-44 unit 1; 18 looks; opener grade, proxy era SBR open",
+      "plain_summary": null,
+      "probability_positive": 0.858,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 65,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "scripts/mod44_coach_tenure.py",
+      "standard_error": 6.503
+    },
+    "mod44_interim_2020-25_resid": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Team-perspective cover residual vs served probability, state interim, 2020-25",
+      "effect": 6.163,
+      "effect_units": "rate_pp",
+      "family": "mod44_coach_tenure",
+      "interval": [
+        -5.538,
+        17.864
+      ],
+      "league": "nfl",
+      "notes": "MOD-44 unit 1; 18 looks; opener grade, proxy era SBR open",
+      "plain_summary": null,
+      "probability_positive": 0.849,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 73,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mod44_coach_tenure.py",
+      "standard_error": 5.97
+    },
+    "mod44_term_served+both_states_2011-19_loso": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "LOSO log-loss gain of served+both_states over served, 2011-19",
+      "effect": -0.00041,
+      "effect_units": "log_loss_improvement",
+      "family": "mod44_coach_tenure",
+      "interval": [
+        -0.00129,
+        0.00047
+      ],
+      "league": "nfl",
+      "notes": "MOD-44 unit 1; 18 looks; opener grade, proxy era SBR open",
+      "plain_summary": null,
+      "probability_positive": 0.192,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "scripts/mod44_coach_tenure.py",
+      "standard_error": 0.00045
+    },
+    "mod44_term_served+both_states_2020-25_loso": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "LOSO log-loss gain of served+both_states over served, 2020-25",
+      "effect": 7e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "mod44_coach_tenure",
+      "interval": [
+        -0.00235,
+        0.00248
+      ],
+      "league": "nfl",
+      "notes": "MOD-44 unit 1; 18 looks; opener grade, proxy era SBR open",
+      "plain_summary": null,
+      "probability_positive": 0.521,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mod44_coach_tenure.py",
+      "standard_error": 0.00123
+    },
+    "mod44_term_served+first_year_2011-19_loso": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "LOSO log-loss gain of served+first_year over served, 2011-19",
+      "effect": -0.00027,
+      "effect_units": "log_loss_improvement",
+      "family": "mod44_coach_tenure",
+      "interval": [
+        -0.00064,
+        8e-05
+      ],
+      "league": "nfl",
+      "notes": "MOD-44 unit 1; 18 looks; opener grade, proxy era SBR open",
+      "plain_summary": null,
+      "probability_positive": 0.066,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "scripts/mod44_coach_tenure.py",
+      "standard_error": 0.00018
+    },
+    "mod44_term_served+first_year_2020-25_loso": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "LOSO log-loss gain of served+first_year over served, 2020-25",
+      "effect": 3e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "mod44_coach_tenure",
+      "interval": [
+        -0.00202,
+        0.00204
+      ],
+      "league": "nfl",
+      "notes": "MOD-44 unit 1; 18 looks; opener grade, proxy era SBR open",
+      "plain_summary": null,
+      "probability_positive": 0.512,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mod44_coach_tenure.py",
+      "standard_error": 0.00103
+    },
+    "mod44_term_served+games_into_2011-19_loso": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "LOSO log-loss gain of served+games_into over served, 2011-19",
+      "effect": -0.00039,
+      "effect_units": "log_loss_improvement",
+      "family": "mod44_coach_tenure",
+      "interval": [
+        -0.00091,
+        0.00016
+      ],
+      "league": "nfl",
+      "notes": "MOD-44 unit 1; 18 looks; opener grade, proxy era SBR open",
+      "plain_summary": null,
+      "probability_positive": 0.077,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "scripts/mod44_coach_tenure.py",
+      "standard_error": 0.00027
+    },
+    "mod44_term_served+games_into_2020-25_loso": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "LOSO log-loss gain of served+games_into over served, 2020-25",
+      "effect": -0.00043,
+      "effect_units": "log_loss_improvement",
+      "family": "mod44_coach_tenure",
+      "interval": [
+        -0.00115,
+        0.00029
+      ],
+      "league": "nfl",
+      "notes": "MOD-44 unit 1; 18 looks; opener grade, proxy era SBR open",
+      "plain_summary": null,
+      "probability_positive": 0.119,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mod44_coach_tenure.py",
+      "standard_error": 0.00037
+    },
+    "mod44_term_served+interim_2011-19_loso": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "LOSO log-loss gain of served+interim over served, 2011-19",
+      "effect": -0.0001,
+      "effect_units": "log_loss_improvement",
+      "family": "mod44_coach_tenure",
+      "interval": [
+        -0.0009,
+        0.00072
+      ],
+      "league": "nfl",
+      "notes": "MOD-44 unit 1; 18 looks; opener grade, proxy era SBR open",
+      "plain_summary": null,
+      "probability_positive": 0.398,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "scripts/mod44_coach_tenure.py",
+      "standard_error": 0.00041
+    },
+    "mod44_term_served+interim_2020-25_loso": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "LOSO log-loss gain of served+interim over served, 2020-25",
+      "effect": 7e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "mod44_coach_tenure",
+      "interval": [
+        -0.00142,
+        0.00157
+      ],
+      "league": "nfl",
+      "notes": "MOD-44 unit 1; 18 looks; opener grade, proxy era SBR open",
+      "plain_summary": null,
+      "probability_positive": 0.529,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mod44_coach_tenure.py",
+      "standard_error": 0.00076
+    }
+  }
+}
