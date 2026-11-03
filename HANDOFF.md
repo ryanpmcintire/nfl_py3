@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T23:19:56.414565+00:00`
+Refreshed at: `2026-11-03T23:20:14.267768+00:00`
 
 ## Start here
 
@@ -21,17 +21,19 @@ Refreshed at: `2026-11-03T23:19:56.414565+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `d14d2c177454` — ENG-59 moneyline/spread audit: 4,368 games, 0 graded opener values or served sides change; the 47 opener dissents are genuine line moves inside the captured book range (BUF@SF 2020 and JAX@CHI 2024 resolved as moves)
-- Pending change set: 257 paths
-  - `M  HANDOFF.md`
-  - `M  README.md`
+- Baseline commit: `a509aa2379dc` — Refresh session handoff
+- Pending change set: 258 paths
   - ` M config/source_policies.json`
   - ` M docs/lanes/mod-10-graph-rating-base-input.md`
   - ` M docs/lanes/mod-53-ridge-penalty-grid-edge-and-reduced-rank.md`
   - ` M docs/lanes/mod-54-mirrored-home-away-training-rows.md`
-  - ` M docs/lanes/per-16-team-reporting-habit-designation-play-rate.md`
+  - `M  docs/lanes/per-16-team-reporting-habit-designation-play-rate.md`
   - ` M registry/weak_signals/mod53_penalty_grid_edge.json`
+  - `A  registry/weak_signals/per16_team_designation_habit.json`
   - ` M scripts/mod53_penalty_grid.py`
+  - `A  scripts/per16_team_designation_habit.py`
+  - ` M src/nfl_ats/board_content.py`
+  - ` M src/nfl_ats/board_terminal.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
@@ -41,9 +43,7 @@ Refreshed at: `2026-11-03T23:19:56.414565+00:00`
   - `?? docs/move_reasons.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - ...and 237 more
+  - ...and 238 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

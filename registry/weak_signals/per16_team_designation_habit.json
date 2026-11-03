@@ -1,0 +1,145 @@
+{
+  "family": "per16_team_designation_habit",
+  "signals": {
+    "per16_q_coach_ladder_heldout": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Coach-keyed shrunk Questionable P(plays) vs league ladder, prior seasons only",
+      "effect": 0.0074,
+      "effect_units": "log_loss_improvement",
+      "family": "per16_team_designation_habit",
+      "interval": [
+        0.004,
+        0.01069
+      ],
+      "league": "nfl",
+      "notes": "Looks declared: 3 designations x (3 reliability families + 2 ladder arms x 2 metrics); 2026 wording check 4 cells. Unverified rows (no pfr id or team-week absent from snaps; 34% of 2013, 81% verified 2025) excluded; team and coach confounded (HC changes rare).",
+      "plain_summary": "Coach-keyed prior beats the league ladder on held-out seasons 2016-2025.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 9575,
+      "seasons": [
+        2016,
+        2025
+      ],
+      "source": "artifacts/per16",
+      "standard_error": 0.0017
+    },
+    "per16_q_coach_yoy_same_team_reliability": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Questionable play rate, same head coach on same team, season t vs t+1",
+      "effect": 0.3371,
+      "effect_units": "correlation",
+      "family": "per16_team_designation_habit",
+      "interval": [
+        0.2192,
+        0.4475
+      ],
+      "league": "nfl",
+      "notes": "Looks declared: 3 designations x (3 reliability families + 2 ladder arms x 2 metrics); 2026 wording check 4 cells. Unverified rows (no pfr id or team-week absent from snaps; 34% of 2013, 81% verified 2025) excluded; team and coach confounded (HC changes rare).",
+      "plain_summary": "A coach's Questionable play rate carries into the next season.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 273,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/per16",
+      "standard_error": 0.058
+    },
+    "per16_q_team_ladder_heldout": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Team-keyed shrunk Questionable P(plays) vs league ladder, prior seasons only",
+      "effect": 0.00339,
+      "effect_units": "log_loss_improvement",
+      "family": "per16_team_designation_habit",
+      "interval": [
+        0.000155,
+        0.006543
+      ],
+      "league": "nfl",
+      "notes": "Looks declared: 3 designations x (3 reliability families + 2 ladder arms x 2 metrics); 2026 wording check 4 cells. Unverified rows (no pfr id or team-week absent from snaps; 34% of 2013, 81% verified 2025) excluded; team and coach confounded (HC changes rare).",
+      "plain_summary": "Team-keyed prior beats the league ladder slightly on held-out seasons 2016-2025.",
+      "probability_positive": 0.979,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 9575,
+      "seasons": [
+        2016,
+        2025
+      ],
+      "source": "artifacts/per16",
+      "standard_error": 0.0016
+    },
+    "per16_q_team_ladder_vs_read_2026": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "LEAD-106 wording read vs team-keyed ladder, Questionable rows 2026 wk2-8",
+      "effect": 0.0925,
+      "effect_units": "log_loss_improvement",
+      "family": "per16_team_designation_habit",
+      "interval": [
+        0.0255,
+        0.1549
+      ],
+      "league": "nfl",
+      "notes": "Looks declared: 3 designations x (3 reliability families + 2 ladder arms x 2 metrics); 2026 wording check 4 cells. Unverified rows (no pfr id or team-week absent from snaps; 34% of 2013, 81% verified 2025) excluded; team and coach confounded (HC changes rare).",
+      "plain_summary": "The wording read still beats the team-keyed ladder on 2026 Questionable players.",
+      "probability_positive": 0.999,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 87,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/per16",
+      "standard_error": 0.033
+    },
+    "per16_q_team_splithalf_reliability": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Questionable play rate by team-season, odd vs even weeks",
+      "effect": 0.4212,
+      "effect_units": "correlation",
+      "family": "per16_team_designation_habit",
+      "interval": [
+        0.3349,
+        0.5076
+      ],
+      "league": "nfl",
+      "notes": "Looks declared: 3 designations x (3 reliability families + 2 ladder arms x 2 metrics); 2026 wording check 4 cells. Unverified rows (no pfr id or team-week absent from snaps; 34% of 2013, 81% verified 2025) excluded; team and coach confounded (HC changes rare).",
+      "plain_summary": "Teams differ in how often a Questionable player plays; the odd-week and even-week rates agree (permutation p 0.001).",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 369,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/per16",
+      "standard_error": 0.044
+    }
+  }
+}
