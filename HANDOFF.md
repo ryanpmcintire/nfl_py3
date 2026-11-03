@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T18:41:48.680366+00:00`
+Refreshed at: `2026-11-03T18:51:54.608958+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-03T18:41:48.680366+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `2c39b603b907` — Dashboard fixed in place (phone layout, text sizes, labels) plus pool outlook panel; research units
-- Pending change set: 277 paths
+- Baseline commit: `acc93ea729ef` — Dashboard round 2 in place: History rules table readable on phones, notes folded, injury line kept visible
+- Pending change set: 274 paths
+  - `M  ROADMAP.md`
   - ` M config/source_policies.json`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
   - `M  docs/lanes/backlog-all-2026-11-02.md`
-  - ` M docs/lanes/engine-patch-queue-2026-11-03.md`
-  - `M  docs/lanes/mod-28-mod28-late-compression.md`
+  - `M  docs/lanes/engine-patch-queue-2026-11-03.md`
+  - `A  docs/lanes/mod-31-mod31-wind-elasticity-term.md`
+  - `A  docs/lanes/mod-32-mod32-coach-aggression-lattice.md`
+  - `A  docs/lanes/mod-33-mod33-last-game-exits.md`
+  - `A  docs/lanes/mod-34-mod34-orthogonal-add-one.md`
+  - `A  docs/lanes/mod-35-mod35-apparent-temperature.md`
+  - `A  docs/lanes/mod-36-mod36-add-one-noise-null.md`
+  - `A  docs/lanes/mod-37-mod37-stadium-false-start.md`
+  - `A  docs/lanes/mod-38-mod38-kicker-wind.md`
   - `M  docs/lanes/mod24-more-games-2026-11-03.md`
+  - `A  docs/lanes/pool-03-pool03-coin-flip-band-leverage.md`
+  - `A  docs/lanes/pool-04-pool04-field-simulator-calibration.md`
   - ` M docs/lanes/sim-12-sim12-ingame-exits.md`
-  - `M  docs/lanes/sim-13-sim13-defensive-load.md`
-  - `M  docs/lanes/sim-15-sim15-weather-calls.md`
   - ` M docs/lanes/sim08-spec-a-terminal-2026-11-03.md`
   - ` M docs/lanes/sim09-tier-a-runs-2026-11-03.md`
-  - `M  docs/lanes/ui20-2026-11-03.md`
-  - `M  docs/lanes/xlg-12-xlg12-cfb-shadow-forward.md`
-  - `M  docs/model.html`
-  - `A  registry/weak_signals/mod24_pooled_era_check.json`
-  - `A  registry/weak_signals/mod28_coasting_trait.json`
-  - `A  registry/weak_signals/sim13_defensive_fatigue.json`
-  - `A  registry/weak_signals/sim15_weather_calls.json`
-  - ...and 257 more
+  - ` M docs/lanes/ui-23-ui23-swing-postmortem.md`
+  - `A  docs/lanes/ui-24-ui24-luck-band.md`
+  - ...and 254 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
