@@ -1,5 +1,6 @@
 import argparse
 import json
+import os
 from pathlib import Path
 
 import numpy as np
@@ -360,13 +361,48 @@ def starts_of(ds):
     return out
 
 
+def table_key(season):
+    return int(season) if int(season) in SEASONS else "all"
+
+
+def table_path(season, directory=OUT):
+    return Path(directory) / f"transitions_{table_key(season)}.json"
+
+
+def write_table(path, t):
+    tmp = path.with_name(f"{path.name}.{os.getpid()}.tmp")
+    tmp.write_text(json.dumps(t))
+    os.replace(tmp, path)
+
+
+def fit_all_table(directory=OUT):
+    t = fit_table(all_drives())
+    t["held_out_season"] = None
+    write_table(Path(directory) / "transitions_all.json", t)
+    return t
+
+
+def load_table(season, directory=OUT):
+    path = table_path(season, directory)
+    if not path.exists():
+        fit_all_table(directory)
+    return json.loads(path.read_text())
+
+
 def cmd_fit(a):
     dr = all_drives()
     for s in SEASONS:
         t = fit_table(dr[dr["season"] != s])
         t["held_out_season"] = s
-        (OUT / f"transitions_{s}.json").write_text(json.dumps(t))
+        write_table(OUT / f"transitions_{s}.json", t)
         print(s, t["n_reg_drives"], t["n_ot_drives"], flush=True)
+    t = fit_all_table()
+    print("all", t["n_reg_drives"], t["n_ot_drives"], flush=True)
+
+
+def cmd_fit_all(a):
+    t = fit_all_table()
+    print("all", t["n_reg_drives"], t["n_ot_drives"], flush=True)
 
 
 def cmd_check(a):
@@ -434,11 +470,12 @@ def main():
     p = argparse.ArgumentParser()
     sub = p.add_subparsers(dest="cmd", required=True)
     sub.add_parser("fit")
+    sub.add_parser("fit-all")
     c = sub.add_parser("check")
     c.add_argument("--draws", type=int, default=100)
     c.add_argument("--seed", type=int, default=20261103)
     a = p.parse_args()
-    {"fit": cmd_fit, "check": cmd_check}[a.cmd](a)
+    {"fit": cmd_fit, "fit-all": cmd_fit_all, "check": cmd_check}[a.cmd](a)
 
 
 if __name__ == "__main__":

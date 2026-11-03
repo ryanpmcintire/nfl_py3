@@ -1,0 +1,201 @@
+{
+  "family": "sim09_situational_sim10",
+  "signals": {
+    "sim10_situational_fatigue_fg": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval not wholly on wrong side; no positive control; not closed",
+      "closing_ground": null,
+      "description": "Sim10 situational fatigue term for fg: held-out improvement over OOF drive model",
+      "effect": 1.667e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "sim09_situational_sim10",
+      "interval": [
+        -8.015e-05,
+        0.0001135
+      ],
+      "league": "nfl",
+      "notes": "seasons better 6 of 9; LOSO 2009-2017 held-out change v OOF drive model; P+ from t on 9 season gains; looks counted: 7 cells x 1 family, plus zc grid 5 and ridge grid 5 chosen nested; stakes uses continuous week ramp (STAKES_FROM_WEEK cut removed); zc hit grid edge 0.25 in all folds",
+      "plain_summary": null,
+      "probability_positive": 0.649,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim10/situational_loso.csv",
+      "standard_error": 4.203000845161532e-05
+    },
+    "sim10_situational_fatigue_td": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval not wholly on wrong side; no positive control; not closed",
+      "closing_ground": null,
+      "description": "Sim10 situational fatigue term for td: held-out improvement over OOF drive model",
+      "effect": 1.379e-06,
+      "effect_units": "log_loss_improvement",
+      "family": "sim09_situational_sim10",
+      "interval": [
+        -5.98e-05,
+        6.256e-05
+      ],
+      "league": "nfl",
+      "notes": "seasons better 6 of 9; LOSO 2009-2017 held-out change v OOF drive model; P+ from t on 9 season gains; looks counted: 7 cells x 1 family, plus zc grid 5 and ridge grid 5 chosen nested; stakes uses continuous week ramp (STAKES_FROM_WEEK cut removed); zc hit grid edge 0.25 in all folds",
+      "plain_summary": null,
+      "probability_positive": 0.52,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim10/situational_loso.csv",
+      "standard_error": 4.180876970012117e-05
+    },
+    "sim10_situational_nohuddle_nh_share": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval not wholly on wrong side; no positive control; not closed",
+      "closing_ground": null,
+      "description": "Sim10 situational nohuddle term for nh_share: held-out improvement over OOF drive model",
+      "effect": 0.009647,
+      "effect_units": "brier_improvement",
+      "family": "sim09_situational_sim10",
+      "interval": [
+        0.004904,
+        0.01439
+      ],
+      "league": "nfl",
+      "notes": "seasons better 9 of 9; LOSO 2009-2017 held-out change v OOF drive model; P+ from t on 9 season gains; looks counted: 7 cells x 1 family, plus zc grid 5 and ridge grid 5 chosen nested; stakes uses continuous week ramp (STAKES_FROM_WEEK cut removed); zc hit grid edge 0.25 in all folds",
+      "plain_summary": null,
+      "probability_positive": 0.999,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim10/situational_loso.csv",
+      "standard_error": 0.002057
+    },
+    "sim10_situational_stakes_fg": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval not wholly on wrong side; no positive control; not closed",
+      "closing_ground": null,
+      "description": "Sim10 situational stakes term for fg: held-out improvement over OOF drive model",
+      "effect": -5.895e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "sim09_situational_sim10",
+      "interval": [
+        -0.0002016,
+        8.37e-05
+      ],
+      "league": "nfl",
+      "notes": "seasons better 4 of 9; LOSO 2009-2017 held-out change v OOF drive model; P+ from t on 9 season gains; looks counted: 7 cells x 1 family, plus zc grid 5 and ridge grid 5 chosen nested; stakes uses continuous week ramp (STAKES_FROM_WEEK cut removed); zc hit grid edge 0.25 in all folds",
+      "plain_summary": null,
+      "probability_positive": 0.184,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim10/situational_loso.csv",
+      "standard_error": 6.186e-05
+    },
+    "sim10_situational_stakes_td": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval not wholly on wrong side; no positive control; not closed",
+      "closing_ground": null,
+      "description": "Sim10 situational stakes term for td: held-out improvement over OOF drive model",
+      "effect": 7.837e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "sim09_situational_sim10",
+      "interval": [
+        -0.0001369,
+        0.0002936
+      ],
+      "league": "nfl",
+      "notes": "seasons better 5 of 9; LOSO 2009-2017 held-out change v OOF drive model; P+ from t on 9 season gains; looks counted: 7 cells x 1 family, plus zc grid 5 and ridge grid 5 chosen nested; stakes uses continuous week ramp (STAKES_FROM_WEEK cut removed); zc hit grid edge 0.25 in all folds",
+      "plain_summary": null,
+      "probability_positive": 0.787,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim10/situational_loso.csv",
+      "standard_error": 9.335e-05
+    },
+    "sim10_situational_urgency_fg": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval not wholly on wrong side; no positive control; not closed",
+      "closing_ground": null,
+      "description": "Sim10 situational urgency term for fg: held-out improvement over OOF drive model",
+      "effect": 3.864e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "sim09_situational_sim10",
+      "interval": [
+        -0.0001297,
+        0.000207
+      ],
+      "league": "nfl",
+      "notes": "seasons better 5 of 9; LOSO 2009-2017 held-out change v OOF drive model; P+ from t on 9 season gains; looks counted: 7 cells x 1 family, plus zc grid 5 and ridge grid 5 chosen nested; stakes uses continuous week ramp (STAKES_FROM_WEEK cut removed); zc hit grid edge 0.25 in all folds",
+      "plain_summary": null,
+      "probability_positive": 0.695,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim10/situational_loso.csv",
+      "standard_error": 7.3e-05
+    },
+    "sim10_situational_urgency_td": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval not wholly on wrong side; no positive control; not closed",
+      "closing_ground": null,
+      "description": "Sim10 situational urgency term for td: held-out improvement over OOF drive model",
+      "effect": 4.207e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "sim09_situational_sim10",
+      "interval": [
+        -0.0001598,
+        0.000244
+      ],
+      "league": "nfl",
+      "notes": "seasons better 6 of 9; LOSO 2009-2017 held-out change v OOF drive model; P+ from t on 9 season gains; looks counted: 7 cells x 1 family, plus zc grid 5 and ridge grid 5 chosen nested; stakes uses continuous week ramp (STAKES_FROM_WEEK cut removed); zc hit grid edge 0.25 in all folds",
+      "plain_summary": null,
+      "probability_positive": 0.678,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/sim10/situational_loso.csv",
+      "standard_error": 8.756e-05
+    }
+  }
+}

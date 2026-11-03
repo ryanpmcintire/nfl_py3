@@ -97,3 +97,52 @@ Later, after SIM-08 releases sim10_drive.py:
 2. $env:OMP_NUM_THREADS=1 (and MKL/OPENBLAS/NUMEXPR); $env:SIM10_QLOG="head_s11"; .tools/uv.exe run --no-sync python -I scripts/sim10_drive.py sim --seed 11 --workers 3 --realsched 1 --head 1 --label head_qlog  (about 12 min, 680 s head run plus npz writes; add SIM10_HEAD_V2=1 only with the v2 diff)
 3. .tools/uv.exe run --no-sync python -I scripts/sim06_query_log_analysis.py --label head_s11  -> artifacts/sim06/query_log/head_s11_analysis.json (under 1 min)
 Note: the log label dir and --label are independent; keep them equal for traceability. Reading: if head_minus_kernel at engine shares >> at real shares, covariate shift explains it; else tilt interaction (repair step 3).
+
+## Step 5 result (2026-11-03, measured)
+Patch applied to scripts/sim10_drive.py (ruff E501: 4 pre-existing, 1 new on the reweight line, wrapped; now 4). Smoke is `--worlds 1 --seasons 3` (the lane's command omitted these; default 8x8 is a 15-minute run). Byte-identity seed 5: games.parquet qa_off_s5 = qa_on_s5 = 1419357553846D8FF6E82C7E2AC4E71856512D70BAFC9DB6B486C2816261CE71; plays.parquet both 109ED617...5546E. Default-off path unchanged.
+Query-log head run (seed 11, workers 3, label head_qlog, 741 s, 385,129 queries, 346 MB npz in artifacts/sim06/query_log/head_qlog/; analysis head_qlog_analysis.json). Gates in artifacts/sim10/head_qlog match head_s11 behaviour (noise_re_var 186.7, r2_w10_18 .110).
+E[offense pts/drive] on engine-queried states: kernel 1.788, head (masked) 1.837, head-minus-kernel +0.0494 (at real-state shares +0.0405); real obs 1.793; drawn outcome 1.863. So engine states add only +0.009/drive to the head gap. Covariate shift small: NN distance engine-to-real 0.421 v real-to-real 0.383 (ratio 1.10), 7.5% of engine states beyond real p95 (5% expected), feature mean shifts <0.04 real SD.
+By yl bin (engine share/real share; E_head, E_kernel, real obs): (0,25] .034/.028; 4.45, 3.73, 4.44. (25,50] .090/.079; 2.97, 2.56, 2.95. (50,75] .293/.299; 1.96, 1.83, 1.93. (75,100] .583/.593; 1.45, 1.54, 1.44. Head tracks real obs by yl; kernel under-scores the red zone and over-scores deep starts, netting to the right total.
+Decomposition of drawn minus real obs (+0.070/drive, ~1.6 pt/game at 22.4 drives; inferred arithmetic on measured values): engine yl mix scored at real obs 1.824 v 1.793 = +0.030 (engine visits more drives starting in yl<=50: 12.4% v 10.8%); head vs real obs at that mix +0.014; DR/strength/joint tilts applied to head weights (drawn 1.863 minus head 1.837) +0.026. The tilts were calibrated on kernel weights.
+Mechanism: not covariate shift and not head bias alone; two measured contributors, a better drive-start field-position mix in the engine (+0.03/drive) and tilt interaction (+0.026/drive). Why the engine start mix is richer is unmeasured (no kernel-run log; kernel net matches only through offsetting yl errors).
+Caveat: the half row of the analysis table is a bin-edge artifact (all mass in one bin); the npz holds both halves.
+Next repair (fitted, no constants): (1) refit the DR tilt targets on head-reweighted weights (repair step 3) and rerun gates; (2) compare engine drive-start yl distribution v real in head_qlog and in the kernel run rsjt_s11 plays (cheap, no heavy job) to find which upstream outcome (punt/kick/turnover return yardage) feeds the richer start mix; (3) fix the analysis half bin. Left in place: patch applied to sim10_drive.py (uncommitted).
+
+## Step 6 start-mix and tilt refit, offline (2026-11-03, no engine run, no sim10_drive.py edit)
+Start mix (measured; tests/scratch/sim06_startmix.py, artifacts/sim06/startmix.json). Start type = fixed_drive_result of the previous drive (kickoff = TD/FG/opp TD/safety). Engine = head_qlog chained queries (385k); real = 2009-17 segments; value = real 5-yd-bin E[pts] by start yl.
+Engine v real mean start yl: kickoff 76.01 v 76.07, punt 74.33 v 74.37, safety kick 62.0 v 62.0, turnover 48.73 v 50.72, downs 60.34 v 63.75, missed FG 62.60 v 64.92. Start-type shares match within 1.2 pts. Decomposition of chained engine minus real start value (+0.025 v +0.030 above): type-share effect -0.002 (kickoff share +1.2 pts is a result of scoring, not a cause), within-type position +0.0266: turnover +0.0138, downs +0.0057, punt +0.0031, missed FG +0.0028, kickoff +0.0010. So the +0.030 sits in turnover (and turnover-on-downs/missed-FG) spots 2-3 yd closer to the scoring team than real; kickoff and punt are neutral.
+Mechanism (read sim10_drive.py:1341-1347 + measured): next start = drawn segment nyl, shifted by -d (d = query yl minus drawn yl) when not scored, i.e. slope -1 imposed. Real slope of nyl on yl (2009-17, within start type): punt -0.512, turnover -0.531, downs -0.396, missed FG -0.036 (LOSO sd <= .007). Counterfactual with fitted slopes on the same log: engine start value 1.8245 -> 1.8219 (-0.0026, about 10% of the position effect). Remaining ~90% sits in the drawn segments' own nyl (turnover mean 49.34 v library 50.72): selection by head/DR/clock weights, cause unmeasured (no kernel-run log to split).
+Kickoff by season (real mean start yl, 2009-25): 73.5, 73.3, 77.3, 77.5, 77.3, 77.2, 77.7, 74.7, 74.9, 74.3, 74.4, 74.1, 74.6, 74.1, 74.4, 69.9 (2024), 69.2 (2025). The library pool 2009-17 (76.0) is 6-7 yd richer than the 2024-25 rule; any 2024+ run needs a season-keyed kickoff start.
+Tilt refit (scripts/sim06_tilt_refit.py, 9 LOSO folds, 300 real queries per season, 1 core, 3 min; artifacts/sim06/tilt_refit.json). Replicates Engine.draw offline: locked bandwidths_tilt, head refit per fold on other seasons, Head.reweight arithmetic, DR step tg2 = tg + lam*(u.out - u.m)*DR_MASK, final tilt to [tg2, mu]. Scored by tilt-aware class log loss (fittilt formula). lam grid 0..1.25 chosen on the other 8 seasons.
+Result (measured): head weights choose lam=.25 in 9/9 folds; kernel weights choose 0 (2009-11) or .25 (2012-17). Pooled ll: head lam1 -3.5721, lam .25 -3.5618 (+0.0103); kernel lam1 -3.6086, lam0 -3.6036. Head minus kernel ll at lam1 +0.0365 (8/9 seasons positive; 2016 -0.004). E[pts]-obs per drive on real queries: head lam1 +0.102, lam .25 +0.056, lam0 +0.044; kernel lam1 +0.085, lam0 +0.041. So full-strength DR adds +0.058 on head weights v +0.044 on kernel; refit lam removes about 0.046; base targets keep +0.044 (unexplained, reported as measured). Mean DR adj (td,fg,ds) at lam1 head: td +.004..+.014, fg -.010..+.009: differs by season in sign for fg.
+Unapplied engine diff (sim10_drive.py; each flag default off, off path draws no extra RNG):
+```
+@@ Engine.__init__ after self.head = ...
++        self.drlam = float(os.environ.get("SIM10_DRLAM", "1.0"))
++        self.stslope = self.koseason = None
++        if os.environ.get("SIM10_STSLOPE") == "1" or os.environ.get("SIM10_KOSEASON") == "1":
++            tb = np.load(REPO / "artifacts" / "sim06" / "start_tables.npz")
++            if os.environ.get("SIM10_STSLOPE") == "1" and len(tb["slope_seg"]) == len(seg):
++                self.stslope = tb["slope_seg"]
++            if os.environ.get("SIM10_KOSEASON") == "1":
++                self.koseason = {int(y): tb["ko_values"][tb["ko_years"] == y] for y in np.unique(tb["ko_years"])}
+@@ Engine.draw (DR block)
+-                tg = tg + adj * DR_MASK
++                tg = tg + adj * DR_MASK * (self.drlam if self.head is not None else 1.0)
+@@ run_half
+             if not scored:
+-                ny = ny + d if self.nsame[j] == 1 else ny - d
++                if self.nsame[j] == 1:
++                    ny = ny + d
++                elif self.stslope is not None:
++                    ny = ny + self.stslope[j] * d
++                else:
++                    ny = ny - d
++            elif self.koseason is not None and self.nsame[j] != 1:
++                ks = [y for y in self.koseason if y <= season]
++                ko = self.koseason[max(ks) if ks else min(self.koseason)]
++                ny = float(ko[rng.integers(len(ko))])
+```
+Regenerate tables: `.tools/uv.exe run --no-sync python -I scripts/sim06_start_tables.py` (done, artifacts/sim06/start_tables.npz; slope_seg is per 2009-17 segment, -1 for scored/other types). Caution: SIM10_KOSEASON only changes 2024+ answers if the run season key is real (realsched seasons); the 2009-17 library pool is replaced by that season's real kickoff starts.
+Gate command (next heavy run, after SIM-08 releases the engine and the diff is applied): `$env:OMP_NUM_THREADS=1; $env:SIM10_QLOG="head_rep"; $env:SIM10_DRLAM="0.25"; $env:SIM10_STSLOPE="1"; $env:SIM10_KOSEASON="1"; .tools/uv.exe run --no-sync python -I scripts/sim10_drive.py sim --seed 11 --workers 3 --realsched 1 --head 1 --label head_rep`; then `.tools/uv.exe run --no-sync python -I tests/scratch/sim06_startmix.py` (set label path in file) and `scripts/sim06_query_log_analysis.py --label head_rep`. Pass bar: gates v rsjt_s11 13/14 with none lost, pts_game within real interval [44.19,45.45], drawn minus real obs per drive under +0.02. Run each flag alone first (3 seeds-of-one) if the combined run loses a gate.
+Open: lam .25 is a grid value picked LOSO, not a derived constant (a continuous per-fold fit is the cleaner repair); the turnover-spot selection source is unmeasured until a kernel-run query log exists.

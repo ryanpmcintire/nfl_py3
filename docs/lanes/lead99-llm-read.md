@@ -22,3 +22,10 @@ Week 7 Tuesday view recorded: artifacts/lead99_llm_read/runs/2026-week-07-tuesda
 Check Thu 18:00 deadline run lands (artifacts/lead99_llm_read/runs/, scheduler_log). No interim scoring; score after Week 18 per State.
 
 ## Open
+
+## Week 9 Tuesday requirement (2026-11-03, read-only check)
+- Job lead99_llm_read_tuesday_tue_1330 has no requires, so splash_board_tue status is irrelevant; it runs 13:30 regardless.
+- Selection (lead99_llm_read.py:63-89): glob data/splash/2026_week09_*.json; per file needs captured_at_et (ISO with UTC offset, must be <= run instant, latest such file wins), games[] each with game_id (2026_09_AWAY_HOME), home, away, home_spread (positive = home favored), kickoff_et (ISO with offset). Week chosen = lowest captured week with any game kicking off after run instant. Other top-level keys (week, season, picks_lock_et, contest...) are copy-the-Week-8-schema, not read.
+- Dry check (packet, no model call) now: "no captured pool week has a game still to kick off" (Week 8 fully kicked off 11-02). Expected to flip once the Week 9 file exists.
+- Other inputs (market, injuries, headlines, inactives, weather) are best-effort and already present; none is Week 9 specific beyond the splash file.
+- Manual capture satisfies it if the schema matches and captured_at_et is before 13:30 ET. Verify after saving: uv run --no-sync python scripts/lead99_llm_read.py packet (prints games count).
