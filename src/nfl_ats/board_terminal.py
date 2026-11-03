@@ -2602,7 +2602,8 @@ def _leader_split_html(block: SeasonSoFar) -> str:
     )
     return (
         '<details class="policy-note"><summary class="micro" style="cursor:pointer;">'
-        f"{escape(block.leader_split_text)}</summary>{table}</details>"
+        f"{escape(block.leader_split_text)}</summary>"
+        f"<p>{escape(block.leader_split_note)}</p>{table}</details>"
     )
 
 

@@ -436,6 +436,7 @@ class SeasonSoFar:
     tuesday_week_records: tuple[tuple[int, int, int, int], ...] = ()
     field_week_texts: tuple[tuple[int, str], ...] = ()
     leader_split_text: str = ""
+    leader_split_note: str = ""
     leader_split_games: tuple[tuple[str, str, str, str, str], ...] = ()
 
     @property
@@ -504,17 +505,17 @@ def _field_week_texts(
 
 def _leader_split(
     rows: Sequence[HistoryPickRow], data_root: Path, season: int | None
-) -> tuple[str, tuple[tuple[str, str, str, str, str], ...]]:
+) -> tuple[str, str, tuple[tuple[str, str, str, str, str], ...]]:
     if season is None:
-        return "", ()
+        return "", "", ()
     captures = sorted((data_root / "splash" / "field").glob(f"{season}_romana_empire_w*.csv"))
     if not captures:
-        return "", ()
+        return "", "", ()
     path = captures[-1]
     try:
         leader = pd.read_csv(path)
     except (OSError, ValueError):
-        return "", ()
+        return "", "", ()
     sides = {"a": "AWAY", "h": "HOME"}
     ours = {row.game_id: row for row in rows if row.status == "settled"}
     games = []
@@ -544,18 +545,20 @@ def _leader_split(
             )
         )
     if not weeks_covered:
-        return "", ()
+        return "", "", ()
     covered = len(weeks_covered)
     week_word = "week" if covered == 1 else "weeks"
     game_word = "game" if len(games) == 1 else "games"
     text = (
-        f"Where we split from the leader: {len(games)} {game_word} where the leader "
-        f"and our card took opposite sides. The leader was right on {leader_won}, we were "
-        f"right on {ours_won}. Picks for the entry that led the pool were only captured for "
-        f"{covered} {week_word} (Weeks {min(weeks_covered)} to {max(weeks_covered)}), so later "
-        "weeks are not counted."
+        f"Where we split from the leader: {len(games)} {game_word}, the leader right on "
+        f"{leader_won}, us on {ours_won}"
     )
-    return text, tuple(games)
+    note = (
+        f"These are the games where the leader and our card took opposite sides. Picks for "
+        f"the entry that led the pool were only captured for {covered} {week_word} (Weeks "
+        f"{min(weeks_covered)} to {max(weeks_covered)}), so later weeks are not counted."
+    )
+    return text, note, tuple(games)
 
 
 def _season_so_far_caveat(settled: int) -> str:
@@ -694,7 +697,8 @@ def _build_season_so_far(
         week_records=week_records,
         field_week_texts=_field_week_texts(week_records, data_root or _default_data_root(), season),
         leader_split_text=leader_split[0],
-        leader_split_games=leader_split[1],
+        leader_split_note=leader_split[1],
+        leader_split_games=leader_split[2],
         tuesday_week_records=_week_records(
             [row for row in tuesday_picks if season is None or row.season == season],
             minimum_weeks=1,

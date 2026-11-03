@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T21:38:42.338635+00:00`
+Refreshed at: `2026-11-03T21:42:49.752571+00:00`
 
 ## Start here
 
@@ -21,14 +21,17 @@ Refreshed at: `2026-11-03T21:38:42.338635+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `a87c5913a0aa` — MKT-25 opener revision: the opener follows the last cover (+.049 per point, P+ 1.0) but the revision term adds nothing at the opener grade (best P+ .48); unresolved
-- Pending change set: 249 paths
+- Baseline commit: `106b92077baa` — SIM-19 trailing risk: real trailers add pass rate, depth and go rate (time-driven); net pass-rate excess persists by OC (.31); sim trailing scoring-drive rate 2-6 pts below real in every bin; urgency arm shifts means where real risk adds variance
+- Pending change set: 257 paths
   - ` M config/source_policies.json`
   - ` M docs/lanes/lead-102-name-blinded-control-read.md`
-  - `M  docs/lanes/sim-19-trailing-risk.md`
+  - ` M docs/lanes/lead-106-injury-language-read.md`
+  - `M  docs/lanes/ui20-2026-11-03.md`
+  - ` M scripts/mkt25_opener_revision.py`
   - ` M scripts/sim10_drive.py`
-  - `A  scripts/sim19_drive_gap.py`
-  - `A  scripts/sim19_trailing_risk.py`
+  - `M  src/nfl_ats/board_interactive_layout.js`
+  - `M  src/nfl_ats/board_site_content.py`
+  - `M  src/nfl_ats/board_terminal.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
@@ -40,10 +43,7 @@ Refreshed at: `2026-11-03T21:38:42.338635+00:00`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
   - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
-  - ...and 229 more
+  - ...and 237 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
