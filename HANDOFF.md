@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T20:57:33.200841+00:00`
+Refreshed at: `2026-11-03T20:58:19.961010+00:00`
 
 ## Start here
 
@@ -21,21 +21,18 @@ Refreshed at: `2026-11-03T20:57:33.200841+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `fdeb188fe14e` — Refresh session handoff
-- Pending change set: 261 paths
+- Baseline commit: `b5acd5d28853` — UI-28: History week strip shows where each week finished in the pool field (share of entries beaten, field median wins); LEAD-101 news-delta read with Thursday 18:30 and Sunday 11:30 forward-log jobs
+- Pending change set: 258 paths
   - ` M config/source_policies.json`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - ` M docs/lanes/eng-51-opener-input-provenance-guard.md`
   - ` M docs/lanes/lead-100-lead99-repeat-read-ensemble.md`
-  - `M  docs/lanes/lead-101-news-delta-read.md`
   - ` M docs/lanes/mod-41-mod41-cumulative-workload.md`
   - ` M docs/lanes/sim-12-sim12-ingame-exits.md`
-  - `M  docs/lanes/ui-28-week-strip-field-percentile.md`
-  - `M  scripts/capture_scheduler.py`
   - ` M scripts/forward_terms_week.py`
-  - `A  scripts/lead101_delta_read.py`
-  - `A  scripts/lead101_prompt.md`
   - ` M scripts/sim10_drive.py`
-  - `M  src/nfl_ats/board_site_content.py`
-  - `M  src/nfl_ats/board_terminal.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
@@ -43,7 +40,10 @@ Refreshed at: `2026-11-03T20:57:33.200841+00:00`
   - `?? docs/lanes/machine-crashes-2026-10-31.md`
   - `?? docs/lanes/stealmybitcoin-ctf.md`
   - `?? docs/move_reasons.json`
-  - ...and 241 more
+  - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
+  - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
+  - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
+  - ...and 238 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
