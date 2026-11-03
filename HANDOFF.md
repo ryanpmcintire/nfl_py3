@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T21:49:25.873619+00:00`
+Refreshed at: `2026-11-03T21:49:38.312177+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-03T21:49:25.873619+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `e214456e94f4` — MOD-41 unit 5 base-model add-one: 2020-25 log loss +.00141 [.00047,.00235] P+ .998, coef negative 6/6, accuracy unchanged (decisive 31-31); 2014-19 proxy does not replicate (P+ .20); unresolved
-- Pending change set: 263 paths
-  - ` M ROADMAP.md`
+- Baseline commit: `5207ecef834f` — LEAD-106 unit 2 id-join rescore (87% verified outcomes): injury-wording read beats the designation ladder, log loss +.065 [.014,.130] P+ .998; vs designation x practice ladder +.036 [-.002,.083] P+ .96; unresolved
+- Pending change set: 260 paths
+  - `M  ROADMAP.md`
   - ` M config/source_policies.json`
-  - ` M docs/lanes/backlog-all-2026-11-02.md`
-  - `M  docs/lanes/lead-106-injury-language-read.md`
-  - `M  registry/weak_signals/lead106.json`
-  - `M  scripts/lead106_injury_language.py`
+  - `M  docs/lanes/backlog-all-2026-11-02.md`
+  - `A  docs/lanes/eng-53-trait-reliability-table.md`
+  - `A  docs/lanes/lead-107-read-dispersion-weight.md`
+  - `A  docs/lanes/mkt-26-move-size-dispersion.md`
+  - `A  docs/lanes/mkt-27-total-level-variance.md`
+  - `A  docs/lanes/mod-45-tempo-pair-spread.md`
+  - `A  docs/lanes/mod-46-favourite-lead-skew.md`
+  - `A  docs/lanes/per-14-coordinator-mover-portability.md`
+  - `A  docs/lanes/per-15-minor-return-ramp.md`
+  - `A  docs/lanes/pool-08-hook-side-field-share.md`
+  - `A  docs/lanes/sim-20-coordinator-halftime-hook.md`
+  - `A  docs/lanes/sim-21-drive-length-decomposition.md`
+  - `A  docs/lanes/ui-32-key-number-chip.md`
+  - `A  docs/lanes/ui-33-pick-depends-on-status.md`
   - ` M scripts/sim10_drive.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - `?? docs/lanes/c-drive-space-2026-10-31.md`
-  - `?? docs/lanes/eng-53-trait-reliability-table.md`
-  - `?? docs/lanes/lead-107-read-dispersion-weight.md`
-  - `?? docs/lanes/machine-crashes-2026-10-31.md`
-  - `?? docs/lanes/mkt-26-move-size-dispersion.md`
-  - `?? docs/lanes/mkt-27-total-level-variance.md`
-  - `?? docs/lanes/mod-45-tempo-pair-spread.md`
-  - `?? docs/lanes/mod-46-favourite-lead-skew.md`
-  - `?? docs/lanes/per-14-coordinator-mover-portability.md`
-  - `?? docs/lanes/per-15-minor-return-ramp.md`
-  - ...and 243 more
+  - ...and 240 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
