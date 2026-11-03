@@ -1193,6 +1193,18 @@ class Engine:
             setattr(self, k, seg[k].to_numpy(np.float64))
         self.ev_ptr, self.ev = c["ev_ptr"], c["ev"]
         self.pl_ptr, self.pl = c["pl_ptr"], c["pl"]
+        self.trunctilt = os.environ.get("SIM10_TRUNCTILT") == "1"
+        if self.trunctilt:
+            cnt = np.diff(self.ev_ptr)
+            kd = np.repeat(np.arange(len(cnt)), cnt)
+            pos_ = np.arange(len(self.ev)) - self.ev_ptr[kd]
+            width = int(cnt.max())
+            self.tev_off = np.full((len(cnt), width), np.inf)
+            self.tev_po = np.zeros((len(cnt), width))
+            self.tev_pd = np.zeros((len(cnt), width))
+            self.tev_off[kd, pos_] = self.ev[:, 0]
+            self.tev_po[kd, pos_] = self.ev[:, 1]
+            self.tev_pd[kd, pos_] = self.ev[:, 2]
         ops = ops[ops["bad"] == 0]
         ops = ops.assign(same_recv=(ops["recv_home"] == ops["recv_q1_home"]).astype(np.int8))
         ops["pr"] = np.where(ops["recv_home"] == 1, ops["ph"], ops["pa"])
@@ -1203,6 +1215,20 @@ class Engine:
             ].to_numpy(np.float64)
             for h in (1, 2, 3)
         }
+
+    def trunc_out(self, ci, secs):
+        o = self.out_arr[ci].copy()
+        cut = (self.he[ci] == 1) | (self.el[ci] >= secs)
+        if cut.any():
+            r = ci[cut]
+            keep = self.tev_off[r] <= secs
+            po = (self.tev_po[r] * keep).sum(axis=1)
+            pd_ = (self.tev_pd[r] * keep).sum(axis=1)
+            o[cut, 0] = np.minimum(self.el[r], secs)
+            o[cut, 1] = (po >= 6).astype(np.float64)
+            o[cut, 2] = (po == 3).astype(np.float64)
+            o[cut, 3] = (pd_ > 0).astype(np.float64)
+        return o
 
     def draw(self, hf, hm, q, rng):
         qq = quarter_of(np.array([hf]), np.array([math.expm1(q[2])]))[0] if self.qstrata else 0
@@ -1302,20 +1328,21 @@ class Engine:
                 u = w1 / w1.sum()
                 adj = u @ self.out_arr[idx[nz]] - u @ self.m_arr[idx[nz]]
                 tg = tg + adj * DR_MASK * (self.drlam if self.head is not None else 1.0)
+            oa = self.out_arr[idx[nz]]
+            if self.trunctilt:
+                oa = self.trunc_out(idx[nz], secs)
             rg_ = regime(hf, secs)
             if rg_ in self.mu_free and self.eoh == "mu":
                 w = tilt_weights(w, X[nz, 5:6], mt)
             elif rg_ in self.mu_free and self.eoh == "muscore":
                 sk = self.score_k
-                w = tilt_weights(
-                    w, np.c_[self.out_arr[idx[nz]][:, sk], X[nz, 5]], np.r_[tg[sk], mt]
-                )
+                w = tilt_weights(w, np.c_[oa[:, sk], X[nz, 5]], np.r_[tg[sk], mt])
             elif rg_ in self.mu_free:
-                w = tilt_weights(w, self.out_arr[idx[nz]], np.asarray(tg))
+                w = tilt_weights(w, oa, np.asarray(tg))
             else:
-                w = tilt_weights(w, np.c_[self.out_arr[idx[nz]], X[nz, 5]], np.r_[tg, mt])
+                w = tilt_weights(w, np.c_[oa, X[nz, 5]], np.r_[tg, mt])
             if self.tl is not None:
-                o_ = self.out_arr[idx[nz]]
+                o_ = oa
                 lo_, hi_ = o_.min(axis=0), o_.max(axis=0)
                 sp_ = hi_ - lo_
                 tgv_ = np.asarray(tg, dtype=np.float64)
