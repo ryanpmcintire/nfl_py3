@@ -1,8 +1,8 @@
 # NFL ATS predictions: 2026 Week 8
 
-Published from the synchronized weak stack model, 2026-11-01 17:16 UTC.
+Published from the synchronized weak stack model, 2026-11-02 17:17 UTC.
 
-<!-- publication: model_id=9b7b416622f7538b published_at_utc=2026-11-01T17:16:24.334794+00:00 -->
+<!-- publication: model_id=9b7b416622f7538b published_at_utc=2026-11-02T17:17:47.302697+00:00 -->
 
 > **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 
@@ -10,23 +10,23 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 
 **Production policy active:** one calibrated probability combines the model, situational evidence and available line movement to choose each side.
 
-**Best Pick of the week (★):** CIN -10.5 in TEN at CIN. The pool scores one Best Pick per regular-season week. This pick was provisionally chosen because it has the highest estimated chance to cover among eligible games. Its estimated lead over the other picks is uncertain.
+**Best Pick of the week (★):** CIN -10.5 in TEN at CIN. The pool scores one Best Pick per regular-season week. This pick was the star this card carried when the picks locked; once a game is past its deadline the star stays where the pool saw it.
 
 | Date        | Matchup    | ATS prediction   | Cover chance   |
 |:------------|:-----------|:-----------------|:---------------|
 | Thu, Oct 29 | CAR at GB  | CAR +3.5         | 50.1%          |
-| Sun, Nov 01 | ARI at DAL | DAL -6.5         | 54.6%          |
+| Sun, Nov 01 | ARI at DAL | DAL -6.5         | 51.9%          |
 | Sun, Nov 01 | ATL at TB  | ATL +2.5         | 50.2%          |
 | Sun, Nov 01 | BAL at BUF | BAL +3.5         | 55.7%          |
 | Sun, Nov 01 | CLE at PIT | CLE +3.5         | 50.7%          |
-| Sun, Nov 01 | IND at JAX | JAX -7.5         | 57.5%          |
+| Sun, Nov 01 | IND at JAX | JAX -7.5         | 58.2%          |
 | Sun, Nov 01 | KC at DEN  | DEN +1.5         | 57.4%          |
 | Sun, Nov 01 | LAC at LA  | LA -6.5          | 51.2%          |
 | Sun, Nov 01 | LV at NYJ  | NYJ -1.5         | 52.6%          |
 | Sun, Nov 01 | MIN at DET | MIN +3.5         | 52.6%          |
 | Sun, Nov 01 | NE at MIA  | MIA +7.5         | 50.0%          |
-| Sun, Nov 01 | PHI at WAS | WAS -4.5         | 52.5%          |
-| Sun, Nov 01 | TEN at CIN | ★ CIN -10.5      | 70.4%          |
+| Sun, Nov 01 | PHI at WAS | WAS -4.5         | 52.3%          |
+| Sun, Nov 01 | TEN at CIN | ★ CIN -10.5      | 65.6%          |
 | Mon, Nov 02 | CHI at SEA | CHI +3.5         | 59.3%          |
 
 **Tiebreaker (last game, CHI at SEA):** SEA 24 - CHI 22, total 46 (market total 46.5) -- consistent with the CHI +3.5 pick.
@@ -42,9 +42,9 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 
 | Matchup    | Previous pick   | New pick   | Cover chance   |
 |:-----------|:----------------|:-----------|:---------------|
-| ARI at DAL | ARI             | DAL        | 54.6%          |
-| IND at JAX | IND             | JAX        | 57.5%          |
+| ARI at DAL | ARI             | DAL        | 51.9%          |
+| IND at JAX | IND             | JAX        | 58.2%          |
 | LV at NYJ  | LV              | NYJ        | 52.6%          |
 | NE at MIA  | NE              | MIA        | 50.0%          |
-| PHI at WAS | PHI             | WAS        | 52.5%          |
+| PHI at WAS | PHI             | WAS        | 52.3%          |
 <!-- LATE_WEEK_REFRESH:END -->

@@ -4,9 +4,9 @@
   "comparison_total_blend_k01": 46.48088812880586,
   "consistency_note": "consistent with the CHI +3.5 pick",
   "current_median_total": 46.5,
-  "forecast_artifact": "margin_predictions/2026-week-08-20261101T170933Z",
+  "forecast_artifact": "margin_predictions/2026-week-08-20261102T171020Z",
   "game_id": "2026_08_CHI_SEA",
-  "generated_at_utc": "2026-11-01T17:16:24.334794+00:00",
+  "generated_at_utc": "2026-11-02T17:17:47.302697+00:00",
   "guess_away": 22,
   "guess_home": 24,
   "home": "SEA",
@@ -31,7 +31,7 @@
   "total_move_baseline": {
     "blended_total": 45.593508314861374,
     "consistency_note": "consistent with the CHI +3.5 pick",
-    "generated_at_utc": "2026-11-01T17:16:24.334794+00:00",
+    "generated_at_utc": "2026-11-02T17:17:47.302697+00:00",
     "guess_away": 22,
     "guess_home": 24,
     "lattice_centre_margin": 2.0973912050477947,
@@ -42,20 +42,9 @@
     "pick_spread_line": 3.5,
     "served_total": 45.593508314861374
   },
-  "total_move_deadline_utc": "2026-11-01T21:00:00+00:00",
-  "total_move_fit": {
-    "path": "artifacts\\tiebreaker_total_move\\fit.json",
-    "sha256": "05f969696ef8a6486c963f828bde358ed1513c639ca377d4c59d3098273f7ea4"
-  },
-  "total_move_quote": {
-    "books": 1,
-    "observed_at_utc": "2026-11-01T17:22:41.719723+00:00",
-    "path": "data\\market\\raw\\20261101T172241Z\\quotes.parquet",
-    "sha256": "f05e6ef23f6a96e859ead0bf1168838542b91f991563790ed980b5c063c75431"
-  },
-  "total_move_refreshed_at_utc": "2026-11-01T20:00:14.050538+00:00",
-  "total_move_slope": 0.8,
-  "total_move_status": "zero_adjustment",
+  "total_move_fit": null,
+  "total_move_slope": null,
+  "total_move_status": "tuesday_baseline",
   "tuesday_total": 46.5,
   "week": 8
 }
