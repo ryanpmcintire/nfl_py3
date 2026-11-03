@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T23:06:55.787452+00:00`
+Refreshed at: `2026-11-03T23:07:59.499508+00:00`
 
 ## Start here
 
@@ -21,18 +21,15 @@ Refreshed at: `2026-11-03T23:06:55.787452+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `a6e52414bfef` — Refresh session handoff
-- Pending change set: 257 paths
+- Baseline commit: `364d7a440f79` — Dashboard round 11: no model name in the command row, 'the line ends in a half point', consistent History wording ('Share that covered', 'Who covered', 'our card'), no duplicate strongest-test line; ENG-60 neutral-site audit clean (home field zeroed at neutral sites; 0 orientation mismatches)
+- Pending change set: 254 paths
   - ` M config/source_policies.json`
-  - `M  docs/lanes/eng-60-neutral-site-orientation-audit.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
   - ` M docs/lanes/mod-53-ridge-penalty-grid-edge-and-reduced-rank.md`
-  - `M  docs/lanes/ui20-2026-11-03.md`
-  - `A  scripts/eng60_neutral_audit.py`
+  - `M  docs/model.html`
   - ` M scripts/sim10_drive.py`
-  - `M  src/nfl_ats/board_site_content.py`
-  - `M  src/nfl_ats/board_terminal.py`
-  - `M  src/nfl_ats/card_explanation.py`
-  - `M  tests/test_key_line_pick_read.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
@@ -43,7 +40,10 @@ Refreshed at: `2026-11-03T23:06:55.787452+00:00`
   - `?? docs/move_reasons.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
-  - ...and 237 more
+  - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
+  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
+  - ...and 234 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
