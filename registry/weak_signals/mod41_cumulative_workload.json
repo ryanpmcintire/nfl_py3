@@ -1,0 +1,173 @@
+{
+  "family": "mod41_cumulative_workload",
+  "signals": {
+    "mod41_load_defended": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-41 LOSO 2020-25 opener-graded gain over logit_p base, plays defended only",
+      "effect": -0.732,
+      "effect_units": "accuracy_points",
+      "family": "mod41_cumulative_workload",
+      "interval": [
+        -3.065,
+        1.728
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.269,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod41/cumulative_workload.json",
+      "standard_error": null
+    },
+    "mod41_load_defended_placebo": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-41 LOSO 2020-25 opener-graded gain over logit_p base, plays defended placebo shifted one game",
+      "effect": -0.532,
+      "effect_units": "accuracy_points",
+      "family": "mod41_cumulative_workload",
+      "interval": [
+        -1.607,
+        0.463
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.14,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod41/cumulative_workload.json",
+      "standard_error": null
+    },
+    "mod41_load_total": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-41 LOSO 2020-25 opener-graded gain over logit_p base, 3-game plays defended+run vs season norm, home minus away",
+      "effect": 0.998,
+      "effect_units": "accuracy_points",
+      "family": "mod41_cumulative_workload",
+      "interval": [
+        -2.174,
+        4.059
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.737,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod41/cumulative_workload.json",
+      "standard_error": null
+    },
+    "mod41_load_total_ll": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-41 LOSO 2020-25 opener-graded gain over logit_p base, log loss improvement, load_total",
+      "effect": 0.005067,
+      "effect_units": "log_loss_improvement",
+      "family": "mod41_cumulative_workload",
+      "interval": [
+        -0.000514,
+        0.010781
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.962,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod41/cumulative_workload.json",
+      "standard_error": null
+    },
+    "mod41_load_total_placebo": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-41 LOSO 2020-25 opener-graded gain over logit_p base, placebo window shifted one game",
+      "effect": -2.063,
+      "effect_units": "accuracy_points",
+      "family": "mod41_cumulative_workload",
+      "interval": [
+        -3.833,
+        -0.134
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.014,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod41/cumulative_workload.json",
+      "standard_error": null
+    },
+    "mod41_ot_short_week_flags": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MOD-41 LOSO 2020-25 opener-graded gain over logit_p base, overtime plus short-week count last 3 games",
+      "effect": -1.53,
+      "effect_units": "accuracy_points",
+      "family": "mod41_cumulative_workload",
+      "interval": [
+        -3.104,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.023,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod41/cumulative_workload.json",
+      "standard_error": null
+    }
+  }
+}

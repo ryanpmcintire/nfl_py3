@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T19:59:54.467419+00:00`
+Refreshed at: `2026-11-03T20:00:52.311420+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-03T19:59:54.467419+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `53c118c18f4f` — MKT-22 trait pricing audit and SIM-16 pregame attrition: both unresolved
-- Pending change set: 262 paths
+- Baseline commit: `4e32bd85fada` — UI-27: kickoff forecast chip on each unplayed pick card (temperature, wind, rain chance from the Tuesday MOS bulletin; Indoors for dome or closed roof)
+- Pending change set: 261 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M config/source_policies.json`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
+  - `M  docs/lanes/backlog-all-2026-11-02.md`
   - ` M docs/lanes/mod-41-mod41-cumulative-workload.md`
+  - `M  docs/lanes/per-13-per13-week17-rest-hazard.md`
   - ` M docs/lanes/sim08-spec-a-terminal-2026-11-03.md`
-  - `M  docs/lanes/ui-27-ui27-forecast-chip.md`
   - ` M docs/lead64_freshness_audit.md`
   - ` M docs/model.html`
+  - `A  registry/weak_signals/mod41_cumulative_workload.json`
+  - `A  registry/weak_signals/per13_locked_seed_rest.json`
+  - `A  scripts/mod41_cumulative_workload.py`
+  - `A  scripts/per13_locked_seed_rest.py`
   - ` M scripts/sim10_situational.py`
-  - `M  src/nfl_ats/board_content.py`
-  - `A  src/nfl_ats/board_forecast.py`
-  - `M  src/nfl_ats/board_terminal.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - `?? docs/lanes/c-drive-space-2026-10-31.md`
-  - `?? docs/lanes/machine-crashes-2026-10-31.md`
-  - ...and 242 more
+  - ...and 241 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

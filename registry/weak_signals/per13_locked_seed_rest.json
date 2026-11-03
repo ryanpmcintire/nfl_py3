@@ -1,0 +1,285 @@
+{
+  "family": "per13_locked_seed_rest",
+  "signals": {
+    "per13_elim_ats_close": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "game-cluster bootstrap 2000 draws; no refuted mechanism, no positive control; look count 10",
+      "closing_ground": null,
+      "description": "elim seed status, Weeks 17-18, fade flagged team ATS margin at close vs unflagged",
+      "effect": 1.5481901515019743,
+      "effect_units": "ats_points",
+      "family": "per13_locked_seed_rest",
+      "interval": [
+        -0.5478948739789387,
+        3.5953845389262695
+      ],
+      "league": "nfl",
+      "notes": "script scripts/per13_locked_seed_rest.py",
+      "plain_summary": null,
+      "probability_positive": 0.9185,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 243,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/per13_locked_seed_rest/cells.json",
+      "standard_error": null
+    },
+    "per13_elim_ats_open": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "game-cluster bootstrap 2000 draws; no refuted mechanism, no positive control; look count 10",
+      "closing_ground": null,
+      "description": "elim seed status, Weeks 17-18, fade flagged team ATS margin at opener vs unflagged",
+      "effect": 1.5480960676953708,
+      "effect_units": "ats_points",
+      "family": "per13_locked_seed_rest",
+      "interval": [
+        -0.6728320169640998,
+        3.7795830444519596
+      ],
+      "league": "nfl",
+      "notes": "script scripts/per13_locked_seed_rest.py",
+      "plain_summary": null,
+      "probability_positive": 0.922,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 238,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/per13_locked_seed_rest/cells.json",
+      "standard_error": null
+    },
+    "per13_elim_drop_defense": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "game-cluster bootstrap 2000 draws; no refuted mechanism, no positive control; look count 10",
+      "closing_ground": null,
+      "description": "elim seed status, Weeks 17-18, defense starter snap-share drop",
+      "effect": 1.8315119575084786,
+      "effect_units": "rate_pp",
+      "family": "per13_locked_seed_rest",
+      "interval": [
+        -0.5866602241892215,
+        4.162690619853665
+      ],
+      "league": "nfl",
+      "notes": "script scripts/per13_locked_seed_rest.py",
+      "plain_summary": null,
+      "probability_positive": 0.9285,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 159,
+      "seasons": [
+        2016,
+        2025
+      ],
+      "source": "artifacts/per13_locked_seed_rest/cells.json",
+      "standard_error": null
+    },
+    "per13_elim_drop_offense": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "game-cluster bootstrap 2000 draws; no refuted mechanism, no positive control; look count 10",
+      "closing_ground": null,
+      "description": "elim seed status, Weeks 17-18, offense starter snap-share drop",
+      "effect": 2.7696246221337475,
+      "effect_units": "rate_pp",
+      "family": "per13_locked_seed_rest",
+      "interval": [
+        0.47755904570829955,
+        4.836447074785824
+      ],
+      "league": "nfl",
+      "notes": "script scripts/per13_locked_seed_rest.py",
+      "plain_summary": null,
+      "probability_positive": 0.988,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 159,
+      "seasons": [
+        2016,
+        2025
+      ],
+      "source": "artifacts/per13_locked_seed_rest/cells.json",
+      "standard_error": null
+    },
+    "per13_elim_move_toward": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "game-cluster bootstrap 2000 draws; no refuted mechanism, no positive control; look count 10",
+      "closing_ground": null,
+      "description": "elim seed status, Weeks 17-18, open-to-close line move against flagged team",
+      "effect": -0.032416625186660025,
+      "effect_units": "ats_points",
+      "family": "per13_locked_seed_rest",
+      "interval": [
+        -0.5265849378979419,
+        0.4974216198880019
+      ],
+      "league": "nfl",
+      "notes": "script scripts/per13_locked_seed_rest.py",
+      "plain_summary": null,
+      "probability_positive": 0.4505,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 238,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/per13_locked_seed_rest/cells.json",
+      "standard_error": null
+    },
+    "per13_locked_ats_close": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "game-cluster bootstrap 2000 draws; no refuted mechanism, no positive control; look count 10",
+      "closing_ground": null,
+      "description": "locked seed status, Weeks 17-18, fade flagged team ATS margin at close vs unflagged",
+      "effect": 0.3306696059520529,
+      "effect_units": "ats_points",
+      "family": "per13_locked_seed_rest",
+      "interval": [
+        -5.852910399261447,
+        6.1931704176826425
+      ],
+      "league": "nfl",
+      "notes": "script scripts/per13_locked_seed_rest.py",
+      "plain_summary": null,
+      "probability_positive": 0.5345,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 19,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/per13_locked_seed_rest/cells.json",
+      "standard_error": null
+    },
+    "per13_locked_ats_open": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "game-cluster bootstrap 2000 draws; no refuted mechanism, no positive control; look count 10",
+      "closing_ground": null,
+      "description": "locked seed status, Weeks 17-18, fade flagged team ATS margin at opener vs unflagged",
+      "effect": 3.258130081300813,
+      "effect_units": "ats_points",
+      "family": "per13_locked_seed_rest",
+      "interval": [
+        -3.3038643930046643,
+        9.473379138370118
+      ],
+      "league": "nfl",
+      "notes": "script scripts/per13_locked_seed_rest.py",
+      "plain_summary": null,
+      "probability_positive": 0.8465,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 19,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/per13_locked_seed_rest/cells.json",
+      "standard_error": null
+    },
+    "per13_locked_drop_defense": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "game-cluster bootstrap 2000 draws; no refuted mechanism, no positive control; look count 10",
+      "closing_ground": null,
+      "description": "locked seed status, Weeks 17-18, defense starter snap-share drop",
+      "effect": 34.19728097581656,
+      "effect_units": "rate_pp",
+      "family": "per13_locked_seed_rest",
+      "interval": [
+        20.905834542036935,
+        46.437252552125756
+      ],
+      "league": "nfl",
+      "notes": "script scripts/per13_locked_seed_rest.py",
+      "plain_summary": null,
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 12,
+      "seasons": [
+        2016,
+        2025
+      ],
+      "source": "artifacts/per13_locked_seed_rest/cells.json",
+      "standard_error": null
+    },
+    "per13_locked_drop_offense": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "game-cluster bootstrap 2000 draws; no refuted mechanism, no positive control; look count 10",
+      "closing_ground": null,
+      "description": "locked seed status, Weeks 17-18, offense starter snap-share drop",
+      "effect": 34.13455517768931,
+      "effect_units": "rate_pp",
+      "family": "per13_locked_seed_rest",
+      "interval": [
+        21.934780979787753,
+        45.845551231934195
+      ],
+      "league": "nfl",
+      "notes": "script scripts/per13_locked_seed_rest.py",
+      "plain_summary": null,
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 12,
+      "seasons": [
+        2016,
+        2025
+      ],
+      "source": "artifacts/per13_locked_seed_rest/cells.json",
+      "standard_error": null
+    },
+    "per13_locked_move_toward": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "game-cluster bootstrap 2000 draws; no refuted mechanism, no positive control; look count 10",
+      "closing_ground": null,
+      "description": "locked seed status, Weeks 17-18, open-to-close line move against flagged team",
+      "effect": 2.909178433889602,
+      "effect_units": "ats_points",
+      "family": "per13_locked_seed_rest",
+      "interval": [
+        1.2598751414827405,
+        4.710316834722882
+      ],
+      "league": "nfl",
+      "notes": "script scripts/per13_locked_seed_rest.py",
+      "plain_summary": null,
+      "probability_positive": 0.9995,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 19,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/per13_locked_seed_rest/cells.json",
+      "standard_error": null
+    }
+  }
+}
