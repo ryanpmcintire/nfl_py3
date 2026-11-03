@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T21:42:49.752571+00:00`
+Refreshed at: `2026-11-03T21:43:27.123056+00:00`
 
 ## Start here
 
@@ -21,17 +21,17 @@ Refreshed at: `2026-11-03T21:42:49.752571+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `106b92077baa` — SIM-19 trailing risk: real trailers add pass rate, depth and go rate (time-driven); net pass-rate excess persists by OC (.31); sim trailing scoring-drive rate 2-6 pts below real in every bin; urgency arm shifts means where real risk adds variance
-- Pending change set: 257 paths
+- Baseline commit: `bcd19bff6c9b` — Dashboard: leader-split fold summary is one short line (the coverage note moves inside, no longer all caps on phones); long-table filter reads 'Filter this table'
+- Pending change set: 259 paths
   - ` M config/source_policies.json`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
   - ` M docs/lanes/lead-102-name-blinded-control-read.md`
   - ` M docs/lanes/lead-106-injury-language-read.md`
-  - `M  docs/lanes/ui20-2026-11-03.md`
+  - `M  docs/model.html`
   - ` M scripts/mkt25_opener_revision.py`
   - ` M scripts/sim10_drive.py`
-  - `M  src/nfl_ats/board_interactive_layout.js`
-  - `M  src/nfl_ats/board_site_content.py`
-  - `M  src/nfl_ats/board_terminal.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
@@ -43,7 +43,7 @@ Refreshed at: `2026-11-03T21:42:49.752571+00:00`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
   - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - ...and 237 more
+  - ...and 239 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

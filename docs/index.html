@@ -3088,7 +3088,7 @@ const nav=document.createElement('div');nav.className='reader-nav';nav.setAttrib
 if(page!=='findings'){$$('main>section[aria-labelledby]').forEach(section=>{const id=section.getAttribute('aria-labelledby'),heading=document.getElementById(id);if(!heading)return;const a=document.createElement('a');a.href='#'+id;a.textContent=heading.textContent;nav.append(a)});$('.page-lead').after(nav)}
 $$('table.board').forEach((table,index)=>{
 const rows=$$('tbody tr',table);if(rows.length<12)return;
-const search=document.createElement('label');search.className='reader-search';search.textContent='Find an entry';const input=document.createElement('input');input.type='search';input.placeholder='Search names or descriptions';input.setAttribute('aria-label','Search table '+(index+1));search.append(input);table.closest('.board-scroll')?.before(search);input.addEventListener('input',()=>{const q=input.value.toLowerCase().trim();rows.forEach(r=>r.hidden=!r.textContent.toLowerCase().includes(q))});
+const search=document.createElement('label');search.className='reader-search';search.textContent='Filter this table';const input=document.createElement('input');input.type='search';input.placeholder='Type a team or a word';input.setAttribute('aria-label','Search table '+(index+1));search.append(input);table.closest('.board-scroll')?.before(search);input.addEventListener('input',()=>{const q=input.value.toLowerCase().trim();rows.forEach(r=>r.hidden=!r.textContent.toLowerCase().includes(q))});
 });
 if(page==='findings'){
 const panels=$$('[data-atlas-family]');
