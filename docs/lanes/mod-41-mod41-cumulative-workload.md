@@ -45,3 +45,12 @@ scripts/mod41_unit4_placebo_practice.py, artifacts/mod41/unit4_placebo_practice.
 - Same-week swap, 500 draws: mean -.0004, 2.5-97.5 [-.0017,.0010], p+ .23; observed .0041 above every percentile.
 - Practice (DNP+limited, same-week report, after opener: mediation only): first stage QB +.0084 [.0017,.0152] p+ .99; receivers +.0126 p+ .91; DB -.0143 p+ .09; RB, OL, DL, LB, all straddle 0. Residual coef stays -.0432 to -.0447, ll gain .0039-.0042 in every arm. No mediation.
 Next: term to served combine once forward weeks score; QB practice slope is the one lean (8 slopes, unadjusted).
+
+## Unit 5 done 2026-11-03 ~16:50 (base-model add-one)
+scripts/mod41_unit5_base_addone.py (modes true, proxy, true_control), artifacts/mod41/unit5/. Harness = mod23_unit8_span/mod24_u1 true_eval and proxy_eval (ridge on ats_margin, weak_stack FULL set, opener input). Baseline reproduced: 802-701 on 2020-25 (guard in script). Feature: home minus away residual load, beta (const, own, opp) refit each fold on usable rows of prior seasons only; pbp rebuilt from 2011; unusable rows 0.
+- 2020-25 (n 1503): record 802-701 = baseline; 62 flips, decisive 31-31; acc +0.00 [-1.00,1.07] p+ .48 (week-block); ll .69550 vs .69692 gain +.00141 [.00047,.00235] p+ .998 (6 season blocks p+ 1.0); Brier .25102 vs .25172; market-only ll .6933. Coef (margin pts per play-index) -.016,-.039,-.053,-.071,-.073,-.090: negative 6/6, growing. Margin MSE gain in-sample .003-.123, out-of-sample .13-.92 (OOS above IS, no overfit gap).
+- Permuted-feature control: 800-703, 12 flips 5-7, ll -.00003 p+ .35.
+- Proxy 2014-19 (n 1487): 766-721 vs 769-718, decisive 9-12, acc -.20 [-.88,.47] p+ .24, ll -.00021 p+ .20; coef sign unstable (+.065 in 2015), OOS MSE gain negative in 4/6.
+- Base route ll gain +.0014 vs combine route +.0041 (different baselines: ridge base ll .6969 vs served logit): base route carries a third of it, none in accuracy.
+5 cells recorded (family mod41_residual_load_u5_base_addone, unit5_weak_signals_batch.json), unresolved_below_power. 5 looks.
+Next: 2011-13 proxy not run (warm-up); feature scale not tuned.

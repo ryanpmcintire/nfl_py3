@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T21:49:04.015232+00:00`
+Refreshed at: `2026-11-03T21:49:16.852097+00:00`
 
 ## Start here
 
@@ -21,18 +21,18 @@ Refreshed at: `2026-11-03T21:49:04.015232+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `594befa733ee` — POOL-07 standings policy: max-probability card P(first) 7.6%; a small coin-flip tilt adds ~0.5 pp but costs ~0.4 wins and flips sign with the field model; challenger only
-- Pending change set: 268 paths
+- Baseline commit: `86e97fa17f7d` — XLG-12: CFB forward ledgers now use the opener as model input (--open-input; earlier forward rows used the observed pregame line and are not scored); week 10 frozen 2h before first kickoff
+- Pending change set: 266 paths
   - ` M ROADMAP.md`
   - ` M config/source_policies.json`
   - ` M docs/lanes/backlog-all-2026-11-02.md`
-  - ` M docs/lanes/mod-41-mod41-cumulative-workload.md`
-  - `M  docs/lanes/xlg-12-xlg12-cfb-shadow-forward.md`
+  - ` M docs/lanes/lead-106-injury-language-read.md`
+  - `M  docs/lanes/mod-41-mod41-cumulative-workload.md`
   - ` M registry/weak_signals/lead106.json`
+  - `A  registry/weak_signals/mod41_residual_load_u5_base_addone.json`
   - ` M scripts/lead106_injury_language.py`
+  - `A  scripts/mod41_unit5_base_addone.py`
   - ` M scripts/sim10_drive.py`
-  - `M  scripts/xlg12_predict.py`
-  - `M  scripts/xlg12_score.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
@@ -43,7 +43,7 @@ Refreshed at: `2026-11-03T21:49:04.015232+00:00`
   - `?? docs/lanes/mkt-26-move-size-dispersion.md`
   - `?? docs/lanes/mkt-27-total-level-variance.md`
   - `?? docs/lanes/mod-45-tempo-pair-spread.md`
-  - ...and 248 more
+  - ...and 246 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

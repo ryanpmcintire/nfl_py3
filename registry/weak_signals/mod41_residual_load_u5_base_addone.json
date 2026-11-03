@@ -1,0 +1,145 @@
+{
+  "family": "mod41_residual_load_u5_base_addone",
+  "signals": {
+    "mod41_u5_base_proxy_accuracy_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap; 5 looks (true ll, true acc, proxy ll, proxy acc, permuted-feature control).",
+      "closing_ground": null,
+      "description": "Residual recent-load feature (home minus away, beta from prior seasons) added to the served ridge base margin feature set, graded at the opener; SBR open proxy 2014-19, decisive 9-12 of 21 flips",
+      "effect": -0.20175,
+      "effect_units": "accuracy_points",
+      "family": "mod41_residual_load_u5_base_addone",
+      "interval": [
+        -0.88201,
+        0.47011
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Same test on the older seasons shows no accuracy gain.",
+      "probability_positive": 0.2362,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1487,
+      "seasons": [
+        2014,
+        2019
+      ],
+      "source": "artifacts/mod41/unit5/proxy_report.json",
+      "standard_error": 0.3449285714285714
+    },
+    "mod41_u5_base_proxy_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap; 5 looks (true ll, true acc, proxy ll, proxy acc, permuted-feature control).",
+      "closing_ground": null,
+      "description": "Residual recent-load feature (home minus away, beta from prior seasons) added to the served ridge base margin feature set, graded at the opener; SBR open proxy 2014-19, decisive 9-12 of 21 flips, record 766-721 vs 769-718",
+      "effect": -0.00021,
+      "effect_units": "log_loss_improvement",
+      "family": "mod41_residual_load_u5_base_addone",
+      "interval": [
+        -0.00073,
+        0.0003
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Same test on the older seasons shows no gain.",
+      "probability_positive": 0.2048,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1487,
+      "seasons": [
+        2014,
+        2019
+      ],
+      "source": "artifacts/mod41/unit5/proxy_report.json",
+      "standard_error": 0.0002627551020408163
+    },
+    "mod41_u5_base_true_accuracy_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap; 5 looks (true ll, true acc, proxy ll, proxy acc, permuted-feature control).",
+      "closing_ground": null,
+      "description": "Residual recent-load feature (home minus away, beta from prior seasons) added to the served ridge base margin feature set, graded at the opener; decisive 31-31 of 62 flips",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod41_residual_load_u5_base_addone",
+      "interval": [
+        -1.004,
+        1.067
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Adding recent workload to the base model leaves its pick record unchanged.",
+      "probability_positive": 0.4804,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod41/unit5/true_report.json",
+      "standard_error": 0.5283163265306122
+    },
+    "mod41_u5_base_true_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap; 5 looks (true ll, true acc, proxy ll, proxy acc, permuted-feature control).",
+      "closing_ground": null,
+      "description": "Residual recent-load feature (home minus away, beta from prior seasons) added to the served ridge base margin feature set, graded at the opener; decisive 31-31 of 62 flips, record 802-701 unchanged; coef negative 6/6 folds",
+      "effect": 0.001414,
+      "effect_units": "log_loss_improvement",
+      "family": "mod41_residual_load_u5_base_addone",
+      "interval": [
+        0.00047,
+        0.00235
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Adding recent workload to the base model barely improves its probabilities and changes no accuracy.",
+      "probability_positive": 0.998,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod41/unit5/true_report.json",
+      "standard_error": 0.0004795918367346939
+    },
+    "mod41_u5_base_true_permuted_control_log_loss": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap; 5 looks (true ll, true acc, proxy ll, proxy acc, permuted-feature control).",
+      "closing_ground": null,
+      "description": "Residual recent-load feature (home minus away, beta from prior seasons) added to the served ridge base margin feature set, graded at the opener; within-week permuted feature control, 12 flips 5-7",
+      "effect": -3.12e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "mod41_residual_load_u5_base_addone",
+      "interval": [
+        -0.0002,
+        0.00014
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Control: shuffling the workload feature within each week adds nothing, as it should.",
+      "probability_positive": 0.3486,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod41/unit5/true_report.json",
+      "standard_error": 8.673469387755102e-05
+    }
+  }
+}
