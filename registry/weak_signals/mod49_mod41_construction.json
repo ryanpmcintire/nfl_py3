@@ -1,6 +1,34 @@
 {
   "family": "mod49_mod41_construction",
   "signals": {
+    "mod49_AVGWIN_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap; 1 log-loss cell and 1 accuracy cell, single pre-declared construction.",
+      "closing_ground": null,
+      "description": "Pre-declared equal-weight average of the standardized residual-load term over windows 2 to 5. Served base, LOSO 2020-25, opener grade; decisive 91-89 of 180; accuracy gain 0.13 pts, P+ 0.51; coef -0.1702; permutation p 0.010",
+      "effect": 0.001312093980132989,
+      "effect_units": "log_loss_improvement",
+      "family": "mod49_mod41_construction",
+      "interval": [
+        -0.0022854498563792762,
+        0.004643298369192691
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Recent-workload term averaged over four window lengths so no window is picked.",
+      "probability_positive": 0.777,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 944,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod49/avgwin.json",
+      "standard_error": 0.0017675378126459102
+    },
     "mod49_OFF_only_log_loss_gain": {
       "category": "schedule",
       "classification": "unresolved_below_power",

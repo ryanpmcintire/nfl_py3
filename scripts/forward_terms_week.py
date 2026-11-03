@@ -29,6 +29,7 @@ TERMS = (
     "mod35_cold_exposure",
     "mod41_residual_load",
     "mod41_residual_load_served",
+    "mod41_avgwin_served",
 )
 
 
@@ -898,6 +899,66 @@ def mod41_week(week, games, now, term="mod41_residual_load"):
     return pd.Series(x, dtype=float), fr, ts
 
 
+def avgwin_frozen(term="mod41_avgwin_served"):
+    path = OUT / term / "frozen_coefficients.json"
+    body = json.loads(path.read_text())
+    assert body["no_2026_outcomes"] is True
+    keys = ("b_logit_per_unit", "intercept", "decomposition_by_window", "sd_by_window")
+    assert body["coefficient_hash"] == sha_obj({k: body[k] for k in keys})
+    body["b_logit_per_point"] = body["b_logit_per_unit"]
+    return body
+
+
+def avgwin_week(week, games, now, term="mod41_avgwin_served"):
+    import mod41_freeze_residual_load as f41
+
+    fr = avgwin_frozen(term)
+    pbp = f41.latest_pbp(ROOT / "data" / "pbp" / "raw")
+    t = f41.season_team_games(pbp, SEASON)
+    assert int(t.week.max()) < week
+    t = t[t.week < week]
+    g = t.groupby("team")
+    n = g.cumcount() + 1
+    state = pd.DataFrame({"team": t["team"], "week": t["week"], "n_played": n})
+    state["own_td"] = g["run"].transform(lambda s: s.expanding().mean())
+    norm = g["total"].transform(lambda s: s.expanding().mean())
+    for w in fr["windows"]:
+        state[f"load{w}"] = g["total"].transform(lambda s, w=w: s.rolling(w).mean()) - norm
+        state[f"opp{w}"] = g["defended"].transform(lambda s, w=w: s.rolling(w).mean())
+    state["ok"] = state["n_played"] >= fr["min_prior_games"]
+    st = state.sort_values("week").groupby("team").tail(1).set_index("team")
+    x = {}
+    ts = {
+        "pbp_snapshot": pbp.name,
+        "trait_data_through_week": int(t.week.max()),
+        "per_game": {},
+        "missing": [],
+    }
+    for r in games.itertuples():
+        if r.home_team not in st.index or r.away_team not in st.index:
+            ts["missing"].append({"game_id": r.game_id, "reason": "team without prior games"})
+            continue
+        h, a = st.loc[r.home_team], st.loc[r.away_team]
+        if not (bool(h.ok) and bool(a.ok)):
+            ts["missing"].append(
+                {"game_id": r.game_id, "reason": f"fewer than {fr['min_prior_games']} prior games"}
+            )
+            continue
+        s_own = float(h.own_td - a.own_td)
+        z = {}
+        for w in fr["windows"]:
+            b0, b_own, b_opp = fr["decomposition_by_window"][str(w)]
+            s_total = float(h[f"load{w}"] - a[f"load{w}"])
+            s_opp = float(h[f"opp{w}"] - a[f"opp{w}"])
+            z[w] = (s_total - (b0 + b_own * s_own + b_opp * s_opp)) / fr["sd_by_window"][str(w)]
+        x[r.game_id] = float(np.mean(list(z.values())))
+        ts["per_game"][r.game_id] = {
+            "standardized_residual_by_window": {str(w): v for w, v in z.items()},
+            "average": x[r.game_id],
+        }
+    return pd.Series(x, dtype=float), fr, ts
+
+
 def served_card_probability(week):
     pub = pd.read_parquet(ROOT / "artifacts" / "clv_ledger" / "published_picks.parquet")
     pub = pub[(pub.season == SEASON) & (pub.week == week)]
@@ -909,9 +970,12 @@ def served_card_probability(week):
     return dict(zip(last.game_id, home, strict=True))
 
 
+SERVED_BASE_TERMS = ("mod41_residual_load_served", "mod41_avgwin_served")
+
+
 def combine(term, games, x, fr, week):
     out = []
-    served = served_card_probability(week) if term == "mod41_residual_load_served" else {}
+    served = served_card_probability(week) if term in SERVED_BASE_TERMS else {}
     if term == "env02":
         centre = fr["roof_term_train_mean"]
         beta = fr["roof_beta_natural"]
@@ -919,7 +983,7 @@ def combine(term, games, x, fr, week):
         centre = 0.0
         beta = fr["b_logit_per_point"]
     for r in games.itertuples():
-        if term == "mod41_residual_load_served":
+        if term in SERVED_BASE_TERMS:
             if r.game_id not in served:
                 raise SystemExit(f"MISSING INPUT: no published card probability for {r.game_id}")
             r = r._replace(base_home_probability=float(served[r.game_id]))
@@ -939,7 +1003,7 @@ def combine(term, games, x, fr, week):
             )
             continue
         dl = beta * (v - centre) if term == "env02" else beta * v
-        if term == "mod41_residual_load_served":
+        if term in SERVED_BASE_TERMS:
             base_logit = logit(r.base_home_probability)
             dl = (
                 fr["intercept"]
@@ -1005,6 +1069,8 @@ def main():
                 x, fr, ts = surface_week(week, games, now)
             elif term == "mod35_cold_exposure":
                 x, fr, ts = mod35_week(week, games, now)
+            elif term == "mod41_avgwin_served":
+                x, fr, ts = avgwin_week(week, games, now, term)
             elif term in ("mod41_residual_load", "mod41_residual_load_served"):
                 x, fr, ts = mod41_week(week, games, now, term)
             else:

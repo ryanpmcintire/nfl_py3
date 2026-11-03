@@ -25,6 +25,7 @@ TERM_DIRS = [
     "mod35_cold_exposure",
     "mod41_residual_load",
     "mod41_residual_load_served",
+    "mod41_avgwin_served",
 ]
 CFB_EXCLUDED = ["xlg12_cfb_v1", "xlg12_cfb_v2"]
 
