@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T22:14:17.979391+00:00`
+Refreshed at: `2026-11-03T22:14:50.399880+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-03T22:14:17.979391+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `0faa214caf60` — XLG-11 post-fix rerun in flight: u1 gain shrinks from +2.73 (P+ .999, pre-fix) to +1.13 (P+ .87), log loss worse; XLG-13 script reads screen reports instead of hard-coded effects
-- Pending change set: 273 paths
-  - `M  ROADMAP.md`
+- Baseline commit: `6f27a078bcb1` — Backlog round 7: 14 new rows (LEAD-108..111, POOL-09/10, ENG-54..56, MOD-47, SIM-22..24, UI-34); inventory 65/193
+- Pending change set: 260 paths
+  - `M  HANDOFF.md`
   - ` M config/source_policies.json`
-  - `M  docs/lanes/backlog-all-2026-11-02.md`
-  - `A  docs/lanes/eng-54-outcome-label-default-audit.md`
-  - `A  docs/lanes/eng-55-pool-line-inference-audit.md`
-  - `A  docs/lanes/eng-56-final-score-reconciliation.md`
-  - `A  docs/lanes/lead-108-wording-read-availability-inside-the-inj.md`
-  - `A  docs/lanes/lead-109-position-value-weighting-of-the-wording.md`
-  - `A  docs/lanes/lead-110-market-absorption-of-the-wording-read.md`
-  - `A  docs/lanes/lead-111-phrase-ablation-of-the-injury-read.md`
-  - `A  docs/lanes/mod-47-short-week-confidence-slope.md`
-  - `A  docs/lanes/pool-09-hook-over-pick-against-lattice-value.md`
-  - `A  docs/lanes/pool-10-best-pick-placement-on-half-point-sides.md`
   - ` M docs/lanes/sim-21-drive-length-decomposition.md`
-  - `A  docs/lanes/sim-22-plays-per-drive-logging-in-the-resampler.md`
-  - `A  docs/lanes/sim-23-clock-truncated-drives.md`
-  - `A  docs/lanes/sim-24-next-drive-start-field-by-previous-drive.md`
-  - `A  docs/lanes/ui-34-half-point-games.md`
+  - ` M docs/lanes/xlg-13-xlg13-screen-transfer.md`
+  - ` M scripts/eng53_reliability.py`
   - ` M scripts/mod40_ngs_reliability.py`
   - ` M scripts/sim10_drive.py`
-  - ...and 253 more
+  - ` M scripts/sim17_halftime_adjustment.py`
+  - ` M scripts/sim17_unit2_carriers.py`
+  - ` M scripts/sim18_lead_protection.py`
+  - ` M scripts/sim18_unit2_multiplier.py`
+  - ` M scripts/sim19_trailing_risk.py`
+  - ` M scripts/xlg15_cfb_trait_reliability.py`
+  - ` M src/nfl_ats/board_content.py`
+  - ` M src/nfl_ats/board_terminal.py`
+  - `?? an.csv`
+  - `?? data/pool_observables/20261103T130853Z/manifest.json`
+  - `?? data/pool_observables/20261103T130853Z/observations.json`
+  - `?? docs/lanes/c-drive-space-2026-10-31.md`
+  - `?? docs/lanes/machine-crashes-2026-10-31.md`
+  - ...and 240 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
