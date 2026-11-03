@@ -10,6 +10,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from eng53_units import emit, piece
 from sklearn.ensemble import HistGradientBoostingClassifier as H
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -123,7 +124,7 @@ def venue_games(p):
     return g
 
 
-def split_rel(tg, era):
+def split_rel(tg, era, name=None, sink=None):
     lo, hi = era
     d = (
         tg[(tg.season >= lo) & (tg.season <= hi)]
@@ -137,15 +138,34 @@ def split_rel(tg, era):
     a = (s["v"][0] / s["n"][0]).values
     b = (s["v"][1] / s["n"][1]).values
     ss = s.index.get_level_values("season").values
+    if sink is not None:
+        k = d[pd.MultiIndex.from_frame(d[["season", "pos_team_id"]]).isin(s.index)]
+        sink.append(
+            piece(
+                name,
+                k.season.astype(str) + "|" + k.pos_team_id.astype(str),
+                k.pos_team_id,
+                k.season,
+                k.game_id,
+                k.h,
+                k.v / k.n,
+                k.n,
+            )
+        )
     return a, b, ss
 
 
-def venue_rel(g, era):
+def venue_rel(g, era, name=None, sink=None):
     lo, hi = era
     d = g[(g.season >= lo) & (g.season <= hi)].copy()
     d["h"] = d.season % 2
     sm = d.groupby(["home_id", "h"]).excess.agg(["mean", "size"]).unstack("h").dropna()
     w = 2 * sm[("size", 0)] * sm[("size", 1)] / (sm[("size", 0)] + sm[("size", 1)])
+    if sink is not None:
+        k = d[d.home_id.isin(sm.index)]
+        sink.append(
+            piece(name, k.home_id, k.home_id, k.season, k.game_id, k.h, k.excess, np.ones(len(k)))
+        )
     return sm[("mean", 0)].values, sm[("mean", 1)].values, w.values, d
 
 
@@ -240,10 +260,11 @@ grid = pd.concat(
     ]
 )
 res = {"family": "xlg15_cfb_trait_reliability", "reliability": {}, "pricing": {}}
+unit_pieces = []
 for name, tg in (("pass_oe_when_ahead", t1), ("fourth_down_go_residual", t2)):
     res["reliability"][name] = {}
     for en, era in ERAS.items():
-        a, b, ss = split_rel(tg, era)
+        a, b, ss = split_rel(tg, era, f"{name}|{en}", unit_pieces)
         res["reliability"][name][en] = rel_stats(a, b, ss)
         print("REL", name, en, res["reliability"][name][en], flush=True)
     ao = asof(tg, grid, "v", "n")
@@ -272,7 +293,7 @@ vn = vg.merge(g[["game_id", "neutral_site"]], on="game_id", how="left")
 vn = vn[vn.neutral_site.fillna(0) == 0]
 res["reliability"]["venue_false_starts"] = {}
 for en, era in ERAS.items():
-    a, b, w, _ = venue_rel(vn, era)
+    a, b, w, _ = venue_rel(vn, era, f"venue_false_starts|{en}", unit_pieces)
     res["reliability"]["venue_false_starts"][en] = rel_stats(a, b, np.zeros(len(a)), w)
     print("REL venue", en, res["reliability"]["venue_false_starts"][en], flush=True)
 vv = vn.dropna(subset=["excess_asof"]).sort_values(["home_id", "season", "week", "game_id"]).copy()
@@ -284,5 +305,6 @@ res["pricing"]["venue_false_starts"] = {}
 for en, era in ERAS.items():
     res["pricing"]["venue_false_starts"][en] = price(fr, "ats_open", "venue_tr", era)
     print("PRICE venue", en, res["pricing"]["venue_false_starts"][en], flush=True)
+emit("xlg15", unit_pieces)
 OUT.parent.mkdir(parents=True, exist_ok=True)
 OUT.write_text(json.dumps(res, indent=1))

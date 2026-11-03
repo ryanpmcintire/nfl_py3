@@ -5,6 +5,7 @@ import os
 os.environ["OMP_NUM_THREADS"] = "1"
 import numpy as np
 import pandas as pd
+from eng53_units import emit, piece
 
 N_BOOT = 500
 N_PERM = 1000
@@ -224,6 +225,7 @@ def boot_r(a, b):
 
 
 rel = {}
+unit_pieces = []
 for k, mode in [(k, m_) for k in T for m_ in ("style_incl", "shift")]:
     t = T[k]
     gx = t.groupby(["game_id", "posteam"]).agg(ex=("ex", "sum"), n=("ex", "size")).reset_index()
@@ -247,6 +249,31 @@ for k, mode in [(k, m_) for k in T for m_ in ("style_incl", "shift")]:
         pr = gk.groupby(["code", "par_" + key])[["ex", "n"]].sum().unstack()
         nmin = pr["n"].median().min()
         ok = ((pr["n"] >= nmin).all(axis=1)).values
+        kept = gk[gk.code.isin(np.flatnonzero(ok))]
+        unit_pieces.append(
+            piece(
+                f"{k}|{key}|{mode}|season_all",
+                gk[sk],
+                gk[sk],
+                gk.season,
+                gk.game_id,
+                gk["par_" + key],
+                gk.ex / gk.n,
+                gk.n,
+            )
+        )
+        unit_pieces.append(
+            piece(
+                f"{k}|{key}|{mode}",
+                kept[sk],
+                kept[sk],
+                kept.season,
+                kept.game_id,
+                kept["par_" + key],
+                kept.ex / kept.n,
+                kept.n,
+            )
+        )
         a = (pr["ex"][0] / pr["n"][0]).values[ok]
         b = (pr["ex"][1] / pr["n"][1]).values[ok]
         r = float(np.corrcoef(a, b)[0, 1])
@@ -295,6 +322,7 @@ for k, mode in [(k, m_) for k in T for m_ in ("style_incl", "shift")]:
             "t_t1_p_pos": pp2,
         }
 res["reliability"] = rel
+emit("sim19", unit_pieces)
 res["looks"] = {
     "cells": sum(len(v) for v in res["cells"].values()),
     "slopes": 2 * len(T),

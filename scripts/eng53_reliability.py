@@ -12,6 +12,8 @@ N_BOOT = 4000
 N_PERM = 5000
 LEVEL = 0.95
 TOLERANCE = 0.02
+MIN_SEASON_GAMES = 6
+UNITS = OUT / "units"
 
 COLS = [
     "trait",
@@ -41,6 +43,17 @@ COLS = [
     "shared_hi",
     "shared_p",
     "shared_n",
+    "unit_ref",
+    "unit_groups",
+    "u_oe_r",
+    "u_oe_lo",
+    "u_oe_hi",
+    "u_sb",
+    "u_oe_p",
+    "u_tt_r",
+    "u_tt_lo",
+    "u_tt_hi",
+    "u_tt_pairs",
     "flag",
     "status",
     "source",
@@ -95,7 +108,9 @@ def rel_row(trait, key, league, era, rec, source, n_games, shrink):
     r["n_groups"] = rec.get("n_spells", rec.get("n_units", ""))
     r["n_games"] = n_games if n_games is not None else rec.get("n_games", "")
     r["oe_r"] = rec.get("odd_even_r", rec.get("r_half", ""))
-    ci = rec.get("odd_even_ci95", rec.get("sb_ci"))
+    ci = rec.get("odd_even_ci95")
+    if ci is None and "sb_ci" in rec:
+        ci = [x / (2 - x) for x in rec["sb_ci"]]
     if ci:
         r["oe_lo"], r["oe_hi"] = ci
     r["sb"] = rec.get("spearman_brown", rec.get("split_half_sb", rec.get("sb", "")))
@@ -139,6 +154,11 @@ def mod40(trait, era, n, r, sb, p, dec, dll, pp):
     return row
 
 
+def tag(row, ref):
+    row["unit_ref"] = ref
+    return row
+
+
 def build_reported():
     rows = []
     h = jload("sim17/halftime_adjustment.json")["metrics"]
@@ -161,21 +181,24 @@ def build_reported():
         set_pick(
             row, a["W"], a["L"], a["dLL_vs_served"]["mean"], a["dLL_vs_served"]["prob_positive"]
         )
-        rows.append(row)
+        rows.append(tag(row, f"sim17_halftime|{side}"))
     c = jload("sim17/unit2_carriers.json")
     for side, grp in (("off_res", ("hc", "oc", "qb")), ("def_res", ("hc", "dc"))):
         who = "offense" if side == "off_res" else "defense"
         for g in grp:
             rows.append(
-                rel_row(
-                    f"halftime adjustment, {who}",
-                    f"{g} spell (>=16 games), own sample",
-                    "nfl",
-                    "2009-2025",
-                    c["reliability_own"][side][g],
-                    "SIM-17 unit2 unit2_carriers.json",
-                    None,
-                    "none stated",
+                tag(
+                    rel_row(
+                        f"halftime adjustment, {who}",
+                        f"{g} spell (>=16 games), own sample",
+                        "nfl",
+                        "2009-2025",
+                        c["reliability_own"][side][g],
+                        "SIM-17 unit2 unit2_carriers.json",
+                        None,
+                        "none stated",
+                    ),
+                    f"sim17_unit2|{side}|{g}",
                 )
             )
     u2 = jload("sim18/unit2.json")
@@ -202,20 +225,23 @@ def build_reported():
             a = u2["pick"]["arms"][arm]
             v = u2["pick"]["vs_served"][arm]
             set_pick(row, a["W"], a["L"], v["dLL"], v["p_positive"])
-        rows.append(row)
+        rows.append(tag(row, f"sim18_unit1|{k}"))
     for k, rec in jload("sim19/trailing_risk.json")["reliability"].items():
         met, grp, kind = k.split("|")
         label = "style-adjusted shift" if kind == "shift" else "incl. team style"
         rows.append(
-            rel_row(
-                f"trailing {met}",
-                f"{grp} spell (>=16 games), {label}",
-                "nfl",
-                "2009-2025",
-                rec,
-                "SIM-19 unit1 trailing_risk.json",
-                None,
-                "none stated",
+            tag(
+                rel_row(
+                    f"trailing {met}",
+                    f"{grp} spell (>=16 games), {label}",
+                    "nfl",
+                    "2009-2025",
+                    rec,
+                    "SIM-19 unit1 trailing_risk.json",
+                    None,
+                    "none stated",
+                ),
+                f"sim19|{k}",
             )
         )
     x = jload("xlg15/report.json")
@@ -239,13 +265,27 @@ def build_reported():
                 f"[{pr['ci'][0]:.2f}, {pr['ci'][1]:.2f}]"
             )
             rr["ll_p_pos"] = pr["p_pos"]
-            rows.append(rr)
+            rows.append(tag(rr, f"xlg15|{tr}|{era}"))
     rows.append(
-        mod40("CPOE gap", "NGS seasons, 10", 320, 0.418, 0.59, 0.0002, "802-701", 4e-05, 0.499)
+        tag(
+            mod40("CPOE gap", "NGS seasons, 10", 320, 0.418, 0.59, 0.0002, "802-701", 4e-05, 0.499),
+            "mod40|cpoe",
+        )
     )
     rows.append(
-        mod40(
-            "RYOE per attempt gap", "2018-2025", 256, 0.175, 0.30, 0.003, "796-707", -2e-05, 0.496
+        tag(
+            mod40(
+                "RYOE per attempt gap",
+                "2018-2025",
+                256,
+                0.175,
+                0.30,
+                0.003,
+                "796-707",
+                -2e-05,
+                0.496,
+            ),
+            "mod40|ryoe",
         )
     )
     for nm, src in (
@@ -314,9 +354,120 @@ def build_per14():
     return rows
 
 
+def unit_means(df):
+    code = pd.factorize(df["unit"])[0]
+    cell = code * 2 + df["parity"].to_numpy()
+    vw = (df["resid"] * df["weight"]).to_numpy()
+    w = df["weight"].to_numpy()
+    return code, cell, vw, w
+
+
+def half_values(cell, vw, w, n_units):
+    sv = np.bincount(cell, vw, minlength=2 * n_units).reshape(-1, 2)
+    sw = np.bincount(cell, w, minlength=2 * n_units).reshape(-1, 2)
+    with np.errstate(all="ignore"):
+        return sv / sw, (sw > 0).all(axis=1)
+
+
+def odd_even(df, rng):
+    code, cell, vw, w = unit_means(df)
+    n_units = code.max() + 1
+    m, ok = half_values(cell, vw, w, n_units)
+    a, b = m[ok, 0], m[ok, 1]
+    r = corr(a, b)
+    n = len(a)
+    boots = []
+    for _ in range(N_BOOT):
+        i = rng.integers(0, n, n)
+        boots.append(corr(a[i], b[i]))
+    lo, hi = np.nanquantile(boots, [(1 - LEVEL) / 2, 1 - (1 - LEVEL) / 2])
+    null = []
+    for _ in range(N_PERM):
+        s = rng.choice([-1.0, 1.0], len(vw))
+        mm, _ = half_values(cell, vw * s, w, n_units)
+        null.append(corr(mm[ok, 0], mm[ok, 1]))
+    p = float((np.sum(np.array(null) >= r) + 1) / (N_PERM + 1))
+    return r, float(lo), float(hi), p, n
+
+
+def season_pairs(df, rng):
+    g = (
+        df.assign(vw=df["resid"] * df["weight"])
+        .groupby(["entity", "season"])
+        .agg(vw=("vw", "sum"), w=("weight", "sum"), ng=("game_id", "size"))
+        .reset_index()
+    )
+    g = g[(g.ng >= MIN_SEASON_GAMES) & (g.w > 0)]
+    g["mu"] = g.vw / g.w
+    nxt = g[["entity", "season", "mu"]].copy()
+    nxt["season"] = nxt["season"] - 1
+    pr = g.merge(nxt, on=["entity", "season"], suffixes=("_t", "_t1"))
+    r = corr(pr.mu_t.to_numpy(), pr.mu_t1.to_numpy())
+    groups = [x[["mu_t", "mu_t1"]].to_numpy() for _, x in pr.groupby("entity")]
+    boots = []
+    for _ in range(N_BOOT):
+        pick = rng.integers(0, len(groups), len(groups))
+        m = np.vstack([groups[i] for i in pick])
+        boots.append(corr(m[:, 0], m[:, 1]))
+    lo, hi = np.nanquantile(boots, [(1 - LEVEL) / 2, 1 - (1 - LEVEL) / 2])
+    return r, float(lo), float(hi), len(pr)
+
+
+def disagreement(label, value, lo, hi, reported):
+    if lo != "" and hi != "" and not (lo <= value <= hi):
+        return f"{label} outside reported interval"
+    if abs(value - reported) > TOLERANCE:
+        return f"{label} inside interval, differs by more than tolerance"
+    return ""
+
+
+def attach_units(rows):
+    rng = np.random.default_rng(SEED)
+    cache = {}
+    for row in rows:
+        ref = row.get("unit_ref", "")
+        if not ref:
+            continue
+        study, trait = ref.split("|", 1)
+        if study not in cache:
+            path = UNITS / f"{study}.parquet"
+            cache[study] = pd.read_parquet(path) if path.exists() else None
+        data = cache[study]
+        if data is None:
+            continue
+        df = data[data["trait"] == trait]
+        if df.empty:
+            continue
+        r, lo, hi, p, n = odd_even(df, rng)
+        both = data[data["trait"] == f"{trait}|season_all"]
+        tr, tlo, thi, tn = season_pairs(both if len(both) else df, rng)
+        row.update(
+            unit_groups=n,
+            u_oe_r=r,
+            u_oe_lo=lo,
+            u_oe_hi=hi,
+            u_sb=2 * r / (1 + r),
+            u_oe_p=p,
+            u_tt_r=tr,
+            u_tt_lo=tlo,
+            u_tt_hi=thi,
+            u_tt_pairs=tn,
+            status="recomputed from unit data",
+        )
+        notes = []
+        if row["oe_r"] != "":
+            notes.append(disagreement("odd/even r", r, row["oe_lo"], row["oe_hi"], row["oe_r"]))
+        if row["tt_r"] != "":
+            notes.append(
+                disagreement("season t to t+1 r", tr, row["tt_lo"], row["tt_hi"], row["tt_r"])
+            )
+        row["flag"] = "; ".join(n for n in notes if n)
+    return rows
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
-    df = pd.DataFrame(build_reported() + build_per14(), columns=COLS)
+    df = pd.DataFrame(attach_units(build_reported()) + build_per14(), columns=COLS)
     df.to_csv(OUT / "trait_reliability.csv", index=False)
     print(len(df), df["status"].value_counts().to_dict())
     pd.set_option("display.width", 250)

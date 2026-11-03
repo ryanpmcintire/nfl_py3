@@ -6,6 +6,7 @@ import glob
 
 import numpy as np
 import pandas as pd
+from eng53_units import emit, piece
 
 WP_LO, WP_HI = 0.05, 0.95
 MIN_SPELL_GAMES = 16
@@ -141,7 +142,20 @@ def boot_ci(a, b):
 
 
 out = {}
+pieces = []
 for col in ["off_res", "def_res"]:
+    pieces.append(
+        piece(
+            col,
+            gk.spell,
+            gk.spell,
+            gk.season,
+            gk.game_id,
+            gk.parity,
+            gk[col],
+            np.ones(len(gk)),
+        )
+    )
     p = gk.pivot_table(index="spell", columns="parity", values=col, aggfunc="mean").dropna()
     a, b = p[0].values, p[1].values
     r = float(np.corrcoef(a, b)[0, 1])
@@ -190,6 +204,7 @@ for col in ["off_res", "def_res"]:
         "resid_wmean": float(np.average(g[col], weights=g["w_" + col.replace("_res", "_delta")])),
     }
 res["metrics"] = out
+emit("sim17_halftime", pieces)
 os.makedirs("artifacts/sim17", exist_ok=True)
 with open("artifacts/sim17/halftime_adjustment.json", "w") as f:
     json.dump(res, f, indent=1)

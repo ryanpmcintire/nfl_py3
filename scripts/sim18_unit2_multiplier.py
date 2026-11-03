@@ -6,6 +6,7 @@ from pathlib import Path
 os.environ["OMP_NUM_THREADS"] = "1"
 import numpy as np
 import pandas as pd
+from eng53_units import emit, piece
 from scipy.special import logit
 from sklearn.linear_model import LogisticRegression
 
@@ -270,6 +271,7 @@ def season_stat(frame, sk, col, wcol, flips=None):
 
 
 rel = {}
+unit_pieces = []
 for key in ["hc", "oc"]:
     sk, pk = "sp_" + key, "par_" + key
     for col, wcol in [("res_sec", "n_sec"), ("res_run", "n_run")]:
@@ -278,6 +280,18 @@ for key in ["hc", "oc"]:
             sz = gk.groupby(sk).size()
             gk = gk[gk[sk].isin(sz[sz >= MIN_SPELL_GAMES].index)].copy()
             gk["par"] = gk.groupby(sk).cumcount() % 2
+            unit_pieces.append(
+                piece(
+                    f"{key}|{kind}|{col}",
+                    gk[sk],
+                    gk[sk],
+                    gk.season,
+                    gk.game_id,
+                    gk["par"],
+                    gk[c],
+                    gk[wcol],
+                )
+            )
             obs_r, _, nsp = split_stat(gk, sk, "par", c, wcol)
             obs_s, npairs = season_stat(gk, sk, c, wcol)
             pa, pb = [], []
@@ -296,6 +310,7 @@ for key in ["hc", "oc"]:
                 "season_null_q95": float(np.quantile(pb, 0.95)),
                 "season_p": float((pb >= obs_s).mean()),
             }
+emit("sim18_unit2", unit_pieces)
 for key in ["hc", "oc"]:
     for col in ["res_sec", "res_run"]:
         r_ = rel[f"{key}|raw|{col}"]

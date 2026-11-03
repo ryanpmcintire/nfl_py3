@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T22:23:34.510917+00:00`
+Refreshed at: `2026-11-03T22:24:05.972301+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-03T22:23:34.510917+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `c328ac14528f` — Master lane state
-- Pending change set: 261 paths
-  - `M  HANDOFF.md`
+- Baseline commit: `e8ac116d64ca` — Refresh session handoff
+- Pending change set: 263 paths
   - ` M ROADMAP.md`
   - ` M config/source_policies.json`
   - ` M docs/lanes/done/eng-56-final-score-reconciliation.md`
-  - ` M docs/lanes/eng-53-trait-reliability-table.md`
-  - ` M scripts/eng53_reliability.py`
-  - ` M scripts/mod40_ngs_reliability.py`
-  - ` M scripts/sim17_halftime_adjustment.py`
-  - ` M scripts/sim17_unit2_carriers.py`
-  - ` M scripts/sim18_lead_protection.py`
-  - ` M scripts/sim18_unit2_multiplier.py`
-  - ` M scripts/sim19_trailing_risk.py`
-  - ` M scripts/xlg15_cfb_trait_reliability.py`
+  - `M  docs/lanes/eng-53-trait-reliability-table.md`
+  - ` M docs/lanes/eng-55-pool-line-inference-audit.md`
+  - `M  scripts/eng53_reliability.py`
+  - `A  scripts/eng53_units.py`
+  - `M  scripts/mod40_ngs_reliability.py`
+  - `M  scripts/sim17_halftime_adjustment.py`
+  - `M  scripts/sim17_unit2_carriers.py`
+  - `M  scripts/sim18_lead_protection.py`
+  - `M  scripts/sim18_unit2_multiplier.py`
+  - `M  scripts/sim19_trailing_risk.py`
+  - `M  scripts/xlg15_cfb_trait_reliability.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
   - `?? docs/lanes/c-drive-space-2026-10-31.md`
   - `?? docs/lanes/machine-crashes-2026-10-31.md`
   - `?? docs/lanes/stealmybitcoin-ctf.md`
-  - `?? docs/move_reasons.json`
-  - ...and 241 more
+  - ...and 243 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

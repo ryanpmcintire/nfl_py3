@@ -2,6 +2,7 @@ import glob
 
 import numpy as np
 import pandas as pd
+from eng53_units import emit, piece
 
 d = sorted(glob.glob("data/raw/ngs/*/"))[-1]
 p = pd.read_parquet(d + "ngs_passing.parquet")
@@ -36,8 +37,25 @@ def half(w):
     return j
 
 
+unit_pieces = []
 for name, w in [("cpoe", pw), ("ryoe", rw)]:
     j = half(w)
+    k = w[pd.MultiIndex.from_frame(w[["season", "team_abbr"]]).isin(j.index)]
+    rate = k.groupby("season").v.transform("sum") / k.groupby("season").n.transform("sum")
+    k = k[k.n > 0]
+    rate = rate[k.index]
+    unit_pieces.append(
+        piece(
+            name,
+            k.season.astype(str) + "|" + k.team_abbr,
+            k.team_abbr,
+            k.season,
+            k.week,
+            k.week % 2,
+            (k.v - k.n * rate) / k.n,
+            k.n,
+        )
+    )
     j["o"] = j.o - j.groupby("season").o.transform("mean")
     j["e"] = j.e - j.groupby("season").e.transform("mean")
     rho = np.corrcoef(j.o, j.e)[0, 1]
@@ -57,3 +75,4 @@ for name, w in [("cpoe", pw), ("ryoe", rw)]:
         "pos",
         sum(x > 0 for x in per),
     )
+emit("mod40", unit_pieces)

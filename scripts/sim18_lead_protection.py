@@ -6,6 +6,7 @@ from pathlib import Path
 os.environ["OMP_NUM_THREADS"] = "1"
 import numpy as np
 import pandas as pd
+from eng53_units import emit, piece
 
 MIN_SPELL_GAMES = 16
 MIN_SEASON_GAMES = 6
@@ -313,6 +314,7 @@ def season_stat(frame, sk, col, wcol, flips=None):
 
 
 rel = {}
+unit_pieces = []
 for key in ["hc", "oc"]:
     sk, pk = "sp_" + key, "par_" + key
     gk = tg[tg[sk].notna()]
@@ -320,6 +322,9 @@ for key in ["hc", "oc"]:
     gk = gk[gk[sk].isin(sz[sz >= MIN_SPELL_GAMES].index)].copy()
     for col in ["sec", "run"]:
         c, w = "res_" + col, "n_" + col
+        unit_pieces.append(
+            piece(f"{key}|{c}", gk[sk], gk[sk], gk.season, gk.game_id, gk[pk], gk[c], gk[w])
+        )
         obs, nsp = split_stat(gk, sk, pk, c, w)
         obs_s, npairs = season_stat(gk, sk, c, w)
         pa, pb = [], []
@@ -339,6 +344,7 @@ for key in ["hc", "oc"]:
             "season_null_q95": float(np.quantile(pb, 0.95)),
         }
 
+emit("sim18_unit1", unit_pieces)
 res = {
     "looks": {
         "curve_cells": len(curve),

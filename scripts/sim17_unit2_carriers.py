@@ -6,6 +6,7 @@ import glob
 
 import numpy as np
 import pandas as pd
+from eng53_units import emit, piece
 
 WP_LO, WP_HI = 0.05, 0.95
 MIN_SPELL_GAMES = 16
@@ -158,11 +159,24 @@ def boot_ci(a, b):
     return np.percentile(rs, [2.5, 97.5]).tolist(), float(np.mean(rs > 0))
 
 
-def reliab(frame, key, col):
+def reliab(frame, key, col, sink=None):
     gk = frame[frame["sp_" + key].notna()]
     sp = gk.groupby("sp_" + key).size()
     gk = gk[gk["sp_" + key].isin(sp[sp >= MIN_SPELL_GAMES].index)].copy()
     sk = "sp_" + key
+    if sink is not None:
+        sink.append(
+            piece(
+                f"{col}|{key}",
+                gk[sk],
+                gk[sk],
+                gk.season,
+                gk.game_id,
+                gk["par_" + key],
+                gk[col],
+                np.ones(len(gk)),
+            )
+        )
     p = gk.pivot_table(index=sk, columns="par_" + key, values=col, aggfunc="mean").dropna()
     a, b = p[0].values, p[1].values
     r = float(np.corrcoef(a, b)[0, 1])
@@ -255,8 +269,10 @@ res["spells_kept_own"] = {
     k: int(g.loc[keepmask(g, k), "sp_" + k].nunique()) for k in ["hc", "oc", "dc", "qb"]
 }
 res["reliability_own"] = {}
+unit_pieces = []
 for col, keys in [("off_res", ["hc", "oc", "qb"]), ("def_res", ["hc", "dc"])]:
-    res["reliability_own"][col] = {k: reliab(g, k, col) for k in keys}
+    res["reliability_own"][col] = {k: reliab(g, k, col, unit_pieces) for k in keys}
+emit("sim17_unit2", unit_pieces)
 res["reliability_common"] = {}
 res["decomposition"] = {}
 for col, keys in [("off_res", ["hc", "oc", "qb"]), ("def_res", ["hc", "dc"])]:
