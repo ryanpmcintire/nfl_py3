@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T21:24:41.256726+00:00`
+Refreshed at: `2026-11-03T21:25:23.149545+00:00`
 
 ## Start here
 
@@ -21,14 +21,18 @@ Refreshed at: `2026-11-03T21:24:41.256726+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `09423e5af869` — MKT-24 kickoff-slot opener residual: no slot mispriced (signs disagree across eras; LOSO slot term flips 77-114 at the opener); unresolved
-- Pending change set: 255 paths
+- Baseline commit: `2b72b3b81278` — SIM-17 unit 2: halftime adjustment is carried by coordinators (OC reliability .21-.25, perm p .010; head coach adds nothing given OC or QB; DC on defense, not separable from HC)
+- Pending change set: 260 paths
   - ` M config/source_policies.json`
+  - `M  docs/lanes/backlog-all-2026-11-02.md`
+  - `M  docs/lanes/eng-50-online-forward-stacker.md`
+  - `M  docs/lanes/eng-51-opener-input-provenance-guard.md`
+  - `M  docs/lanes/engine-patch-queue-2026-11-03.md`
+  - `M  docs/lanes/lead-101-news-delta-read.md`
   - ` M docs/lanes/lead-102-name-blinded-control-read.md`
-  - ` M docs/lanes/sim-12-sim12-ingame-exits.md`
-  - `M  docs/lanes/sim-17-halftime-adjustment.md`
+  - `M  docs/lanes/pool-leader-romana.md`
+  - `M  docs/lanes/sim-12-sim12-ingame-exits.md`
   - ` M scripts/sim10_drive.py`
-  - `A  scripts/sim17_unit2_carriers.py`
   - ` M src/nfl_ats/board_archive.py`
   - ` M src/nfl_ats/board_content.py`
   - ` M src/nfl_ats/board_site.py`
@@ -39,11 +43,7 @@ Refreshed at: `2026-11-03T21:24:41.256726+00:00`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
   - `?? docs/lanes/c-drive-space-2026-10-31.md`
   - `?? docs/lanes/machine-crashes-2026-10-31.md`
-  - `?? docs/lanes/stealmybitcoin-ctf.md`
-  - `?? docs/move_reasons.json`
-  - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
-  - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
-  - ...and 235 more
+  - ...and 240 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
