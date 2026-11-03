@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T23:08:18.487029+00:00`
+Refreshed at: `2026-11-03T23:08:25.593058+00:00`
 
 ## Start here
 
@@ -21,11 +21,11 @@ Refreshed at: `2026-11-03T23:08:18.487029+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `c36c289aba2f` — Republish the site with the latest settled results
+- Baseline commit: `a66b8cb9ca8c` — MOD-53 registry cells (recorded by the running unit)
 - Pending change set: 251 paths
+  - `M  HANDOFF.md`
   - ` M config/source_policies.json`
   - ` M docs/lanes/mod-53-ridge-penalty-grid-edge-and-reduced-rank.md`
-  - `A  registry/weak_signals/mod53_penalty_grid_edge.json`
   - ` M scripts/sim10_drive.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
