@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T22:27:42.349280+00:00`
+Refreshed at: `2026-11-03T22:27:48.310660+00:00`
 
 ## Start here
 
@@ -21,11 +21,11 @@ Refreshed at: `2026-11-03T22:27:42.349280+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `f2f9ba39c52a` — MOD-47 unit 2: the served probability is well calibrated at the opener (slope .92 [.51,1.36]; LOSO shrink worse, P+ .21); unit 1's overconfidence was the raw model, which the served fit already shrinks (coef .308); no change
+- Baseline commit: `575fd6456f2e` — Master lane state: served probability calibrated; raw-vs-served base label issue recorded
 - Pending change set: 253 paths
+  - `M  HANDOFF.md`
   - ` M ROADMAP.md`
   - ` M config/source_policies.json`
-  - `M  docs/lanes/backlog-all-2026-11-02.md`
   - ` M docs/lanes/done/eng-56-final-score-reconciliation.md`
   - ` M docs/lanes/sim-21-drive-length-decomposition.md`
   - ` M scripts/sim10_drive.py`
