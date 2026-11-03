@@ -22,6 +22,7 @@ from sklearn.pipeline import Pipeline  # noqa: E402
 
 from nfl_ats import clv  # noqa: E402
 from nfl_ats import margin as margin_mod  # noqa: E402
+from nfl_ats.mass_preserving_lattice import band_read  # noqa: E402
 
 u3 = NS["u3"]
 HARNESS = NS["HARNESS"]
@@ -29,7 +30,7 @@ FULL = NS["FULL"]
 BASE_ALPHA = NS["BASE_ALPHA"]
 BASE5 = NS["BASE5"]
 compare = NS["compare"]
-OUT = u3.ROOT / "artifacts" / "mod53_unit1"
+OUT = u3.ROOT / "artifacts" / "mod53_unit2"
 ORIG = margin_mod.make_margin_estimator
 LOG10_START = -1.0
 LOG10_STEP = 0.5
@@ -38,7 +39,9 @@ MAX_COMPONENTS = 30
 MIN_SEASONS = 3
 EIG_REL_TOL = 1e-10
 LOG = []
-STATE = {"seasons": None, "arm": None}
+STATE = {"seasons": None, "arm": None, "results": None}
+CACHE = {}
+PROB_EPS = 1e-6
 SEASON_MAP = None
 
 
@@ -79,6 +82,66 @@ def ridge_choice(Z, y, seasons):
             w = np.linalg.solve(Gt - G[s] + pen + eye, ct - c[s])
             sse[j] += float(np.sum((yy[s] - blocks[s] @ w) ** 2))
     return A, lams, d, sse
+
+
+def cover_prob(pool_line, pool_margin, line, point):
+    r = band_read(pool_line, pool_margin, float(line), float(point))
+    total = r.cover + r.loss
+    return r.cover / total if total > 0.0 else 0.5
+
+
+def score_games(pool_line, pool_margin, lines, points, margins):
+    ll = 0.0
+    hit = 0
+    n = 0
+    for line, point, m in zip(lines, points, margins, strict=True):
+        if m == line:
+            continue
+        p = min(max(cover_prob(pool_line, pool_margin, line, point), PROB_EPS), 1.0 - PROB_EPS)
+        home = m > line
+        ll += -np.log(p if home else 1.0 - p)
+        hit += int((p >= 0.5) == home)
+        n += 1
+    return ll, hit, n
+
+
+def decision_choice(Z, y, res, seasons):
+    A = np.hstack([Z, np.ones((len(Z), 1))])
+    uniq = np.unique(seasons)
+    Zc = Z - Z.mean(axis=0)
+    lams, d = grid_for(Zc.T @ Zc)
+    line = res - y
+    blocks = {s: A[seasons == s] for s in uniq}
+    G = {s: blocks[s].T @ blocks[s] for s in uniq}
+    c = {s: blocks[s].T @ y[seasons == s] for s in uniq}
+    Gt = sum(G.values())
+    ct = sum(c.values())
+    eye = 1e-12 * np.eye(A.shape[1])
+    ll = np.zeros(len(lams))
+    hit = np.zeros(len(lams))
+    cnt = np.zeros(len(lams))
+    for s in uniq:
+        m = seasons == s
+        for j, lam in enumerate(lams):
+            pen = np.full(A.shape[1], lam)
+            pen[-1] = 0.0
+            w = np.linalg.solve(Gt - G[s] + np.diag(pen) + eye, ct - c[s])
+            loc = float(np.median(y[~m] - A[~m] @ w))
+            pts = line[m] + blocks[s] @ w + loc
+            a, b, n = score_games(line[~m], res[~m], line[m], pts, res[m])
+            ll[j] += a
+            hit[j] += b
+            cnt[j] += n
+    return A, lams, d, ll / cnt, hit / cnt, line
+
+
+def insample_score(A, y, res, line, lam):
+    pen = np.full(A.shape[1], lam)
+    pen[-1] = 0.0
+    w = np.linalg.solve(A.T @ A + np.diag(pen) + 1e-12 * np.eye(A.shape[1]), A.T @ y)
+    loc = float(np.median(y - A @ w))
+    a, b, n = score_games(line, res, line, line + A @ w + loc, res)
+    return a / n, b / n
 
 
 def pca_choice(Z, y, seasons):
@@ -128,6 +191,51 @@ class ArmRidge(BaseEstimator, RegressorMixin):
             r = Ridge(alpha=BASE_ALPHA).fit(Z, y)
             self.coef_, self.intercept_ = r.coef_, float(r.intercept_)
             rec.update(fallback=True)
+        elif arm in ("L", "C"):
+            S = int(seasons.max())
+            res = STATE["results"]
+            prior = seasons < S
+            key = (arm, S, int(prior.sum()))
+            if len(np.unique(seasons[prior])) < MIN_SEASONS:
+                r = Ridge(alpha=BASE_ALPHA).fit(Z, y)
+                self.coef_, self.intercept_ = r.coef_, float(r.intercept_)
+                rec.update(fallback=True)
+            else:
+                if key not in CACHE:
+                    A0, lams, d, ll, acc, line = decision_choice(
+                        Z[prior], y[prior], res[prior], seasons[prior]
+                    )
+                    obj = -ll if arm == "L" else acc
+                    j = int(np.argmax(obj))
+                    i10 = int(np.argmin(np.abs(np.log10(lams) - np.log10(BASE_ALPHA))))
+                    ins = insample_score(A0, y[prior], res[prior], line, lams[j])
+                    ins10 = insample_score(A0, y[prior], res[prior], line, lams[i10])
+                    CACHE[key] = {
+                        "lam": float(lams[j]),
+                        "idx": j,
+                        "grid_len": len(lams),
+                        "dof": dof_at(d, lams[j]),
+                        "inner_ll": float(ll[j]),
+                        "inner_acc": float(acc[j]),
+                        "inner_ll_a10": float(ll[i10]),
+                        "inner_acc_a10": float(acc[i10]),
+                        "in_ll": ins[0],
+                        "in_acc": ins[1],
+                        "in_ll_a10": ins10[0],
+                        "in_acc_a10": ins10[1],
+                        "ll_curve": [float(v) for v in ll],
+                        "acc_curve": [float(v) for v in acc],
+                        "lams": [float(v) for v in lams],
+                    }
+                ch = CACHE[key]
+                A = np.hstack([Z, np.ones((len(Z), 1))])
+                pen = np.full(A.shape[1], ch["lam"])
+                pen[-1] = 0.0
+                w = np.linalg.solve(A.T @ A + np.diag(pen) + 1e-12 * np.eye(A.shape[1]), A.T @ y)
+                self.coef_, self.intercept_ = w[:-1], float(w[-1])
+                rec.update(
+                    {k: v for k, v in ch.items() if k not in ("ll_curve", "acc_curve", "lams")}
+                )
         elif arm == "A":
             A, lams, d, sse = ridge_choice(Z, y, seasons)
             j = int(np.argmin(sse))
@@ -178,10 +286,11 @@ class ArmPipe(Pipeline):
     def fit(self, X, y=None, **kw):
         cols = list(X.columns)
         keys = pd.util.hash_pandas_object(X[cols], index=False).to_numpy()
-        seasons = SEASON_MAP.reindex(keys).to_numpy()
-        if np.isnan(seasons).any():
+        looked = SEASON_MAP.reindex(keys)
+        if looked["season"].isna().any():
             raise RuntimeError("season lookup failed")
-        STATE["seasons"] = seasons.astype(int)
+        STATE["seasons"] = looked["season"].to_numpy().astype(int)
+        STATE["results"] = looked["result"].to_numpy(dtype=float)
         return super().fit(X, y, **kw)
 
 
@@ -244,7 +353,12 @@ def selfcheck():
         bool(ok3),
         flush=True,
     )
-    if not (ok and ok2 and dof_ok and ok3):
+    pool_l = rng.normal(size=400) * 6.0
+    pool_m = np.round(pool_l + rng.normal(size=400) * 13.0)
+    ll_c, _hit, n_c = score_games(pool_l, pool_m, pool_l[:20], pool_l[:20], pool_m[:20])
+    ok4 = n_c > 0 and bool(np.isfinite(ll_c))
+    print("selfcheck decision_score_finite", ok4, flush=True)
+    if not (ok and ok2 and dof_ok and ok3 and ok4):
         raise SystemExit("selfcheck failed")
 
 
@@ -281,6 +395,13 @@ def summarize_log(arm):
     return out
 
 
+def summarize_decision():
+    out = {}
+    for (_arm, S, _n), v in sorted(CACHE.items(), key=lambda kv: kv[0][1]):
+        out[int(S)] = {k: v[k] for k in v if k not in ("ll_curve", "acc_curve", "lams")}
+    return out
+
+
 def main():
     global SEASON_MAP
     OUT.mkdir(parents=True, exist_ok=True)
@@ -288,9 +409,15 @@ def main():
     selfcheck()
     features = pd.read_parquet(u3.FEATURES)
     keys = pd.util.hash_pandas_object(features[list(FULL)], index=False)
-    sm = pd.Series(features["season"].astype(int).to_numpy(), index=keys.to_numpy())
+    sm = pd.DataFrame(
+        {
+            "season": features["season"].astype(int).to_numpy(),
+            "result": pd.to_numeric(features["result"], errors="coerce").to_numpy(),
+        },
+        index=keys.to_numpy(),
+    )
     dup = sm.index.duplicated(keep=False)
-    if int(sm[dup].groupby(level=0).nunique().gt(1).sum()):
+    if int(sm[dup].groupby(level=0).nunique(dropna=False).gt(1).any(axis=1).sum()):
         raise SystemExit("season key conflict")
     SEASON_MAP = sm[~sm.index.duplicated(keep="first")]
     base = pd.read_parquet(BASE5)
@@ -300,9 +427,10 @@ def main():
         raise SystemExit("base reproduction failed")
     pop = HARNESS["proxy_population"](features)
     results, chosen = {}, {}
-    arms = sys.argv[1:] or ["A", "P", "I"]
+    arms = sys.argv[1:] or ["L", "C"]
     for tag in arms:
         LOG.clear()
+        CACHE.clear()
         install(tag)
         try:
             late = HARNESS["true_eval"](features, tuple(FULL), BASE_ALPHA)
@@ -318,6 +446,9 @@ def main():
         pd.DataFrame(
             [{k: v for k, v in r.items() if k not in ("curve", "lams")} for r in LOG]
         ).to_csv(OUT / f"{tag}_fits.csv", index=False)
+        if tag in ("L", "C"):
+            (OUT / f"{tag}_curves.json").write_text(json.dumps(list(CACHE.items()), default=str))
+            chosen[tag] = summarize_decision()
         if tag in ("A", "P"):
             (OUT / f"{tag}_curves.json").write_text(
                 json.dumps([r for r in LOG if "curve" in r], default=str)
@@ -353,6 +484,8 @@ def main():
         )
     cells = []
     names = {
+        "L": "ridge_penalty_by_inner_loso_cover_log_loss",
+        "C": "ridge_penalty_by_inner_loso_pick_accuracy",
         "A": "ridge_extended_grid_inner_loso",
         "P": "reduced_rank_pca_inner_loso",
         "I": "intercept_only_control",
@@ -361,11 +494,11 @@ def main():
         for era, c in r.items():
             if era.startswith("from_") or era == "pooled":
                 continue
-            lo, hi = (2011, 2019) if era.startswith("proxy") else (2020, 2025)
+            lo, hi = (2011, 2019) if era.startswith("sbr") else (2020, 2025)
             b = c["d_acc_season_boot"]
             cells.append(
                 {
-                    "source": "artifacts/mod53_unit1/report.json",
+                    "source": "artifacts/mod53_unit2/report.json",
                     "effect_units": "accuracy_points",
                     "classification": "unresolved_below_power",
                     "league": "nfl",
@@ -374,8 +507,8 @@ def main():
                     "family": "mod53_penalty_grid_edge",
                     "category": "control" if tag == "I" else "modeling",
                     "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
-                    "notes": "Base model, same 88 inputs, past-only weekly refits, opener input; selection by inner leave-one-season-out; three arms (A extended penalty grid, P principal components 1..30, I intercept-only control) by two eras, six looks.",
-                    "name": f"mod53_unit1_{names[tag]}_{era}_accuracy_diff",
+                    "notes": "Base model, same 88 inputs, past-only weekly refits, opener input; selection by inner leave-one-season-out; penalty chosen once per outer season by inner leave-one-season-out over earlier seasons on the discrete opener cover probability; two arms (L cover log loss, C pick accuracy) by two eras, four looks.",
+                    "name": f"mod53_unit2_{names[tag]}_{era}_accuracy_diff",
                     "description": f"Base model {names[tag]}, paired vs base ridge alpha 10, {lo}-{hi}; {c['record']} vs {c['record_base']}.",
                     "effect": c["d_acc"],
                     "interval_low": b["low"],
@@ -383,7 +516,7 @@ def main():
                     "probability_positive": b["pp"],
                     "sample_games": c["n"],
                     "sample_blocks": b["blocks"],
-                    "plain_summary": "Choosing the base model's shrinkage or rank inside each past-only window moved picks against the opener by an unresolved amount.",
+                    "plain_summary": "Choosing the base model's shrinkage by the decision metric inside each past-only window moved picks against the opener by an unresolved amount.",
                 }
             )
     (OUT / "weak_signals_batch.json").write_text(json.dumps({"cells": cells}, indent=1))

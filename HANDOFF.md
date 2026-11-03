@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T23:20:14.267768+00:00`
+Refreshed at: `2026-11-03T23:20:38.029914+00:00`
 
 ## Start here
 
@@ -21,17 +21,14 @@ Refreshed at: `2026-11-03T23:20:14.267768+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `a509aa2379dc` — Refresh session handoff
-- Pending change set: 258 paths
+- Baseline commit: `0fa1b58c63be` — PER-16: teams and coaches differ persistently in how often Questionable players play (split-half r .42, season-to-season .32-.34); coach-keyed ladder beats the league ladder on held-out seasons (P(plays) log loss +.0074, P+ 1.0); the wording read still beats it
+- Pending change set: 255 paths
   - ` M config/source_policies.json`
   - ` M docs/lanes/mod-10-graph-rating-base-input.md`
-  - ` M docs/lanes/mod-53-ridge-penalty-grid-edge-and-reduced-rank.md`
+  - `M  docs/lanes/mod-53-ridge-penalty-grid-edge-and-reduced-rank.md`
   - ` M docs/lanes/mod-54-mirrored-home-away-training-rows.md`
-  - `M  docs/lanes/per-16-team-reporting-habit-designation-play-rate.md`
-  - ` M registry/weak_signals/mod53_penalty_grid_edge.json`
-  - `A  registry/weak_signals/per16_team_designation_habit.json`
-  - ` M scripts/mod53_penalty_grid.py`
-  - `A  scripts/per16_team_designation_habit.py`
+  - `M  registry/weak_signals/mod53_penalty_grid_edge.json`
+  - `M  scripts/mod53_penalty_grid.py`
   - ` M src/nfl_ats/board_content.py`
   - ` M src/nfl_ats/board_terminal.py`
   - `?? an.csv`
@@ -43,7 +40,10 @@ Refreshed at: `2026-11-03T23:20:14.267768+00:00`
   - `?? docs/move_reasons.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
-  - ...and 238 more
+  - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
+  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
+  - ...and 235 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

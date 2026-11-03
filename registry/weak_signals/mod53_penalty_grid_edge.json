@@ -168,6 +168,118 @@
       ],
       "source": "artifacts/mod53_unit1/report.json",
       "standard_error": null
+    },
+    "mod53_unit2_ridge_penalty_by_inner_loso_cover_log_loss_sbr_2011_2019_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model ridge_penalty_by_inner_loso_cover_log_loss, paired vs base ridge alpha 10, 2020-2025; 1124-1107 vs 1142-1089.",
+      "effect": -0.8068130883012102,
+      "effect_units": "accuracy_points",
+      "family": "mod53_penalty_grid_edge",
+      "interval": [
+        -1.8360949395432153,
+        0.2679767753461367
+      ],
+      "league": "nfl",
+      "notes": "Base model, same 88 inputs, past-only weekly refits, opener input; selection by inner leave-one-season-out; penalty chosen once per outer season by inner leave-one-season-out over earlier seasons on the discrete opener cover probability; two arms (L cover log loss, C pick accuracy) by two eras, four looks.",
+      "plain_summary": "Choosing the base model's shrinkage by the decision metric inside each past-only window moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.06165,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod53_unit2/report.json",
+      "standard_error": null
+    },
+    "mod53_unit2_ridge_penalty_by_inner_loso_cover_log_loss_tuesday_2020_2025_accuracy_diff": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Whole season-blocked interval below zero (-1.13 [-1.67,-0.60], P+ 0.0) for choosing the ridge penalty by inner leave-one-season-out cover log loss.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Base model ridge_penalty_by_inner_loso_cover_log_loss, paired vs base ridge alpha 10, 2020-2025; 785-718 vs 802-701.",
+      "effect": -1.1310711909514304,
+      "effect_units": "accuracy_points",
+      "family": "mod53_penalty_grid_edge",
+      "interval": [
+        -1.6744809109176155,
+        -0.598404255319149
+      ],
+      "league": "nfl",
+      "notes": "Base model, same 88 inputs, past-only weekly refits, opener input; selection by inner leave-one-season-out; penalty chosen once per outer season by inner leave-one-season-out over earlier seasons on the discrete opener cover probability; two arms (L cover log loss, C pick accuracy) by two eras, four looks.",
+      "plain_summary": "Choosing the base model's shrinkage by the decision metric inside each past-only window moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod53_unit2/report.json",
+      "standard_error": null
+    },
+    "mod53_unit2_ridge_penalty_by_inner_loso_pick_accuracy_sbr_2011_2019_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model ridge_penalty_by_inner_loso_pick_accuracy, paired vs base ridge alpha 10, 2020-2025; 1133-1098 vs 1142-1089.",
+      "effect": -0.4034065441506051,
+      "effect_units": "accuracy_points",
+      "family": "mod53_penalty_grid_edge",
+      "interval": [
+        -1.0810810810810811,
+        0.26702566913200954
+      ],
+      "league": "nfl",
+      "notes": "Base model, same 88 inputs, past-only weekly refits, opener input; selection by inner leave-one-season-out; penalty chosen once per outer season by inner leave-one-season-out over earlier seasons on the discrete opener cover probability; two arms (L cover log loss, C pick accuracy) by two eras, four looks.",
+      "plain_summary": "Choosing the base model's shrinkage by the decision metric inside each past-only window moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.1106,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mod53_unit2/report.json",
+      "standard_error": null
+    },
+    "mod53_unit2_ridge_penalty_by_inner_loso_pick_accuracy_tuesday_2020_2025_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model ridge_penalty_by_inner_loso_pick_accuracy, paired vs base ridge alpha 10, 2020-2025; 791-712 vs 802-701.",
+      "effect": -0.7318695941450433,
+      "effect_units": "accuracy_points",
+      "family": "mod53_penalty_grid_edge",
+      "interval": [
+        -1.6318537859007833,
+        0.1342281879194631
+      ],
+      "league": "nfl",
+      "notes": "Base model, same 88 inputs, past-only weekly refits, opener input; selection by inner leave-one-season-out; penalty chosen once per outer season by inner leave-one-season-out over earlier seasons on the discrete opener cover probability; two arms (L cover log loss, C pick accuracy) by two eras, four looks.",
+      "plain_summary": "Choosing the base model's shrinkage by the decision metric inside each past-only window moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.039,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod53_unit2/report.json",
+      "standard_error": null
     }
   }
 }
