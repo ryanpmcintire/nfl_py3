@@ -10,7 +10,7 @@ import pandas as pd
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "scripts"))
 OUT = REPO / "artifacts" / "mod25e3" / "rulestr"
-NV = Path("C:/Users/Ryan/AppData/Local/Temp/claude/F--Repos-nfl-py3/f6b7873f-565c-422a-9dee-b6963fcaad49/scratchpad/nv")
+from nv_path import NV  # noqa: E402
 COLS = ["game_id", "play_id", "season", "week", "posteam", "defteam", "home_team", "away_team", "home_score", "away_score", "down", "play_type", "qb_kneel", "qb_spike", "penalty", "penalty_type", "penalty_team", "penalty_yards", "timeout", "timeout_team", "epa", "game_seconds_remaining"]
 
 

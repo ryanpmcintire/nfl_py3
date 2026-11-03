@@ -29,6 +29,34 @@
       "source": "artifacts/pool_rank_replay/standing_aware_e100_b1p0_s3000_results.json",
       "standard_error": 0.0376
     },
+    "pool01_standing_aware_forward_from_rank19": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "policies differ on 6 of 1200 paths; model probabilities assumed calibrated; field BP model fit on 8 weeks incl. sim weeks; no positive control",
+      "closing_ground": null,
+      "description": "Standing-aware Best Pick vs served top-probability Best Pick, forward from rank 19 / 65 points, 250 entries, field Best Pick game choice from prelock softmax; 0 side flips; 1 arm",
+      "effect": 0.375,
+      "effect_units": "payout_first_pp",
+      "family": "pool01_standing_aware",
+      "interval": [
+        0.083,
+        0.75
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.99905,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 1200,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_rank_replay/forward_sim_results.json",
+      "standard_error": null
+    },
     "pool01_standing_aware_observed_tiebreak": {
       "category": "modeling",
       "classification": "unresolved_below_power",

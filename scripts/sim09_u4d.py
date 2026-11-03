@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO / "scripts"))
 import sim04_engine as eng  # noqa: E402
 
 OUT = REPO / "artifacts" / "sim09" / "u4d"
-NV = Path("C:/Users/Ryan/AppData/Local/Temp/claude/F--Repos-nfl-py3/f6b7873f-565c-422a-9dee-b6963fcaad49/scratchpad/nv")
+from nv_path import NV  # noqa: E402
 COLS = ["game_id", "play_id", "season", "down", "ydstogo", "yardline_100", "score_differential", "qtr", "game_seconds_remaining",
         "posteam_timeouts_remaining", "defteam_timeouts_remaining", "play_type", "air_yards", "yards_gained", "qb_kneel", "qb_spike"]
 CUR = {"a": eng.SCORE_INNER_SCALE, "b": eng.SCORE_OUTER_SCALE, "T": eng.SCALE_TIME, "K": eng.K_NEIGHBORS, "H": 0}

@@ -700,7 +700,9 @@ def install_cal4s():
 
 EP_MODEL_PATH = OUT / "ep_model.joblib"
 EP_COLS = ["down", "ydstogo", "yardline_100", "half_seconds_remaining", "score_differential", "posteam_to", "defteam_to", "half"]
-NV_DIR = "C:/Users/Ryan/AppData/Local/Temp/claude/F--Repos-nfl-py3/f6b7873f-565c-422a-9dee-b6963fcaad49/scratchpad/nv"
+from nv_path import NV as _NV  # noqa: E402
+
+NV_DIR = _NV.as_posix()
 
 
 def ep_features(down, dist, yl, hs, sd, to_o, to_d, half):

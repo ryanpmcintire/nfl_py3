@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T13:16:18.601503+00:00`
+Refreshed at: `2026-11-03T13:35:22.550763+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-03T13:16:18.601503+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `25dea3e122b5` — Republish the site with the latest settled results
-- Pending change set: 283 paths
+- Baseline commit: `5a2ca157f7bb` — Backlog wave 2026-11-03: MOD-17 done; SKY, MOD-10, SIM-06/07, ENV-02, LEAD-28/61, pool and forward-log units
+- Pending change set: 247 paths
   - `M  ROADMAP.md`
   - `M  docs/lanes/backlog-all-2026-11-02.md`
-  - `M  docs/lanes/coordinators-lead28-per07-2026-11-02.md`
-  - `M  docs/lanes/done/env02-forecast-provenance-chronology.md`
-  - `M  docs/lanes/done/lead61-second-half-channel.md`
-  - `A  docs/lanes/forward-terms-2026-11-03.md`
-  - `A  docs/lanes/mod10-graph-reliability-2026-11-03.md`
-  - `A  docs/lanes/mod17-lattice-ledger-2026-11-03.md`
-  - `M  docs/lanes/mod25-v3-sim11-distill.md`
-  - `M  docs/lanes/pol12-totals-2026-11-02.md`
+  - `A  docs/lanes/forward-log-audit-2026-11-03.md`
   - `M  docs/lanes/pool01-standing-aware-2026-11-02.md`
-  - `M  docs/lanes/sim06-learned-head-2026-11-02.md`
-  - `A  docs/lanes/sim07-power-2026-11-03.md`
-  - `M  docs/lanes/sim08-simulator-rebuild.md`
-  - ` M docs/lanes/sim09-urgency-stakes.md`
-  - `M  docs/lanes/sky01-news-availability.md`
-  - `M  docs/lanes/sky03-matchups-2026-11-02.md`
-  - `M  docs/lanes/sky04-lead-lag-2026-11-02.md`
-  - `A  docs/lanes/ui20-2026-11-03.md`
-  - `M  docs/sim08_market_anchored_declaration.md`
-  - ...and 263 more
+  - `A  docs/lanes/scheduler-batch-2026-11-03.md`
+  - `M  docs/lanes/sim09-urgency-stakes.md`
+  - `M  registry/weak_signals/pool01_standing_aware.json`
+  - `M  scripts/mod25d_variance.py`
+  - `M  scripts/mod25e_desp.py`
+  - `M  scripts/mod25e_rulestr.py`
+  - `A  scripts/nv_path.py`
+  - `A  scripts/pool01_field_best_pick.py`
+  - `A  scripts/pool01_forward_sim.py`
+  - `M  scripts/sim09_f3.py`
+  - `M  scripts/sim09_personnel.py`
+  - `M  scripts/sim09_u4d.py`
+  - `M  scripts/sim09_urgency.py`
+  - `?? an.csv`
+  - `?? data/pool_observables/20261103T130853Z/manifest.json`
+  - `?? data/pool_observables/20261103T130853Z/observations.json`
+  - ...and 227 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

@@ -11,7 +11,7 @@ import pandas as pd
 
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "scripts"))
-NV = Path("C:/Users/Ryan/AppData/Local/Temp/claude/F--Repos-nfl-py3/f6b7873f-565c-422a-9dee-b6963fcaad49/scratchpad/nv")
+from nv_path import NV  # noqa: E402
 OUT = REPO / "artifacts" / "sim09" / "f3"
 PRE = {"False Start", "Delay of Game", "Illegal Formation", "Illegal Shift", "Defensive Offside", "Neutral Zone Infraction", "Encroachment", "Defensive 12 On-field", "Offensive 12 On-field", "Illegal Motion", "Illegal Substitution", "Defensive Delay of Game", "Offensive Offside"}
 GROUPS = ["pre_off", "pre_def", "in_off", "in_def"]

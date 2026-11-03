@@ -10,7 +10,7 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "scripts"))
 ART = REPO / "artifacts" / "mod25e3"
 OUTD = ART / "desp"
-NV = Path("C:/Users/Ryan/AppData/Local/Temp/claude/F--Repos-nfl-py3/f6b7873f-565c-422a-9dee-b6963fcaad49/scratchpad/nv")
+from nv_path import NV  # noqa: E402
 LABEL = os.environ.get("DESP_LABEL", "crHpqokgndecsmfwt")
 SEEDS = tuple(int(x) for x in os.environ.get("DESP_SEEDS", "11,12,13").split(","))
 BURN = int(os.environ.get("KICK_BURN", 2))

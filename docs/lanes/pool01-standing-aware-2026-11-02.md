@@ -25,3 +25,10 @@ Script `scripts/pool_observed_replay.py`, artifact `artifacts/pool_rank_replay/o
 - Limits: hit rate 55.5% is the population hit rate (in-sample); field Best Pick distribution per game not measurable (best_picks only in w1-2 tsv), so rival tiebreak wins are independent of our game choice; tiebreak only, no weekly Last-game-total modelled; today's actual standing (19th, 65 pts) not simulated.
 ## Next
 Fit field best-pick game shares once more weeks of `best_picks` are captured; simulate forward from rank 19 / 65 points.
+
+## Field Best Pick model and forward sim (2026-11-03)
+- Parquet data/splash/field/2026_field_best_picks_w01-08.parquet (242 rows, 121 games). Autopicks absent in raw (0 for W3-8, NaN W1-2). Script scripts/pool01_field_best_pick.py -> artifacts/pool_rank_replay/field_best_pick_model.json: conditional logit over sides (fav, |spread|, model p), leave-one-week-out; held-out loglik/best pick -3.289 v uniform -3.408, gain +0.118/wk [0.059, 0.178]; game-share calibration slope 0.79 (shrinks; quintile table in json). With lock pick counts: -3.128, slope 1.36.
+- scripts/pool01_forward_sim.py (10 weeks x 15 games, rank 19 / 65 pts conditioned by rejection, 1200 paths, inner 200): P(first) served 18.5% [16.3, 20.7], aware 18.8% [16.7, 21.1], gain +0.375 pp [0.083, 0.75] P+ 0.999 but policies differ on only 6 paths; BP tiebreak value +1.38 pp [0.87, 1.92]. Recorded pool01_standing_aware_forward_from_rank19.
+- Caveats: model probs assumed calibrated (inflates P(first)); future-game features bootstrapped from W1-8; full-fit BP coefficients used in sim; W8 standings page not read, rival points simulated.
+## Next
+Read Week 8 standings for real rival scores; replace bootstrap with real remaining schedule.

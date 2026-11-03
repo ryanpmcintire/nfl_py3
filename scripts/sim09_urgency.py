@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 from scipy.stats import norm
 
-NV = Path("C:/Users/Ryan/AppData/Local/Temp/claude/F--Repos-nfl-py3/f6b7873f-565c-422a-9dee-b6963fcaad49/scratchpad/nv")
+from nv_path import NV  # noqa: E402
 OUT = Path(__file__).resolve().parents[1] / "artifacts" / "sim09"
 OUT.mkdir(parents=True, exist_ok=True)
 COLS = ["game_id", "season", "week", "season_type", "posteam", "defteam", "home_team", "away_team", "qtr",

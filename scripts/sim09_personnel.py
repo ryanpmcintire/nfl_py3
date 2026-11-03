@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 from sim09_urgency import cluster_ols  # noqa: E402
 
-NV = Path("C:/Users/Ryan/AppData/Local/Temp/claude/F--Repos-nfl-py3/f6b7873f-565c-422a-9dee-b6963fcaad49/scratchpad/nv")
+from nv_path import NV  # noqa: E402
 OUT = ROOT / "artifacts" / "sim09"
 PBP = sorted(glob.glob(str(ROOT / "data/pbp/raw/*")))[-1]
 PART = ROOT / "data/players/participation/raw/20260813T131635Z"
