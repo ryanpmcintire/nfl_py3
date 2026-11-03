@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T19:36:56.578034+00:00`
+Refreshed at: `2026-11-03T19:37:59.223460+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-03T19:36:56.578034+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `e259535b569c` — POOL-03 coin-flip ownership term (no real effect once fitted), MOD-33 prior-week exits, MOD-34 residualised add-one: all unresolved
-- Pending change set: 254 paths
+- Baseline commit: `1535369953d8` — MOD-33 unit 2: OL absence join fixed, QB exit term by designation (unresolved); script made ruff-clean
+- Pending change set: 266 paths
+  - `M  ROADMAP.md`
   - ` M config/source_policies.json`
-  - `M  docs/lanes/backlog-all-2026-11-02.md`
+  - ` M docs/lanes/backlog-all-2026-11-02.md`
+  - `A  docs/lanes/eng-48-eng48-anytime-valid-monitor.md`
+  - `A  docs/lanes/eng-49-eng49-matched-forward-ledger.md`
   - ` M docs/lanes/engine-patch-queue-2026-11-03.md`
-  - `A  docs/lanes/mod-33-mod33-prior-week-exits.md`
+  - `A  docs/lanes/mkt-22-mkt22-trait-pricing-audit.md`
+  - `A  docs/lanes/mod-39-mod39-playoff-leverage-asymmetry.md`
+  - `A  docs/lanes/mod-40-mod40-nextgen-process-gap.md`
+  - `A  docs/lanes/mod-41-mod41-cumulative-workload.md`
+  - `A  docs/lanes/per-11-per11-acquired-player-ramp.md`
+  - `A  docs/lanes/per-12-per12-qb-return-from-absence.md`
+  - `A  docs/lanes/per-13-per13-week17-rest-hazard.md`
+  - `A  docs/lanes/sim-16-sim16-attrition-expectation.md`
   - ` M docs/lanes/sim08-spec-a-terminal-2026-11-03.md`
+  - `A  docs/lanes/ui-25-ui25-when-we-will-know.md`
+  - `A  docs/lanes/ui-26-ui26-copy-pick-sheet.md`
+  - `A  docs/lanes/ui-27-ui27-forecast-chip.md`
+  - `A  docs/lanes/xlg-15-xlg15-reliability-transfer.md`
   - ` M docs/lead64_freshness_audit.md`
-  - `M  registry/weak_signals/mod33_prior_week_exits.json`
-  - `M  scripts/mod33_prior_week_exits.py`
-  - ` M scripts/sim10_situational.py`
-  - ` M src/nfl_ats/board_content.py`
-  - ` M src/nfl_ats/board_interactive.css`
-  - ` M src/nfl_ats/board_terminal.py`
-  - ` M src/nfl_ats/dashboard/findings_content.py`
-  - ` M tests/test_board_content.py`
-  - `?? an.csv`
-  - `?? data/pool_observables/20261103T130853Z/manifest.json`
-  - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - `?? docs/lanes/c-drive-space-2026-10-31.md`
-  - `?? docs/lanes/machine-crashes-2026-10-31.md`
-  - `?? docs/lanes/stealmybitcoin-ctf.md`
-  - ...and 234 more
+  - ...and 246 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
