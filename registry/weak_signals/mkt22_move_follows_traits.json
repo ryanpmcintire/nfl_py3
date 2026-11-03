@@ -1,0 +1,341 @@
+{
+  "family": "mkt22_move_follows_traits",
+  "signals": {
+    "mkt22_sbr_2011_19_agg_cover_beyond_move": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval not resolved wrong-sign; no positive control; 12 looks in family",
+      "closing_ground": null,
+      "description": "cover_beyond_move on as-of trait agg per SD, controls open spread and season-week; permutation p 0.887",
+      "effect": 0.041517942762821614,
+      "effect_units": "ats_points",
+      "family": "mkt22_move_follows_traits",
+      "interval": [
+        -0.5682367783520176,
+        0.6434311253783447
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.558,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1933,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mkt22/cells.json",
+      "standard_error": 0.3148585935047275
+    },
+    "mkt22_sbr_2011_19_agg_move": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval not resolved wrong-sign; no positive control; 12 looks in family",
+      "closing_ground": null,
+      "description": "move on as-of trait agg per SD, controls open spread and season-week; permutation p 0.003",
+      "effect": 0.1436546186402634,
+      "effect_units": "ats_points",
+      "family": "mkt22_move_follows_traits",
+      "interval": [
+        0.04827979611135687,
+        0.24131816766121345
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.9995,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1998,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mkt22/cells.json",
+      "standard_error": 0.15823245089583762
+    },
+    "mkt22_sbr_2011_19_fs_cover_beyond_move": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval not resolved wrong-sign; no positive control; 12 looks in family",
+      "closing_ground": null,
+      "description": "cover_beyond_move on as-of trait fs per SD, controls open spread and season-week; permutation p 0.198",
+      "effect": -0.3975148078406896,
+      "effect_units": "ats_points",
+      "family": "mkt22_move_follows_traits",
+      "interval": [
+        -0.9814358821096392,
+        0.20392277456749774
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.097,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2223,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mkt22/cells.json",
+      "standard_error": 0.3017698990439586
+    },
+    "mkt22_sbr_2011_19_fs_move": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval not resolved wrong-sign; no positive control; 12 looks in family",
+      "closing_ground": null,
+      "description": "move on as-of trait fs per SD, controls open spread and season-week; permutation p 0.186",
+      "effect": 0.05354824129596508,
+      "effect_units": "ats_points",
+      "family": "mkt22_move_follows_traits",
+      "interval": [
+        -0.03325072843381854,
+        0.14548518048541398
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.8915,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2296,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mkt22/cells.json",
+      "standard_error": 0.1483615849167033
+    },
+    "mkt22_sbr_2011_19_pass_ahead_cover_beyond_move": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval not resolved wrong-sign; no positive control; 12 looks in family",
+      "closing_ground": null,
+      "description": "cover_beyond_move on as-of trait pass_ahead per SD, controls open spread and season-week; permutation p 0.400",
+      "effect": 0.27307953800000695,
+      "effect_units": "ats_points",
+      "family": "mkt22_move_follows_traits",
+      "interval": [
+        -0.36372653417191453,
+        0.9233505066554492
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.798,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1919,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mkt22/cells.json",
+      "standard_error": 0.3296831803984942
+    },
+    "mkt22_sbr_2011_19_pass_ahead_move": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval not resolved wrong-sign; no positive control; 12 looks in family",
+      "closing_ground": null,
+      "description": "move on as-of trait pass_ahead per SD, controls open spread and season-week; permutation p 0.961",
+      "effect": -0.0025968740243463295,
+      "effect_units": "ats_points",
+      "family": "mkt22_move_follows_traits",
+      "interval": [
+        -0.10205201864336623,
+        0.1020335003243189
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.4755,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1982,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/mkt22/cells.json",
+      "standard_error": 0.15811297709470137
+    },
+    "mkt22_tue_2020_25_agg_cover_beyond_move": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval not resolved wrong-sign; no positive control; 12 looks in family",
+      "closing_ground": null,
+      "description": "cover_beyond_move on as-of trait agg per SD, controls open spread and season-week; permutation p 0.148",
+      "effect": 0.4949576147630919,
+      "effect_units": "ats_points",
+      "family": "mkt22_move_follows_traits",
+      "interval": [
+        -0.19503273832139886,
+        1.167650742228534
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.925,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mkt22/cells.json",
+      "standard_error": 0.3466107453578879
+    },
+    "mkt22_tue_2020_25_agg_move": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval not resolved wrong-sign; no positive control; 12 looks in family",
+      "closing_ground": null,
+      "description": "move on as-of trait agg per SD, controls open spread and season-week; permutation p 0.373",
+      "effect": -0.03362011755055555,
+      "effect_units": "ats_points",
+      "family": "mkt22_move_follows_traits",
+      "interval": [
+        -0.11145569682489817,
+        0.04239042245590398
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.1955,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mkt22/cells.json",
+      "standard_error": 0.17940108990602174
+    },
+    "mkt22_tue_2020_25_fs_cover_beyond_move": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval not resolved wrong-sign; no positive control; 12 looks in family",
+      "closing_ground": null,
+      "description": "cover_beyond_move on as-of trait fs per SD, controls open spread and season-week; permutation p 0.370",
+      "effect": -0.3136452685911043,
+      "effect_units": "ats_points",
+      "family": "mkt22_move_follows_traits",
+      "interval": [
+        -1.0065643100521782,
+        0.37540135040836764
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.1775,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1498,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mkt22/cells.json",
+      "standard_error": 0.35020458544194843
+    },
+    "mkt22_tue_2020_25_fs_move": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval not resolved wrong-sign; no positive control; 12 looks in family",
+      "closing_ground": null,
+      "description": "move on as-of trait fs per SD, controls open spread and season-week; permutation p 0.591",
+      "effect": -0.020535742662578696,
+      "effect_units": "ats_points",
+      "family": "mkt22_move_follows_traits",
+      "interval": [
+        -0.09776443366426717,
+        0.058006924887142805
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.306,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1532,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mkt22/cells.json",
+      "standard_error": 0.17984151749572974
+    },
+    "mkt22_tue_2020_25_pass_ahead_cover_beyond_move": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval not resolved wrong-sign; no positive control; 12 looks in family",
+      "closing_ground": null,
+      "description": "cover_beyond_move on as-of trait pass_ahead per SD, controls open spread and season-week; permutation p 0.020",
+      "effect": 0.7874536198788447,
+      "effect_units": "ats_points",
+      "family": "mkt22_move_follows_traits",
+      "interval": [
+        0.08146997638576926,
+        1.4872336614313086
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.9845,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1498,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mkt22/cells.json",
+      "standard_error": 0.3556040725607195
+    },
+    "mkt22_tue_2020_25_pass_ahead_move": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval not resolved wrong-sign; no positive control; 12 looks in family",
+      "closing_ground": null,
+      "description": "move on as-of trait pass_ahead per SD, controls open spread and season-week; permutation p 0.824",
+      "effect": 0.009052491518712801,
+      "effect_units": "ats_points",
+      "family": "mkt22_move_follows_traits",
+      "interval": [
+        -0.06926251205596431,
+        0.08521613065187421
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.5845,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1532,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mkt22/cells.json",
+      "standard_error": 0.1796936077750064
+    }
+  }
+}

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T19:56:07.039472+00:00`
+Refreshed at: `2026-11-03T19:57:38.214973+00:00`
 
 ## Start here
 
@@ -21,28 +21,28 @@ Refreshed at: `2026-11-03T19:56:07.039472+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `dfd148c02b1c` — MOD-39 playoff leverage, PER-12 QB return, MOD-36 add-one noise floor: all unresolved; refresh handoff
+- Baseline commit: `f3c07865cfdf` — MOD-40 NGS process gap (reliable trait, priced at the opener); ENG-48 anytime-valid forward monitor
 - Pending change set: 265 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - ` M README.md`
   - ` M config/source_policies.json`
+  - ` M docs/findings.html`
+  - ` M docs/history.html`
+  - ` M docs/index.html`
   - `M  docs/lanes/backlog-all-2026-11-02.md`
-  - `M  docs/lanes/eng-48-eng48-anytime-valid-monitor.md`
-  - `M  docs/lanes/engine-patch-queue-2026-11-03.md`
-  - ` M docs/lanes/mkt-22-mkt22-trait-pricing-audit.md`
-  - `M  docs/lanes/mod-40-mod40-nextgen-process-gap.md`
+  - `M  docs/lanes/mkt-22-mkt22-trait-pricing-audit.md`
+  - `M  docs/lanes/sim-16-sim16-attrition-expectation.md`
   - ` M docs/lanes/sim08-spec-a-terminal-2026-11-03.md`
   - ` M docs/lead64_freshness_audit.md`
-  - `A  registry/weak_signals/mod40_ngs_process_gap.json`
-  - `A  scripts/forward_monitor.py`
-  - `A  scripts/mod40_ngs_fit.py`
-  - `A  scripts/mod40_ngs_reliability.py`
+  - ` M docs/model.html`
+  - `A  registry/weak_signals/mkt22_move_follows_traits.json`
+  - `A  registry/weak_signals/sim16_pregame_attrition.json`
+  - `A  scripts/mkt22_trait_pricing.py`
   - ` M scripts/sim10_situational.py`
+  - `A  scripts/sim16_attrition.py`
   - ` M src/nfl_ats/board_content.py`
   - ` M src/nfl_ats/board_terminal.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
-  - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - ...and 245 more
 
 The baseline commit and pending paths were observed before the automatic refresh.

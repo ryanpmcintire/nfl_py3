@@ -1,0 +1,89 @@
+{
+  "family": "sim16_pregame_attrition",
+  "signals": {
+    "sim16_attrition_flathazard_x_gap_loso_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Flat hazard x backup gap; decisive 100 term 43 v 57; placebo p>=obs 0.93",
+      "effect": -0.0016,
+      "effect_units": "log_loss_improvement",
+      "family": "sim16_pregame_attrition",
+      "interval": [
+        -0.0029,
+        -0.00046
+      ],
+      "league": "nfl",
+      "notes": "scripts/sim16_attrition.py; 3 term looks plus 3x200 placebo permutations; coefs positive (wrong sign for an attrition cost) 5 of 6 folds in full arm",
+      "plain_summary": null,
+      "probability_positive": 0.004,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1368,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/sim-16-sim16-attrition-expectation.md",
+      "standard_error": null
+    },
+    "sim16_attrition_hazard_only_loso_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Fitted hazard sum without gap; decisive 107 term 52 v 55; placebo p>=obs 0.555",
+      "effect": -0.00056,
+      "effect_units": "log_loss_improvement",
+      "family": "sim16_pregame_attrition",
+      "interval": [
+        -0.00163,
+        0.00051
+      ],
+      "league": "nfl",
+      "notes": "scripts/sim16_attrition.py; 3 term looks plus 3x200 placebo permutations; coefs positive (wrong sign for an attrition cost) 5 of 6 folds in full arm",
+      "plain_summary": null,
+      "probability_positive": 0.15,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1368,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/sim-16-sim16-attrition-expectation.md",
+      "standard_error": null
+    },
+    "sim16_attrition_hazard_x_gap_loso_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "OL attrition cost (LOSO hazard x backup gap) home-away, opener input, v intercept-only; decisive 112 term 49 v control 63; placebo p>=obs 0.95",
+      "effect": -0.00146,
+      "effect_units": "log_loss_improvement",
+      "family": "sim16_pregame_attrition",
+      "interval": [
+        -0.00264,
+        -0.00037
+      ],
+      "league": "nfl",
+      "notes": "scripts/sim16_attrition.py; 3 term looks plus 3x200 placebo permutations; coefs positive (wrong sign for an attrition cost) 5 of 6 folds in full arm",
+      "plain_summary": null,
+      "probability_positive": 0.004,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1368,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/sim-16-sim16-attrition-expectation.md",
+      "standard_error": null
+    }
+  }
+}
