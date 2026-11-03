@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T21:44:39.085658+00:00`
+Refreshed at: `2026-11-03T21:44:44.357056+00:00`
 
 ## Start here
 
@@ -21,16 +21,11 @@ Refreshed at: `2026-11-03T21:44:39.085658+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `1e181d9c664f` — Refresh session handoff
-- Pending change set: 255 paths
+- Baseline commit: `9593701c2e73` — MKT-25 unit 2: the opener follows small and non-cover margins more, no over-revision after big covers, nothing mispriced; LEAD-102 blinded read: names barely move the read (r .856, mean -.009); LEAD-106 first score (pending an id-based outcome join)
+- Pending change set: 250 paths
+  - `M  HANDOFF.md`
   - ` M config/source_policies.json`
-  - `M  docs/lanes/lead-102-name-blinded-control-read.md`
-  - `M  docs/lanes/lead-106-injury-language-read.md`
-  - `M  docs/lanes/mkt-25-opener-revision-size.md`
-  - `A  registry/weak_signals/lead106.json`
-  - `A  registry/weak_signals/mkt25_opener_revision_unit2.json`
-  - `M  scripts/mkt25_opener_revision.py`
-  - `A  scripts/mkt25_unit2.py`
+  - ` M docs/lanes/sim-18-lead-protection.md`
   - ` M scripts/sim10_drive.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
@@ -43,7 +38,12 @@ Refreshed at: `2026-11-03T21:44:39.085658+00:00`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
   - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - ...and 235 more
+  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
+  - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
+  - ...and 230 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
