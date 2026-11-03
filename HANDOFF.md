@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T22:42:46.071549+00:00`
+Refreshed at: `2026-11-03T22:42:58.234938+00:00`
 
 ## Start here
 
@@ -21,14 +21,13 @@ Refreshed at: `2026-11-03T22:42:46.071549+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `0daa88de6219` — Refresh session handoff
-- Pending change set: 254 paths
+- Baseline commit: `66dc24bc8191` — MKT-28: PER-15 and SIM-18 served-base cells recorded (20 cells total, all unresolved; SIM-18 sec terms whole-interval negative but coefficient sign unresolved)
+- Pending change set: 252 paths
   - ` M config/source_policies.json`
-  - `M  docs/lanes/mkt-28-served-base-retest-of-opener-revision-terms.md`
   - ` M docs/lanes/mod-49-mod41-construction-sensitivity.md`
-  - ` M docs/lanes/mod-52-mod41-season-and-week-stability.md`
+  - `M  docs/lanes/mod-52-mod41-season-and-week-stability.md`
   - ` M docs/lanes/sim-21-drive-length-decomposition.md`
-  - `M  registry/weak_signals/mkt28_served_base_retest.json`
+  - `A  scripts/mod52_stability.py`
   - ` M scripts/sim10_drive.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
@@ -43,7 +42,8 @@ Refreshed at: `2026-11-03T22:42:46.071549+00:00`
   - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
   - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
   - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
-  - ...and 234 more
+  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
+  - ...and 232 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
