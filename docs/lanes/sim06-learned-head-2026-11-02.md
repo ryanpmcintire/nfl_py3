@@ -44,3 +44,9 @@ Full one-seed screen (not run), workers 3:
 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 python scripts/sim10_drive.py sim --seed 11 --workers 3 --realsched 1 --head 1 --label head
 Compare gates v artifacts/sim10/rshc_s11 / current default same seed (--head 0 --label headctl).
 Open: mass_10/mass_14 identical across default and head smoke runs (check gate_stats).
+
+## Step 2 screen (launched 2026-11-02 23:32 local)
+Seed 11 --head 1 --label head running in background (log artifacts/sim10_head_s11.log, out artifacts/sim10/head_s11 or similar by label). Compare to artifacts/sim10/rsjt_s11/gates.json (13/14; fails ot_share only; gate pass = sim inside real interval in table). Rule: if >=13/14 and loses none, run seeds 12-16 one at a time at workers 3, 6-seed mean vs rsjt; adopt only if all rsjt-passing gates pass and one improves without worsening beyond seed SD. Kill by PID at 11:30 ET Tuesday. Not yet compared.
+
+## Step 2 result (seed 11, measured, 680 s)
+--head 1 (artifacts/sim10/head_s11/gates.json) passes ~6 of the 14 table gates (sim inside real interval) v rsjt_s11 13/14. Loses margin_sd 15.46, q4_slope -0.111, mass_7 .0787, mass_14 .0432, pts_game 46.54, home_edge 2.77, noise_re_var 186.7, r2_w10_18 .110 (floor .1313). Gains ot_share (.0582). Declared rule fails: seeds 12-16 NOT run, default stays --head 0. Likely cause (inferred): head class probs (no tilt-aware calibration, higher scoring drives) shift scoring +1.7 pts/game. Not adopted; no code edited.
