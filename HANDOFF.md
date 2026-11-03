@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T22:59:30.973354+00:00`
+Refreshed at: `2026-11-03T22:59:38.141000+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-03T22:59:30.973354+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `7380c9630e5e` — MOD-07 joint stack of the nine frozen forward terms loses to the served probability (-.00141, P+ .18; decisive 77-87; small gains do not add up); PER-03 2026 injury revision history (8,528 rows; changes cluster Sat; 3.5% of Questionable change before kickoff); SIM-21/26 kernel replications used the wrong bandwidth config (correction recorded)
-- Pending change set: 247 paths
+- Baseline commit: `40882a25a9c9` — PER-03 lane: Friday evening injury snapshot job already scheduled
+- Pending change set: 262 paths
+  - `M  HANDOFF.md`
+  - ` M ROADMAP.md`
   - ` M config/source_policies.json`
-  - `M  docs/lanes/per03-free-source-2026-11-03.md`
+  - ` M docs/lanes/backlog-all-2026-11-02.md`
   - ` M scripts/sim10_drive.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
   - `?? docs/lanes/c-drive-space-2026-10-31.md`
+  - `?? docs/lanes/eng-58-flexed-and-rescheduled-games-audit.md`
+  - `?? docs/lanes/eng-59-moneyline-spread-consistency-audit.md`
+  - `?? docs/lanes/eng-60-neutral-site-orientation-audit.md`
+  - `?? docs/lanes/lead-112-post-opener-availability-news.md`
   - `?? docs/lanes/machine-crashes-2026-10-31.md`
-  - `?? docs/lanes/stealmybitcoin-ctf.md`
-  - `?? docs/move_reasons.json`
-  - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
-  - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
-  - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
-  - `?? registry/experiments/margin-backtest/20261006T183854Z.json`
-  - ...and 227 more
+  - `?? docs/lanes/mod-53-ridge-penalty-grid-edge-and-reduced-rank.md`
+  - `?? docs/lanes/mod-54-mirrored-home-away-training-rows.md`
+  - `?? docs/lanes/per-16-team-reporting-habit-designation-play-rate.md`
+  - `?? docs/lanes/sim-27-adaptive-neighbour-count-in-the-drive-draw.md`
+  - `?? docs/lanes/sim-28-timeouts-remaining-in-end-of-half-drives.md`
+  - `?? docs/lanes/sim-29-simulated-lineup-from-the-wording-read.md`
+  - ...and 242 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
