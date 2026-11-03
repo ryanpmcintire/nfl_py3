@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T18:57:51.109760+00:00`
+Refreshed at: `2026-11-03T19:05:18.092786+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-03T18:57:51.109760+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `1c7198acea1d` — Backlog round 2: 13 new rows (XLG-13/14, MOD-31..38, POOL-03/04, UI-24); XLG-11 CFB-centered ridge units 1-2; era-check scripts in repo
-- Pending change set: 276 paths
+- Baseline commit: `eef1d7437fcd` — Dashboard round 3: plain model name, real footer date, UI-23 swing lines; pooled-screen leak correction
+- Pending change set: 268 paths
   - ` M config/source_policies.json`
   - `M  docs/findings.html`
-  - `M  docs/history.html`
   - `M  docs/index.html`
   - `M  docs/lanes/backlog-all-2026-11-02.md`
-  - `M  docs/lanes/engine-patch-queue-2026-11-03.md`
-  - `M  docs/lanes/mod-31-mod31-wind-elasticity-term.md`
-  - ` M docs/lanes/mod24-more-games-2026-11-03.md`
-  - `M  docs/lanes/mod24-pooled-sweep-2026-11-03.md`
+  - ` M docs/lanes/engine-patch-queue-2026-11-03.md`
+  - `M  docs/lanes/mod-38-mod38-kicker-wind.md`
+  - `M  docs/lanes/mod24-more-games-2026-11-03.md`
+  - `M  docs/lanes/pool-04-pool04-field-simulator-calibration.md`
   - ` M docs/lanes/sim-12-sim12-ingame-exits.md`
   - ` M docs/lanes/sim08-spec-a-terminal-2026-11-03.md`
-  - `M  docs/lanes/sim09-tier-a-runs-2026-11-03.md`
-  - `M  docs/lanes/ui-23-ui23-swing-postmortem.md`
-  - `M  docs/lanes/ui20-2026-11-03.md`
-  - `M  docs/lanes/xlg-10-xlg10-pooled-addone.md`
-  - `M  docs/lanes/xlg-11-xlg11-cfb-prior-center.md`
-  - `M  docs/lanes/xlg-13-xlg13-screen-transfer.md`
-  - `M  docs/model.html`
-  - `A  registry/weak_signals/mod31_wind_elasticity.json`
+  - `M  docs/lanes/ui-24-ui24-luck-band.md`
+  - `M  registry/weak_signals/mod24_pooled_era_check.json`
+  - `A  registry/weak_signals/mod38_kicker_wind.json`
+  - `A  registry/weak_signals/pool04_field_calibration.json`
+  - `M  registry/weak_signals/xlg10_pooled_addone.json`
   - `M  registry/weak_signals/xlg11_cfb_centered_ridge.json`
-  - ...and 256 more
+  - `M  scripts/mod24_more_games.py`
+  - `M  scripts/mod24_pooled_levers.py`
+  - `A  scripts/mod38_kicker_wind.py`
+  - `A  scripts/pool04_field_ppc.py`
+  - ...and 248 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

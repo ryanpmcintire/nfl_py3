@@ -15,3 +15,6 @@ Rules: Zero crossing closes nothing; one fitted probability selects the side; we
 
 ## Open
 Look count and family to be declared before any sign is seen. Nothing here closes on zero crossing; record unresolved results with nfl-ats weak-signals record.
+
+## Unit 1 result (2026-11-04)
+Script scripts/pool04_field_ppc.py, artifact artifacts/pool_rank_replay/pool04_field_ppc.json (family pool04_field_calibration, 84 looks: 28 cells x 3 modes). Total sd obs 5.38 vs sim 5.21 (pct 0.76); leader 75 vs sim mean 74.9 (pct 0.53). Total mean 58.5 vs 60.4 (pct 0.14, mildly below). Adding POOL-01 skill term (split-half sd) gives sd ratio 1.00. Recorded pool04_total_sd_ratio_fixed_cover (unresolved_below_power). Next: week-level mean misses (W7 sd pct 0.99) vs pick-distribution shares.

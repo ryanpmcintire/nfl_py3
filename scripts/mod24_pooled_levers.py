@@ -77,6 +77,7 @@ def predict_arms(train, test, cols, arms):
 
 
 def walk(frame, cols, test_mask, min_train, arms, post_train=False):
+    frame = base.to_opener(frame)
     frame = frame.sort_values(["gameday", "game_id"]).reset_index(drop=True)
     test = frame.loc[test_mask(frame)]
     rows = []
@@ -172,8 +173,7 @@ def main():
     common = [c for c in CFB_MODEL_FEATURE_COLUMNS if c in nfl_cols]
     nfl = pd.read_parquet(base.NFL_FEATURES)
     nfl["gameday"] = pd.to_datetime(nfl["gameday"])
-    pg = pd.read_parquet(base.PER_GAME)[["game_id", "tue_open_home_spread"]]
-    nfl = nfl.merge(pg, on="game_id", how="left").rename(columns={"tue_open_home_spread": "open"})
+    nfl = base.nfl_open(nfl)
     ng = grade(
         walk(
             nfl,

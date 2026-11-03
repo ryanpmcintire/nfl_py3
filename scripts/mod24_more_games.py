@@ -32,6 +32,35 @@ CFB_MIN_TRAIN = 500
 NFL_MIN_TRAIN = 1000
 DRAWS = 2000
 SEED = 20261103
+SBR = ROOT / "data" / "processed" / "sbr_odds.parquet"
+OPENER_INPUT = os.environ.get("MOD24_CLOSE_INPUT") != "1"
+NFL_OPENER_SEASONS = (2020, 2025)
+
+
+def nfl_open(nfl):
+    pg = pd.read_parquet(PER_GAME)[["game_id", "tue_open_home_spread"]]
+    sbr = pd.read_parquet(SBR).dropna(subset=["game_id", "open_home_spread"])
+    sbr = sbr.drop_duplicates("game_id")[["game_id", "open_home_spread"]]
+    out = nfl.merge(pg, on="game_id", how="left").merge(sbr, on="game_id", how="left")
+    lo, hi = NFL_OPENER_SEASONS
+    out["open"] = np.where(
+        out["season"].between(lo, hi), out["tue_open_home_spread"], out["open_home_spread"]
+    )
+    return out
+
+
+def cfb_prior_rows(cfb):
+    out = to_opener(cfb.assign(open=cfb["spread_open"]))
+    return out.loc[out["ats_margin"].notna()].dropna(subset=["gameday"])
+
+
+def to_opener(frame):
+    if not OPENER_INPUT:
+        return frame
+    out = frame.loc[frame["open"].notna()].copy()
+    out["spread_line"] = out["open"]
+    out["ats_margin"] = out["result"] - out["open"]
+    return out
 
 
 def fit_predict(train_x, train_y, test_x, alpha):
@@ -45,6 +74,7 @@ def fit_predict(train_x, train_y, test_x, alpha):
 
 
 def walk(frame, cols, test_mask, min_train):
+    frame = to_opener(frame)
     frame = frame.sort_values(["gameday", "game_id"]).reset_index(drop=True)
     rows = []
     test = frame.loc[test_mask(frame)]
@@ -144,8 +174,7 @@ def main():
         raise SystemExit(f"nfl missing {missing[:5]} of {len(missing)}")
     nfl = nfl.loc[nfl["game_type"].eq("REG")].copy()
     nfl["gameday"] = pd.to_datetime(nfl["gameday"])
-    pg = pd.read_parquet(PER_GAME)[["game_id", "tue_open_home_spread"]]
-    nfl = nfl.merge(pg, on="game_id", how="left").rename(columns={"tue_open_home_spread": "open"})
+    nfl = nfl_open(nfl)
     nfl_pred = walk(
         nfl,
         cols,

@@ -280,6 +280,174 @@
       ],
       "source": "artifacts/pooled_screen/xlg10_*.json",
       "standard_error": 0.2396
+    },
+    "xlg10_bye_diff_openinput_cfb_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input bye_diff added to 14 shared features, cfb; accuracy.",
+      "effect": 0.08507018290089324,
+      "effect_units": "accuracy_points",
+      "family": "xlg10_pooled_addone",
+      "interval": [
+        -0.26879092725165993,
+        0.4478169085030968
+      ],
+      "league": "cfb",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.6665,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/pooled_screen/xlg10_bye_diff.json",
+      "standard_error": 0.18082021217006114
+    },
+    "xlg10_bye_diff_openinput_cfb_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input bye_diff added to 14 shared features, cfb; log_loss.",
+      "effect": -6.484784369619965e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg10_pooled_addone",
+      "interval": [
+        -0.0002853657839181594,
+        0.0001257675217391828
+      ],
+      "league": "cfb",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.2525,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/pooled_screen/xlg10_bye_diff.json",
+      "standard_error": 0.00010104388259852713
+    },
+    "xlg10_bye_diff_openinput_nfl_opener_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input bye_diff added to 14 shared features, nfl_opener; accuracy.",
+      "effect": 0.0665335994677312,
+      "effect_units": "accuracy_points",
+      "family": "xlg10_pooled_addone",
+      "interval": [
+        -0.4016266272332792,
+        0.5308648176592458
+      ],
+      "league": "nfl",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.57,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_screen/xlg10_bye_diff.json",
+      "standard_error": 0.23643693673294292
+    },
+    "xlg10_bye_diff_openinput_nfl_opener_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input bye_diff added to 14 shared features, nfl_opener; log_loss.",
+      "effect": -6.937061046547848e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg10_pooled_addone",
+      "interval": [
+        -0.0001620949841978692,
+        2.3616103031122525e-05
+      ],
+      "league": "nfl",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.073,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_screen/xlg10_bye_diff.json",
+      "standard_error": 4.783624483251949e-05
+    },
+    "xlg10_bye_diff_openinput_nfl_proxy_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input bye_diff added to 14 shared features, nfl_proxy; accuracy.",
+      "effect": -0.2289639381797367,
+      "effect_units": "accuracy_points",
+      "family": "xlg10_pooled_addone",
+      "interval": [
+        -0.9748126340445489,
+        0.4545583824594063
+      ],
+      "league": "nfl",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.2245,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/pooled_screen/xlg10_bye_diff.json",
+      "standard_error": 0.36096095696353026
+    },
+    "xlg10_bye_diff_openinput_nfl_proxy_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input bye_diff added to 14 shared features, nfl_proxy; log_loss.",
+      "effect": -0.0002062432082362786,
+      "effect_units": "log_loss_improvement",
+      "family": "xlg10_pooled_addone",
+      "interval": [
+        -0.0007128730498377287,
+        0.00029153305328648635
+      ],
+      "league": "nfl",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.2025,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "artifacts/pooled_screen/xlg10_bye_diff.json",
+      "standard_error": 0.00025264057375074894
     }
   }
 }

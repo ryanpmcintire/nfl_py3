@@ -86,15 +86,9 @@ def shared_columns():
 def nfl_graded(cols):
     nfl = pd.read_parquet(base.NFL_FEATURES)
     nfl["gameday"] = pd.to_datetime(nfl["gameday"])
-    pg = pd.read_parquet(base.PER_GAME)[["game_id", "tue_open_home_spread"]]
-    sbr = pd.read_parquet(SBR).dropna(subset=["game_id", "open_home_spread"])
-    sbr = sbr.drop_duplicates("game_id")[["game_id", "open_home_spread"]]
-    nfl = nfl.merge(pg, on="game_id", how="left").merge(sbr, on="game_id", how="left")
     lo_o, hi_o = NFL_OPENER_SEASONS
     lo_p, hi_p = NFL_PROXY_SEASONS
-    nfl["open"] = np.where(
-        nfl["season"].between(lo_o, hi_o), nfl["tue_open_home_spread"], nfl["open_home_spread"]
-    )
+    nfl = base.nfl_open(nfl)
     return lev.grade(
         lev.walk(
             nfl,

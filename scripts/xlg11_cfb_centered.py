@@ -80,7 +80,7 @@ def main():
     cfb = pd.read_parquet(base.CFB_FEATURES)
     cfb["gameday"] = pd.to_datetime(cfb["gameday"])
     cols = ps.shared_columns()
-    STATE["cfb"] = cfb.loc[cfb["ats_margin"].notna()].dropna(subset=["gameday"])
+    STATE["cfb"] = base.cfb_prior_rows(cfb)
     install()
     g = ps.nfl_graded(cols)
     rng = np.random.default_rng(base.SEED)

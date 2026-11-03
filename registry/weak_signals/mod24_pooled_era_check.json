@@ -561,6 +561,1350 @@
       "source": "artifacts/pooled_screen/mod24_era_check.json",
       "standard_error": 0.000375985109431932
     },
+    "mod24_era_check_openinput_a10000_cfb_2012_19_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm a10000 on 14 shared features vs ridge alpha 10, cfb 2012-2019; accuracy.",
+      "effect": 1.0679811049496817,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        0.13957873273142832,
+        2.073695553018712
+      ],
+      "league": "cfb",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.984,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2012,
+        2019
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 0.5073556548100588
+    },
+    "mod24_era_check_openinput_a10000_cfb_2012_19_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm a10000 on 14 shared features vs ridge alpha 10, cfb 2012-2019; log_loss.",
+      "effect": 0.0017206817748781711,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        -0.0001866262944613367,
+        0.0036212119171673833
+      ],
+      "league": "cfb",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.9615,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2012,
+        2019
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 0.0009665497848706438
+    },
+    "mod24_era_check_openinput_a10000_cfb_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm a10000 on 14 shared features vs ridge alpha 10, cfb 2023-2025; accuracy.",
+      "effect": 0.49594229035166815,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        -0.9381973578394013,
+        1.8182853592876365
+      ],
+      "league": "cfb",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.7405,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 0.7072912999395927
+    },
+    "mod24_era_check_openinput_a10000_cfb_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm a10000 on 14 shared features vs ridge alpha 10, cfb 2023-2025; log_loss.",
+      "effect": 0.00012520679028964353,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        -0.0015981166344043495,
+        0.0020225258308262167
+      ],
+      "league": "cfb",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.531,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 0.0009242224165920174
+    },
+    "mod24_era_check_openinput_a10000_nfl_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm a10000 on 14 shared features vs ridge alpha 10, nfl 2020-2025; accuracy.",
+      "effect": 0.998003992015968,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        -1.2072839994973197,
+        3.0363069707780492
+      ],
+      "league": "nfl",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.8075,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 1.0872573909907575
+    },
+    "mod24_era_check_openinput_a10000_nfl_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm a10000 on 14 shared features vs ridge alpha 10, nfl 2020-2025; log_loss.",
+      "effect": 0.001490867201036348,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        -0.0002985570066391135,
+        0.003150286668252611
+      ],
+      "league": "nfl",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.9465,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 0.0008852529773352382
+    },
+    "mod24_era_check_openinput_a1000_cfb_2012_19_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm a1000 on 14 shared features vs ridge alpha 10, cfb 2012-2019; accuracy.",
+      "effect": 0.4518381597864038,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        -0.22819577385619863,
+        1.1510594033813024
+      ],
+      "league": "cfb",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.8895,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2012,
+        2019
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 0.3554039628831978
+    },
+    "mod24_era_check_openinput_a1000_cfb_2012_19_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm a1000 on 14 shared features vs ridge alpha 10, cfb 2012-2019; log_loss.",
+      "effect": 0.001508240703930762,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        0.0005139794153753258,
+        0.002469236929795879
+      ],
+      "league": "cfb",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.9975,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2012,
+        2019
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 0.0005043674192791599
+    },
+    "mod24_era_check_openinput_a1000_cfb_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm a1000 on 14 shared features vs ridge alpha 10, cfb 2023-2025; accuracy.",
+      "effect": -0.04508566275924256,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        -0.9026029674810037,
+        0.7248233496721614
+      ],
+      "league": "cfb",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.433,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 0.4096607108051733
+    },
+    "mod24_era_check_openinput_a1000_cfb_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm a1000 on 14 shared features vs ridge alpha 10, cfb 2023-2025; log_loss.",
+      "effect": 0.00010829683284495487,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        -0.00047878922731373855,
+        0.0007478393185840795
+      ],
+      "league": "cfb",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.6225,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 0.0003161693182373636
+    },
+    "mod24_era_check_openinput_a1000_nfl_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm a1000 on 14 shared features vs ridge alpha 10, nfl 2020-2025; accuracy.",
+      "effect": 0.9314703925482368,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        -0.2635046113306983,
+        2.137715860100388
+      ],
+      "league": "nfl",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.929,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 0.6159471955773212
+    },
+    "mod24_era_check_openinput_a1000_nfl_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm a1000 on 14 shared features vs ridge alpha 10, nfl 2020-2025; log_loss.",
+      "effect": 0.000473190587822681,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        -0.00018314039752904667,
+        0.0011530775185120406
+      ],
+      "league": "nfl",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.916,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 0.00033832341040237
+    },
+    "mod24_era_check_openinput_a100_cfb_2012_19_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm a100 on 14 shared features vs ridge alpha 10, cfb 2012-2019; accuracy.",
+      "effect": 0.5956048469911687,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        0.26588001284446217,
+        0.9464422903900465
+      ],
+      "league": "cfb",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.999,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2012,
+        2019
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 0.17673946529286658
+    },
+    "mod24_era_check_openinput_a100_cfb_2012_19_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm a100 on 14 shared features vs ridge alpha 10, cfb 2012-2019; log_loss.",
+      "effect": 0.0004525948715363539,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        0.00016590819892769104,
+        0.0007626877254194718
+      ],
+      "league": "cfb",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.9995,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2012,
+        2019
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 0.0001496002559487397
+    },
+    "mod24_era_check_openinput_a100_cfb_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm a100 on 14 shared features vs ridge alpha 10, cfb 2023-2025; accuracy.",
+      "effect": 0.04508566275924256,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        -0.4207294235012399,
+        0.4556329915608072
+      ],
+      "league": "cfb",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.536,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 0.22211515381300928
+    },
+    "mod24_era_check_openinput_a100_cfb_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm a100 on 14 shared features vs ridge alpha 10, cfb 2023-2025; log_loss.",
+      "effect": -7.565674497123433e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        -0.00024979108955956497,
+        8.749466959425474e-05
+      ],
+      "league": "cfb",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.182,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 8.673440683783718e-05
+    },
+    "mod24_era_check_openinput_a100_nfl_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm a100 on 14 shared features vs ridge alpha 10, nfl 2020-2025; accuracy.",
+      "effect": 0.1996007984031936,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        -0.5329780146568954,
+        0.9389828906323848
+      ],
+      "league": "nfl",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.665,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 0.3765334564953677
+    },
+    "mod24_era_check_openinput_a100_nfl_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm a100 on 14 shared features vs ridge alpha 10, nfl 2020-2025; log_loss.",
+      "effect": -7.230474510035685e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        -0.0004173000050496295,
+        0.0002696913297768053
+      ],
+      "league": "nfl",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.3435,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 0.00017456803872711944
+    },
+    "mod24_era_check_openinput_a1_cfb_2012_19_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm a1 on 14 shared features vs ridge alpha 10, cfb 2012-2019; accuracy.",
+      "effect": 0.1643047853768741,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        -0.06145160678030832,
+        0.40435177455887805
+      ],
+      "league": "cfb",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.908,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2012,
+        2019
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 0.12190646229884813
+    },
+    "mod24_era_check_openinput_a1_cfb_2012_19_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm a1 on 14 shared features vs ridge alpha 10, cfb 2012-2019; log_loss.",
+      "effect": -0.00014473974711303638,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        -0.00043938393209469993,
+        0.00011994434313393614
+      ],
+      "league": "cfb",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.1495,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2012,
+        2019
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 0.00014480167912186677
+    },
+    "mod24_era_check_openinput_a1_cfb_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm a1 on 14 shared features vs ridge alpha 10, cfb 2023-2025; accuracy.",
+      "effect": -0.04508566275924256,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        -0.14557458783290828,
+        0.0
+      ],
+      "league": "cfb",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 0.045954017406632706
+    },
+    "mod24_era_check_openinput_a1_cfb_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm a1 on 14 shared features vs ridge alpha 10, cfb 2023-2025; log_loss.",
+      "effect": 0.00011088790609283412,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        -4.546884742150601e-05,
+        0.00030183842280022584
+      ],
+      "league": "cfb",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.9045,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 9.059597199907777e-05
+    },
+    "mod24_era_check_openinput_a1_nfl_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm a1 on 14 shared features vs ridge alpha 10, nfl 2020-2025; accuracy.",
+      "effect": -0.0665335994677312,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        -0.8119907189504031,
+        0.6729475100942126
+      ],
+      "league": "nfl",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.409,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 0.3911085688626821
+    },
+    "mod24_era_check_openinput_a1_nfl_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm a1 on 14 shared features vs ridge alpha 10, nfl 2020-2025; log_loss.",
+      "effect": 0.0001322546803300377,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        -0.00020750117091806105,
+        0.0004887778534652077
+      ],
+      "league": "nfl",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.7765,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 0.00017416739576070502
+    },
+    "mod24_era_check_openinput_cv_cfb_2012_19_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm cv on 14 shared features vs ridge alpha 10, cfb 2012-2019; accuracy.",
+      "effect": 0.41076196344218524,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        -0.2546973271622137,
+        1.1075422584633512
+      ],
+      "league": "cfb",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.8705,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2012,
+        2019
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 0.3526602150605955
+    },
+    "mod24_era_check_openinput_cv_cfb_2012_19_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm cv on 14 shared features vs ridge alpha 10, cfb 2012-2019; log_loss.",
+      "effect": 0.0014454009673218029,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        0.0004834667205867195,
+        0.0023865393803890445
+      ],
+      "league": "cfb",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.9975,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2012,
+        2019
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 0.0004917043267966831
+    },
+    "mod24_era_check_openinput_cv_cfb_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm cv on 14 shared features vs ridge alpha 10, cfb 2023-2025; accuracy.",
+      "effect": -0.04508566275924256,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        -0.9026029674810037,
+        0.7248233496721614
+      ],
+      "league": "cfb",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.433,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 0.4096607108051733
+    },
+    "mod24_era_check_openinput_cv_cfb_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm cv on 14 shared features vs ridge alpha 10, cfb 2023-2025; log_loss.",
+      "effect": 0.00010829683284495487,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        -0.00047878922731373855,
+        0.0007478393185840795
+      ],
+      "league": "cfb",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.6225,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 0.0003161693182373636
+    },
+    "mod24_era_check_openinput_cv_nfl_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm cv on 14 shared features vs ridge alpha 10, nfl 2020-2025; accuracy.",
+      "effect": 0.9314703925482368,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        -0.2635046113306983,
+        2.137715860100388
+      ],
+      "league": "nfl",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.929,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 0.6159471955773212
+    },
+    "mod24_era_check_openinput_cv_nfl_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm cv on 14 shared features vs ridge alpha 10, nfl 2020-2025; log_loss.",
+      "effect": 0.000473190587822681,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        -0.00018314039752904667,
+        0.0011530775185120406
+      ],
+      "league": "nfl",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.916,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 0.00033832341040237
+    },
+    "mod24_era_check_openinput_enet_cfb_2012_19_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm enet on 14 shared features vs ridge alpha 10, cfb 2012-2019; accuracy.",
+      "effect": 0.6572191415074964,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        -0.24732240077736833,
+        1.6778359504023277
+      ],
+      "league": "cfb",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.912,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2012,
+        2019
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 0.4951937118376809
+    },
+    "mod24_era_check_openinput_enet_cfb_2012_19_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm enet on 14 shared features vs ridge alpha 10, cfb 2012-2019; log_loss.",
+      "effect": 0.001487147080892199,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        0.00011993616152362013,
+        0.002891913390517547
+      ],
+      "league": "cfb",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.9855,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2012,
+        2019
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 0.0006993781760552424
+    },
+    "mod24_era_check_openinput_enet_cfb_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm enet on 14 shared features vs ridge alpha 10, cfb 2023-2025; accuracy.",
+      "effect": -1.2623985572587917,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        -3.3085728650610684,
+        0.7033234923007182
+      ],
+      "league": "cfb",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.0895,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 1.002068663469325
+    },
+    "mod24_era_check_openinput_enet_cfb_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm enet on 14 shared features vs ridge alpha 10, cfb 2023-2025; log_loss.",
+      "effect": -7.304010609776049e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        -0.002396213105787348,
+        0.002458544944679171
+      ],
+      "league": "cfb",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.4575,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 0.0012431331408351393
+    },
+    "mod24_era_check_openinput_enet_nfl_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm enet on 14 shared features vs ridge alpha 10, nfl 2020-2025; accuracy.",
+      "effect": 0.5988023952095808,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        -1.467817240090355,
+        2.465478271756187
+      ],
+      "league": "nfl",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.7055,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 1.018854935447733
+    },
+    "mod24_era_check_openinput_enet_nfl_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm enet on 14 shared features vs ridge alpha 10, nfl 2020-2025; log_loss.",
+      "effect": 0.0015916044174592284,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        -0.0002533616064519903,
+        0.00329843040850543
+      ],
+      "league": "nfl",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.954,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 0.0009043089257257213
+    },
+    "mod24_era_check_openinput_icpt_cfb_2012_19_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm icpt on 14 shared features vs ridge alpha 10, cfb 2012-2019; accuracy.",
+      "effect": 0.8420620250564798,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        -0.7683053842338682,
+        2.4504757526927885
+      ],
+      "league": "cfb",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.8575,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2012,
+        2019
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 0.824287434273325
+    },
+    "mod24_era_check_openinput_icpt_cfb_2012_19_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm icpt on 14 shared features vs ridge alpha 10, cfb 2012-2019; log_loss.",
+      "effect": 0.0012367569646798064,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        -0.0011292872176430551,
+        0.003594763738098919
+      ],
+      "league": "cfb",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.848,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2012,
+        2019
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 0.0011875548954207364
+    },
+    "mod24_era_check_openinput_icpt_cfb_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm icpt on 14 shared features vs ridge alpha 10, cfb 2023-2025; accuracy.",
+      "effect": -1.442741208295762,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        -3.5344043477060034,
+        0.6264262873060804
+      ],
+      "league": "cfb",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.0805,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 1.054898915669795
+    },
+    "mod24_era_check_openinput_icpt_cfb_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm icpt on 14 shared features vs ridge alpha 10, cfb 2023-2025; log_loss.",
+      "effect": -0.0006088670079012567,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        -0.0031754962557230676,
+        0.0021950105882848825
+      ],
+      "league": "cfb",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.3045,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 0.0013794913446334041
+    },
+    "mod24_era_check_openinput_icpt_nfl_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm icpt on 14 shared features vs ridge alpha 10, nfl 2020-2025; accuracy.",
+      "effect": 0.1996007984031936,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        -2.6457220800286496,
+        2.89896831245394
+      ],
+      "league": "nfl",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.5195,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 1.4285085819280632
+    },
+    "mod24_era_check_openinput_icpt_nfl_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm icpt on 14 shared features vs ridge alpha 10, nfl 2020-2025; log_loss.",
+      "effect": 0.001764440796741583,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        -0.00087929044996406,
+        0.004328154020888967
+      ],
+      "league": "nfl",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.9005,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 0.0013426908645007504
+    },
+    "mod24_era_check_openinput_slope_cfb_2012_19_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm slope on 14 shared features vs ridge alpha 10, cfb 2012-2019; accuracy.",
+      "effect": -0.061614294516327786,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        -0.5540193615268185,
+        0.4074683424009883
+      ],
+      "league": "cfb",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.4005,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2012,
+        2019
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 0.24650170456567996
+    },
+    "mod24_era_check_openinput_slope_cfb_2012_19_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm slope on 14 shared features vs ridge alpha 10, cfb 2012-2019; log_loss.",
+      "effect": 0.0015398094123076891,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        -2.1996479814989567e-05,
+        0.0031121385937880022
+      ],
+      "league": "cfb",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.971,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2012,
+        2019
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 0.0007830104228079247
+    },
+    "mod24_era_check_openinput_slope_cfb_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm slope on 14 shared features vs ridge alpha 10, cfb 2023-2025; accuracy.",
+      "effect": -0.04508566275924256,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        -0.21327241606658476,
+        0.09359353133601901
+      ],
+      "league": "cfb",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.1885,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 0.08052168027482738
+    },
+    "mod24_era_check_openinput_slope_cfb_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm slope on 14 shared features vs ridge alpha 10, cfb 2023-2025; log_loss.",
+      "effect": -0.00012935822072598674,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        -0.00245970365295919,
+        0.0024693247403940726
+      ],
+      "league": "cfb",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.443,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 0.0012447652801899879
+    },
+    "mod24_era_check_openinput_slope_nfl_accuracy": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm slope on 14 shared features vs ridge alpha 10, nfl 2020-2025; accuracy.",
+      "effect": -0.998003992015968,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        -2.547002357090163,
+        0.06644628719869937
+      ],
+      "league": "nfl",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.0295,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 0.6807211268131679
+    },
+    "mod24_era_check_openinput_slope_nfl_log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-week blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Opener-input arm slope on 14 shared features vs ridge alpha 10, nfl 2020-2025; log_loss.",
+      "effect": 0.0015459672942577725,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pooled_era_check",
+      "interval": [
+        -0.0007773638973803016,
+        0.003664877223429335
+      ],
+      "league": "nfl",
+      "notes": "Design changed 2026-11-03: model input line and residual target are the opener (Tuesday opener 2020-25 and SBR open earlier for NFL; spread_open for CFB), same line the grade uses; earlier cells used the closing line as input. total_line remains the feature-table closing total.",
+      "plain_summary": "With the opener as the model input, the change moved results against the opener by an unresolved amount.",
+      "probability_positive": 0.9065,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_screen/mod24_era_check_openinput_new.json",
+      "standard_error": 0.0011312746873502527
+    },
     "mod24_era_check_slope_cfb_accuracy": {
       "category": "modeling",
       "classification": "unresolved_below_power",

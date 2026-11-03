@@ -15,3 +15,6 @@ Rules: Zero crossing closes nothing; one fitted probability selects the side; we
 
 ## Open
 Look count and family to be declared before any sign is seen. Nothing here closes on zero crossing; record unresolved results with nfl-ats weak-signals record.
+
+## Update 2026-11-03 (unit 1 shipped locally, not published)
+Luck band added to the Home pool panel: exact binomial 5th-95th percentile over the games played (121 games: 51 to 70 wins), field 5th-95th from the captured weekly totals (50 to 66), our 65 as a marker. Code: _binomial_quantile and _load_pool_outlook in board_content.py, _luck_band_html in board_terminal.py. Rendered to tests/scratch/ui-audit-2026-11-03/site5 and checked at 390 and 1440. Next: orchestrator publishes and pushes; no weak-signals record needed (display only).

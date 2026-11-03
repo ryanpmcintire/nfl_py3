@@ -5,7 +5,7 @@ import os
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass, field, replace
 from datetime import UTC, date, datetime, timedelta
-from math import isnan
+from math import ceil, comb, isnan
 from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo
@@ -2428,11 +2428,33 @@ class PoolOutlook:
     assumption_text: str
     as_of_text: str
     stale_text: str = ""
+    luck_text: str = ""
+    luck_field_text: str = ""
+    luck_axis: tuple[int, int] = (0, 0)
+    luck_coin: tuple[int, int] = (0, 0)
+    luck_field: tuple[int, int] = (0, 0)
+    luck_ours: int = 0
 
 
 def _percent_text(value: float) -> str:
 
     return f"{value * 100:.1f}%"
+
+
+def _binomial_quantile(games: int, level: float) -> int:
+
+    total = 0.0
+    for wins in range(games + 1):
+        total += comb(games, wins) / 2**games
+        if total >= level:
+            return wins
+    return games
+
+
+def _sample_quantile(values: list[int], level: float) -> int:
+
+    ordered = sorted(values)
+    return ordered[min(len(ordered), max(1, ceil(level * len(ordered)))) - 1]
 
 
 def _load_pool_outlook(
@@ -2447,7 +2469,9 @@ def _load_pool_outlook(
         return None
     try:
         result = read_json(path)
-        weeks_played = len(read_json(field_path)["weeks"])
+        field_weeks = read_json(field_path)["weeks"]
+        weeks_played = len(field_weeks)
+        games_played = sum(int(week_row["games"]) for week_row in field_weeks)
         start = result["start"]
         chance = result["p_first_served"]
         low, high = chance["interval_95"]
@@ -2480,7 +2504,28 @@ def _load_pool_outlook(
         if gap <= 0
         else f"{gap} {'point' if gap == 1 else 'points'} behind the leader, who has {leader}."
     )
+    coin_low = _binomial_quantile(games_played, 0.05)
+    coin_high = _binomial_quantile(games_played, 0.95)
+    field_low = _sample_quantile(totals, 0.05)
+    field_high = _sample_quantile(totals, 0.95)
+    axis = (min(coin_low, field_low, points), max(coin_high, field_high, points))
+    luck_text = (
+        f"A coin-flipper finishes between {coin_low} and {coin_high} wins over "
+        f"{games_played} games; we are at {points}."
+    )
+    luck_field_text = (
+        f"Most of the pool sits between {field_low} and {field_high} wins, "
+        "about the same spread as pure luck."
+        if field_low >= coin_low - 1 and field_high <= coin_high + 1
+        else f"Most of the pool sits between {field_low} and {field_high} wins."
+    )
     return PoolOutlook(
+        luck_text=luck_text,
+        luck_field_text=luck_field_text,
+        luck_axis=axis,
+        luck_coin=(coin_low, coin_high),
+        luck_field=(field_low, field_high),
+        luck_ours=points,
         rank_text=f"{rank} of {entries}",
         points_text=f"{points} points after Week {weeks_played}",
         gap_text=gap_text,

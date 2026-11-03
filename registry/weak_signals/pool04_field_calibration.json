@@ -1,0 +1,33 @@
+{
+  "family": "pool04_field_calibration",
+  "signals": {
+    "pool04_total_sd_ratio_fixed_cover": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "28 cells per mode, 3 modes, 84 looks; all observed stats within sim 5-95 percent except few weekly cells; no dispersion gap resolved",
+      "closing_ground": null,
+      "description": "Observed 241-entry W1-8 season-total sd over POOL-01 field-model sim sd (no skill term), minus 1",
+      "effect": 0.036,
+      "effect_units": "slope_difference",
+      "family": "pool04_field_calibration",
+      "interval": [
+        -0.055,
+        0.127
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The simulated field spreads about as widely as the real one",
+      "probability_positive": 0.784,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": 121,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_rank_replay/pool04_field_ppc.json",
+      "standard_error": 0.046
+    }
+  }
+}

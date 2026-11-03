@@ -1,0 +1,30 @@
+{
+  "family": "mod38_kicker_wind",
+  "signals": {
+    "mod38_kicker_wind_split_half": {
+      "category": "onfield",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "3 looks: alt-kick split intercept+slope r=-0.50 (rank -0.18, perm null mean -0.01 sd 0.17), alt-kick slope-only r=-0.14 (rank -0.02), season-parity r=-0.11 (rank -0.06). No positive reliability.",
+      "closing_ground": "no_split_half_reliability",
+      "description": "Kicker wind x distance slope split-half reliability, 49 outdoor kickers with 40+ windy kicks, 2009-2025 pbp",
+      "effect": -0.1447,
+      "effect_units": "correlation",
+      "family": "mod38_kicker_wind",
+      "interval": null,
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Kickers do not differ reliably in how wind hurts long kicks",
+      "probability_positive": 0.17,
+      "recorded_at": "2026-11-03",
+      "reliability": -0.14,
+      "sample_blocks": 49,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "docs/lanes/mod-38-mod38-kicker-wind.md",
+      "standard_error": 0.147
+    }
+  }
+}

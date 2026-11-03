@@ -23,6 +23,7 @@ from nfl_ats.board_content import (
     GameRow,
     HeadlineStats,
     LinkPreview,
+    PoolOutlook,
     RivalRulesPanel,
     SourcePolicyView,
     TickerChrome,
@@ -1655,6 +1656,34 @@ def _pool_line_note_html(content: BoardContent) -> str:
     return f'<div class="pool-line-note">{escape(content.pool_line_note)}</div>'
 
 
+def _luck_band_html(outlook: PoolOutlook) -> str:
+    if not outlook.luck_text:
+        return ""
+    lo, hi = outlook.luck_axis
+    span = max(hi - lo, 1)
+
+    def pos(value: int) -> float:
+        return (value - lo) / span * 100
+
+    coin_lo, coin_hi = outlook.luck_coin
+    field_lo, field_hi = outlook.luck_field
+    ours = pos(outlook.luck_ours)
+    return (
+        f'<p class="policy-note">{escape(outlook.luck_text)} {escape(outlook.luck_field_text)}</p>'
+        '<svg viewBox="0 0 100 22" width="100%" height="64" role="img" '
+        'preserveAspectRatio="none" aria-label="Our wins against the range a coin-flipper reaches">'
+        f'<rect x="{pos(coin_lo):.2f}" y="3" width="{max(pos(coin_hi) - pos(coin_lo), 0.6):.2f}" '
+        'height="6" style="fill:var(--amber);opacity:.55"></rect>'
+        f'<rect x="{pos(field_lo):.2f}" y="12" '
+        f'width="{max(pos(field_hi) - pos(field_lo), 0.6):.2f}" '
+        'height="6" style="fill:var(--cyan);opacity:.55"></rect>'
+        f'<rect x="{ours - 0.3:.2f}" y="0" width="0.6" height="22" style="fill:var(--text)"></rect>'
+        "</svg>"
+        '<p class="micro">Amber: where a coin-flipper lands (5th to 95th percentile). '
+        "Teal: the same range for the pool's entries. White line: us.</p>"
+    )
+
+
 def _pool_outlook_section(content: BoardContent) -> str:
 
     outlook = content.pool_outlook
@@ -1673,6 +1702,7 @@ def _pool_outlook_section(content: BoardContent) -> str:
         f'<span class="value">{escape(outlook.chance_text)}</span>'
         f'<span class="foot">{escape(outlook.range_text)}</span></div>'
         "</div>"
+        f"{_luck_band_html(outlook)}"
         '<details class="policy-note"><summary>How this chance is worked out</summary>'
         f'<p class="policy-note">{escape(outlook.assumption_text)}</p></details>'
         f"{stale}</section>"
