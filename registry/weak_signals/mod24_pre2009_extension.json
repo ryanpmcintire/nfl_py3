@@ -1,0 +1,341 @@
+{
+  "family": "mod24_pre2009_extension",
+  "signals": {
+    "mod24_a_vs_served_acc_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "whole interval not on wrong side; no closing ground",
+      "closing_ground": null,
+      "description": "A v served acc_points fair opener 2020-25",
+      "effect": -0.7984031936127745,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pre2009_extension",
+      "interval": [
+        -2.629805558769717,
+        1.0506967965345457
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.18675,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_pre2009/report.json",
+      "standard_error": null
+    },
+    "mod24_a_vs_served_brier_gain": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "whole interval not on wrong side; no closing ground",
+      "closing_ground": null,
+      "description": "A v served brier_gain fair opener 2020-25",
+      "effect": -0.00022413370430840205,
+      "effect_units": "brier_improvement",
+      "family": "mod24_pre2009_extension",
+      "interval": [
+        -0.002012214556321145,
+        0.0015537144023625212
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.396,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_pre2009/report.json",
+      "standard_error": null
+    },
+    "mod24_a_vs_served_ll_gain": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "whole interval not on wrong side; no closing ground",
+      "closing_ground": null,
+      "description": "A v served ll_gain fair opener 2020-25",
+      "effect": -0.0002980972479325817,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pre2009_extension",
+      "interval": [
+        -0.003975165635857046,
+        0.0033715611729010298
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.429,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_pre2009/report.json",
+      "standard_error": null
+    },
+    "mod24_b_vs_a_acc_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "whole interval not on wrong side; no closing ground",
+      "closing_ground": null,
+      "description": "B v A acc_points fair opener 2020-25",
+      "effect": -1.264138389886893,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pre2009_extension",
+      "interval": [
+        -3.578588152780927,
+        1.1432606592260788
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.139,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_pre2009/report.json",
+      "standard_error": null
+    },
+    "mod24_b_vs_a_brier_gain": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "whole interval not on wrong side; no closing ground",
+      "closing_ground": null,
+      "description": "B v A brier_gain fair opener 2020-25",
+      "effect": -0.0010037269084220966,
+      "effect_units": "brier_improvement",
+      "family": "mod24_pre2009_extension",
+      "interval": [
+        -0.0029246307699187235,
+        0.001002824585886444
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.15725,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_pre2009/report.json",
+      "standard_error": null
+    },
+    "mod24_b_vs_a_ll_gain": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "whole interval not on wrong side; no closing ground",
+      "closing_ground": null,
+      "description": "B v A ll_gain fair opener 2020-25",
+      "effect": -0.001960060823328513,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pre2009_extension",
+      "interval": [
+        -0.005857924937345674,
+        0.0020926102131402897
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.16725,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_pre2009/report.json",
+      "standard_error": null
+    },
+    "mod24_b_vs_served_acc_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "whole interval not on wrong side; no closing ground",
+      "closing_ground": null,
+      "description": "B v served acc_points fair opener 2020-25",
+      "effect": -2.062541583499667,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pre2009_extension",
+      "interval": [
+        -4.623532960194256,
+        0.6715091925134196
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.0665,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_pre2009/report.json",
+      "standard_error": null
+    },
+    "mod24_b_vs_served_brier_gain": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "whole interval not on wrong side; no closing ground",
+      "closing_ground": null,
+      "description": "B v served brier_gain fair opener 2020-25",
+      "effect": -0.0012278606127304984,
+      "effect_units": "brier_improvement",
+      "family": "mod24_pre2009_extension",
+      "interval": [
+        -0.003973490890611721,
+        0.0015310849210530626
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.18775,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_pre2009/report.json",
+      "standard_error": null
+    },
+    "mod24_b_vs_served_ll_gain": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "whole interval not on wrong side; no closing ground",
+      "closing_ground": null,
+      "description": "B v served ll_gain fair opener 2020-25",
+      "effect": -0.0022581580712610952,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pre2009_extension",
+      "interval": [
+        -0.007894350612585197,
+        0.003385760412850629
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.215,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_pre2009/report.json",
+      "standard_error": null
+    },
+    "mod24_bw_vs_a_acc_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "whole interval not on wrong side; no closing ground",
+      "closing_ground": null,
+      "description": "Bw (LOSO era weight) v A acc_points fair opener 2020-25",
+      "effect": -1.8629407850964737,
+      "effect_units": "accuracy_points",
+      "family": "mod24_pre2009_extension",
+      "interval": [
+        -4.0720961281708945,
+        0.33885489814364717
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.051,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_pre2009/report_weighted.json",
+      "standard_error": null
+    },
+    "mod24_bw_vs_a_brier_gain": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "whole interval not on wrong side; no closing ground",
+      "closing_ground": null,
+      "description": "Bw (LOSO era weight) v A brier_gain fair opener 2020-25",
+      "effect": -0.0009317175289896378,
+      "effect_units": "brier_improvement",
+      "family": "mod24_pre2009_extension",
+      "interval": [
+        -0.0026661845206776115,
+        0.0008631198669154693
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.1535,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_pre2009/report_weighted.json",
+      "standard_error": null
+    },
+    "mod24_bw_vs_a_ll_gain": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "whole interval not on wrong side; no closing ground",
+      "closing_ground": null,
+      "description": "Bw (LOSO era weight) v A ll_gain fair opener 2020-25",
+      "effect": -0.0018150493793798238,
+      "effect_units": "log_loss_improvement",
+      "family": "mod24_pre2009_extension",
+      "interval": [
+        -0.005354307660030115,
+        0.001824584825508539
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.1645,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod24_pre2009/report_weighted.json",
+      "standard_error": null
+    }
+  }
+}

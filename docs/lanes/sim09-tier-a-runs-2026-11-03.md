@@ -23,3 +23,8 @@ Rule at 1 of 3 seeds: strength moves away from real by ~24x seed SD, r2 down ~8x
 
 ## Update 10:55 ET (second agent)
 crzhk s12, s13 exist; RAM 36 GB free. Started u4e seed 12 at 10:54 ET (background task b3enweq25, log artifacts/sim09/u4e/e5_u4e_12.log, result artifacts/mod25e3/e5_u4e_s12/e5.json). Order remaining: u4e 13, crzf 11-13 (e5_crzf_s11-13 already exist, check before rerun), crzs 11-13 (exist too), crzkl 11-13. No run starts after 11:42 ET. Kill by PID at 11:50.
+
+## Update 11:10 ET
+u4e s12 (294 s) and s13 done. u4e v crzhk, s12/s13: strength RE 37.9/37.1 v 47.0/47.9 (real 52.3, away ~18-22x SD .5); r2 w10-18 .080/.065 v .098/.106; pts 41.9/41.8 v 42.6/42.4; noise 186.8/186.1 v 184.7/179.4 (s13 +2.2x SD away from? real; not computed); margin SD 15.01/14.94 v 15.22/15.09.
+u4e VERDICT (3 seeds, rule condition 3): FAIL, strength RE, r2, pts move away from real beyond 2x SD on all three seeds; not adopted (no rule-correction justification declared for u4e; conditions 1-2 gate pass counts not computed). Unresolved -> weak-signals record is orchestrator's.
+11:10 ET started crzf s11 (task bpoms6o4z, log artifacts/sim09/crzf/e5_crzf_11.log). Next crzf 12, 13, crzs, crzkl.

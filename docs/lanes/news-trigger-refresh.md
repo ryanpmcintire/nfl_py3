@@ -228,3 +228,8 @@ nfl-ats weak-signals record --name news_trigger_role_share_line_move --descripti
    design change is indicated without a larger sample or a named mechanism.
 3. MKT-08's prospective dispatch path (top of this lane) is unaffected by
    these historical units and still waits on real scheduled scans.
+
+## Audit 2026-11-03 (MKT-08 forward-only check)
+- Historical: nothing unrun. Retrospective resolution term recorded (-1.22 pts, P+ 0.094, unresolved_below_power); role-share and line-move cells found in registry/weak_signals/_no_family.json. refresh_timing_policy.json holds the timing cells.
+- Forward (measured, week8-forward-scoring-2026-11-03.md): POL-11 refresh ledger season refreshed sides 25-18 v pre-refresh 21-22 across 43 changed-side games in Weeks 1-8 (about 5.4 a week; Week 8 4-4 v 3-5).
+- Expected by Week 18: about 97 changed-side games (inferred). Paired outcomes on those games swing +/-10 points of accuracy per SD (sqrt(97)/97), so a 1.2-point retrospective effect cannot reach power; only a large effect (current +9 on 43) could resolve. Score of record after Week 18 (Jan 2027); report P+ from draws, not a binary. No new record.

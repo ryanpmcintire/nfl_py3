@@ -101,6 +101,62 @@
       "source": "artifacts/sim07/ftn_state_summary.json",
       "standard_error": null
     },
+    "sim07_ftn_box_success_loso_heldout_corr": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "4 season folds (corr .07,.51,.85,-.12) bootstrap over folds; split-half odd v even weeks game-cluster bootstrap 300; 8 looks in family",
+      "closing_ground": null,
+      "description": "FTN box x personnel success interaction, cells as declared, 20 cells 2022-2025, loso_heldout_corr",
+      "effect": 0.3293,
+      "effect_units": "correlation",
+      "family": "sim07_ftn_state",
+      "interval": [
+        -0.0233,
+        0.682
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Box by personnel success deviations show positive held-out correlation, interval touches zero, unresolved.",
+      "probability_positive": 0.9563,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.6513,
+      "sample_blocks": 4,
+      "sample_games": null,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts/sim07/ftn_loso_summary.json",
+      "standard_error": null
+    },
+    "sim07_ftn_box_success_splithalf_corr": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "4 season folds (corr .07,.51,.85,-.12) bootstrap over folds; split-half odd v even weeks game-cluster bootstrap 300; 8 looks in family",
+      "closing_ground": null,
+      "description": "FTN box x personnel success interaction, cells as declared, 20 cells 2022-2025, splithalf_corr",
+      "effect": 0.6513,
+      "effect_units": "correlation",
+      "family": "sim07_ftn_state",
+      "interval": [
+        -0.0577,
+        0.7597
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Box by personnel success deviations show positive held-out correlation, interval touches zero, unresolved.",
+      "probability_positive": 0.9633,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.6513,
+      "sample_blocks": 4,
+      "sample_games": null,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts/sim07/ftn_loso_summary.json",
+      "standard_error": null
+    },
     "sim07_ftn_old_dbcount_epa": {
       "category": "onfield",
       "classification": "unresolved_below_power",

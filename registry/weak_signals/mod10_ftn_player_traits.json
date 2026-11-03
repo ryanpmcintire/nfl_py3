@@ -1,0 +1,257 @@
+{
+  "family": "mod10_ftn_player_traits",
+  "signals": {
+    "qb_catchable_per_attempt": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "FTN-attributed player trait split-half reliability (odd v even weeks, Spearman-Brown, pooled 2022-25)",
+      "effect": 0.6782,
+      "effect_units": "correlation",
+      "family": "mod10_ftn_player_traits",
+      "interval": [
+        0.5481,
+        0.7641
+      ],
+      "league": "nfl",
+      "notes": "54 looks in family; within-season split-half, not out of sample; gate .436 P(above)=0.999; cross-season stability 0.352",
+      "plain_summary": "Player trait reliability from FTN charting",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.6782,
+      "sample_blocks": 141,
+      "sample_games": null,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts/mod10_ftn_traits/result.json",
+      "standard_error": null
+    },
+    "qb_fault_sack_per_dropback": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "FTN-attributed player trait split-half reliability (odd v even weeks, Spearman-Brown, pooled 2022-25)",
+      "effect": 0.5357,
+      "effect_units": "correlation",
+      "family": "mod10_ftn_player_traits",
+      "interval": [
+        0.3732,
+        0.6654
+      ],
+      "league": "nfl",
+      "notes": "54 looks in family; within-season split-half, not out of sample; gate .436 P(above)=0.892; cross-season stability 0.038",
+      "plain_summary": "Player trait reliability from FTN charting",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.5357,
+      "sample_blocks": 141,
+      "sample_games": null,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts/mod10_ftn_traits/result.json",
+      "standard_error": null
+    },
+    "qb_interception_worthy_per_dropback": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "FTN-attributed player trait split-half reliability (odd v even weeks, Spearman-Brown, pooled 2022-25)",
+      "effect": 0.474,
+      "effect_units": "correlation",
+      "family": "mod10_ftn_player_traits",
+      "interval": [
+        0.2266,
+        0.6446
+      ],
+      "league": "nfl",
+      "notes": "54 looks in family; within-season split-half, not out of sample; gate .436 P(above)=0.648; cross-season stability 0.235",
+      "plain_summary": "Player trait reliability from FTN charting",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.474,
+      "sample_blocks": 141,
+      "sample_games": null,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts/mod10_ftn_traits/result.json",
+      "standard_error": null
+    },
+    "rec_contested_rate": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "FTN-attributed player trait split-half reliability (odd v even weeks, Spearman-Brown, pooled 2022-25)",
+      "effect": 0.603,
+      "effect_units": "correlation",
+      "family": "mod10_ftn_player_traits",
+      "interval": [
+        0.4999,
+        0.6846
+      ],
+      "league": "nfl",
+      "notes": "54 looks in family; within-season split-half, not out of sample; gate .436 P(above)=0.9995; cross-season stability 0.415",
+      "plain_summary": "Player trait reliability from FTN charting",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.603,
+      "sample_blocks": 296,
+      "sample_games": null,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts/mod10_ftn_traits/result.json",
+      "standard_error": null
+    },
+    "rec_contested_rate_teamdemeaned": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "FTN-attributed player trait split-half reliability (odd v even weeks, Spearman-Brown, pooled 2022-25)",
+      "effect": 0.6541,
+      "effect_units": "correlation",
+      "family": "mod10_ftn_player_traits",
+      "interval": [
+        0.5437,
+        0.7315
+      ],
+      "league": "nfl",
+      "notes": "54 looks in family; within-season split-half, not out of sample; gate .436 P(above)=1.0; cross-season stability 0.415",
+      "plain_summary": "Player trait reliability from FTN charting",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.6541,
+      "sample_blocks": 296,
+      "sample_games": null,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts/mod10_ftn_traits/result.json",
+      "standard_error": null
+    },
+    "rec_created_reception_rate": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "FTN-attributed player trait split-half reliability (odd v even weeks, Spearman-Brown, pooled 2022-25)",
+      "effect": 0.4487,
+      "effect_units": "correlation",
+      "family": "mod10_ftn_player_traits",
+      "interval": [
+        0.2915,
+        0.5693
+      ],
+      "league": "nfl",
+      "notes": "54 looks in family; within-season split-half, not out of sample; gate .436 P(above)=0.5545; cross-season stability 0.527",
+      "plain_summary": "Player trait reliability from FTN charting",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.4487,
+      "sample_blocks": 296,
+      "sample_games": null,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts/mod10_ftn_traits/result.json",
+      "standard_error": null
+    },
+    "rec_created_reception_rate_teamdemeaned": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "FTN-attributed player trait split-half reliability (odd v even weeks, Spearman-Brown, pooled 2022-25)",
+      "effect": 0.4993,
+      "effect_units": "correlation",
+      "family": "mod10_ftn_player_traits",
+      "interval": [
+        0.3589,
+        0.61
+      ],
+      "league": "nfl",
+      "notes": "54 looks in family; within-season split-half, not out of sample; gate .436 P(above)=0.817; cross-season stability 0.527",
+      "plain_summary": "Player trait reliability from FTN charting",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.4993,
+      "sample_blocks": 296,
+      "sample_games": null,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts/mod10_ftn_traits/result.json",
+      "standard_error": null
+    },
+    "rec_drop_rate": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "FTN-attributed player trait split-half reliability (odd v even weeks, Spearman-Brown, pooled 2022-25)",
+      "effect": 0.0106,
+      "effect_units": "correlation",
+      "family": "mod10_ftn_player_traits",
+      "interval": [
+        -0.1752,
+        0.1666
+      ],
+      "league": "nfl",
+      "notes": "54 looks in family; within-season split-half, not out of sample; gate .436 P(above)=0.0; cross-season stability 0.094",
+      "plain_summary": "Player trait reliability from FTN charting",
+      "probability_positive": 0.541,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.0106,
+      "sample_blocks": 579,
+      "sample_games": null,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts/mod10_ftn_traits/result.json",
+      "standard_error": null
+    },
+    "rec_drop_rate_teamdemeaned": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "FTN-attributed player trait split-half reliability (odd v even weeks, Spearman-Brown, pooled 2022-25)",
+      "effect": 0.0538,
+      "effect_units": "correlation",
+      "family": "mod10_ftn_player_traits",
+      "interval": [
+        -0.1081,
+        0.1923
+      ],
+      "league": "nfl",
+      "notes": "54 looks in family; within-season split-half, not out of sample; gate .436 P(above)=0.0; cross-season stability 0.094",
+      "plain_summary": "Player trait reliability from FTN charting",
+      "probability_positive": 0.7595,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.0538,
+      "sample_blocks": 579,
+      "sample_games": null,
+      "seasons": [
+        2022,
+        2025
+      ],
+      "source": "artifacts/mod10_ftn_traits/result.json",
+      "standard_error": null
+    }
+  }
+}

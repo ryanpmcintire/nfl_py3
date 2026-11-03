@@ -30,3 +30,8 @@ frozen challenger fingerprint. Preserve the historical research classification.
 ## Open
 Further prospective evidence and recovery of the historical replay script remain.
 This completed lane closes the status audit only.
+
+## Audit 2026-11-03 (forward-only check)
+- Historical: nothing unrun. Stack replays are spent: [2020,2021] 53.29 v 51.32 (P+ 0.8745), 1,537-game 52.83 v 52.50, v3/v4/v5 all recorded unresolved_below_power (registry weak_stack_v4_forecast_weather, weak_stack_v5_fluview_away, post_discovery_2026_stack_terms). Retuning is inadmissible; the absent replay script is a gap, not a new look.
+- Forward (measured, artifacts/prospective_scoring/20261103T153531Z): stack 63/121 (P+ 0.681 v coin) v active 66/121. Paired contrast: 45 games where stack and active picks differ in Weeks 1-8; active 24, stack 21 (about 5.6 differing games a week).
+- Expected by Week 18 at that rate: about 100 differing games (inferred). Paired SD of accuracy diff is about sqrt(100)/270 = 3.7 points; the historical effect is +0.33, so the sample cannot reach power for it (would need thousands of games). Read stays a descriptive forward record, scored each Tuesday; score of record after Week 18 (Jan 2027). No registry record added (no new historical look).

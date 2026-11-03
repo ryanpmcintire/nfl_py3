@@ -31,3 +31,14 @@ Apply: `git -C F:\Repos\nfl_py3 apply F:\Repos\nfl_py3\tests\scratch\engine-queu
 - Baseline: committed engine + copied scripts + junctions at tests/scratch/engine_identity/base/; running idbase (seed 5, 1 world, 3 seasons, workers 1, realsched 1, 1 thread) in background task b7yv0emdq; log tests/scratch/engine_identity/idbase.log (last line rc/secs). Output artifacts/sim10/idbase_s5/.
 - Next: when idbase finishes, run the same from scripts/sim10_drive.py with label idall (no SIM10_* env set), then compare SHA256 of games.parquet and plays.parquet in artifacts/sim10/idbase_s5 vs idall_s5. If different, git apply -R the combined patch and test instrumentation alone.
 - RESULT: idbase vs idall byte-identical. games.parquet sha256 26b3415a9ab702360a07a7ecf5665368741a248fa8d6b279ac74bb342236cd71; plays.parquet 74ebec4da923912e0756d1958c3bd44718d8cdffdb8bb030a981a6c0d3109e5b. Combined patch stays applied; queue ready.
+
+## 2026-11-03 flag smokes (agent)
+- Running (background task b33f53blf): scratchpad smk.ps1 runs seed 5, 1 world, 1 season, workers 1, realsched 1, one core: off, instr, qlog(head1), terminal=1, drlam=0.25(head1), stslope(head1), koseason(head1), sit nohuddle/urgency/fatigue/stakes. Results: scratchpad smk_summary.txt (rc, secs) and smk_<n>.log; outputs artifacts/sim10/smk_*_s5 (delete after summarizing), plus artifacts/sim06/query_log/smk_qlog and any smk_instr files.
+- Result pending.
+
+## Quality gates 2026-11-03
+Run on HEAD 053a3c26 plus uncommitted lane edits.
+- ruff format --check: 220 files failed before; all in scripts/, none in src/ or tests/. 9 were committed today (mod25d_variance, mod25e_desp, mod25e_rulestr, sim08_market_anchored, sim09_f3, sim09_personnel, sim09_u4d, sim09_urgency, sim10_drive); reformatted with ruff format (uncommitted). Remaining 211 predate today.
+- ruff check: 5633 errors, all in scripts/ (3851 E501), none in src/ or tests/. Today's files with errors: mod25d_variance 225, sim09_f3 156, mod25e_desp 57, sim09_personnel 55, sim09_urgency 30, sim09_u4d 25, mod25e_rulestr 16, sim08_market_anchored 6, sim10_drive 5. Not fixed (not format-only).
+- mypy src: pass, 256 files.
+- pytest -n 2: 1644 passed, 1 failed, 12 errors. Failed: tests/test_officials_wayback_sweep.py::test_cli_exposes_fallback_captures_and_retry_unparsed (KeyError items_remaining; test and module last touched 2026-09-23, so pre-today). Errors: 12 tests/scratch/ui20_render collection PermissionError (environmental).

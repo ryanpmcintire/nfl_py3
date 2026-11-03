@@ -28,3 +28,7 @@ Whether to merge the two run directories into one parquet for the downstream bat
 - Recorded 4 cells, family lead59_type_trait_history_2009_fit_terms_v1, all unresolved_below_power.
 ## Next
 Owner/root: decide LEAD-59 done; commit nothing from this lane yet.
+
+## 2026-11-03 test repair
+- test_cli_exposes_fallback_captures_and_retry_unparsed failed KeyError items_remaining: commit 7164e885 added items_remaining and estimated_hours_left to the run_sweep summary and the CLI print; the test's fake summary lacked them.
+- Fix: added both keys to the fake summary in the test (stub only). Code untouched.

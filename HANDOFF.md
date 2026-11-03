@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T16:09:19.845572+00:00`
+Refreshed at: `2026-11-03T16:19:04.258837+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-03T16:09:19.845572+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `2d026db1cbb4` — POOL-01 real-rival correction; LEAD-29 overlay input wired to PER-07
-- Pending change set: 244 paths
+- Baseline commit: `053a3c2684c9` — Engine queue applied (all default-off, byte-identical); SIM-07 FTN state
+- Pending change set: 271 paths
+  - `M  ROADMAP.md`
+  - ` M docs/findings.html`
+  - ` M docs/history.html`
+  - ` M docs/index.html`
+  - `M  docs/lanes/backlog-all-2026-11-02.md`
+  - `M  docs/lanes/done/lead65-protection-window-split.md`
+  - `M  docs/lanes/done/mod07-prospective-status-audit.md`
   - `M  docs/lanes/engine-patch-queue-2026-11-03.md`
+  - `M  docs/lanes/lead59-officials-sweep-2026-11-02.md`
+  - `M  docs/lanes/mod10-graph-reliability-2026-11-03.md`
+  - `M  docs/lanes/mod24-next-2026-11-03.md`
+  - `M  docs/lanes/news-trigger-refresh.md`
+  - `M  docs/lanes/scheduler-batch-2026-11-03.md`
   - `M  docs/lanes/sim07-power-2026-11-03.md`
-  - ` M docs/lanes/sim09-tier-a-runs-2026-11-03.md`
-  - ` M docs/lanes/sky01-news-availability.md`
-  - `A  registry/weak_signals/sim07_ftn_state.json`
-  - `M  registry/weak_signals/sky01_news_availability.json`
-  - ` M scripts/capture_scheduler.py`
-  - `A  scripts/sim07_ftn_state.py`
-  - `M  scripts/sim10_drive.py`
-  - `?? an.csv`
-  - `?? data/pool_observables/20261103T130853Z/manifest.json`
-  - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - `?? docs/lanes/c-drive-space-2026-10-31.md`
-  - `?? docs/lanes/machine-crashes-2026-10-31.md`
-  - `?? docs/lanes/stealmybitcoin-ctf.md`
-  - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
-  - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
-  - ...and 224 more
+  - `M  docs/lanes/sim09-tier-a-runs-2026-11-03.md`
+  - `M  docs/lanes/sky01-news-availability.md`
+  - `M  docs/lanes/sky04-lead-lag-2026-11-02.md`
+  - ` M docs/model.html`
+  - `A  registry/weak_signals/mod10_ftn_player_traits.json`
+  - `A  registry/weak_signals/mod24_pre2009_extension.json`
+  - ...and 251 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
