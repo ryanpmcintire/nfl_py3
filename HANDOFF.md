@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T23:11:03.666232+00:00`
+Refreshed at: `2026-11-03T23:11:10.578314+00:00`
 
 ## Start here
 
@@ -21,10 +21,10 @@ Refreshed at: `2026-11-03T23:11:03.666232+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `dabc4270e361` — SIM-21 unit 3: truncation-aware tilt behind SIM10_TRUNCTILT (default off; flag-off identical to HEAD) aligns achieved and realized scoring but NOT ADOPTED (gates 10/11/10, pts_game 45.72 v real 44.83): it unmasks an upward scoring bias the double count was cancelling; next a joint test with the measured late-game bandwidths
+- Baseline commit: `fbd530125117` — SIM-27 lane: joint arm queued with the truncation fix
 - Pending change set: 250 paths
+  - `M  HANDOFF.md`
   - ` M config/source_policies.json`
-  - `M  docs/lanes/sim-27-adaptive-neighbour-count-in-the-drive-draw.md`
   - ` M src/nfl_ats/board_site_content.py`
   - ` M src/nfl_ats/board_terminal.py`
   - `?? an.csv`
