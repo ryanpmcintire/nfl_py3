@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T22:23:15.617957+00:00`
+Refreshed at: `2026-11-03T22:23:29.097144+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-03T22:23:15.617957+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `e1b46dc4c53a` — LEAD-110: the Tuesday-to-deadline move does not measurably load on the injury-wording read (-0.97 [-8.8, 6.1], 91 games, partial team sums); unresolved below power
-- Pending change set: 260 paths
+- Baseline commit: `eec1246c1fa2` — SIM-21 unit 2: logging-only tilt trace (SIM10_TILT, flag-off identical to HEAD); defect found: the tilt matches untruncated drive outcomes, then the clock cuts the drawn drive, double-counting clock-cut zero-scores (explains ~60% of the trailing and ~90% of the leading scoring gap)
+- Pending change set: 261 paths
   - ` M ROADMAP.md`
   - ` M config/source_policies.json`
+  - `M  docs/lanes/backlog-all-2026-11-02.md`
   - ` M docs/lanes/done/eng-56-final-score-reconciliation.md`
-  - `M  docs/lanes/engine-patch-queue-2026-11-03.md`
-  - `M  docs/lanes/sim-21-drive-length-decomposition.md`
+  - ` M docs/lanes/eng-53-trait-reliability-table.md`
   - ` M scripts/eng53_reliability.py`
   - ` M scripts/mod40_ngs_reliability.py`
-  - `M  scripts/sim10_drive.py`
   - ` M scripts/sim17_halftime_adjustment.py`
   - ` M scripts/sim17_unit2_carriers.py`
   - ` M scripts/sim18_lead_protection.py`
   - ` M scripts/sim18_unit2_multiplier.py`
   - ` M scripts/sim19_trailing_risk.py`
-  - `A  scripts/sim21_tilt_trace.py`
   - ` M scripts/xlg15_cfb_trait_reliability.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
   - `?? docs/lanes/c-drive-space-2026-10-31.md`
   - `?? docs/lanes/machine-crashes-2026-10-31.md`
-  - ...and 240 more
+  - `?? docs/lanes/stealmybitcoin-ctf.md`
+  - `?? docs/move_reasons.json`
+  - ...and 241 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
