@@ -1,0 +1,117 @@
+{
+  "family": "mod36_noise_floor",
+  "signals": {
+    "mod36_noise_K12_d_acc": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Negative-control null distribution; sets a noise floor, closes nothing. 2 K arms x 2 metrics = 4 looks, 50 seeded draws each (seed [36,K,i]).",
+      "closing_ground": null,
+      "description": "Pure-noise null, 50 draws of K=12 standard-normal columns added to the 88 base inputs, ridge alpha 10, past-only refits, opener 2020-2025 vs base 802-701; effect is the median, interval is the 5th-95th percentile of draws.",
+      "effect": -0.33266799733865604,
+      "effect_units": "accuracy_points",
+      "family": "mod36_noise_floor",
+      "interval": [
+        -1.0345974717232203,
+        0.7085828343313367
+      ],
+      "league": "nfl",
+      "notes": "Null for add-one candidates; not a closing ground for any candidate.",
+      "plain_summary": "Random columns added to the model move accuracy and log loss by this much with no real signal.",
+      "probability_positive": 0.28,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 50,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod36_noise/summary.json",
+      "standard_error": null
+    },
+    "mod36_noise_K12_ll_gain": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Negative-control null distribution; sets a noise floor, closes nothing. 2 K arms x 2 metrics = 4 looks, 50 seeded draws each (seed [36,K,i]).",
+      "closing_ground": null,
+      "description": "Pure-noise null, 50 draws of K=12 standard-normal columns added to the 88 base inputs, ridge alpha 10, past-only refits, opener 2020-2025 vs base 802-701; effect is the median, interval is the 5th-95th percentile of draws.",
+      "effect": -0.0008471286078918783,
+      "effect_units": "log_loss_improvement",
+      "family": "mod36_noise_floor",
+      "interval": [
+        -0.0029084259847717174,
+        0.0005702047276224419
+      ],
+      "league": "nfl",
+      "notes": "Null for add-one candidates; not a closing ground for any candidate.",
+      "plain_summary": "Random columns added to the model move accuracy and log loss by this much with no real signal.",
+      "probability_positive": 0.2,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 50,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod36_noise/summary.json",
+      "standard_error": null
+    },
+    "mod36_noise_K1_d_acc": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Negative-control null distribution; sets a noise floor, closes nothing. 2 K arms x 2 metrics = 4 looks, 50 seeded draws each (seed [36,K,i]).",
+      "closing_ground": null,
+      "description": "Pure-noise null, 50 draws of K=1 standard-normal columns added to the 88 base inputs, ridge alpha 10, past-only refits, opener 2020-2025 vs base 802-701; effect is the median, interval is the 5th-95th percentile of draws.",
+      "effect": -0.0665335994677312,
+      "effect_units": "accuracy_points",
+      "family": "mod36_noise_floor",
+      "interval": [
+        -0.7318695941450433,
+        0.3393213572854288
+      ],
+      "league": "nfl",
+      "notes": "Null for add-one candidates; not a closing ground for any candidate.",
+      "plain_summary": "Random columns added to the model move accuracy and log loss by this much with no real signal.",
+      "probability_positive": 0.36,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 50,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod36_noise/summary.json",
+      "standard_error": null
+    },
+    "mod36_noise_K1_ll_gain": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Negative-control null distribution; sets a noise floor, closes nothing. 2 K arms x 2 metrics = 4 looks, 50 seeded draws each (seed [36,K,i]).",
+      "closing_ground": null,
+      "description": "Pure-noise null, 50 draws of K=1 standard-normal columns added to the 88 base inputs, ridge alpha 10, past-only refits, opener 2020-2025 vs base 802-701; effect is the median, interval is the 5th-95th percentile of draws.",
+      "effect": -2.477131437278457e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "mod36_noise_floor",
+      "interval": [
+        -0.0006361282985771543,
+        0.0005895480953186866
+      ],
+      "league": "nfl",
+      "notes": "Null for add-one candidates; not a closing ground for any candidate.",
+      "plain_summary": "Random columns added to the model move accuracy and log loss by this much with no real signal.",
+      "probability_positive": 0.4,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 50,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod36_noise/summary.json",
+      "standard_error": null
+    }
+  }
+}

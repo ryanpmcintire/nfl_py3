@@ -1,0 +1,145 @@
+{
+  "family": "per12_qb_return",
+  "signals": {
+    "per12_move_on_ev_swap_slope": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Slope of adjusted line move on expected QB swap value (EPA gap times dropbacks)",
+      "effect": 0.0495,
+      "effect_units": "slope_difference",
+      "family": "per12_qb_return",
+      "interval": [
+        -0.0634,
+        0.1712
+      ],
+      "league": "nfl",
+      "notes": "per12_qb_return family, 6 cells counted as looks; QB-clustered bootstrap 4000 draws; opener cells 2020-2025 use tue_open_home_spread as input; LOSO diagnostic (6 folds) oos mse 165.47 vs intercept-only 165.15, no gain",
+      "plain_summary": "Line move tracks the swap value weakly; full pricing would be a slope near 1.",
+      "probability_positive": 0.7885,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 120,
+      "sample_games": 120,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/per12_qb_return.py; tests/scratch/per12/result.json",
+      "standard_error": 0.0596
+    },
+    "per12_return12_cover_vs_opener": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Returning team cover margin vs Tuesday opener, return games 1-2, 2020-2025; record 55-64-1",
+      "effect": -1.067,
+      "effect_units": "ats_points",
+      "family": "per12_qb_return",
+      "interval": [
+        -3.605,
+        1.346
+      ],
+      "league": "nfl",
+      "notes": "per12_qb_return family, 6 cells counted as looks; QB-clustered bootstrap 4000 draws; opener cells 2020-2025 use tue_open_home_spread as input; LOSO diagnostic (6 folds) oos mse 165.47 vs intercept-only 165.15, no gain",
+      "plain_summary": "Opener does not under-price the return; teams went 55-64-1 against it.",
+      "probability_positive": 0.193,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 120,
+      "sample_games": 120,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/per12_qb_return.py; tests/scratch/per12/result.json",
+      "standard_error": 1.261
+    },
+    "per12_return12_move_adj": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Open minus prior-week close, pattern-adjusted, return games 1-2, 2020-2025",
+      "effect": 0.411,
+      "effect_units": "ats_points",
+      "family": "per12_qb_return",
+      "interval": [
+        -0.639,
+        1.406
+      ],
+      "league": "nfl",
+      "notes": "per12_qb_return family, 6 cells counted as looks; QB-clustered bootstrap 4000 draws; opener cells 2020-2025 use tue_open_home_spread as input; LOSO diagnostic (6 folds) oos mse 165.47 vs intercept-only 165.15, no gain",
+      "plain_summary": "Line moves slightly toward the returning team week over week.",
+      "probability_positive": 0.798,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 120,
+      "sample_games": 120,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/per12_qb_return.py; tests/scratch/per12/result.json",
+      "standard_error": 0.6494806998189018
+    },
+    "per12_return1_epa_vs_own_baseline": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Returning QB EPA per dropback in return game 1 minus own pre-absence baseline",
+      "effect": 0.0635,
+      "effect_units": "epa_per_play",
+      "family": "per12_qb_return",
+      "interval": [
+        0.0194,
+        0.1072
+      ],
+      "league": "nfl",
+      "notes": "per12_qb_return family, 6 cells counted as looks; QB-clustered bootstrap 4000 draws; opener cells 2020-2025 use tue_open_home_spread as input; LOSO diagnostic (6 folds) oos mse 165.47 vs intercept-only 165.15, no gain",
+      "plain_summary": "No rust dip; first game back is above his own prior level.",
+      "probability_positive": 0.997,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 174,
+      "sample_games": 174,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/per12_qb_return.py; tests/scratch/per12/result.json",
+      "standard_error": 0.0222
+    },
+    "per12_return2_epa_vs_own_baseline": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Returning QB EPA per dropback in return game 2 minus own baseline",
+      "effect": 0.0047,
+      "effect_units": "epa_per_play",
+      "family": "per12_qb_return",
+      "interval": [
+        -0.0506,
+        0.0598
+      ],
+      "league": "nfl",
+      "notes": "per12_qb_return family, 6 cells counted as looks; QB-clustered bootstrap 4000 draws; opener cells 2020-2025 use tue_open_home_spread as input; LOSO diagnostic (6 folds) oos mse 165.47 vs intercept-only 165.15, no gain",
+      "plain_summary": "Second game back is level with his prior form.",
+      "probability_positive": 0.551,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 126,
+      "sample_games": 126,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/per12_qb_return.py; tests/scratch/per12/result.json",
+      "standard_error": 0.0284
+    }
+  }
+}

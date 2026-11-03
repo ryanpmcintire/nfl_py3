@@ -1,17 +1,20 @@
 # MOD-36 Add-one noise ensemble
 
 ## Goal
-Add-one noise ensemble: run random matched features through the served add-one pipeline to set the noise floor for every candidate verdict ROADMAP row MOD-36.
+Noise floor for add-one candidates on the 88-input served base (ROADMAP MOD-36).
 
 ## State
-Added 2026-11-03 as an unmeasured backlog row; nothing run, no registry window spent. Mechanism: Add-one candidates on the 88-input model move accuracy by flipping a handful of coin-flip games, so a gain of a few tenths of a point may be the pipeline own noise. A negative control of random features with matched marginals shows the distribution of gain, log loss and flip count that noise alone produces. Data: Served-model add-one pipeline and the opener population 2020-2025; random columns permuted within season from real candidate marginals.
+Unit 1 done 2026-11-03 (measured). Family mod36_noise_floor, 4 looks recorded (K x accuracy/log loss), unresolved_below_power. 50 draws per K in {1,12}, N(0,1) columns seeded [36,K,i], ridge alpha 10, opener 2020-25 vs base 802-701 (scripts/mod36_noise_floor.py, mod36_analyze.py; artifacts/mod36_noise/draws.jsonl, summary.json). ~30-45 s per draw.
+Null K=1: acc pts q05/50/95 -0.73/-0.07/+0.34; LL gain -6e-4/-2e-5/+6e-4; flips 10/36/73; P+ q50 .33, share P+>=.9 .02, >=.95 .02.
+Null K=12: acc -1.03/-0.33/+0.71; LL gain -2.9e-3/-8.5e-4/+5.7e-4; flips 102/149/201; P+ share >=.9 0, >=.95 0; P+<=.1 .26.
+Placement (two-sided acc p vs K=12): u13 A -0.47 .54, B -0.47 .54, u14 D -0.33 .60, P -0.86 .28 (K=1: .04).
+Not a closing ground for anyone.
 
 ## Tried
-Novelty check only: Nearest: positive-control-power.md and sim07-power-2026-11-03.md (planted real effects), leak_ceiling_control.md (leakage ceiling). Differs: a negative control for the add-one noise floor; grep for noise feature, random feature and placebo feature returned no hit.
+Noise is not mean zero: median acc is negative for K=12, so excess over noise, not raw delta, is the read.
 
 ## Next
-First unit: Run 200 matched random features through the pipeline, store gain, log loss, flip count and decisive-game record, then place each completed MOD-23 candidate in that null distribution and report probability_positive of its excess over noise.
-Rules: Zero crossing closes nothing; one fitted probability selects the side; weights, cut points and alphas chosen leave-one-season-out; every cell counted as a look; unresolved results go through nfl-ats weak-signals record with a closing ground; graded at the opener on the same market and simple-model baselines.
+Place MOD-29, MKT-21, XLG-10 only via their own pipelines (different estimator/period/harness: not exchangeable with this null). More draws or K=2,4,16 matched arms if wanted.
 
 ## Open
-Look count and family to be declared before any sign is seen. Nothing here closes on zero crossing; record unresolved results with nfl-ats weak-signals record.
+Draws per arm are 50, so p-values resolve to 0.02.

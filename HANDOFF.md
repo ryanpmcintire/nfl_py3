@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T19:49:44.831582+00:00`
+Refreshed at: `2026-11-03T19:50:12.550936+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-03T19:49:44.831582+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `d63a0a8a2232` — PER-11 arrival ramp-up (no effect; unresolved); refresh session handoff
-- Pending change set: 263 paths
+- Baseline commit: `dbace82d4a57` — UI-26: one-tap 'Copy picks as text' sheet on Home (15 picks, Best Pick marked, tiebreaker), with a selectable fallback
+- Pending change set: 260 paths
+  - `M  HANDOFF.md`
   - ` M config/source_policies.json`
-  - `M  docs/findings.html`
-  - `M  docs/index.html`
   - ` M docs/lanes/backlog-all-2026-11-02.md`
   - ` M docs/lanes/engine-patch-queue-2026-11-03.md`
   - ` M docs/lanes/mkt-22-mkt22-trait-pricing-audit.md`
-  - ` M docs/lanes/mod-36-mod36-add-one-noise-null.md`
-  - ` M docs/lanes/mod-39-mod39-playoff-leverage-asymmetry.md`
-  - ` M docs/lanes/per-12-per12-qb-return-from-absence.md`
+  - `M  docs/lanes/mod-36-mod36-add-one-noise-null.md`
+  - `M  docs/lanes/mod-39-mod39-playoff-leverage-asymmetry.md`
+  - `M  docs/lanes/per-12-per12-qb-return-from-absence.md`
   - ` M docs/lanes/sim08-spec-a-terminal-2026-11-03.md`
-  - `M  docs/lanes/ui-26-ui26-copy-pick-sheet.md`
   - ` M docs/lead64_freshness_audit.md`
+  - `A  registry/weak_signals/mod36_noise_floor.json`
+  - `A  registry/weak_signals/mod39_playoff_leverage.json`
+  - `A  registry/weak_signals/per12_qb_return.json`
+  - `A  scripts/mod36_analyze.py`
+  - `A  scripts/mod36_noise_floor.py`
+  - `A  scripts/mod39_leverage.py`
+  - `A  scripts/per12_qb_return.py`
   - ` M scripts/sim10_situational.py`
-  - `M  src/nfl_ats/board_terminal.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
-  - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - `?? docs/lanes/c-drive-space-2026-10-31.md`
-  - `?? docs/lanes/machine-crashes-2026-10-31.md`
-  - `?? docs/lanes/stealmybitcoin-ctf.md`
-  - ...and 243 more
+  - ...and 240 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

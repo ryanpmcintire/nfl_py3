@@ -1,0 +1,117 @@
+{
+  "family": "mod39_playoff_leverage",
+  "signals": {
+    "mod39_levdiff_close_slope_2009_19": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Pregame playoff-probability swing (win minus loss) home minus away, weeks 10-16, standings Monte Carlo with as-of ratings (scripts/sim09_stakes.py team-weeks)",
+      "effect": -1.588,
+      "effect_units": "ats_points",
+      "family": "mod39_playoff_leverage",
+      "interval": [
+        -6.329,
+        3.077
+      ],
+      "league": "nfl",
+      "notes": "close-graded, not opener; secondary look",
+      "plain_summary": "Teams with more to play for in the playoff race were compared with teams with less; the opening line already looks to price it, with no measurable lean either way.",
+      "probability_positive": 0.2566,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1186,
+      "seasons": [
+        2009,
+        2019
+      ],
+      "source": "artifacts/mod39/mod39_results.json",
+      "standard_error": 2.409
+    },
+    "mod39_levdiff_loso_accuracy_2020_25": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Pregame playoff-probability swing (win minus loss) home minus away, weeks 10-16, standings Monte Carlo with as-of ratings (scripts/sim09_stakes.py team-weeks)",
+      "effect": 0.676,
+      "effect_units": "accuracy_points",
+      "family": "mod39_playoff_leverage",
+      "interval": [
+        -1.18,
+        2.53
+      ],
+      "league": "nfl",
+      "notes": "decisive games (pick differs from intercept control) 32: term 18 control 14",
+      "plain_summary": "Teams with more to play for in the playoff race were compared with teams with less; the opening line already looks to price it, with no measurable lean either way.",
+      "probability_positive": 0.7402,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 592,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod39/mod39_results.json",
+      "standard_error": null
+    },
+    "mod39_levdiff_loso_logloss_2020_25": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Pregame playoff-probability swing (win minus loss) home minus away, weeks 10-16, standings Monte Carlo with as-of ratings (scripts/sim09_stakes.py team-weeks)",
+      "effect": -0.000936,
+      "effect_units": "log_loss_improvement",
+      "family": "mod39_playoff_leverage",
+      "interval": [
+        -0.0028,
+        0.000975
+      ],
+      "league": "nfl",
+      "notes": "LOSO logistic offset=opener model prob, term levdiff vs intercept-only; in-sample gain +0.00017 gap 0.0011",
+      "plain_summary": "Teams with more to play for in the playoff race were compared with teams with less; the opening line already looks to price it, with no measurable lean either way.",
+      "probability_positive": 0.176,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 592,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod39/mod39_results.json",
+      "standard_error": null
+    },
+    "mod39_levdiff_opener_slope_2020_25": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Pregame playoff-probability swing (win minus loss) home minus away, weeks 10-16, standings Monte Carlo with as-of ratings (scripts/sim09_stakes.py team-weeks)",
+      "effect": 3.175,
+      "effect_units": "ats_points",
+      "family": "mod39_playoff_leverage",
+      "interval": [
+        -2.851,
+        9.333
+      ],
+      "league": "nfl",
+      "notes": "ats points per 1.0 levdiff, margin_vs_open, game bootstrap 5000; levdiff SD 0.162",
+      "plain_summary": "Teams with more to play for in the playoff race were compared with teams with less; the opening line already looks to price it, with no measurable lean either way.",
+      "probability_positive": 0.8486,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 592,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod39/mod39_results.json",
+      "standard_error": 3.107
+    }
+  }
+}
