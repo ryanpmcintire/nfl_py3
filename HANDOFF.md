@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T22:06:11.727976+00:00`
+Refreshed at: `2026-11-03T22:06:47.550466+00:00`
 
 ## Start here
 
@@ -21,17 +21,18 @@ Refreshed at: `2026-11-03T22:06:11.727976+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `eb0b4a2e0266` — Refresh session handoff
-- Pending change set: 255 paths
+- Baseline commit: `26f162f4b4d0` — Dashboard round 8: Home tiles say what was counted and against which line; Findings counts note is two plain sentences with the detail folded; History lead in plain words
+- Pending change set: 257 paths
   - ` M config/source_policies.json`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
   - ` M docs/lanes/mod-46-favourite-lead-skew.md`
-  - `M  docs/lanes/ui20-2026-11-03.md`
   - ` M docs/lanes/xlg-10-xlg10-pooled-addone.md`
+  - `M  docs/model.html`
   - ` M registry/weak_signals/xlg10_pooled_addone.json`
   - ` M registry/weak_signals/xlg10_pooled_addone_unit2.json`
   - ` M scripts/sim10_drive.py`
-  - `M  src/nfl_ats/board_content.py`
-  - `M  src/nfl_ats/board_terminal.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
@@ -42,8 +43,7 @@ Refreshed at: `2026-11-03T22:06:11.727976+00:00`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - ...and 235 more
+  - ...and 237 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
