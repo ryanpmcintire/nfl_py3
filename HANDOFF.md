@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T22:04:17.137316+00:00`
+Refreshed at: `2026-11-03T22:04:55.713267+00:00`
 
 ## Start here
 
@@ -21,13 +21,14 @@ Refreshed at: `2026-11-03T22:04:17.137316+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `d6c057e6415b` — Refresh session handoff
-- Pending change set: 253 paths
+- Baseline commit: `e1b33d9db3a2` — XLG-14 unit 2: declared 5-candidate schedule family screened college-first; zero survivors (all log-loss P+ <= .29), no NFL confirmation; 5 cells unresolved
+- Pending change set: 254 paths
   - ` M config/source_policies.json`
+  - `M  docs/lanes/eng-53-trait-reliability-table.md`
   - ` M docs/lanes/mod-46-favourite-lead-skew.md`
-  - `M  docs/lanes/xlg-14-xlg14-cfb-first-discovery.md`
-  - `A  registry/weak_signals/xlg14_family_u2.json`
-  - `A  scripts/xlg14_family_screen.py`
+  - ` M registry/weak_signals/xlg10_pooled_addone.json`
+  - `A  scripts/eng53_reliability.py`
+  - ` M scripts/sim10_drive.py`
   - ` M src/nfl_ats/board_content.py`
   - ` M src/nfl_ats/board_terminal.py`
   - `?? an.csv`
@@ -42,8 +43,7 @@ Refreshed at: `2026-11-03T22:04:17.137316+00:00`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
   - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
   - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
-  - ...and 233 more
+  - ...and 234 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
