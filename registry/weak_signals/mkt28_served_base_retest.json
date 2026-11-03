@@ -337,6 +337,62 @@
       "source": "tests/scratch/mkt28/mkt25_unit2.py; tests/scratch/mkt28/mkt25_unit2_out.txt",
       "standard_error": null
     },
+    "mkt28_per15_x_unweighted_term_dLL_vs_true_served": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "LOSO 2020-25 n 1503 (1155 with feature); flips 175 arm side 86-89; seasons positive 4/6; served-vs-intercept dLL 0.00636",
+      "closing_ground": null,
+      "description": "PER-15 unweighted return-ramp pick term re-run with base = out_of_season_home_probability (true served); old base raw model probability",
+      "effect": -0.001237,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt28_served_base_retest",
+      "interval": [
+        -0.003698,
+        0.001329
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether injury-return ramp slot-loss value adds to the true served opener pick probability",
+      "probability_positive": 0.18,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mkt28/per15_return_ramp.py; tests/scratch/mkt28/per15/result.json",
+      "standard_error": null
+    },
+    "mkt28_per15_x_value_term_dLL_vs_true_served": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "LOSO 2020-25 n 1503 (1155 with feature); flips 90 arm side 41-49; seasons positive 5/6; served-vs-intercept dLL 0.00636",
+      "closing_ground": null,
+      "description": "PER-15 position-value return-ramp pick term re-run with base = out_of_season_home_probability (true served); old base raw model probability",
+      "effect": -1.7e-06,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt28_served_base_retest",
+      "interval": [
+        -0.001185,
+        0.001105
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether injury-return ramp slot-loss value adds to the true served opener pick probability",
+      "probability_positive": 0.4805,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mkt28/per15_return_ramp.py; tests/scratch/mkt28/per15/result.json",
+      "standard_error": null
+    },
     "mkt28_sim17_defense_adjustment_term_dLL_vs_true_served": {
       "category": "onfield",
       "classification": "unresolved_below_power",
@@ -419,6 +475,90 @@
         2025
       ],
       "source": "tests/scratch/mkt28/sim17_unit3_heldout.py; tests/scratch/mkt28/sim17_unit3.json",
+      "standard_error": null
+    },
+    "mkt28_sim18_run_adj_term_dLL_vs_true_served": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "LOSO 2020-25 n 1503; flips 235 arm side 123-112; seasons positive 4/6; coef mean -0.106 negative 6/6 folds; served-vs-intercept dLL 0.00636",
+      "closing_ground": null,
+      "description": "SIM-18 quality-adjusted run-rate pick term re-run with base = out_of_season_home_probability (true served); old base raw model probability",
+      "effect": 0.000297,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt28_served_base_retest",
+      "interval": [
+        -0.002547,
+        0.00305
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether lead-protection drive-length traits add to the true served opener pick probability",
+      "probability_positive": 0.5856,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mkt28/sim18_unit2_multiplier.py; tests/scratch/mkt28/sim18/unit2.json",
+      "standard_error": null
+    },
+    "mkt28_sim18_sec_adj_term_dLL_vs_true_served": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "LOSO 2020-25 n 1503; flips 63 arm side 25-38; seasons positive 3/6; coef mean +0.017 sign consistent 5/6 (2024 negative) so sign not resolved; unresolved_below_power",
+      "closing_ground": null,
+      "description": "SIM-18 quality-adjusted seconds-per-drive pick term re-run with base = out_of_season_home_probability (true served); old base raw model probability",
+      "effect": -0.001112,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt28_served_base_retest",
+      "interval": [
+        -0.002139,
+        -0.00013
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether lead-protection drive-length traits add to the true served opener pick probability",
+      "probability_positive": 0.0132,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mkt28/sim18_unit2_multiplier.py; tests/scratch/mkt28/sim18/unit2.json",
+      "standard_error": null
+    },
+    "mkt28_sim18_sec_raw_term_dLL_vs_true_served": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "LOSO 2020-25 n 1503; flips 84 arm side 33-51; seasons positive 2/6; coef mean -0.023 sign consistent 5/6 so sign not resolved; unresolved_below_power",
+      "closing_ground": null,
+      "description": "SIM-18 raw seconds-per-drive pick term re-run with base = out_of_season_home_probability (true served); old base raw model probability",
+      "effect": -0.001086,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt28_served_base_retest",
+      "interval": [
+        -0.001935,
+        -0.000215
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether lead-protection drive-length traits add to the true served opener pick probability",
+      "probability_positive": 0.0076,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mkt28/sim18_unit2_multiplier.py; tests/scratch/mkt28/sim18/unit2.json",
       "standard_error": null
     }
   }
