@@ -1,0 +1,145 @@
+{
+  "family": "mkt27_total_lattice",
+  "signals": {
+    "mkt27_abs_ats_residual_high_minus_low_total": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Absolute ATS residual, top minus bottom total tercile within season x spread bin, 9 looks",
+      "effect": 0.183,
+      "effect_units": "ats_points",
+      "family": "mkt27_total_lattice",
+      "interval": [
+        -0.441,
+        0.812
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.7225,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 3919,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/mkt27",
+      "standard_error": null
+    },
+    "mkt27_mass7_high_minus_low_total": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Mass of |margin|=7, top minus bottom total tercile within season x spread bin (closing total proxy), 9 looks",
+      "effect": 0.99,
+      "effect_units": "rate_pp",
+      "family": "mkt27_total_lattice",
+      "interval": [
+        -1.16,
+        3.16
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.797,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 3919,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/mkt27",
+      "standard_error": null
+    },
+    "mkt27_push_rate_high_minus_low_total": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Push rate, top minus bottom total tercile within season x spread bin, 9 looks",
+      "effect": -0.9,
+      "effect_units": "rate_pp",
+      "family": "mkt27_total_lattice",
+      "interval": [
+        -2.18,
+        0.41
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.085,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 3919,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/mkt27",
+      "standard_error": null
+    },
+    "mkt27_total_median_lattice_loso_logloss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Total-median-split-conditioned discrete lattice add-one, LOSO log loss at opener; coef positive 0/6",
+      "effect": -7e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt27_total_lattice",
+      "interval": [
+        -0.00193,
+        0.00176
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.476,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1493,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mkt27",
+      "standard_error": null
+    },
+    "mkt27_total_tercile_lattice_loso_logloss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Total-tercile-conditioned discrete lattice added to calibrated served lattice, LOSO log loss at opener, Tuesday total; coef positive 1/6",
+      "effect": -0.00073,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt27_total_lattice",
+      "interval": [
+        -0.0014,
+        -7e-05
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.013,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1493,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mkt27",
+      "standard_error": null
+    }
+  }
+}

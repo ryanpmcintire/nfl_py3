@@ -1168,8 +1168,8 @@ def _adjuster_html(
 
     if dive.adjuster is None:
         return (
-            '<p class="adjuster-empty">Line-offset adjuster unavailable for this game -- this '
-            "build's active model has no closed-form probability read.</p>"
+            '<p class="adjuster-empty">No what-if line slider for this game: the pick is '
+            "shown at the posted line only.</p>"
         )
     adjuster = dive.adjuster
     pinned = (
@@ -1522,7 +1522,7 @@ def _dive_panel_html(
         f"{flip_note_html}"
         f"{tiebreaker_note_html}"
         "</div>"
-        '<span class="sample-tag">Real attribution</span>'
+        '<span class="sample-tag">Pick breakdown</span>'
         "</div>"
         f"{_why_this_pick_html(explanation_text)}"
         '<div class="dive-body"><div>'
@@ -2969,7 +2969,7 @@ def _atlas_seasons_html(cells: list[dict[str, Any]], title: str) -> str:
         f'<td data-label="Games">{int(season["games"])}</td>'
         '<td data-label="Win-rate difference" class="prob">'
         f"{_atlas_signed(season['accuracy_delta_points'], suffix=' pts')}</td>"
-        '<td data-label="Brier improvement" class="prob">'
+        '<td data-label="Probability-score gain (Brier)" class="prob">'
         f"{_atlas_signed(season['brier_improvement'], digits=3)}</td></tr>"
         for cell in cells
         for season in cell["seasons"]
@@ -2980,7 +2980,8 @@ def _atlas_seasons_html(cells: list[dict[str, Any]], title: str) -> str:
         "the seasons share the same comparison design.</p>"
         '<div class="board-scroll atlas-scroll"><table class="atlas-table"><thead><tr>'
         "<th>Time window</th><th>Season</th><th>Games</th>"
-        f"<th>Win-rate difference</th><th>Brier improvement</th></tr></thead><tbody>{rows}"
+        "<th>Win-rate difference</th><th>Probability-score gain (Brier)</th>"
+        f"</tr></thead><tbody>{rows}"
         "</tbody></table></div></div></details>"
     )
 
@@ -2999,32 +3000,33 @@ def _atlas_evaluation_html(
         f'<td data-label="Games">{int(cell["games"])}</td>'
         '<td data-label="Different picks"><b>'
         f'{count_noun(int(cell["decisive_games"]), "game")}</b><span class="atlas-cell-note">'
-        f"Full {count_noun(int(cell['full_decisive_wins']), 'win')} &middot; Reduced "
+        f"With the signal {count_noun(int(cell['full_decisive_wins']), 'win')} &middot; Without "
         f"{count_noun(int(cell['reduced_decisive_wins']), 'win')}</span>"
         '<span class="atlas-cell-note">'
-        "Under an even-chance comparison, "
-        f"{_atlas_percent(cell['exact_null_p'])} chance of a split at least this lopsided"
+        "If both versions were equally good, "
+        "a split at least this lopsided would happen "
+        f"{_atlas_percent(cell['exact_null_p'])} of the time"
         "</span></td>"
         '<td data-label="Win-rate difference"><b>'
         f"{_atlas_signed(cell['accuracy_delta_points'], suffix=' pts')}</b>"
         '<span class="atlas-cell-note">'
         f"{_atlas_interval(cell['accuracy_interval'], suffix=' pts')}</span>"
         f"{_atlas_plot(cell, span)}</td>"
-        '<td data-label="Resamples favoring full" class="prob">'
+        '<td data-label="Chance of improvement" class="prob">'
         f"{_atlas_percent(cell['probability_positive'])}</td>"
-        '<td data-label="Brier improvement" class="prob">'
+        '<td data-label="Probability-score gain (Brier)" class="prob">'
         f"{_atlas_signed(cell['brier_improvement'], digits=3)}"
         '<span class="atlas-cell-note">'
         f"{_atlas_interval(cell['brier_interval'], digits=3)}</span></td>"
-        '<td data-label="Log-loss improvement" class="prob">'
+        '<td data-label="Second score gain (log loss)" class="prob">'
         f"{_atlas_signed(cell['log_loss_improvement'], digits=3)}</td></tr>"
         for cell in ordered
     )
     table = (
         '<div class="board-scroll atlas-scroll"><table class="atlas-table"><thead><tr>'
         "<th>Time window</th><th>Games</th><th>Different picks</th>"
-        "<th>Win-rate difference and interval</th><th>Resamples favoring full</th>"
-        "<th>Brier improvement and interval</th><th>Log-loss improvement</th>"
+        "<th>Win-rate difference and interval</th><th>Chance of improvement</th>"
+        "<th>Probability-score gain (Brier) and range</th><th>Second score gain (log loss)</th>"
         f"</tr></thead><tbody>{rows}</tbody></table></div>"
     )
     contents = (
