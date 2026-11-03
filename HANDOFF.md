@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T22:43:35.964655+00:00`
+Refreshed at: `2026-11-03T22:43:41.096768+00:00`
 
 ## Start here
 
@@ -21,13 +21,12 @@ Refreshed at: `2026-11-03T22:43:35.964655+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `c508bd74dab8` — MOD-52: MOD-41 served-base gain is broad (5/6 seasons positive, all week blocks positive, homogeneity p .91/.93); leans to large spreads and large |term| (not rejected at .05)
-- Pending change set: 253 paths
+- Baseline commit: `c0424e413903` — MOD-51: MOD-40, 42-47 re-tested on the served base; no conclusion changes (MOD-47 interaction moves from mildly negative to null; MOD-46 trait still equals its placebo)
+- Pending change set: 252 paths
+  - `M  HANDOFF.md`
   - ` M config/source_policies.json`
   - ` M docs/lanes/mod-49-mod41-construction-sensitivity.md`
-  - `M  docs/lanes/mod-51-served-base-retest-of-new-pregame-terms.md`
   - ` M docs/lanes/sim-21-drive-length-decomposition.md`
-  - `A  registry/weak_signals/mod51_served_base_retest.json`
   - ` M scripts/sim10_drive.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
@@ -43,7 +42,8 @@ Refreshed at: `2026-11-03T22:43:35.964655+00:00`
   - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
   - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
   - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
-  - ...and 233 more
+  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
+  - ...and 232 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
