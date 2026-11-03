@@ -47,6 +47,7 @@ DIMS = ["yl", "sd", "lt", "too", "tod", "x", "season", "week"]
 LAST_REG_WEEK = 17
 HALF_SECS = {1: 1800.0, 2: 1800.0}
 SUDDEN_DEATH = {2009, 2010, 2011}
+BOTH_POSSESS_FROM = 2025
 FG_POINTS = 3.0
 FG_DEC_LO = -FG_POINTS
 TD_PLUS_2PT = 8.0
@@ -472,6 +473,38 @@ class Head:
         self.layers = [(z[f"w{i}"], z[f"b{i}"]) for i in range(nl)]
         fit = (seg["bad"].to_numpy() == 0) & (seg["half"].to_numpy() < 3)
         self.cls = head_codes(seg, fit)[0]
+        self.last = None
+        self.ql = None
+        if os.environ.get("SIM10_QLOG"):
+            self.ql = REPO / "artifacts" / "sim06" / "query_log" / os.environ["SIM10_QLOG"]
+            self.ql.mkdir(parents=True, exist_ok=True)
+            self.buf = []
+            self.nfl = 0
+
+    def record(self, row):
+        if self.last is not None:
+            self.buf.append((*self.last, int(row)))
+            self.last = None
+            if len(self.buf) >= 5000:
+                self.flush()
+
+    def flush(self):
+        if self.ql is None or not self.buf:
+            return
+        f, hf, hm, ph, pm, pk, row = zip(*self.buf, strict=True)
+        np.savez_compressed(
+            self.ql / f"{os.getpid()}_{self.nfl:05d}.npz",
+            f=np.asarray(f, dtype=np.float64),
+            half=np.asarray(hf, dtype=np.int8),
+            home=np.asarray(hm, dtype=np.int8),
+            p_head=np.asarray(ph, dtype=np.float32),
+            p_head_masked=np.asarray(pm, dtype=np.float32),
+            p_kernel=np.asarray(pk, dtype=np.float32),
+            row=np.asarray(row, dtype=np.int64),
+            drawn_cls=self.cls[np.asarray(row, dtype=np.int64)].astype(np.int16),
+        )
+        self.nfl += 1
+        self.buf = []
 
     def proba(self, f):
         a = (np.asarray(f, dtype=np.float64) - self.mean) / self.scale
@@ -484,17 +517,21 @@ class Head:
         p[self.classes] = a / a.sum()
         return p
 
-    def reweight(self, rows, w, f):
+    def reweight(self, rows, w, f, hf=0, hm=0):
+        self.last = None
         cl = self.cls[rows]
         ok = cl >= 0
         mass = np.bincount(cl[ok], weights=w[ok], minlength=self.k)
         if mass.sum() <= 0:
             return w
         mass = mass / mass.sum()
-        pm = self.proba(f) * (mass > 0)
+        ph = self.proba(f)
+        pm = ph * (mass > 0)
         if pm.sum() <= 0:
             return w
         pm = pm / pm.sum()
+        if self.ql is not None:
+            self.last = (list(f), hf, hm, ph, pm, mass)
         ratio = np.where(mass > 0, pm / np.where(mass > 0, mass, 1.0), 0.0)
         return np.where(ok, w * ratio[np.maximum(cl, 0)], w)
 
@@ -1112,7 +1149,8 @@ class Engine:
         nz = np.flatnonzero(w > 1e-12)
         w = w[nz]
         if self.head is not None and hf < 3:
-            w = self.head.reweight(idx[nz], w, [q[0], q[1], q[2], q[3], q[4], q[7], hf - 1.0, hm])
+            hq = [q[0], q[1], q[2], q[3], q[4], q[7], hf - 1.0, hm]
+            w = self.head.reweight(idx[nz], w, hq, hf, hm)
         if self.models is not None and hf < 3:
             secs = math.expm1(q[2])
             gs = secs + 1800.0 if hf == 1 else secs
@@ -1196,6 +1234,8 @@ class Engine:
                 w = tilt_weights(w, X[nz][:, tdims], q[tdims])
         c = np.cumsum(w)
         k = min(int(np.searchsorted(c, rng.random() * c[-1], side="right")), len(nz) - 1)
+        if self.head is not None and self.head.ql is not None:
+            self.head.record(idx[nz[k]])
         return idx[nz[k]]
 
     def st_shift(self, pos, other, scored, j):
@@ -1295,6 +1335,8 @@ class Engine:
                     return
                 if ot_rule == "mod" and (td or dsc or (n_poss >= 2 and sc[0] != sc[1])):
                     return
+                if ot_rule == "both" and (dsc or (n_poss >= 2 and sc[0] != sc[1])):
+                    return
             d = yl - self.yl[j]
             ny = self.nyl[j]
             if not scored:
@@ -1334,7 +1376,12 @@ class Engine:
         went_ot = sc[0] == sc[1]
         if went_ot:
             tot = 600.0 if season >= 2017 else 900.0
-            rule = "sd" if season in SUDDEN_DEATH else "mod"
+            if season in SUDDEN_DEATH:
+                rule = "sd"
+            elif season >= BOTH_POSSESS_FROM:
+                rule = "both"
+            else:
+                rule = "mod"
             o = self.opening(3, season, rng)
             recv = 0 if rng.random() < 0.5 else 1
             sc[recv] += o[4]
@@ -1499,6 +1546,8 @@ def sim_world(task):
             if len(pl):
                 prow.append(pl[:, 0].astype(np.int64))
                 ptm.append((gidn, f"W{w}T{h}", f"W{w}T{a}", pl[:, 1].astype(np.int8)))
+    if eng.head is not None:
+        eng.head.flush()
     return w, grows, prow, ptm
 
 
