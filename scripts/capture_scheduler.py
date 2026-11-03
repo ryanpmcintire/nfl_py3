@@ -651,6 +651,38 @@ SCHEDULE: tuple[Job, ...] = (
             ("sun", "10:00"),
         )
     ),
+    Job(
+        "xlg12_score_sun",
+        "sun",
+        "20:00",
+        120,
+        [str(UV), "run", "--no-sync", "python", str(REPO / "scripts" / "xlg12_weekly.py"), "score"],
+        True,
+        "Score finished frozen college forward rows (v1 and v2) at the opener; idempotent.",
+        season_guarded=False,
+        added_on="2026-11-03",
+        catch_up=True,
+    ),
+    Job(
+        "xlg12_freeze_tue",
+        "tue",
+        "12:00",
+        360,
+        [
+            str(UV),
+            "run",
+            "--no-sync",
+            "python",
+            str(REPO / "scripts" / "xlg12_weekly.py"),
+            "freeze",
+        ],
+        True,
+        "Capture college openers, ingest, build features and freeze the next unplayed week "
+        "(v1 and v2, opener as model input) before its first kickoff; never re-freezes.",
+        season_guarded=False,
+        added_on="2026-11-03",
+        catch_up=True,
+    ),
     *(
         Job(
             f"lead101_delta_read_{view}_{day}_{at.replace(':', '')}",
