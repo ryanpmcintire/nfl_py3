@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T05:31:15.004600+00:00`
+Refreshed at: `2026-11-03T13:16:18.601503+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-03T05:31:15.004600+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `ee344fabd3a6` — Refresh the session handoff and README research state
-- Pending change set: 237 paths
-  - `M  CURRENT_PREDICTIONS.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - ` M docs/lanes/sim08-simulator-rebuild.md`
-  - `M  docs/model.html`
-  - ` M docs/sim08_market_anchored_declaration.md`
-  - ` M scripts/sim08_market_anchored.py`
-  - `M  tiebreaker.json`
-  - `?? an.csv`
-  - `?? docs/lanes/c-drive-space-2026-10-31.md`
-  - `?? docs/lanes/machine-crashes-2026-10-31.md`
-  - `?? docs/lanes/stealmybitcoin-ctf.md`
-  - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
-  - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
-  - ...and 217 more
+- Baseline commit: `25dea3e122b5` — Republish the site with the latest settled results
+- Pending change set: 283 paths
+  - `M  ROADMAP.md`
+  - `M  docs/lanes/backlog-all-2026-11-02.md`
+  - `M  docs/lanes/coordinators-lead28-per07-2026-11-02.md`
+  - `M  docs/lanes/done/env02-forecast-provenance-chronology.md`
+  - `M  docs/lanes/done/lead61-second-half-channel.md`
+  - `A  docs/lanes/forward-terms-2026-11-03.md`
+  - `A  docs/lanes/mod10-graph-reliability-2026-11-03.md`
+  - `A  docs/lanes/mod17-lattice-ledger-2026-11-03.md`
+  - `M  docs/lanes/mod25-v3-sim11-distill.md`
+  - `M  docs/lanes/pol12-totals-2026-11-02.md`
+  - `M  docs/lanes/pool01-standing-aware-2026-11-02.md`
+  - `M  docs/lanes/sim06-learned-head-2026-11-02.md`
+  - `A  docs/lanes/sim07-power-2026-11-03.md`
+  - `M  docs/lanes/sim08-simulator-rebuild.md`
+  - ` M docs/lanes/sim09-urgency-stakes.md`
+  - `M  docs/lanes/sky01-news-availability.md`
+  - `M  docs/lanes/sky03-matchups-2026-11-02.md`
+  - `M  docs/lanes/sky04-lead-lag-2026-11-02.md`
+  - `A  docs/lanes/ui20-2026-11-03.md`
+  - `M  docs/sim08_market_anchored_declaration.md`
+  - ...and 263 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

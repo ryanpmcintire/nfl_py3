@@ -16,3 +16,8 @@ Record cells with weak-signals record (family per07_first_game_new_playcaller_fi
 
 ## Open
 The overlay is a pick flip (inadmissible under AGENTS.md one-probability rule); pinned, not edited. Only 12 events, power very low.
+
+## LEAD-28 unit (2026-11-03)
+Row text (ROADMAP LEAD-28) already holds the unconditional close-grade interaction (2009-2025, P+ 0.203), the production back+fade tilt screen, split-half reliability, and says the predeclared interaction stays unscored until forward accrual through Wk18 (Jan 2027). Missing: fitted-term (LOSO, one probability) historical read. Script scripts/lead28_post_bye_fitted_interaction.py -> artifacts/lead28/post_bye_fitted_interaction.json (flag term + interaction with main effects, within-week permutation null, 2 looks). Started 2026-11-03; if json absent, rerun (slow, sklearn warning spam: pass -W ignore).
+Forward: Wk8 fires scorable now via POL-10; full accrual 2027-01 (Wk18).
+RESULT: json written (4000 draws), 2 cells recorded under family lead28_post_bye_x_new_oc_fitted_interaction (unresolved_below_power). flag term OOS acc -0.13 [-0.73,+0.47] P+ 0.298, 98 flagged, decisive 13 v 15; interaction coef +0.484 [-0.27,+1.31] P+ 0.893, perm p 0.0185, OOS acc -1.66 P+ 0.047 (205 changed picks, intercept noise). Next: Wk8-18 forward scoring via POL-10, complete 2027-01.

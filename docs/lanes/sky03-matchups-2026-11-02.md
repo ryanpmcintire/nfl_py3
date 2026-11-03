@@ -17,3 +17,22 @@ Split A and B as separate declared looks only if owner wants; richer pressure da
 
 ## Open
 ROADMAP SKY-03 row not updated (orchestrator). Reliability is not zero, so no closing ground applies.
+
+## Update 2026-11-03
+Planted positive control (scripts/sky03_positive_control.py, 200 reps/size, LOSO 2020-2025, 1,503 games): planted logit coefficient on x; detected = OOS Brier gain P+ >= 0.95. Coef 0.13 (4x observed |0.033|): 1% detected; 0.26: 13.5%; 0.526: 93%; 1.05: 100%. Null false-detect 0.5%. Control cannot bound the observed size (about 16x below detectable), so no positive_control_bound; sign of observed coef negative but interval spans zero, so no wrong_sign_resolved. Stays unresolved_below_power. Artifacts: artifacts/sky03/positive_control.json, positive_control_large.json. Re-recorded 2026-11-03 as cell sky03_positive_control_detectable_size in family sky03_positive_control, category control, effect 0.004455 brier_improvement (mean OOS gain at b0 0.526, 93 pct detection), no probability_positive; old cell removed from sky03_matchups.
+Next: richer pressure/coverage trait source (earliest when PFR/NGS data is on disk); skill vs selection vs script separation still undone.
+
+## Update 2026-11-03 PFR/NGS traits
+Data: data/raw/pfr_advstats/20261103T125324Z (pass+def weekly 2018-2025, manifest.json); NGS from data/raw/ngs. Script scripts/sky03_pfr_traits.py, artifacts/sky03/pfr_traits_rel.json, pfr_record_batch.json.
+Trait split-half r (odd v even weeks, team-season demeaned, 2018-2025, offense/defense): pbp pressure .62/.34; PFR pressure .49/.25; pbp EPA non-sack .49/.19; NGS separation .43/.32; NGS time to throw .75/.17. Interaction slope r (2020-2025): A pbp .02/-.07 -> PFR .24/-.16; B pbp .23/.40 -> NGS separation -.37/.15.
+Verdict: no material rise (PFR pressure is below the pbp sack+hit rate; separation only helps defense side), so no refit. 18 reliability looks recorded, family sky03_trait_reliability. Not a closing ground.
+Next: PFR def file (hurries/coverage per target) as defender-level traits, or pbp-based pressure with sack+hit+hurry; refit only if slope reliability clearly rises.
+
+## Update 2026-11-03 defender traits and declared pair
+Script scripts/sky03_def_traits.py, artifacts/sky03/def_traits/rel.json. pbp has no hurry column, so the combined rate is pbp sack+qb_hit plus PFR def-file hurries per dropback. PFR def file has no snap counts; coverage traits use targets as the denominator.
+Trait split-half r (offense/defense, 2018-2025): sack+hit+hurry .54/.26; PFR def pressures .53/.26; yards per target allowed .44/.19; completions per target allowed .34/.28.
+Interaction slope r (offense/defense, 2020-2025): A hit+hurry .-07/.04; A oP x PFR pressures -.13/.06; B oN x yards/target .01/.30; B oN x completions/target .10/.32.
+DECLARED before any outcome look: B_oN_x_completions_per_target_allowed (highest min over both sides, .10/.32). Single interaction term, refit once, LOSO 2020-2025, opener.
+Refit (one look, artifacts/sky03/def_traits/term.json, 1,503 games): OOS Brier gain -0.00029 [-0.00098,+0.00043] P+ 0.199; log loss -0.00057 P+ 0.212; accuracy -0.80 pts [-1.73,0.00]; decisive 42, term 15-27. In-sample +0.00007, gap +0.00036. Fold coefs -0.236,-0.106,-0.115,-0.007,-0.105,-0.103 (all negative, stable-ish). Model-only Brier 0.2448, market 0.25. Recorded: sky03_matchups cell sky03_def_cov_term_oos_brier, 16 reliability cells in sky03_trait_reliability. unresolved_below_power.
+Positive control (scripts/sky03_def_positive_control.py, def_traits/positive_control.json, 200 reps): planted b 0.105 (1x) 0% detected; 0.21: 1.5%; 0.42: 23.5%; 0.84 (8x observed): 98.5%, mean gain 0.0047. Detectable size about 8x observed (was 16x).
+Next: the all-negative coefficient hints at wrong sign; sign check on a larger sample before any wrong_sign_resolved.

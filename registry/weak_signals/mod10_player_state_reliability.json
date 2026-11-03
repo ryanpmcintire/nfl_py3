@@ -1,0 +1,285 @@
+{
+  "family": "mod10_player_state_reliability",
+  "signals": {
+    "mod10 player-state defense reliability residualised on unpenalised team-season, per-season snap-weighted, S2 held out": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "gate .436 not reached; probability that SB exceeds .436 is 0.000 from 2000 bootstrap draws; interval not on a refuted-mechanism ground",
+      "closing_ground": null,
+      "description": "Out-of-sample Spearman-Brown split-half reliability of player ridge coefficients after removing unpenalised team-season offense and defense means from play EPA; alpha chosen on S1 and S3; S2 2020-23 scored; 66 looks (2 designs x 11 alphas x 3 splits); mean OOS across S1,S2,S3 offense about .05 defense about -.11 per-season design",
+      "effect": 0.1468,
+      "effect_units": "correlation",
+      "family": "mod10_player_state_reliability",
+      "interval": [
+        -0.0559,
+        0.3181
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Once team quality is removed without shrinkage, player ratings barely repeat from one half to the other",
+      "probability_positive": 0.922,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.1468,
+      "sample_blocks": 390,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2023
+      ],
+      "source": "F:/Repos/nfl_py3/artifacts/mod10_graph_reliability/resid.json",
+      "standard_error": null
+    },
+    "mod10 player-state offense reliability residualised on unpenalised team-season, per-season snap-weighted, S2 held out": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "gate .436 not reached; probability that SB exceeds .436 is 0.000 from 2000 bootstrap draws; interval not on a refuted-mechanism ground",
+      "closing_ground": null,
+      "description": "Out-of-sample Spearman-Brown split-half reliability of player ridge coefficients after removing unpenalised team-season offense and defense means from play EPA; alpha chosen on S1 and S3; S2 2020-23 scored; 66 looks (2 designs x 11 alphas x 3 splits); mean OOS across S1,S2,S3 offense about .05 defense about -.11 per-season design",
+      "effect": 0.1225,
+      "effect_units": "correlation",
+      "family": "mod10_player_state_reliability",
+      "interval": [
+        -0.0996,
+        0.2989
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Once team quality is removed without shrinkage, player ratings barely repeat from one half to the other",
+      "probability_positive": 0.8735,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.1225,
+      "sample_blocks": 352,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2023
+      ],
+      "source": "F:/Repos/nfl_py3/artifacts/mod10_graph_reliability/resid.json",
+      "standard_error": null
+    },
+    "mod10_player_state_reliability_alpha3000": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "ridge alpha 3000 no team-season, offense SB",
+      "effect": 0.3964,
+      "effect_units": "correlation",
+      "family": "mod10_player_state_reliability",
+      "interval": [
+        0.2985,
+        0.4782
+      ],
+      "league": "nfl",
+      "notes": "Spearman-Brown split-half odd v even seasons; 760 offense players; probability_positive = fraction of 2000 bootstrap draws of the split-half correlation above zero (2000/2000); alpha chosen on the same halves so in-sample",
+      "plain_summary": null,
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2016,
+        2025
+      ],
+      "source": "artifacts/mod10_graph_reliability/lopo_grid30.json",
+      "standard_error": null
+    },
+    "mod10_player_state_reliability_lopo_perseason_weighted_defense": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "perseason_weighted ridge, alpha chosen on the disjoint other split, defense SB out of sample",
+      "effect": 0.3933,
+      "effect_units": "correlation",
+      "family": "mod10_player_state_reliability",
+      "interval": [
+        0.2452,
+        0.5078
+      ],
+      "league": "nfl",
+      "notes": "mean of two directions (S1 2016-19 -> S2 2022-25 and reverse), halves of 2 seasons, SB; interval is the mean of the per-direction bootstrap bounds; P+ is the lower of the two directions fraction of 2000 draws >0; alpha selected at the top of the 7-alpha grid in all arms so in-sample best equals selected (gap 0) and the optimum is not bracketed; 21 looks (3 designs x 7 alphas)",
+      "plain_summary": null,
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2016,
+        2025
+      ],
+      "source": "artifacts/mod10_graph_reliability/lopo_wide.json",
+      "standard_error": null
+    },
+    "mod10_player_state_reliability_lopo_perseason_weighted_offense": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "perseason_weighted ridge, alpha chosen on the disjoint other split, offense SB out of sample",
+      "effect": 0.5884,
+      "effect_units": "correlation",
+      "family": "mod10_player_state_reliability",
+      "interval": [
+        0.4936,
+        0.6696
+      ],
+      "league": "nfl",
+      "notes": "mean of two directions (S1 2016-19 -> S2 2022-25 and reverse), halves of 2 seasons, SB; interval is the mean of the per-direction bootstrap bounds; P+ is the lower of the two directions fraction of 2000 draws >0; alpha selected at the top of the 7-alpha grid in all arms so in-sample best equals selected (gap 0) and the optimum is not bracketed; 21 looks (3 designs x 7 alphas)",
+      "plain_summary": null,
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2016,
+        2025
+      ],
+      "source": "artifacts/mod10_graph_reliability/lopo_wide.json",
+      "standard_error": null
+    },
+    "mod10_player_state_reliability_lopo_plain_defense": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "plain ridge, alpha chosen on the disjoint other split, defense SB out of sample",
+      "effect": 0.3756,
+      "effect_units": "correlation",
+      "family": "mod10_player_state_reliability",
+      "interval": [
+        0.2331,
+        0.4947
+      ],
+      "league": "nfl",
+      "notes": "mean of two directions (S1 2016-19 -> S2 2022-25 and reverse), halves of 2 seasons, SB; interval is the mean of the per-direction bootstrap bounds; P+ is the lower of the two directions fraction of 2000 draws >0; alpha selected at the top of the 7-alpha grid in all arms so in-sample best equals selected (gap 0) and the optimum is not bracketed; 21 looks (3 designs x 7 alphas)",
+      "plain_summary": null,
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2016,
+        2025
+      ],
+      "source": "artifacts/mod10_graph_reliability/lopo_wide.json",
+      "standard_error": null
+    },
+    "mod10_player_state_reliability_lopo_plain_offense": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "plain ridge, alpha chosen on the disjoint other split, offense SB out of sample",
+      "effect": 0.5523,
+      "effect_units": "correlation",
+      "family": "mod10_player_state_reliability",
+      "interval": [
+        0.4522,
+        0.6388
+      ],
+      "league": "nfl",
+      "notes": "mean of two directions (S1 2016-19 -> S2 2022-25 and reverse), halves of 2 seasons, SB; interval is the mean of the per-direction bootstrap bounds; P+ is the lower of the two directions fraction of 2000 draws >0; alpha selected at the top of the 7-alpha grid in all arms so in-sample best equals selected (gap 0) and the optimum is not bracketed; 21 looks (3 designs x 7 alphas)",
+      "plain_summary": null,
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2016,
+        2025
+      ],
+      "source": "artifacts/mod10_graph_reliability/lopo_wide.json",
+      "standard_error": null
+    },
+    "mod10_player_state_reliability_lopo_teamseason_defense": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "teamseason ridge, alpha chosen on the disjoint other split, defense SB out of sample",
+      "effect": 0.3515,
+      "effect_units": "correlation",
+      "family": "mod10_player_state_reliability",
+      "interval": [
+        0.1976,
+        0.4723
+      ],
+      "league": "nfl",
+      "notes": "mean of two directions (S1 2016-19 -> S2 2022-25 and reverse), halves of 2 seasons, SB; interval is the mean of the per-direction bootstrap bounds; P+ is the lower of the two directions fraction of 2000 draws >0; alpha selected at the top of the 7-alpha grid in all arms so in-sample best equals selected (gap 0) and the optimum is not bracketed; 21 looks (3 designs x 7 alphas)",
+      "plain_summary": null,
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2016,
+        2025
+      ],
+      "source": "artifacts/mod10_graph_reliability/lopo_wide.json",
+      "standard_error": null
+    },
+    "mod10_player_state_reliability_lopo_teamseason_offense": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "teamseason ridge, alpha chosen on the disjoint other split, offense SB out of sample",
+      "effect": 0.5527,
+      "effect_units": "correlation",
+      "family": "mod10_player_state_reliability",
+      "interval": [
+        0.4524,
+        0.6364
+      ],
+      "league": "nfl",
+      "notes": "mean of two directions (S1 2016-19 -> S2 2022-25 and reverse), halves of 2 seasons, SB; interval is the mean of the per-direction bootstrap bounds; P+ is the lower of the two directions fraction of 2000 draws >0; alpha selected at the top of the 7-alpha grid in all arms so in-sample best equals selected (gap 0) and the optimum is not bracketed; 21 looks (3 designs x 7 alphas)",
+      "plain_summary": null,
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2016,
+        2025
+      ],
+      "source": "artifacts/mod10_graph_reliability/lopo_wide.json",
+      "standard_error": null
+    },
+    "mod10_player_state_reliability_teamseason_a1000": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "team-season dummies, alpha 1000, offense SB",
+      "effect": 0.1575,
+      "effect_units": "correlation",
+      "family": "mod10_player_state_reliability",
+      "interval": [
+        0.0289,
+        0.2674
+      ],
+      "league": "nfl",
+      "notes": "Spearman-Brown split-half odd v even seasons; 760 offense players; probability_positive = fraction of 2000 bootstrap draws of the split-half correlation above zero (1984/2000); alpha chosen on the same halves so in-sample",
+      "plain_summary": null,
+      "probability_positive": 0.992,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2016,
+        2025
+      ],
+      "source": "artifacts/mod10_graph_reliability/lopo_grid30.json",
+      "standard_error": null
+    }
+  }
+}

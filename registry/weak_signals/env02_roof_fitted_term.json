@@ -1,0 +1,61 @@
+{
+  "family": "env02_roof_fitted_term",
+  "signals": {
+    "env02_roof_open_probability_term_oos_brier": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Effect is about 2e-4 log loss; term is nonzero in 530 games; fold betas mean +0.004 sd 0.077, 8 of 15 positive; in-sample improvement 3e-8 so the term is not fit; below power, mechanism not refuted",
+      "closing_ground": null,
+      "description": "Walk-forward predicted roof-open probability at the five retractable venues, as a fifth fitted term in the served four-term probability, leave-one-season-out, versus the four-term baseline; aware forecast archive; 530 nonzero games of 3734.",
+      "effect": -9.418e-05,
+      "effect_units": "brier_improvement",
+      "family": "env02_roof_fitted_term",
+      "interval": [
+        -0.00015201,
+        -4.586e-05
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 15,
+      "sample_games": 3734,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/env02_roof_fitted_term/20261103T125920Z/summary.json",
+      "standard_error": null
+    },
+    "env02_roof_open_probability_term_oos_log_loss": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Effect is about 2e-4 log loss; term is nonzero in 530 games; fold betas mean +0.004 sd 0.077, 8 of 15 positive; in-sample improvement 3e-8 so the term is not fit; below power, mechanism not refuted",
+      "closing_ground": null,
+      "description": "Walk-forward predicted roof-open probability at the five retractable venues, as a fifth fitted term in the served four-term probability, leave-one-season-out, versus the four-term baseline; aware forecast archive; 530 nonzero games of 3734.",
+      "effect": -0.00018894,
+      "effect_units": "log_loss_improvement",
+      "family": "env02_roof_fitted_term",
+      "interval": [
+        -0.00030423,
+        -9.185e-05
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 15,
+      "sample_games": 3734,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/env02_roof_fitted_term/20261103T125920Z/summary.json",
+      "standard_error": null
+    }
+  }
+}

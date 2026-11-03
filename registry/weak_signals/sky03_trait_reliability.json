@@ -1,0 +1,957 @@
+{
+  "family": "sky03_trait_reliability",
+  "signals": {
+    "sky03_def_rel_slope_A_oP_x_pfr_def_pressures_defense": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "reliability measurement, not an effect test; no closing ground",
+      "closing_ground": null,
+      "description": "A_oP_x_pfr_def_pressures defense: team interaction slope split-half r",
+      "effect": 0.056989620468251644,
+      "effect_units": "correlation",
+      "family": "sky03_trait_reliability",
+      "interval": [
+        -0.1963918731722868,
+        0.3582992827364833
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How stable a team's pass-rush and coverage tendencies are from one half of a season to the other, which limits how well matchup effects can be measured.",
+      "probability_positive": 0.668,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.056989620468251644,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sky03/def_traits/rel.json",
+      "standard_error": null
+    },
+    "sky03_def_rel_slope_A_oP_x_pfr_def_pressures_offense": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "reliability measurement, not an effect test; no closing ground",
+      "closing_ground": null,
+      "description": "A_oP_x_pfr_def_pressures offense: team interaction slope split-half r",
+      "effect": -0.13372993227452923,
+      "effect_units": "correlation",
+      "family": "sky03_trait_reliability",
+      "interval": [
+        -0.46390058029569425,
+        0.4075799434966487
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How stable a team's pass-rush and coverage tendencies are from one half of a season to the other, which limits how well matchup effects can be measured.",
+      "probability_positive": 0.3165,
+      "recorded_at": "2026-11-03",
+      "reliability": -0.13372993227452923,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sky03/def_traits/rel.json",
+      "standard_error": null
+    },
+    "sky03_def_rel_slope_A_pbp_hit_plus_pfr_hurry_defense": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "reliability measurement, not an effect test; no closing ground",
+      "closing_ground": null,
+      "description": "A_pbp_hit_plus_pfr_hurry defense: team interaction slope split-half r",
+      "effect": 0.03993460929992392,
+      "effect_units": "correlation",
+      "family": "sky03_trait_reliability",
+      "interval": [
+        -0.30151539391367416,
+        0.3878572511630585
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How stable a team's pass-rush and coverage tendencies are from one half of a season to the other, which limits how well matchup effects can be measured.",
+      "probability_positive": 0.62,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.03993460929992392,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sky03/def_traits/rel.json",
+      "standard_error": null
+    },
+    "sky03_def_rel_slope_A_pbp_hit_plus_pfr_hurry_offense": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "reliability measurement, not an effect test; no closing ground",
+      "closing_ground": null,
+      "description": "A_pbp_hit_plus_pfr_hurry offense: team interaction slope split-half r",
+      "effect": -0.07423084938990174,
+      "effect_units": "correlation",
+      "family": "sky03_trait_reliability",
+      "interval": [
+        -0.3909602526203312,
+        0.37624228140525967
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How stable a team's pass-rush and coverage tendencies are from one half of a season to the other, which limits how well matchup effects can be measured.",
+      "probability_positive": 0.3695,
+      "recorded_at": "2026-11-03",
+      "reliability": -0.07423084938990174,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sky03/def_traits/rel.json",
+      "standard_error": null
+    },
+    "sky03_def_rel_slope_B_oN_x_completions_per_target_allowed_defense": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "reliability measurement, not an effect test; no closing ground",
+      "closing_ground": null,
+      "description": "B_oN_x_completions_per_target_allowed defense: team interaction slope split-half r",
+      "effect": 0.3169108495506608,
+      "effect_units": "correlation",
+      "family": "sky03_trait_reliability",
+      "interval": [
+        -0.00850338868133583,
+        0.6070632410796747
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How stable a team's pass-rush and coverage tendencies are from one half of a season to the other, which limits how well matchup effects can be measured.",
+      "probability_positive": 0.972,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.3169108495506608,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sky03/def_traits/rel.json",
+      "standard_error": null
+    },
+    "sky03_def_rel_slope_B_oN_x_completions_per_target_allowed_offense": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "reliability measurement, not an effect test; no closing ground",
+      "closing_ground": null,
+      "description": "B_oN_x_completions_per_target_allowed offense: team interaction slope split-half r",
+      "effect": 0.09960700244317769,
+      "effect_units": "correlation",
+      "family": "sky03_trait_reliability",
+      "interval": [
+        -0.29258591387869026,
+        0.4487898269903569
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How stable a team's pass-rush and coverage tendencies are from one half of a season to the other, which limits how well matchup effects can be measured.",
+      "probability_positive": 0.6995,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.09960700244317769,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sky03/def_traits/rel.json",
+      "standard_error": null
+    },
+    "sky03_def_rel_slope_B_oN_x_yards_per_target_allowed_defense": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "reliability measurement, not an effect test; no closing ground",
+      "closing_ground": null,
+      "description": "B_oN_x_yards_per_target_allowed defense: team interaction slope split-half r",
+      "effect": 0.29949717541156173,
+      "effect_units": "correlation",
+      "family": "sky03_trait_reliability",
+      "interval": [
+        -0.013306719307979492,
+        0.5863448695054133
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How stable a team's pass-rush and coverage tendencies are from one half of a season to the other, which limits how well matchup effects can be measured.",
+      "probability_positive": 0.9675,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.29949717541156173,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sky03/def_traits/rel.json",
+      "standard_error": null
+    },
+    "sky03_def_rel_slope_B_oN_x_yards_per_target_allowed_offense": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "reliability measurement, not an effect test; no closing ground",
+      "closing_ground": null,
+      "description": "B_oN_x_yards_per_target_allowed offense: team interaction slope split-half r",
+      "effect": 0.006865335329393556,
+      "effect_units": "correlation",
+      "family": "sky03_trait_reliability",
+      "interval": [
+        -0.32904415056446024,
+        0.38241317954573556
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How stable a team's pass-rush and coverage tendencies are from one half of a season to the other, which limits how well matchup effects can be measured.",
+      "probability_positive": 0.5485,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.006865335329393556,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sky03/def_traits/rel.json",
+      "standard_error": null
+    },
+    "sky03_def_rel_trait_pbp_sack_hit_plus_pfr_hurry_rate_defense": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "reliability measurement, not an effect test; no closing ground",
+      "closing_ground": null,
+      "description": "pbp_sack_hit_plus_pfr_hurry_rate defense: odd v even week split-half r, season-demeaned",
+      "effect": 0.26433833106281396,
+      "effect_units": "correlation",
+      "family": "sky03_trait_reliability",
+      "interval": [
+        0.13030652927906713,
+        0.3975723803803951
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How stable a team's pass-rush and coverage tendencies are from one half of a season to the other, which limits how well matchup effects can be measured.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.26433833106281396,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/sky03/def_traits/rel.json",
+      "standard_error": null
+    },
+    "sky03_def_rel_trait_pbp_sack_hit_plus_pfr_hurry_rate_offense": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "reliability measurement, not an effect test; no closing ground",
+      "closing_ground": null,
+      "description": "pbp_sack_hit_plus_pfr_hurry_rate offense: odd v even week split-half r, season-demeaned",
+      "effect": 0.5448518753021857,
+      "effect_units": "correlation",
+      "family": "sky03_trait_reliability",
+      "interval": [
+        0.45095862609265397,
+        0.6297490714128197
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How stable a team's pass-rush and coverage tendencies are from one half of a season to the other, which limits how well matchup effects can be measured.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.5448518753021857,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/sky03/def_traits/rel.json",
+      "standard_error": null
+    },
+    "sky03_def_rel_trait_pfr_completions_per_target_allowed_defense": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "reliability measurement, not an effect test; no closing ground",
+      "closing_ground": null,
+      "description": "pfr_completions_per_target_allowed defense: odd v even week split-half r, season-demeaned",
+      "effect": 0.2791876654204687,
+      "effect_units": "correlation",
+      "family": "sky03_trait_reliability",
+      "interval": [
+        0.15752361858054173,
+        0.39261848528964555
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How stable a team's pass-rush and coverage tendencies are from one half of a season to the other, which limits how well matchup effects can be measured.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.2791876654204687,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/sky03/def_traits/rel.json",
+      "standard_error": null
+    },
+    "sky03_def_rel_trait_pfr_completions_per_target_allowed_offense": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "reliability measurement, not an effect test; no closing ground",
+      "closing_ground": null,
+      "description": "pfr_completions_per_target_allowed offense: odd v even week split-half r, season-demeaned",
+      "effect": 0.34188266259912,
+      "effect_units": "correlation",
+      "family": "sky03_trait_reliability",
+      "interval": [
+        0.23653709864011357,
+        0.44211620233485655
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How stable a team's pass-rush and coverage tendencies are from one half of a season to the other, which limits how well matchup effects can be measured.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.34188266259912,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/sky03/def_traits/rel.json",
+      "standard_error": null
+    },
+    "sky03_def_rel_trait_pfr_def_pressure_rate_defense": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "reliability measurement, not an effect test; no closing ground",
+      "closing_ground": null,
+      "description": "pfr_def_pressure_rate defense: odd v even week split-half r, season-demeaned",
+      "effect": 0.2581369975021858,
+      "effect_units": "correlation",
+      "family": "sky03_trait_reliability",
+      "interval": [
+        0.12859403111131196,
+        0.38215140914747087
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How stable a team's pass-rush and coverage tendencies are from one half of a season to the other, which limits how well matchup effects can be measured.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.2581369975021858,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/sky03/def_traits/rel.json",
+      "standard_error": null
+    },
+    "sky03_def_rel_trait_pfr_def_pressure_rate_offense": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "reliability measurement, not an effect test; no closing ground",
+      "closing_ground": null,
+      "description": "pfr_def_pressure_rate offense: odd v even week split-half r, season-demeaned",
+      "effect": 0.5343791441485012,
+      "effect_units": "correlation",
+      "family": "sky03_trait_reliability",
+      "interval": [
+        0.4393183252344566,
+        0.6157664284047067
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How stable a team's pass-rush and coverage tendencies are from one half of a season to the other, which limits how well matchup effects can be measured.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.5343791441485012,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/sky03/def_traits/rel.json",
+      "standard_error": null
+    },
+    "sky03_def_rel_trait_pfr_yards_per_target_allowed_defense": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "reliability measurement, not an effect test; no closing ground",
+      "closing_ground": null,
+      "description": "pfr_yards_per_target_allowed defense: odd v even week split-half r, season-demeaned",
+      "effect": 0.19297099133537646,
+      "effect_units": "correlation",
+      "family": "sky03_trait_reliability",
+      "interval": [
+        0.07810839835942503,
+        0.305331819494672
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How stable a team's pass-rush and coverage tendencies are from one half of a season to the other, which limits how well matchup effects can be measured.",
+      "probability_positive": 0.999,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.19297099133537646,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/sky03/def_traits/rel.json",
+      "standard_error": null
+    },
+    "sky03_def_rel_trait_pfr_yards_per_target_allowed_offense": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "reliability measurement, not an effect test; no closing ground",
+      "closing_ground": null,
+      "description": "pfr_yards_per_target_allowed offense: odd v even week split-half r, season-demeaned",
+      "effect": 0.4448869936179893,
+      "effect_units": "correlation",
+      "family": "sky03_trait_reliability",
+      "interval": [
+        0.33297715553392054,
+        0.5509330553487102
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How stable a team's pass-rush and coverage tendencies are from one half of a season to the other, which limits how well matchup effects can be measured.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.4448869936179893,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/sky03/def_traits/rel.json",
+      "standard_error": null
+    },
+    "sky03_rel_slope_A_new_pfr_pressure_defense": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "reliability measurement, not an effect test; no closing ground",
+      "closing_ground": null,
+      "description": "A_new_pfr_pressure defense: odd v even week split-half r of 32 team interaction slopes, 2020-2025; one of 18 reliability looks (10 trait, 8 slope)",
+      "effect": -0.16053126360767653,
+      "effect_units": "correlation",
+      "family": "sky03_trait_reliability",
+      "interval": [
+        -0.44334761100985515,
+        0.2060256323870695
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How repeatable each team's pass-rush, protection and receiver-separation numbers are from one half of the season to the other.",
+      "probability_positive": 0.189,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/sky03/pfr_traits_rel.json",
+      "standard_error": null
+    },
+    "sky03_rel_slope_A_new_pfr_pressure_offense": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "reliability measurement, not an effect test; no closing ground",
+      "closing_ground": null,
+      "description": "A_new_pfr_pressure offense: odd v even week split-half r of 32 team interaction slopes, 2020-2025; one of 18 reliability looks (10 trait, 8 slope)",
+      "effect": 0.23977408622039856,
+      "effect_units": "correlation",
+      "family": "sky03_trait_reliability",
+      "interval": [
+        -0.005462105389361333,
+        0.5334673562146217
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How repeatable each team's pass-rush, protection and receiver-separation numbers are from one half of the season to the other.",
+      "probability_positive": 0.9715,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/sky03/pfr_traits_rel.json",
+      "standard_error": null
+    },
+    "sky03_rel_slope_A_old_pbp_pressure_defense": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "reliability measurement, not an effect test; no closing ground",
+      "closing_ground": null,
+      "description": "A_old_pbp_pressure defense: odd v even week split-half r of 32 team interaction slopes, 2020-2025; one of 18 reliability looks (10 trait, 8 slope)",
+      "effect": -0.07123977439337799,
+      "effect_units": "correlation",
+      "family": "sky03_trait_reliability",
+      "interval": [
+        -0.46383402879893526,
+        0.4225388510291876
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How repeatable each team's pass-rush, protection and receiver-separation numbers are from one half of the season to the other.",
+      "probability_positive": 0.4055,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/sky03/pfr_traits_rel.json",
+      "standard_error": null
+    },
+    "sky03_rel_slope_A_old_pbp_pressure_offense": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "reliability measurement, not an effect test; no closing ground",
+      "closing_ground": null,
+      "description": "A_old_pbp_pressure offense: odd v even week split-half r of 32 team interaction slopes, 2020-2025; one of 18 reliability looks (10 trait, 8 slope)",
+      "effect": 0.020319135641857767,
+      "effect_units": "correlation",
+      "family": "sky03_trait_reliability",
+      "interval": [
+        -0.31434692456090724,
+        0.47410433820161085
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How repeatable each team's pass-rush, protection and receiver-separation numbers are from one half of the season to the other.",
+      "probability_positive": 0.563,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/sky03/pfr_traits_rel.json",
+      "standard_error": null
+    },
+    "sky03_rel_slope_B_new_ngs_separation_defense": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "reliability measurement, not an effect test; no closing ground",
+      "closing_ground": null,
+      "description": "B_new_ngs_separation defense: odd v even week split-half r of 32 team interaction slopes, 2020-2025; one of 18 reliability looks (10 trait, 8 slope)",
+      "effect": 0.14701023592062223,
+      "effect_units": "correlation",
+      "family": "sky03_trait_reliability",
+      "interval": [
+        -0.15492110954528363,
+        0.3989474809931306
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How repeatable each team's pass-rush, protection and receiver-separation numbers are from one half of the season to the other.",
+      "probability_positive": 0.8285,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/sky03/pfr_traits_rel.json",
+      "standard_error": null
+    },
+    "sky03_rel_slope_B_new_ngs_separation_offense": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "reliability measurement, not an effect test; no closing ground",
+      "closing_ground": null,
+      "description": "B_new_ngs_separation offense: odd v even week split-half r of 32 team interaction slopes, 2020-2025; one of 18 reliability looks (10 trait, 8 slope)",
+      "effect": -0.3680723880288226,
+      "effect_units": "correlation",
+      "family": "sky03_trait_reliability",
+      "interval": [
+        -0.6382014682976089,
+        -0.005903769441161101
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How repeatable each team's pass-rush, protection and receiver-separation numbers are from one half of the season to the other.",
+      "probability_positive": 0.0215,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/sky03/pfr_traits_rel.json",
+      "standard_error": null
+    },
+    "sky03_rel_slope_B_old_pbp_epa_defense": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "reliability measurement, not an effect test; no closing ground",
+      "closing_ground": null,
+      "description": "B_old_pbp_epa defense: odd v even week split-half r of 32 team interaction slopes, 2020-2025; one of 18 reliability looks (10 trait, 8 slope)",
+      "effect": 0.4039986905772584,
+      "effect_units": "correlation",
+      "family": "sky03_trait_reliability",
+      "interval": [
+        0.12508661747524918,
+        0.645532701812799
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How repeatable each team's pass-rush, protection and receiver-separation numbers are from one half of the season to the other.",
+      "probability_positive": 0.994,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/sky03/pfr_traits_rel.json",
+      "standard_error": null
+    },
+    "sky03_rel_slope_B_old_pbp_epa_offense": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "reliability measurement, not an effect test; no closing ground",
+      "closing_ground": null,
+      "description": "B_old_pbp_epa offense: odd v even week split-half r of 32 team interaction slopes, 2020-2025; one of 18 reliability looks (10 trait, 8 slope)",
+      "effect": 0.22831819834012335,
+      "effect_units": "correlation",
+      "family": "sky03_trait_reliability",
+      "interval": [
+        -0.09615625624161436,
+        0.5410260155099912
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How repeatable each team's pass-rush, protection and receiver-separation numbers are from one half of the season to the other.",
+      "probability_positive": 0.9275,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/sky03/pfr_traits_rel.json",
+      "standard_error": null
+    },
+    "sky03_rel_trait_ngs_separation_defense": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "reliability measurement, not an effect test; no closing ground",
+      "closing_ground": null,
+      "description": "ngs_separation defense: odd v even week split-half r of team-season trait, demeaned by season; one of 18 reliability looks (10 trait, 8 slope)",
+      "effect": 0.31809233451404123,
+      "effect_units": "correlation",
+      "family": "sky03_trait_reliability",
+      "interval": [
+        0.19873051265685232,
+        0.43149951103789375
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How repeatable each team's pass-rush, protection and receiver-separation numbers are from one half of the season to the other.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/sky03/pfr_traits_rel.json",
+      "standard_error": null
+    },
+    "sky03_rel_trait_ngs_separation_offense": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "reliability measurement, not an effect test; no closing ground",
+      "closing_ground": null,
+      "description": "ngs_separation offense: odd v even week split-half r of team-season trait, demeaned by season; one of 18 reliability looks (10 trait, 8 slope)",
+      "effect": 0.42956845883535993,
+      "effect_units": "correlation",
+      "family": "sky03_trait_reliability",
+      "interval": [
+        0.33054345412759334,
+        0.519727572671618
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How repeatable each team's pass-rush, protection and receiver-separation numbers are from one half of the season to the other.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/sky03/pfr_traits_rel.json",
+      "standard_error": null
+    },
+    "sky03_rel_trait_ngs_time_to_throw_defense": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "reliability measurement, not an effect test; no closing ground",
+      "closing_ground": null,
+      "description": "ngs_time_to_throw defense: odd v even week split-half r of team-season trait, demeaned by season; one of 18 reliability looks (10 trait, 8 slope)",
+      "effect": 0.16826375265879315,
+      "effect_units": "correlation",
+      "family": "sky03_trait_reliability",
+      "interval": [
+        0.05616905266408823,
+        0.27783890419396307
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How repeatable each team's pass-rush, protection and receiver-separation numbers are from one half of the season to the other.",
+      "probability_positive": 0.998,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/sky03/pfr_traits_rel.json",
+      "standard_error": null
+    },
+    "sky03_rel_trait_ngs_time_to_throw_offense": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "reliability measurement, not an effect test; no closing ground",
+      "closing_ground": null,
+      "description": "ngs_time_to_throw offense: odd v even week split-half r of team-season trait, demeaned by season; one of 18 reliability looks (10 trait, 8 slope)",
+      "effect": 0.7467455440926791,
+      "effect_units": "correlation",
+      "family": "sky03_trait_reliability",
+      "interval": [
+        0.6865045476965663,
+        0.8028491915727626
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How repeatable each team's pass-rush, protection and receiver-separation numbers are from one half of the season to the other.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/sky03/pfr_traits_rel.json",
+      "standard_error": null
+    },
+    "sky03_rel_trait_pbp_epa_nonsack_defense": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "reliability measurement, not an effect test; no closing ground",
+      "closing_ground": null,
+      "description": "pbp_epa_nonsack defense: odd v even week split-half r of team-season trait, demeaned by season; one of 18 reliability looks (10 trait, 8 slope)",
+      "effect": 0.1918929592591292,
+      "effect_units": "correlation",
+      "family": "sky03_trait_reliability",
+      "interval": [
+        0.07173251030568287,
+        0.30585403869970473
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How repeatable each team's pass-rush, protection and receiver-separation numbers are from one half of the season to the other.",
+      "probability_positive": 0.999,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/sky03/pfr_traits_rel.json",
+      "standard_error": null
+    },
+    "sky03_rel_trait_pbp_epa_nonsack_offense": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "reliability measurement, not an effect test; no closing ground",
+      "closing_ground": null,
+      "description": "pbp_epa_nonsack offense: odd v even week split-half r of team-season trait, demeaned by season; one of 18 reliability looks (10 trait, 8 slope)",
+      "effect": 0.4879899575349471,
+      "effect_units": "correlation",
+      "family": "sky03_trait_reliability",
+      "interval": [
+        0.3907007899272785,
+        0.5704781685036667
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How repeatable each team's pass-rush, protection and receiver-separation numbers are from one half of the season to the other.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/sky03/pfr_traits_rel.json",
+      "standard_error": null
+    },
+    "sky03_rel_trait_pbp_pressure_rate_defense": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "reliability measurement, not an effect test; no closing ground",
+      "closing_ground": null,
+      "description": "pbp_pressure_rate defense: odd v even week split-half r of team-season trait, demeaned by season; one of 18 reliability looks (10 trait, 8 slope)",
+      "effect": 0.33777953035969066,
+      "effect_units": "correlation",
+      "family": "sky03_trait_reliability",
+      "interval": [
+        0.22928082699137095,
+        0.4480088151663469
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How repeatable each team's pass-rush, protection and receiver-separation numbers are from one half of the season to the other.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/sky03/pfr_traits_rel.json",
+      "standard_error": null
+    },
+    "sky03_rel_trait_pbp_pressure_rate_offense": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "reliability measurement, not an effect test; no closing ground",
+      "closing_ground": null,
+      "description": "pbp_pressure_rate offense: odd v even week split-half r of team-season trait, demeaned by season; one of 18 reliability looks (10 trait, 8 slope)",
+      "effect": 0.621462576881886,
+      "effect_units": "correlation",
+      "family": "sky03_trait_reliability",
+      "interval": [
+        0.5399933189565136,
+        0.696264709425901
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How repeatable each team's pass-rush, protection and receiver-separation numbers are from one half of the season to the other.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/sky03/pfr_traits_rel.json",
+      "standard_error": null
+    },
+    "sky03_rel_trait_pfr_pressure_rate_defense": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "reliability measurement, not an effect test; no closing ground",
+      "closing_ground": null,
+      "description": "pfr_pressure_rate defense: odd v even week split-half r of team-season trait, demeaned by season; one of 18 reliability looks (10 trait, 8 slope)",
+      "effect": 0.2517749436554777,
+      "effect_units": "correlation",
+      "family": "sky03_trait_reliability",
+      "interval": [
+        0.1302324177594292,
+        0.3724012208568692
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How repeatable each team's pass-rush, protection and receiver-separation numbers are from one half of the season to the other.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/sky03/pfr_traits_rel.json",
+      "standard_error": null
+    },
+    "sky03_rel_trait_pfr_pressure_rate_offense": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "reliability measurement, not an effect test; no closing ground",
+      "closing_ground": null,
+      "description": "pfr_pressure_rate offense: odd v even week split-half r of team-season trait, demeaned by season; one of 18 reliability looks (10 trait, 8 slope)",
+      "effect": 0.4872258002460417,
+      "effect_units": "correlation",
+      "family": "sky03_trait_reliability",
+      "interval": [
+        0.38474598372861185,
+        0.5806142999009539
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How repeatable each team's pass-rush, protection and receiver-separation numbers are from one half of the season to the other.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/sky03/pfr_traits_rel.json",
+      "standard_error": null
+    }
+  }
+}

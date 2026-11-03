@@ -261,3 +261,48 @@ compared to opener lines and opener totals only.
    kappa bisection on the LOSO two-column blend (recalibrated served logit,
    candidate), noise sd = sqrt(train_sd^2 + (2/sqrt(draws))^2). The execution run on
    the 20-game smoke population only shows it runs; it is not a verdict.
+
+### Amendment 3 (before any look), 2026-11-03
+
+No graded outcome, blend, or L-level metric has been computed.
+
+1. Fold separation (validation/selection separation; MOD-25 found drive-library
+   contamination). Each leave-one-season-out fold's drive library and every fitted
+   engine component used for that fold exclude the held-out season: play-by-play
+   library, outcome and PAT models, latent fit, strength terms, fourth-quarter
+   decision table, bandwidths and the EPA scale are read from the existing
+   walk-forward state `artifacts/sim10_wf/T<s>` (seasons 2009 to s-1, built by
+   `scripts/mod25_wf.py` stage `state`). This is stricter than leave-one-out
+   because seasons after s are also excluded, so the engine is never fitted on the
+   future. The smokes of Amendments 1-2 used the pooled 2009-2017 library with a
+   2009-2025 latent fit; they graded no outcome. Implemented as
+   `SIM08_STATE`/`SIM08_HELD` environment read before the engine imports, and
+   asserted at runtime: the state directory is `T<s>`, the engine's season window
+   ends before s, and the latent fit, real-games table and every engine artifact
+   path lie inside that state with seasons below s. The per-fold transmission and
+   environment response are measured on that fold's engine with design contexts
+   from the held-out fold's schedule facts (Amendment 2 item 4).
+2. Blend sim logits are each produced by the engine of their own season's fold;
+   the blend for held-out season s is fitted on the other five seasons' logits.
+3. Count smoothing (named estimator, not a tuned constant). Simulated cover/push/
+   loss counts n_k out of N draws enter as Jeffreys-smoothed proportions
+   (n_k + 1/2)/(N + 3/2) for the raw three-way read (L1, L3 side, A1, P) and
+   (c + 1/2)/(c + l + 1) for the sim logit in the blend, so a zero count has a
+   finite logit.
+4. Baselines. Market: prior-season (2009 to s-1, regular season) final home
+   margins tilted to the opener line as mean (exponential tilt, `tilt_hist` of the
+   2026-09-26 harness), discrete three-way at the line. Model-only: the stored
+   discrete-uncorrected opener cover probability with the stored push probability.
+   Served: stored opener three-way. Served-only recalibration: one-term LOSO
+   logistic on the served conditional logit with intercept; push probability is
+   the served push in every blend.
+5. Looks keep the 34 declared. Operational definitions: S is the per-season delta
+   of L1 and L4; P is the push-outcome games' log loss of the raw sim v served;
+   B bands are by absolute opener spread; K is mean over games of
+   (simulated mass at |margin| = k) minus 1[|result| = k]; T is the slope of
+   per-game simulated mean total on the opener total minus the slope of real total
+   on the opener total (reported 0.867 in SIM-04); O is the simulated overtime rate
+   minus the real overtime rate. Spread-only arm A1 is run after the primary arm,
+   same N and folds, reusing each fold's measured transmission; if the time window
+   closes before it completes, A1 is reported not run and its five cells are not
+   recorded.

@@ -1,0 +1,30 @@
+{
+  "family": "sim07_personnel_omnibus",
+  "signals": {
+    "sim07_personnel_interaction_omnibus_fulldata": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "planted control on the full-data omnibus instrument detects 0.044 EPA/play at power 0.8 (raw EPA) and 0.043 (fumble-stripped EPA with xpass and wp), against a relevant 0.005 where power is 0.06; control does not prove the relevant size detectable, so no closing ground",
+      "closing_ground": null,
+      "description": "SIM-07 personnel x DB package interaction in EPA/play: full-data omnibus Wald test on the 10-df interaction space of 18 cells, game-cluster bootstrap null, planted control of 6 cells with random sign",
+      "effect": 0.0,
+      "effect_units": "mae",
+      "family": "sim07_personnel_omnibus",
+      "interval": null,
+      "league": "nfl",
+      "notes": "57 looks: 3 labels x 18 cells plus 3 omnibus; observed omnibus Q 3.3 v critical 18.0 on rank 10 (p_boot 0.97); effect is the rms interaction-cell deviation in EPA/play (0), and the units field holds mae only because the registry has no EPA unit; the omnibus is unsigned, so no probability_positive is stated; success-rate label detects 0.016 success-rate points at 0.8 (0.033 label sd, same as EPA); own family so it never pools with the signed reliability cells",
+      "plain_summary": "A sharper whole-table test of personnel by package needs a 0.044 EPA per play cell shift to reach 80 percent power; the 0.005 that matters is about 77 times too small for 326k plays; no cell is resolved either way",
+      "probability_positive": null,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2640,
+      "seasons": [
+        2016,
+        2025
+      ],
+      "source": "artifacts/sim07/power_summary.json",
+      "standard_error": null
+    }
+  }
+}

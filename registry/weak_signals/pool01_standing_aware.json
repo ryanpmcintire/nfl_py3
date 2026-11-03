@@ -28,6 +28,34 @@
       ],
       "source": "artifacts/pool_rank_replay/standing_aware_e100_b1p0_s3000_results.json",
       "standard_error": 0.0376
+    },
+    "pool01_standing_aware_observed_tiebreak": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval does not exclude zero; 4 of 6 seasons have zero P(first) so power is nil; no positive control; 2 field-lean arms counted as looks",
+      "closing_ground": null,
+      "description": "Standing-aware Best Pick (tiebreak-only, 250 entries, one winner, measured lean 0.638) vs served argmax-probability Best Pick; 0 side flips",
+      "effect": -0.571,
+      "effect_units": "payout_first_pp",
+      "family": "pool01_standing_aware",
+      "interval": [
+        -1.714,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "With only a tiebreak at stake, picking the Best Pick by standing instead of by confidence did not help in six replayed seasons, and it gave up about seven points of cover probability on the games it changed.",
+      "probability_positive": 0.167,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pool_rank_replay/observed_results.json",
+      "standard_error": null
     }
   }
 }

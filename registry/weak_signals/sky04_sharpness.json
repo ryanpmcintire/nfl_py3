@@ -1,0 +1,33 @@
+{
+  "family": "sky04_sharpness",
+  "signals": {
+    "sky04_sharpness_term_oos_brier": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "fold coefficients flip sign (0.60, -0.90, -0.66); in-sample p+ 0.64; per-book sharper-than-median p+ at most 0.985 (betonlineag) and 0.934 (lowvig) across 11 looks; mechanism sign unresolved",
+      "closing_ground": null,
+      "description": "one fitted term: sharpness-weighted mean minus median home spread at Tuesday noon, weights 1/MSE vs result on training seasons, leave-one-season-out 2023-2025, graded at the opener, 1 look",
+      "effect": -0.0022542,
+      "effect_units": "brier_improvement",
+      "family": "sky04_sharpness",
+      "interval": [
+        -0.0040751,
+        -0.0005607
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether weighting books by how close their Tuesday noon line came to the result, versus the median line, adds to the pick probability.",
+      "probability_positive": 0.005,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sky04/sharpness.json",
+      "standard_error": null
+    }
+  }
+}

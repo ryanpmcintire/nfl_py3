@@ -141,6 +141,34 @@
       "source": "artifacts/sim10_wf/pipeline_joint/grade_hgb_nomkt.json",
       "standard_error": 0.8066581632653061
     },
+    "mod25_wfj_hgb_forward_2026_w01_w07_open_reconstructed": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval spans zero with n 102; decisive games 11-10 arm v 10-11 served; reconstruction not prospective",
+      "closing_ground": null,
+      "description": "Joint-engine hgb student (T2025, library to 2024) combined at frozen weight 0.278, 2026 W1-7 reconstruction with student inputs taken from locked-folder features, graded at Tuesday opener, arm minus locked served card",
+      "effect": 0.98,
+      "effect_units": "accuracy_points",
+      "family": "mod25_distillation_walkforward",
+      "interval": [
+        -7.84,
+        9.8
+      ],
+      "league": "nfl",
+      "notes": "pool-line variant: 62-45 v 64-43, -1.87 pts, P+ 0.281; log loss gain v served -0.0052 P+ 0.259 (open)",
+      "plain_summary": null,
+      "probability_positive": 0.548,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 7,
+      "sample_games": 102,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/sim10_wf/forward_2026_joint/report.json",
+      "standard_error": null
+    },
     "mod25_wfj_hgb_logloss": {
       "category": "modeling",
       "classification": "unresolved_below_power",

@@ -1,0 +1,30 @@
+{
+  "family": "sky03_positive_control",
+  "signals": {
+    "sky03_positive_control_detectable_size": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "planted logit coefficient on the matchup term x added to opener logit, LOSO 2020-2025, 200 reps per size, detection = OOS Brier gain P+ >= 0.95; 3 sizes looked at in second run, 5 in first; script scripts/sky03_positive_control.py",
+      "effect": 0.004455,
+      "effect_units": "brier_improvement",
+      "family": "sky03_positive_control",
+      "interval": null,
+      "league": "nfl",
+      "notes": "Effect is mean OOS Brier gain at the smallest planted size detected in at least 90 pct of reps: planted b0 0.526 logit per x point (x sd 0.55), detection rate 93 pct (P+ >= 0.95); mean_Ppos across reps 0.985 is not recorded as probability_positive. Observed pooled coef -0.033; 4x observed detected 1 pct; control cannot bound observed size, so no closing ground.",
+      "plain_summary": "The matchup test only catches a planted effect about sixteen times larger than the one observed, so a small real matchup effect is not ruled out.",
+      "probability_positive": null,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sky03/positive_control_large.json",
+      "standard_error": null
+    }
+  }
+}

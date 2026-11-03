@@ -17,3 +17,6 @@ Score the term on 2026 once four-term opener probabilities exist for 2026 (Week 
 
 ## Open
 ROADMAP SKY-01 row not updated (orchestrator owns). Drift-controlled lead is negative (not a closure: term sign stable in weighted fit).
+
+## Unit 3 (2026-11-03, read-only audit)
+Row definition (table with provenance) met 2026-11-02; fitted term unresolved_below_power, 14 cells recorded. Not DONE: no forward 2026 score exists. Earliest forward score Nov 10 (after Week 9 games); informative only near Week 18 (~3% decisive). Remaining 28% unmatched snap weights are players with no prior-season snap share (rookies), a data gap not a join bug (inferred, not re-measured). No code changed.

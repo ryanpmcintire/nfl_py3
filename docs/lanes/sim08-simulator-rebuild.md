@@ -100,3 +100,17 @@ Transmission: margin 1.93+37.5 xd+3.9 xe (R2 .403); total 45.7+2.5 xd+47.1 xe (R
 Noisy control coded and executed (smoke6 population, 20 reps, not a look): deltas .001/.008 kappa .017/.045, realized .00044/.0071.
 Next: per-fold LOSO kernel pool decision, then full run (one job, 4 workers, N=372, heldout-pool per fold); control verdict
 only after full-run train sd. No processes left running.
+
+## Unit 3 full run (2026-11-03 subagent 4) - IN FLIGHT
+Amendment 3 appended to the declaration (per-fold state `artifacts/sim10_wf/T<s>` = seasons 2009..s-1 for library, models, latent, strength,
+q4dec, bandwidths; runtime asserts `assert_fold_state`; Jeffreys smoothing; baselines; operational look definitions; A1 only if time allows).
+Code: `scripts/sim08_market_anchored.py` (`fold`, `full` commands), `scripts/sim08_evaluate.py` (all declared cells; tested on fake data only, removed).
+Launched 23:46 Mon: `python scripts/sim08_market_anchored.py full --run main --arms primary,spread --workers 4 --draws 372`
+(background task b58jmidj2; driver PID 31404, fold PID 8392, workers 17520 19684 21104 26696, stubs 21616 22224; PIDs 13088 15776 are NOT mine).
+Output `artifacts/sim08_market_anchored/main/{primary,spread}_<season>.npz` per fold (checkpoint; driver skips finished), `run.log`.
+Free RAM 36 GB, workers 204 MB each, sampled page faults ~0/s. Expected ~1 h per fold: primary done ~06:00, spread ~11:30.
+Deadline: at 11:30 ET Tue kill by PID, keep finished folds; spread incomplete -> A1 not run, 5 cells unrecorded.
+Next: after primary folds (6 npz): `python scripts/sim08_evaluate.py --run main --arms primary` (then `primary,spread` if complete) ->
+evaluation.json; noisy control `python scripts/sim08_market_anchored.py control --noisy 1 --train-sd <mean of sim_logit_minus_served_sd_by_train_fold>
+--draws 372 --deltas 0.001 0.008 --replicates 500 --out artifacts/sim08_market_anchored/main/control.json`; then record cells (families
+sim08_market_anchored 29 incl A1, sim08_market_anchored_shape K x5), `nfl-ats research status --family sim08_market_anchored`. Nothing recorded yet.

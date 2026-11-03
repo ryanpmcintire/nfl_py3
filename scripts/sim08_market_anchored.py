@@ -16,6 +16,13 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "scripts"))
 sys.path.insert(0, str(REPO / "src"))
 
+HELD = int(os.environ["SIM08_HELD"]) if os.environ.get("SIM08_HELD") else None
+STATE = REPO / "artifacts" / "sim10_wf" / f"T{HELD}" if HELD else None
+if HELD:
+    os.environ["SIM10_OUT"] = str(STATE)
+    os.environ["SIM11_OUT"] = str(STATE)
+    os.environ["SIM10_SEASONS"] = f"2009-{HELD - 1}"
+
 import sim04_loso as base  # noqa: E402
 import sim10_drive as sd  # noqa: E402
 
@@ -46,7 +53,36 @@ ENGINE_DEFAULTS = {
 }
 
 
+if HELD:
+    ENGINE_DEFAULTS.update(
+        {
+            "strength": str(STATE / "strength_terms.json"),
+            "q4dec": str(STATE / "q4dec_fg.json"),
+            "latent": str(STATE / "latent_fit.json"),
+            "h": str(STATE / "bandwidths_week.json"),
+        }
+    )
+
+
+def assert_fold_state():
+    if not HELD:
+        return
+    state = STATE.resolve()
+    assert state.name == f"T{HELD}", state
+    assert sd.OUT.resolve() == state, (sd.OUT, state)
+    assert max(sd.SEASONS) < HELD, sd.SEASONS
+    for key in ("strength", "q4dec", "latent", "h"):
+        assert Path(ENGINE_DEFAULTS[key]).resolve().parent == state, key
+    lat = json.loads((state / "latent_fit.json").read_text())
+    assert max(lat["seasons"]) < HELD, lat["seasons"]
+    rg = pd.read_parquet(state / "real_games.parquet")
+    assert int(rg["season"].max()) < HELD, rg["season"].max()
+    for f in ("outcome_models.pkl", "pat_model.pkl", "hgb_params.json", "csr.npz"):
+        assert (state / f).exists(), f
+
+
 def engine():
+    assert_fold_state()
     a = Namespace(**ENGINE_DEFAULTS)
     os.environ["SIM10_LATENT"] = a.latent
     os.environ["SIM10_Q4DEC"] = a.q4dec
@@ -513,6 +549,133 @@ def cmd_control(a):
         print(json.dumps(brief), flush=True)
     Path(a.out).write_text(json.dumps(results, indent=1))
 
+DESIGN_N = 9600
+DESIGN_CHUNK = 100
+X_DIFF_BOX = 0.5
+X_ENV_BOX = 0.21
+RUN_ROOT = REPO / "artifacts" / "sim08_market_anchored"
+_ENG = None
+
+
+def init_worker():
+    global _ENG
+    _ENG = engine()
+
+
+def design_task(task):
+    pool, seed = task
+    return design_run(_ENG, pool, DESIGN_CHUNK, seed, X_DIFF_BOX, X_ENV_BOX)
+
+
+def game_task(task):
+    row, fit, n_draws, seed, spread_only = task
+    xd, xe, out = anchored_draws(_ENG, row, fit, n_draws, seed, spread_only)
+    return xd, xe, out[:, 0].astype(np.int16), out[:, 1].astype(np.int16), out[:, 2] > 0.5
+
+
+def cmd_fold(a):
+    import multiprocessing as mp
+
+    assert HELD == a.held_out, (HELD, a.held_out)
+    assert_fold_state()
+    out_dir = RUN_ROOT / a.run
+    out_dir.mkdir(parents=True, exist_ok=True)
+    npz = out_dir / f"{a.arm}_{HELD}.npz"
+    fit_path = out_dir / f"fit_{HELD}.json"
+    frame = load_frame()
+    test = frame[frame["season"] == HELD].reset_index(drop=True)
+    pool_ctx = list(zip(test["season"], test["week"], strict=True))
+    t0 = time.time()
+    ctx = mp.get_context("spawn")
+    with ctx.Pool(a.workers, initializer=init_worker) as pool:
+        if fit_path.exists():
+            fit = json.loads(fit_path.read_text())
+        else:
+            tasks = [(pool_ctx, 1_000_003 * HELD + i) for i in range(DESIGN_N // DESIGN_CHUNK)]
+            D = pd.concat(pool.imap(design_task, tasks, chunksize=1), ignore_index=True)
+            D.to_csv(out_dir / f"design_{HELD}.csv", index=False)
+            fit = transmission_fit(D)
+            fit.update(
+                {
+                    "design_n": DESIGN_N,
+                    "x_diff_range": X_DIFF_BOX,
+                    "x_env_range": X_ENV_BOX,
+                    "held_out": HELD,
+                    "design_seconds": time.time() - t0,
+                }
+            )
+            fit_path.write_text(json.dumps(fit, indent=1))
+        print(f"fold {HELD} design done {time.time() - t0:.0f}s free_gb {free_gb():.1f}", flush=True)
+        spread_only = a.arm == "spread"
+        tasks = [
+            (
+                {k: r[k] for k in ("line", "total", "season", "week")},
+                fit,
+                a.draws,
+                7_000_003 * HELD + 1009 * i + (1 if spread_only else 0),
+                spread_only,
+            )
+            for i, r in test.iterrows()
+        ]
+        res = []
+        for k, r in enumerate(pool.imap(game_task, tasks, chunksize=1)):
+            res.append(r)
+            if k % 16 == 0:
+                print(f"fold {HELD} {a.arm} game {k}/{len(tasks)} {time.time() - t0:.0f}s", flush=True)
+    np.savez(
+        npz,
+        game_id=test["game_id"].to_numpy().astype(str),
+        line=test["line"].to_numpy(),
+        total=test["total"].to_numpy(),
+        x_diff=np.array([r[0] for r in res]),
+        x_env=np.array([r[1] for r in res]),
+        margins=np.stack([r[2] for r in res]),
+        totals=np.stack([r[3] for r in res]),
+        ot=np.stack([r[4] for r in res]),
+        seconds=time.time() - t0,
+        draws=a.draws,
+    )
+    print(f"fold {HELD} {a.arm} saved {time.time() - t0:.0f}s", flush=True)
+
+
+def cmd_full(a):
+    import subprocess
+
+    out_dir = RUN_ROOT / a.run
+    out_dir.mkdir(parents=True, exist_ok=True)
+    for arm in a.arms.split(","):
+        for held in base.GRADED_SEASONS:
+            if (out_dir / f"{arm}_{held}.npz").exists():
+                continue
+            gb = free_gb()
+            assert gb >= 16, gb
+            env = dict(os.environ)
+            env["SIM08_HELD"] = str(held)
+            argv = [
+                sys.executable,
+                str(Path(__file__).resolve()),
+                "fold",
+                "--held-out",
+                str(held),
+                "--arm",
+                arm,
+                "--run",
+                a.run,
+                "--workers",
+                str(a.workers),
+                "--draws",
+                str(a.draws),
+            ]
+            with open(out_dir / "run.log", "a") as fh:
+                r = subprocess.run(
+                    argv,
+                    env=env,
+                    stdout=fh,
+                    stderr=subprocess.STDOUT,
+                    creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+                )
+            assert r.returncode == 0, (arm, held)
+
 
 def main():
     ap = argparse.ArgumentParser()
@@ -548,14 +711,29 @@ def main():
     c.add_argument("--kappa-reps", type=int, default=6, dest="kappa_reps")
     c.add_argument("--seed", type=int, default=8)
     c.add_argument("--out", default=str(SCRATCH / "control.json"))
+    for name in ("fold", "full"):
+        f = sub.add_parser(name)
+        f.add_argument("--run", default="main")
+        f.add_argument("--workers", type=int, default=4)
+        f.add_argument("--draws", type=int, default=372)
+        if name == "fold":
+            f.add_argument("--held-out", type=int, required=True, dest="held_out")
+            f.add_argument("--arm", default="primary")
+        else:
+            f.add_argument("--arms", default="primary")
     a = ap.parse_args()
     SCRATCH.mkdir(parents=True, exist_ok=True)
     if a.cmd == "control" and a.noisy:
         cmd_control_noisy(a)
         return
-    {"probe": cmd_probe, "smoke": cmd_smoke, "control": cmd_control, "support": cmd_support}[a.cmd](
-        a
-    )
+    {
+        "probe": cmd_probe,
+        "smoke": cmd_smoke,
+        "control": cmd_control,
+        "support": cmd_support,
+        "fold": cmd_fold,
+        "full": cmd_full,
+    }[a.cmd](a)
 
 
 if __name__ == "__main__":

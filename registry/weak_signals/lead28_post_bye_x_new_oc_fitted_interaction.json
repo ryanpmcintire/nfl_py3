@@ -1,0 +1,61 @@
+{
+  "family": "lead28_post_bye_x_new_oc_fitted_interaction",
+  "signals": {
+    "L28-flag-oos-accuracy": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval spans zero or mixed OOS; no resolved wrong sign, no control bound",
+      "closing_ground": null,
+      "description": "LOSO accuracy gain of a post-bye x new-OC fitted term vs model-only, opener",
+      "effect": -0.133,
+      "effect_units": "accuracy_points",
+      "family": "lead28_post_bye_x_new_oc_fitted_interaction",
+      "interval": [
+        -0.728,
+        0.47
+      ],
+      "league": "nfl",
+      "notes": "98 flagged of 1503; 2 looks; decisive 28 changed (13 right vs 15 base); in-sample +0.20",
+      "plain_summary": null,
+      "probability_positive": 0.2978,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/lead28/post_bye_fitted_interaction.json",
+      "standard_error": null
+    },
+    "L28-interaction-coef": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval spans zero or mixed OOS; no resolved wrong sign, no control bound",
+      "closing_ground": null,
+      "description": "Post-bye x new-OC interaction coefficient with both main effects, full sample, opener",
+      "effect": 0.4843,
+      "effect_units": "correlation",
+      "family": "lead28_post_bye_x_new_oc_fitted_interaction",
+      "interval": [
+        -0.2685,
+        1.3134
+      ],
+      "league": "nfl",
+      "notes": "within-week permutation p 0.0185; OOS accuracy -1.66 P+ 0.047 (intercept refit noise on 205 changed picks); 2 looks",
+      "plain_summary": null,
+      "probability_positive": 0.8928,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/lead28/post_bye_fitted_interaction.json",
+      "standard_error": null
+    }
+  }
+}

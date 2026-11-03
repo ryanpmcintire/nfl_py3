@@ -57,6 +57,34 @@
       "source": "artifacts/sky03/fitted_term.json",
       "standard_error": null
     },
+    "sky03_def_cov_term_oos_brier": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "fold coefficients all negative (-0.24 to -0.01), mechanism sign unresolved; control detects only about 8x observed size",
+      "closing_ground": null,
+      "description": "one declared look: offense non-sack EPA x defense PFR completions allowed per target, one fitted term, LOSO 2020-2025, opener; single look",
+      "effect": -0.00029382566586123177,
+      "effect_units": "brier_improvement",
+      "family": "sky03_matchups",
+      "interval": [
+        -0.000977148068523568,
+        0.00043114438293072413
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether a team's receivers against the opposing defense's completion allowance matter beyond each side's own strength for the pick probability.",
+      "probability_positive": 0.199,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.0996,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sky03/def_traits/term.json",
+      "standard_error": null
+    },
     "sky03_matchup_ins_brier": {
       "category": "onfield",
       "classification": "unresolved_below_power",
