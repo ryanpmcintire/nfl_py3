@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T21:18:48.775178+00:00`
+Refreshed at: `2026-11-03T21:19:13.981148+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-03T21:18:48.775178+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `5f199565e92b` — Dashboard round 5: plain wording on the History week strip ("the typical entry won N") and the leader split ("the leader was right on X, we were right on Y"); LEAD-104 read revision follows the line move (r .885, R2 .78; residual 1.16x revision noise)
-- Pending change set: 267 paths
-  - ` M ROADMAP.md`
+- Baseline commit: `5cdb0045d23c` — Republish the site with the latest settled results
+- Pending change set: 265 paths
+  - `M  ROADMAP.md`
   - ` M config/source_policies.json`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - ` M docs/lanes/backlog-all-2026-11-02.md`
+  - `M  docs/lanes/backlog-all-2026-11-02.md`
+  - `A  docs/lanes/eng-52-opener-timestamp-audit.md`
   - ` M docs/lanes/lead-102-name-blinded-control-read.md`
+  - `A  docs/lanes/lead-106-injury-language-read.md`
+  - `A  docs/lanes/mkt-24-slot-opener-residual.md`
+  - `A  docs/lanes/mkt-25-opener-revision-size.md`
+  - `A  docs/lanes/mod-42-offensive-line-continuity.md`
+  - `A  docs/lanes/mod-43-qb-learning-curve.md`
+  - `A  docs/lanes/mod-44-head-coach-tenure.md`
+  - `A  docs/lanes/pool-06-tiebreak-field-guess.md`
+  - `A  docs/lanes/pool-07-standings-variance-policy.md`
   - ` M docs/lanes/sim-12-sim12-ingame-exits.md`
+  - `A  docs/lanes/sim-17-halftime-adjustment.md`
+  - `A  docs/lanes/sim-18-lead-protection.md`
+  - `A  docs/lanes/sim-19-trailing-risk.md`
+  - `A  docs/lanes/ui-30-changed-since-tuesday.md`
+  - `A  docs/lanes/ui-31-half-point-chip.md`
   - ` M scripts/sim10_drive.py`
-  - ` M src/nfl_ats/board_terminal.py`
-  - `?? an.csv`
-  - `?? data/pool_observables/20261103T130853Z/manifest.json`
-  - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - `?? docs/lanes/c-drive-space-2026-10-31.md`
-  - `?? docs/lanes/eng-52-opener-timestamp-audit.md`
-  - `?? docs/lanes/lead-106-injury-language-read.md`
-  - `?? docs/lanes/machine-crashes-2026-10-31.md`
-  - `?? docs/lanes/mkt-24-slot-opener-residual.md`
-  - `?? docs/lanes/mkt-25-opener-revision-size.md`
-  - `?? docs/lanes/mod-42-offensive-line-continuity.md`
-  - `?? docs/lanes/mod-43-qb-learning-curve.md`
-  - ...and 247 more
+  - ...and 245 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
