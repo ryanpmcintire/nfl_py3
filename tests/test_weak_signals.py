@@ -694,6 +694,9 @@ def test_existing_effect_units_are_unchanged_by_the_new_additions() -> None:
         "pool_points_per_week",
         "elapsed_seconds_bias",
         "rate_pp",
+        "logit_coefficient",
+        "slope_difference",
+        "epa_per_play",
     }
 
 

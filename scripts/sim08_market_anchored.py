@@ -173,9 +173,56 @@ def solve_diff_only(fit, margin_target):
     return float((margin_target - c[0]) / c[1])
 
 
+def amend4():
+    return os.environ.get("SIM08_AMEND4") == "1"
+
+
+ITER_CAP = 4
+
+
+def jacobian(fit, v):
+    h = 1e-4
+    J = np.empty((2, 2))
+    for j in range(2):
+        d = np.zeros(2)
+        d[j] = h
+        for i, name in enumerate(("margin", "total")):
+            J[i, j] = (
+                response(fit, name, v[0] + d[0], v[1] + d[1])
+                - response(fit, name, v[0] - d[0], v[1] - d[1])
+            ) / (2 * h)
+    return J
+
+
+def iterate_anchor(eng, row, fit, n_draws, seed, v0, total_target):
+    bx, be = fit["x_diff_range"], fit["x_env_range"]
+    target = np.array([row["line"], total_target])
+    v = np.array(v0, dtype=float)
+    best = None
+    for it in range(ITER_CAP + 1):
+        rng = np.random.default_rng(seed + 17)
+        out = np.empty((n_draws, 2))
+        for k in range(n_draws):
+            m, t, _ = play(eng, rng, v[0], v[1], row["season"], row["week"])
+            out[k] = (m, t)
+        err = out.mean(0) - target
+        se = out.std(0, ddof=1) / np.sqrt(n_draws)
+        z = float(np.max(np.abs(err) / se))
+        if best is None or z < best[0]:
+            best = (z, v.copy(), it)
+        if bool(np.all(np.abs(err) <= se)) or it == ITER_CAP or z > best[0]:
+            break
+        v = np.clip(v - np.linalg.solve(jacobian(fit, v), err), [-bx, -be], [bx, be])
+    return best[1], {"iter_steps": best[2], "iter_z": best[0], "iter_cap_hit": best[2] >= ITER_CAP}
+
+
 def anchored_draws(eng, row, fit, n_draws, seed, spread_only=False):
+    use_target = amend4() and not spread_only and np.isfinite(row.get("total_target", np.nan))
     if spread_only or not np.isfinite(row["total"]):
         xd, xe = solve_diff_only(fit, row["line"]), 0.0
+    elif use_target:
+        xd, xe = solve_latents(fit, row["line"], row["total_target"])
+        (xd, xe), _ = iterate_anchor(eng, row, fit, n_draws, seed, (xd, xe), row["total_target"])
     else:
         xd, xe = solve_latents(fit, row["line"], row["total"])
     rng = np.random.default_rng(seed)
@@ -183,6 +230,87 @@ def anchored_draws(eng, row, fit, n_draws, seed, spread_only=False):
     for k in range(n_draws):
         out[k] = play(eng, rng, xd, xe, row["season"], row["week"])
     return xd, xe, out
+
+
+def realised_total_frame():
+    gf = pd.read_parquet(
+        REPO / "data" / "processed" / "game_features.parquet",
+        columns=["game_id", "home_score", "away_score"],
+    )
+    g = load_frame()[["game_id", "season", "total"]].merge(gf, on="game_id", how="left")
+    g["real_total"] = g["home_score"] + g["away_score"]
+    return g.dropna(subset=["total", "real_total"]).reset_index(drop=True)
+
+
+def target_forms(x, y):
+    mean_y = float(y.mean())
+    b, a = np.polyfit(x, y, 1)
+    return {
+        "identity": lambda t: t,
+        "mean": lambda t: np.full_like(t, mean_y, dtype=float),
+        "linear": lambda t, a=a, b=b: a + b * t,
+    }
+
+
+def select_target_form(frame, seasons):
+    sse = {"identity": 0.0, "mean": 0.0, "linear": 0.0}
+    for s in seasons:
+        tr = frame[frame["season"].isin([q for q in seasons if q != s])]
+        te = frame[frame["season"] == s]
+        forms = target_forms(tr["total"].to_numpy(), tr["real_total"].to_numpy())
+        for name, f in forms.items():
+            err = f(te["total"].to_numpy()) - te["real_total"].to_numpy()
+            sse[name] += float((err**2).sum())
+    return min(sse, key=sse.get), sse
+
+
+def total_target_fit(frame, train_seasons):
+    tr = frame[frame["season"].isin(train_seasons)]
+    name, sse = select_target_form(frame, sorted(train_seasons))
+    b, a = np.polyfit(tr["total"].to_numpy(), tr["real_total"].to_numpy(), 1)
+    return {
+        "form": name,
+        "loo_sse": sse,
+        "intercept": float(a),
+        "slope": float(b),
+        "mean_real_total": float(tr["real_total"].mean()),
+        "train_seasons": sorted(int(q) for q in train_seasons),
+    }
+
+
+def apply_target(tf, totals):
+    t = np.asarray(totals, dtype=float)
+    if tf["form"] == "identity":
+        return t
+    if tf["form"] == "mean":
+        return np.full_like(t, tf["mean_real_total"])
+    return tf["intercept"] + tf["slope"] * t
+
+
+def cmd_target(a):
+    frame = realised_total_frame()
+    rows = []
+    for s in range(a.first, a.last + 1):
+        train = [q for q in range(a.first, a.last + 1) if q != s]
+        tf = total_target_fit(frame, train)
+        te = frame[frame["season"] == s]
+        tgt = apply_target(tf, te["total"].to_numpy())
+        slope_real = float(np.polyfit(te["total"].to_numpy(), te["real_total"].to_numpy(), 1)[0])
+        slope_tgt = float(np.polyfit(te["total"].to_numpy(), tgt, 1)[0])
+        rows.append(
+            {
+                "held_out": s,
+                "n": int(len(te)),
+                "form": tf["form"],
+                "fit_slope": tf["slope"],
+                "target_slope_on_opener": slope_tgt,
+                "real_total_slope_on_opener": slope_real,
+                "target_minus_real_mean": float((tgt - te["real_total"].to_numpy()).mean()),
+            }
+        )
+    print(pd.DataFrame(rows).round(4).to_string())
+    Path(a.out).parent.mkdir(parents=True, exist_ok=True)
+    Path(a.out).write_text(json.dumps(rows, indent=1))
 
 
 def key_mass(margins):
@@ -584,6 +712,12 @@ def cmd_fold(a):
     fit_path = out_dir / f"fit_{HELD}.json"
     frame = load_frame()
     test = frame[frame["season"] == HELD].reset_index(drop=True)
+    test["total_target"] = test["total"]
+    if amend4():
+        rf = realised_total_frame()
+        tf = total_target_fit(rf, [q for q in rf["season"].unique() if q < HELD])
+        test["total_target"] = apply_target(tf, test["total"].to_numpy())
+        (out_dir / f"total_target_{HELD}.json").write_text(json.dumps(tf, indent=1))
     pool_ctx = list(zip(test["season"], test["week"], strict=True))
     t0 = time.time()
     ctx = mp.get_context("spawn")
@@ -609,7 +743,7 @@ def cmd_fold(a):
         spread_only = a.arm == "spread"
         tasks = [
             (
-                {k: r[k] for k in ("line", "total", "season", "week")},
+                {k: r[k] for k in ("line", "total", "total_target", "season", "week")},
                 fit,
                 a.draws,
                 7_000_003 * HELD + 1009 * i + (1 if spread_only else 0),
@@ -627,6 +761,7 @@ def cmd_fold(a):
         game_id=test["game_id"].to_numpy().astype(str),
         line=test["line"].to_numpy(),
         total=test["total"].to_numpy(),
+        total_target=test["total_target"].to_numpy(),
         x_diff=np.array([r[0] for r in res]),
         x_env=np.array([r[1] for r in res]),
         margins=np.stack([r[2] for r in res]),
@@ -711,8 +846,13 @@ def main():
     c.add_argument("--kappa-reps", type=int, default=6, dest="kappa_reps")
     c.add_argument("--seed", type=int, default=8)
     c.add_argument("--out", default=str(SCRATCH / "control.json"))
+    t4 = sub.add_parser("target")
+    t4.add_argument("--first", type=int, default=2020)
+    t4.add_argument("--last", type=int, default=2025)
+    t4.add_argument("--out", default=str(SCRATCH / "target_loso.json"))
     for name in ("fold", "full"):
         f = sub.add_parser(name)
+        f.add_argument("--amend4", type=int, default=0)
         f.add_argument("--run", default="main")
         f.add_argument("--workers", type=int, default=4)
         f.add_argument("--draws", type=int, default=372)
@@ -722,6 +862,8 @@ def main():
         else:
             f.add_argument("--arms", default="primary")
     a = ap.parse_args()
+    if getattr(a, "amend4", 0):
+        os.environ["SIM08_AMEND4"] = "1"
     SCRATCH.mkdir(parents=True, exist_ok=True)
     if a.cmd == "control" and a.noisy:
         cmd_control_noisy(a)
@@ -733,6 +875,7 @@ def main():
         "support": cmd_support,
         "fold": cmd_fold,
         "full": cmd_full,
+        "target": cmd_target,
     }[a.cmd](a)
 
 

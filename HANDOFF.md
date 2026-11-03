@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T15:05:31.725494+00:00`
+Refreshed at: `2026-11-03T15:42:48.672726+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-03T15:05:31.725494+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `4e8aac821fca` — Forward terms: add SKY-01 (two variants) and ENV-02 surface; draftcap gate diagnosis
-- Pending change set: 236 paths
-  - `M  ROADMAP.md`
+- Baseline commit: `320f8be5ac61` — SIM-08 unit 3 scored: declared market-anchored run unresolved; shape defects named
+- Pending change set: 259 paths
   - `M  docs/lanes/backlog-all-2026-11-02.md`
+  - `M  docs/lanes/lead53-sunday-renomination.md`
+  - `M  docs/lanes/mod27-u5-pool-move-log.md`
+  - `M  docs/lanes/pol10-prospective-2026.md`
+  - `M  docs/lanes/pol11-ledger-check-2026-11-02.md`
+  - `A  docs/lanes/registry-units-2026-11-03.md`
+  - ` M docs/lanes/sim06-learned-head-2026-11-02.md`
   - `M  docs/lanes/sim08-simulator-rebuild.md`
-  - `A  registry/weak_signals/sim08_market_anchored.json`
-  - `A  registry/weak_signals/sim08_market_anchored_shape.json`
+  - `A  docs/lanes/sim08-spec-a-terminal-2026-11-03.md`
+  - ` M docs/lanes/sim11-strength-transmission.md`
+  - `M  docs/lanes/sky03-matchups-2026-11-02.md`
+  - `A  docs/lanes/week8-forward-scoring-2026-11-03.md`
+  - `M  docs/sim08_market_anchored_declaration.md`
+  - `M  registry/weak_signals/sim07_personnel_omnibus.json`
+  - `M  registry/weak_signals/sim08_market_anchored.json`
+  - `M  registry/weak_signals/sky03_matchups.json`
+  - `M  scripts/sim08_market_anchored.py`
+  - `A  scripts/sim08_shape_decompose.py`
+  - `A  scripts/sim08_terminal_fit.py`
   - ` M scripts/sim10_drive.py`
-  - `?? an.csv`
-  - `?? data/pool_observables/20261103T130853Z/manifest.json`
-  - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - `?? docs/lanes/c-drive-space-2026-10-31.md`
-  - `?? docs/lanes/machine-crashes-2026-10-31.md`
-  - `?? docs/lanes/stealmybitcoin-ctf.md`
-  - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
-  - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
-  - ...and 216 more
+  - ...and 239 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

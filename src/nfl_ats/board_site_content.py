@@ -1100,6 +1100,9 @@ _RECENT_ACTIVITY_EFFECT_UNIT_WORDS: dict[str, str] = {
     "payout_first_pp": "percentage points of simulated chance of finishing first",
     "pool_points_per_week": "pool points per week",
     "rate_pp": "percentage points of difference between simulated and real event rates",
+    "logit_coefficient": "logit coefficient",
+    "slope_difference": "difference in slope",
+    "epa_per_play": "expected points added per play",
 }
 
 

@@ -27,3 +27,5 @@ Forward log of the pool-relative challenger beside the card, Weeks 9-18, no serv
 ## Open
 - Rows share the feed time; a late flip after the last feed is not in the log (card_side is the latest published pick at run time).
 - Feed final_probability is the home-cover probability; confirm after the first live run.
+
+**Measured 2026-11-03 Week 8 scored (CHI at SEA settled):** see docs/lanes/week8-forward-scoring-2026-11-03.md.

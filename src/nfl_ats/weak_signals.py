@@ -80,6 +80,9 @@ EFFECT_UNITS = (
     "pool_points_per_week",
     "elapsed_seconds_bias",
     "rate_pp",
+    "logit_coefficient",
+    "slope_difference",
+    "epa_per_play",
 )
 
 NONDIRECTIONAL_EFFECT_UNITS = frozenset({"elapsed_seconds_bias"})

@@ -57,6 +57,34 @@
       "source": "artifacts/sky03/fitted_term.json",
       "standard_error": null
     },
+    "sky03_def_cov_coef_sign_season_block": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "coefficient interval spans zero; week-block [-0.383,0.182] P(neg) 0.754; game [-0.380,0.182]; all 6 fold coefs negative; control detects about 8x",
+      "closing_ground": null,
+      "description": "same declared term (offense non-sack EPA x defense completions allowed per target), pooled logit coefficient, season-block bootstrap 4000 draws, 6 seasons 2020-2025; 2018-2019 served opener probabilities do not exist; one look",
+      "effect": -0.105,
+      "effect_units": "logit_coefficient",
+      "family": "sky03_matchups",
+      "interval": [
+        -0.4596,
+        0.055
+      ],
+      "league": "nfl",
+      "notes": "[2026-11-03T15:38:32.844060+00:00] effect_units retagged: 'correlation' -> 'logit_coefficient'. Reason: effect is a pooled logit coefficient, not a correlation",
+      "plain_summary": "Whether the receiver-versus-coverage term leans the wrong way across seasons.",
+      "probability_positive": 0.1265,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sky03/def_traits/sign.json",
+      "standard_error": null
+    },
     "sky03_def_cov_term_oos_brier": {
       "category": "onfield",
       "classification": "unresolved_below_power",

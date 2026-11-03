@@ -306,3 +306,42 @@ No graded outcome, blend, or L-level metric has been computed.
    same N and folds, reusing each fold's measured transmission; if the time window
    closes before it completes, A1 is reported not run and its five cells are not
    recorded.
+
+### Amendment 4 (before any look), 2026-11-03
+
+Declared before any simulation under it. It is one declared unit with the SIM-08
+spec A (terminal-state transition table) and overtime-rule repairs and runs only
+after both land; no look is scored on a partial set. The 34 looks are unchanged;
+this is a re-run of the same cells under the repaired engine and anchor
+(run name distinct from `main`, Unit 3 artifacts preserved).
+
+1. Mechanism. Market totals spread wider than realised totals (measured slope of
+   real total on opener total 0.888, SIM-08 shape decomposition), so anchoring
+   the simulated mean to the opener total over-disperses the simulated total
+   (slope 1.111). The total anchor target becomes E[realised total | opener
+   total].
+2. Functional form, chosen out of sample. For held-out season s the candidate
+   forms are identity, training-mean constant, and linear a + b x opener total,
+   all fitted on completed seasons below s (the Amendment 3 walk-forward window).
+   The form is the one with the smallest leave-one-training-season-out squared
+   error across the training seasons; the held-out season never enters its own
+   fit or selection. The spread anchor is unchanged.
+3. Tail inversion. The one-shot quadratic inverse is followed by an iterated
+   Newton solve on the simulated means using common random numbers (same stream
+   each iteration) with the measured response Jacobian. Convergence rule:
+   stop when both the simulated mean margin and mean total are within one
+   standard error of the pilot draws (SE = draw sd / sqrt(draws), measured per
+   game) of their targets, or when the worst standardised error stops
+   improving (best iterate kept). A compute-budget cap of 4 Newton steps is a
+   budget, not a fitted constant; games reaching it are counted and reported.
+   Final draws use a fresh seed, so the anchor check is not circular.
+4. Implementation: `scripts/sim08_market_anchored.py`, flag `--amend4 1`
+   (environment `SIM08_AMEND4=1`); default off reproduces Amendment 3. Cheap
+   check without simulation: `target` command (leave-one-season-out slopes).
+5. Decision rule and cells. Judged on T (slope difference, interval must include
+   0 with |effect| < 0.05), K3 (sim mass at 3 v real, with the spec A repair),
+   and L4 (primary; not worse than Unit 3). Also required: anchor_check total
+   error within |0.1|, K7, K17 and O not worse, L1 not worse than -0.0136,
+   SIM-11 14 gates pass, planted control re-run. Unresolved results are recorded
+   with `weak-signals record`; zero crossing closes nothing and no pick is
+   changed by the simulator alone.

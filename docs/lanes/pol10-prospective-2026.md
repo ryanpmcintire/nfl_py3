@@ -51,3 +51,5 @@ supersedes earlier timestamp-only market comparisons. No model selection.
 
 ## Open
 The equal-book source still lacks a valid pick side. Three ledgers and three scorer adapters remain unavailable. No research closure or serving promotion is made here. AGENTS.md requires admissible mechanism/power grounds for closure; zero-crossing intervals remain unresolved below power.
+
+**Measured 2026-11-03 Week 8 scored (CHI at SEA settled):** see docs/lanes/week8-forward-scoring-2026-11-03.md.

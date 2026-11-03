@@ -56,3 +56,5 @@ The exact Week 1 guard result and the historical Week 2 input difference cannot 
 evidence. Current artifacts no longer reproduce the Week 2 loader failure.
 
 Orchestrator 2026-10-08: logging fix reviewed and committed; gates passed. Scheduler not restarted: until it is, a refresh_sun write may log twice (harmless). Check the next Tuesday 2026-10-13 write logs one BEST-PICK-LEDGER tuesday line.
+
+**Measured 2026-11-03 Week 8 scored (CHI at SEA settled):** see docs/lanes/week8-forward-scoring-2026-11-03.md.

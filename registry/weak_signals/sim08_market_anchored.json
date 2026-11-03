@@ -792,14 +792,14 @@
       "closing_ground": null,
       "description": "Simulated minus real slope of total on opening total (sim 1.111, real 0.888)",
       "effect": 0.2233037371346508,
-      "effect_units": "correlation",
+      "effect_units": "slope_difference",
       "family": "sim08_market_anchored",
       "interval": [
         0.08688534486107585,
         0.36273563996007074
       ],
       "league": "nfl",
-      "notes": "372 draws per game, 6 LOSO folds 2020-2025, block bootstrap over 107 weeks. Simulated minus real slope of total on opening total (sim 1.111, real 0.888)",
+      "notes": "372 draws per game, 6 LOSO folds 2020-2025, block bootstrap over 107 weeks. Simulated minus real slope of total on opening total (sim 1.111, real 0.888)\n[2026-11-03T15:38:36.211575+00:00] effect_units retagged: 'correlation' -> 'slope_difference'. Reason: effect is a total-slope difference, not a correlation",
       "plain_summary": "Market-anchored simulator test at the opener; no pick or serving change.",
       "probability_positive": 1.0,
       "recorded_at": "2026-11-03",

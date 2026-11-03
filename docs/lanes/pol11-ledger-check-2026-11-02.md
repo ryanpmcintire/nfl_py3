@@ -18,3 +18,5 @@ Named unit: LOSO baseline-outlier guard for move feature; opener-line grade of c
 
 ## Open
 Is the --replace-week repair still needed now the check is clean for W8?
+
+**Measured 2026-11-03:** Week 8 refreshed 4-4 vs before_refresh 3-5 (changed sides, Tuesday line); season refreshed 25-18, before 21-22. See week8-forward-scoring-2026-11-03.md.
