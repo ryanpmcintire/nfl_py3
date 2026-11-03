@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T21:56:43.155943+00:00`
+Refreshed at: `2026-11-03T21:56:49.953754+00:00`
 
 ## Start here
 
@@ -21,10 +21,10 @@ Refreshed at: `2026-11-03T21:56:43.155943+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `d223e8f61cf2` — MOD-45: tempo traits widen margin dispersion slightly (+.32 pts per SD, P+ .92-.98) but move cover chance under 1 pp and do not improve opener log loss; unresolved
+- Baseline commit: `2ea13a8b7705` — Master lane state
 - Pending change set: 248 paths
+  - `M  HANDOFF.md`
   - ` M config/source_policies.json`
-  - `M  docs/lanes/backlog-all-2026-11-02.md`
   - ` M docs/lanes/xlg-14-xlg14-cfb-first-discovery.md`
   - ` M scripts/sim10_drive.py`
   - `?? an.csv`
