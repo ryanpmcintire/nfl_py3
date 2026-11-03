@@ -114,3 +114,11 @@ Next: after primary folds (6 npz): `python scripts/sim08_evaluate.py --run main 
 evaluation.json; noisy control `python scripts/sim08_market_anchored.py control --noisy 1 --train-sd <mean of sim_logit_minus_served_sd_by_train_fold>
 --draws 372 --deltas 0.001 0.008 --replicates 500 --out artifacts/sim08_market_anchored/main/control.json`; then record cells (families
 sim08_market_anchored 29 incl A1, sim08_market_anchored_shape K x5), `nfl-ats research status --family sim08_market_anchored`. Nothing recorded yet.
+
+## Unit 3 RESULT (2026-11-03, measured; run finished, no processes left)
+Artifacts: artifacts/sim08_market_anchored/main/{evaluation.json,control.json,*.npz}. Both arms complete (N=372, 6 folds, per-fold sim10_wf state).
+Primary L4 (blend v served-only recal) +0.00153 [-0.00114,+0.00412] pp 0.864; spread-only A1 L4 +0.00039 pp 0.61. L1 raw sim v served -0.0136 pp 0 (raw sim worse); L5 +0.0062 pp 0.98.
+Blend sim coef NEGATIVE in all 6 folds (-0.48..-0.39) with served 0.28..0.42: odd sign, inferred attenuation/overlap, unexplained. Decisive games 390: blend 196 v recal 194.
+Shape: mass3 sim .130 v real .143 (K3 -0.0205 pp .01), K7 +.0096, K17 -.0094; total slope sim 1.111 v real (T +0.223 pp 1.0, overshoot); OT diff -0.0025.
+Noisy control: delta .001 detected 31.8% (not detected), delta .008 84.4% (detected) -> power statement: detects ~0.008 not 0.001; L4 stays unresolved_below_power.
+Next: weak-signals record --batch (family sim08_market_anchored 29 cells, sim08_market_anchored_shape K x5; T,O in main family), then research status. RECORDED 2026-11-03: 34 cells via weak-signals record --batch (29 main incl A1, 5 shape), all unresolved_below_power; status 29/34 main (5 are the shape family), no closure. Lane correction: real mass at 3 is .151 (evaluation.json), not .143. Decision rule (decl. s10): L4 pp 0.864 is between 0.5 and 0.9, so unresolved, work stays open; nothing served. SIM-08 bar (catch the served read AND beat it on push pricing) NOT met: raw sim worse than served (L1 -0.0136) and on push lines (P -0.1375 pp .006). Negative blend sim coefficient in all 6 folds: measured, unexplained.

@@ -1,0 +1,817 @@
+{
+  "family": "sim08_market_anchored",
+  "signals": {
+    "sim08_ma_a1_l1": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md; no admissible closing ground: the 0.0010 noisy positive control was not detected (rate 0.318), so no control bound; zero crossing or a negative sign alone closes nothing. ",
+      "closing_ground": null,
+      "description": "Arm spread: anchored sim raw v served raw, three-way log loss at opener",
+      "effect": -0.01340545233681262,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.0239664585149045,
+        -0.0035235102637437444
+      ],
+      "league": "nfl",
+      "notes": "372 draws per game, 6 LOSO folds 2020-2025, block bootstrap over 107 weeks. Arm spread: anchored sim raw v served raw, three-way log loss at opener",
+      "plain_summary": "Market-anchored simulator test at the opener; no pick or serving change.",
+      "probability_positive": 0.0025,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/main/evaluation.json",
+      "standard_error": 0.005229419852128587
+    },
+    "sim08_ma_a1_l2": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md; no admissible closing ground: the 0.0010 noisy positive control was not detected (rate 0.318), so no control bound; zero crossing or a negative sign alone closes nothing. ",
+      "closing_ground": null,
+      "description": "Arm spread: anchored sim raw v model-only, three-way log loss at opener",
+      "effect": -0.013031135596112655,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.02300594454600839,
+        -0.0033686928762858936
+      ],
+      "league": "nfl",
+      "notes": "372 draws per game, 6 LOSO folds 2020-2025, block bootstrap over 107 weeks. Arm spread: anchored sim raw v model-only, three-way log loss at opener",
+      "plain_summary": "Market-anchored simulator test at the opener; no pick or serving change.",
+      "probability_positive": 0.004,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/main/evaluation.json",
+      "standard_error": 0.005227845509574775
+    },
+    "sim08_ma_a1_l3": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md; no admissible closing ground: the 0.0010 noisy positive control was not detected (rate 0.318), so no control bound; zero crossing or a negative sign alone closes nothing. ",
+      "closing_ground": null,
+      "description": "Arm spread: anchored sim raw v market histogram, three-way log loss at opener",
+      "effect": -0.0158570075718583,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.023067884778312762,
+        -0.008404416157536902
+      ],
+      "league": "nfl",
+      "notes": "372 draws per game, 6 LOSO folds 2020-2025, block bootstrap over 107 weeks. Arm spread: anchored sim raw v market histogram, three-way log loss at opener",
+      "plain_summary": "Market-anchored simulator test at the opener; no pick or serving change.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/main/evaluation.json",
+      "standard_error": 0.003799000974100363
+    },
+    "sim08_ma_a1_l4": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md; no admissible closing ground: the 0.0010 noisy positive control was not detected (rate 0.318), so no control bound; zero crossing or a negative sign alone closes nothing. ",
+      "closing_ground": null,
+      "description": "Arm spread: fitted blend v served-only recalibration (PRIMARY), three-way log loss at opener",
+      "effect": 0.0003939596797364533,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.0021585867096765837,
+        0.002878363358802704
+      ],
+      "league": "nfl",
+      "notes": "372 draws per game, 6 LOSO folds 2020-2025, block bootstrap over 107 weeks. Arm spread: fitted blend v served-only recalibration (PRIMARY), three-way log loss at opener",
+      "plain_summary": "Market-anchored simulator test at the opener; no pick or serving change.",
+      "probability_positive": 0.6115,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/main/evaluation.json",
+      "standard_error": 0.0012856600327742962
+    },
+    "sim08_ma_a1_l5": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md; no admissible closing ground: the 0.0010 noisy positive control was not detected (rate 0.318), so no control bound; zero crossing or a negative sign alone closes nothing. ",
+      "closing_ground": null,
+      "description": "Arm spread: fitted blend v served raw, three-way log loss at opener",
+      "effect": 0.005048451883473023,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.0009364765724834133,
+        0.010782905401734568
+      ],
+      "league": "nfl",
+      "notes": "372 draws per game, 6 LOSO folds 2020-2025, block bootstrap over 107 weeks. Arm spread: fitted blend v served raw, three-way log loss at opener",
+      "plain_summary": "Market-anchored simulator test at the opener; no pick or serving change.",
+      "probability_positive": 0.9565,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/main/evaluation.json",
+      "standard_error": 0.00291850551767174
+    },
+    "sim08_ma_b_10plus": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md; no admissible closing ground: the 0.0010 noisy positive control was not detected (rate 0.318), so no control bound; zero crossing or a negative sign alone closes nothing. ",
+      "closing_ground": null,
+      "description": "L4 blend v recalibration, opener line band 10+",
+      "effect": -0.006787513353113623,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.019187055395203646,
+        0.006198236930537794
+      ],
+      "league": "nfl",
+      "notes": "372 draws per game, 6 LOSO folds 2020-2025, block bootstrap over 107 weeks. L4 blend v recalibration, opener line band 10+",
+      "plain_summary": "Market-anchored simulator test at the opener; no pick or serving change.",
+      "probability_positive": 0.149,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 157,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/main/evaluation.json",
+      "standard_error": 0.006348807282385132
+    },
+    "sim08_ma_b_3p5to6p5": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md; no admissible closing ground: the 0.0010 noisy positive control was not detected (rate 0.318), so no control bound; zero crossing or a negative sign alone closes nothing. ",
+      "closing_ground": null,
+      "description": "L4 blend v recalibration, opener line band 3.5-6.5",
+      "effect": 0.001999476950942769,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.001661437817813761,
+        0.005451014582863185
+      ],
+      "league": "nfl",
+      "notes": "372 draws per game, 6 LOSO folds 2020-2025, block bootstrap over 107 weeks. L4 blend v recalibration, opener line band 3.5-6.5",
+      "plain_summary": "Market-anchored simulator test at the opener; no pick or serving change.",
+      "probability_positive": 0.8555,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 554,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/main/evaluation.json",
+      "standard_error": 0.001854372267829932
+    },
+    "sim08_ma_b_7to9p5": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md; no admissible closing ground: the 0.0010 noisy positive control was not detected (rate 0.318), so no control bound; zero crossing or a negative sign alone closes nothing. ",
+      "closing_ground": null,
+      "description": "L4 blend v recalibration, opener line band 7-9.5",
+      "effect": 0.0031152652909865433,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.004191900667159911,
+        0.010344801940731974
+      ],
+      "league": "nfl",
+      "notes": "372 draws per game, 6 LOSO folds 2020-2025, block bootstrap over 107 weeks. L4 blend v recalibration, opener line band 7-9.5",
+      "plain_summary": "Market-anchored simulator test at the opener; no pick or serving change.",
+      "probability_positive": 0.808,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 246,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/main/evaluation.json",
+      "standard_error": 0.003713241700666207
+    },
+    "sim08_ma_b_le3": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md; no admissible closing ground: the 0.0010 noisy positive control was not detected (rate 0.318), so no control bound; zero crossing or a negative sign alone closes nothing. ",
+      "closing_ground": null,
+      "description": "L4 blend v recalibration, opener line band <=3",
+      "effect": 0.0027561035275117814,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.0012183504622034112,
+        0.006725958366082823
+      ],
+      "league": "nfl",
+      "notes": "372 draws per game, 6 LOSO folds 2020-2025, block bootstrap over 107 weeks. L4 blend v recalibration, opener line band <=3",
+      "plain_summary": "Market-anchored simulator test at the opener; no pick or serving change.",
+      "probability_positive": 0.913,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 573,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/main/evaluation.json",
+      "standard_error": 0.002044830389787661
+    },
+    "sim08_ma_l1": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md; no admissible closing ground: the 0.0010 noisy positive control was not detected (rate 0.318), so no control bound; zero crossing or a negative sign alone closes nothing. ",
+      "closing_ground": null,
+      "description": "Arm primary: anchored sim raw v served raw, three-way log loss at opener",
+      "effect": -0.013570910321231396,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.023030591213256003,
+        -0.004771466778168335
+      ],
+      "league": "nfl",
+      "notes": "372 draws per game, 6 LOSO folds 2020-2025, block bootstrap over 107 weeks. Arm primary: anchored sim raw v served raw, three-way log loss at opener",
+      "plain_summary": "Market-anchored simulator test at the opener; no pick or serving change.",
+      "probability_positive": 0.002,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/main/evaluation.json",
+      "standard_error": 0.004702677325245596
+    },
+    "sim08_ma_l2": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md; no admissible closing ground: the 0.0010 noisy positive control was not detected (rate 0.318), so no control bound; zero crossing or a negative sign alone closes nothing. ",
+      "closing_ground": null,
+      "description": "Arm primary: anchored sim raw v model-only, three-way log loss at opener",
+      "effect": -0.01319659358053143,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.02242970112305308,
+        -0.004361726609364931
+      ],
+      "league": "nfl",
+      "notes": "372 draws per game, 6 LOSO folds 2020-2025, block bootstrap over 107 weeks. Arm primary: anchored sim raw v model-only, three-way log loss at opener",
+      "plain_summary": "Market-anchored simulator test at the opener; no pick or serving change.",
+      "probability_positive": 0.0025,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/main/evaluation.json",
+      "standard_error": 0.004649056173162311
+    },
+    "sim08_ma_l3": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md; no admissible closing ground: the 0.0010 noisy positive control was not detected (rate 0.318), so no control bound; zero crossing or a negative sign alone closes nothing. ",
+      "closing_ground": null,
+      "description": "Arm primary: anchored sim raw v market histogram, three-way log loss at opener",
+      "effect": -0.016022465556277076,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.02216076139817648,
+        -0.009413327281159798
+      ],
+      "league": "nfl",
+      "notes": "372 draws per game, 6 LOSO folds 2020-2025, block bootstrap over 107 weeks. Arm primary: anchored sim raw v market histogram, three-way log loss at opener",
+      "plain_summary": "Market-anchored simulator test at the opener; no pick or serving change.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/main/evaluation.json",
+      "standard_error": 0.0032036400285226792
+    },
+    "sim08_ma_l4": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md; no admissible closing ground: the 0.0010 noisy positive control was not detected (rate 0.318), so no control bound; zero crossing or a negative sign alone closes nothing. ",
+      "closing_ground": null,
+      "description": "Arm primary: fitted blend v served-only recalibration (PRIMARY), three-way log loss at opener",
+      "effect": 0.001534842908645047,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.001138559396552937,
+        0.004117557116936164
+      ],
+      "league": "nfl",
+      "notes": "372 draws per game, 6 LOSO folds 2020-2025, block bootstrap over 107 weeks. Arm primary: fitted blend v served-only recalibration (PRIMARY), three-way log loss at opener",
+      "plain_summary": "Market-anchored simulator test at the opener; no pick or serving change.",
+      "probability_positive": 0.864,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/main/evaluation.json",
+      "standard_error": 0.0013273410219781284
+    },
+    "sim08_ma_l5": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md; no admissible closing ground: the 0.0010 noisy positive control was not detected (rate 0.318), so no control bound; zero crossing or a negative sign alone closes nothing. ",
+      "closing_ground": null,
+      "description": "Arm primary: fitted blend v served raw, three-way log loss at opener",
+      "effect": 0.006189335112381615,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        0.00045905887540486484,
+        0.011656020260852627
+      ],
+      "league": "nfl",
+      "notes": "372 draws per game, 6 LOSO folds 2020-2025, block bootstrap over 107 weeks. Arm primary: fitted blend v served raw, three-way log loss at opener",
+      "plain_summary": "Market-anchored simulator test at the opener; no pick or serving change.",
+      "probability_positive": 0.9825,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/main/evaluation.json",
+      "standard_error": 0.0028578214420825815
+    },
+    "sim08_ma_o_tied_late_ot": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md; no admissible closing ground: the 0.0010 noisy positive control was not detected (rate 0.318), so no control bound; zero crossing or a negative sign alone closes nothing. ",
+      "closing_ground": null,
+      "description": "Simulated minus real overtime rate, in percentage points",
+      "effect": -0.24817931873990046,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -1.3563184680698896,
+        0.8261971629007304
+      ],
+      "league": "nfl",
+      "notes": "372 draws per game, 6 LOSO folds 2020-2025, block bootstrap over 107 weeks. Simulated minus real overtime rate, in percentage points",
+      "plain_summary": "Market-anchored simulator test at the opener; no pick or serving change.",
+      "probability_positive": 0.3345,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/main/evaluation.json",
+      "standard_error": 0.55959446897988
+    },
+    "sim08_ma_p_push_line": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md; no admissible closing ground: the 0.0010 noisy positive control was not detected (rate 0.318), so no control bound; zero crossing or a negative sign alone closes nothing. ",
+      "closing_ground": null,
+      "description": "Fitted blend v served-only recalibration on push-line games (34)",
+      "effect": -0.13750725067170555,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.24309739902748753,
+        -0.03333826118244005
+      ],
+      "league": "nfl",
+      "notes": "372 draws per game, 6 LOSO folds 2020-2025, block bootstrap over 107 weeks. Fitted blend v served-only recalibration on push-line games (34)",
+      "plain_summary": "Market-anchored simulator test at the opener; no pick or serving change.",
+      "probability_positive": 0.006,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 34,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/main/evaluation.json",
+      "standard_error": 0.05410507275744689
+    },
+    "sim08_ma_s_l1_2020": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md; no admissible closing ground: the 0.0010 noisy positive control was not detected (rate 0.318), so no control bound; zero crossing or a negative sign alone closes nothing. ",
+      "closing_ground": null,
+      "description": "anchored sim raw v served raw, season 2020",
+      "effect": 0.003262823118215464,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.024990547486011035,
+        0.029108846345690293
+      ],
+      "league": "nfl",
+      "notes": "372 draws per game, 6 LOSO folds 2020-2025, block bootstrap over 107 weeks. anchored sim raw v served raw, season 2020",
+      "plain_summary": "Market-anchored simulator test at the opener; no pick or serving change.",
+      "probability_positive": 0.594,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 227,
+      "seasons": [
+        2020,
+        2020
+      ],
+      "source": "artifacts/sim08_market_anchored/main/evaluation.json",
+      "standard_error": 0.013822350804955457
+    },
+    "sim08_ma_s_l1_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md; no admissible closing ground: the 0.0010 noisy positive control was not detected (rate 0.318), so no control bound; zero crossing or a negative sign alone closes nothing. ",
+      "closing_ground": null,
+      "description": "anchored sim raw v served raw, season 2021",
+      "effect": -0.026836168435910853,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.0630350282613748,
+        0.009069674816788234
+      ],
+      "league": "nfl",
+      "notes": "372 draws per game, 6 LOSO folds 2020-2025, block bootstrap over 107 weeks. anchored sim raw v served raw, season 2021",
+      "plain_summary": "Market-anchored simulator test at the opener; no pick or serving change.",
+      "probability_positive": 0.069,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 239,
+      "seasons": [
+        2021,
+        2021
+      ],
+      "source": "artifacts/sim08_market_anchored/main/evaluation.json",
+      "standard_error": 0.018145813659474517
+    },
+    "sim08_ma_s_l1_2022": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md; no admissible closing ground: the 0.0010 noisy positive control was not detected (rate 0.318), so no control bound; zero crossing or a negative sign alone closes nothing. ",
+      "closing_ground": null,
+      "description": "anchored sim raw v served raw, season 2022",
+      "effect": -0.026853615744198856,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.04804102558544981,
+        -0.003645725673956336
+      ],
+      "league": "nfl",
+      "notes": "372 draws per game, 6 LOSO folds 2020-2025, block bootstrap over 107 weeks. anchored sim raw v served raw, season 2022",
+      "plain_summary": "Market-anchored simulator test at the opener; no pick or serving change.",
+      "probability_positive": 0.014,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 255,
+      "seasons": [
+        2022,
+        2022
+      ],
+      "source": "artifacts/sim08_market_anchored/main/evaluation.json",
+      "standard_error": 0.01133146117725827
+    },
+    "sim08_ma_s_l1_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md; no admissible closing ground: the 0.0010 noisy positive control was not detected (rate 0.318), so no control bound; zero crossing or a negative sign alone closes nothing. ",
+      "closing_ground": null,
+      "description": "anchored sim raw v served raw, season 2023",
+      "effect": -0.005013136018387872,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.012656102916797403,
+        0.002576591732797242
+      ],
+      "league": "nfl",
+      "notes": "372 draws per game, 6 LOSO folds 2020-2025, block bootstrap over 107 weeks. anchored sim raw v served raw, season 2023",
+      "plain_summary": "Market-anchored simulator test at the opener; no pick or serving change.",
+      "probability_positive": 0.09,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 272,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "artifacts/sim08_market_anchored/main/evaluation.json",
+      "standard_error": 0.0038202094890313577
+    },
+    "sim08_ma_s_l1_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md; no admissible closing ground: the 0.0010 noisy positive control was not detected (rate 0.318), so no control bound; zero crossing or a negative sign alone closes nothing. ",
+      "closing_ground": null,
+      "description": "anchored sim raw v served raw, season 2024",
+      "effect": -0.006372273395600642,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.023220613031710732,
+        0.009649632430222734
+      ],
+      "league": "nfl",
+      "notes": "372 draws per game, 6 LOSO folds 2020-2025, block bootstrap over 107 weeks. anchored sim raw v served raw, season 2024",
+      "plain_summary": "Market-anchored simulator test at the opener; no pick or serving change.",
+      "probability_positive": 0.2335,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 272,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "artifacts/sim08_market_anchored/main/evaluation.json",
+      "standard_error": 0.008613952918881366
+    },
+    "sim08_ma_s_l1_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md; no admissible closing ground: the 0.0010 noisy positive control was not detected (rate 0.318), so no control bound; zero crossing or a negative sign alone closes nothing. ",
+      "closing_ground": null,
+      "description": "anchored sim raw v served raw, season 2025",
+      "effect": -0.019267655808857684,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.040903438046596345,
+        0.004071151126437991
+      ],
+      "league": "nfl",
+      "notes": "372 draws per game, 6 LOSO folds 2020-2025, block bootstrap over 107 weeks. anchored sim raw v served raw, season 2025",
+      "plain_summary": "Market-anchored simulator test at the opener; no pick or serving change.",
+      "probability_positive": 0.0445,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 272,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/main/evaluation.json",
+      "standard_error": 0.011289182731653963
+    },
+    "sim08_ma_s_l4_2020": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md; no admissible closing ground: the 0.0010 noisy positive control was not detected (rate 0.318), so no control bound; zero crossing or a negative sign alone closes nothing. ",
+      "closing_ground": null,
+      "description": "fitted blend v served-only recalibration (PRIMARY), season 2020",
+      "effect": 0.0001376741335910731,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.005240793823832719,
+        0.005704547292813912
+      ],
+      "league": "nfl",
+      "notes": "372 draws per game, 6 LOSO folds 2020-2025, block bootstrap over 107 weeks. fitted blend v served-only recalibration (PRIMARY), season 2020",
+      "plain_summary": "Market-anchored simulator test at the opener; no pick or serving change.",
+      "probability_positive": 0.523,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 227,
+      "seasons": [
+        2020,
+        2020
+      ],
+      "source": "artifacts/sim08_market_anchored/main/evaluation.json",
+      "standard_error": 0.002818184682782051
+    },
+    "sim08_ma_s_l4_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md; no admissible closing ground: the 0.0010 noisy positive control was not detected (rate 0.318), so no control bound; zero crossing or a negative sign alone closes nothing. ",
+      "closing_ground": null,
+      "description": "fitted blend v served-only recalibration (PRIMARY), season 2021",
+      "effect": 0.0033673183174274327,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.004730414223157869,
+        0.010916375891197757
+      ],
+      "league": "nfl",
+      "notes": "372 draws per game, 6 LOSO folds 2020-2025, block bootstrap over 107 weeks. fitted blend v served-only recalibration (PRIMARY), season 2021",
+      "plain_summary": "Market-anchored simulator test at the opener; no pick or serving change.",
+      "probability_positive": 0.808,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 239,
+      "seasons": [
+        2021,
+        2021
+      ],
+      "source": "artifacts/sim08_market_anchored/main/evaluation.json",
+      "standard_error": 0.003955270002192149
+    },
+    "sim08_ma_s_l4_2022": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md; no admissible closing ground: the 0.0010 noisy positive control was not detected (rate 0.318), so no control bound; zero crossing or a negative sign alone closes nothing. ",
+      "closing_ground": null,
+      "description": "fitted blend v served-only recalibration (PRIMARY), season 2022",
+      "effect": 0.0035003785323805387,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.002232664011243916,
+        0.009120387267419039
+      ],
+      "league": "nfl",
+      "notes": "372 draws per game, 6 LOSO folds 2020-2025, block bootstrap over 107 weeks. fitted blend v served-only recalibration (PRIMARY), season 2022",
+      "plain_summary": "Market-anchored simulator test at the opener; no pick or serving change.",
+      "probability_positive": 0.873,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 255,
+      "seasons": [
+        2022,
+        2022
+      ],
+      "source": "artifacts/sim08_market_anchored/main/evaluation.json",
+      "standard_error": 0.002929797324295829
+    },
+    "sim08_ma_s_l4_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md; no admissible closing ground: the 0.0010 noisy positive control was not detected (rate 0.318), so no control bound; zero crossing or a negative sign alone closes nothing. ",
+      "closing_ground": null,
+      "description": "fitted blend v served-only recalibration (PRIMARY), season 2023",
+      "effect": 0.001169165007240874,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.0036435337139669667,
+        0.005866161022484514
+      ],
+      "league": "nfl",
+      "notes": "372 draws per game, 6 LOSO folds 2020-2025, block bootstrap over 107 weeks. fitted blend v served-only recalibration (PRIMARY), season 2023",
+      "plain_summary": "Market-anchored simulator test at the opener; no pick or serving change.",
+      "probability_positive": 0.6865,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 272,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "artifacts/sim08_market_anchored/main/evaluation.json",
+      "standard_error": 0.0024102606232945765
+    },
+    "sim08_ma_s_l4_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md; no admissible closing ground: the 0.0010 noisy positive control was not detected (rate 0.318), so no control bound; zero crossing or a negative sign alone closes nothing. ",
+      "closing_ground": null,
+      "description": "fitted blend v served-only recalibration (PRIMARY), season 2024",
+      "effect": 1.2602351700058412e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.007210266983391178,
+        0.006821134722978697
+      ],
+      "league": "nfl",
+      "notes": "372 draws per game, 6 LOSO folds 2020-2025, block bootstrap over 107 weeks. fitted blend v served-only recalibration (PRIMARY), season 2024",
+      "plain_summary": "Market-anchored simulator test at the opener; no pick or serving change.",
+      "probability_positive": 0.487,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 272,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "artifacts/sim08_market_anchored/main/evaluation.json",
+      "standard_error": 0.0034918935611001293
+    },
+    "sim08_ma_s_l4_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md; no admissible closing ground: the 0.0010 noisy positive control was not detected (rate 0.318), so no control bound; zero crossing or a negative sign alone closes nothing. ",
+      "closing_ground": null,
+      "description": "fitted blend v served-only recalibration (PRIMARY), season 2025",
+      "effect": 0.0011359382242946184,
+      "effect_units": "log_loss_improvement",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -0.006828121307758176,
+        0.008819364431327236
+      ],
+      "league": "nfl",
+      "notes": "372 draws per game, 6 LOSO folds 2020-2025, block bootstrap over 107 weeks. fitted blend v served-only recalibration (PRIMARY), season 2025",
+      "plain_summary": "Market-anchored simulator test at the opener; no pick or serving change.",
+      "probability_positive": 0.614,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 272,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/main/evaluation.json",
+      "standard_error": 0.0040194273084950445
+    },
+    "sim08_ma_t_total_slope": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md; no admissible closing ground: the 0.0010 noisy positive control was not detected (rate 0.318), so no control bound; zero crossing or a negative sign alone closes nothing. Slope difference stored under correlation units as the nearest dimensionless unit.",
+      "closing_ground": null,
+      "description": "Simulated minus real slope of total on opening total (sim 1.111, real 0.888)",
+      "effect": 0.2233037371346508,
+      "effect_units": "correlation",
+      "family": "sim08_market_anchored",
+      "interval": [
+        0.08688534486107585,
+        0.36273563996007074
+      ],
+      "league": "nfl",
+      "notes": "372 draws per game, 6 LOSO folds 2020-2025, block bootstrap over 107 weeks. Simulated minus real slope of total on opening total (sim 1.111, real 0.888)",
+      "plain_summary": "Market-anchored simulator test at the opener; no pick or serving change.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1526,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/main/evaluation.json",
+      "standard_error": 0.07137113173379954
+    }
+  }
+}

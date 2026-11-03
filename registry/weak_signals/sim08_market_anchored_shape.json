@@ -1,0 +1,145 @@
+{
+  "family": "sim08_market_anchored_shape",
+  "signals": {
+    "sim08_ma_shape_k_10": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md; no admissible closing ground: the 0.0010 noisy positive control was not detected (rate 0.318), so no control bound; zero crossing or a negative sign alone closes nothing. ",
+      "closing_ground": null,
+      "description": "Simulated minus real final-margin mass at 10, percentage points (sim 0.0531, real 0.0494)",
+      "effect": 0.365710328037441,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored_shape",
+      "interval": [
+        -0.7454053632530289,
+        1.4674620388573252
+      ],
+      "league": "nfl",
+      "notes": "372 draws per game, 6 LOSO folds 2020-2025, block bootstrap over 107 weeks. Simulated minus real final-margin mass at 10, percentage points (sim 0.0531, real 0.0494)",
+      "plain_summary": "Market-anchored simulator test at the opener; no pick or serving change.",
+      "probability_positive": 0.74,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/main/evaluation.json",
+      "standard_error": 0.5574028168749153
+    },
+    "sim08_ma_shape_k_14": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md; no admissible closing ground: the 0.0010 noisy positive control was not detected (rate 0.318), so no control bound; zero crossing or a negative sign alone closes nothing. ",
+      "closing_ground": null,
+      "description": "Simulated minus real final-margin mass at 14, percentage points (sim 0.0499, real 0.0442)",
+      "effect": 0.5656179822444217,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored_shape",
+      "interval": [
+        -0.3576621688401617,
+        1.530211658864926
+      ],
+      "league": "nfl",
+      "notes": "372 draws per game, 6 LOSO folds 2020-2025, block bootstrap over 107 weeks. Simulated minus real final-margin mass at 14, percentage points (sim 0.0499, real 0.0442)",
+      "plain_summary": "Market-anchored simulator test at the opener; no pick or serving change.",
+      "probability_positive": 0.8755,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/main/evaluation.json",
+      "standard_error": 0.4946141925059791
+    },
+    "sim08_ma_shape_k_17": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md; no admissible closing ground: the 0.0010 noisy positive control was not detected (rate 0.318), so no control bound; zero crossing or a negative sign alone closes nothing. ",
+      "closing_ground": null,
+      "description": "Simulated minus real final-margin mass at 17, percentage points (sim 0.0309, real 0.0403)",
+      "effect": -0.9409476637213963,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored_shape",
+      "interval": [
+        -1.894086985716887,
+        -0.03122546554332725
+      ],
+      "league": "nfl",
+      "notes": "372 draws per game, 6 LOSO folds 2020-2025, block bootstrap over 107 weeks. Simulated minus real final-margin mass at 17, percentage points (sim 0.0309, real 0.0403)",
+      "plain_summary": "Market-anchored simulator test at the opener; no pick or serving change.",
+      "probability_positive": 0.0205,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/main/evaluation.json",
+      "standard_error": 0.47463498003988724
+    },
+    "sim08_ma_shape_k_3": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md; no admissible closing ground: the 0.0010 noisy positive control was not detected (rate 0.318), so no control bound; zero crossing or a negative sign alone closes nothing. ",
+      "closing_ground": null,
+      "description": "Simulated minus real final-margin mass at 3, percentage points (sim 0.1304, real 0.1509)",
+      "effect": -2.0524202293253864,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored_shape",
+      "interval": [
+        -3.906470750804395,
+        -0.3910769526299565
+      ],
+      "league": "nfl",
+      "notes": "372 draws per game, 6 LOSO folds 2020-2025, block bootstrap over 107 weeks. Simulated minus real final-margin mass at 3, percentage points (sim 0.1304, real 0.1509)",
+      "plain_summary": "Market-anchored simulator test at the opener; no pick or serving change.",
+      "probability_positive": 0.007,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/main/evaluation.json",
+      "standard_error": 0.8971913944450367
+    },
+    "sim08_ma_shape_k_7": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Declared look in docs/sim08_market_anchored_declaration.md; no admissible closing ground: the 0.0010 noisy positive control was not detected (rate 0.318), so no control bound; zero crossing or a negative sign alone closes nothing. ",
+      "closing_ground": null,
+      "description": "Simulated minus real final-margin mass at 7, percentage points (sim 0.0864, real 0.0768)",
+      "effect": 0.9594867812594009,
+      "effect_units": "rate_pp",
+      "family": "sim08_market_anchored_shape",
+      "interval": [
+        -0.2880363864797009,
+        2.2237677210525613
+      ],
+      "league": "nfl",
+      "notes": "372 draws per game, 6 LOSO folds 2020-2025, block bootstrap over 107 weeks. Simulated minus real final-margin mass at 7, percentage points (sim 0.0864, real 0.0768)",
+      "plain_summary": "Market-anchored simulator test at the opener; no pick or serving change.",
+      "probability_positive": 0.939,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/main/evaluation.json",
+      "standard_error": 0.6447953652212421
+    }
+  }
+}
