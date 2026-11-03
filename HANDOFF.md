@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T21:49:16.852097+00:00`
+Refreshed at: `2026-11-03T21:49:25.873619+00:00`
 
 ## Start here
 
@@ -21,17 +21,14 @@ Refreshed at: `2026-11-03T21:49:16.852097+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `86e97fa17f7d` — XLG-12: CFB forward ledgers now use the opener as model input (--open-input; earlier forward rows used the observed pregame line and are not scored); week 10 frozen 2h before first kickoff
-- Pending change set: 266 paths
+- Baseline commit: `e214456e94f4` — MOD-41 unit 5 base-model add-one: 2020-25 log loss +.00141 [.00047,.00235] P+ .998, coef negative 6/6, accuracy unchanged (decisive 31-31); 2014-19 proxy does not replicate (P+ .20); unresolved
+- Pending change set: 263 paths
   - ` M ROADMAP.md`
   - ` M config/source_policies.json`
   - ` M docs/lanes/backlog-all-2026-11-02.md`
-  - ` M docs/lanes/lead-106-injury-language-read.md`
-  - `M  docs/lanes/mod-41-mod41-cumulative-workload.md`
-  - ` M registry/weak_signals/lead106.json`
-  - `A  registry/weak_signals/mod41_residual_load_u5_base_addone.json`
-  - ` M scripts/lead106_injury_language.py`
-  - `A  scripts/mod41_unit5_base_addone.py`
+  - `M  docs/lanes/lead-106-injury-language-read.md`
+  - `M  registry/weak_signals/lead106.json`
+  - `M  scripts/lead106_injury_language.py`
   - ` M scripts/sim10_drive.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
@@ -43,7 +40,10 @@ Refreshed at: `2026-11-03T21:49:16.852097+00:00`
   - `?? docs/lanes/mkt-26-move-size-dispersion.md`
   - `?? docs/lanes/mkt-27-total-level-variance.md`
   - `?? docs/lanes/mod-45-tempo-pair-spread.md`
-  - ...and 246 more
+  - `?? docs/lanes/mod-46-favourite-lead-skew.md`
+  - `?? docs/lanes/per-14-coordinator-mover-portability.md`
+  - `?? docs/lanes/per-15-minor-return-ramp.md`
+  - ...and 243 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

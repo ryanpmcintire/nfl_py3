@@ -4,20 +4,20 @@
     "lead106_injury_language_p_plays": {
       "category": "health",
       "classification": "unresolved_below_power",
-      "classification_evidence": "Interval positive but one season, 2 split halves both positive (even .027, odd .134), stratified sample; availability term only, no side rule",
+      "classification_evidence": "Rescored by player id (gsis to pfr crosswalk, unverified rows dropped); one season; even/odd halves .030/.108; gain sits in Questionable and none; availability term only, no side rule",
       "closing_ground": null,
-      "description": "Frozen LLM read of injury-report wording (designation, injury, practice wording, pre-kickoff headlines) vs designation ladder fit on prior weeks; P(plays), 331 stratified player-weeks, 2026 wk2-8",
-      "effect": 0.0752,
+      "description": "Frozen LLM read of injury-report wording vs designation ladder fit on prior weeks; P(plays), id-joined verified outcomes only (294 of 331 stratified player-weeks), 2026 wk2-8",
+      "effect": 0.0649,
       "effect_units": "log_loss_improvement",
       "family": "lead106",
       "interval": [
-        0.0188,
-        0.1374
+        0.0136,
+        0.1301
       ],
       "league": "nfl",
       "notes": "",
       "plain_summary": null,
-      "probability_positive": 0.9995,
+      "probability_positive": 0.9985,
       "recorded_at": "2026-11-03",
       "reliability": null,
       "sample_blocks": 49,
@@ -26,8 +26,36 @@
         2026,
         2026
       ],
-      "source": "artifacts/lead106_injury_language/score.json",
-      "standard_error": 0.031
+      "source": "artifacts/lead106_injury_language/score_ids.json",
+      "standard_error": 0.03
+    },
+    "lead106_injury_language_p_plays_vs_practice_ladder": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval reaches slightly below zero; halves .032/.041; one season",
+      "closing_ground": null,
+      "description": "Same read vs designation x practice ladder fit on prior weeks; id-joined verified outcomes, 294 rows",
+      "effect": 0.0357,
+      "effect_units": "log_loss_improvement",
+      "family": "lead106",
+      "interval": [
+        -0.0025,
+        0.0825
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.959,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 49,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead106_injury_language/score_ids.json",
+      "standard_error": null
     }
   }
 }

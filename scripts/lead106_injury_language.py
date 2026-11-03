@@ -312,10 +312,165 @@ def cmd_score(_):
     print(json.dumps(res, indent=1))
 
 
+def roster_map():
+    f = sorted((ROOT / "data" / "players" / "raw").glob("*/weekly_rosters.parquet"))[-1]
+    r = pd.read_parquet(f, columns=["season", "week", "team", "status", "gsis_id", "pfr_id"])
+    r = r[r["season"] == SEASON]
+    ids = r.dropna(subset=["pfr_id"]).drop_duplicates("gsis_id", keep="last")
+    return r, dict(zip(ids["gsis_id"], ids["pfr_id"], strict=True))
+
+
+def id_outcomes(pop):
+    r, pmap = roster_map()
+    s = pd.read_parquet(
+        ROOT / "data" / "players" / "forward_snaps" / "snap_counts_2026_before_week_09.parquet"
+    )
+    s = s[(s["season"] == SEASON) & s["week"].between(FIRST_WEEK, LAST_WEEK)].copy()
+    s["total"] = s[["offense_snaps", "defense_snaps", "st_snaps"]].fillna(0).sum(axis=1)
+    s["share"] = s[["offense_pct", "defense_pct"]].fillna(0).max(axis=1)
+    s = s.groupby(["pfr_player_id", "week"], as_index=False).agg(
+        total=("total", "sum"), share=("share", "max"), st=("st_snaps", "sum")
+    )
+    teamweeks = set(
+        map(
+            tuple,
+            pd.read_parquet(
+                ROOT
+                / "data"
+                / "players"
+                / "forward_snaps"
+                / "snap_counts_2026_before_week_09.parquet",
+                columns=["team", "week", "season"],
+            )
+            .query("season == @SEASON")[["team", "week"]]
+            .drop_duplicates()
+            .to_numpy(),
+        )
+    )
+    rw = r.drop_duplicates(["gsis_id", "week"], keep="last").set_index(["gsis_id", "week"])[
+        "status"
+    ]
+    x = pop.drop(columns=["total", "share", "matched", "played", "snap_share"]).copy()
+    x["pfr"] = x["gsis_id"].map(pmap)
+    x = x.merge(s, left_on=["pfr", "week"], right_on=["pfr_player_id", "week"], how="left")
+    x["rost"] = [rw.get((g, w)) for g, w in zip(x["gsis_id"], x["week"], strict=True)]
+    cat = []
+    for a in x.itertuples():
+        if (a.team, a.week) not in teamweeks:
+            cat.append("unverified_team_week_not_in_snaps")
+        elif pd.notna(a.total) and a.total > 0:
+            cat.append("played")
+        elif pd.notna(a.total):
+            cat.append("in_snaps_zero_snaps")
+        elif a.designation == "Out":
+            cat.append("out_absent")
+        elif pd.isna(a.pfr):
+            cat.append("unverified_no_pfr_id")
+        elif pd.notna(a.rost):
+            cat.append("absent_rostered_" + str(a.rost))
+        else:
+            cat.append("unverified_absent_not_on_roster_week")
+    x["category"] = cat
+    x["verified"] = ~x["category"].str.startswith("unverified")
+    x["played"] = (x["category"] == "played").astype(int)
+    x["snap_share"] = np.where(x["played"] == 1, x["share"].fillna(0.0), 0.0)
+    return x
+
+
+def cmd_ids(_):
+    pop = pd.read_parquet(ART / "population.parquet")
+    pop = id_outcomes(pop)
+    s0 = pd.read_parquet(ART / "sample.parquet")[["rid", "gsis_id", "week"]]
+    rep = {
+        "overall_verified_rate": float(pop["verified"].mean()),
+        "by_designation_verified_rate": pop.groupby("designation")["verified"].mean().to_dict(),
+        "category_by_designation": {
+            d: g["category"].value_counts().to_dict() for d, g in pop.groupby("designation")
+        },
+    }
+    ver = pop[pop["verified"]].copy()
+    ver["practice_status"] = ver["practice_status"].fillna("none")
+    s = s0.merge(ver.drop(columns=["rid"], errors="ignore"), on=["gsis_id", "week"], how="inner")
+    reads = parse_reads()
+    s = s[s["rid"].isin(reads)].copy()
+    n = len(s)
+    clip = 1.0 / (n + 2)
+    s["rp"] = s["rid"].map(lambda r: min(max(reads[r][0], clip), 1 - clip))
+    s["rs"] = s["rid"].map(lambda r: min(max(reads[r][1], 0.0), 1.0))
+    popn = ver[ver["week"] > FIRST_WEEK].groupby("designation").size()
+    samn = s.groupby("designation").size()
+    s["w"] = s["designation"].map(lambda d: popn[d] / samn[d])
+    y = s["played"].to_numpy()
+    sh = s["snap_share"].to_numpy()
+    w = s["w"].to_numpy()
+    cl = (s["team"] + s["week"].astype(str)).to_numpy()
+    for nm, keys in (
+        ("designation", ["designation"]),
+        ("designation_x_practice", ["designation", "practice_status"]),
+    ):
+        tab = ladder_tables(ver, keys)
+        pr = [ladder_pred(r, tab, keys) for _, r in s.iterrows()]
+        s[f"lp_{nm}"] = [min(max(p[0], clip), 1 - clip) for p in pr]
+        s[f"ls_{nm}"] = [p[1] for p in pr]
+
+    def ll(p):
+        return -(y * np.log(p) + (1 - y) * np.log(1 - p))
+
+    def br(p):
+        return (p - y) ** 2
+
+    rp = s["rp"].to_numpy()
+    rs = s["rs"].to_numpy()
+    out = []
+    even = (s["week"] % 2 == 0).to_numpy()
+    designs = s["designation"].to_numpy()
+    for nm in ("designation", "designation_x_practice"):
+        lp = s[f"lp_{nm}"].to_numpy()
+        ls = s[f"ls_{nm}"].to_numpy()
+        rng = np.random.default_rng(seed_value())
+        subsets = [("all", np.ones(n, bool)), ("headline_rows", s["has_headline"].to_numpy())]
+        subsets += [(d, designs == d) for d in STRATA]
+        for sub, mask in subsets:
+            if mask.sum() < 2:
+                continue
+            cells = (
+                ("log_loss_improvement", ll(lp) - ll(rp)),
+                ("brier_improvement", br(lp) - br(rp)),
+                ("mae_improvement", np.abs(ls - sh) - np.abs(rs - sh)),
+            )
+            for metric, d in cells:
+                r = summarize(metric, d[mask], w[mask], cl[mask], rng)
+                r.update(baseline=nm, subset=sub, rows=int(mask.sum()))
+                out.append(r)
+        for hv, mk in (("even_weeks", even), ("odd_weeks", ~even)):
+            out.append(
+                {
+                    "metric": "log_loss_improvement",
+                    "baseline": nm,
+                    "subset": hv,
+                    "rows": int(mk.sum()),
+                    "estimate": wmean((ll(lp) - ll(rp))[mk], w[mk]),
+                }
+            )
+    rep["sample_verified_rows"] = n
+    rep["sample_rows_total"] = len(s0)
+    rep["sample_by_designation"] = {
+        d: {
+            "rows": int((s["designation"] == d).sum()),
+            "played_rate": float(s.loc[s["designation"] == d, "played"].mean()),
+            "mean_read_p": float(s.loc[s["designation"] == d, "rp"].mean()),
+        }
+        for d in STRATA
+    }
+    rep["cells"] = out
+    (ART / "score_ids.json").write_text(json.dumps(rep, indent=1))
+    print(json.dumps(rep, indent=1))
+
+
 def main():
     p = argparse.ArgumentParser()
     sp = p.add_subparsers(dest="cmd", required=True)
-    for n, f in (("freeze", cmd_freeze), ("run", cmd_run), ("score", cmd_score)):
+    for n, f in (("freeze", cmd_freeze), ("run", cmd_run), ("score", cmd_score), ("ids", cmd_ids)):
         sp.add_parser(n).set_defaults(fn=f)
     a = p.parse_args()
     a.fn(a)
