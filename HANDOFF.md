@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T22:59:38.141000+00:00`
+Refreshed at: `2026-11-03T23:00:23.196518+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-03T22:59:38.141000+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `40882a25a9c9` — PER-03 lane: Friday evening injury snapshot job already scheduled
-- Pending change set: 262 paths
-  - `M  HANDOFF.md`
-  - ` M ROADMAP.md`
+- Baseline commit: `1ef3c42ea344` — Refresh session handoff
+- Pending change set: 263 paths
+  - `M  ROADMAP.md`
   - ` M config/source_policies.json`
-  - ` M docs/lanes/backlog-all-2026-11-02.md`
+  - `M  docs/lanes/backlog-all-2026-11-02.md`
+  - `A  docs/lanes/eng-58-flexed-and-rescheduled-games-audit.md`
+  - `A  docs/lanes/eng-59-moneyline-spread-consistency-audit.md`
+  - `A  docs/lanes/eng-60-neutral-site-orientation-audit.md`
+  - `A  docs/lanes/lead-112-post-opener-availability-news.md`
+  - `A  docs/lanes/mod-53-ridge-penalty-grid-edge-and-reduced-rank.md`
+  - `A  docs/lanes/mod-54-mirrored-home-away-training-rows.md`
+  - `A  docs/lanes/per-16-team-reporting-habit-designation-play-rate.md`
+  - ` M docs/lanes/sim-26-prevent-defense-yardage-shape.md`
+  - `A  docs/lanes/sim-27-adaptive-neighbour-count-in-the-drive-draw.md`
+  - `A  docs/lanes/sim-28-timeouts-remaining-in-end-of-half-drives.md`
+  - `A  docs/lanes/sim-29-simulated-lineup-from-the-wording-read.md`
+  - `A  docs/lanes/sim-30-simulated-margin-distribution-challenger.md`
+  - `A  docs/lanes/ui-36-history-record-by-side-type.md`
+  - `A  docs/lanes/ui-37-rest-and-travel-facts-on-each-row.md`
   - ` M scripts/sim10_drive.py`
+  - ` M src/nfl_ats/board_terminal.py`
   - `?? an.csv`
-  - `?? data/pool_observables/20261103T130853Z/manifest.json`
-  - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - `?? docs/lanes/c-drive-space-2026-10-31.md`
-  - `?? docs/lanes/eng-58-flexed-and-rescheduled-games-audit.md`
-  - `?? docs/lanes/eng-59-moneyline-spread-consistency-audit.md`
-  - `?? docs/lanes/eng-60-neutral-site-orientation-audit.md`
-  - `?? docs/lanes/lead-112-post-opener-availability-news.md`
-  - `?? docs/lanes/machine-crashes-2026-10-31.md`
-  - `?? docs/lanes/mod-53-ridge-penalty-grid-edge-and-reduced-rank.md`
-  - `?? docs/lanes/mod-54-mirrored-home-away-training-rows.md`
-  - `?? docs/lanes/per-16-team-reporting-habit-designation-play-rate.md`
-  - `?? docs/lanes/sim-27-adaptive-neighbour-count-in-the-drive-draw.md`
-  - `?? docs/lanes/sim-28-timeouts-remaining-in-end-of-half-drives.md`
-  - `?? docs/lanes/sim-29-simulated-lineup-from-the-wording-read.md`
-  - ...and 242 more
+  - ...and 243 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
