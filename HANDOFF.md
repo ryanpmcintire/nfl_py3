@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T23:18:31.249088+00:00`
+Refreshed at: `2026-11-03T23:18:43.649954+00:00`
 
 ## Start here
 
@@ -21,14 +21,12 @@ Refreshed at: `2026-11-03T23:18:31.249088+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `d3d75c6f69fb` — MOD-54: base ridge is not antisymmetric; mirrored home/away training rows leave accuracy flat (2020-25 +0.20, P+ .61) and improve log loss (.6944 v .6969); unresolved
-- Pending change set: 254 paths
+- Baseline commit: `dfcb0472f312` — MOD-10: graph ratings are mostly duplicate information (R2 .92-.93 on base inputs); margin rating adds nothing; EPA rating leans positive (2014-19 +0.67 P+ .94, 2020-25 +0.20 P+ .60) and corrects existing EPA overshoot; unresolved
+- Pending change set: 252 paths
+  - `M  HANDOFF.md`
   - ` M config/source_policies.json`
-  - `A  docs/lanes/mod-10-graph-rating-base-input.md`
   - ` M docs/lanes/mod-53-ridge-penalty-grid-edge-and-reduced-rank.md`
   - ` M docs/lanes/mod-54-mirrored-home-away-training-rows.md`
-  - `A  registry/weak_signals/mod10_graph_rating_base_input.json`
-  - `A  scripts/mod10_graph_rating.py`
   - ` M scripts/mod53_penalty_grid.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
@@ -43,7 +41,9 @@ Refreshed at: `2026-11-03T23:18:31.249088+00:00`
   - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
   - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
   - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
-  - ...and 234 more
+  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
+  - ...and 232 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
