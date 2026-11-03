@@ -14,3 +14,10 @@ First unit: Audit: list every script that reads the feature-table spread_line an
 
 ## Open
 Changes: Prevents false grades. Data: scripts/ that call opener evaluation (about 177) and src/nfl_ats/clv.py. Audit table, then a runtime check in the shared grading path (no tests added). Zero crossing closes nothing; record unresolved results with nfl-ats weak-signals record and a closing ground. Look count and family declared before any sign is seen.
+
+## Unit 1 audit (2026-11-03 21:00Z, read by grep plus targeted line reads, not full reads)
+Table artifacts/eng51/audit.csv, 96 scripts read a closing column and touch an opener grade. Classes: opener_input_clean 67, not_opener_graded 14, close_as_input_leaky 6, close_as_stratifier_only 6, mixed 2, production_parity 1 (counts in the report).
+Leaky (all share one pattern: pre-2020 history pool built from nflverse close, scored at the opener): lead76_declared, lead76_rule_prior, lead66_unit2, mod24_u8_grade_deadline, total_conditioned_lattice, altitude_fourth_quarter_screen. The three named false leads (mod24_more_games, XLG-12, XLG-11) are already fixed and classed clean.
+Rerun (tests/scratch/eng51/lead76_open_control.py, pool lines swapped to SBR open 2011-2019, 2009-2010 dropped, out artifacts/eng51/lead76_open_control/): LEAD-76 rule-vs-pool log loss +4.7e-6 (P+ 0.657) became -1.8e-9 (P+ 0.233); pool-vs-market -0.00147 became -0.00131. Zero both ways; not a refutation; stays unresolved_below_power. Confound: smaller pool.
+Next: unit 2 runtime guard in the shared grading path; lead66_unit2 and mod24_u8_grade_deadline reruns with SBR-open pool.
+Open: classification of the 67 clean rows is by script-text read, not by rerunning each with an intercept-only control.
