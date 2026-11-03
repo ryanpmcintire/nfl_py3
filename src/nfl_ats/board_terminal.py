@@ -2545,6 +2545,32 @@ def _week_strip_html(block: SeasonSoFar) -> str:
     )
 
 
+def _leader_split_html(block: SeasonSoFar) -> str:
+    if not block.leader_split_text:
+        return ""
+    body = "".join(
+        "<tr>"
+        f'<td data-label="Week">{escape(week)}</td>'
+        f'<td data-label="Game">{escape(game)}</td>'
+        f'<td data-label="Our side">{escape(ours)}</td>'
+        f'<td data-label="Their side">{escape(theirs)}</td>'
+        f'<td data-label="Right">{escape(winner)}</td>'
+        "</tr>"
+        for week, game, ours, theirs, winner in block.leader_split_games
+    )
+    table = (
+        '<div class="board-scroll"><table class="board"><thead><tr>'
+        "<th>Week</th><th>Game</th><th>Our side</th><th>Their side</th><th>Right</th>"
+        f"</tr></thead><tbody>{body}</tbody></table></div>"
+        if body
+        else ""
+    )
+    return (
+        '<details class="policy-note"><summary class="micro" style="cursor:pointer;">'
+        f"{escape(block.leader_split_text)}</summary>{table}</details>"
+    )
+
+
 def _season_so_far_section_html(block: SeasonSoFar | None) -> str:
 
     if block is None:
@@ -2585,6 +2611,7 @@ def _season_so_far_section_html(block: SeasonSoFar | None) -> str:
         ),
         f'<p class="policy-note">{escape(block.caveat_text)}</p>',
         f'<p class="policy-note">{escape(block.tiebreaker_text)}</p>',
+        _leader_split_html(block),
     ]
     if block.challengers:
         body = "".join(_season_so_far_challenger_row_html(row) for row in block.challengers)

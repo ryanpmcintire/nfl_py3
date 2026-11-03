@@ -435,6 +435,8 @@ class SeasonSoFar:
     week_records: tuple[tuple[int, int, int, int], ...] = ()
     tuesday_week_records: tuple[tuple[int, int, int, int], ...] = ()
     field_week_texts: tuple[tuple[int, str], ...] = ()
+    leader_split_text: str = ""
+    leader_split_games: tuple[tuple[str, str, str, str, str], ...] = ()
 
     @property
     def has_rows(self) -> bool:
@@ -496,6 +498,61 @@ def _field_week_texts(
         beaten = float((points < wins).mean())
         texts.append((week, f"beat {beaten:.0%} of entries; field median {points.median():g} wins"))
     return tuple(texts)
+
+
+def _leader_split(
+    rows: Sequence[HistoryPickRow], data_root: Path, season: int | None
+) -> tuple[str, tuple[tuple[str, str, str, str, str], ...]]:
+    if season is None:
+        return "", ()
+    captures = sorted((data_root / "splash" / "field").glob(f"{season}_romana_empire_w*.csv"))
+    if not captures:
+        return "", ()
+    path = captures[-1]
+    try:
+        leader = pd.read_csv(path)
+    except (OSError, ValueError):
+        return "", ()
+    sides = {"a": "AWAY", "h": "HOME"}
+    ours = {row.game_id: row for row in rows if row.status == "settled"}
+    games = []
+    weeks_covered = set()
+    ours_won = leader_won = 0
+    for record in leader.itertuples():
+        row = ours.get(str(record.game_id))
+        if row is None or row.correct is None:
+            continue
+        weeks_covered.add(int(record.week))
+        their_side = sides.get(str(record.r_side))
+        if their_side is None or their_side == row.pick_side:
+            continue
+        leader_correct = bool(record.r_win)
+        if leader_correct == row.correct:
+            continue
+        ours_won += int(row.correct)
+        leader_won += int(leader_correct)
+        their_team = row.home_team if their_side == "HOME" else row.away_team
+        games.append(
+            (
+                f"Week {int(record.week)}",
+                f"{row.away_team} at {row.home_team}",
+                row.pick_team,
+                their_team,
+                "Us" if row.correct else "Them",
+            )
+        )
+    if not weeks_covered:
+        return "", ()
+    covered = len(weeks_covered)
+    week_word = "week" if covered == 1 else "weeks"
+    game_word = "game" if len(games) == 1 else "games"
+    text = (
+        f"Where we split from the leader: {len(games)} {game_word}, they won {leader_won}, "
+        f"we won {ours_won}. Picks for the entry that led the pool were only captured for "
+        f"{covered} {week_word} (Weeks {min(weeks_covered)} to {max(weeks_covered)}), so later "
+        "weeks are not counted."
+    )
+    return text, tuple(games)
 
 
 def _season_so_far_caveat(settled: int) -> str:
@@ -617,6 +674,7 @@ def _build_season_so_far(
     else:
         best_pick_text = "No pick has been singled out as a week's strongest yet."
     week_records = _week_records(season_rows)
+    leader_split = _leader_split(season_rows, data_root or _default_data_root(), season)
     return SeasonSoFar(
         season=season,
         settled_games=settled,
@@ -632,6 +690,8 @@ def _build_season_so_far(
         week_by_week_text=_week_by_week_text(season_rows),
         week_records=week_records,
         field_week_texts=_field_week_texts(week_records, data_root or _default_data_root(), season),
+        leader_split_text=leader_split[0],
+        leader_split_games=leader_split[1],
         tuesday_week_records=_week_records(
             [row for row in tuesday_picks if season is None or row.season == season],
             minimum_weeks=1,
