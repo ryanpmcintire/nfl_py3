@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T22:02:16.836569+00:00`
+Refreshed at: `2026-11-03T22:02:43.836833+00:00`
 
 ## Start here
 
@@ -21,14 +21,12 @@ Refreshed at: `2026-11-03T22:02:16.836569+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `9c50ad1167f7` — PER-15: returning non-QB starters lose ~6 snap-share points, the same as any starter after a played game (no extra ramp); the loss is mostly whether he plays; deadline-view term P+ .43; unresolved
-- Pending change set: 251 paths
+- Baseline commit: `53be9083d593` — SIM-12 OL exit redesign behind --olexit (measured exit-time CDF; shift redistributed so the league mean is unchanged by construction; flag-off identical to HEAD): Tier B 13->13, 14->13, 13->13, NOT ADOPTED, default off; scoring no longer biased (44.89 v real 44.83)
+- Pending change set: 249 paths
   - ` M config/source_policies.json`
-  - `M  docs/lanes/engine-patch-queue-2026-11-03.md`
+  - `M  docs/lanes/backlog-all-2026-11-02.md`
   - ` M docs/lanes/mod-46-favourite-lead-skew.md`
-  - `M  docs/lanes/sim-12-sim12-ingame-exits.md`
   - ` M docs/lanes/xlg-14-xlg14-cfb-first-discovery.md`
-  - `M  scripts/sim10_drive.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
@@ -43,7 +41,9 @@ Refreshed at: `2026-11-03T22:02:16.836569+00:00`
   - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
   - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
   - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
-  - ...and 231 more
+  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
+  - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
+  - ...and 229 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
