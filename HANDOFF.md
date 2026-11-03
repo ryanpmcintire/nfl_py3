@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T20:59:59.996232+00:00`
+Refreshed at: `2026-11-03T21:00:14.411254+00:00`
 
 ## Start here
 
@@ -21,17 +21,16 @@ Refreshed at: `2026-11-03T20:59:59.996232+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `a7667816170d` — Republish the site with the latest settled results
-- Pending change set: 255 paths
+- Baseline commit: `6f0c2e4e6e37` — LEAD-100 repeat reads (between-read SD 0.052 logit, split-half r 0.24 [-0.39, 0.96], unresolved at n=15); ENG-51 opener-input audit (96 scripts: 67 clean, 6 leaky; LEAD-76 quoted gain does not survive an opener pool)
+- Pending change set: 254 paths
   - ` M config/source_policies.json`
-  - `M  docs/lanes/eng-51-opener-input-provenance-guard.md`
-  - `M  docs/lanes/lead-100-lead99-repeat-read-ensemble.md`
+  - `M  docs/lanes/backlog-all-2026-11-02.md`
   - ` M docs/lanes/mod-41-mod41-cumulative-workload.md`
   - ` M docs/lanes/sim-12-sim12-ingame-exits.md`
   - ` M scripts/forward_terms_week.py`
-  - `A  scripts/lead100_analyze.py`
-  - `A  scripts/lead100_repeat_reads.py`
   - ` M scripts/sim10_drive.py`
+  - ` M src/nfl_ats/board_site_content.py`
+  - ` M src/nfl_ats/board_terminal.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
@@ -43,7 +42,8 @@ Refreshed at: `2026-11-03T20:59:59.996232+00:00`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
   - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - ...and 235 more
+  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
+  - ...and 234 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
