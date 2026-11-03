@@ -1,0 +1,453 @@
+{
+  "family": "sim12_starter_exit",
+  "signals": {
+    "sim12_exit_db1_all_epa_did_2016_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "fixed build (scrimmage-play starters, DB1 includes CB and DB), game-cluster bootstrap 150, placebo and LOSO run; cell of the sim12_starter_exit family; not closed",
+      "closing_ground": null,
+      "description": "DB1 (CB or DB top prior snaps) in-game exit, all strata, 227 events, defense EPA/play after exit sign as measured (negative = defense better); 4958 slots",
+      "effect": -0.033,
+      "effect_units": "epa_per_play",
+      "family": "sim12_starter_exit",
+      "interval": [
+        -0.068,
+        0.011
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.087,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 227,
+      "seasons": [
+        2016,
+        2025
+      ],
+      "source": "docs/lanes/sim-12-sim12-ingame-exits.md",
+      "standard_error": null
+    },
+    "sim12_exit_ol_0_next_drives_epa_did_2016_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "game-cluster bootstrap 300; cell of 32-look family; not closed",
+      "closing_ground": null,
+      "description": "OL in-game exit (cell 0), post-exit minus pre-exit EPA per play net of matched no-exit games; points/drive -0.140 (-0.657,0.396), hazard 0.048, margin impact -0.160",
+      "effect": -0.0787,
+      "effect_units": "epa_per_play",
+      "family": "sim12_starter_exit",
+      "interval": [
+        -0.1942,
+        0.0227
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.07,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 48,
+      "seasons": [
+        2016,
+        2025
+      ],
+      "source": "docs/lanes/sim-12-sim12-ingame-exits.md",
+      "standard_error": null
+    },
+    "sim12_exit_ol_1_next_drives_epa_did_2016_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "game-cluster bootstrap 300; cell of 32-look family; not closed",
+      "closing_ground": null,
+      "description": "OL in-game exit (cell 1), post-exit minus pre-exit EPA per play net of matched no-exit games; points/drive -0.213 (-0.511,0.105), hazard 0.048, margin impact -0.358",
+      "effect": -0.0509,
+      "effect_units": "epa_per_play",
+      "family": "sim12_starter_exit",
+      "interval": [
+        -0.1106,
+        -0.0013
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.023,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 215,
+      "seasons": [
+        2016,
+        2025
+      ],
+      "source": "docs/lanes/sim-12-sim12-ingame-exits.md",
+      "standard_error": null
+    },
+    "sim12_exit_ol_2_next_drives_epa_did_2016_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "game-cluster bootstrap 300; cell of 32-look family; not closed",
+      "closing_ground": null,
+      "description": "OL in-game exit (cell 2), post-exit minus pre-exit EPA per play net of matched no-exit games; points/drive -0.573 (-1.076,-0.114), hazard 0.048, margin impact -0.658",
+      "effect": -0.1045,
+      "effect_units": "epa_per_play",
+      "family": "sim12_starter_exit",
+      "interval": [
+        -0.1838,
+        -0.0282
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.003,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 96,
+      "seasons": [
+        2016,
+        2025
+      ],
+      "source": "docs/lanes/sim-12-sim12-ingame-exits.md",
+      "standard_error": null
+    },
+    "sim12_exit_ol_all_fixed_epa_did_2016_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "fixed build (scrimmage-play starters, DB1 includes CB and DB), game-cluster bootstrap 150, placebo and LOSO run; cell of the sim12_starter_exit family; not closed",
+      "closing_ground": null,
+      "description": "OL in-game exit, all strata, 1251 events; placebo mean 0.0025 (-0.0178,0.018), LOSO pooled -0.038, 8 of 10 folds negative, margin impact -0.30 (-0.49,-0.13)",
+      "effect": -0.038,
+      "effect_units": "epa_per_play",
+      "family": "sim12_starter_exit",
+      "interval": [
+        -0.057,
+        -0.017
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1251,
+      "seasons": [
+        2016,
+        2025
+      ],
+      "source": "docs/lanes/sim-12-sim12-ingame-exits.md",
+      "standard_error": null
+    },
+    "sim12_exit_ol_all_next_drives_epa_did_2016_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "game-cluster bootstrap 300; cell of 32-look family; not closed",
+      "closing_ground": null,
+      "description": "OL in-game exit (cell all), post-exit minus pre-exit EPA per play net of matched no-exit games; points/drive -0.300 (-0.560,-0.086), hazard 0.048, margin impact -0.439",
+      "effect": -0.0689,
+      "effect_units": "epa_per_play",
+      "family": "sim12_starter_exit",
+      "interval": [
+        -0.1153,
+        -0.0261
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 359,
+      "seasons": [
+        2016,
+        2025
+      ],
+      "source": "docs/lanes/sim-12-sim12-ingame-exits.md",
+      "standard_error": null
+    },
+    "sim12_exit_qb_0_next_drives_epa_did_2016_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "game-cluster bootstrap 300; cell of 32-look family; not closed",
+      "closing_ground": null,
+      "description": "QB in-game exit (cell 0), post-exit minus pre-exit EPA per play net of matched no-exit games; points/drive 0.292 (-0.332,0.951), hazard 0.060, margin impact 0.071",
+      "effect": 0.1218,
+      "effect_units": "epa_per_play",
+      "family": "sim12_starter_exit",
+      "interval": [
+        0.0072,
+        0.2272
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.983,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 33,
+      "seasons": [
+        2016,
+        2025
+      ],
+      "source": "docs/lanes/sim-12-sim12-ingame-exits.md",
+      "standard_error": null
+    },
+    "sim12_exit_qb_1_next_drives_epa_did_2016_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "game-cluster bootstrap 300; cell of 32-look family; not closed",
+      "closing_ground": null,
+      "description": "QB in-game exit (cell 1), post-exit minus pre-exit EPA per play net of matched no-exit games; points/drive -0.029 (-0.648,0.542), hazard 0.060, margin impact -0.012",
+      "effect": 0.0267,
+      "effect_units": "epa_per_play",
+      "family": "sim12_starter_exit",
+      "interval": [
+        -0.0944,
+        0.1616
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.637,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 47,
+      "seasons": [
+        2016,
+        2025
+      ],
+      "source": "docs/lanes/sim-12-sim12-ingame-exits.md",
+      "standard_error": null
+    },
+    "sim12_exit_qb_2_next_drives_epa_did_2016_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "game-cluster bootstrap 300; cell of 32-look family; not closed",
+      "closing_ground": null,
+      "description": "QB in-game exit (cell 2), post-exit minus pre-exit EPA per play net of matched no-exit games; points/drive -1.296 (-2.047,-0.484), hazard 0.060, margin impact -0.310",
+      "effect": -0.2302,
+      "effect_units": "epa_per_play",
+      "family": "sim12_starter_exit",
+      "interval": [
+        -0.3601,
+        -0.0762
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.003,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 18,
+      "seasons": [
+        2016,
+        2025
+      ],
+      "source": "docs/lanes/sim-12-sim12-ingame-exits.md",
+      "standard_error": null
+    },
+    "sim12_exit_qb_all_fixed_epa_did_2016_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "fixed build (scrimmage-play starters, DB1 includes CB and DB), game-cluster bootstrap 150, placebo and LOSO run; cell of the sim12_starter_exit family; not closed",
+      "closing_ground": null,
+      "description": "QB in-game exit, all strata, coverage fixed (5275 team-games, 297 events); placebo mean -0.0002, LOSO pooled -0.016, 4 of 10 folds negative",
+      "effect": -0.016,
+      "effect_units": "epa_per_play",
+      "family": "sim12_starter_exit",
+      "interval": [
+        -0.063,
+        0.024
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.253,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 297,
+      "seasons": [
+        2016,
+        2025
+      ],
+      "source": "docs/lanes/sim-12-sim12-ingame-exits.md",
+      "standard_error": null
+    },
+    "sim12_exit_qb_all_next_drives_epa_did_2016_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "game-cluster bootstrap 300; cell of 32-look family; not closed",
+      "closing_ground": null,
+      "description": "QB in-game exit (cell all), post-exit minus pre-exit EPA per play net of matched no-exit games; points/drive -0.154 (-0.610,0.236), hazard 0.060, margin impact -0.048",
+      "effect": 0.0115,
+      "effect_units": "epa_per_play",
+      "family": "sim12_starter_exit",
+      "interval": [
+        -0.0671,
+        0.0947
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.633,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 98,
+      "seasons": [
+        2016,
+        2025
+      ],
+      "source": "docs/lanes/sim-12-sim12-ingame-exits.md",
+      "standard_error": null
+    },
+    "sim12_exit_wr1_0_next_drives_epa_did_2016_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "game-cluster bootstrap 300; cell of 32-look family; not closed",
+      "closing_ground": null,
+      "description": "WR1 in-game exit (cell 0), post-exit minus pre-exit EPA per play net of matched no-exit games; points/drive 0.234 (-0.289,0.795), hazard 0.046, margin impact 0.049",
+      "effect": 0.1121,
+      "effect_units": "epa_per_play",
+      "family": "sim12_starter_exit",
+      "interval": [
+        -0.0364,
+        0.2412
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.957,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 34,
+      "seasons": [
+        2016,
+        2025
+      ],
+      "source": "docs/lanes/sim-12-sim12-ingame-exits.md",
+      "standard_error": null
+    },
+    "sim12_exit_wr1_1_next_drives_epa_did_2016_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "game-cluster bootstrap 300; cell of 32-look family; not closed",
+      "closing_ground": null,
+      "description": "WR1 in-game exit (cell 1), post-exit minus pre-exit EPA per play net of matched no-exit games; points/drive 0.439 (0.074,0.799), hazard 0.046, margin impact 0.142",
+      "effect": 0.0414,
+      "effect_units": "epa_per_play",
+      "family": "sim12_starter_exit",
+      "interval": [
+        -0.0188,
+        0.1147
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.867,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 117,
+      "seasons": [
+        2016,
+        2025
+      ],
+      "source": "docs/lanes/sim-12-sim12-ingame-exits.md",
+      "standard_error": null
+    },
+    "sim12_exit_wr1_2_next_drives_epa_did_2016_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "game-cluster bootstrap 300; cell of 32-look family; not closed",
+      "closing_ground": null,
+      "description": "WR1 in-game exit (cell 2), post-exit minus pre-exit EPA per play net of matched no-exit games; points/drive -0.599 (-0.991,-0.209), hazard 0.046, margin impact -0.111",
+      "effect": -0.0746,
+      "effect_units": "epa_per_play",
+      "family": "sim12_starter_exit",
+      "interval": [
+        -0.1473,
+        0.007
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.04,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 77,
+      "seasons": [
+        2016,
+        2025
+      ],
+      "source": "docs/lanes/sim-12-sim12-ingame-exits.md",
+      "standard_error": null
+    },
+    "sim12_exit_wr1_all_fixed_epa_did_2016_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "fixed build (scrimmage-play starters, DB1 includes CB and DB), game-cluster bootstrap 150, placebo and LOSO run; cell of the sim12_starter_exit family; not closed",
+      "closing_ground": null,
+      "description": "WR1 in-game exit, all strata, 240 events; placebo upper edge 0.0175",
+      "effect": 0.017,
+      "effect_units": "epa_per_play",
+      "family": "sim12_starter_exit",
+      "interval": [
+        -0.033,
+        0.067
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.773,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 240,
+      "seasons": [
+        2016,
+        2025
+      ],
+      "source": "docs/lanes/sim-12-sim12-ingame-exits.md",
+      "standard_error": null
+    },
+    "sim12_exit_wr1_all_next_drives_epa_did_2016_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "game-cluster bootstrap 300; cell of 32-look family; not closed",
+      "closing_ground": null,
+      "description": "WR1 in-game exit (cell all), post-exit minus pre-exit EPA per play net of matched no-exit games; points/drive 0.058 (-0.156,0.317), hazard 0.046, margin impact 0.015",
+      "effect": 0.0127,
+      "effect_units": "epa_per_play",
+      "family": "sim12_starter_exit",
+      "interval": [
+        -0.0238,
+        0.0657
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.673,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 228,
+      "seasons": [
+        2016,
+        2025
+      ],
+      "source": "docs/lanes/sim-12-sim12-ingame-exits.md",
+      "standard_error": null
+    }
+  }
+}
