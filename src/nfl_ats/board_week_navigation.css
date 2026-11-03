@@ -5,7 +5,7 @@
 #week-current { cursor:pointer; }
 #week-current:disabled { opacity:.45; cursor:default; }
 #week-select:focus-visible, #week-current:focus-visible, .week-game-link:focus-visible, .week-archive-row:focus-visible { outline:2px solid var(--cyan); outline-offset:3px; }
-#week-selection-status { margin:0 0 0 auto; color:var(--text-dim); font-size:11px; }
+#week-selection-status { display:none; }
 #week-readiness { flex-basis:100%; }
 #week-readiness[hidden], #main-content > [hidden], body[data-week-live-visible="false"] .ticker { display:none !important; }
 #week-card { min-width:0; }
@@ -24,6 +24,5 @@
   #week-browser { gap:8px; }
   #week-browser label { flex-basis:100%; }
   #week-select { flex:1; min-width:0; }
-  #week-selection-status { flex-basis:100%; margin:0; }
   .week-pending-message { padding:24px 16px; }
 }

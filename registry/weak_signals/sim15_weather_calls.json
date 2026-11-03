@@ -1,0 +1,1349 @@
+{
+  "family": "sim15_weather_calls",
+  "signals": {
+    "sim15_deep_share_main_observed_temp10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "per 10 F, n plays 112991, game-cluster bootstrap 300. LOSO folds 9, positive 0, fold sd 0.0305.",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": -0.05302344044472,
+      "effect_units": "rate_pp",
+      "family": "sim15_weather_calls",
+      "interval": [
+        -0.19626633588095999,
+        0.06945078168493
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 0.2366666666666666,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1665,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_deep_share_main_observed_wind10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "per 10 mph, n plays 112991, game-cluster bootstrap 300. LOSO folds 9, positive 0, fold sd 0.0801.",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": -0.48736969011690995,
+      "effect_units": "rate_pp",
+      "family": "sim15_weather_calls",
+      "interval": [
+        -0.8953991216814601,
+        -0.039772549311030005
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 0.0066666666666666,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1665,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_deep_share_outdoor_forecast_temp10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "per 10 F, n plays 115984, game-cluster bootstrap 300. LOSO folds 9, positive 0, fold sd 0.0266.",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": -0.06855175841357,
+      "effect_units": "rate_pp",
+      "family": "sim15_weather_calls",
+      "interval": [
+        -0.18528921937787998,
+        0.07770098707095
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 0.17,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1708,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_deep_share_outdoor_forecast_wind10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "per 10 mph, n plays 115984, game-cluster bootstrap 300. LOSO folds 9, positive 0, fold sd 0.1191.",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": -0.49465227250702004,
+      "effect_units": "rate_pp",
+      "family": "sim15_weather_calls",
+      "interval": [
+        -0.9421904947490101,
+        -0.06524356929177
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 0.0166666666666666,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1708,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_deep_share_placebo_roof_forecast_temp10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "per 10 F, n plays 40083, game-cluster bootstrap 300. LOSO folds 9, positive 8, fold sd 0.0381.",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": 0.06647477204367,
+      "effect_units": "rate_pp",
+      "family": "sim15_weather_calls",
+      "interval": [
+        -0.12114728900194001,
+        0.24270796579231002
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 0.8,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 570,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_deep_share_placebo_roof_forecast_wind10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "per 10 mph, n plays 40083, game-cluster bootstrap 300. LOSO folds 9, positive 0, fold sd 0.0864.",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": -0.2167129908942,
+      "effect_units": "rate_pp",
+      "family": "sim15_weather_calls",
+      "interval": [
+        -0.8916777440322601,
+        0.38940131181568
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 0.23,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 570,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_epa_behavioural_main_observed_temp10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "total minus fixed-call slope per 10 F; direct 0.00468, total 0.00491",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": 0.0002253963041533,
+      "effect_units": "epa_per_play",
+      "family": "sim15_weather_calls",
+      "interval": [
+        0.0001105188961147,
+        0.0003417995284599
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2975,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_epa_behavioural_main_observed_wind10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "total minus fixed-call slope per 10 mph; direct -0.01641, total -0.01706",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": -0.0006525741212962,
+      "effect_units": "epa_per_play",
+      "family": "sim15_weather_calls",
+      "interval": [
+        -0.0010363108055383,
+        -0.0002687315747732
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2975,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_epa_behavioural_outdoor_forecast_temp10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "total minus fixed-call slope per 10 F; direct 0.00509, total 0.00532",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": 0.0002325117772499,
+      "effect_units": "epa_per_play",
+      "family": "sim15_weather_calls",
+      "interval": [
+        0.0001079642384081,
+        0.0003335708904521
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 0.9966666666666668,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2975,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_epa_behavioural_outdoor_forecast_wind10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "total minus fixed-call slope per 10 mph; direct -0.02199, total -0.02258",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": -0.0005823740971153,
+      "effect_units": "epa_per_play",
+      "family": "sim15_weather_calls",
+      "interval": [
+        -0.0009845239272959,
+        -0.0001978956374983
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2975,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_epa_behavioural_placebo_roof_forecast_temp10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "total minus fixed-call slope per 10 F; direct 0.00494, total 0.00497",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": 3.617379060091592e-05,
+      "effect_units": "epa_per_play",
+      "family": "sim15_weather_calls",
+      "interval": [
+        -0.0001121223455246,
+        0.0002188258070533
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 0.6466666666666666,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1210,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_epa_behavioural_placebo_roof_forecast_wind10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "total minus fixed-call slope per 10 mph; direct 0.00321, total 0.00292",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": -0.0002937329494569,
+      "effect_units": "epa_per_play",
+      "family": "sim15_weather_calls",
+      "interval": [
+        -0.0008980874177414,
+        0.0003274064245495
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 0.2,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1210,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_epa_fixed_call_main_observed_temp10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "per 10 F, n plays 369185, game-cluster bootstrap 300. LOSO folds 17, positive 17, fold sd 0.0004.",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": 0.0046798166910351,
+      "effect_units": "epa_per_play",
+      "family": "sim15_weather_calls",
+      "interval": [
+        0.0017105192410203,
+        0.0077619311921554
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 0.9966666666666668,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2975,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_epa_fixed_call_main_observed_wind10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "per 10 mph, n plays 369185, game-cluster bootstrap 300. LOSO folds 17, positive 0, fold sd 0.0015.",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": -0.0164105583579971,
+      "effect_units": "epa_per_play",
+      "family": "sim15_weather_calls",
+      "interval": [
+        -0.0266767731585687,
+        -0.0065047068359191
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2975,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_epa_fixed_call_outdoor_forecast_temp10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "per 10 F, n plays 393384, game-cluster bootstrap 300.",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": 0.0050912871921857,
+      "effect_units": "epa_per_play",
+      "family": "sim15_weather_calls",
+      "interval": [
+        0.0027042912169306,
+        0.007663494201016
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 3170,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_epa_fixed_call_outdoor_forecast_wind10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "per 10 mph, n plays 393384, game-cluster bootstrap 300.",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": -0.0219946645806439,
+      "effect_units": "epa_per_play",
+      "family": "sim15_weather_calls",
+      "interval": [
+        -0.0306864185976005,
+        -0.0128694334000261
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 3170,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_epa_fixed_call_placebo_roof_forecast_temp10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "per 10 F, n plays 150626, game-cluster bootstrap 300.",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": 0.0049353410883715,
+      "effect_units": "epa_per_play",
+      "family": "sim15_weather_calls",
+      "interval": [
+        0.0008691614038254,
+        0.0097227469444215
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 0.9933333333333332,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1210,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_epa_fixed_call_placebo_roof_forecast_wind10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "per 10 mph, n plays 150626, game-cluster bootstrap 300.",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": 0.0032101584054568,
+      "effect_units": "epa_per_play",
+      "family": "sim15_weather_calls",
+      "interval": [
+        -0.0157741244672297,
+        0.0190794549847068
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 0.65,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1210,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_epa_total_main_observed_temp10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "per 10 F, n plays 369185, game-cluster bootstrap 300. LOSO folds 17, positive 17, fold sd 0.0004.",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": 0.0049052129951884,
+      "effect_units": "epa_per_play",
+      "family": "sim15_weather_calls",
+      "interval": [
+        0.0019576801858888,
+        0.0079968403336737
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 0.9966666666666668,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2975,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_epa_total_main_observed_wind10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "per 10 mph, n plays 369185, game-cluster bootstrap 300. LOSO folds 17, positive 0, fold sd 0.0015.",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": -0.0170631324792933,
+      "effect_units": "epa_per_play",
+      "family": "sim15_weather_calls",
+      "interval": [
+        -0.0274345832522886,
+        -0.0071134084221553
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2975,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_epa_total_outdoor_forecast_temp10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "per 10 F, n plays 393384, game-cluster bootstrap 300.",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": 0.0053237989694357,
+      "effect_units": "epa_per_play",
+      "family": "sim15_weather_calls",
+      "interval": [
+        0.0029510602704425,
+        0.0079375420560886
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 3170,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_epa_total_outdoor_forecast_wind10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "per 10 mph, n plays 393384, game-cluster bootstrap 300.",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": -0.0225770386777593,
+      "effect_units": "epa_per_play",
+      "family": "sim15_weather_calls",
+      "interval": [
+        -0.0311297053990028,
+        -0.0135014953505237
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 3170,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_epa_total_placebo_roof_forecast_temp10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "per 10 F, n plays 150626, game-cluster bootstrap 300.",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": 0.0049715148789724,
+      "effect_units": "epa_per_play",
+      "family": "sim15_weather_calls",
+      "interval": [
+        0.0008869676353999,
+        0.0098128258832442
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 0.99,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1210,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_epa_total_placebo_roof_forecast_wind10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "per 10 mph, n plays 150626, game-cluster bootstrap 300.",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": 0.0029164254559998,
+      "effect_units": "epa_per_play",
+      "family": "sim15_weather_calls",
+      "interval": [
+        -0.0162829265162642,
+        0.0187853332939742
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 0.64,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1210,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_fg_21_30_main_observed_temp10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "per 10 F, n plays 3914, game-cluster bootstrap 300. LOSO folds 17, positive 17, fold sd 0.0554.",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": 1.34991098340499,
+      "effect_units": "rate_pp",
+      "family": "sim15_weather_calls",
+      "interval": [
+        0.83709454280798,
+        1.92282153846221
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2216,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_fg_21_30_main_observed_wind10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "per 10 mph, n plays 3914, game-cluster bootstrap 300. LOSO folds 17, positive 0, fold sd 0.1904.",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": -1.77629258906052,
+      "effect_units": "rate_pp",
+      "family": "sim15_weather_calls",
+      "interval": [
+        -3.79496947013149,
+        -0.08129705912734
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 0.0233333333333333,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2216,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_fg_21_30_outdoor_forecast_temp10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "per 10 F, n plays 4162, game-cluster bootstrap 300.",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": 1.24181315518822,
+      "effect_units": "rate_pp",
+      "family": "sim15_weather_calls",
+      "interval": [
+        0.66281506786072,
+        1.8530735788083699
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2357,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_fg_21_30_outdoor_forecast_wind10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "per 10 mph, n plays 4162, game-cluster bootstrap 300.",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": -0.9553680084932001,
+      "effect_units": "rate_pp",
+      "family": "sim15_weather_calls",
+      "interval": [
+        -3.01513324018897,
+        0.92924599883808
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 0.1666666666666666,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2357,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_fg_21_30_placebo_roof_forecast_temp10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "per 10 F, n plays 1541, game-cluster bootstrap 300.",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": -0.29272073364979,
+      "effect_units": "rate_pp",
+      "family": "sim15_weather_calls",
+      "interval": [
+        -1.31874322217542,
+        0.51330459948066
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 0.2466666666666666,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 866,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_fg_21_30_placebo_roof_forecast_wind10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "per 10 mph, n plays 1541, game-cluster bootstrap 300.",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": 0.89171271808757,
+      "effect_units": "rate_pp",
+      "family": "sim15_weather_calls",
+      "interval": [
+        -2.56570479416163,
+        4.22056020273359
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 0.7,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 866,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_fg_31_40_main_observed_temp10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "per 10 F, n plays 4044, game-cluster bootstrap 300. LOSO folds 17, positive 17, fold sd 0.0682.",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": 3.18214738873449,
+      "effect_units": "rate_pp",
+      "family": "sim15_weather_calls",
+      "interval": [
+        2.4897429252840797,
+        3.9574597840433303
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2265,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_fg_31_40_main_observed_wind10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "per 10 mph, n plays 4044, game-cluster bootstrap 300. LOSO folds 17, positive 0, fold sd 0.4543.",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": -6.9422269181439304,
+      "effect_units": "rate_pp",
+      "family": "sim15_weather_calls",
+      "interval": [
+        -9.29466124965759,
+        -4.81611516694302
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2265,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_fg_31_40_outdoor_forecast_temp10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "per 10 F, n plays 4316, game-cluster bootstrap 300.",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": 3.07729821826804,
+      "effect_units": "rate_pp",
+      "family": "sim15_weather_calls",
+      "interval": [
+        2.3472767865210202,
+        3.85830455302522
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2417,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_fg_31_40_outdoor_forecast_wind10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "per 10 mph, n plays 4316, game-cluster bootstrap 300.",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": -6.58445063246529,
+      "effect_units": "rate_pp",
+      "family": "sim15_weather_calls",
+      "interval": [
+        -9.13940426859425,
+        -4.00230314161805
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2417,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_fg_31_40_placebo_roof_forecast_temp10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "per 10 F, n plays 1720, game-cluster bootstrap 300.",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": 0.64496912699833,
+      "effect_units": "rate_pp",
+      "family": "sim15_weather_calls",
+      "interval": [
+        -0.40021073869919,
+        1.77391258550197
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 0.8466666666666667,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 924,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_fg_31_40_placebo_roof_forecast_wind10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "per 10 mph, n plays 1720, game-cluster bootstrap 300.",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": 2.0920641435949396,
+      "effect_units": "rate_pp",
+      "family": "sim15_weather_calls",
+      "interval": [
+        -1.7430192999083,
+        5.80503847734647
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 0.85,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 924,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_fg_le20_main_observed_temp10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "per 10 F, n plays 7195, game-cluster bootstrap 300. LOSO folds 17, positive 17, fold sd 0.0797.",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": 0.75657905179478,
+      "effect_units": "rate_pp",
+      "family": "sim15_weather_calls",
+      "interval": [
+        0.28786995842939,
+        1.29378366625308
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2771,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_fg_le20_main_observed_wind10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "per 10 mph, n plays 7195, game-cluster bootstrap 300. LOSO folds 17, positive 3, fold sd 0.2576.",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": -0.26638650820652005,
+      "effect_units": "rate_pp",
+      "family": "sim15_weather_calls",
+      "interval": [
+        -1.6737949625548,
+        1.1432330103798
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 0.35,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2771,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_fg_le20_outdoor_forecast_temp10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "per 10 F, n plays 7691, game-cluster bootstrap 300.",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": 0.5949862570544,
+      "effect_units": "rate_pp",
+      "family": "sim15_weather_calls",
+      "interval": [
+        0.18536351860418,
+        0.96226933218857
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2950,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_fg_le20_outdoor_forecast_wind10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "per 10 mph, n plays 7691, game-cluster bootstrap 300.",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": -0.25566882716208,
+      "effect_units": "rate_pp",
+      "family": "sim15_weather_calls",
+      "interval": [
+        -1.7753707619661898,
+        1.357450377632
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 0.37,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2950,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_fg_le20_placebo_roof_forecast_temp10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "per 10 F, n plays 2891, game-cluster bootstrap 300.",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": 0.141105721471,
+      "effect_units": "rate_pp",
+      "family": "sim15_weather_calls",
+      "interval": [
+        -0.47575758404432,
+        0.8790566980656
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 0.6766666666666666,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1121,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_fg_le20_placebo_roof_forecast_wind10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "per 10 mph, n plays 2891, game-cluster bootstrap 300.",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": 1.8009008697864801,
+      "effect_units": "rate_pp",
+      "family": "sim15_weather_calls",
+      "interval": [
+        -1.12059381512487,
+        4.26292227509252
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 0.8666666666666667,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1121,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_pass_rate_main_observed_temp10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "per 10 F, n plays 369187, game-cluster bootstrap 300. LOSO folds 17, positive 17, fold sd 0.0239.",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": 0.36259180999253,
+      "effect_units": "rate_pp",
+      "family": "sim15_weather_calls",
+      "interval": [
+        0.25473107383300997,
+        0.48615274326609004
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2975,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_pass_rate_main_observed_wind10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "per 10 mph, n plays 369187, game-cluster bootstrap 300. LOSO folds 17, positive 0, fold sd 0.0688.",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": -0.90749972316897,
+      "effect_units": "rate_pp",
+      "family": "sim15_weather_calls",
+      "interval": [
+        -1.29186174904602,
+        -0.43260032593186
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2975,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_pass_rate_outdoor_forecast_temp10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "per 10 F, n plays 393386, game-cluster bootstrap 300. LOSO folds 17, positive 17, fold sd 0.0226.",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": 0.38682191806997,
+      "effect_units": "rate_pp",
+      "family": "sim15_weather_calls",
+      "interval": [
+        0.26213942580324,
+        0.49970432904622997
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 3170,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_pass_rate_outdoor_forecast_wind10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "per 10 mph, n plays 393386, game-cluster bootstrap 300. LOSO folds 17, positive 0, fold sd 0.0633.",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": -1.1758981507894202,
+      "effect_units": "rate_pp",
+      "family": "sim15_weather_calls",
+      "interval": [
+        -1.5712438881006399,
+        -0.7764227651059701
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 3170,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_pass_rate_placebo_roof_forecast_temp10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "per 10 F, n plays 150626, game-cluster bootstrap 300. LOSO folds 17, positive 17, fold sd 0.0250.",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": 0.051168269006719995,
+      "effect_units": "rate_pp",
+      "family": "sim15_weather_calls",
+      "interval": [
+        -0.11110262839434,
+        0.19316635035725
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 0.7466666666666667,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1210,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    },
+    "sim15_pass_rate_placebo_roof_forecast_wind10": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "per 10 mph, n plays 150626, game-cluster bootstrap 300. LOSO folds 17, positive 1, fold sd 0.0940.",
+      "closing_ground": null,
+      "description": "offence team-season fixed effects, game-state controls, 42 declared cells (7 outcomes x 3 specs x 2 terms) plus 6 behavioural contrasts, game-cluster bootstrap, per-season fold slopes; deep share 2009-2017 only",
+      "effect": -0.16847321478028,
+      "effect_units": "rate_pp",
+      "family": "sim15_weather_calls",
+      "interval": [
+        -0.62838041615006,
+        0.34700480929919003
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether wind and cold change what teams call (pass rate, deep share, field goal attempts) and whether that shift changes EPA per play, with indoor-game forecast placebo.",
+      "probability_positive": 0.3,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1210,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim15/cells.csv",
+      "standard_error": null
+    }
+  }
+}

@@ -541,11 +541,11 @@ def _flip_pill_html(game: GameRow) -> str:
     return f'<span class="pill flip-pill">{escape(game.flip_pill_text)}</span>'
 
 
-def _lock_html(lock_text: str | None) -> str:
+def _lock_html(lock_text: str | None, countdown: str = "") -> str:
 
     if not lock_text:
         return ""
-    return f'<span class="lock">{escape(lock_text)}</span>'
+    return f'<span class="lock">{escape(lock_text)}{countdown}</span>'
 
 
 def _lock_sub_html(lock_text: str | None) -> str:
@@ -958,7 +958,8 @@ def _board_section(content: BoardContent, *, archived: bool = False) -> str:
                 f'data-prob="{game.pick_probability:.6f}">'
                 f'<td class="kickoff" data-label="Kickoff"{kickoff_attrs}>'
                 f"{escape(game.kickoff_short_label)}"
-                f"{_lock_html(game.lock_text)}{kickoff_countdown}</td>"
+                f"{_lock_html(game.lock_text, kickoff_countdown)}"
+                f"{'' if game.lock_text else kickoff_countdown}</td>"
                 f'<td class="matchup" data-label="Matchup">{matchup_cell}</td>'
                 f'<td class="pick" data-label="Pick">{pick_cell}</td>'
                 f'<td class="market-now" '
@@ -1034,12 +1035,15 @@ def _board_section(content: BoardContent, *, archived: bool = False) -> str:
         "</tr></thead><tbody>" + "".join(rows) + "</tbody></table>"
     )
     details = (
-        f"{_confidence_legend_html(content)}"
         f"{_best_pick_note_html(content)}"
         f"{_injury_state_html(content)}"
         f"{_tiebreaker_panel_html(content.tiebreaker)}"
+        '<details class="policy-note"><summary>How confidence and '
+        "late changes are handled</summary>"
+        f"{_confidence_legend_html(content)}"
         f'<div class="policy-note"><b>Policy overlay</b> &mdash; {policy_html}</div>'
         f'<p class="policy-note">{escape(REFRESH_POLICY_NOTE)}</p>'
+        "</details>"
         + (
             f'<p class="policy-note pick-lock-note">{escape(content.pick_lock_note)}</p>'
             if content.pick_lock_note
@@ -1656,7 +1660,8 @@ def _pool_outlook_section(content: BoardContent) -> str:
         f'<span class="value">{escape(outlook.chance_text)}</span>'
         f'<span class="foot">{escape(outlook.range_text)}</span></div>'
         "</div>"
-        f'<p class="policy-note">{escape(outlook.assumption_text)}</p>'
+        '<details class="policy-note"><summary>How this chance is worked out</summary>'
+        f'<p class="policy-note">{escape(outlook.assumption_text)}</p></details>'
         f"{stale}</section>"
     )
 

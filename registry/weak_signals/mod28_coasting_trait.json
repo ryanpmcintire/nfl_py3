@@ -1,0 +1,453 @@
+{
+  "family": "mod28_coasting_trait",
+  "signals": {
+    "mod28_coasting_trait_pass_oe_ll_abs_spread_ge7_2011_2019": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; block bootstrap by season-week; coefficients small, mixed sign; one trait x two subsets looked at.",
+      "closing_ground": null,
+      "description": "LOSO 2012-19 one-coefficient pass_oe term on SBR-opener discrete base p, |spread|>=7, n=549; record model 300-249 base 300-249, 20 flips (10 model wins, 10 base wins); dBrier(base-model) -0.00105; in-sample minus OOS gap 0.00238; 2011 excluded for lack of 3 prior seasons.",
+      "effect": -0.00227454672146216,
+      "effect_units": "log_loss_improvement",
+      "family": "mod28_coasting_trait",
+      "interval": [
+        -0.004749695396374199,
+        8.851203205376114e-05
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The late-lead pass-rate trait made the proxy-era probability slightly worse.",
+      "probability_positive": 0.058,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 134,
+      "sample_games": 549,
+      "seasons": [
+        2012,
+        2019
+      ],
+      "source": "tests/scratch/mod28/result_proxy.json",
+      "standard_error": null
+    },
+    "mod28_coasting_trait_pass_oe_ll_all_2011_2019": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; block bootstrap by season-week; coefficients small, mixed sign; one trait x two subsets looked at.",
+      "closing_ground": null,
+      "description": "LOSO 2012-19 one-coefficient pass_oe term on SBR-opener discrete base p, all games, n=1981; record model 1022-959 base 1023-958, 29 flips (14 model wins, 15 base wins); dBrier(base-model) -0.00023; in-sample minus OOS gap 0.00047; 2011 excluded for lack of 3 prior seasons.",
+      "effect": -0.00046431830911404086,
+      "effect_units": "log_loss_improvement",
+      "family": "mod28_coasting_trait",
+      "interval": [
+        -0.0008380119587957368,
+        -0.00011170523407686289
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The late-lead pass-rate trait made the proxy-era probability slightly worse.",
+      "probability_positive": 0.0145,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 136,
+      "sample_games": 1981,
+      "seasons": [
+        2012,
+        2019
+      ],
+      "source": "tests/scratch/mod28/result_proxy.json",
+      "standard_error": null
+    },
+    "mod28_fit_comp_abs_spread_ge7": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or positive control; reliability above its permutation null for two of three traits; fit cells are LOSO and unresolved below power, not a resolved wrong sign",
+      "closing_ground": null,
+      "description": "Team coasting trait from Q4 drives while leading by 8+ (pass over expected, seconds per play, points per drive vs yardline expectation), prior games only",
+      "effect": -0.0073623900337339765,
+      "effect_units": "log_loss_improvement",
+      "family": "mod28_coasting_trait",
+      "interval": [
+        -0.010245465763676501,
+        -0.004773314848536548
+      ],
+      "league": "nfl",
+      "notes": "LOSO coefficients [0.0599, -0.0365, 0.1609, 0.0004, 0.0804, 0.0412]; permutation p 1.000; model vs market ll -0.0308, base vs market -0.0234",
+      "plain_summary": "Leave-one-season-out fit of favourite composite coasting trait on the opener cover probability, subset abs_spread_ge7; log loss gain per game vs base, negative is worse",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1374,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mod28_coasting_trait.py",
+      "standard_error": null
+    },
+    "mod28_fit_comp_all": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or positive control; reliability above its permutation null for two of three traits; fit cells are LOSO and unresolved below power, not a resolved wrong sign",
+      "closing_ground": null,
+      "description": "Team coasting trait from Q4 drives while leading by 8+ (pass over expected, seconds per play, points per drive vs yardline expectation), prior games only",
+      "effect": -0.0006471585880027304,
+      "effect_units": "log_loss_improvement",
+      "family": "mod28_coasting_trait",
+      "interval": [
+        -0.0013711594349285457,
+        7.011658100975688e-05
+      ],
+      "league": "nfl",
+      "notes": "LOSO coefficients [0.0453, 0.0233, 0.074, 0.0222, 0.0565, 0.0484]; permutation p 0.960; model vs market ll -0.0097, base vs market -0.0091",
+      "plain_summary": "Leave-one-season-out fit of favourite composite coasting trait on the opener cover probability, subset all; log loss gain per game vs base, negative is worse",
+      "probability_positive": 0.066,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 4746,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mod28_coasting_trait.py",
+      "standard_error": null
+    },
+    "mod28_fit_oe_abs_spread_ge7": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or positive control; reliability above its permutation null for two of three traits; fit cells are LOSO and unresolved below power, not a resolved wrong sign",
+      "closing_ground": null,
+      "description": "Team coasting trait from Q4 drives while leading by 8+ (pass over expected, seconds per play, points per drive vs yardline expectation), prior games only",
+      "effect": -0.008070054605046114,
+      "effect_units": "log_loss_improvement",
+      "family": "mod28_coasting_trait",
+      "interval": [
+        -0.011419724429814206,
+        -0.004764210209068282
+      ],
+      "league": "nfl",
+      "notes": "LOSO coefficients [-0.0446, -0.1559, 0.0244, -0.0757, 0.011, -0.0474]; permutation p 1.000; model vs market ll -0.0315, base vs market -0.0234",
+      "plain_summary": "Leave-one-season-out fit of favourite pass rate over expected coasting trait on the opener cover probability, subset abs_spread_ge7; log loss gain per game vs base, negative is worse",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.33409231273088025,
+      "sample_blocks": 6,
+      "sample_games": 1374,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mod28_coasting_trait.py",
+      "standard_error": null
+    },
+    "mod28_fit_oe_all": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or positive control; reliability above its permutation null for two of three traits; fit cells are LOSO and unresolved below power, not a resolved wrong sign",
+      "closing_ground": null,
+      "description": "Team coasting trait from Q4 drives while leading by 8+ (pass over expected, seconds per play, points per drive vs yardline expectation), prior games only",
+      "effect": -0.0007475641875748336,
+      "effect_units": "log_loss_improvement",
+      "family": "mod28_coasting_trait",
+      "interval": [
+        -0.001175179997367379,
+        -0.0003123788482667334
+      ],
+      "league": "nfl",
+      "notes": "LOSO coefficients [0.0237, -0.0046, 0.0473, 0.0131, 0.0277, 0.0462]; permutation p 0.990; model vs market ll -0.0098, base vs market -0.0091",
+      "plain_summary": "Leave-one-season-out fit of favourite pass rate over expected coasting trait on the opener cover probability, subset all; log loss gain per game vs base, negative is worse",
+      "probability_positive": 0.0025,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.33409231273088025,
+      "sample_blocks": 6,
+      "sample_games": 4746,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mod28_coasting_trait.py",
+      "standard_error": null
+    },
+    "mod28_fit_ppd_abs_spread_ge7": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or positive control; reliability above its permutation null for two of three traits; fit cells are LOSO and unresolved below power, not a resolved wrong sign",
+      "closing_ground": null,
+      "description": "Team coasting trait from Q4 drives while leading by 8+ (pass over expected, seconds per play, points per drive vs yardline expectation), prior games only",
+      "effect": -0.0035817783757039635,
+      "effect_units": "log_loss_improvement",
+      "family": "mod28_coasting_trait",
+      "interval": [
+        -0.0050599927022168,
+        -0.002082168118704963
+      ],
+      "league": "nfl",
+      "notes": "LOSO coefficients [0.0215, -0.0399, 0.0678, -0.008, -0.0001, 0.0804]; permutation p 0.983; model vs market ll -0.0270, base vs market -0.0234",
+      "plain_summary": "Leave-one-season-out fit of favourite points per drive coasting trait on the opener cover probability, subset abs_spread_ge7; log loss gain per game vs base, negative is worse",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.1990650747820045,
+      "sample_blocks": 6,
+      "sample_games": 1374,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mod28_coasting_trait.py",
+      "standard_error": null
+    },
+    "mod28_fit_ppd_all": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or positive control; reliability above its permutation null for two of three traits; fit cells are LOSO and unresolved below power, not a resolved wrong sign",
+      "closing_ground": null,
+      "description": "Team coasting trait from Q4 drives while leading by 8+ (pass over expected, seconds per play, points per drive vs yardline expectation), prior games only",
+      "effect": -0.0010494267047780326,
+      "effect_units": "log_loss_improvement",
+      "family": "mod28_coasting_trait",
+      "interval": [
+        -0.001374551950506329,
+        -0.0007263195469187267
+      ],
+      "league": "nfl",
+      "notes": "LOSO coefficients [0.0026, -0.0122, -0.0032, -0.0317, 0.0192, 0.0416]; permutation p 0.997; model vs market ll -0.0101, base vs market -0.0091",
+      "plain_summary": "Leave-one-season-out fit of favourite points per drive coasting trait on the opener cover probability, subset all; log loss gain per game vs base, negative is worse",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.1990650747820045,
+      "sample_blocks": 6,
+      "sample_games": 4746,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mod28_coasting_trait.py",
+      "standard_error": null
+    },
+    "mod28_fit_sec_abs_spread_ge7": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or positive control; reliability above its permutation null for two of three traits; fit cells are LOSO and unresolved below power, not a resolved wrong sign",
+      "closing_ground": null,
+      "description": "Team coasting trait from Q4 drives while leading by 8+ (pass over expected, seconds per play, points per drive vs yardline expectation), prior games only",
+      "effect": -0.0006931090465818003,
+      "effect_units": "log_loss_improvement",
+      "family": "mod28_coasting_trait",
+      "interval": [
+        -0.005207057456517407,
+        0.0040727103715258485
+      ],
+      "league": "nfl",
+      "notes": "LOSO coefficients [0.1895, 0.1811, 0.2536, 0.1265, 0.1997, 0.0751]; permutation p 0.710; model vs market ll -0.0241, base vs market -0.0234",
+      "plain_summary": "Leave-one-season-out fit of favourite seconds per play coasting trait on the opener cover probability, subset abs_spread_ge7; log loss gain per game vs base, negative is worse",
+      "probability_positive": 0.4235,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.30996117581099825,
+      "sample_blocks": 6,
+      "sample_games": 1374,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mod28_coasting_trait.py",
+      "standard_error": null
+    },
+    "mod28_fit_sec_all": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or positive control; reliability above its permutation null for two of three traits; fit cells are LOSO and unresolved below power, not a resolved wrong sign",
+      "closing_ground": null,
+      "description": "Team coasting trait from Q4 drives while leading by 8+ (pass over expected, seconds per play, points per drive vs yardline expectation), prior games only",
+      "effect": -0.0012625156215625036,
+      "effect_units": "log_loss_improvement",
+      "family": "mod28_coasting_trait",
+      "interval": [
+        -0.002192073600697832,
+        -0.00033791659013490547
+      ],
+      "league": "nfl",
+      "notes": "LOSO coefficients [0.0608, 0.0625, 0.0889, 0.068, 0.0656, -0.0056]; permutation p 1.000; model vs market ll -0.0104, base vs market -0.0091",
+      "plain_summary": "Leave-one-season-out fit of favourite seconds per play coasting trait on the opener cover probability, subset all; log loss gain per game vs base, negative is worse",
+      "probability_positive": 0.0165,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.30996117581099825,
+      "sample_blocks": 6,
+      "sample_games": 4746,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mod28_coasting_trait.py",
+      "standard_error": null
+    },
+    "mod28_reliability_ext_oe": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or positive control; reliability above its permutation null for two of three traits; fit cells are LOSO and unresolved below power, not a resolved wrong sign",
+      "closing_ground": null,
+      "description": "Team coasting trait from Q4 drives while leading by 8+ (pass over expected, seconds per play, points per drive vs yardline expectation), prior games only",
+      "effect": 0.3868383142057089,
+      "effect_units": "correlation",
+      "family": "mod28_coasting_trait",
+      "interval": [
+        0.2907620000355329,
+        0.4766570840201617
+      ],
+      "league": "nfl",
+      "notes": "n team-seasons 492; raw half correlation 0.240; permutation null SD 0.045",
+      "plain_summary": "Split-half reliability (Spearman-Brown) of the coasting trait oe, 2009-2025 extension ordered by game id, 90% bootstrap interval, permutation p 0.0",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.3868383142057089,
+      "sample_blocks": 492,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/mod28_coasting_trait.py",
+      "standard_error": null
+    },
+    "mod28_reliability_ext_ppd": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or positive control; reliability above its permutation null for two of three traits; fit cells are LOSO and unresolved below power, not a resolved wrong sign",
+      "closing_ground": null,
+      "description": "Team coasting trait from Q4 drives while leading by 8+ (pass over expected, seconds per play, points per drive vs yardline expectation), prior games only",
+      "effect": 0.14865294629490478,
+      "effect_units": "correlation",
+      "family": "mod28_coasting_trait",
+      "interval": [
+        0.029648986901160926,
+        0.25529782214138874
+      ],
+      "league": "nfl",
+      "notes": "n team-seasons 492; raw half correlation 0.080; permutation null SD 0.044",
+      "plain_summary": "Split-half reliability (Spearman-Brown) of the coasting trait ppd, 2009-2025 extension ordered by game id, 90% bootstrap interval, permutation p 0.081",
+      "probability_positive": 0.984,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.14865294629490478,
+      "sample_blocks": 492,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/mod28_coasting_trait.py",
+      "standard_error": null
+    },
+    "mod28_reliability_ext_sec": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or positive control; reliability above its permutation null for two of three traits; fit cells are LOSO and unresolved below power, not a resolved wrong sign",
+      "closing_ground": null,
+      "description": "Team coasting trait from Q4 drives while leading by 8+ (pass over expected, seconds per play, points per drive vs yardline expectation), prior games only",
+      "effect": 0.1467452940013773,
+      "effect_units": "correlation",
+      "family": "mod28_coasting_trait",
+      "interval": [
+        -0.01953138077782552,
+        0.28736987881850723
+      ],
+      "league": "nfl",
+      "notes": "n team-seasons 492; raw half correlation 0.079; permutation null SD 0.043",
+      "plain_summary": "Split-half reliability (Spearman-Brown) of the coasting trait sec, 2009-2025 extension ordered by game id, 90% bootstrap interval, permutation p 0.036",
+      "probability_positive": 0.932,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.1467452940013773,
+      "sample_blocks": 492,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/mod28_coasting_trait.py",
+      "standard_error": null
+    },
+    "mod28_reliability_oe": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or positive control; reliability above its permutation null for two of three traits; fit cells are LOSO and unresolved below power, not a resolved wrong sign",
+      "closing_ground": null,
+      "description": "Team coasting trait from Q4 drives while leading by 8+ (pass over expected, seconds per play, points per drive vs yardline expectation), prior games only",
+      "effect": 0.33409231273088025,
+      "effect_units": "correlation",
+      "family": "mod28_coasting_trait",
+      "interval": [
+        0.17522903325229736,
+        0.45783611437432004
+      ],
+      "league": "nfl",
+      "notes": "n team-seasons 235; raw half correlation 0.201; permutation null SD 0.066",
+      "plain_summary": "Split-half reliability (Spearman-Brown) of the coasting trait pass rate over expected, odd/even games within team-season, 90% bootstrap interval, permutation p 0.001",
+      "probability_positive": 0.9995,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.33409231273088025,
+      "sample_blocks": 235,
+      "sample_games": 1291,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "scripts/mod28_coasting_trait.py",
+      "standard_error": null
+    },
+    "mod28_reliability_ppd": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or positive control; reliability above its permutation null for two of three traits; fit cells are LOSO and unresolved below power, not a resolved wrong sign",
+      "closing_ground": null,
+      "description": "Team coasting trait from Q4 drives while leading by 8+ (pass over expected, seconds per play, points per drive vs yardline expectation), prior games only",
+      "effect": 0.1990650747820045,
+      "effect_units": "correlation",
+      "family": "mod28_coasting_trait",
+      "interval": [
+        0.04305784136477301,
+        0.33502916083522305
+      ],
+      "league": "nfl",
+      "notes": "n team-seasons 235; raw half correlation 0.111; permutation null SD 0.063",
+      "plain_summary": "Split-half reliability (Spearman-Brown) of the coasting trait points per drive, odd/even games within team-season, 90% bootstrap interval, permutation p 0.0915",
+      "probability_positive": 0.978,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.1990650747820045,
+      "sample_blocks": 235,
+      "sample_games": 1291,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "scripts/mod28_coasting_trait.py",
+      "standard_error": null
+    },
+    "mod28_reliability_sec": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism or positive control; reliability above its permutation null for two of three traits; fit cells are LOSO and unresolved below power, not a resolved wrong sign",
+      "closing_ground": null,
+      "description": "Team coasting trait from Q4 drives while leading by 8+ (pass over expected, seconds per play, points per drive vs yardline expectation), prior games only",
+      "effect": 0.30996117581099825,
+      "effect_units": "correlation",
+      "family": "mod28_coasting_trait",
+      "interval": [
+        0.11977942030328481,
+        0.4533256220137753
+      ],
+      "league": "nfl",
+      "notes": "n team-seasons 235; raw half correlation 0.183; permutation null SD 0.065",
+      "plain_summary": "Split-half reliability (Spearman-Brown) of the coasting trait seconds per play, odd/even games within team-season, 90% bootstrap interval, permutation p 0.0065",
+      "probability_positive": 0.9945,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.30996117581099825,
+      "sample_blocks": 235,
+      "sample_games": 1291,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "scripts/mod28_coasting_trait.py",
+      "standard_error": null
+    }
+  }
+}

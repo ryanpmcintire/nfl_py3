@@ -1,0 +1,173 @@
+{
+  "family": "xlg12_cfb_retro2026",
+  "signals": {
+    "xlg12_base_retro2026_bovada_open": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Corrects the 2026-11-03 cells that fed the captured closing line to the model and graded at the opener, which follows the open-to-close move; six correlated cells; binomial SE vs 50 percent; no admissible closure ground.",
+      "closing_ground": null,
+      "description": "XLG-12 base frozen CFB rule, Bovada 2026 weeks 1-9, opener spread as model input and as grade line, accuracy minus 50; retrospective, opener rows with spreadOpen and overUnderOpen only.",
+      "effect": -4.303278688524593,
+      "effect_units": "accuracy_points",
+      "family": "xlg12_cfb_retro2026",
+      "interval": [
+        -8.739530244608002,
+        0.13297286755881554
+      ],
+      "league": "cfb",
+      "notes": "Retrospective only; corrected 2026-11-03 after truncation test and provider opener audit.",
+      "plain_summary": "College test of the frozen rule on games already played this season with the opening line as input; informational only, not a forward result.",
+      "probability_positive": 0.028634593735413605,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 488,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/xlg12_cfb_forward/retro2026_openinput_predictions.csv",
+      "standard_error": 2.2633936510629633
+    },
+    "xlg12_base_retro2026_draftkings_open": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Corrects the 2026-11-03 cells that fed the captured closing line to the model and graded at the opener, which follows the open-to-close move; six correlated cells; binomial SE vs 50 percent; no admissible closure ground.",
+      "closing_ground": null,
+      "description": "XLG-12 base frozen CFB rule, DraftKings 2026 weeks 1-9, opener spread as model input and as grade line, accuracy minus 50; retrospective, opener rows with spreadOpen and overUnderOpen only.",
+      "effect": -4.823529411764705,
+      "effect_units": "accuracy_points",
+      "family": "xlg12_cfb_retro2026",
+      "interval": [
+        -9.577227662476831,
+        -0.06983116105257814
+      ],
+      "league": "cfb",
+      "notes": "Retrospective only; corrected 2026-11-03 after truncation test and provider opener audit.",
+      "plain_summary": "College test of the frozen rule on games already played this season with the opening line as input; informational only, not a forward result.",
+      "probability_positive": 0.0233620761670969,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 425,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/xlg12_cfb_forward/retro2026_openinput_predictions.csv",
+      "standard_error": 2.42535625036333
+    },
+    "xlg12_cv_retro2026_bovada_open": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Corrects the 2026-11-03 cells that fed the captured closing line to the model and graded at the opener, which follows the open-to-close move; six correlated cells; binomial SE vs 50 percent; no admissible closure ground.",
+      "closing_ground": null,
+      "description": "XLG-12 cv frozen CFB rule, Bovada 2026 weeks 1-9, opener spread as model input and as grade line, accuracy minus 50; retrospective, opener rows with spreadOpen and overUnderOpen only.",
+      "effect": -4.098360655737704,
+      "effect_units": "accuracy_points",
+      "family": "xlg12_cfb_retro2026",
+      "interval": [
+        -8.534612211821113,
+        0.33789090034570446
+      ],
+      "league": "cfb",
+      "notes": "Retrospective only; corrected 2026-11-03 after truncation test and provider opener audit.",
+      "plain_summary": "College test of the frozen rule on games already played this season with the opening line as input; informational only, not a forward result.",
+      "probability_positive": 0.03509249598324632,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 488,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/xlg12_cfb_forward/retro2026_openinput_predictions.csv",
+      "standard_error": 2.2633936510629633
+    },
+    "xlg12_cv_retro2026_draftkings_open": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Corrects the 2026-11-03 cells that fed the captured closing line to the model and graded at the opener, which follows the open-to-close move; six correlated cells; binomial SE vs 50 percent; no admissible closure ground.",
+      "closing_ground": null,
+      "description": "XLG-12 cv frozen CFB rule, DraftKings 2026 weeks 1-9, opener spread as model input and as grade line, accuracy minus 50; retrospective, opener rows with spreadOpen and overUnderOpen only.",
+      "effect": -5.529411764705882,
+      "effect_units": "accuracy_points",
+      "family": "xlg12_cfb_retro2026",
+      "interval": [
+        -10.283110015418009,
+        -0.7757135139937557
+      ],
+      "league": "cfb",
+      "notes": "Retrospective only; corrected 2026-11-03 after truncation test and provider opener audit.",
+      "plain_summary": "College test of the frozen rule on games already played this season with the opening line as input; informational only, not a forward result.",
+      "probability_positive": 0.011308741863606975,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 425,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/xlg12_cfb_forward/retro2026_openinput_predictions.csv",
+      "standard_error": 2.42535625036333
+    },
+    "xlg12_slope_retro2026_bovada_open": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Corrects the 2026-11-03 cells that fed the captured closing line to the model and graded at the opener, which follows the open-to-close move; six correlated cells; binomial SE vs 50 percent; no admissible closure ground.",
+      "closing_ground": null,
+      "description": "XLG-12 slope frozen CFB rule, Bovada 2026 weeks 1-9, opener spread as model input and as grade line, accuracy minus 50; retrospective, opener rows with spreadOpen and overUnderOpen only.",
+      "effect": -4.303278688524593,
+      "effect_units": "accuracy_points",
+      "family": "xlg12_cfb_retro2026",
+      "interval": [
+        -8.739530244608002,
+        0.13297286755881554
+      ],
+      "league": "cfb",
+      "notes": "Retrospective only; corrected 2026-11-03 after truncation test and provider opener audit.",
+      "plain_summary": "College test of the frozen rule on games already played this season with the opening line as input; informational only, not a forward result.",
+      "probability_positive": 0.028634593735413605,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 488,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/xlg12_cfb_forward/retro2026_openinput_predictions.csv",
+      "standard_error": 2.2633936510629633
+    },
+    "xlg12_slope_retro2026_draftkings_open": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Corrects the 2026-11-03 cells that fed the captured closing line to the model and graded at the opener, which follows the open-to-close move; six correlated cells; binomial SE vs 50 percent; no admissible closure ground.",
+      "closing_ground": null,
+      "description": "XLG-12 slope frozen CFB rule, DraftKings 2026 weeks 1-9, opener spread as model input and as grade line, accuracy minus 50; retrospective, opener rows with spreadOpen and overUnderOpen only.",
+      "effect": -4.823529411764705,
+      "effect_units": "accuracy_points",
+      "family": "xlg12_cfb_retro2026",
+      "interval": [
+        -9.577227662476831,
+        -0.06983116105257814
+      ],
+      "league": "cfb",
+      "notes": "Retrospective only; corrected 2026-11-03 after truncation test and provider opener audit.",
+      "plain_summary": "College test of the frozen rule on games already played this season with the opening line as input; informational only, not a forward result.",
+      "probability_positive": 0.0233620761670969,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 425,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/xlg12_cfb_forward/retro2026_openinput_predictions.csv",
+      "standard_error": 2.42535625036333
+    }
+  }
+}

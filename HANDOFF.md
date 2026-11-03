@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T18:22:00.299602+00:00`
+Refreshed at: `2026-11-03T18:41:48.680366+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-03T18:22:00.299602+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `21d370e0629c` — Week 9 card published with pool-line notes; 15 new backlog rows; wave 3 results
-- Pending change set: 285 paths
+- Baseline commit: `2c39b603b907` — Dashboard fixed in place (phone layout, text sizes, labels) plus pool outlook panel; research units
+- Pending change set: 277 paths
   - ` M config/source_policies.json`
   - `M  docs/findings.html`
   - `M  docs/history.html`
   - `M  docs/index.html`
   - `M  docs/lanes/backlog-all-2026-11-02.md`
   - ` M docs/lanes/engine-patch-queue-2026-11-03.md`
-  - `M  docs/lanes/mkt-21-mkt21-line-path-shape.md`
-  - ` M docs/lanes/mod-28-mod28-late-compression.md`
-  - `M  docs/lanes/mod-29-mod29-hour-rest.md`
-  - `M  docs/lanes/mod-30-mod30-public-ratings.md`
-  - `A  docs/lanes/mod24-pooled-sweep-2026-11-03.md`
-  - `M  docs/lanes/pool-02-pool02-entrant-skill.md`
+  - `M  docs/lanes/mod-28-mod28-late-compression.md`
+  - `M  docs/lanes/mod24-more-games-2026-11-03.md`
   - ` M docs/lanes/sim-12-sim12-ingame-exits.md`
-  - ` M docs/lanes/sim-13-sim13-defensive-load.md`
-  - `M  docs/lanes/sim-14-sim14-coach-aggression.md`
+  - `M  docs/lanes/sim-13-sim13-defensive-load.md`
+  - `M  docs/lanes/sim-15-sim15-weather-calls.md`
   - ` M docs/lanes/sim08-spec-a-terminal-2026-11-03.md`
   - ` M docs/lanes/sim09-tier-a-runs-2026-11-03.md`
-  - `M  docs/lanes/ui-21-ui21-pool-outlook.md`
   - `M  docs/lanes/ui20-2026-11-03.md`
-  - `M  docs/lanes/xlg-10-xlg10-pooled-addone.md`
-  - ...and 265 more
+  - `M  docs/lanes/xlg-12-xlg12-cfb-shadow-forward.md`
+  - `M  docs/model.html`
+  - `A  registry/weak_signals/mod24_pooled_era_check.json`
+  - `A  registry/weak_signals/mod28_coasting_trait.json`
+  - `A  registry/weak_signals/sim13_defensive_fatigue.json`
+  - `A  registry/weak_signals/sim15_weather_calls.json`
+  - ...and 257 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

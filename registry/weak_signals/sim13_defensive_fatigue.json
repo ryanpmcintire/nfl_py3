@@ -1,0 +1,257 @@
+{
+  "family": "sim13_defensive_fatigue",
+  "signals": {
+    "sim13_clock_cum_def_epa": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Opponent EPA per play vs defence snaps so far per 10, within-quarter clock control, game-by-defence FE",
+      "effect": 0.0319,
+      "effect_units": "epa_per_play",
+      "family": "sim13_defensive_fatigue",
+      "interval": [
+        0.0183,
+        0.0471
+      ],
+      "league": "nfl",
+      "notes": "unit2 25 looks; placebo with same control +0.0103 [-0.0017,0.0225]; quarter splits still move together",
+      "plain_summary": "With within-quarter clock control defence snaps still raise opponent EPA, but placebo shrinks the gap to about 0.02.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 4500,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim13/cells_unit2.csv",
+      "standard_error": null
+    },
+    "sim13_def_fatigue_cum_def_epa": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Opponent EPA per play vs defence cumulative snaps defended at drive start, per 10 snaps, game-by-defence fixed effect",
+      "effect": 0.0224,
+      "effect_units": "epa_per_play",
+      "family": "sim13_defensive_fatigue",
+      "interval": [
+        0.0089,
+        0.0377
+      ],
+      "league": "nfl",
+      "notes": "28 looks; quarter splits are within-quarter time artifacts (placebo matches)",
+      "plain_summary": "Offence gains about 0.02 EPA per play per 10 extra defender snaps within a game; placebo own-offence snaps is -0.002.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 4500,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim13/cells.csv",
+      "standard_error": 0.00735
+    },
+    "sim13_def_fatigue_placebo_cum_off_epa": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Placebo: offence own cumulative snaps vs its EPA per play, per 10 snaps",
+      "effect": -0.0016,
+      "effect_units": "epa_per_play",
+      "family": "sim13_defensive_fatigue",
+      "interval": [
+        -0.0136,
+        0.0094
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Placebo is flat.",
+      "probability_positive": 0.385,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 4500,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim13/cells.csv",
+      "standard_error": 0.00587
+    },
+    "sim13_dose_top_tercile_epa": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Top-tercile slope (>38 snaps) of opponent EPA per play per 10 defended snaps",
+      "effect": 0.042,
+      "effect_units": "epa_per_play",
+      "family": "sim13_defensive_fatigue",
+      "interval": [
+        0.0277,
+        0.0582
+      ],
+      "league": "nfl",
+      "notes": "lower terciles -0.0068, +0.0051; placebo top +0.0148; nonlinear, concentrated above 38 snaps",
+      "plain_summary": "Effect shows mainly after about 38 defended snaps; flat below.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 4500,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim13/cells_unit2.csv",
+      "standard_error": null
+    },
+    "sim13_drive_points_against": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Points scored on drive vs defence snaps so far per 10, drive level",
+      "effect": -0.1036,
+      "effect_units": "epa_per_play",
+      "family": "sim13_defensive_fatigue",
+      "interval": [
+        -0.1944,
+        -0.019
+      ],
+      "league": "nfl",
+      "notes": "placebo -0.2521 [-0.3152,-0.1957]; main minus placebo about +0.15 points; drive-level outcome has no time control beyond el",
+      "plain_summary": "Drive points against fall with snaps defended, but offence's own snaps fall more; no fatigue read at drive level.",
+      "probability_positive": 0.005,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 4500,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim13/cells_unit2.csv",
+      "standard_error": null
+    },
+    "sim13_unit3_diff_loose_above38": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Defence snaps minus own-offence snaps above 38 snaps, baseline controls, same plays",
+      "effect": -0.0039,
+      "effect_units": "epa_per_play",
+      "family": "sim13_defensive_fatigue",
+      "interval": [
+        -0.0273,
+        0.0166
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Above the knot the defence-load slope is not distinguishable from its own offence's snaps; strong-control version flips sign (+0.163) because the two counts are 98 percent collinear, so the difference is not identified.",
+      "probability_positive": 0.385,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim13/cells_unit3.csv",
+      "standard_error": 0.0123
+    },
+    "sim13_unit3_diff_strong_above38": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Same, with drive-index FE and score-by-time controls",
+      "effect": 0.1628,
+      "effect_units": "epa_per_play",
+      "family": "sim13_defensive_fatigue",
+      "interval": [
+        0.1367,
+        0.1868
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Sign flips with controls; collinearity R2 0.98; LOSO folds all about 0.16 but unidentified.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim13/cells_unit3.csv",
+      "standard_error": null
+    },
+    "sim13_unit4_shock_A_joint": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "SIM-13 exogenous shock A_joint on next opponent drive EPA",
+      "effect": -0.0046,
+      "effect_units": "epa_per_play",
+      "family": "sim13_defensive_fatigue",
+      "interval": [
+        -0.0152,
+        0.0057
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Shock effect on opponent next-drive EPA per play; unresolved",
+      "probability_positive": 0.2,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim13/cells_unit4.csv",
+      "standard_error": null
+    },
+    "sim13_unit4_shock_B_joint": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "SIM-13 exogenous shock B_joint on next opponent drive EPA",
+      "effect": 0.0007,
+      "effect_units": "epa_per_play",
+      "family": "sim13_defensive_fatigue",
+      "interval": [
+        -0.0043,
+        0.006
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Shock effect on opponent next-drive EPA per play; unresolved",
+      "probability_positive": 0.56,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/sim13/cells_unit4.csv",
+      "standard_error": null
+    }
+  }
+}
