@@ -1,0 +1,33 @@
+{
+  "family": "lead104_revision_path",
+  "signals": {
+    "lead104_w7_residual_revision_sign_vs_cover": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "LEAD-104 unit 1: sign of read revision residual (Tuesday to deadline view, after removing market move) vs cover at pool line, Week 7, 13 decisive games, 7 agree, 1 look",
+      "effect": 3.85,
+      "effect_units": "accuracy_points",
+      "family": "lead104_revision_path",
+      "interval": [
+        -26.9,
+        26.9
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Week 7 only: the part of the read's revision that the line move does not explain agreed with the cover side in 7 of 13 games; far too few games to say anything.",
+      "probability_positive": 0.61,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 13,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "scripts/lead104_revision_path.py",
+      "standard_error": null
+    }
+  }
+}

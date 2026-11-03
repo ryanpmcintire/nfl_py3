@@ -496,7 +496,9 @@ def _field_week_texts(
         if points.empty:
             continue
         beaten = float((points < wins).mean())
-        texts.append((week, f"beat {beaten:.0%} of entries; field median {points.median():g} wins"))
+        texts.append(
+            (week, f"beat {beaten:.0%} of entries; the typical entry won {points.median():g}")
+        )
     return tuple(texts)
 
 
@@ -547,8 +549,9 @@ def _leader_split(
     week_word = "week" if covered == 1 else "weeks"
     game_word = "game" if len(games) == 1 else "games"
     text = (
-        f"Where we split from the leader: {len(games)} {game_word}, they won {leader_won}, "
-        f"we won {ours_won}. Picks for the entry that led the pool were only captured for "
+        f"Where we split from the leader: {len(games)} {game_word} where the leader "
+        f"and our card took opposite sides. The leader was right on {leader_won}, we were "
+        f"right on {ours_won}. Picks for the entry that led the pool were only captured for "
         f"{covered} {week_word} (Weeks {min(weeks_covered)} to {max(weeks_covered)}), so later "
         "weeks are not counted."
     )
