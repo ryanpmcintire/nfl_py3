@@ -1113,6 +1113,11 @@ class Engine:
 
             self.sit = Situational(os.environ["SIM10_SITUATIONAL"].split(","))
         self.drlam = float(os.environ.get("SIM10_DRLAM", "1.0"))
+        self.olx = None
+        self.olt = None
+        self.orng = None
+        if os.environ.get("SIM10_OLEXIT") == "1":
+            self.olx = json.loads((REPO / "artifacts" / "sim12" / "ol_exit.json").read_text())
         self.stslope = self.koseason = None
         if os.environ.get("SIM10_STSLOPE") == "1" or os.environ.get("SIM10_KOSEASON") == "1":
             tb = np.load(REPO / "artifacts" / "sim06" / "start_tables.npz")
@@ -1344,6 +1349,12 @@ class Engine:
             cand = o
         return cand[rng.integers(len(cand))]
 
+    def ol_shift(self, pos, hf, base, secs):
+        if self.olt is None:
+            return 0.0
+        el = np.inf if hf == 3 else 3600.0 - (base + secs)
+        return self.olx["epa_per_play_shift"] / self.s * int((self.olt[pos] <= el).sum())
+
     def run_half(
         self, rng, hf, pos, yl, secs, sc, base, xq, season, evs, pls, ot_rule=None, week=9.0
     ):
@@ -1360,7 +1371,7 @@ class Engine:
                     math.log1p(secs),
                     tos[pos],
                     tos[other],
-                    xq[pos],
+                    xq[pos] + self.ol_shift(pos, hf, base, secs),
                     season,
                     week,
                 ]
@@ -1464,6 +1475,12 @@ class Engine:
         sc = [0.0, 0.0]
         evs, pls = [], []
         xq = [(lat[0][0] + lat[1][1]) / self.s, (lat[1][0] + lat[0][1]) / self.s]
+        if self.olx is not None:
+            n = 2 * self.olx["slots"]
+            gone = self.orng.random(n) < self.olx["hazard_per_starter"]
+            at = self.orng.random(n) * self.olx["exit_window_elapsed_seconds"]
+            at = np.where(gone, at, np.inf)
+            self.olt = [at[: self.olx["slots"]], at[self.olx["slots"] :]]
         o = self.opening(1, season, rng)
         recv1 = 0 if rng.random() < 0.5 else 1
         sc[recv1] += o[4]
@@ -1622,6 +1639,12 @@ def sim_world(task):
     ilines = []
     if ilab:
         eng.il = []
+    if eng.olx is not None:
+        eng.orng = np.random.default_rng(
+            np.random.SeedSequence(
+                entropy=wseed.entropy, spawn_key=(*wseed.spawn_key, eng.olx["stream_key"])
+            )
+        )
     rng = np.random.default_rng(wseed)
     lat = gen.gen_world_latents(rng, n_seasons, fit, setting)
     gseeds = wseed.spawn(n_seasons)
@@ -2492,6 +2515,7 @@ def cmd_sim(a):
     os.environ["SIM10_LATENT"] = a.latent
     os.environ["SIM10_Q4DEC"] = a.q4dec
     os.environ["SIM10_SITUATIONAL"] = a.sit
+    os.environ["SIM10_OLEXIT"] = str(int(a.olexit))
     os.environ["SIM10_FGDEC"] = a.fgdec
     os.environ["SIM10_FORM"] = str(int(a.form))
     os.environ["SIM10_HECARRY"] = str(int(a.hecarry))
@@ -2625,6 +2649,7 @@ def main():
     s.add_argument("--st", default="")
     s.add_argument("--fgdec", default="")
     s.add_argument("--sit", default="")
+    s.add_argument("--olexit", type=int, default=0)
     s.add_argument("--q4dec", default=str(OUT / "q4dec_fg.json"))
     s.add_argument("--latent", default=str(OUT / "latent_fit_2009_25.json"))
     s.add_argument("--label", default="sim10")
