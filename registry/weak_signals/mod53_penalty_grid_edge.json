@@ -1,0 +1,173 @@
+{
+  "family": "mod53_penalty_grid_edge",
+  "signals": {
+    "mod53_unit1_intercept_only_control_sbr_2011_2019_accuracy_diff": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model intercept_only_control, paired vs base ridge alpha 10, 2020-2025; 1135-1096 vs 1142-1089.",
+      "effect": -0.31376064545047067,
+      "effect_units": "accuracy_points",
+      "family": "mod53_penalty_grid_edge",
+      "interval": [
+        -1.8050745246962374,
+        1.3374944271065536
+      ],
+      "league": "nfl",
+      "notes": "Base model, same 88 inputs, past-only weekly refits, opener input; selection by inner leave-one-season-out; three arms (A extended penalty grid, P principal components 1..30, I intercept-only control) by two eras, six looks.",
+      "plain_summary": "Choosing the base model's shrinkage or rank inside each past-only window moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.329,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod53_unit1/report.json",
+      "standard_error": null
+    },
+    "mod53_unit1_intercept_only_control_tuesday_2020_2025_accuracy_diff": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model intercept_only_control, paired vs base ridge alpha 10, 2020-2025; 756-747 vs 802-701.",
+      "effect": -3.0605455755156354,
+      "effect_units": "accuracy_points",
+      "family": "mod53_penalty_grid_edge",
+      "interval": [
+        -3.820816864295125,
+        -2.264685067232838
+      ],
+      "league": "nfl",
+      "notes": "Base model, same 88 inputs, past-only weekly refits, opener input; selection by inner leave-one-season-out; three arms (A extended penalty grid, P principal components 1..30, I intercept-only control) by two eras, six looks.",
+      "plain_summary": "Choosing the base model's shrinkage or rank inside each past-only window moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod53_unit1/report.json",
+      "standard_error": null
+    },
+    "mod53_unit1_reduced_rank_pca_inner_loso_sbr_2011_2019_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model reduced_rank_pca_inner_loso, paired vs base ridge alpha 10, 2020-2025; 1132-1099 vs 1142-1089.",
+      "effect": -0.44822949350067237,
+      "effect_units": "accuracy_points",
+      "family": "mod53_penalty_grid_edge",
+      "interval": [
+        -2.0664869721473496,
+        1.4719329441187687
+      ],
+      "league": "nfl",
+      "notes": "Base model, same 88 inputs, past-only weekly refits, opener input; selection by inner leave-one-season-out; three arms (A extended penalty grid, P principal components 1..30, I intercept-only control) by two eras, six looks.",
+      "plain_summary": "Choosing the base model's shrinkage or rank inside each past-only window moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.28775,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod53_unit1/report.json",
+      "standard_error": null
+    },
+    "mod53_unit1_reduced_rank_pca_inner_loso_tuesday_2020_2025_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model reduced_rank_pca_inner_loso, paired vs base ridge alpha 10, 2020-2025; 766-737 vs 802-701.",
+      "effect": -2.395209580838323,
+      "effect_units": "accuracy_points",
+      "family": "mod53_penalty_grid_edge",
+      "interval": [
+        -4.135338345864661,
+        -0.7649513212795549
+      ],
+      "league": "nfl",
+      "notes": "Base model, same 88 inputs, past-only weekly refits, opener input; selection by inner leave-one-season-out; three arms (A extended penalty grid, P principal components 1..30, I intercept-only control) by two eras, six looks.",
+      "plain_summary": "Choosing the base model's shrinkage or rank inside each past-only window moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.0003,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod53_unit1/report.json",
+      "standard_error": null
+    },
+    "mod53_unit1_ridge_extended_grid_inner_loso_sbr_2011_2019_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model ridge_extended_grid_inner_loso, paired vs base ridge alpha 10, 2020-2025; 1131-1100 vs 1142-1089.",
+      "effect": -0.49305244285073957,
+      "effect_units": "accuracy_points",
+      "family": "mod53_penalty_grid_edge",
+      "interval": [
+        -1.664417453891138,
+        0.7606263982102909
+      ],
+      "league": "nfl",
+      "notes": "Base model, same 88 inputs, past-only weekly refits, opener input; selection by inner leave-one-season-out; three arms (A extended penalty grid, P principal components 1..30, I intercept-only control) by two eras, six looks.",
+      "plain_summary": "Choosing the base model's shrinkage or rank inside each past-only window moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.2069,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2231,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod53_unit1/report.json",
+      "standard_error": null
+    },
+    "mod53_unit1_ridge_extended_grid_inner_loso_tuesday_2020_2025_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Base model ridge_extended_grid_inner_loso, paired vs base ridge alpha 10, 2020-2025; 768-735 vs 802-701.",
+      "effect": -2.2621423819028608,
+      "effect_units": "accuracy_points",
+      "family": "mod53_penalty_grid_edge",
+      "interval": [
+        -2.8326745718050064,
+        -1.6286644951140066
+      ],
+      "league": "nfl",
+      "notes": "Base model, same 88 inputs, past-only weekly refits, opener input; selection by inner leave-one-season-out; three arms (A extended penalty grid, P principal components 1..30, I intercept-only control) by two eras, six looks.",
+      "plain_summary": "Choosing the base model's shrinkage or rank inside each past-only window moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod53_unit1/report.json",
+      "standard_error": null
+    }
+  }
+}

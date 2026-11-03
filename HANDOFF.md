@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T23:07:59.499508+00:00`
+Refreshed at: `2026-11-03T23:08:18.487029+00:00`
 
 ## Start here
 
@@ -21,14 +21,11 @@ Refreshed at: `2026-11-03T23:07:59.499508+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `364d7a440f79` — Dashboard round 11: no model name in the command row, 'the line ends in a half point', consistent History wording ('Share that covered', 'Who covered', 'our card'), no duplicate strongest-test line; ENG-60 neutral-site audit clean (home field zeroed at neutral sites; 0 orientation mismatches)
-- Pending change set: 254 paths
+- Baseline commit: `c36c289aba2f` — Republish the site with the latest settled results
+- Pending change set: 251 paths
   - ` M config/source_policies.json`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
   - ` M docs/lanes/mod-53-ridge-penalty-grid-edge-and-reduced-rank.md`
-  - `M  docs/model.html`
+  - `A  registry/weak_signals/mod53_penalty_grid_edge.json`
   - ` M scripts/sim10_drive.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
@@ -43,7 +40,10 @@ Refreshed at: `2026-11-03T23:07:59.499508+00:00`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
   - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
   - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
-  - ...and 234 more
+  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
+  - ...and 231 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
