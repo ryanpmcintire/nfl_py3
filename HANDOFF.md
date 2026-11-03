@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T22:05:07.419305+00:00`
+Refreshed at: `2026-11-03T22:05:12.670354+00:00`
 
 ## Start here
 
@@ -21,10 +21,10 @@ Refreshed at: `2026-11-03T22:05:07.419305+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `1ba64da6de52` — ENG-53 trait reliability table (51 rows; PER-14 rows recomputed with one shared estimator and match; 39 rows reported-only pending per-group outputs)
+- Baseline commit: `95ec02a1e35b` — Master lane state
 - Pending change set: 255 paths
+  - `M  HANDOFF.md`
   - ` M config/source_policies.json`
-  - `M  docs/lanes/backlog-all-2026-11-02.md`
   - ` M docs/lanes/mod-46-favourite-lead-skew.md`
   - ` M docs/lanes/ui20-2026-11-03.md`
   - ` M registry/weak_signals/xlg10_pooled_addone.json`
