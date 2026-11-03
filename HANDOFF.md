@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T16:28:08.661780+00:00`
+Refreshed at: `2026-11-03T16:28:51.493296+00:00`
 
 ## Start here
 
@@ -21,16 +21,18 @@ Refreshed at: `2026-11-03T16:28:08.661780+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `ea1e551b11ed` — ROADMAP reconciled with 2026-11-03 measurements (25 rows annotated)
-- Pending change set: 255 paths
-  - `M  HANDOFF.md`
+- Baseline commit: `7df524d80d9d` — Forward pooling declaration for rows that cannot reach power in 2026
+- Pending change set: 257 paths
   - ` M docs/findings.html`
-  - `A  docs/forward_pooling_declaration_2026-11-03.md`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - ` M docs/lanes/mod10-graph-reliability-2026-11-03.md`
+  - `M  docs/lanes/mod10-graph-reliability-2026-11-03.md`
+  - ` M docs/lanes/sim08-simulator-rebuild.md`
   - ` M docs/model.html`
+  - `M  registry/weak_signals/mod10_graph_term.json`
+  - `M  registry/weak_signals/sim08_market_anchored.json`
   - ` M scripts/capture_scheduler.py`
+  - `A  scripts/mod10_graph_edge.py`
   - ` M scripts/mod25d_variance.py`
   - ` M scripts/mod25e_desp.py`
   - ` M scripts/mod25e_rulestr.py`
@@ -41,9 +43,7 @@ Refreshed at: `2026-11-03T16:28:08.661780+00:00`
   - ` M scripts/sim09_urgency.py`
   - ` M scripts/sim10_drive.py`
   - `?? an.csv`
-  - `?? data/pool_observables/20261103T130853Z/manifest.json`
-  - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - ...and 235 more
+  - ...and 237 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

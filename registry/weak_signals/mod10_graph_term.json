@@ -1,6 +1,174 @@
 {
   "family": "mod10_graph_term",
   "signals": {
+    "graph edge term acc all": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "QB-receiver pair edge term, scored 2023-2025 decisive games vs base 416-383, arm 423-376",
+      "effect": 0.8761,
+      "effect_units": "accuracy_points",
+      "family": "mod10_graph_term",
+      "interval": [
+        -1.005,
+        2.7535
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "QB-receiver edge term: small positive accuracy, no gain in probability scores",
+      "probability_positive": 0.79525,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/mod10_graph_term/report_edge.json",
+      "standard_error": null
+    },
+    "graph edge term acc qb change": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Edge term, QB-change games only, arm 93-92 vs base 89-96",
+      "effect": 2.1622,
+      "effect_units": "accuracy_points",
+      "family": "mod10_graph_term",
+      "interval": [
+        -1.6952,
+        6.9621
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "QB-receiver edge term: small positive accuracy, no gain in probability scores",
+      "probability_positive": 0.817,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 185,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/mod10_graph_term/report_edge.json",
+      "standard_error": null
+    },
+    "graph edge term brier all": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "QB-receiver pair edge term, 2023-2025 decisive games",
+      "effect": -0.000234,
+      "effect_units": "brier_improvement",
+      "family": "mod10_graph_term",
+      "interval": [
+        -0.001425,
+        0.001062
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "QB-receiver edge term: small positive accuracy, no gain in probability scores",
+      "probability_positive": 0.32525,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/mod10_graph_term/report_edge.json",
+      "standard_error": null
+    },
+    "graph edge term brier qb change": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Edge term, QB-change games only",
+      "effect": -0.000216,
+      "effect_units": "brier_improvement",
+      "family": "mod10_graph_term",
+      "interval": [
+        -0.003633,
+        0.003278
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "QB-receiver edge term: small positive accuracy, no gain in probability scores",
+      "probability_positive": 0.4675,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 185,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/mod10_graph_term/report_edge.json",
+      "standard_error": null
+    },
+    "graph edge term ll all": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "QB-receiver pair edge term, 2023-2025 decisive games",
+      "effect": -0.000553,
+      "effect_units": "log_loss_improvement",
+      "family": "mod10_graph_term",
+      "interval": [
+        -0.002961,
+        0.00204
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "QB-receiver edge term: small positive accuracy, no gain in probability scores",
+      "probability_positive": 0.30575,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/mod10_graph_term/report_edge.json",
+      "standard_error": null
+    },
+    "graph edge term ll qb change": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Edge term, QB-change games only",
+      "effect": -0.001018,
+      "effect_units": "log_loss_improvement",
+      "family": "mod10_graph_term",
+      "interval": [
+        -0.008678,
+        0.006383
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "QB-receiver edge term: small positive accuracy, no gain in probability scores",
+      "probability_positive": 0.41825,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 185,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/mod10_graph_term/report_edge.json",
+      "standard_error": null
+    },
     "graph term warm-up fix acc": {
       "category": "modeling",
       "classification": "unresolved_below_power",

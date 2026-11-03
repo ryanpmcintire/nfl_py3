@@ -840,6 +840,34 @@
       ],
       "source": "artifacts/sim08_market_anchored/main/negcoef_decompose.json",
       "standard_error": 0.2075
+    },
+    "sim08_na_within_line_anchor_miss_coef": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground: whole interval is negative but folds share the same games and the sign has no named mechanism; within-line permutation p 0.007; between-line component -0.07 SE 0.41",
+      "closing_ground": null,
+      "description": "Sim cover logit with its per-line mean removed (within-line component, anchor miss plus MC noise) on cover, non-push games; between-line component carries nothing",
+      "effect": -0.5829,
+      "effect_units": "logit_coefficient",
+      "family": "sim08_market_anchored",
+      "interval": [
+        -1.0552,
+        -0.1106
+      ],
+      "league": "nfl",
+      "notes": "Localisation look. Within-line sd 0.215 logit v MC 0.104; miss in sim mean margin v line sd 1.4 pts beyond MC; y on miss -0.056 logit/pt SE 0.033; favourite overshoot +1.0 pt",
+      "plain_summary": "The simulator's inverted cover read comes from game-to-game variation within the same line, not from any line or key-number group",
+      "probability_positive": 0.008,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim08_market_anchored/main/negcoef_cells3.json",
+      "standard_error": 0.241
     }
   }
 }
