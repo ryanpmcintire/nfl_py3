@@ -1,0 +1,341 @@
+{
+  "family": "eng51_open_pool_rerun",
+  "signals": {
+    "eng51_lead66_u2_log_model_centred_vs_market_openpool": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Opener-built pool rerun; interval spans zero or positive direction, no admissible closing ground. Confound: pool dropped 1999-2010 and unmatched seasons.",
+      "closing_ground": null,
+      "description": "2011-2019 log model_centred_lattice vs market_residual, pool rebuilt from SBR open",
+      "effect": 0.07792931972127805,
+      "effect_units": "log_loss_improvement",
+      "family": "eng51_open_pool_rerun",
+      "interval": [
+        0.05914917965199603,
+        0.09529702203920265
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2301,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "tests/scratch/eng51/lead66_unit2_open.py",
+      "standard_error": null
+    },
+    "eng51_lead66_u2_log_model_centred_vs_served_openpool": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Opener-built pool rerun; interval spans zero or positive direction, no admissible closing ground. Confound: pool dropped 1999-2010 and unmatched seasons.",
+      "closing_ground": null,
+      "description": "2011-2019 log model_centred_lattice vs served_lattice, pool rebuilt from SBR open",
+      "effect": 0.0004966832544771286,
+      "effect_units": "log_loss_improvement",
+      "family": "eng51_open_pool_rerun",
+      "interval": [
+        -0.007032432027678735,
+        0.008077599877612881
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.5475,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2301,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "tests/scratch/eng51/lead66_unit2_open.py",
+      "standard_error": null
+    },
+    "eng51_lead66_u2_log_served_vs_market_openpool": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Opener-built pool rerun; interval spans zero or positive direction, no admissible closing ground. Confound: pool dropped 1999-2010 and unmatched seasons.",
+      "closing_ground": null,
+      "description": "2011-2019 log served_lattice vs market_residual, pool rebuilt from SBR open",
+      "effect": 0.0774326364668009,
+      "effect_units": "log_loss_improvement",
+      "family": "eng51_open_pool_rerun",
+      "interval": [
+        0.060260324570709026,
+        0.09524259684747409
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2301,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "tests/scratch/eng51/lead66_unit2_open.py",
+      "standard_error": null
+    },
+    "eng51_lead66_u2_rps_model_centred_vs_market_openpool": {
+      "category": "control",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Whole interval on the wrong side of zero; same sign as the close-pool read. Pool shrunk to 2009+ opener rows (confound).",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "2011-2019 rps model_centred_lattice vs market_residual, pool rebuilt from SBR open",
+      "effect": -0.38009877926488456,
+      "effect_units": "rps_improvement",
+      "family": "eng51_open_pool_rerun",
+      "interval": [
+        -0.5449258629035615,
+        -0.2496966908933083
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2301,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "tests/scratch/eng51/lead66_unit2_open.py",
+      "standard_error": null
+    },
+    "eng51_lead66_u2_rps_model_centred_vs_served_openpool": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Opener-built pool rerun; interval spans zero or positive direction, no admissible closing ground. Confound: pool dropped 1999-2010 and unmatched seasons.",
+      "closing_ground": null,
+      "description": "2011-2019 rps model_centred_lattice vs served_lattice, pool rebuilt from SBR open",
+      "effect": -0.007710367965132638,
+      "effect_units": "rps_improvement",
+      "family": "eng51_open_pool_rerun",
+      "interval": [
+        -0.020783038450001106,
+        0.008717453765746376
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.1575,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2301,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "tests/scratch/eng51/lead66_unit2_open.py",
+      "standard_error": null
+    },
+    "eng51_lead66_u2_rps_served_vs_market_openpool": {
+      "category": "control",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Whole interval on the wrong side of zero; same sign as the close-pool read. Pool shrunk to 2009+ opener rows (confound).",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "2011-2019 rps served_lattice vs market_residual, pool rebuilt from SBR open",
+      "effect": -0.37238841129975186,
+      "effect_units": "rps_improvement",
+      "family": "eng51_open_pool_rerun",
+      "interval": [
+        -0.5516479136695863,
+        -0.23121844108931036
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2301,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "tests/scratch/eng51/lead66_unit2_open.py",
+      "standard_error": null
+    },
+    "eng51_mod24_u8_kalshi_combined_vs_served_openpool": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Pool rebuilt from SBR open 2011-2019 and opener 2020-2024; 2025 only, leave-one-week-out; interval spans zero, no admissible closing ground. Confound: pool shrunk to 2011+.",
+      "closing_ground": null,
+      "description": "Kalshi served+market fitted term minus served, opener-built pool",
+      "effect": -2.996255,
+      "effect_units": "accuracy_points",
+      "family": "eng51_open_pool_rerun",
+      "interval": [
+        -10.075468,
+        4.150943
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.192,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "tests/scratch/eng51/mod24_u8_grade_deadline_open.py",
+      "standard_error": null
+    },
+    "eng51_mod24_u8_kalshi_market_vs_50_openpool": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Pool rebuilt from SBR open 2011-2019 and opener 2020-2024; 2025 only, leave-one-week-out; interval spans zero, no admissible closing ground. Confound: pool shrunk to 2011+.",
+      "closing_ground": null,
+      "description": "Kalshi deadline-tilt market side v 50 pct, opener-built pool",
+      "effect": 2.808989,
+      "effect_units": "accuracy_points",
+      "family": "eng51_open_pool_rerun",
+      "interval": [
+        -3.817527,
+        9.191176
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.79425,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "tests/scratch/eng51/mod24_u8_grade_deadline_open.py",
+      "standard_error": null
+    },
+    "eng51_mod24_u8_kalshi_market_vs_served_openpool": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Pool rebuilt from SBR open 2011-2019 and opener 2020-2024; 2025 only, leave-one-week-out; interval spans zero, no admissible closing ground. Confound: pool shrunk to 2011+.",
+      "closing_ground": null,
+      "description": "Kalshi market side minus served side, opener-built pool",
+      "effect": -1.123596,
+      "effect_units": "accuracy_points",
+      "family": "eng51_open_pool_rerun",
+      "interval": [
+        -9.558823,
+        7.19697
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.38725,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "tests/scratch/eng51/mod24_u8_grade_deadline_open.py",
+      "standard_error": null
+    },
+    "eng51_mod24_u8_poly_combined_vs_served_openpool": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Pool rebuilt from SBR open 2011-2019 and opener 2020-2024; 2025 only, leave-one-week-out; interval spans zero, no admissible closing ground. Confound: pool shrunk to 2011+.",
+      "closing_ground": null,
+      "description": "Polymarket served+market fitted term minus served, opener-built pool",
+      "effect": -11.176471,
+      "effect_units": "accuracy_points",
+      "family": "eng51_open_pool_rerun",
+      "interval": [
+        -17.526458,
+        -5.202312
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 170,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "tests/scratch/eng51/mod24_u8_grade_deadline_open.py",
+      "standard_error": null
+    },
+    "eng51_mod24_u8_poly_market_vs_50_openpool": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Pool rebuilt from SBR open 2011-2019 and opener 2020-2024; 2025 only, leave-one-week-out; interval spans zero, no admissible closing ground. Confound: pool shrunk to 2011+.",
+      "closing_ground": null,
+      "description": "Polymarket deadline-tilt market side v 50 pct, opener-built pool",
+      "effect": 1.176471,
+      "effect_units": "accuracy_points",
+      "family": "eng51_open_pool_rerun",
+      "interval": [
+        -5.789764,
+        8.386733
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.61325,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 170,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "tests/scratch/eng51/mod24_u8_grade_deadline_open.py",
+      "standard_error": null
+    },
+    "eng51_mod24_u8_poly_market_vs_served_openpool": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Pool rebuilt from SBR open 2011-2019 and opener 2020-2024; 2025 only, leave-one-week-out; interval spans zero, no admissible closing ground. Confound: pool shrunk to 2011+.",
+      "closing_ground": null,
+      "description": "Polymarket market side minus served side, opener-built pool",
+      "effect": -1.764706,
+      "effect_units": "accuracy_points",
+      "family": "eng51_open_pool_rerun",
+      "interval": [
+        -13.63755,
+        10.844725
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.39025,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 170,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "tests/scratch/eng51/mod24_u8_grade_deadline_open.py",
+      "standard_error": null
+    }
+  }
+}

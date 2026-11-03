@@ -1,0 +1,145 @@
+{
+  "family": "mkt23_move_decomposition",
+  "signals": {
+    "mkt23_one_team_follow_vs_50": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "n 109; by season {'2023': [36, 0.4722222222222222], '2024': [40, 0.625], '2025': [33, 0.6363636363636364]}; split-half rates {'even_game_ids': 0.5818181818181818, 'odd_game_ids': 0.5740740740740741}; graded at opener, move direction cover rate minus 50",
+      "closing_ground": null,
+      "description": "Tuesday noon to deadline consensus spread and total moves split into pure side, one-team, two-team same-direction, two-team opposite; follow-rate vs 50 and one-team minus two-team contrast; 5 looks, graded at opener",
+      "effect": 7.798165137614679,
+      "effect_units": "accuracy_points",
+      "family": "mkt23_move_decomposition",
+      "interval": [
+        -2.293577981651376,
+        16.972477064220183
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether spread moves that come with one-team versus two-team implied total moves are followed by the final margin more often, graded at the opener.",
+      "probability_positive": 0.952,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/mkt23/decomposition.json",
+      "standard_error": null
+    },
+    "mkt23_one_team_minus_two_team_same": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "by season {'2023': -7.707355242566516, '2024': 5.555555555555558, '2025': 15.360501567398115}; primary declared contrast",
+      "closing_ground": null,
+      "description": "Tuesday noon to deadline consensus spread and total moves split into pure side, one-team, two-team same-direction, two-team opposite; follow-rate vs 50 and one-team minus two-team contrast; 5 looks, graded at opener",
+      "effect": 4.066821854032588,
+      "effect_units": "accuracy_points",
+      "family": "mkt23_move_decomposition",
+      "interval": [
+        -7.254667031813416,
+        15.884682094116569
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether spread moves that come with one-team versus two-team implied total moves are followed by the final margin more often, graded at the opener.",
+      "probability_positive": 0.7625,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/mkt23/decomposition.json",
+      "standard_error": null
+    },
+    "mkt23_pure_side_follow_vs_50": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "n 140; by season {'2023': [31, 0.5161290322580645], '2024': [43, 0.5348837209302325], '2025': [66, 0.5606060606060606]}; split-half rates {'even_game_ids': 0.5142857142857142, 'odd_game_ids': 0.5714285714285714}; graded at opener, move direction cover rate minus 50",
+      "closing_ground": null,
+      "description": "Tuesday noon to deadline consensus spread and total moves split into pure side, one-team, two-team same-direction, two-team opposite; follow-rate vs 50 and one-team minus two-team contrast; 5 looks, graded at opener",
+      "effect": 4.285714285714286,
+      "effect_units": "accuracy_points",
+      "family": "mkt23_move_decomposition",
+      "interval": [
+        -4.285714285714286,
+        12.142857142857142
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether spread moves that come with one-team versus two-team implied total moves are followed by the final margin more often, graded at the opener.",
+      "probability_positive": 0.8275,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/mkt23/decomposition.json",
+      "standard_error": null
+    },
+    "mkt23_two_team_opposite_follow_vs_50": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "n 148; by season {'2023': [62, 0.5483870967741935], '2024': [48, 0.5625], '2025': [38, 0.6052631578947368]}; split-half rates {'even_game_ids': 0.581081081081081, 'odd_game_ids': 0.5540540540540541}; graded at opener, move direction cover rate minus 50",
+      "closing_ground": null,
+      "description": "Tuesday noon to deadline consensus spread and total moves split into pure side, one-team, two-team same-direction, two-team opposite; follow-rate vs 50 and one-team minus two-team contrast; 5 looks, graded at opener",
+      "effect": 6.756756756756757,
+      "effect_units": "accuracy_points",
+      "family": "mkt23_move_decomposition",
+      "interval": [
+        -1.3513513513513513,
+        14.864864864864865
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether spread moves that come with one-team versus two-team implied total moves are followed by the final margin more often, graded at the opener.",
+      "probability_positive": 0.939,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/mkt23/decomposition.json",
+      "standard_error": null
+    },
+    "mkt23_two_team_same_follow_vs_50": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "n 201; by season {'2023': [71, 0.5492957746478874], '2024': [72, 0.5694444444444444], '2025': [58, 0.4827586206896552]}; split-half rates {'even_game_ids': 0.5247524752475248, 'odd_game_ids': 0.55}; graded at opener, move direction cover rate minus 50",
+      "closing_ground": null,
+      "description": "Tuesday noon to deadline consensus spread and total moves split into pure side, one-team, two-team same-direction, two-team opposite; follow-rate vs 50 and one-team minus two-team contrast; 5 looks, graded at opener",
+      "effect": 3.7313432835820897,
+      "effect_units": "accuracy_points",
+      "family": "mkt23_move_decomposition",
+      "interval": [
+        -3.2338308457711444,
+        10.696517412935323
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether spread moves that come with one-team versus two-team implied total moves are followed by the final margin more often, graded at the opener.",
+      "probability_positive": 0.8515,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/mkt23/decomposition.json",
+      "standard_error": null
+    }
+  }
+}

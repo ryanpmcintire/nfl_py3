@@ -1,0 +1,61 @@
+{
+  "family": "pool05_ownership_v2",
+  "signals": {
+    "pool05_ownership_v2_m0h_home_spread_heldout_week": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Home-intercept plus line control for ownership proxy, leave-one-week-out, log loss improvement over 0.6796",
+      "effect": 0.001,
+      "effect_units": "log_loss_improvement",
+      "family": "pool05_ownership_v2",
+      "interval": [
+        -0.002,
+        0.004
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Home-side parametrization of the line-only proxy is marginally better than the model-side one.",
+      "probability_positive": 0.745,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": 121,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_rank_replay/pool05_ownership_v2.json",
+      "standard_error": null
+    },
+    "pool05_ownership_v2_m3_slot_team_heldout_week": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Ownership proxy v2 (home-share logit on line, slot, shrunk team effects), leave-one-week-out, 121 games W1-8, log loss improvement over POOL-03 line-only 0.6796",
+      "effect": -0.0009,
+      "effect_units": "log_loss_improvement",
+      "family": "pool05_ownership_v2",
+      "interval": [
+        -0.0042,
+        0.0024
+      ],
+      "league": "nfl",
+      "notes": "5 cells x 8 folds; primary M3; line-only home-intercept control M0h +0.0010 P+0.745; team split-half r 0.34",
+      "plain_summary": "Slot and team brand effects did not improve the held-out ownership fit over the line-only proxy.",
+      "probability_positive": 0.273,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": 121,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_rank_replay/pool05_ownership_v2.json",
+      "standard_error": null
+    }
+  }
+}
