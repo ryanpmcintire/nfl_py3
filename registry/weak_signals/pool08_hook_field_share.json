@@ -1,0 +1,89 @@
+{
+  "family": "pool08_hook_field_share",
+  "signals": {
+    "pool08_hook_side_cover_vs_model_p": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Hook side cover rate 26-18 minus its model probability, 44 games",
+      "effect": 8.17,
+      "effect_units": "rate_pp",
+      "family": "pool08_hook_field_share",
+      "interval": [
+        -5.89,
+        22.07
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Half-point side covered 26 of 44 versus 50.9 percent expected; consistent with luck",
+      "probability_positive": 0.875,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 44,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_rank_replay/pool08_hook_field_share.json",
+      "standard_error": null
+    },
+    "pool08_hook_side_share_residual": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Field share on hook-favoured side minus POOL-05 proxy, 44 hook games W1-8, permutation p 0.029 within-week",
+      "effect": 7.68,
+      "effect_units": "rate_pp",
+      "family": "pool08_hook_field_share",
+      "interval": [
+        3.22,
+        11.94
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The field picks the half-point side about 7.7 points more often than the line value implies",
+      "probability_positive": 0.9995,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 44,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_rank_replay/pool08_hook_field_share.json",
+      "standard_error": null
+    },
+    "pool08_hook_term_logloss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Ownership proxy with hook-side term vs POOL-05 M0h, leave-one-week-out, entry-weighted log loss, 121 games W1-8 (44 hook)",
+      "effect": 0.00333,
+      "effect_units": "log_loss_improvement",
+      "family": "pool08_hook_field_share",
+      "interval": [
+        -0.00235,
+        0.0086
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Field leans to the half-point side more than the line value implies; adding that term helps the share forecast slightly",
+      "probability_positive": 0.881,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 121,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_rank_replay/pool08_hook_field_share.json",
+      "standard_error": null
+    }
+  }
+}

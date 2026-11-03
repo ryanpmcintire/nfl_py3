@@ -2945,7 +2945,10 @@ def _build_attribution(
         probability_text=game.probability_text,
         rows=tuple(rows),
         net_points=net_points,
-        net_label=f"Net toward {game.pick_team} {game.pick_spread_text}",
+        net_label=(
+            "Our adjustments vs the market line, "
+            f"{'toward' if net_points >= 0 else 'away from'} {game.pick_team}"
+        ),
     )
 
 

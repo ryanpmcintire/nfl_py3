@@ -14,3 +14,7 @@ First unit for one agent: Add the line for games where the sit scenario flips th
 
 ## Open
 Reader text carries no ids or jargon; scenario weights must be keyed to the active model. Zero crossing closes nothing; one fitted probability selects the side.
+
+## Update 2026-11-03 16:58 (agent)
+Part 1 STOPPED: no served artifact stores per-scenario sides or sit probabilities. The PER-10 kernel (injury_scenarios.py) was deleted in b7ed31d and the producer was never built (done/injury-scenario-producer.md). UI-33 needs the producer first; next unit = build and store it keyed to the active model.
+Part 2 DONE: attribution Net = sum of model adjustments from the market-line start, oriented to the pick. Before: "Net toward DEN -2.5 / -1.27 pts". After: "Our adjustments moved the forecast away from DEN versus the market line, by / 1.27 pts" (abs value; direction in words). Files: board_content.py ~2948, board_terminal.py ~1354. Tests 309 passed. Week 9 render not re-quoted (build_site not run).

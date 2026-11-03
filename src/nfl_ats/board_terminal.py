@@ -1351,7 +1351,7 @@ def _attribution_html(dive: GameDive) -> str:
         )
     total = (
         f'<div class="attr-total"><span>{escape(attribution.net_label or "Net")}</span>'
-        f"<b>{attribution.net_points:+.2f} pts</b></div>"
+        f"<b>{abs(attribution.net_points):.2f} pts</b></div>"
         if attribution.net_points is not None
         else ""
     )

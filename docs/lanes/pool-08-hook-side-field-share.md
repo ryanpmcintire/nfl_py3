@@ -14,3 +14,13 @@ First unit for one agent: Join captured field shares to games with a pool half p
 
 ## Open
 Field picks known only for captured weeks; count games before testing. Zero crossing closes nothing; one fitted probability selects the side.
+
+## Unit 1 (2026-11-03 16:59, family pool08_hook_field_share)
+scripts/pool08_hook_field_share.py -> artifacts/pool_rank_replay/pool08_hook_field_share.json. 121 games W1-8, 44 hook (Tuesday market whole, pool = market +-0.5; 18 favour home). Looks: 3 (share residual, hook-term log loss, cover vs model_p).
+- Share on hook side minus POOL-05 M0h proxy (LOWO, pool line): +7.68 pp [3.22, 11.94] P+ 0.9995; within-week permutation (20000) two-sided p 0.029. 7 of 8 weeks positive (W7 -3.2). Field picks the half-point side MORE, not less.
+- Hook term in home-share logit: coefficient 0.24-0.41 per fold; all-game log loss improvement +0.0033 [-0.0024, 0.0086] P+ 0.881.
+- Outcome: hook side covered 26-18 (decisive record) vs mean model_p 0.509: +8.2 pp [-5.9, 22.1] P+ 0.875, perm p 0.29. Not separable from luck.
+- Recorded 3 cells unresolved_below_power.
+- Implication (challenger only): hook sides are over-owned, so hook edges are more shared; the pool-relative term should discount hook-side leverage by the fitted coefficient; no side rule.
+## Next
+Re-run at W9+; add hook coefficient to the pool-objective ownership proxy in POOL-01 replay.

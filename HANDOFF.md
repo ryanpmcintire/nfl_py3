@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T21:57:52.675162+00:00`
+Refreshed at: `2026-11-03T21:59:29.616370+00:00`
 
 ## Start here
 
@@ -21,15 +21,18 @@ Refreshed at: `2026-11-03T21:57:52.675162+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `e5a6deba747f` — Refresh session handoff
-- Pending change set: 251 paths
+- Baseline commit: `e8600486a09e` — XLG-14 unit 1: MOD-41 residual load in CFB is opposite sign and ~1/30 the NFL size (log loss -.00013, P+ .014); not commensurable, NFL signal neither strengthened nor refuted; unresolved
+- Pending change set: 256 paths
   - ` M config/source_policies.json`
-  - `M  docs/lanes/xlg-14-xlg14-cfb-first-discovery.md`
-  - `A  registry/weak_signals/xlg14_mod41_cfb_u1.json`
+  - ` M docs/lanes/mod-46-favourite-lead-skew.md`
+  - `M  docs/lanes/pool-08-hook-side-field-share.md`
+  - `M  docs/lanes/ui-33-pick-depends-on-status.md`
+  - ` M docs/lanes/xlg-14-xlg14-cfb-first-discovery.md`
+  - `A  registry/weak_signals/pool08_hook_field_share.json`
+  - `A  scripts/pool08_hook_field_share.py`
   - ` M scripts/sim10_drive.py`
-  - `A  scripts/xlg14_mod41_cfb.py`
-  - ` M src/nfl_ats/board_content.py`
-  - ` M src/nfl_ats/board_terminal.py`
+  - `M  src/nfl_ats/board_content.py`
+  - `M  src/nfl_ats/board_terminal.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
@@ -40,10 +43,7 @@ Refreshed at: `2026-11-03T21:57:52.675162+00:00`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
-  - ...and 231 more
+  - ...and 236 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
