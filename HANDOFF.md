@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T21:37:38.562601+00:00`
+Refreshed at: `2026-11-03T21:37:44.068626+00:00`
 
 ## Start here
 
@@ -21,10 +21,11 @@ Refreshed at: `2026-11-03T21:37:38.562601+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `2355984fa6d1` — MOD-43 QB learning curve: early-career QBs improve with starts (+.021 EPA per log start, P+ .99) but no pricing gap at the opener (dLL -.00001); SIM-18 lead protection: OC/HC tempo traits highly reliable (split-half .67-.80), sim matches drive length within 3-4%
-- Pending change set: 250 paths
+- Baseline commit: `20e20f34fa9a` — Master lane state
+- Pending change set: 252 paths
+  - `M  HANDOFF.md`
+  - `M  README.md`
   - ` M config/source_policies.json`
-  - `M  docs/lanes/backlog-all-2026-11-02.md`
   - ` M docs/lanes/lead-102-name-blinded-control-read.md`
   - ` M scripts/sim10_drive.py`
   - `?? an.csv`
@@ -42,8 +43,7 @@ Refreshed at: `2026-11-03T21:37:38.562601+00:00`
   - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
   - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
   - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
-  - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
-  - ...and 230 more
+  - ...and 232 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
