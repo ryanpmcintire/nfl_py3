@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T22:20:38.355567+00:00`
+Refreshed at: `2026-11-03T22:21:16.279785+00:00`
 
 ## Start here
 
@@ -21,14 +21,15 @@ Refreshed at: `2026-11-03T22:20:38.355567+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `9d28953563be` — Revert "UI-32: game detail says when the line sits on or next to 3 or 7 and how often games land exactly there (served discrete reader), and whether that landing helps or hurts the pick"
+- Baseline commit: `fad86f253b80` — UI-32 lane: reverted (dead on the calibrated-mass path); next unit named
 - Pending change set: 262 paths
   - ` M config/source_policies.json`
-  - ` M docs/lanes/eng-54-outcome-label-default-audit.md`
-  - ` M docs/lanes/eng-55-pool-line-inference-audit.md`
+  - `M  docs/lanes/eng-54-outcome-label-default-audit.md`
+  - `M  docs/lanes/eng-55-pool-line-inference-audit.md`
+  - ` M docs/lanes/eng-56-final-score-reconciliation.md`
   - ` M docs/lanes/sim-21-drive-length-decomposition.md`
-  - `M  docs/lanes/ui-32-key-number-chip.md`
   - ` M scripts/eng53_reliability.py`
+  - `A  scripts/eng55_pool_line_audit.py`
   - ` M scripts/mod40_ngs_reliability.py`
   - ` M scripts/sim10_drive.py`
   - ` M scripts/sim17_halftime_adjustment.py`
@@ -42,7 +43,6 @@ Refreshed at: `2026-11-03T22:20:38.355567+00:00`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
   - `?? docs/lanes/c-drive-space-2026-10-31.md`
   - `?? docs/lanes/machine-crashes-2026-10-31.md`
-  - `?? docs/lanes/stealmybitcoin-ctf.md`
   - ...and 242 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
