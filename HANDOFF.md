@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T23:18:43.649954+00:00`
+Refreshed at: `2026-11-03T23:19:11.306873+00:00`
 
 ## Start here
 
@@ -21,12 +21,13 @@ Refreshed at: `2026-11-03T23:18:43.649954+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `dfcb0472f312` — MOD-10: graph ratings are mostly duplicate information (R2 .92-.93 on base inputs); margin rating adds nothing; EPA rating leans positive (2014-19 +0.67 P+ .94, 2020-25 +0.20 P+ .60) and corrects existing EPA overshoot; unresolved
+- Baseline commit: `438b5effec16` — Refresh session handoff
 - Pending change set: 252 paths
-  - `M  HANDOFF.md`
   - ` M config/source_policies.json`
+  - `M  docs/lanes/eng-59-moneyline-spread-consistency-audit.md`
   - ` M docs/lanes/mod-53-ridge-penalty-grid-edge-and-reduced-rank.md`
   - ` M docs/lanes/mod-54-mirrored-home-away-training-rows.md`
+  - `A  scripts/eng59_ml_spread_audit.py`
   - ` M scripts/mod53_penalty_grid.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
@@ -42,7 +43,6 @@ Refreshed at: `2026-11-03T23:18:43.649954+00:00`
   - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
   - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
   - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
   - ...and 232 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
