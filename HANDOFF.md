@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T21:47:11.109150+00:00`
+Refreshed at: `2026-11-03T21:48:11.262354+00:00`
 
 ## Start here
 
@@ -21,12 +21,14 @@ Refreshed at: `2026-11-03T21:47:11.109150+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `f4a893a8eb89` — Refresh session handoff
-- Pending change set: 250 paths
+- Baseline commit: `822e95071646` — SIM-15 unit 2: per-game weather joined for the simulator's 2,304 real games in a new file (observed wind on all outdoor games, forecast on 98-99%; identical to unit 1); engine sites cited, hook pending
+- Pending change set: 251 paths
   - ` M config/source_policies.json`
-  - `M  docs/lanes/sim-15-sim15-weather-calls.md`
+  - `M  docs/lanes/pool-07-standings-variance-policy.md`
+  - `A  scripts/pool07_standings_policy.py`
   - ` M scripts/sim10_drive.py`
-  - `A  scripts/sim15_weather_join.py`
+  - ` M scripts/xlg12_predict.py`
+  - ` M scripts/xlg12_score.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
@@ -41,9 +43,7 @@ Refreshed at: `2026-11-03T21:47:11.109150+00:00`
   - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
   - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
   - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
-  - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
-  - ...and 230 more
+  - ...and 231 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
