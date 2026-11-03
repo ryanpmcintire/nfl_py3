@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T22:21:16.279785+00:00`
+Refreshed at: `2026-11-03T22:21:21.055201+00:00`
 
 ## Start here
 
@@ -21,15 +21,13 @@ Refreshed at: `2026-11-03T22:21:16.279785+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `fad86f253b80` — UI-32 lane: reverted (dead on the calibrated-mass path); next unit named
-- Pending change set: 262 paths
+- Baseline commit: `2828455cf8f9` — ENG-55 pool-line audit: captured pool lines match every inference site; Weeks 1-8 hook set equals POOL-08's 44 games (+7.7 pp stands); Week 9 has 9 hooks. ENG-54 outcome-label audit: 17 risky joins; mod33 baseline inflated by name joins (finding survives), sim16 and coach_speak results survive
+- Pending change set: 260 paths
+  - `M  HANDOFF.md`
   - ` M config/source_policies.json`
-  - `M  docs/lanes/eng-54-outcome-label-default-audit.md`
-  - `M  docs/lanes/eng-55-pool-line-inference-audit.md`
   - ` M docs/lanes/eng-56-final-score-reconciliation.md`
   - ` M docs/lanes/sim-21-drive-length-decomposition.md`
   - ` M scripts/eng53_reliability.py`
-  - `A  scripts/eng55_pool_line_audit.py`
   - ` M scripts/mod40_ngs_reliability.py`
   - ` M scripts/sim10_drive.py`
   - ` M scripts/sim17_halftime_adjustment.py`
@@ -43,7 +41,9 @@ Refreshed at: `2026-11-03T22:21:16.279785+00:00`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
   - `?? docs/lanes/c-drive-space-2026-10-31.md`
   - `?? docs/lanes/machine-crashes-2026-10-31.md`
-  - ...and 242 more
+  - `?? docs/lanes/stealmybitcoin-ctf.md`
+  - `?? docs/move_reasons.json`
+  - ...and 240 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
