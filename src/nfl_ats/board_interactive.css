@@ -285,3 +285,4 @@ body[data-interactive-page=findings] main{max-width:1260px;margin:0 auto;box-siz
 .reader-page table.board{min-width:0!important;width:100%}
 .reader-page table.board td{max-width:none;overflow-wrap:anywhere;min-width:0}
 }
+table.board td.market-now .game-sub{white-space:normal;text-align:right;flex-basis:100%;overflow-wrap:anywhere}

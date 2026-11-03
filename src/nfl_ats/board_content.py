@@ -257,13 +257,7 @@ class GameRow:
 
     @property
     def market_move_text(self) -> str:
-        if self.market_now is None:
-            return ""
-        sign = -1.0 if self.pick_team == self.home else 1.0
-        delta = round((self.market_now - self.market_spread) * sign * 2) / 2
-        if delta == 0:
-            return "unchanged since the pool line"
-        return f"{abs(delta):g} {'toward' if delta < 0 else 'against'} {self.pick_team}"
+        return self.market_move_label
 
     @property
     def market_move_label(self) -> str:
@@ -272,7 +266,7 @@ class GameRow:
         sign = -1.0 if self.pick_team == self.home else 1.0
         delta = round((self.market_now - self.market_spread) * sign * 2) / 2
         if delta == 0:
-            return "unchanged"
+            return f"same as the pool line, {self.pick_team} {self.pick_spread_text}"
         abs_d = abs(delta)
         word = (
             "half a point"
@@ -281,8 +275,8 @@ class GameRow:
             if abs_d == 1
             else f"{abs_d:g} points"
         )
-        direction = "toward" if delta < 0 else "against"
-        return f"{word} {direction} {self.pick_team}"
+        side = "better" if delta < 0 else "worse"
+        return f"pool gives {self.pick_team} {self.pick_spread_text}, {word} {side}"
 
     @property
     def flip_line_text(self) -> str:
@@ -2387,7 +2381,7 @@ def _build_prospective_scoreboard(
     settled = played_wins + played_losses + played_pushes
     headline_text = (
         "Prospective record against the same games: the card as played "
-        f"{_record_text(played_wins, played_losses, played_pushes)} vs. the former rule chain "
+        f"{_record_text(played_wins, played_losses, played_pushes)} vs. the previous pick method "
         f"{_record_text(prior_wins, prior_losses, prior_pushes)} -- "
         f"{settled} of {count_noun(len(played), 'recorded game')} settled."
     )
@@ -2751,7 +2745,7 @@ def _build_season_record(
 
 _MAX_ATTRIBUTION_CHANNELS = 4
 
-_PROBABILITY_RULE_LABEL = "Residual-sample calibration shift"
+_PROBABILITY_RULE_LABEL = "Fitted on past seasons, then shifted to match recent results"
 
 _HOME_SIDE_OFFSET_LABEL = "Home-side correction on big spreads"
 

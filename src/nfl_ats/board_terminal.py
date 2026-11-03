@@ -264,9 +264,9 @@ _LOCK_COUNTDOWN_SCRIPT = """
     if (minutes < 1) return "locking now";
     var hours = Math.floor(minutes / 60);
     var days = Math.floor(hours / 24);
-    if (days > 0) return "locks in " + days + "d " + (hours % 24) + "h";
-    if (hours > 0) return "locks in " + hours + "h " + (minutes % 60) + "m";
-    return "locks in " + minutes + "m";
+    if (days > 0) return "in " + days + "d " + (hours % 24) + "h";
+    if (hours > 0) return "in " + hours + "h " + (minutes % 60) + "m";
+    return "in " + minutes + "m";
   }
   function updateCountdowns() {
     var nowMs = Date.now();
@@ -488,7 +488,7 @@ def _headline_section(headline: HeadlineStats) -> str:
         f"{_prospective_scoreboard_html(headline)}"
         "</div></div>"
         '<div class="kpi-grid">'
-        '<div class="kpi"><span class="label">Prior chain &middot; coach &rarr; arrests</span>'
+        '<div class="kpi"><span class="label">Coach-to-arrests chain &middot; prior</span>'
         f'<span class="value muted">{headline.prior_chain_value_text}</span>'
         f'<span class="foot">{escape(headline.prior_chain_caption)}</span></div>'
         '<div class="kpi"><span class="label">Model alone &middot; opener grade baseline</span>'
@@ -921,7 +921,7 @@ def _board_section(content: BoardContent, *, archived: bool = False) -> str:
             else:
                 pick_cell = pick_text
             pick_cell += _flip_pill_html(game)
-            if game.pool_edge_text and not game.final:
+            if game.pool_edge_text and not game.final and game.market_now is None:
                 _edge_size = {0.25: "¼ pt", 0.5: "½ pt", 0.75: "¾ pt"}.get(
                     abs(game.pool_edge), f"{abs(game.pool_edge):g} pts"
                 )
@@ -953,7 +953,7 @@ def _board_section(content: BoardContent, *, archived: bool = False) -> str:
             if game.final and game.cover_result:
                 row_classes.append(f"final-{game.cover_result}")
             conf_cell = _final_outcome_html(game) if game.final else _confidence_meter_html(game)
-            _move_cls = " against" if "against" in game.market_move_text else ""
+            _move_cls = " against" if "worse" in game.market_move_text else ""
             matchup_cell = (
                 f'<a class="row-link" href="#{escape(game.game_id)}" '
                 f'data-game-id="{escape(game.game_id)}" '

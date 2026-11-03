@@ -131,7 +131,7 @@ LEDGER_PROMOTED_CAVEAT = (
 )
 
 CHALLENGER_DISPLAY_NAMES: dict[str, str] = {
-    "mod07_weak_signal_stack": "Model + seven-rule stat stack",
+    "mod07_weak_signal_stack": "Model plus seven small situational rules",
     "hc_year_one_fade_overlay": "Year-one coach fade",
     "best_pick_nomination_v2": "Best Pick with no spread limit",
     "best_pick_nomination_v3": "Best Pick v3 ranker",
@@ -191,7 +191,7 @@ CHALLENGER_DISPLAY_NAMES: dict[str, str] = {
     "turnover_luck_rebound_tilt_overlay": "Turnover-luck rebound tilt",
     "special_teams_return_tilt_overlay": "Elite return-unit tilt",
     "pace_mismatch_dog_tilt_overlay": "Pace-mismatch underdog tilt",
-    "weak_stack_qb_revenge_deadline_drag": "QB-revenge + trade-deadline-drag stack",
+    "weak_stack_qb_revenge_deadline_drag": "QB-revenge plus trade-deadline-drag rules",
     "totals_served_method": "Served-total method (tiebreaker)",
     "specialist_absence_fade_refresh_v1": "Snapper/punter absence fade",
     "late_week_move_follow_refresh_v1": "Follow late-week line moves",
