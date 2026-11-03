@@ -409,13 +409,11 @@ def _header(
 
 
 def _cmd_row(chrome: TickerChrome) -> str:
-
-    method_arg = "market-line"
     suffix = f" {escape(chrome.page_command_suffix)}" if chrome.page_command_suffix else ""
     return (
         '<div class="cmd-row"><span class="prompt">&gt;</span><span>nfl-ats board</span>'
         f'<span class="arg">--season {chrome.season} --week {chrome.week} '
-        f"--model {method_arg}{suffix}</span>"
+        f"{suffix}</span>"
         '<span class="cursor"></span></div>'
     )
 
@@ -1926,11 +1924,9 @@ ARM_SUMMARY_LINE_NAMES = {"close-grade": "closing line", "opener-grade": "openin
 def _plain_arm_summary(sentence: str) -> str:
     kept = []
     for part in sentence.rstrip(".").split(". "):
-        if part.startswith("interval [") or "registry evidence entr" in part:
+        if part.startswith(("interval [", "best evidence ")) or "registry evidence entr" in part:
             continue
-        if part.startswith("best evidence "):
-            part = "Strongest test: " + part.removeprefix("best evidence ")
-        elif part.startswith("registered evidence "):
+        if part.startswith("registered evidence "):
             part = "Likely real: " + part.removeprefix("registered evidence ").removesuffix(
                 " likely real"
             )
@@ -2648,7 +2644,7 @@ def _calibration_html(block: SeasonSoFar) -> str:
         f'<td data-label="Chance the card gave">{escape(band)}</td>'
         f'<td data-label="Picks">{games}</td>'
         f'<td data-label="Average chance given">{escape(stated)}</td>'
-        f'<td data-label="Actually covered">{escape(covered)}</td>'
+        f'<td data-label="Share that covered">{escape(covered)}</td>'
         "</tr>"
         for band, games, stated, covered in block.calibration_rows
     )
@@ -2659,7 +2655,7 @@ def _calibration_html(block: SeasonSoFar) -> str:
         "card gave. Each group is small, so a few games can move its share a lot.</p>"
         '<div class="board-scroll"><table class="board"><thead><tr>'
         "<th>Chance the card gave</th><th>Picks</th><th>Average chance given</th>"
-        f"<th>Actually covered</th></tr></thead><tbody>{body}</tbody></table></div></details>"
+        f"<th>Share that covered</th></tr></thead><tbody>{body}</tbody></table></div></details>"
     )
 
 
@@ -2672,13 +2668,13 @@ def _leader_split_html(block: SeasonSoFar) -> str:
         f'<td data-label="Game">{escape(game)}</td>'
         f'<td data-label="Our side">{escape(ours)}</td>'
         f'<td data-label="Their side">{escape(theirs)}</td>'
-        f'<td data-label="Right">{escape(winner)}</td>'
+        f'<td data-label="Who covered">{escape(winner)}</td>'
         "</tr>"
         for week, game, ours, theirs, winner in block.leader_split_games
     )
     table = (
         '<div class="board-scroll"><table class="board"><thead><tr>'
-        "<th>Week</th><th>Game</th><th>Our side</th><th>Their side</th><th>Right</th>"
+        "<th>Week</th><th>Game</th><th>Our side</th><th>Their side</th><th>Who covered</th>"
         f"</tr></thead><tbody>{body}</tbody></table></div>"
         if body
         else ""

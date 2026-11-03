@@ -549,7 +549,7 @@ def _half_point_week_texts(
                 int(week),
                 f"On the {games} {noun} where the pool's half point beat the books, the crowd "
                 f"took that side {crowd / total:.0%} of the time; that side covered "
-                f"{covered} of {games}; we took it on {ours_on}.",
+                f"{covered} of {games}; our card took it on {ours_on}.",
             )
         )
     return tuple(texts)

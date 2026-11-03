@@ -711,7 +711,7 @@ def _no_push_sentence(home_spread_line: float | None) -> str:
     if home_spread_line is None or not is_half_point_line(home_spread_line):
         return ""
     return (
-        "The line is a half point, so the game cannot finish exactly on it: there are no ties "
+        "The line ends in a half point, so the game cannot finish exactly on it: there are no ties "
         "here, and one side or the other covers."
     )
 

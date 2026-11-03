@@ -634,7 +634,7 @@ def test_half_point_game_says_there_is_no_tie_rather_than_a_zero_push_chance() -
         "gameday": "2026-09-13",
     }
     text = explain_pick({**base, "push_probability": 0.0}).text
-    assert "The line is a half point, so the game cannot finish exactly on it" in text
+    assert "The line ends in a half point, so the game cannot finish exactly on it" in text
     assert "there are no ties here" in text
     assert "in 100" not in text and "0%" not in text and "0.0" not in text
     assert "The line sits" not in text

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T23:01:32.504249+00:00`
+Refreshed at: `2026-11-03T23:06:55.787452+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-03T23:01:32.504249+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `0df4cdc7424d` — SIM-26 unit 3: with the engine's regime bandwidths, late-game score-difference bandwidths are far wider than real games support (last 2 min 178 v 3.2; 2nd-half 18.8 v 7.4); measured bandwidths cut the trailing-minus-leading late TD gap at the draw from .108 to .031
-- Pending change set: 247 paths
-  - `M  HANDOFF.md`
+- Baseline commit: `a6e52414bfef` — Refresh session handoff
+- Pending change set: 257 paths
   - ` M config/source_policies.json`
+  - `M  docs/lanes/eng-60-neutral-site-orientation-audit.md`
+  - ` M docs/lanes/mod-53-ridge-penalty-grid-edge-and-reduced-rank.md`
+  - `M  docs/lanes/ui20-2026-11-03.md`
+  - `A  scripts/eng60_neutral_audit.py`
   - ` M scripts/sim10_drive.py`
-  - ` M src/nfl_ats/board_terminal.py`
+  - `M  src/nfl_ats/board_site_content.py`
+  - `M  src/nfl_ats/board_terminal.py`
+  - `M  src/nfl_ats/card_explanation.py`
+  - `M  tests/test_key_line_pick_read.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
   - `?? docs/lanes/c-drive-space-2026-10-31.md`
   - `?? docs/lanes/machine-crashes-2026-10-31.md`
+  - `?? docs/lanes/mod-10-graph-rating-base-input.md`
   - `?? docs/lanes/stealmybitcoin-ctf.md`
   - `?? docs/move_reasons.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
-  - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
-  - ...and 227 more
+  - ...and 237 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
