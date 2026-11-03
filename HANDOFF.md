@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T21:18:08.592229+00:00`
+Refreshed at: `2026-11-03T21:18:48.775178+00:00`
 
 ## Start here
 
@@ -21,19 +21,16 @@ Refreshed at: `2026-11-03T21:18:08.592229+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `c2afc860897c` — LEAD-103 packet block ablation (one read per block): only the market block clearly exceeds read noise (1.82x [1.04, 2.71]); beat posts 1.39x; others at the noise floor
-- Pending change set: 270 paths
+- Baseline commit: `5f199565e92b` — Dashboard round 5: plain wording on the History week strip ("the typical entry won N") and the leader split ("the leader was right on X, we were right on Y"); LEAD-104 read revision follows the line move (r .885, R2 .78; residual 1.16x revision noise)
+- Pending change set: 267 paths
   - ` M ROADMAP.md`
   - ` M config/source_policies.json`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
   - ` M docs/lanes/backlog-all-2026-11-02.md`
   - ` M docs/lanes/lead-102-name-blinded-control-read.md`
-  - `M  docs/lanes/lead-104-read-revision-path.md`
   - ` M docs/lanes/sim-12-sim12-ingame-exits.md`
-  - `M  docs/lanes/ui20-2026-11-03.md`
-  - `A  registry/weak_signals/lead104_revision_path.json`
-  - `A  scripts/lead104_revision_path.py`
   - ` M scripts/sim10_drive.py`
-  - `M  src/nfl_ats/board_site_content.py`
   - ` M src/nfl_ats/board_terminal.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
@@ -43,7 +40,10 @@ Refreshed at: `2026-11-03T21:18:08.592229+00:00`
   - `?? docs/lanes/lead-106-injury-language-read.md`
   - `?? docs/lanes/machine-crashes-2026-10-31.md`
   - `?? docs/lanes/mkt-24-slot-opener-residual.md`
-  - ...and 250 more
+  - `?? docs/lanes/mkt-25-opener-revision-size.md`
+  - `?? docs/lanes/mod-42-offensive-line-continuity.md`
+  - `?? docs/lanes/mod-43-qb-learning-curve.md`
+  - ...and 247 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
