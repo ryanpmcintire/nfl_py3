@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T21:05:02.510432+00:00`
+Refreshed at: `2026-11-03T21:06:00.811543+00:00`
 
 ## Start here
 
@@ -21,10 +21,10 @@ Refreshed at: `2026-11-03T21:05:02.510432+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `a174b7e4d93f` — POOL-05 ownership v2 (slot and team add nothing; unresolved), MKT-23 move decomposition (one-team implied-total moves follow 57.8%, P+ .95; unresolved), ENG-51 opener-pool reruns (LEAD-66 RPS wrong sign resolved; MOD-24 u8 survives in direction)
-- Pending change set: 252 paths
-  - `M  HANDOFF.md`
+- Baseline commit: `7d20ce783c55` — Refresh session handoff
+- Pending change set: 254 paths
   - ` M config/source_policies.json`
+  - `M  docs/lanes/backlog-all-2026-11-02.md`
   - ` M docs/lanes/mod-41-mod41-cumulative-workload.md`
   - ` M docs/lanes/sim-12-sim12-ingame-exits.md`
   - ` M scripts/forward_terms_week.py`
@@ -43,7 +43,7 @@ Refreshed at: `2026-11-03T21:05:02.510432+00:00`
   - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
   - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
   - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
-  - ...and 232 more
+  - ...and 234 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
