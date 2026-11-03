@@ -2659,6 +2659,32 @@ def _calibration_html(block: SeasonSoFar) -> str:
     )
 
 
+def _side_type_html(block: SeasonSoFar) -> str:
+    if not block.side_type_rows:
+        return ""
+    body = "".join(
+        "<tr>"
+        f'<td data-label="Our pick">{escape(label)}</td>'
+        f'<td data-label="Picks">{games}</td>'
+        f'<td data-label="Record">{escape(record)}</td>'
+        f'<td data-label="Share that covered">{escape(covered)}</td>'
+        f'<td data-label="What luck alone gives">{escape(coin)}</td>'
+        "</tr>"
+        for label, games, record, covered, coin in block.side_type_rows
+    )
+    return (
+        '<details class="policy-note"><summary class="micro" style="cursor:pointer;">'
+        "Does the card do better on favourites or underdogs, at home or on the road?"
+        "</summary>"
+        "<p>Finished picks this season, split by the kind of side the card took. The two "
+        "splits overlap, so each game counts once in each. Small groups swing a lot: read "
+        "the share next to what a coin flip would produce.</p>"
+        '<div class="board-scroll"><table class="board"><thead><tr>'
+        "<th>Our pick</th><th>Picks</th><th>Record</th><th>Share that covered</th>"
+        f"<th>What luck alone gives</th></tr></thead><tbody>{body}</tbody></table></div></details>"
+    )
+
+
 def _leader_split_html(block: SeasonSoFar) -> str:
     if not block.leader_split_text:
         return ""
@@ -2727,6 +2753,7 @@ def _season_so_far_section_html(block: SeasonSoFar | None) -> str:
         f'<p class="policy-note">{escape(block.caveat_text)}</p>',
         f'<p class="policy-note">{escape(block.tiebreaker_text)}</p>',
         _calibration_html(block),
+        _side_type_html(block),
         _leader_split_html(block),
     ]
     if block.challengers:

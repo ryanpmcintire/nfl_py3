@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import html
 import json
+import math
 import re
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field, fields, replace
@@ -442,6 +443,7 @@ class SeasonSoFar:
     leader_split_note: str = ""
     leader_split_games: tuple[tuple[str, str, str, str, str], ...] = ()
     calibration_rows: tuple[tuple[str, int, str, str], ...] = ()
+    side_type_rows: tuple[tuple[str, int, str, str, str], ...] = ()
 
     @property
     def has_rows(self) -> bool:
@@ -709,6 +711,60 @@ def _calibration_rows(
     return tuple(out)
 
 
+COIN_FLIP_RANGE_LEVEL = 0.95
+
+
+def _coin_flip_range(picks: int) -> tuple[int, int]:
+    tail = (1.0 - COIN_FLIP_RANGE_LEVEL) / 2.0
+    cumulative = 0.0
+    low = high = picks
+    low_found = False
+    for wins in range(picks + 1):
+        cumulative += math.comb(picks, wins) / 2**picks
+        if not low_found and cumulative >= tail:
+            low = wins
+            low_found = True
+        if cumulative >= 1.0 - tail:
+            high = wins
+            break
+    return low, high
+
+
+def _side_type_rows(
+    rows: Sequence[HistoryPickRow],
+) -> tuple[tuple[str, int, str, str, str], ...]:
+    graded = []
+    for row in rows:
+        if row.status != "settled" or row.correct is None or row.decision_home_spread is None:
+            continue
+        line = -row.decision_home_spread if row.pick_side == "HOME" else row.decision_home_spread
+        graded.append((line, row.pick_side, bool(row.correct)))
+    groups = (
+        ("Picks on favourites", lambda line, side: line < 0),
+        ("Picks on underdogs", lambda line, side: line > 0),
+        ("Picks on the home team", lambda line, side: side == "HOME"),
+        ("Picks on the road team", lambda line, side: side == "AWAY"),
+    )
+    out = []
+    for label, member in groups:
+        chosen = [won for line, side, won in graded if member(line, side)]
+        if not chosen:
+            continue
+        count = len(chosen)
+        wins = sum(chosen)
+        low, high = _coin_flip_range(count)
+        out.append(
+            (
+                label,
+                count,
+                f"{wins}-{count - wins}",
+                f"{wins / count:.0%}",
+                f"a coin would win between {low} and {high} of these {count}",
+            )
+        )
+    return tuple(out)
+
+
 def _build_season_so_far(
     picks: Sequence[HistoryPickRow],
     assessments: Sequence[ChallengerAssessment],
@@ -779,6 +835,7 @@ def _build_season_so_far(
         leader_split_note=leader_split[1],
         leader_split_games=leader_split[2],
         calibration_rows=_calibration_rows(season_rows),
+        side_type_rows=_side_type_rows(season_rows),
         tuesday_week_records=_week_records(
             [row for row in tuesday_picks if season is None or row.season == season],
             minimum_weeks=1,
