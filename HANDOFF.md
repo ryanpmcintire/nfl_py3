@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T00:35:10.308108+00:00`
+Refreshed at: `2026-11-03T00:35:48.255260+00:00`
 
 ## Start here
 
@@ -21,19 +21,16 @@ Refreshed at: `2026-11-03T00:35:10.308108+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `aea66baccc83` — Refresh the session handoff and README research state
-- Pending change set: 239 paths
+- Baseline commit: `d01e308417b0` — SIM-08: anchor passes on the new engine with held-out-fold design contexts; Amendment 2
+- Pending change set: 236 paths
   - ` M CURRENT_PREDICTIONS.md`
+  - `M  HANDOFF.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/backlog-all-2026-11-02.md`
   - ` M docs/lanes/mod25-v3-sim11-distill.md`
-  - `M  docs/lanes/sim08-simulator-rebuild.md`
   - ` M docs/model.html`
-  - `M  docs/sim08_market_anchored_declaration.md`
   - ` M scripts/mod25_v3_produce.py`
-  - `M  scripts/sim08_market_anchored.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? docs/lanes/c-drive-space-2026-10-31.md`
@@ -43,7 +40,10 @@ Refreshed at: `2026-11-03T00:35:10.308108+00:00`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
   - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - ...and 219 more
+  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
+  - ...and 216 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
