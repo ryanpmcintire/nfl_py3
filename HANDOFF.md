@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T22:09:39.890008+00:00`
+Refreshed at: `2026-11-03T22:10:13.376387+00:00`
 
 ## Start here
 
@@ -21,16 +21,14 @@ Refreshed at: `2026-11-03T22:09:39.890008+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `6bc06bcd04ba` — Home top metric strip in plain words (the script-built strip still carried archive/opener jargon); XLG-10 rerun on the fixed harness (pre-fix accuracy gains for bye and away rest vanish; turnover NFL-only negatives were a closing-line artefact; short-week rises but log loss worse); MOD-46 favourite lead skew: no shape move, trait equals placebo
-- Pending change set: 253 paths
+- Baseline commit: `6613120b3ec9` — MKT-26 move size and dispersion: weak lean (+.31 pts per point of move, P+ .82), no shrink gain in either view; PER-14 unit 2 in-season play-caller changes: traits barely move, offense EPA rises after (regression to the mean, inferred), no market term; unresolved
+- Pending change set: 251 paths
   - ` M config/source_policies.json`
-  - `M  docs/lanes/mkt-26-move-size-dispersion.md`
-  - `M  docs/lanes/per-14-coordinator-mover-portability.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
   - ` M docs/lanes/sim-21-drive-length-decomposition.md`
-  - `A  registry/weak_signals/mkt26_move_dispersion.json`
-  - `A  registry/weak_signals/per14_inseason_playcaller_change_event_study.json`
-  - `A  scripts/mkt26_move_dispersion.py`
-  - `A  scripts/per14_unit2_firings.py`
+  - `M  docs/model.html`
   - ` M scripts/sim10_drive.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
@@ -43,7 +41,9 @@ Refreshed at: `2026-11-03T22:09:39.890008+00:00`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
   - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - ...and 233 more
+  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
+  - ...and 231 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

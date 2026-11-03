@@ -2705,7 +2705,7 @@ const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelect
 
 const main=$('main'),stats=$('section[aria-labelledby="stats-h"]');
 if(!stats || !$('.week-grid')) return;
-const metrics=[['.headline-main .value','Played card · archive','Selected on historical games'],['.kpi:nth-child(2) .value','Model alone · opener','Historical baseline'],['.kpi:nth-child(3) .value','Model · closing line','Separate historical grade']].map(([s,label,note])=>({value:$(s,stats)?.textContent || 'Not yet measured',label,note}));
+const metrics=[['.headline-main .value','Our played card','Past seasons, graded at the opening line'],['.kpi:nth-child(2) .value','Model alone','Past seasons, graded at the opening line'],['.kpi:nth-child(3) .value','Model alone, closing line','Same model, graded at the closing line']].map(([s,label,note])=>({value:$(s,stats)?.textContent || 'Not yet measured',label,note}));
 const intro=document.createElement('div');intro.className='merged-intro';intro.innerHTML='<div><div class="merged-kicker">THE WEEKLY INTELLIGENCE BRIEF</div><h1>Every game. A considered pick.</h1><p>The whole slate on the left. The story behind every pick on the right.</p></div>';main.prepend(intro);
 const strip=document.createElement('div');strip.className='merged-metrics';
 metrics.forEach(m=>{const box=document.createElement('div');box.className='merged-metric';const value=document.createElement('b');value.textContent=m.value;const label=document.createElement('span');label.textContent=m.label;const note=document.createElement('small');note.textContent=m.note;box.append(value,label,note);strip.append(box)});
