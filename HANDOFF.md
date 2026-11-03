@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T22:23:29.097144+00:00`
+Refreshed at: `2026-11-03T22:23:34.510917+00:00`
 
 ## Start here
 
@@ -21,11 +21,11 @@ Refreshed at: `2026-11-03T22:23:29.097144+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `eec1246c1fa2` — SIM-21 unit 2: logging-only tilt trace (SIM10_TILT, flag-off identical to HEAD); defect found: the tilt matches untruncated drive outcomes, then the clock cuts the drawn drive, double-counting clock-cut zero-scores (explains ~60% of the trailing and ~90% of the leading scoring gap)
+- Baseline commit: `c328ac14528f` — Master lane state
 - Pending change set: 261 paths
+  - `M  HANDOFF.md`
   - ` M ROADMAP.md`
   - ` M config/source_policies.json`
-  - `M  docs/lanes/backlog-all-2026-11-02.md`
   - ` M docs/lanes/done/eng-56-final-score-reconciliation.md`
   - ` M docs/lanes/eng-53-trait-reliability-table.md`
   - ` M scripts/eng53_reliability.py`
