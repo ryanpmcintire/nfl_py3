@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T22:44:45.680117+00:00`
+Refreshed at: `2026-11-03T22:46:38.539539+00:00`
 
 ## Start here
 
@@ -21,13 +21,17 @@ Refreshed at: `2026-11-03T22:44:45.680117+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `61d959ad19fd` — MOD-49: MOD-41 sign robust across construction choices, size not (window 3 is the family peak); decision: not served for Week 10, forward-only; any serving test uses a pre-declared averaged construction
-- Pending change set: 249 paths
-  - `M  HANDOFF.md`
+- Baseline commit: `c79082ffa0a3` — Refresh session handoff
+- Pending change set: 254 paths
   - ` M config/source_policies.json`
-  - ` M docs/lanes/mod-50-mod41-early-season-carryover.md`
+  - ` M docs/lanes/mod-49-mod41-construction-sensitivity.md`
+  - `M  docs/lanes/mod-50-mod41-early-season-carryover.md`
   - ` M docs/lanes/sim-21-drive-length-decomposition.md`
+  - ` M docs/lanes/sim-26-prevent-defense-yardage-shape.md`
+  - `A  registry/weak_signals/mod50_mod41_early.json`
+  - `A  scripts/mod50_early_carryover.py`
   - ` M scripts/sim10_drive.py`
+  - ` M src/nfl_ats/dashboard/findings_content.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
@@ -39,11 +43,7 @@ Refreshed at: `2026-11-03T22:44:45.680117+00:00`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
   - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
   - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
-  - ...and 229 more
+  - ...and 234 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

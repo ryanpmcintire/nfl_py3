@@ -1,0 +1,173 @@
+{
+  "family": "mod50_mod41_early",
+  "signals": {
+    "mod50_a_early_interaction": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap; 6 cells (3 variants declared, variant c is the unchanged main term) in family mod50_mod41_early.",
+      "closing_ground": null,
+      "description": "Variant a early-season interaction on the MOD-41 term (main coef -0.0439, early total 0.0208), week-blocked bootstrap",
+      "effect": 0.06466442524714432,
+      "effect_units": "logit_coefficient",
+      "family": "mod50_mod41_early",
+      "interval": [
+        0.021648178033505546,
+        0.11158628112708294
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Tests whether the workload effect behaves differently in the first four weeks.",
+      "probability_positive": 0.999,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod50/unit1_early_carryover.json",
+      "standard_error": null
+    },
+    "mod50_a_early_ll_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap; 6 cells (3 variants declared, variant c is the unchanged main term) in family mod50_mod41_early.",
+      "closing_ground": null,
+      "description": "Variant a (prior-season carry window), early_only LOSO 2020-25 opener grade on served base; decisive 18-23 of 41; in-sample gap 0.0028",
+      "effect": 2.8471728621415338e-06,
+      "effect_units": "log_loss_improvement",
+      "family": "mod50_mod41_early",
+      "interval": [
+        -0.011569037323952192,
+        0.008825223619787716
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Tests whether workload carried into the first weeks adds to the pick probability the card already serves.",
+      "probability_positive": 0.554,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 361,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod50/unit1_early_carryover.json",
+      "standard_error": null
+    },
+    "mod50_a_merged_ll_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap; 6 cells (3 variants declared, variant c is the unchanged main term) in family mod50_mod41_early.",
+      "closing_ground": null,
+      "description": "Variant a (prior-season carry window), merged LOSO 2020-25 opener grade on served base; decisive 98-101 of 199; in-sample gap 0.0002",
+      "effect": 0.0008689330074951318,
+      "effect_units": "log_loss_improvement",
+      "family": "mod50_mod41_early",
+      "interval": [
+        -0.002047792159322867,
+        0.003537387433479333
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Tests whether workload carried into the first weeks adds to the pick probability the card already serves.",
+      "probability_positive": 0.735,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod50/unit1_early_carryover.json",
+      "standard_error": null
+    },
+    "mod50_b_early_interaction": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap; 6 cells (3 variants declared, variant c is the unchanged main term) in family mod50_mod41_early.",
+      "closing_ground": null,
+      "description": "Variant b early-season interaction on the MOD-41 term (main coef -0.0439, early total -0.0122), week-blocked bootstrap",
+      "effect": 0.03170465980084965,
+      "effect_units": "logit_coefficient",
+      "family": "mod50_mod41_early",
+      "interval": [
+        -0.040103795346407026,
+        0.09996291197688599
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Tests whether the workload effect behaves differently in the first four weeks.",
+      "probability_positive": 0.84,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod50/unit1_early_carryover.json",
+      "standard_error": null
+    },
+    "mod50_b_early_ll_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap; 6 cells (3 variants declared, variant c is the unchanged main term) in family mod50_mod41_early.",
+      "closing_ground": null,
+      "description": "Variant b (shorter window min(3, n-1)), early_only LOSO 2020-25 opener grade on served base; decisive 4-7 of 11; in-sample gap 0.0038",
+      "effect": -0.003250825912551991,
+      "effect_units": "log_loss_improvement",
+      "family": "mod50_mod41_early",
+      "interval": [
+        -0.008651247676223328,
+        0.0006318166827036894
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Tests whether workload carried into the first weeks adds to the pick probability the card already serves.",
+      "probability_positive": 0.055,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 361,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod50/unit1_early_carryover.json",
+      "standard_error": null
+    },
+    "mod50_b_merged_ll_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap; 6 cells (3 variants declared, variant c is the unchanged main term) in family mod50_mod41_early.",
+      "closing_ground": null,
+      "description": "Variant b (shorter window min(3, n-1)), merged LOSO 2020-25 opener grade on served base; decisive 161-153 of 314; in-sample gap 0.0003",
+      "effect": 0.0036611273881517192,
+      "effect_units": "log_loss_improvement",
+      "family": "mod50_mod41_early",
+      "interval": [
+        -0.000874841651204225,
+        0.008459129225664129
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Tests whether workload carried into the first weeks adds to the pick probability the card already serves.",
+      "probability_positive": 0.932,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod50/unit1_early_carryover.json",
+      "standard_error": null
+    }
+  }
+}
