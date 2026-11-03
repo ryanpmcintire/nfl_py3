@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T22:02:43.836833+00:00`
+Refreshed at: `2026-11-03T22:02:49.326045+00:00`
 
 ## Start here
 
@@ -21,10 +21,10 @@ Refreshed at: `2026-11-03T22:02:43.836833+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `53be9083d593` — SIM-12 OL exit redesign behind --olexit (measured exit-time CDF; shift redistributed so the league mean is unchanged by construction; flag-off identical to HEAD): Tier B 13->13, 14->13, 13->13, NOT ADOPTED, default off; scoring no longer biased (44.89 v real 44.83)
+- Baseline commit: `5c07bfa5c408` — Master lane state
 - Pending change set: 249 paths
+  - `M  HANDOFF.md`
   - ` M config/source_policies.json`
-  - `M  docs/lanes/backlog-all-2026-11-02.md`
   - ` M docs/lanes/mod-46-favourite-lead-skew.md`
   - ` M docs/lanes/xlg-14-xlg14-cfb-first-discovery.md`
   - `?? an.csv`
