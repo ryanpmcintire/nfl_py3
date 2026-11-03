@@ -12,6 +12,7 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import forward_terms_week as FTW
 import lead99_llm_read as L99
+import live_kickoff
 
 ROOT = L99.ROOT
 ART = ROOT / "artifacts" / "lead106_injury_language"
@@ -485,7 +486,7 @@ def live_inputs(week, view):
         columns=["season", "week", "home_team", "away_team", "kickoff"],
     )
     g = g[(g["season"] == SEASON) & (g["week"] == week)].copy()
-    g["kickoff"] = pd.to_datetime(g["kickoff"], utc=True)
+    g["kickoff"] = live_kickoff.earliest_by_matchup(g)
     g["thursday"] = g["kickoff"].dt.tz_convert("America/New_York").dt.weekday == THURSDAY
     g = g[g["thursday"] if view == "thursday" else ~g["thursday"]]
     g["game_id"] = g["away_team"] + "@" + g["home_team"]

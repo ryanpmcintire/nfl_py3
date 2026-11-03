@@ -16,6 +16,7 @@ for sub in (SCRIPTS, REPO / "src"):
     if str(sub) not in sys.path:
         sys.path.insert(0, str(sub))
 
+import live_kickoff  # noqa: E402
 import mod27_fenced_repairs_replay as base  # noqa: E402
 import pool_relative_move_forward_log as plog  # noqa: E402
 
@@ -262,11 +263,12 @@ def forward(week):
         raise SystemExit(f"no waterfall feed for week {week}")
     quotes = load_decision_quotes(REPO / "data" / "market" / "raw", capture_kind=LIVE_CAPTURE_KIND)
     ids = [g for g in cards.index if g in pool]
+    live = live_kickoff.live_kickoffs().set_index("game_id")["live_kickoff"]
     tuesday = plog._tuesday_market(quotes, set(ids), {g: cards.at[g, "kickoff"] for g in ids})
     lines, results = history()
     rows = []
     for gid in ids:
-        limit = min(now, cards.at[gid, "pick_deadline_utc"])
+        limit = min(now, cards.at[gid, "pick_deadline_utc"], live.get(gid, now))
         hit = feed_row(feeds, gid, limit)
         mkt = tuesday.get(gid, np.nan)
         if (

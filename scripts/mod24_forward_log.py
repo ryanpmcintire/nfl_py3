@@ -5,11 +5,11 @@ import sys
 from datetime import UTC, datetime
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+import live_kickoff
 import mod23_unit3 as u3
 import mod23_unit5 as u5
 
@@ -46,14 +46,12 @@ def sha256_file(path):
 def game_deadlines(frame):
     kickoffs = pd.to_datetime(frame["kickoff"], utc=True)
     lock = sunday_pick_lock(kickoffs)
-    return pd.Series(
-        [pick_deadline(pd.Timestamp(k), lock) for k in kickoffs], index=frame.index
-    )
+    return pd.Series([pick_deadline(pd.Timestamp(k), lock) for k in kickoffs], index=frame.index)
 
 
 def week_frame(features, week):
     sub = features.loc[features["season"].eq(SEASON) & features["week"].eq(week)].copy()
-    sub["kickoff"] = pd.to_datetime(sub["kickoff"], utc=True)
+    sub["kickoff"] = live_kickoff.earliest_by_game_id(sub)
     sub["deadline"] = game_deadlines(sub)
     return sub
 
@@ -68,7 +66,9 @@ def logged_rows():
 
 
 def current_week(features, now):
-    sub = features.loc[features["season"].eq(SEASON) & features["week"].between(FIRST_WEEK, LAST_WEEK)]
+    sub = features.loc[
+        features["season"].eq(SEASON) & features["week"].between(FIRST_WEEK, LAST_WEEK)
+    ]
     kickoffs = pd.to_datetime(sub["kickoff"], utc=True)
     upcoming = sub.loc[kickoffs.gt(now)]
     if upcoming.empty:
@@ -106,7 +106,7 @@ def zero_rows(frame, target, value_cols):
     for game in target.itertuples():
         for team in (game.home_team, game.away_team):
             row = {"game_id": game.game_id, "team": team, "gameday": game.gameday}
-            row.update({c: 0.0 for c in value_cols})
+            row.update(dict.fromkeys(value_cols, 0.0))
             rows.append(row)
     extra = pd.DataFrame(rows)
     return pd.concat([frame, extra], ignore_index=True) if not extra.empty else frame
@@ -116,8 +116,12 @@ def man_zone_terms(features, joined, target):
     classes = u5.MAN_ZONE
     off, dfn = u5.class_tables(joined, "defense_man_zone_type", classes)
     target = target.assign(gameday=pd.to_datetime(target["gameday"]))
-    off = zero_rows(off, target, [c for c in off.columns if c not in ("game_id", "team", "gameday")])
-    dfn = zero_rows(dfn, target, [c for c in dfn.columns if c not in ("game_id", "team", "gameday")])
+    off = zero_rows(
+        off, target, [c for c in off.columns if c not in ("game_id", "team", "gameday")]
+    )
+    dfn = zero_rows(
+        dfn, target, [c for c in dfn.columns if c not in ("game_id", "team", "gameday")]
+    )
     state = u5.rolling_state(off, dfn)
     frame = u5.matchup_terms(state, classes)
     terms = u5.side_terms(features, frame, classes, "cov_mz")
@@ -241,13 +245,21 @@ def record(week, now):
             "line": float(arm.loc[game_id, "spread_line"]),
             "arm_home_cover_probability": p,
             "arm_side": side_of(p),
-            "terms": {c: float(terms.set_index("game_id").loc[game_id, c]) for c in terms.columns if c != "game_id"},
+            "terms": {
+                c: float(terms.set_index("game_id").loc[game_id, c])
+                for c in terms.columns
+                if c != "game_id"
+            },
         }
         if served is not None and game_id in served.index:
             sp = float(served.loc[game_id, "home_cover_probability"])
             row["served_home_cover_probability"] = sp
             row["served_side"] = side_of(sp)
-            row["served_pool_side"] = None if pd.isna(served.loc[game_id, "pool_side"]) else str(served.loc[game_id, "pool_side"])
+            row["served_pool_side"] = (
+                None
+                if pd.isna(served.loc[game_id, "pool_side"])
+                else str(served.loc[game_id, "pool_side"])
+            )
             row["served_line"] = float(served.loc[game_id, "spread_line"])
         rows.append(row)
     if not rows:
@@ -280,7 +292,12 @@ def record(week, now):
     path = RUNS_DIR / f"{SEASON}-week-{week:02d}-{stamp}.json"
     with open(path, "x") as handle:
         handle.write(json.dumps(payload, indent=1, default=str))
-    print(json.dumps({"path": str(path), "logged": [r["game_id"] for r in rows], "refused": refused}, indent=1))
+    print(
+        json.dumps(
+            {"path": str(path), "logged": [r["game_id"] for r in rows], "refused": refused},
+            indent=1,
+        )
+    )
 
 
 def main():
@@ -330,5 +347,15 @@ def current_season_snaps(week):
     folder.mkdir(parents=True, exist_ok=True)
     path = folder / f"snap_counts_{SEASON}_before_week_{int(week):02d}.parquet"
     merged.to_parquet(path)
-    print("snap counts", files[-1].parent.name, "plus", SEASON, "rows", len(fresh), "through week", int(fresh["week"].max()) if len(fresh) else None, flush=True)
+    print(
+        "snap counts",
+        files[-1].parent.name,
+        "plus",
+        SEASON,
+        "rows",
+        len(fresh),
+        "through week",
+        int(fresh["week"].max()) if len(fresh) else None,
+        flush=True,
+    )
     return path

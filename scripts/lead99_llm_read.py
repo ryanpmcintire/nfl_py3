@@ -8,6 +8,7 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
+import live_kickoff
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -301,6 +302,7 @@ def build_packet(week, run_at):
     f, spl = load_splash(week, run_at)
     anchor = datetime.fromisoformat(spl["captured_at_et"])
     games = spl["games"]
+    live = live_kickoff.live_kickoffs().set_index("game_id")["live_kickoff"].dt.tz_convert(ET)
     prev = previous_kickoffs(week, run_at)
     week_start = (
         anchor.astimezone(ET).replace(hour=0, minute=0, second=0, microsecond=0).astimezone(UTC)
@@ -326,7 +328,7 @@ def build_packet(week, run_at):
                 "away": a,
                 "home": h,
                 "kickoff_et": g["kickoff_et"],
-                "deadline_et": deadline_for(kick, anchor).isoformat(),
+                "deadline_et": deadline_for(min(kick, live.get(gid, kick)), anchor).isoformat(),
                 "pool_line": {
                     "home_spread": g["home_spread"],
                     "source": f.name,

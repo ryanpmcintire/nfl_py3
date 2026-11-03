@@ -10,6 +10,7 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+import live_kickoff
 import mod25_forward_q as mfq
 import mod25_wf_forward as mwf
 
@@ -123,7 +124,7 @@ def locked_served(game_ids, deadlines):
 def deadlines_for(features):
     out = {}
     for week, g in features.groupby("week"):  # noqa: B007
-        k = pd.to_datetime(g["kickoff"], utc=True)
+        k = live_kickoff.earliest_by_game_id(g)
         lock = sunday_pick_lock(k)
         for gid, kk in zip(g["game_id"], k, strict=True):
             out[gid] = pick_deadline(kk, lock)

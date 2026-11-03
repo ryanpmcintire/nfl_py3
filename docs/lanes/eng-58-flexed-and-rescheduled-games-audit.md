@@ -15,3 +15,6 @@ First unit for one agent: Compare the schedule row at opener capture with the fi
 
 ## Open
 Rules: audit only, no research verdict; report counts, rows and the exact join; any graded result that changes is re-run and re-recorded through the registry validator, never weakened. Look count and family declared before any sign is seen. Data: nflverse schedules, captured schedule snapshots and opener archive timestamps (local).
+
+## Unit 2 (2026-11-03 18:35 ET, scripts only)
+Added scripts/live_kickoff.py (latest data/raw schedules snapshot, gameday+gametime ET -> UTC). Guards now use min(own kickoff, live): mod24_forward_log.py week_frame, mod25_wfj_forward.py deadlines_for, mod27_pool_offset_observed.py forward limit, forward_terms_week.py main (pre-filter), lead106_injury_language.py live_inputs, lead99_llm_read.py build_packet deadline_et (lead101 inherits via L99.build_packet). Check: tests/scratch/eng58/guard_check.py, Wk9 identical (272/272 rows 2026 unchanged), simulated -8 day move refused by mod24 and mod25. Cadence: schedule snapshots on disk are weekly (Tuesdays: 1006, 1013, 1020, 1027, 1103), no capture_scheduler job found writing them; guard is as fresh as the last weekly snapshot. Next: add a daily schedule-snapshot job if flex detection needs to be faster; mod24 ruff E501 pre-existing (7).

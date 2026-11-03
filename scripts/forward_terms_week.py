@@ -15,6 +15,8 @@ for sub in ("scripts", "src"):
     if str(ROOT / sub) not in sys.path:
         sys.path.insert(0, str(ROOT / sub))
 
+import live_kickoff  # noqa: E402
+
 OUT = ROOT / "artifacts" / "forward_terms"
 SEASON = 2026
 ET = "America/New_York"
@@ -1044,6 +1046,7 @@ def main():
     else:
         games, basemeta = base_card(week)
     if not a.dry:
+        games["kickoff_utc"] = live_kickoff.earliest_by_game_id(games, "kickoff_utc")
         games = games[games.kickoff_utc > pd.Timestamp(now)].reset_index(drop=True)
     if games.empty:
         raise SystemExit(f"week {week}: every game has kicked off; nothing pregame to freeze")
