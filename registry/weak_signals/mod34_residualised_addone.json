@@ -1,0 +1,145 @@
+{
+  "family": "mod34_residualised_addone",
+  "signals": {
+    "mod34_residualised_A_pass_rush_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Served base plus span-residual of A_pass_rush, paired vs base, 2020-2025; 802-701 vs 802-701.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod34_residualised_addone",
+      "interval": [
+        -1.0243277848911652,
+        1.4705882352941178
+      ],
+      "league": "nfl",
+      "notes": "Candidate residualised on the 88 served inputs (OLS fit on earlier seasons only) then added to the served ridge at the Tuesday opener; five arms, one era, five looks.",
+      "plain_summary": "Adding only the part of the candidate outside the existing inputs moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.45115,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod34_residualised_addone/report_A_pass_rush.json",
+      "standard_error": null
+    },
+    "mod34_residualised_B_total_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Served base plus span-residual of B_total, paired vs base, 2020-2025; 791-712 vs 802-701.",
+      "effect": -0.7318695941450433,
+      "effect_units": "accuracy_points",
+      "family": "mod34_residualised_addone",
+      "interval": [
+        -1.6466117796073465,
+        0.34223134839151265
+      ],
+      "league": "nfl",
+      "notes": "Candidate residualised on the 88 served inputs (OLS fit on earlier seasons only) then added to the served ridge at the Tuesday opener; five arms, one era, five looks.",
+      "plain_summary": "Adding only the part of the candidate outside the existing inputs moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.08665,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod34_residualised_addone/report_B_total.json",
+      "standard_error": null
+    },
+    "mod34_residualised_D_drive_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Served base plus span-residual of D_drive, paired vs base, 2020-2025; 797-706 vs 802-701.",
+      "effect": -0.33266799733865604,
+      "effect_units": "accuracy_points",
+      "family": "mod34_residualised_addone",
+      "interval": [
+        -1.9471488178025034,
+        1.5009380863039399
+      ],
+      "league": "nfl",
+      "notes": "Candidate residualised on the 88 served inputs (OLS fit on earlier seasons only) then added to the served ridge at the Tuesday opener; five arms, one era, five looks.",
+      "plain_summary": "Adding only the part of the candidate outside the existing inputs moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.30715,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod34_residualised_addone/report_D_drive.json",
+      "standard_error": null
+    },
+    "mod34_residualised_H_hours_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Served base plus span-residual of H_hours, paired vs base, 2020-2025; 795-708 vs 802-701.",
+      "effect": -0.4657351962741184,
+      "effect_units": "accuracy_points",
+      "family": "mod34_residualised_addone",
+      "interval": [
+        -1.1235955056179776,
+        0.06925207756232687
+      ],
+      "league": "nfl",
+      "notes": "Candidate residualised on the 88 served inputs (OLS fit on earlier seasons only) then added to the served ridge at the Tuesday opener; five arms, one era, five looks.",
+      "plain_summary": "Adding only the part of the candidate outside the existing inputs moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.0433,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod34_residualised_addone/report_H_hours.json",
+      "standard_error": null
+    },
+    "mod34_residualised_P_playquality_accuracy_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; season-blocked bootstrap interval reported.",
+      "closing_ground": null,
+      "description": "Served base plus span-residual of P_playquality, paired vs base, 2020-2025; 783-720 vs 802-701.",
+      "effect": -1.264138389886893,
+      "effect_units": "accuracy_points",
+      "family": "mod34_residualised_addone",
+      "interval": [
+        -2.298050139275766,
+        -0.5157962604771116
+      ],
+      "league": "nfl",
+      "notes": "Candidate residualised on the 88 served inputs (OLS fit on earlier seasons only) then added to the served ridge at the Tuesday opener; five arms, one era, five looks.",
+      "plain_summary": "Adding only the part of the candidate outside the existing inputs moved picks against the opener by an unresolved amount.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod34_residualised_addone/report_P_playquality.json",
+      "standard_error": null
+    }
+  }
+}

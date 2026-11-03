@@ -1,0 +1,61 @@
+{
+  "family": "pool03_coinflip_ownership",
+  "signals": {
+    "pool03_coinflip_ownership_term_heldout_week": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Coin-flip band ownership term (band, weight chosen out of week by simulated P(first)) vs served card, forward sim rank 19/65pts",
+      "effect": 0.79,
+      "effect_units": "payout_first_pp",
+      "family": "pool03_coinflip_ownership",
+      "interval": [
+        0.1,
+        1.46
+      ],
+      "league": "nfl",
+      "notes": "208 looks (26 cells x 8 weeks); interval is simulation-path bootstrap only; 5 sides changed over 8 weeks; model p assumed calibrated",
+      "plain_summary": null,
+      "probability_positive": 0.9882,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_rank_replay/pool03_coinflip_ownership.json",
+      "standard_error": null
+    },
+    "pool03_continuous_ownership_term_heldout_week": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Continuous ownership term, w fit by week on simulated P(first); bootstrap over weeks and paths",
+      "effect": -0.0417,
+      "effect_units": "payout_first_pp",
+      "family": "pool03_coinflip_ownership",
+      "interval": [
+        -0.771,
+        0.75
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Removing the gate erased the simulated gain",
+      "probability_positive": 0.4293,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": 121,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/pool_rank_replay/pool03_continuous.json",
+      "standard_error": null
+    }
+  }
+}

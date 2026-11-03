@@ -1,0 +1,145 @@
+{
+  "family": "mod33_prior_week_exits",
+  "signals": {
+    "mod33_prior_week_exits_all4_loso_2020_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "family mod33_prior_week_exits 5 looks; term did not beat intercept-only control out of sample; decisive term 72-113 vs control; unresolved, not closed",
+      "closing_ground": null,
+      "description": "prior-game mid-game starter exits home-minus-away (all4) as one term in opener-graded logit with opener-based probability as input, LOSO 2020-25; effect is out-of-sample log-loss improvement vs intercept-only control",
+      "effect": -0.00441,
+      "effect_units": "log_loss_improvement",
+      "family": "mod33_prior_week_exits",
+      "interval": [
+        -0.00731,
+        -0.00135
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.002,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod-33-mod33-prior-week-exits.md",
+      "standard_error": null
+    },
+    "mod33_prior_week_exits_db1_loso_2020_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "family mod33_prior_week_exits 5 looks; term did not beat intercept-only control out of sample; decisive term 10-19 vs control; unresolved, not closed",
+      "closing_ground": null,
+      "description": "prior-game mid-game starter exits home-minus-away (DB1) as one term in opener-graded logit with opener-based probability as input, LOSO 2020-25; effect is out-of-sample log-loss improvement vs intercept-only control",
+      "effect": -0.00098,
+      "effect_units": "log_loss_improvement",
+      "family": "mod33_prior_week_exits",
+      "interval": [
+        -0.00229,
+        0.00016
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.04,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod-33-mod33-prior-week-exits.md",
+      "standard_error": null
+    },
+    "mod33_prior_week_exits_ol_loso_2020_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "family mod33_prior_week_exits 5 looks; term did not beat intercept-only control out of sample; decisive term 24-46 vs control; unresolved, not closed",
+      "closing_ground": null,
+      "description": "prior-game mid-game starter exits home-minus-away (OL) as one term in opener-graded logit with opener-based probability as input, LOSO 2020-25; effect is out-of-sample log-loss improvement vs intercept-only control",
+      "effect": -0.00113,
+      "effect_units": "log_loss_improvement",
+      "family": "mod33_prior_week_exits",
+      "interval": [
+        -0.0019,
+        -0.0004
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod-33-mod33-prior-week-exits.md",
+      "standard_error": null
+    },
+    "mod33_prior_week_exits_qb_loso_2020_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "family mod33_prior_week_exits 5 looks; term did not beat intercept-only control out of sample; decisive term 38-47 vs control; unresolved, not closed",
+      "closing_ground": null,
+      "description": "prior-game mid-game starter exits home-minus-away (QB) as one term in opener-graded logit with opener-based probability as input, LOSO 2020-25; effect is out-of-sample log-loss improvement vs intercept-only control",
+      "effect": -0.0006,
+      "effect_units": "log_loss_improvement",
+      "family": "mod33_prior_week_exits",
+      "interval": [
+        -0.00287,
+        0.00158
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.288,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod-33-mod33-prior-week-exits.md",
+      "standard_error": null
+    },
+    "mod33_prior_week_exits_wr1_loso_2020_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "family mod33_prior_week_exits 5 looks; term did not beat intercept-only control out of sample; decisive term 13-25 vs control; unresolved, not closed",
+      "closing_ground": null,
+      "description": "prior-game mid-game starter exits home-minus-away (WR1) as one term in opener-graded logit with opener-based probability as input, LOSO 2020-25; effect is out-of-sample log-loss improvement vs intercept-only control",
+      "effect": -0.00176,
+      "effect_units": "log_loss_improvement",
+      "family": "mod33_prior_week_exits",
+      "interval": [
+        -0.00269,
+        -0.00081
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod-33-mod33-prior-week-exits.md",
+      "standard_error": null
+    }
+  }
+}
