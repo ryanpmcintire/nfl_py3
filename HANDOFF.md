@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T22:00:45.333652+00:00`
+Refreshed at: `2026-11-03T22:01:06.951866+00:00`
 
 ## Start here
 
@@ -21,13 +21,14 @@ Refreshed at: `2026-11-03T22:00:45.333652+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `1de5ab723da9` — Republish the site with the latest settled results
-- Pending change set: 253 paths
+- Baseline commit: `e7a8fab297fb` — PER-14: coordinator traits do not travel with the person (portability r ~0 for halftime, lead tempo, trailing pass; the style-adjusted trailing pass excess persists with the team, r .35); unresolved
+- Pending change set: 254 paths
+  - `M  HANDOFF.md`
+  - `M  README.md`
   - ` M config/source_policies.json`
   - ` M docs/lanes/mod-46-favourite-lead-skew.md`
-  - `M  docs/lanes/per-14-coordinator-mover-portability.md`
+  - ` M docs/lanes/per-15-minor-return-ramp.md`
   - ` M docs/lanes/xlg-14-xlg14-cfb-first-discovery.md`
-  - `A  scripts/per14_mover_portability.py`
   - ` M scripts/sim10_drive.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
@@ -42,8 +43,7 @@ Refreshed at: `2026-11-03T22:00:45.333652+00:00`
   - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
   - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
   - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
-  - ...and 233 more
+  - ...and 234 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
