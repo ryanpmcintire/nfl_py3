@@ -229,6 +229,7 @@ class GameRow:
     move_reason: str = ""
     move_reason_evidence: tuple[str, ...] = ()
     forecast_text: str = ""
+    schedule_text: str = ""
 
     @property
     def pool_edge_text(self) -> str:
@@ -2634,6 +2635,30 @@ def _with_forecast_chips(
     ]
 
 
+def _with_schedule_facts(
+    games: list[GameRow], data_root: Path | None, season: float | None, week: float | None
+) -> list[GameRow]:
+    from dataclasses import replace
+
+    from nfl_ats.board_schedule_facts import build_schedule_facts
+
+    if data_root is None or season is None or week is None:
+        return games
+    try:
+        facts = build_schedule_facts(
+            Path(data_root),
+            season=int(season),
+            week=int(week),
+            game_ids={game.game_id for game in games if not game.final},
+        )
+    except Exception:
+        return games
+    return [
+        replace(game, schedule_text=facts[game.game_id]) if game.game_id in facts else game
+        for game in games
+    ]
+
+
 def _with_move_reasons(
     games: list[GameRow], data_root: Path | None, season: float | None, week: float | None
 ) -> list[GameRow]:
@@ -4337,6 +4362,7 @@ def load_board_content(
 
     games = _with_move_reasons(games, resolved_data_root, season_number, week_number)
     games = _with_forecast_chips(games, resolved_data_root, season_number, week_number, generated)
+    games = _with_schedule_facts(games, resolved_data_root, season_number, week_number)
 
     if require_fresh_arrest_overlay and published_rows:
         record_published_picks(artifacts_root, published_rows, published_at=generated)
