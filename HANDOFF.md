@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T21:35:58.654919+00:00`
+Refreshed at: `2026-11-03T21:36:35.420311+00:00`
 
 ## Start here
 
@@ -21,14 +21,15 @@ Refreshed at: `2026-11-03T21:35:58.654919+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `5448369dd5df` — MOD-42 OL continuity: no term earns a pick role (continuity null coefficient; new-starter count right sign every fold, P+ .44); unresolved
-- Pending change set: 254 paths
+- Baseline commit: `6dfffe09d935` — UI-31: each unplayed row shows when the pool's half point is better or worse than Tuesday's books and how much that moves the cover chance (served model with and without the half point); same note in the game detail
+- Pending change set: 255 paths
   - ` M config/source_policies.json`
+  - `M  docs/findings.html`
+  - `M  docs/index.html`
   - ` M docs/lanes/lead-102-name-blinded-control-read.md`
-  - `M  docs/lanes/ui-31-half-point-chip.md`
+  - ` M docs/lanes/mod-43-qb-learning-curve.md`
+  - ` M docs/lanes/sim-18-lead-protection.md`
   - ` M scripts/sim10_drive.py`
-  - `M  src/nfl_ats/board_content.py`
-  - `M  src/nfl_ats/board_terminal.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
@@ -42,8 +43,7 @@ Refreshed at: `2026-11-03T21:35:58.654919+00:00`
   - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
   - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
   - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
-  - ...and 234 more
+  - ...and 235 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
