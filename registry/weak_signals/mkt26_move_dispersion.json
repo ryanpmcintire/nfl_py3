@@ -1,0 +1,285 @@
+{
+  "family": "mkt26_move_dispersion",
+  "signals": {
+    "mkt26_dispersion_abs_move__abs_resid": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "OLS slope, controls line and total, n 784, 10 looks; no control",
+      "closing_ground": null,
+      "description": "Dispersion slopes and LOSO shrink terms; 10 looks (slope: ATS points of absolute residual per unit of the predictor) (slope: ATS points of absolute residual per point of move)",
+      "effect": 0.3050478955723308,
+      "effect_units": "ats_points",
+      "family": "mkt26_move_dispersion",
+      "interval": [
+        -0.31619524103151564,
+        0.9555320105276934
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the size of the Tuesday-to-deadline spread move or book disagreement predicts how far the margin lands from the deadline line.",
+      "probability_positive": 0.823,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/mkt26/result.json",
+      "standard_error": 0.32084062706241423
+    },
+    "mkt26_dispersion_abs_move__near_push": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "OLS slope, controls line and total, n 784, 10 looks; no control",
+      "closing_ground": null,
+      "description": "Dispersion slopes and LOSO shrink terms; 10 looks",
+      "effect": -0.0016312973589184207,
+      "effect_units": "accuracy_points",
+      "family": "mkt26_move_dispersion",
+      "interval": [
+        -0.016467453762716015,
+        0.017467585778158757
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the size of the Tuesday-to-deadline spread move or book disagreement predicts how far the margin lands from the deadline line.",
+      "probability_positive": 0.405,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/mkt26/result.json",
+      "standard_error": 0.00860735886544323
+    },
+    "mkt26_dispersion_disagree__abs_resid": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "OLS slope, controls line and total, n 784, 10 looks; no control",
+      "closing_ground": null,
+      "description": "Dispersion slopes and LOSO shrink terms; 10 looks (slope: ATS points of absolute residual per unit of the predictor)",
+      "effect": -1.1367911043801224,
+      "effect_units": "ats_points",
+      "family": "mkt26_move_dispersion",
+      "interval": [
+        -4.786040661893218,
+        2.643376028147421
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the size of the Tuesday-to-deadline spread move or book disagreement predicts how far the margin lands from the deadline line.",
+      "probability_positive": 0.2605,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/mkt26/result.json",
+      "standard_error": 1.8830150576246747
+    },
+    "mkt26_dispersion_disagree__near_push": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "OLS slope, controls line and total, n 784, 10 looks; no control",
+      "closing_ground": null,
+      "description": "Dispersion slopes and LOSO shrink terms; 10 looks",
+      "effect": -0.013888936914545109,
+      "effect_units": "accuracy_points",
+      "family": "mkt26_move_dispersion",
+      "interval": [
+        -0.11898847565182721,
+        0.09947489239330666
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the size of the Tuesday-to-deadline spread move or book disagreement predicts how far the margin lands from the deadline line.",
+      "probability_positive": 0.385,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/mkt26/result.json",
+      "standard_error": 0.0548822769679983
+    },
+    "mkt26_shrink_deadline_c_move": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "LOSO 2023-25, 10 looks; no positive control; deadline view",
+      "closing_ground": null,
+      "description": "Dispersion slopes and LOSO shrink terms; 10 looks",
+      "effect": -0.0015014425372651787,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt26_move_dispersion",
+      "interval": [
+        -0.0035475194260224325,
+        0.00039148316512113755
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the size of the Tuesday-to-deadline spread move or book disagreement predicts how far the margin lands from the deadline line.",
+      "probability_positive": 0.0635,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/mkt26/result.json",
+      "standard_error": 0.000998385273527653
+    },
+    "mkt26_shrink_deadline_d_disagree": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "LOSO 2023-25, 10 looks; no positive control; deadline view",
+      "closing_ground": null,
+      "description": "Dispersion slopes and LOSO shrink terms; 10 looks",
+      "effect": -0.0022405490882273444,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt26_move_dispersion",
+      "interval": [
+        -0.0056268072028379445,
+        0.0013456720856132802
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the size of the Tuesday-to-deadline spread move or book disagreement predicts how far the margin lands from the deadline line.",
+      "probability_positive": 0.111,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/mkt26/result.json",
+      "standard_error": 0.0017962142416803118
+    },
+    "mkt26_shrink_deadline_e_both": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "LOSO 2023-25, 10 looks; no positive control; deadline view",
+      "closing_ground": null,
+      "description": "Dispersion slopes and LOSO shrink terms; 10 looks",
+      "effect": -0.0036163331100919627,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt26_move_dispersion",
+      "interval": [
+        -0.007504388920391923,
+        0.00022541660940415866
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the size of the Tuesday-to-deadline spread move or book disagreement predicts how far the margin lands from the deadline line.",
+      "probability_positive": 0.0345,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/mkt26/result.json",
+      "standard_error": 0.0020271544894418965
+    },
+    "mkt26_shrink_opener_later_c_move": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "LOSO 2023-25, 10 looks; no positive control; opener_later view",
+      "closing_ground": null,
+      "description": "Dispersion slopes and LOSO shrink terms; 10 looks",
+      "effect": -0.0022606729965556093,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt26_move_dispersion",
+      "interval": [
+        -0.005620517598291203,
+        0.0009689743399017946
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the size of the Tuesday-to-deadline spread move or book disagreement predicts how far the margin lands from the deadline line.",
+      "probability_positive": 0.0925,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/mkt26/result.json",
+      "standard_error": 0.0017261859114067832
+    },
+    "mkt26_shrink_opener_later_d_disagree": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "LOSO 2023-25, 10 looks; no positive control; opener_later view",
+      "closing_ground": null,
+      "description": "Dispersion slopes and LOSO shrink terms; 10 looks",
+      "effect": 9.282604600530105e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt26_move_dispersion",
+      "interval": [
+        -0.0009061322737629584,
+        0.0010528633677776955
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the size of the Tuesday-to-deadline spread move or book disagreement predicts how far the margin lands from the deadline line.",
+      "probability_positive": 0.5705,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/mkt26/result.json",
+      "standard_error": 0.0005144757278833834
+    },
+    "mkt26_shrink_opener_later_e_both": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "LOSO 2023-25, 10 looks; no positive control; opener_later view",
+      "closing_ground": null,
+      "description": "Dispersion slopes and LOSO shrink terms; 10 looks",
+      "effect": -0.002278908277043353,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt26_move_dispersion",
+      "interval": [
+        -0.005829341064443929,
+        0.0011220688849782818
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the size of the Tuesday-to-deadline spread move or book disagreement predicts how far the margin lands from the deadline line.",
+      "probability_positive": 0.0945,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/mkt26/result.json",
+      "standard_error": 0.001746609782162329
+    }
+  }
+}

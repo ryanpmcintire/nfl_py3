@@ -1,0 +1,285 @@
+{
+  "family": "per14_inseason_playcaller_change_event_study",
+  "signals": {
+    "per14_firing_did_halftime_off": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "26 events, interval wide or not wrong-sign resolved; no closing ground",
+      "closing_ground": null,
+      "description": "Difference-in-differences of halftime_off over 4 games after vs before an in-season HC/OC change, against same-season no-change controls; permutation null over placebo change weeks (p 0.834)",
+      "effect": -0.011960997615594073,
+      "effect_units": "epa_per_play",
+      "family": "per14_inseason_playcaller_change_event_study",
+      "interval": [
+        -0.09855511680896067,
+        0.07489995068817075
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.39025,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.32,
+      "sample_blocks": null,
+      "sample_games": 25,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/per14/firings_event_study.json",
+      "standard_error": 0.04494903624114765
+    },
+    "per14_firing_did_lead_run": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "26 events, interval wide or not wrong-sign resolved; no closing ground",
+      "closing_ground": null,
+      "description": "Difference-in-differences of lead_run over 4 games after vs before an in-season HC/OC change, against same-season no-change controls; permutation null over placebo change weeks (p 0.502)",
+      "effect": 2.549459716800457,
+      "effect_units": "rate_pp",
+      "family": "per14_inseason_playcaller_change_event_study",
+      "interval": [
+        -8.252041294840778,
+        10.625454755681883
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.728,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.78,
+      "sample_blocks": null,
+      "sample_games": 8,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/per14/firings_event_study.json",
+      "standard_error": 5.471182630676806
+    },
+    "per14_firing_did_lead_sec": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "26 events, interval wide or not wrong-sign resolved; no closing ground",
+      "closing_ground": null,
+      "description": "Difference-in-differences of lead_sec over 4 games after vs before an in-season HC/OC change, against same-season no-change controls; permutation null over placebo change weeks (p 0.913)",
+      "effect": -0.1437346313031512,
+      "effect_units": "elapsed_seconds_bias",
+      "family": "per14_inseason_playcaller_change_event_study",
+      "interval": [
+        -3.722192079202524,
+        3.4181223439635584
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.46825,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.69,
+      "sample_blocks": null,
+      "sample_games": 6,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/per14/firings_event_study.json",
+      "standard_error": 232.56514950196782
+    },
+    "per14_firing_did_off_epa": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "26 events, interval wide or not wrong-sign resolved; no closing ground",
+      "closing_ground": null,
+      "description": "Difference-in-differences of off_epa over 4 games after vs before an in-season HC/OC change, against same-season no-change controls; permutation null over placebo change weeks (p 0.001)",
+      "effect": 0.0869023971622089,
+      "effect_units": "epa_per_play",
+      "family": "per14_inseason_playcaller_change_event_study",
+      "interval": [
+        0.0435518644224152,
+        0.12683448576853074
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 25,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/per14/firings_event_study.json",
+      "standard_error": 0.02139021424715689
+    },
+    "per14_firing_did_trail_pass_incl": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "26 events, interval wide or not wrong-sign resolved; no closing ground",
+      "closing_ground": null,
+      "description": "Difference-in-differences of trail_pass_incl over 4 games after vs before an in-season HC/OC change, against same-season no-change controls; permutation null over placebo change weeks (p 0.130)",
+      "effect": -2.6422289641903767,
+      "effect_units": "rate_pp",
+      "family": "per14_inseason_playcaller_change_event_study",
+      "interval": [
+        -5.427411426948292,
+        0.16348401949615887
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.035,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.74,
+      "sample_blocks": null,
+      "sample_games": 24,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/per14/firings_event_study.json",
+      "standard_error": 1.4421039552491834
+    },
+    "per14_firing_did_trail_pass_shift": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "26 events, interval wide or not wrong-sign resolved; no closing ground",
+      "closing_ground": null,
+      "description": "Difference-in-differences of trail_pass_shift over 4 games after vs before an in-season HC/OC change, against same-season no-change controls; permutation null over placebo change weeks (p 0.120)",
+      "effect": -3.5557633353401954,
+      "effect_units": "rate_pp",
+      "family": "per14_inseason_playcaller_change_event_study",
+      "interval": [
+        -6.760836122041779,
+        -0.30927256527412567
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.015,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.65,
+      "sample_blocks": null,
+      "sample_games": 21,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/per14/firings_event_study.json",
+      "standard_error": 1.7014255459972087
+    },
+    "per14_firing_market_first1_accuracy": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "26 events, interval wide or not wrong-sign resolved; no closing ground",
+      "closing_ground": null,
+      "description": "Same term, LOSO accuracy points gain, first1",
+      "effect": -0.3326679973386537,
+      "effect_units": "accuracy_points",
+      "family": "per14_inseason_playcaller_change_event_study",
+      "interval": [
+        -0.7338347950703269,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.02425,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/per14/firings_event_study.json",
+      "standard_error": null
+    },
+    "per14_firing_market_first1_logloss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "26 events, interval wide or not wrong-sign resolved; no closing ground",
+      "closing_ground": null,
+      "description": "Opener-grade fitted term, home-minus-away flag for first1 games after in-season play-caller change, LOSO log loss gain; decisive 2 term v 7 base",
+      "effect": 0.0002692744357397636,
+      "effect_units": "log_loss_improvement",
+      "family": "per14_inseason_playcaller_change_event_study",
+      "interval": [
+        -0.0022407777585190802,
+        0.0024537514496455557
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.61875,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/per14/firings_event_study.json",
+      "standard_error": null
+    },
+    "per14_firing_market_first3_accuracy": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "26 events, interval wide or not wrong-sign resolved; no closing ground",
+      "closing_ground": null,
+      "description": "Same term, LOSO accuracy points gain, first3",
+      "effect": -0.46573519627411963,
+      "effect_units": "accuracy_points",
+      "family": "per14_inseason_playcaller_change_event_study",
+      "interval": [
+        -1.1371618276595052,
+        0.2656086616987305
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.087,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/per14/firings_event_study.json",
+      "standard_error": null
+    },
+    "per14_firing_market_first3_logloss": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "26 events, interval wide or not wrong-sign resolved; no closing ground",
+      "closing_ground": null,
+      "description": "Opener-grade fitted term, home-minus-away flag for first3 games after in-season play-caller change, LOSO log loss gain; decisive 11 term v 18 base",
+      "effect": 4.065057935109806e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "per14_inseason_playcaller_change_event_study",
+      "interval": [
+        -0.001525409525552801,
+        0.0015080817277263597
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.52425,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/per14/firings_event_study.json",
+      "standard_error": null
+    }
+  }
+}
