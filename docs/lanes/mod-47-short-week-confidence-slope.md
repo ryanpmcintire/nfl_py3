@@ -1,16 +1,19 @@
 # MOD-47
 
 ## Goal
-Short-week confidence slope: the calibration slope of the model logit inside short-week games (ROADMAP MOD-47).
+Short-week confidence slope: calibration slope of the served logit inside short-week games, as a fitted interaction on the one calibrated probability.
 
 ## State
-Added 2026-11-03 (backlog expansion 7), not started, nothing run. Mechanism: XLG-10 reran with short-week accuracy up but log loss worse, the signature of probabilities too confident rather than wrong sides. Fitted term: short-week interaction on the model logit (slope), not a side rule. Data: opener predictions with rest days (local).
+Unit 1 done 2020-25 / 2011-19 (2026-11-03 ~17:40). Script scripts/mod47_short_week_slope.py (log in scratchpad m47.log). Short = min(home,away) team rest days < median team rest (7.0, derived); week-1 rest unknown excluded; pushes excluded. Looks: 4 slope fits, 2 LOSO interaction arms, ~8 dLL contrasts (family mod47_short_week_slope).
+Slopes (served logit): 2020-25 short 0.54 [-0.22,1.33] n=309, normal 0.31 [-0.10,0.73] n=1106; 2011-19 SBR short 0.10 [-0.26,0.46] n=444, normal 0.11 [-0.06,0.30] n=1646. Served prob is overconfident in BOTH groups (slope far below 1); short vs normal not separable.
+LOSO z x short interaction vs served: 2020-25 dLL -0.00149 [-0.0036,+0.0006] P+ .08; decisive 256 games, interaction 117 / served 139; zs coef per fold -0.19..+0.72 unstable. 2011-19: dLL -0.00103 [-0.0019,-0.0002] P+ .008; decisive 217, 105/112; zs coef ~0 (-0.19..+0.07). Intercept-only control also not beaten.
+Recorded 2 cells (log_loss_improvement, unresolved_below_power).
 
 ## Tried
-Novelty check only. Nearest: MOD-29 (hour rest), MOD-41 (workload), XLG-10. Differs: calibrates confidence, not the pick.
+Interaction (z, short, z*short) LOSO; intercept-only and served-only controls.
 
 ## Next
-First unit for one agent: Fit slope and intercept inside short-week games leave-one-season-out and report the reliability table, log loss and Brier against model-only and market baselines, with the look count.
+Overconfidence is global (slope 0.1-0.5), not short-week-specific: a global slope shrink (z scale) LOSO is the real calibration question; check whether it is already in the served path before proposing. Then short-week as side-specific term (home short minus away short) interacting with z.
 
 ## Open
-Rules: Zero crossing closes nothing; one fitted probability selects the side; weights, cut points and alphas chosen leave-one-season-out; every cell counted as a look; unresolved results go through nfl-ats weak-signals record with a closing ground; graded at the opener (opener as model input, with intercept-only and line-move-only controls) on the same market and simple-model baselines. Look count and family declared before any sign is seen.
+Does the pooled +0.47 accuracy of short_week_diff survive as an additive term near 0.5 in this harness (not tested here)?

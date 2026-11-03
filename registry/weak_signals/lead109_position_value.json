@@ -1,0 +1,61 @@
+{
+  "family": "lead109_position_value",
+  "signals": {
+    "lead109_value_weighted_gain_des": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Read minus ladder (des) log loss gain on P(plays), weighted by absolute position spread value from 2011-2025 OLS; 294 id-verified 2026 wk2-8 player-weeks",
+      "effect": 0.08,
+      "effect_units": "log_loss_improvement",
+      "family": "lead109_position_value",
+      "interval": [
+        -0.011,
+        0.196
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Weighting the injury-wording gain by position value leaves it positive but within noise; difference from unweighted 0.015 [-0.051, 0.119] P+ 0.568; permutation null in report",
+      "probability_positive": 0.947,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 294,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead109_position_weights/report.json",
+      "standard_error": null
+    },
+    "lead109_value_weighted_gain_desprac": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Read minus ladder (desprac) log loss gain on P(plays), weighted by absolute position spread value from 2011-2025 OLS; 294 id-verified 2026 wk2-8 player-weeks",
+      "effect": 0.1,
+      "effect_units": "log_loss_improvement",
+      "family": "lead109_position_value",
+      "interval": [
+        -0.021,
+        0.299
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Weighting the injury-wording gain by position value leaves it positive but within noise; difference from unweighted 0.064 [-0.032, 0.235] P+ 0.658; permutation null in report",
+      "probability_positive": 0.86,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 294,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead109_position_weights/report.json",
+      "standard_error": null
+    }
+  }
+}

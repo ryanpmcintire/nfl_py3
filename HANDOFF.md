@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T22:24:25.226456+00:00`
+Refreshed at: `2026-11-03T22:25:07.777657+00:00`
 
 ## Start here
 
@@ -21,15 +21,18 @@ Refreshed at: `2026-11-03T22:24:25.226456+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `577362486d51` — ENG-53 unit 2: studies emit per-group unit data behind ENG53_UNITS (outputs byte-identical when off); all 39 reported-only reliability rows recomputed with one estimator, none outside its reported interval; XLG-15 interval column bug fixed
-- Pending change set: 257 paths
+- Baseline commit: `3f3d9d35b082` — ENG-55 unit 2: the first post-noon Tuesday snapshot is the only anchor defined for every game and matches the served hook term, badges and POOL-08; no anchor yields a clean half-point everywhere; keep it, no pinned re-derivation
+- Pending change set: 256 paths
   - ` M ROADMAP.md`
   - ` M config/source_policies.json`
   - ` M docs/lanes/done/eng-56-final-score-reconciliation.md`
-  - `M  docs/lanes/eng-55-pool-line-inference-audit.md`
-  - ` M docs/lanes/lead-109-position-value-weighting-of-the-wording.md`
-  - ` M docs/lanes/mod-47-short-week-confidence-slope.md`
-  - `A  scripts/eng55_anchor_compare.py`
+  - `M  docs/lanes/lead-109-position-value-weighting-of-the-wording.md`
+  - `M  docs/lanes/mod-47-short-week-confidence-slope.md`
+  - ` M docs/lanes/sim-21-drive-length-decomposition.md`
+  - `A  registry/weak_signals/lead109_position_value.json`
+  - `A  registry/weak_signals/mod47_short_week_slope.json`
+  - `A  scripts/lead109_position_weights.py`
+  - `A  scripts/mod47_short_week_slope.py`
   - ` M scripts/sim10_drive.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
@@ -40,10 +43,7 @@ Refreshed at: `2026-11-03T22:24:25.226456+00:00`
   - `?? docs/move_reasons.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
-  - ...and 237 more
+  - ...and 236 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

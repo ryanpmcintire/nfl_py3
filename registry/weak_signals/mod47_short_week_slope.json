@@ -1,0 +1,61 @@
+{
+  "family": "mod47_short_week_slope",
+  "signals": {
+    "mod47_short_week_slope_interaction_opener": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Served logit x short-week (min team rest below median) interaction, leave-one-season-out, log loss vs served-only",
+      "effect": -0.00149,
+      "effect_units": "log_loss_improvement",
+      "family": "mod47_short_week_slope",
+      "interval": [
+        -0.00361,
+        0.00057
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Letting confidence differ in short-week games does not improve held-out log loss.",
+      "probability_positive": 0.078,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1415,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/lanes/mod-47-short-week-confidence-slope.md",
+      "standard_error": null
+    },
+    "mod47_short_week_slope_interaction_sbr": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Served logit x short-week (min team rest below median) interaction, leave-one-season-out, log loss vs served-only",
+      "effect": -0.00103,
+      "effect_units": "log_loss_improvement",
+      "family": "mod47_short_week_slope",
+      "interval": [
+        -0.00192,
+        -0.00015
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Letting confidence differ in short-week games does not improve held-out log loss.",
+      "probability_positive": 0.008,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2090,
+      "seasons": [
+        2011,
+        2019
+      ],
+      "source": "docs/lanes/mod-47-short-week-confidence-slope.md",
+      "standard_error": null
+    }
+  }
+}
