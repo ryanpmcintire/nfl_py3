@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T23:31:48.637307+00:00`
+Refreshed at: `2026-11-03T23:32:46.484696+00:00`
 
 ## Start here
 
@@ -21,17 +21,11 @@ Refreshed at: `2026-11-03T23:31:48.637307+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `267c21d5f28e` — Refresh session handoff
-- Pending change set: 256 paths
+- Baseline commit: `064a87a69bd9` — ENG-58 unit 3: daily schedule-only snapshots (data/raw_schedules) feed the live kickoff guard; jobs schedule_snapshot_* (09:00 Mon-Sat, 08:00 Sun). MOD-54 forward log of the mirrored-row base model (Week 9 written; job mod54_forward_tue after the lock)
+- Pending change set: 251 paths
+  - `M  HANDOFF.md`
   - ` M config/source_policies.json`
-  - `M  docs/lanes/eng-58-flexed-and-rescheduled-games-audit.md`
   - ` M docs/lanes/mod-10-graph-rating-base-input.md`
-  - `M  docs/lanes/mod-54-mirrored-home-away-training-rows.md`
-  - `A  scripts/capture_schedule_snapshot.py`
-  - `M  scripts/capture_scheduler.py`
-  - `M  scripts/forward_ledger.py`
-  - `M  scripts/live_kickoff.py`
-  - `A  scripts/mod54_forward_log.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
@@ -43,7 +37,13 @@ Refreshed at: `2026-11-03T23:31:48.637307+00:00`
   - `?? docs/move_reasons.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
-  - ...and 236 more
+  - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
+  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
+  - ...and 231 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
