@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T22:21:36.348663+00:00`
+Refreshed at: `2026-11-03T22:21:55.111963+00:00`
 
 ## Start here
 
@@ -21,14 +21,16 @@ Refreshed at: `2026-11-03T22:21:36.348663+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `b804d60d3a10` — Refresh session handoff
+- Baseline commit: `bc4f5c4a556e` — ENG-56 done: final scores reconcile with SBR (2,956/2,957) and play-by-play (4,216/4,217); both differences are source errors and change no cover; lane to done
 - Pending change set: 262 paths
   - ` M ROADMAP.md`
   - ` M config/source_policies.json`
-  - `RM docs/lanes/eng-56-final-score-reconciliation.md -> docs/lanes/done/eng-56-final-score-reconciliation.md`
-  - ` M docs/lanes/lead-110-market-absorption-of-the-wording-read.md`
+  - ` M docs/lanes/done/eng-56-final-score-reconciliation.md`
+  - `M  docs/lanes/lead-110-market-absorption-of-the-wording-read.md`
   - ` M docs/lanes/sim-21-drive-length-decomposition.md`
+  - `A  registry/weak_signals/lead110_absorption.json`
   - ` M scripts/eng53_reliability.py`
+  - `A  scripts/lead110_absorption.py`
   - ` M scripts/mod40_ngs_reliability.py`
   - ` M scripts/sim10_drive.py`
   - ` M scripts/sim17_halftime_adjustment.py`
@@ -41,8 +43,6 @@ Refreshed at: `2026-11-03T22:21:36.348663+00:00`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
   - `?? docs/lanes/c-drive-space-2026-10-31.md`
-  - `?? docs/lanes/machine-crashes-2026-10-31.md`
-  - `?? docs/lanes/stealmybitcoin-ctf.md`
   - ...and 242 more
 
 The baseline commit and pending paths were observed before the automatic refresh.

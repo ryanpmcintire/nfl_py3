@@ -1,0 +1,117 @@
+{
+  "family": "lead110_absorption",
+  "signals": {
+    "lead110_move_loading_des": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Same as desprac but designation-only ladder control",
+      "effect": -0.739,
+      "effect_units": "slope_difference",
+      "family": "lead110_absorption",
+      "interval": [
+        -12.65,
+        5.62
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.439,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 91,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead110_absorption/report.json",
+      "standard_error": 4.5
+    },
+    "lead110_move_loading_desprac": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Tuesday-to-deadline consensus spread move toward home on read-minus-ladder availability difference (position-weighted, prior-season weights), controlling for ladder availability difference; 2026 weeks 2-8, 91 games",
+      "effect": -0.975,
+      "effect_units": "slope_difference",
+      "family": "lead110_absorption",
+      "interval": [
+        -8.84,
+        6.13
+      ],
+      "league": "nfl",
+      "notes": "deadline-view analysis; permutation p two-sided .73; 2 loading looks + 2 cover looks",
+      "plain_summary": null,
+      "probability_positive": 0.378,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 91,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead110_absorption/report.json",
+      "standard_error": 3.8
+    },
+    "lead110_residual_cover_all": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Deadline-graded cover margin on side of read residual not explained by the move; 38-48 decisive, small-n look",
+      "effect": -2.645,
+      "effect_units": "ats_points",
+      "family": "lead110_absorption",
+      "interval": [
+        -5.77,
+        0.7
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.0645,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 86,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead110_absorption/report.json",
+      "standard_error": 1.65
+    },
+    "lead110_residual_cover_tophalf": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Same, top half by absolute residual; 19-24",
+      "effect": -0.308,
+      "effect_units": "ats_points",
+      "family": "lead110_absorption",
+      "interval": [
+        -4.55,
+        3.84
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.43,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 43,
+      "seasons": [
+        2026,
+        2026
+      ],
+      "source": "artifacts/lead110_absorption/report.json",
+      "standard_error": 2.2
+    }
+  }
+}
