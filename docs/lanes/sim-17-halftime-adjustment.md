@@ -32,3 +32,12 @@ Offensive second-half shift keyed by offensive-coordinator spell (fallback: QB s
 
 ## Open (unit 2)
 OC vs QB not separable; HC vs DC not separable (nested spells). Coordinator table is Wikipedia revision-based (2009-2021 preseason only): mid-season changes before 2022 are missed.
+
+## Unit 3 (held-out + pick term) 2026-11-03 16:45 EST
+Script scripts/sim17_unit3_heldout.py, artifact artifacts/sim17/unit3_heldout.json. Spell estimate for season s = mean unit-1 residual over seasons < s, shrunk by empirical-Bayes B = tau2/(tau2+sig2/n) (tau2, sig2 measured from the prior-seasons training set, not chosen); unseen spell = 0. Test seasons 2010-25. Looks: 6 (part 1) + 3 pick arms + 1 intercept control = 10.
+**measured** Offense held-out (3829 common games): OC slope 0.61 [0.30, 0.93], corr 0.062 [0.030, 0.093]; HC slope 1.52 [0.25, 2.86], corr 0.039 [0.007, 0.073]; corr diff OC-HC 0.024 [-0.023, 0.066], P>0 .85.
+**measured** Defense (4349): DC slope 0.62 [0.17, 1.08], corr 0.037 [0.010, 0.065]; HC slope -0.71 [-3.6, 2.3], corr -0.007 [-0.036, 0.023]; DC-HC corr diff 0.044 [0.002, 0.085], P>0 .98. Coordinator keys predict better than HC out of sample (clearly on defense).
+**measured** Pick term, 1503 decisive opener games 2020-25 (served + term, LOSO, term scaled by train-fold sd): served W-L 800-703. f_tot 782-721, flips 244 (won 113, lost 131), dLL vs served +0.00034 [-0.0016, 0.0023] P>0 .62, 5/6 seasons positive, dBrier +0.00017, OOS-in-sample LL gap .00064; coef -0.054..-0.092 every fold (stable sign). f_off 787-716, dLL +0.00004 P .55. f_def 793-710, dLL -0.00058 P .34. Intercept control: served beats intercept by 0.0011 LL.
+**inferred** Stable negative coefficient but no accuracy gain; unresolved_below_power. Three cells recorded in weak-signals (family sim17_halftime_adjustment_pick_term, total 8973).
+## Next (unit 3)
+Only the SIM-10 entry (blocked while Tier B runs): OC-keyed offensive and DC-keyed defensive second-half shift. Check sign: negative pick coefficient means home-OC H2 improvement does not mean home covers; look at mechanism before reuse as pick feature.

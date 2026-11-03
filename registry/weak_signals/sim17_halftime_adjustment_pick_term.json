@@ -1,0 +1,89 @@
+{
+  "family": "sim17_halftime_adjustment_pick_term",
+  "signals": {
+    "sim17_dc_adjustment_defense": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval spans zero; no wrong-sign resolution, reliability nonzero, no positive control",
+      "closing_ground": null,
+      "description": "Defense-only DC halftime adjustment gap as fitted term on served opener logit, LOSO",
+      "effect": -0.000582,
+      "effect_units": "log_loss_improvement",
+      "family": "sim17_halftime_adjustment_pick_term",
+      "interval": [
+        -0.003121,
+        0.00194
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Defensive coordinator halftime-adjustment gap slightly worsens log loss out of sample.",
+      "probability_positive": 0.3365,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.211,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim17/unit3_heldout.json",
+      "standard_error": 0.001319
+    },
+    "sim17_oc_adjustment_offense": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval spans zero; no wrong-sign resolution, reliability nonzero, no positive control",
+      "closing_ground": null,
+      "description": "Offense-only OC halftime adjustment gap as fitted term on served opener logit, LOSO",
+      "effect": 4e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "sim17_halftime_adjustment_pick_term",
+      "interval": [
+        -0.000734,
+        0.000806
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Offensive coordinator halftime-adjustment gap adds essentially nothing over the served pick.",
+      "probability_positive": 0.553,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.211,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim17/unit3_heldout.json",
+      "standard_error": 0.000395
+    },
+    "sim17_oc_dc_adjustment_total": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval spans zero; no wrong-sign resolution, reliability nonzero, no positive control",
+      "closing_ground": null,
+      "description": "Home minus away OC prior-season shrunk halftime adjustment plus DC term as fitted logit term on served opener probability, LOSO",
+      "effect": 0.000337,
+      "effect_units": "log_loss_improvement",
+      "family": "sim17_halftime_adjustment_pick_term",
+      "interval": [
+        -0.001595,
+        0.002335
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Coordinator halftime-adjustment gap adds a tiny, uncertain log-loss gain over the served pick; picks lose 18 wins net.",
+      "probability_positive": 0.617,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.211,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/sim17/unit3_heldout.json",
+      "standard_error": 0.001033
+    }
+  }
+}
