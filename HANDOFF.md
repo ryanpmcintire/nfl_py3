@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T21:19:13.981148+00:00`
+Refreshed at: `2026-11-03T21:19:20.059947+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-03T21:19:13.981148+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `5cdb0045d23c` — Republish the site with the latest settled results
-- Pending change set: 265 paths
-  - `M  ROADMAP.md`
+- Baseline commit: `49acfd67f31f` — Backlog round 5: 14 new rows (MOD-42..44, MKT-24/25, SIM-17..19, POOL-06/07, LEAD-106, ENG-52, UI-30/31); inventory 65/166
+- Pending change set: 250 paths
+  - `M  HANDOFF.md`
   - ` M config/source_policies.json`
-  - `M  docs/lanes/backlog-all-2026-11-02.md`
-  - `A  docs/lanes/eng-52-opener-timestamp-audit.md`
   - ` M docs/lanes/lead-102-name-blinded-control-read.md`
-  - `A  docs/lanes/lead-106-injury-language-read.md`
-  - `A  docs/lanes/mkt-24-slot-opener-residual.md`
-  - `A  docs/lanes/mkt-25-opener-revision-size.md`
-  - `A  docs/lanes/mod-42-offensive-line-continuity.md`
-  - `A  docs/lanes/mod-43-qb-learning-curve.md`
-  - `A  docs/lanes/mod-44-head-coach-tenure.md`
-  - `A  docs/lanes/pool-06-tiebreak-field-guess.md`
-  - `A  docs/lanes/pool-07-standings-variance-policy.md`
   - ` M docs/lanes/sim-12-sim12-ingame-exits.md`
-  - `A  docs/lanes/sim-17-halftime-adjustment.md`
-  - `A  docs/lanes/sim-18-lead-protection.md`
-  - `A  docs/lanes/sim-19-trailing-risk.md`
-  - `A  docs/lanes/ui-30-changed-since-tuesday.md`
-  - `A  docs/lanes/ui-31-half-point-chip.md`
   - ` M scripts/sim10_drive.py`
-  - ...and 245 more
+  - ` M src/nfl_ats/board_terminal.py`
+  - `?? an.csv`
+  - `?? data/pool_observables/20261103T130853Z/manifest.json`
+  - `?? data/pool_observables/20261103T130853Z/observations.json`
+  - `?? docs/lanes/c-drive-space-2026-10-31.md`
+  - `?? docs/lanes/machine-crashes-2026-10-31.md`
+  - `?? docs/lanes/stealmybitcoin-ctf.md`
+  - `?? docs/move_reasons.json`
+  - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
+  - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
+  - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
+  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
+  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
+  - ...and 230 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
