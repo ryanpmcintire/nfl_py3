@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T04:30:43.401406+00:00`
+Refreshed at: `2026-11-03T04:31:07.043161+00:00`
 
 ## Start here
 
@@ -21,16 +21,14 @@ Refreshed at: `2026-11-03T04:30:43.401406+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `c1d37e5243d9` — Backlog lane: heavy queue order after MOD-25
-- Pending change set: 236 paths
+- Baseline commit: `5067f0a3e8ea` — MOD-25: synthetic-data student on the joint-label engine, walk-forward 2020-2025
+- Pending change set: 234 paths
   - ` M CURRENT_PREDICTIONS.md`
+  - `M  HANDOFF.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/mod25-v3-sim11-distill.md`
   - ` M docs/model.html`
-  - `M  registry/weak_signals/mod25_distillation_walkforward.json`
-  - `M  scripts/mod25_v3_produce.py`
   - ` M tiebreaker.json`
   - `?? an.csv`
   - `?? docs/lanes/c-drive-space-2026-10-31.md`
@@ -43,7 +41,9 @@ Refreshed at: `2026-11-03T04:30:43.401406+00:00`
   - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
   - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
   - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
-  - ...and 216 more
+  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
+  - `?? registry/experiments/margin-backtest/20261005T160852Z.json`
+  - ...and 214 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
