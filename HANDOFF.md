@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T21:13:41.433205+00:00`
+Refreshed at: `2026-11-03T21:14:29.806750+00:00`
 
 ## Start here
 
@@ -21,10 +21,10 @@ Refreshed at: `2026-11-03T21:13:41.433205+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `0ed054fc0a11` — ENG-49 ledger served column is now the played card (matches the scorecard in Weeks 1-8; corrected ENG-50 Week 8: stacker +0.0023 log loss, P+ .48); ENG-51 guard refuses closing-line input at an opener grade in the shared research walker; LEAD-102 anonymiser (0 leaks); leader Week 8 picks captured
+- Baseline commit: `9067e392a0a0` — Refresh session handoff
 - Pending change set: 250 paths
-  - `M  HANDOFF.md`
   - ` M config/source_policies.json`
+  - `M  docs/lanes/backlog-all-2026-11-02.md`
   - ` M docs/lanes/lead-103-read-block-ablation.md`
   - ` M docs/lanes/sim-12-sim12-ingame-exits.md`
   - ` M scripts/sim10_drive.py`
