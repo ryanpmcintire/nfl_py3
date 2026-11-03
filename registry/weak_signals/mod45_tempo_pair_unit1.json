@@ -1,0 +1,117 @@
+{
+  "family": "mod45_tempo_pair_unit1",
+  "signals": {
+    "mod45_u1_abs_resid_slope_open_hc": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "abs ATS residual per SD HC expected plays opener 2020-25",
+      "effect": 0.487,
+      "effect_units": "ats_points",
+      "family": "mod45_tempo_pair_unit1",
+      "interval": [
+        0.082,
+        0.905
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.986,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.69,
+      "sample_blocks": null,
+      "sample_games": 1526,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod45/unit1.json",
+      "standard_error": null
+    },
+    "mod45_u1_abs_resid_slope_open_oc": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "abs ATS residual per SD OC expected plays, controls total and abs spread, opener 2020-25",
+      "effect": 0.317,
+      "effect_units": "ats_points",
+      "family": "mod45_tempo_pair_unit1",
+      "interval": [
+        -0.1,
+        0.779
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.915,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.69,
+      "sample_blocks": null,
+      "sample_games": 1526,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod45/unit1.json",
+      "standard_error": null
+    },
+    "mod45_u1_plays_vs_total_open": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "SSE gain per game in plays^2 of OC tempo expected plays over opener total, LOSO season, open 2020-25",
+      "effect": 1.264,
+      "effect_units": "slope_difference",
+      "family": "mod45_tempo_pair_unit1",
+      "interval": [
+        0.405,
+        2.076
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 1.0,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.69,
+      "sample_blocks": null,
+      "sample_games": 1526,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod45/unit1.json",
+      "standard_error": null
+    },
+    "mod45_u1_scaled_lattice_ll_open": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "scaled discrete cover log loss minus base, LOSO beta, opener 2020-25; pick flips 6 (2-4)",
+      "effect": -0.000237,
+      "effect_units": "log_loss_improvement",
+      "family": "mod45_tempo_pair_unit1",
+      "interval": [
+        -0.000444,
+        -3.7e-05
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.009,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.69,
+      "sample_blocks": null,
+      "sample_games": 1492,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod45/unit1.json",
+      "standard_error": null
+    }
+  }
+}
