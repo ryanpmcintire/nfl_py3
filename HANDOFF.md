@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T19:42:24.302670+00:00`
+Refreshed at: `2026-11-03T19:43:36.155385+00:00`
 
 ## Start here
 
@@ -21,16 +21,19 @@ Refreshed at: `2026-11-03T19:42:24.302670+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `74da0c7f4262` — Dashboard round 4: plain Books-now line, plain strategy names, cleaner lock countdown
+- Baseline commit: `8514907cca8b` — ENG-49 matched forward-candidate ledger (scripts/forward_ledger.py); MOD-35 Week 9 forward record written before kickoff
 - Pending change set: 253 paths
+  - `M  HANDOFF.md`
+  - `M  README.md`
   - ` M config/source_policies.json`
-  - `M  docs/lanes/backlog-all-2026-11-02.md`
-  - `M  docs/lanes/eng-49-eng49-matched-forward-ledger.md`
   - ` M docs/lanes/engine-patch-queue-2026-11-03.md`
+  - `M  docs/lanes/per-11-per11-acquired-player-ramp.md`
   - ` M docs/lanes/sim08-spec-a-terminal-2026-11-03.md`
   - ` M docs/lead64_freshness_audit.md`
-  - `A  scripts/forward_ledger.py`
+  - `A  registry/weak_signals/per11_arrival_rampup.json`
+  - `A  scripts/per11_arrival_rampup.py`
   - ` M scripts/sim10_situational.py`
+  - ` M src/nfl_ats/board_terminal.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
   - `?? data/pool_observables/20261103T130853Z/observations.json`
@@ -40,9 +43,6 @@ Refreshed at: `2026-11-03T19:42:24.302670+00:00`
   - `?? docs/move_reasons.json`
   - `?? registry/experiments/margin-backtest/20261001T211134Z.json`
   - `?? registry/experiments/margin-backtest/20261002T161309Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T160924Z.json`
-  - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
   - ...and 233 more
 
 The baseline commit and pending paths were observed before the automatic refresh.

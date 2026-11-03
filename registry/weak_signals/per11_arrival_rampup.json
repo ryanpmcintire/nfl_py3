@@ -1,0 +1,285 @@
+{
+  "family": "per11_arrival_rampup",
+  "signals": {
+    "per11_defense_arrivals_def_epa_vs_placebo_all_k123": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Team EPA per play in games 1-3 (or 2-3) after a starter-level mid-season arrival, as-of baseline, defense_arrivals_def_epa_vs_placebo_all_k123",
+      "effect": 0.0016311635873781985,
+      "effect_units": "epa_per_play",
+      "family": "per11_arrival_rampup",
+      "interval": [
+        -0.027671624777218528,
+        0.03158990350085797
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.5415,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 95,
+      "sample_games": null,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/per11_arrival_rampup/results.json",
+      "standard_error": 0.01528309973481413
+    },
+    "per11_defense_arrivals_def_epa_vs_placebo_pregame_k23": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Team EPA per play in games 1-3 (or 2-3) after a starter-level mid-season arrival, as-of baseline, defense_arrivals_def_epa_vs_placebo_pregame_k23",
+      "effect": 0.0072533250090496834,
+      "effect_units": "epa_per_play",
+      "family": "per11_arrival_rampup",
+      "interval": [
+        -0.026757977505258802,
+        0.041606294619476916
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.659,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 95,
+      "sample_games": null,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/per11_arrival_rampup/results.json",
+      "standard_error": 0.01742210234197645
+    },
+    "per11_offense_arrivals_off_epa_vs_placebo_all_k123": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Team EPA per play in games 1-3 (or 2-3) after a starter-level mid-season arrival, as-of baseline, offense_arrivals_off_epa_vs_placebo_all_k123",
+      "effect": 0.002952120767193107,
+      "effect_units": "epa_per_play",
+      "family": "per11_arrival_rampup",
+      "interval": [
+        -0.02423817134615288,
+        0.02934823799210467
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.58825,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 110,
+      "sample_games": null,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/per11_arrival_rampup/results.json",
+      "standard_error": 0.013921339279367144
+    },
+    "per11_offense_arrivals_off_epa_vs_placebo_pregame_k23": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Team EPA per play in games 1-3 (or 2-3) after a starter-level mid-season arrival, as-of baseline, offense_arrivals_off_epa_vs_placebo_pregame_k23",
+      "effect": -0.0018180222406003527,
+      "effect_units": "epa_per_play",
+      "family": "per11_arrival_rampup",
+      "interval": [
+        -0.03435013544366408,
+        0.029721122916467228
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.46825,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 110,
+      "sample_games": null,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/per11_arrival_rampup/results.json",
+      "standard_error": 0.016240676368773594
+    },
+    "per11_opener_cover_minus_placebo": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Arrival minus 3-game-shifted placebo cover margin vs opener",
+      "effect": -2.003623188405797,
+      "effect_units": "ats_points",
+      "family": "per11_arrival_rampup",
+      "interval": [
+        -4.142853260869565,
+        0.17900362318840582
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.03525,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 115,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/per11_arrival_rampup/results.json",
+      "standard_error": 1.1251096514559522
+    },
+    "per11_opener_cover_vs_zero": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Arrival team cover margin vs opener, games 1-3, vs intercept zero",
+      "effect": -0.31159420289855083,
+      "effect_units": "ats_points",
+      "family": "per11_arrival_rampup",
+      "interval": [
+        -1.7724637681159419,
+        1.1905978260869565
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.33775,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 115,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/per11_arrival_rampup/results.json",
+      "standard_error": 0.7456004864151652
+    },
+    "per11_own_side_vs_asof_all_k123": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Team EPA per play in games 1-3 (or 2-3) after a starter-level mid-season arrival, as-of baseline, own_side_vs_asof_all_k123",
+      "effect": 0.010771933607560341,
+      "effect_units": "epa_per_play",
+      "family": "per11_arrival_rampup",
+      "interval": [
+        -0.003992102014932927,
+        0.025096052704048032
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.9125,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 205,
+      "sample_games": null,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/per11_arrival_rampup/results.json",
+      "standard_error": 0.007623742145442052
+    },
+    "per11_own_side_vs_asof_pregame_k23": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Team EPA per play in games 1-3 (or 2-3) after a starter-level mid-season arrival, as-of baseline, own_side_vs_asof_pregame_k23",
+      "effect": 0.011535942657634723,
+      "effect_units": "epa_per_play",
+      "family": "per11_arrival_rampup",
+      "interval": [
+        -0.004999506748250739,
+        0.028234246785151622
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.91575,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 205,
+      "sample_games": null,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/per11_arrival_rampup/results.json",
+      "standard_error": 0.008485777841294105
+    },
+    "per11_own_side_vs_placebo_all_k123": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Team EPA per play in games 1-3 (or 2-3) after a starter-level mid-season arrival, as-of baseline, own_side_vs_placebo_all_k123",
+      "effect": 0.0023399698789861967,
+      "effect_units": "epa_per_play",
+      "family": "per11_arrival_rampup",
+      "interval": [
+        -0.017731180887915244,
+        0.021547542366323533
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.6,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 205,
+      "sample_games": null,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/per11_arrival_rampup/results.json",
+      "standard_error": 0.01026851744162698
+    },
+    "per11_own_side_vs_placebo_pregame_k23": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Team EPA per play in games 1-3 (or 2-3) after a starter-level mid-season arrival, as-of baseline, own_side_vs_placebo_pregame_k23",
+      "effect": 0.0023857728263106345,
+      "effect_units": "epa_per_play",
+      "family": "per11_arrival_rampup",
+      "interval": [
+        -0.020512782117935204,
+        0.024727028219584724
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.588,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 205,
+      "sample_games": null,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/per11_arrival_rampup/results.json",
+      "standard_error": 0.011854764094541996
+    }
+  }
+}
