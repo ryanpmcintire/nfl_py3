@@ -999,14 +999,10 @@ def _board_section(content: BoardContent, *, archived: bool = False) -> str:
             else:
                 pick_cell = pick_text
             pick_cell += _flip_pill_html(game)
-            if game.pool_edge_text and not game.final and game.market_now is None:
-                _edge_size = {0.25: "¼ pt", 0.5: "½ pt", 0.75: "¾ pt"}.get(
-                    abs(game.pool_edge), f"{abs(game.pool_edge):g} pts"
-                )
-                _edge_word = "better" if game.pool_edge > 0 else "worse"
+            if game.pool_line_badge and not game.final:
                 pick_cell += (
-                    f'<span class="best-flag" title="{escape(game.pool_edge_text)}">'
-                    f"{_edge_size} {_edge_word} than Tuesday</span>"
+                    f'<span class="best-flag" title="{escape(game.pool_line_note)}">'
+                    f"{escape(game.pool_line_badge)}</span>"
                 )
             if game.qb_note:
                 pick_cell += (
@@ -1554,7 +1550,16 @@ def _inspector_section(content: BoardContent, *, archived: bool = False) -> str:
             dive,
             default_game_id=default_game_id,
             explanation_text=(
-                row_by_id[dive.game_id].explanation_text if dive.game_id in row_by_id else ""
+                " ".join(
+                    part
+                    for part in (
+                        row_by_id[dive.game_id].explanation_text,
+                        row_by_id[dive.game_id].pool_line_note,
+                    )
+                    if part
+                )
+                if dive.game_id in row_by_id
+                else ""
             ),
             is_last_game=dive.game_id == last_game_id and not archived,
         )

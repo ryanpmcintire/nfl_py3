@@ -38,6 +38,10 @@ from nfl_ats.market_decomposition import FAMILY_PHRASES
 from nfl_ats.pick_probability import (
     BASE_PROBABILITY_POLICY,
     CALIBRATED_PICK_PROBABILITY_COLUMN,
+    FLAG_SUM_COLUMN,
+    MARKET_LINE_PROBABILITY_COLUMN,
+    MOVE_AVAILABLE_COLUMN,
+    MOVE_COLUMN,
     calibrated_discrete_sweep,
     landing_rate_sentence,
     rule_gate_sentence,
@@ -64,6 +68,7 @@ from nfl_ats.pick_revision_factors import (
     factor_move_sentence,
     model_only_factor_moves,
 )
+from nfl_ats.pool_hook import HOOK_COLUMN
 from nfl_ats.prospective_scoring import (
     DECISION_GRADE,
     load_challenger_decisions,
@@ -112,6 +117,7 @@ from nfl_ats.tiebreaker_history import settled_tiebreakers
 
 _CONFIDENCE_FILL: dict[str, int] = {"slight": 1, "lean": 2, "strong": 3}
 
+POOL_EDGE_SHORT = {0.25: "¼ pt", 0.5: "½ pt", 0.75: "¾ pt"}
 EXPLANATION_NOT_RECORDED_TEXT = "Explanation not recorded for this forecast."
 
 _WEEK_LABELS = {
@@ -219,6 +225,7 @@ class GameRow:
     qb_note: str | None = None
     qb_practice_flag: tuple[str, str] | None = None
     pool_edge: float | None = None
+    pool_hook_effect: float | None = None
     move_reason: str = ""
     move_reason_evidence: tuple[str, ...] = ()
     forecast_text: str = ""
@@ -229,6 +236,34 @@ class GameRow:
             return ""
         size = "Half a point" if abs(self.pool_edge) == 0.5 else f"{abs(self.pool_edge):g} points"
         return f"{size} {'better' if self.pool_edge > 0 else 'worse'} than Tuesday's books"
+
+    @property
+    def pool_effect_text(self) -> str:
+        if self.pool_hook_effect is None:
+            return ""
+        shown = round(self.pool_hook_effect * 100, 1)
+        return "" if shown == 0 else f"{shown:+.1f}"
+
+    @property
+    def pool_line_badge(self) -> str:
+        if not self.pool_edge_text or self.pool_edge is None:
+            return ""
+        size = POOL_EDGE_SHORT.get(abs(self.pool_edge), f"{abs(self.pool_edge):g} pts")
+        word = "better" if self.pool_edge > 0 else "worse"
+        effect = f", {self.pool_effect_text}% to cover" if self.pool_effect_text else ""
+        return f"{size} {word} than Tuesday{effect}"
+
+    @property
+    def pool_line_note(self) -> str:
+        if not self.pool_edge_text:
+            return ""
+        note = f"The pool's line is {self.pool_edge_text.replace('Half', 'half', 1)} for this pick."
+        if self.pool_effect_text:
+            note = (
+                f"{note} That changes its cover chance by {self.pool_effect_text} "
+                "percentage points against the whole-number line."
+            )
+        return note
 
     @property
     def confidence_title(self) -> str:
@@ -2637,6 +2672,22 @@ def _with_move_reasons(
     ]
 
 
+def _pool_hook_effect(model: Any, row: pd.Series, pick_is_home: bool) -> float | None:
+    if not model.has_pool_hook:
+        return None
+    base = pd.Series([_number(row.get(MARKET_LINE_PROBABILITY_COLUMN))], dtype=float)
+    if base.isna().any():
+        return None
+    inputs = [
+        pd.Series([_number(row.get(column)) or 0.0], dtype=float)
+        for column in (FLAG_SUM_COLUMN, MOVE_COLUMN, MOVE_AVAILABLE_COLUMN)
+    ]
+    hook = pd.Series([_number(row.get(HOOK_COLUMN)) or 0.0], dtype=float)
+    served = float(model.home_probability(base, *inputs, hook).iloc[0])
+    without = float(model.home_probability(base, *inputs, hook * 0.0).iloc[0])
+    return (served - without) * (1.0 if pick_is_home else -1.0)
+
+
 def _tuesday_market_by_game(
     data_root: Path | None, *, season: float | None, week: float | None, ordered: pd.DataFrame
 ) -> dict[str, float]:
@@ -4172,6 +4223,11 @@ def load_board_content(
         )
         market_now = market_now_by_game.get(game_id)
         tuesday_line = tuesday_market.get(game_id)
+        pool_hook_effect = (
+            _pool_hook_effect(pick_probability, row, team == home_team)
+            if calibrated_mass and pick_probability is not None
+            else None
+        )
         pool_edge = (
             None
             if tuesday_line is None
@@ -4222,6 +4278,7 @@ def load_board_content(
                 qb_note=qb_notes.get(game_id),
                 qb_practice_flag=qb_practice_flags.get(game_id),
                 pool_edge=pool_edge,
+                pool_hook_effect=pool_hook_effect,
             )
         )
 
