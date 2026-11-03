@@ -1,0 +1,145 @@
+{
+  "family": "mkt25_opener_revision",
+  "signals": {
+    "mkt25_cover_adjusted_revision_term_dLL_vs_served": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "LOSO 2020-25 n 1325; flips 184 new side 91-93; coef per fold 0.038..0.093; seasons positive 4/6; season-parity halves -0.00108/0.00082; week-block bootstrap",
+      "closing_ground": null,
+      "description": "Trailing 17-week least-squares rating from closing spreads with fitted home field; opener minus implied spread; leave-one-season-out terms on the served logit; 9 looks, graded at opener, intercept-only control",
+      "effect": -0.0001,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt25_opener_revision",
+      "interval": [
+        -0.00162,
+        0.00134
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the size of the opener's revision from last week's closing-line ratings, beyond what the prior cover margin predicts, adds to the opener-graded pick probability.",
+      "probability_positive": 0.45,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mkt25_opener_revision.py; tests/scratch/mkt25_out.txt",
+      "standard_error": null
+    },
+    "mkt25_cover_move_injury_adjusted_revision_term_dLL_vs_served": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "LOSO 2020-25 n 1325; flips 189 new side 94-95; coef per fold 0.041..0.092; seasons positive 4/6; season-parity halves -0.00100/0.00081; week-block bootstrap",
+      "closing_ground": null,
+      "description": "Trailing 17-week least-squares rating from closing spreads with fitted home field; opener minus implied spread; leave-one-season-out terms on the served logit; 9 looks, graded at opener, intercept-only control",
+      "effect": -7e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt25_opener_revision",
+      "interval": [
+        -0.00164,
+        0.00149
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the size of the opener's revision from last week's closing-line ratings, beyond what the prior cover margin predicts, adds to the opener-graded pick probability.",
+      "probability_positive": 0.478,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mkt25_opener_revision.py; tests/scratch/mkt25_out.txt",
+      "standard_error": null
+    },
+    "mkt25_raw_revision_term_dLL_vs_served": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "LOSO 2020-25 n 1325; flips 129 new side 71-58; coef per fold 0.016..0.071; seasons positive 3/6; season-parity halves -0.00093/0.00031; week-block bootstrap",
+      "closing_ground": null,
+      "description": "Trailing 17-week least-squares rating from closing spreads with fitted home field; opener minus implied spread; leave-one-season-out terms on the served logit; 9 looks, graded at opener, intercept-only control",
+      "effect": -0.00029,
+      "effect_units": "log_loss_improvement",
+      "family": "mkt25_opener_revision",
+      "interval": [
+        -0.00126,
+        0.00069
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the size of the opener's revision from last week's closing-line ratings, beyond what the prior cover margin predicts, adds to the opener-graded pick probability.",
+      "probability_positive": 0.294,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mkt25_opener_revision.py; tests/scratch/mkt25_out.txt",
+      "standard_error": null
+    },
+    "mkt25_revision_on_injury_news_slope": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "n 1325; season-parity halves -0.0222/-0.0582; week-block bootstrap; slope of opener revision on home-minus-away change in Out/Doubtful count",
+      "closing_ground": null,
+      "description": "Trailing 17-week least-squares rating from closing spreads with fitted home field; opener minus implied spread; leave-one-season-out terms on the served logit; 9 looks, graded at opener, intercept-only control",
+      "effect": -0.0405,
+      "effect_units": "slope_difference",
+      "family": "mkt25_opener_revision",
+      "interval": [
+        -0.1267,
+        0.04
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the size of the opener's revision from last week's closing-line ratings, beyond what the prior cover margin predicts, adds to the opener-graded pick probability.",
+      "probability_positive": 0.17,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mkt25_opener_revision.py; tests/scratch/mkt25_out.txt",
+      "standard_error": null
+    },
+    "mkt25_revision_on_prior_line_move_slope": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "n 1325; season-parity halves -0.0464/0.1231; week-block bootstrap; slope of opener revision on home-minus-away prior-game line move",
+      "closing_ground": null,
+      "description": "Trailing 17-week least-squares rating from closing spreads with fitted home field; opener minus implied spread; leave-one-season-out terms on the served logit; 9 looks, graded at opener, intercept-only control",
+      "effect": 0.0473,
+      "effect_units": "slope_difference",
+      "family": "mkt25_opener_revision",
+      "interval": [
+        -0.054,
+        0.1461
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the size of the opener's revision from last week's closing-line ratings, beyond what the prior cover margin predicts, adds to the opener-graded pick probability.",
+      "probability_positive": 0.836,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/mkt25_opener_revision.py; tests/scratch/mkt25_out.txt",
+      "standard_error": null
+    }
+  }
+}

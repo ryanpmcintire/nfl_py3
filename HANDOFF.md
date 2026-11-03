@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T21:37:44.068626+00:00`
+Refreshed at: `2026-11-03T21:38:27.580718+00:00`
 
 ## Start here
 
@@ -21,12 +21,14 @@ Refreshed at: `2026-11-03T21:37:44.068626+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `20e20f34fa9a` — Master lane state
+- Baseline commit: `8d25e9442a1c` — Refresh session handoff
 - Pending change set: 252 paths
-  - `M  HANDOFF.md`
-  - `M  README.md`
   - ` M config/source_policies.json`
   - ` M docs/lanes/lead-102-name-blinded-control-read.md`
+  - `M  docs/lanes/mkt-25-opener-revision-size.md`
+  - ` M docs/lanes/sim-19-trailing-risk.md`
+  - `A  registry/weak_signals/mkt25_opener_revision.json`
+  - `A  scripts/mkt25_opener_revision.py`
   - ` M scripts/sim10_drive.py`
   - `?? an.csv`
   - `?? data/pool_observables/20261103T130853Z/manifest.json`
@@ -41,8 +43,6 @@ Refreshed at: `2026-11-03T21:37:44.068626+00:00`
   - `?? registry/experiments/margin-backtest/20261003T173843Z.json`
   - `?? registry/experiments/margin-backtest/20261004T000141Z.json`
   - `?? registry/experiments/margin-backtest/20261004T001651Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T134139Z.json`
-  - `?? registry/experiments/margin-backtest/20261004T160854Z.json`
   - ...and 232 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
