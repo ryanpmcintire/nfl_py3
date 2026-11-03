@@ -1,0 +1,323 @@
+{
+  "family": "xlg15_cfb_trait_reliability",
+  "signals": {
+    "xlg15_cfb_pricing_fourth_down_go_residual_2014-2019": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CFB opener ATS margin on as-of fourth_down_go_residual, per SD, game bootstrap, 2014-2019.",
+      "effect": 0.08885144264802722,
+      "effect_units": "ats_points",
+      "family": "xlg15_cfb_trait_reliability",
+      "interval": [
+        -0.4076173425146027,
+        0.5819067886629026
+      ],
+      "league": "cfb",
+      "notes": "3 traits x 2 eras x (reliability, pricing) = 12 cells. CPOE gap not buildable from CFB play-by-play.",
+      "plain_summary": "Whether the college opener already prices this trait.",
+      "probability_positive": 0.641,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.585583232675678,
+      "sample_blocks": null,
+      "sample_games": 4130,
+      "seasons": [
+        2014,
+        2019
+      ],
+      "source": "artifacts/xlg15/report.json",
+      "standard_error": 0.25293544362145204
+    },
+    "xlg15_cfb_pricing_fourth_down_go_residual_2023-2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CFB opener ATS margin on as-of fourth_down_go_residual, per SD, game bootstrap, 2023-2025.",
+      "effect": 0.23534811937091904,
+      "effect_units": "ats_points",
+      "family": "xlg15_cfb_trait_reliability",
+      "interval": [
+        -0.37418617469291643,
+        0.8546239127981804
+      ],
+      "league": "cfb",
+      "notes": "3 traits x 2 eras x (reliability, pricing) = 12 cells. CPOE gap not buildable from CFB play-by-play.",
+      "plain_summary": "Whether the college opener already prices this trait.",
+      "probability_positive": 0.7905,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.6301166138146856,
+      "sample_blocks": null,
+      "sample_games": 2239,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/xlg15/report.json",
+      "standard_error": 0.31551148098261284
+    },
+    "xlg15_cfb_pricing_pass_oe_when_ahead_2014-2019": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CFB opener ATS margin on as-of pass_oe_when_ahead, per SD, game bootstrap, 2014-2019.",
+      "effect": -0.30343280715927445,
+      "effect_units": "ats_points",
+      "family": "xlg15_cfb_trait_reliability",
+      "interval": [
+        -0.8031535347235883,
+        0.20015048208317215
+      ],
+      "league": "cfb",
+      "notes": "3 traits x 2 eras x (reliability, pricing) = 12 cells. CPOE gap not buildable from CFB play-by-play.",
+      "plain_summary": "Whether the college opener already prices this trait.",
+      "probability_positive": 0.1245,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.597042290310073,
+      "sample_blocks": null,
+      "sample_games": 4113,
+      "seasons": [
+        2014,
+        2019
+      ],
+      "source": "artifacts/xlg15/report.json",
+      "standard_error": 0.2606682369113284
+    },
+    "xlg15_cfb_pricing_pass_oe_when_ahead_2023-2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CFB opener ATS margin on as-of pass_oe_when_ahead, per SD, game bootstrap, 2023-2025.",
+      "effect": 0.22824630331241186,
+      "effect_units": "ats_points",
+      "family": "xlg15_cfb_trait_reliability",
+      "interval": [
+        -0.4705702666006107,
+        0.9260179470607807
+      ],
+      "league": "cfb",
+      "notes": "3 traits x 2 eras x (reliability, pricing) = 12 cells. CPOE gap not buildable from CFB play-by-play.",
+      "plain_summary": "Whether the college opener already prices this trait.",
+      "probability_positive": 0.7535,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.5744258335162399,
+      "sample_blocks": null,
+      "sample_games": 2222,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/xlg15/report.json",
+      "standard_error": 0.3512101336295455
+    },
+    "xlg15_cfb_pricing_venue_false_starts_2014-2019": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CFB opener ATS margin on as-of venue_false_starts, per SD, game bootstrap, 2014-2019.",
+      "effect": 0.028650021077464064,
+      "effect_units": "ats_points",
+      "family": "xlg15_cfb_trait_reliability",
+      "interval": [
+        -0.4932021246591033,
+        0.5977544731185627
+      ],
+      "league": "cfb",
+      "notes": "3 traits x 2 eras x (reliability, pricing) = 12 cells. CPOE gap not buildable from CFB play-by-play.",
+      "plain_summary": "Whether the college opener already prices this trait.",
+      "probability_positive": 0.549,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.610270925264728,
+      "sample_blocks": null,
+      "sample_games": 4009,
+      "seasons": [
+        2014,
+        2019
+      ],
+      "source": "artifacts/xlg15/report.json",
+      "standard_error": 0.273581309251438
+    },
+    "xlg15_cfb_pricing_venue_false_starts_2023-2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CFB opener ATS margin on as-of venue_false_starts, per SD, game bootstrap, 2023-2025.",
+      "effect": -0.1399620324344396,
+      "effect_units": "ats_points",
+      "family": "xlg15_cfb_trait_reliability",
+      "interval": [
+        -0.7789339337510792,
+        0.455972340599436
+      ],
+      "league": "cfb",
+      "notes": "3 traits x 2 eras x (reliability, pricing) = 12 cells. CPOE gap not buildable from CFB play-by-play.",
+      "plain_summary": "Whether the college opener already prices this trait.",
+      "probability_positive": 0.3305,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.21983828335076286,
+      "sample_blocks": null,
+      "sample_games": 2163,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/xlg15/report.json",
+      "standard_error": 0.31798234749467846
+    },
+    "xlg15_cfb_reliability_fourth_down_go_residual_2014-2019": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CFB split-half reliability (odd/even game within team-season, venue by season parity), fourth_down_go_residual, 2014-2019.",
+      "effect": 0.41401038661570494,
+      "effect_units": "correlation",
+      "family": "xlg15_cfb_trait_reliability",
+      "interval": null,
+      "league": "cfb",
+      "notes": "3 traits x 2 eras x (reliability, pricing) = 12 cells. CPOE gap not buildable from CFB play-by-play.",
+      "plain_summary": "Split-half reliability of the trait on college play-by-play.",
+      "probability_positive": null,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.585583232675678,
+      "sample_blocks": 904,
+      "sample_games": null,
+      "seasons": [
+        2014,
+        2019
+      ],
+      "source": "artifacts/xlg15/report.json",
+      "standard_error": null
+    },
+    "xlg15_cfb_reliability_fourth_down_go_residual_2023-2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CFB split-half reliability (odd/even game within team-season, venue by season parity), fourth_down_go_residual, 2023-2025.",
+      "effect": 0.45997828732660095,
+      "effect_units": "correlation",
+      "family": "xlg15_cfb_trait_reliability",
+      "interval": null,
+      "league": "cfb",
+      "notes": "3 traits x 2 eras x (reliability, pricing) = 12 cells. CPOE gap not buildable from CFB play-by-play.",
+      "plain_summary": "Split-half reliability of the trait on college play-by-play.",
+      "probability_positive": null,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.6301166138146856,
+      "sample_blocks": 515,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/xlg15/report.json",
+      "standard_error": null
+    },
+    "xlg15_cfb_reliability_pass_oe_when_ahead_2014-2019": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CFB split-half reliability (odd/even game within team-season, venue by season parity), pass_oe_when_ahead, 2014-2019.",
+      "effect": 0.4255597201443995,
+      "effect_units": "correlation",
+      "family": "xlg15_cfb_trait_reliability",
+      "interval": null,
+      "league": "cfb",
+      "notes": "3 traits x 2 eras x (reliability, pricing) = 12 cells. CPOE gap not buildable from CFB play-by-play.",
+      "plain_summary": "Split-half reliability of the trait on college play-by-play.",
+      "probability_positive": null,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.597042290310073,
+      "sample_blocks": 678,
+      "sample_games": null,
+      "seasons": [
+        2014,
+        2019
+      ],
+      "source": "artifacts/xlg15/report.json",
+      "standard_error": null
+    },
+    "xlg15_cfb_reliability_pass_oe_when_ahead_2023-2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CFB split-half reliability (odd/even game within team-season, venue by season parity), pass_oe_when_ahead, 2023-2025.",
+      "effect": 0.4029434925389297,
+      "effect_units": "correlation",
+      "family": "xlg15_cfb_trait_reliability",
+      "interval": null,
+      "league": "cfb",
+      "notes": "3 traits x 2 eras x (reliability, pricing) = 12 cells. CPOE gap not buildable from CFB play-by-play.",
+      "plain_summary": "Split-half reliability of the trait on college play-by-play.",
+      "probability_positive": null,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.5744258335162399,
+      "sample_blocks": 359,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/xlg15/report.json",
+      "standard_error": null
+    },
+    "xlg15_cfb_reliability_venue_false_starts_2014-2019": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CFB split-half reliability (odd/even game within team-season, venue by season parity), venue_false_starts, 2014-2019.",
+      "effect": 0.43912942195656224,
+      "effect_units": "correlation",
+      "family": "xlg15_cfb_trait_reliability",
+      "interval": null,
+      "league": "cfb",
+      "notes": "3 traits x 2 eras x (reliability, pricing) = 12 cells. CPOE gap not buildable from CFB play-by-play.",
+      "plain_summary": "Split-half reliability of the trait on college play-by-play.",
+      "probability_positive": null,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.610270925264728,
+      "sample_blocks": 131,
+      "sample_games": null,
+      "seasons": [
+        2014,
+        2019
+      ],
+      "source": "artifacts/xlg15/report.json",
+      "standard_error": null
+    },
+    "xlg15_cfb_reliability_venue_false_starts_2023-2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CFB split-half reliability (odd/even game within team-season, venue by season parity), venue_false_starts, 2023-2025.",
+      "effect": 0.12349343393619322,
+      "effect_units": "correlation",
+      "family": "xlg15_cfb_trait_reliability",
+      "interval": null,
+      "league": "cfb",
+      "notes": "3 traits x 2 eras x (reliability, pricing) = 12 cells. CPOE gap not buildable from CFB play-by-play.",
+      "plain_summary": "Split-half reliability of the trait on college play-by-play.",
+      "probability_positive": null,
+      "recorded_at": "2026-11-03",
+      "reliability": 0.21983828335076286,
+      "sample_blocks": 138,
+      "sample_games": null,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/xlg15/report.json",
+      "standard_error": null
+    }
+  }
+}

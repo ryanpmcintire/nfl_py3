@@ -23,7 +23,7 @@ FAMILY = "per13_locked_seed_rest"
 def team_rows():
     tw = pd.read_csv(STAKES)
     tw = tw[tw.week.isin(WEEKS)][
-        ["season", "week", "team", "locked", "elim", "p_make", "seed_modal"]
+        ["season", "week", "team", "locked", "elim", "p_make", "seed_modal", "p_seed_modal"]
     ]
     g = pd.read_parquet(FEATURES)[
         ["game_id", "season", "week", "home_team", "away_team", "result", "spread_line"]

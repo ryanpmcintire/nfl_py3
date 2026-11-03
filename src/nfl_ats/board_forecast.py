@@ -13,7 +13,9 @@ EASTERN = ZoneInfo("America/New_York")
 KNOTS_TO_MPH = 1.15078
 INDOOR_ROOFS = {"dome", "closed"}
 FORECAST_STEP_HOURS = 12
-STATION_MAP = Path(__file__).resolve().parents[2] / "registry" / "reference" / "stadium_station_map.csv"
+STATION_MAP = (
+    Path(__file__).resolve().parents[2] / "registry" / "reference" / "stadium_station_map.csv"
+)
 
 
 def _kickoff_utc(gameday: object, gametime: object) -> pd.Timestamp | None:
@@ -57,12 +59,12 @@ def _chip(payload: dict, kickoff: pd.Timestamp) -> str:
         return ""
     wind_row = _nearest(rows, kickoff, "wsp")
     rain_row = _nearest(rows, kickoff, "p12") or _nearest(rows, kickoff, "p06")
-    parts = [f"{int(round(float(temp_row['tmp'])))}°F"]
+    parts = [f"{round(float(temp_row['tmp']))}°F"]
     if wind_row is not None:
-        parts.append(f"wind {int(round(float(wind_row['wsp']) * KNOTS_TO_MPH))} mph")
+        parts.append(f"wind {round(float(wind_row['wsp']) * KNOTS_TO_MPH)} mph")
     if rain_row is not None:
         rain = rain_row["p12"] if rain_row.get("p12") is not None else rain_row["p06"]
-        parts.append(f"{int(round(float(rain)))}% chance of rain")
+        parts.append(f"{round(float(rain))}% chance of rain")
     cached = pd.Timestamp(payload["cached_at_utc"]).tz_convert(EASTERN)
     return f"Kickoff forecast as of {cached.strftime('%A')}: " + ", ".join(parts)
 

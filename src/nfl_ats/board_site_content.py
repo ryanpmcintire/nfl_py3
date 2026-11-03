@@ -1230,7 +1230,8 @@ def _load_forward_tests(artifacts_root: Path | None) -> tuple[tuple[str, str, st
         if evidence >= threshold:
             status = "Settled in its favour" if gain > 0 else "Settled against it"
         else:
-            status = "Early lean for it, not settled" if gain > 0 else "Early lean against it, not settled"
+            side = "for" if gain > 0 else "against"
+            status = f"Early lean {side} it, not settled"
         rows.append(
             (
                 name,

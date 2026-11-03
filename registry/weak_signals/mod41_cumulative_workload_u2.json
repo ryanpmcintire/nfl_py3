@@ -1,0 +1,313 @@
+{
+  "family": "mod41_cumulative_workload_u2",
+  "signals": {
+    "mod41_u2_joint_abc_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap, 11 looks; permutation null for total p 0.002.",
+      "closing_ground": null,
+      "description": "Cumulative-workload component joint_abc added to logit_s, LOSO 2020-25, opener grade, log loss gain vs base (positive better); decisive 228-203 (term-base correct of 431); accuracy gain 1.66 pts p+ 0.86; in-sample gap 0.00151.",
+      "effect": 0.004150481700415876,
+      "effect_units": "log_loss_improvement",
+      "family": "mod41_cumulative_workload_u2",
+      "interval": [
+        -0.0015779170963276246,
+        0.010022973089656325
+      ],
+      "league": "nfl",
+      "notes": "Base is the served probability logit except the first cell; 361 weeks 1-4 games carry term 0.",
+      "plain_summary": "Tests whether a team's recent plays workload adds to the served probability at the opener; usable games only.",
+      "probability_positive": 0.926,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1142,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod41/unit2_components.json",
+      "standard_error": 0.0029594107617305996
+    },
+    "mod41_u2_opp_given_rest_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap, 11 looks; permutation null for total p 0.002.",
+      "closing_ground": null,
+      "description": "Cumulative-workload component opp_given_rest added to logit_s+rest_diff, LOSO 2020-25, opener grade, log loss gain vs base (positive better); decisive 119-110 (term-base correct of 229); accuracy gain 0.60 pts p+ 0.72; in-sample gap 0.00045.",
+      "effect": 0.00013421926807821727,
+      "effect_units": "log_loss_improvement",
+      "family": "mod41_cumulative_workload_u2",
+      "interval": [
+        -0.0016112394250475614,
+        0.0019425249800619133
+      ],
+      "league": "nfl",
+      "notes": "Base is the served probability logit except the first cell; 361 weeks 1-4 games carry term 0.",
+      "plain_summary": "Tests whether a team's recent plays workload adds to the served probability at the opener; usable games only.",
+      "probability_positive": 0.574,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1142,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod41/unit2_components.json",
+      "standard_error": 0.0009065725523238456
+    },
+    "mod41_u2_opp_tempo_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap, 11 looks; permutation null for total p 0.002.",
+      "closing_ground": null,
+      "description": "Cumulative-workload component opp_tempo added to logit_s, LOSO 2020-25, opener grade, log loss gain vs base (positive better); decisive 125-113 (term-base correct of 238); accuracy gain 0.80 pts p+ 0.79; in-sample gap 0.00042.",
+      "effect": 0.00017209744141211125,
+      "effect_units": "log_loss_improvement",
+      "family": "mod41_cumulative_workload_u2",
+      "interval": [
+        -0.0015950976559567676,
+        0.0020009010167013367
+      ],
+      "league": "nfl",
+      "notes": "Base is the served probability logit except the first cell; 361 weeks 1-4 games carry term 0.",
+      "plain_summary": "Tests whether a team's recent plays workload adds to the served probability at the opener; usable games only.",
+      "probability_positive": 0.592,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1142,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod41/unit2_components.json",
+      "standard_error": 0.0009173466001678837
+    },
+    "mod41_u2_own_given_rest_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap, 11 looks; permutation null for total p 0.002.",
+      "closing_ground": null,
+      "description": "Cumulative-workload component own_given_rest added to logit_s+rest_diff, LOSO 2020-25, opener grade, log loss gain vs base (positive better); decisive 105-125 (term-base correct of 230); accuracy gain -1.33 pts p+ 0.10; in-sample gap 0.00074.",
+      "effect": -0.00031086305914529433,
+      "effect_units": "log_loss_improvement",
+      "family": "mod41_cumulative_workload_u2",
+      "interval": [
+        -0.002003997516230951,
+        0.0012429142953902304
+      ],
+      "league": "nfl",
+      "notes": "Base is the served probability logit except the first cell; 361 weeks 1-4 games carry term 0.",
+      "plain_summary": "Tests whether a team's recent plays workload adds to the served probability at the opener; usable games only.",
+      "probability_positive": 0.353,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1142,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod41/unit2_components.json",
+      "standard_error": 0.0008282938294951994
+    },
+    "mod41_u2_own_tempo_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap, 11 looks; permutation null for total p 0.002.",
+      "closing_ground": null,
+      "description": "Cumulative-workload component own_tempo added to logit_s, LOSO 2020-25, opener grade, log loss gain vs base (positive better); decisive 100-130 (term-base correct of 230); accuracy gain -2.00 pts p+ 0.03; in-sample gap 0.00072.",
+      "effect": -0.00029538291806074923,
+      "effect_units": "log_loss_improvement",
+      "family": "mod41_cumulative_workload_u2",
+      "interval": [
+        -0.0019880551566469587,
+        0.001234554637901964
+      ],
+      "league": "nfl",
+      "notes": "Base is the served probability logit except the first cell; 361 weeks 1-4 games carry term 0.",
+      "plain_summary": "Tests whether a team's recent plays workload adds to the served probability at the opener; usable games only.",
+      "probability_positive": 0.358,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1142,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod41/unit2_components.json",
+      "standard_error": 0.0008220943353441129
+    },
+    "mod41_u2_resid_given_rest_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap, 11 looks; permutation null for total p 0.002.",
+      "closing_ground": null,
+      "description": "Cumulative-workload component resid_given_rest added to logit_s+rest_diff, LOSO 2020-25, opener grade, log loss gain vs base (positive better); decisive 196-187 (term-base correct of 383); accuracy gain 0.60 pts p+ 0.65; in-sample gap 0.00030.",
+      "effect": 0.0040759804682555245,
+      "effect_units": "log_loss_improvement",
+      "family": "mod41_cumulative_workload_u2",
+      "interval": [
+        -0.0012367020018820617,
+        0.009438836909441955
+      ],
+      "league": "nfl",
+      "notes": "Base is the served probability logit except the first cell; 361 weeks 1-4 games carry term 0.",
+      "plain_summary": "Tests whether a team's recent plays workload adds to the served probability at the opener; usable games only.",
+      "probability_positive": 0.946,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1142,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod41/unit2_components.json",
+      "standard_error": 0.002723351763092861
+    },
+    "mod41_u2_resid_load_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap, 11 looks; permutation null for total p 0.002.",
+      "closing_ground": null,
+      "description": "Cumulative-workload component resid_load added to logit_s, LOSO 2020-25, opener grade, log loss gain vs base (positive better); decisive 209-193 (term-base correct of 402); accuracy gain 1.06 pts p+ 0.77; in-sample gap 0.00031.",
+      "effect": 0.004058555850872891,
+      "effect_units": "log_loss_improvement",
+      "family": "mod41_cumulative_workload_u2",
+      "interval": [
+        -0.0011994092671537059,
+        0.00940229075599631
+      ],
+      "league": "nfl",
+      "notes": "Base is the served probability logit except the first cell; 361 weeks 1-4 games carry term 0.",
+      "plain_summary": "Tests whether a team's recent plays workload adds to the served probability at the opener; usable games only.",
+      "probability_positive": 0.945,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1142,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod41/unit2_components.json",
+      "standard_error": 0.002704515312028065
+    },
+    "mod41_u2_rest_only_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap, 11 looks; permutation null for total p 0.002.",
+      "closing_ground": null,
+      "description": "Cumulative-workload component rest_only added to logit_s, LOSO 2020-25, opener grade, log loss gain vs base (positive better); decisive 38-42 (term-base correct of 80); accuracy gain -0.27 pts p+ 0.31; in-sample gap 0.00055.",
+      "effect": -0.000422394356289435,
+      "effect_units": "log_loss_improvement",
+      "family": "mod41_cumulative_workload_u2",
+      "interval": [
+        -0.0014623302764474849,
+        0.0005487586966249285
+      ],
+      "league": "nfl",
+      "notes": "Base is the served probability logit except the first cell; 361 weeks 1-4 games carry term 0.",
+      "plain_summary": "Tests whether a team's recent plays workload adds to the served probability at the opener; usable games only.",
+      "probability_positive": 0.22,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1142,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod41/unit2_components.json",
+      "standard_error": 0.000513032901293983
+    },
+    "mod41_u2_total_given_rest_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap, 11 looks; permutation null for total p 0.002.",
+      "closing_ground": null,
+      "description": "Cumulative-workload component total_given_rest added to logit_s+rest_diff, LOSO 2020-25, opener grade, log loss gain vs base (positive better); decisive 211-184 (term-base correct of 395); accuracy gain 1.80 pts p+ 0.90; in-sample gap 0.00025.",
+      "effect": 0.005030455123736122,
+      "effect_units": "log_loss_improvement",
+      "family": "mod41_cumulative_workload_u2",
+      "interval": [
+        -0.0005252549301843351,
+        0.010748935123610836
+      ],
+      "league": "nfl",
+      "notes": "Base is the served probability logit except the first cell; 361 weeks 1-4 games carry term 0.",
+      "plain_summary": "Tests whether a team's recent plays workload adds to the served probability at the opener; usable games only.",
+      "probability_positive": 0.962,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1142,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod41/unit2_components.json",
+      "standard_error": 0.0028760688912742786
+    },
+    "mod41_u2_total_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap, 11 looks; permutation null for total p 0.002.",
+      "closing_ground": null,
+      "description": "Cumulative-workload component total added to logit_s, LOSO 2020-25, opener grade, log loss gain vs base (positive better); decisive 228-188 (term-base correct of 416); accuracy gain 2.66 pts p+ 0.97; in-sample gap 0.00026.",
+      "effect": 0.005028728778271763,
+      "effect_units": "log_loss_improvement",
+      "family": "mod41_cumulative_workload_u2",
+      "interval": [
+        -0.0005943039262632565,
+        0.010717319649135625
+      ],
+      "league": "nfl",
+      "notes": "Base is the served probability logit except the first cell; 361 weeks 1-4 games carry term 0.",
+      "plain_summary": "Tests whether a team's recent plays workload adds to the served probability at the opener; usable games only.",
+      "probability_positive": 0.962,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1142,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod41/unit2_components.json",
+      "standard_error": 0.002885618259030327
+    },
+    "mod41_u2_total_vs_logit_p_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap, 11 looks; permutation null for total p 0.002.",
+      "closing_ground": null,
+      "description": "Cumulative-workload component total_vs_logit_p added to logit_p, LOSO 2020-25, opener grade, log loss gain vs base (positive better); decisive 224-209 (term-base correct of 433); accuracy gain 1.00 pts p+ 0.74; in-sample gap 0.00030.",
+      "effect": 0.005067205444833078,
+      "effect_units": "log_loss_improvement",
+      "family": "mod41_cumulative_workload_u2",
+      "interval": [
+        -0.0005139882322402422,
+        0.010780761563742221
+      ],
+      "league": "nfl",
+      "notes": "Base is the served probability logit except the first cell; 361 weeks 1-4 games carry term 0.",
+      "plain_summary": "Tests whether a team's recent plays workload adds to the prior opener probability at the opener; usable games only.",
+      "probability_positive": 0.962,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1142,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod41/unit2_components.json",
+      "standard_error": 0.002881313723464914
+    }
+  }
+}

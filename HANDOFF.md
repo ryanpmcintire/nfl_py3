@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T20:05:29.643917+00:00`
+Refreshed at: `2026-11-03T20:52:00.268427+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-03T20:05:29.643917+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `168b53972dce` — UI-25: 'When we will know' table on Findings (forward tests, games scored, ahead or behind the card, games still needed; from the anytime-valid monitor)
-- Pending change set: 272 paths
-  - `M  CURRENT_PREDICTIONS.md`
-  - ` M ROADMAP.md`
+- Baseline commit: `1872fafe7dee` — Republish the site with the latest settled results
+- Pending change set: 274 paths
+  - `M  ROADMAP.md`
   - ` M config/source_policies.json`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - ` M docs/lanes/mod-41-mod41-cumulative-workload.md`
-  - ` M docs/lanes/sim08-spec-a-terminal-2026-11-03.md`
-  - ` M docs/lead64_freshness_audit.md`
-  - `M  docs/model.html`
-  - ` M scripts/per13_locked_seed_rest.py`
-  - ` M scripts/sim10_situational.py`
-  - `M  tiebreaker.json`
-  - `?? an.csv`
-  - `?? data/pool_observables/20261103T130853Z/manifest.json`
-  - `?? data/pool_observables/20261103T130853Z/observations.json`
-  - `?? docs/lanes/c-drive-space-2026-10-31.md`
-  - `?? docs/lanes/eng-50-online-forward-stacker.md`
-  - `?? docs/lanes/eng-51-opener-input-provenance-guard.md`
-  - `?? docs/lanes/lead-100-lead99-repeat-read-ensemble.md`
-  - ...and 252 more
+  - `A  docs/lanes/eng-50-online-forward-stacker.md`
+  - `A  docs/lanes/eng-51-opener-input-provenance-guard.md`
+  - `A  docs/lanes/lead-100-lead99-repeat-read-ensemble.md`
+  - `A  docs/lanes/lead-101-news-delta-read.md`
+  - `A  docs/lanes/lead-102-name-blinded-control-read.md`
+  - `A  docs/lanes/lead-103-read-block-ablation.md`
+  - `A  docs/lanes/lead-104-read-revision-path.md`
+  - `A  docs/lanes/lead-105-tiebreak-total-read.md`
+  - `A  docs/lanes/mkt-23-spread-total-move-decomposition.md`
+  - `M  docs/lanes/mod-41-mod41-cumulative-workload.md`
+  - `M  docs/lanes/per-13-per13-week17-rest-hazard.md`
+  - `A  docs/lanes/pool-05-ownership-proxy-v2.md`
+  - `M  docs/lanes/sim08-spec-a-terminal-2026-11-03.md`
+  - `A  docs/lanes/ui-28-week-strip-field-percentile.md`
+  - `A  docs/lanes/ui-29-where-we-trail-leader.md`
+  - `M  docs/lanes/xlg-15-xlg15-reliability-transfer.md`
+  - `M  docs/lead64_freshness_audit.md`
+  - `A  registry/weak_signals/mod41_cumulative_workload_u2.json`
+  - ...and 254 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

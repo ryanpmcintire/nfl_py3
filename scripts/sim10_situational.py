@@ -439,12 +439,12 @@ class Situational:
         self.cnt = z["plays"]
         self.nh = z["nh"]
         self.m_row = z["m_row"]
+        self.tags = None
         self.reset()
 
     def reset(self):
         self.last = [0.0, 0.0]
         self.prev_nh = [None, None]
-        self.tags = None
 
     def set_stakes(self, tags_by_pos):
         self.tags = tags_by_pos

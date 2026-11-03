@@ -1,16 +1,16 @@
 # XLG-15 Reliability transfer
 
 ## Goal
-Reliability transfer: measure NFL situational trait reliability on college teams first, then confirm in the NFL (ROADMAP XLG-15).
+Measure NFL situational trait reliability on college first, then test whether CFB openers price it (family xlg15_cfb_trait_reliability).
 
 ## State
-Added 2026-11-03, unmeasured. NFL coach and venue traits rest on 32 teams, so split-half is noisy; college has about 130 teams and far more games. A trait unreliable even in college is closed on a refuted mechanism; one that is reliable gets a sharper NFL test.
+Unit 1 done 2026-11-03 (scripts/xlg15_cfb_trait_reliability.py, scripts/xlg15_batch.py, artifacts/xlg15/report.json; 12 cells recorded, unresolved_below_power). Split-half (alternating games, Spearman-Brown) CFB 2014-19 / 2023-25: pass_oe when ahead 8+ in Q4 .60/.57; 4th-down go residual (LOSO-season GBM, team-season) .59/.63; venue away false starts (home team, season parity) .61/.22 (2023-25 CI -0.18..0.48). Pricing, opener ATS margin per SD of as-of trait, game bootstrap (ats pts, P+): pass_oe -0.30 (.12) / +0.23 (.75); 4th-down +0.10 (.66) / +0.29 (.81); venue +0.03 (.54) / -0.14 (.31). All intervals about +-0.5 to 0.9; unresolved. CPOE gap not buildable.
 
 ## Tried
-Nothing yet. Novelty: XLG-14 (screens a candidate family on college cover accuracy), XLG-10, XLG-12. Grep found no trait-reliability transfer row.
+12 looks (3 traits x 2 eras x reliability, pricing). Team stands in for coach; no referee crew term for false starts.
 
 ## Next
-First unit: Compute split-half reliability by season parity for coach aggression and wind elasticity on college, with permutation nulls, and tabulate beside the NFL values.
+Pool CFB+NFL pricing per trait only if units match; NFL sharper tests for 4th-down and pass_oe remain.
 
 ## Open
-Data: College play-by-play (CFBD key in user env) with the same trait definitions as MOD-31, MOD-32 and MOD-37. Zero crossing closes nothing; record unresolved results with a closing ground.
+Signs not pre-declared; no sign consistent across eras. Slopes near zero with wide intervals.

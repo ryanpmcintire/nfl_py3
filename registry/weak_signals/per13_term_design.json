@@ -1,0 +1,117 @@
+{
+  "family": "per13_term_design",
+  "signals": {
+    "per13_cover_slope_on_pred": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Opener ATS slope on LOSO predicted move, weeks 16-18",
+      "effect": -1.45,
+      "effect_units": "slope_difference",
+      "family": "per13_term_design",
+      "interval": [
+        -5.635,
+        2.924
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Opener ATS slope on LOSO predicted move, weeks 16-18",
+      "probability_positive": 0.2525,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 606,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/per13_locked_seed_rest/term_design_cells.json",
+      "standard_error": null
+    },
+    "per13_decisive_open_vs_pred": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Locked team opener ATS minus LOSO move-predicted, 19 decisive games",
+      "effect": -1.992,
+      "effect_units": "ats_points",
+      "family": "per13_term_design",
+      "interval": [
+        -7.732,
+        4.262
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Locked team opener ATS minus LOSO move-predicted, 19 decisive games",
+      "probability_positive": 0.2595,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 19,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/per13_locked_seed_rest/term_design_cells.json",
+      "standard_error": null
+    },
+    "per13_move_elim_coef": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Elimination-probability difference coefficient on open-to-close move toward team, weeks 16-18",
+      "effect": -0.633,
+      "effect_units": "ats_points",
+      "family": "per13_term_design",
+      "interval": [
+        -1.315,
+        0.027
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Elimination-probability difference coefficient on open-to-close move toward team, weeks 16-18",
+      "probability_positive": 0.032,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 606,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/per13_locked_seed_rest/term_design_cells.json",
+      "standard_error": null
+    },
+    "per13_move_lock_coef": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Lock-probability difference coefficient on open-to-close move toward team, weeks 16-18",
+      "effect": -1.177,
+      "effect_units": "ats_points",
+      "family": "per13_term_design",
+      "interval": [
+        -2.194,
+        -0.218
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Lock-probability difference coefficient on open-to-close move toward team, weeks 16-18",
+      "probability_positive": 0.008,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 606,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/per13_locked_seed_rest/term_design_cells.json",
+      "standard_error": null
+    }
+  }
+}

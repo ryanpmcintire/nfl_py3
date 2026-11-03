@@ -18,3 +18,13 @@ Pregame lock probability feeding a fitted term (logit with opener as input, LOSO
 
 ## Open
 2026 heads-up (inferred, records only, no simulation): leaders BUF, MIN, SF 6-1; PIT, DEN, CHI 6-2 are seed-lock candidates; LAC 0-7, MIA 1-6, TEN, HOU, NO, IND, PHI, NYJ are elimination candidates.
+
+## Unit 2 (2026-11-03) term design
+Script scripts/per13_term_design.py; cells artifacts/per13_locked_seed_rest/term_design_cells.json; frozen term artifacts/forward_terms/per13_locked_rest/ (frozen_coefficients.json with created_at, procedure.md). 5 looks, 4 recorded unresolved_below_power (family per13_term_design).
+- Label: move toward team (close minus open), Weeks 16-18 2009-25, 1212 team rows, 606 games; regressors own-minus-opponent lock probability (p_seed_modal if playoff seed) and (1-p_make), no intercept, LOSO.
+- Lock coef -1.18 [-2.19, -0.22] P+ 0.008; elim coef -0.63 [-1.31, +0.03] P+ 0.032. LOSO R2 vs zero 0.0014 (in-sample 0.0116); 10 of 17 seasons negative.
+- Decisive 19 locked games: opener ATS -2.5 [-8.2, +3.8], LOSO predicted move -0.51; realized minus predicted -1.99 [-7.7, +4.3] P+ 0.26. Cover slope on predicted move -1.45 [-5.6, +2.9] P+ 0.25 (expected +1 if opener unpriced).
+- Pregame unit: P(rest) x starter value is not separately measured; value is absorbed into the coefficient (34 pp snap drop is the unit 1 measure).
+- 2026 as-of-now lock probs (inferred, sim from rating model, 600x300): artifacts/per13_locked_seed_rest/lock_probabilities_2026.csv; P(locked by Wk17 Tue) SF .07, BUF .03, MIN .03; Wk18 SF .18, NYG .17, MIN .13. Elim by Wk17: TEN 1.0, LAC .995, MIA .99, NYJ .94. Refresh weekly: rerun the script.
+## Next (unit 3)
+Forward-log challenger Wk17/18 2026 per procedure.md; the slope sign vs +1 is unresolved. Serving needs pinned pick_probability edit.
