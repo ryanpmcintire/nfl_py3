@@ -1,0 +1,229 @@
+{
+  "family": "mod49_mod41_construction",
+  "signals": {
+    "mod49_OFF_only_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap; 16 looks (8 log loss, 8 accuracy) in the construction family.",
+      "closing_ground": null,
+      "description": "Same term counting only the team's own offensive plays. Served base, LOSO 2020-25, opener grade; decisive 141-114 of 255; accuracy gain 1.80 pts, P+ 0.92; coef -0.0352; permutation p 0.020",
+      "effect": 0.0017553354552140021,
+      "effect_units": "log_loss_improvement",
+      "family": "mod49_mod41_construction",
+      "interval": [
+        -0.002206831253250943,
+        0.005229156034916898
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Same term counting only the team's own offensive plays.",
+      "probability_positive": 0.826,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1142,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod49/construction.json",
+      "standard_error": 0.0018969355326958778
+    },
+    "mod49_PLACEBO_opp_opp_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap; 16 looks (8 log loss, 8 accuracy) in the construction family.",
+      "closing_ground": null,
+      "description": "Placebo: the load of the opponent's previous opponent. Served base, LOSO 2020-25, opener grade; decisive 17-24 of 41; accuracy gain -0.47 pts, P+ 0.13; coef -0.0010; permutation p 0.677",
+      "effect": -0.0007840068238621489,
+      "effect_units": "log_loss_improvement",
+      "family": "mod49_mod41_construction",
+      "interval": [
+        -0.0017297062402435504,
+        0.00017465249390987979
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Placebo: the load of the opponent's previous opponent.",
+      "probability_positive": 0.052,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1142,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod49/construction.json",
+      "standard_error": 0.0004858057995289363
+    },
+    "mod49_PRIOR_norm_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap; 16 looks (8 log loss, 8 accuracy) in the construction family.",
+      "closing_ground": null,
+      "description": "Same term normalised by last season's mean instead of the season so far. Served base, LOSO 2020-25, opener grade; decisive 133-121 of 254; accuracy gain 0.80 pts, P+ 0.73; coef -0.0279; permutation p 0.002",
+      "effect": 0.002577213233701303,
+      "effect_units": "log_loss_improvement",
+      "family": "mod49_mod41_construction",
+      "interval": [
+        -0.0009782942365731432,
+        0.00611960949085662
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Same term normalised by last season's mean instead of the season so far.",
+      "probability_positive": 0.917,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1142,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod49/construction.json",
+      "standard_error": 0.0018106897263851437
+    },
+    "mod49_SEC_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap; 16 looks (8 log loss, 8 accuracy) in the construction family.",
+      "closing_ground": null,
+      "description": "Same term in seconds of possession instead of plays. Served base, LOSO 2020-25, opener grade; decisive 55-66 of 121; accuracy gain -0.73 pts, P+ 0.14; coef -0.0013; permutation p 0.082",
+      "effect": 0.0004325239018746485,
+      "effect_units": "log_loss_improvement",
+      "family": "mod49_mod41_construction",
+      "interval": [
+        -0.0016253767760920884,
+        0.002368235699544646
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Same term in seconds of possession instead of plays.",
+      "probability_positive": 0.675,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1142,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod49/construction.json",
+      "standard_error": 0.001018778692764473
+    },
+    "mod49_V0_baseline_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap; 16 looks (8 log loss, 8 accuracy) in the construction family.",
+      "closing_ground": null,
+      "description": "Baseline construction replicated on the served base. Served base, LOSO 2020-25, opener grade; decisive 157-131 of 288; accuracy gain 1.73 pts, P+ 0.92; coef -0.0439; permutation p 0.002",
+      "effect": 0.004036998482444987,
+      "effect_units": "log_loss_improvement",
+      "family": "mod49_mod41_construction",
+      "interval": [
+        -0.001178074068586421,
+        0.009363148521929768
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Baseline construction replicated on the served base.",
+      "probability_positive": 0.94,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1142,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod49/construction.json",
+      "standard_error": 0.002689087395539844
+    },
+    "mod49_W2_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap; 16 looks (8 log loss, 8 accuracy) in the construction family.",
+      "closing_ground": null,
+      "description": "Same term with a two-game recent window. Served base, LOSO 2020-25, opener grade; decisive 101-104 of 205; accuracy gain -0.20 pts, P+ 0.40; coef -0.0207; permutation p 0.032",
+      "effect": 0.001196997700774527,
+      "effect_units": "log_loss_improvement",
+      "family": "mod49_mod41_construction",
+      "interval": [
+        -0.0022144723030119496,
+        0.004620013847648946
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Same term with a two-game recent window.",
+      "probability_positive": 0.742,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1231,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod49/construction.json",
+      "standard_error": 0.0017434913649645143
+    },
+    "mod49_W4_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap; 16 looks (8 log loss, 8 accuracy) in the construction family.",
+      "closing_ground": null,
+      "description": "Same term with a four-game recent window. Served base, LOSO 2020-25, opener grade; decisive 111-103 of 214; accuracy gain 0.53 pts, P+ 0.67; coef -0.0397; permutation p 0.006",
+      "effect": 0.002018274333864145,
+      "effect_units": "log_loss_improvement",
+      "family": "mod49_mod41_construction",
+      "interval": [
+        -0.0016831486224172436,
+        0.00551674078827464
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Same term with a four-game recent window.",
+      "probability_positive": 0.875,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1045,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod49/construction.json",
+      "standard_error": 0.001836706482319358
+    },
+    "mod49_W5_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap; 16 looks (8 log loss, 8 accuracy) in the construction family.",
+      "closing_ground": null,
+      "description": "Same term with a five-game recent window. Served base, LOSO 2020-25, opener grade; decisive 32-43 of 75; accuracy gain -0.73 pts, P+ 0.13; coef -0.0173; permutation p 0.373",
+      "effect": -0.00028977867378743305,
+      "effect_units": "log_loss_improvement",
+      "family": "mod49_mod41_construction",
+      "interval": [
+        -0.0018745393202149712,
+        0.0012459327624200045
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Same term with a five-game recent window.",
+      "probability_positive": 0.365,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 944,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod49/construction.json",
+      "standard_error": 0.000796038796590555
+    }
+  }
+}
