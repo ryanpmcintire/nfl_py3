@@ -140,6 +140,90 @@
       ],
       "source": "docs/lanes/mod-33-mod33-prior-week-exits.md",
       "standard_error": null
+    },
+    "mod33_qb_designated_only": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "QB exit followed by designation, LOSO v intercept-only",
+      "effect": 0.00026,
+      "effect_units": "log_loss_improvement",
+      "family": "mod33_prior_week_exits",
+      "interval": [
+        -0.00112,
+        0.0016
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.62,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod33/cells_unit2.json",
+      "standard_error": 0.0007
+    },
+    "mod33_qb_split_unit2": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "QB exit with vs without next-week designation, LOSO v intercept-only",
+      "effect": -0.00142,
+      "effect_units": "log_loss_improvement",
+      "family": "mod33_prior_week_exits",
+      "interval": [
+        -0.00384,
+        0.00095
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.1,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod33/cells_unit2.json",
+      "standard_error": 0.0012
+    },
+    "mod33_qb_undesignated_only": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "QB exit not followed by designation, LOSO v intercept-only",
+      "effect": -0.00172,
+      "effect_units": "log_loss_improvement",
+      "family": "mod33_prior_week_exits",
+      "interval": [
+        -0.00345,
+        0.00011
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": null,
+      "probability_positive": 0.03,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/mod33/cells_unit2.json",
+      "standard_error": 0.0009
     }
   }
 }

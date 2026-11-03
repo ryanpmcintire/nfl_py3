@@ -171,12 +171,21 @@ rn = pd.read_parquet(
     sorted(glob.glob(R + "data/players/raw/*/weekly_rosters.parquet"))[-1],
     columns=["season", "team", "week", "gsis_id", "full_name"],
 )
-rn = rn.dropna().drop_duplicates(["season", "team", "gsis_id"])[["season", "team", "gsis_id", "full_name"]]
+rn = rn.dropna().drop_duplicates(["season", "team", "gsis_id"])[
+    ["season", "team", "gsis_id", "full_name"]
+]
 sc = pd.read_parquet(sorted(glob.glob(R + "data/players/raw/*/snap_counts.parquet"))[-1])
 sc = sc[sc.game_type == "REG"]
 sc["snaps"] = sc.offense_snaps.fillna(0) + sc.defense_snaps.fillna(0)
-sc = sc.groupby(["season", "week", "team", "player"]).snaps.sum().reset_index().rename(columns={"player": "full_name"})
-h = hz.merge(rn, left_on=["season", "team", "player"], right_on=["season", "team", "gsis_id"], how="left")
+sc = (
+    sc.groupby(["season", "week", "team", "player"])
+    .snaps.sum()
+    .reset_index()
+    .rename(columns={"player": "full_name"})
+)
+h = hz.merge(
+    rn, left_on=["season", "team", "player"], right_on=["season", "team", "gsis_id"], how="left"
+)
 nxt = ex[["season", "team", "wk"]].copy()
 nxt["next_wk"] = nxt.groupby(["season", "team"]).wk.shift(-1)
 h = h.merge(nxt, on=["season", "team", "wk"])
@@ -214,3 +223,49 @@ print(t.round(3).to_string())
 t.to_csv(args.out + "/timing.csv", index=False)
 with open(args.out + "/cells.json", "w") as fh:
     json.dump(cells, fh, default=float)
+q = h[(h.grp == "QB") & (h.exit > 0)].copy()
+q["k_des"] = q.des_any.astype(float)
+q["k_und"] = (~q.des_any).astype(float)
+qk = q.groupby(["season", "team", "next_wk"])[["k_des", "k_und"]].max().reset_index()
+qk = qk.rename(columns={"next_wk": "week"})
+for side in ("home", "away"):
+    m = qk.rename(columns={"team": side, "k_des": f"{side}_des", "k_und": f"{side}_und"})
+    pg = pg.merge(m, on=["season", side, "week"], how="left")
+pg["d_QBdes"] = pg.home_des.fillna(0) - pg.away_des.fillna(0)
+pg["d_QBund"] = pg.home_und.fillna(0) - pg.away_und.fillna(0)
+sets = {
+    "QB_split": ["d_QBdes", "d_QBund"],
+    "QB_undes_only": ["d_QBund"],
+    "QB_des_only": ["d_QBdes"],
+}
+ucells = []
+for name, cols in sets.items():
+    p1, c1 = loso(pg, cols)
+    m1 = metrics(p1, y)
+    ims, b, se = insample(pg, cols)
+    dec = (p1 > 0.5) != (p0 > 0.5)
+    ll1 = -(y * np.log(p1) + (1 - y) * np.log(1 - p1))
+    d = ll0 - ll1
+    bs = np.array([d[rng.integers(0, len(y), len(y))].mean() for _ in range(args.boots)])
+    cell = {
+        "name": name,
+        "coef": b[2:].tolist(),
+        "se": se[2:].tolist(),
+        "p_coef_positive": [0.5 * (1 + math.erf(v / 2**0.5)) for v in b[2:] / se[2:]],
+        "fold_coefs": c1[:, 2:].round(3).tolist(),
+        "oos": m1,
+        "ins": ims,
+        "ll_improve": float(d.mean()),
+        "p_improve_positive": float((bs > 0).mean()),
+        "ci": [float(np.quantile(bs, 0.025)), float(np.quantile(bs, 0.975))],
+        "decisive": [
+            int(dec.sum()),
+            int(((p1 > 0.5) == (y > 0.5))[dec].sum()),
+            int(((p0 > 0.5) == (y > 0.5))[dec].sum()),
+        ],
+        "nonzero": {c: int((pg[c] != 0).sum()) for c in cols},
+    }
+    ucells.append(cell)
+    print(json.dumps(cell, default=float))
+with open(args.out + "/cells_unit2.json", "w") as fh:
+    json.dump(ucells, fh, default=float)

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T19:34:37.758465+00:00`
+Refreshed at: `2026-11-03T19:36:56.578034+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-03T19:34:37.758465+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `e65c7fe3560c` — SIM-12 in-game starter exits: OL exit -0.038 EPA/play survives placebo; coverage defects fixed (first scrimmage play, DB group)
-- Pending change set: 260 paths
+- Baseline commit: `e259535b569c` — POOL-03 coin-flip ownership term (no real effect once fitted), MOD-33 prior-week exits, MOD-34 residualised add-one: all unresolved
+- Pending change set: 254 paths
   - ` M config/source_policies.json`
   - `M  docs/lanes/backlog-all-2026-11-02.md`
   - ` M docs/lanes/engine-patch-queue-2026-11-03.md`
-  - `M  docs/lanes/mod-34-mod34-orthogonal-add-one.md`
-  - `M  docs/lanes/pool-03-pool03-coin-flip-band-leverage.md`
+  - `A  docs/lanes/mod-33-mod33-prior-week-exits.md`
   - ` M docs/lanes/sim08-spec-a-terminal-2026-11-03.md`
   - ` M docs/lead64_freshness_audit.md`
-  - `A  registry/weak_signals/mod33_prior_week_exits.json`
-  - `A  registry/weak_signals/mod34_residualised_addone.json`
-  - `A  registry/weak_signals/pool03_coinflip_ownership.json`
-  - `A  scripts/mod33_prior_week_exits.py`
-  - `A  scripts/mod34_residualised_addone.py`
-  - `A  scripts/pool03_coinflip_ownership.py`
-  - `A  scripts/pool03_continuous.py`
+  - `M  registry/weak_signals/mod33_prior_week_exits.json`
+  - `M  scripts/mod33_prior_week_exits.py`
   - ` M scripts/sim10_situational.py`
   - ` M src/nfl_ats/board_content.py`
   - ` M src/nfl_ats/board_interactive.css`
   - ` M src/nfl_ats/board_terminal.py`
   - ` M src/nfl_ats/dashboard/findings_content.py`
+  - ` M tests/test_board_content.py`
   - `?? an.csv`
-  - ...and 240 more
+  - `?? data/pool_observables/20261103T130853Z/manifest.json`
+  - `?? data/pool_observables/20261103T130853Z/observations.json`
+  - `?? docs/lanes/c-drive-space-2026-10-31.md`
+  - `?? docs/lanes/machine-crashes-2026-10-31.md`
+  - `?? docs/lanes/stealmybitcoin-ctf.md`
+  - ...and 234 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
