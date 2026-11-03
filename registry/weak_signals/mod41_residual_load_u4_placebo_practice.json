@@ -1,0 +1,285 @@
+{
+  "family": "mod41_residual_load_u4_placebo_practice",
+  "signals": {
+    "mod41_u4_future_load_placebo_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap; 20 looks (3 placebo, 9 mediation arms, 8 practice first-stage slopes in count units not recorded).",
+      "closing_ground": null,
+      "description": "Residual load of each team's next game (unavailable at the pick) added to served logit, LOSO 2020-25, opener grade; decisive 166-165; coef -0.0287; gap 0.00054; overlaps real window by two of three games (corr 0.75).",
+      "effect": 0.0011670506365281108,
+      "effect_units": "log_loss_improvement",
+      "family": "mod41_residual_load_u4_placebo_practice",
+      "interval": [
+        -0.0025414369278982966,
+        0.004647661276297772
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Placebo: if recent workload is the mechanism, load measured after the pick should add little.",
+      "probability_positive": 0.738,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1056,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod41/unit4_placebo_practice.json",
+      "standard_error": 0.0018339536235194053
+    },
+    "mod41_u4_resid_load_given_practice_all_groups_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap; 20 looks (3 placebo, 9 mediation arms, 8 practice first-stage slopes in count units not recorded).",
+      "closing_ground": null,
+      "description": "Residual load added to served logit plus DNP/limited practice count differential (all_groups, home minus away, same-week, after opener), LOSO 2020-25; decisive 183-144; residual coef -0.0447; gap 0.00033.",
+      "effect": 0.004148862500738426,
+      "effect_units": "log_loss_improvement",
+      "family": "mod41_residual_load_u4_placebo_practice",
+      "interval": [
+        -0.0013499035475609406,
+        0.009572113407647775
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Tests whether the workload effect shrinks once practice absences are accounted for.",
+      "probability_positive": 0.947,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1142,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod41/unit4_placebo_practice.json",
+      "standard_error": 0.0027862288151042644
+    },
+    "mod41_u4_resid_load_given_practice_prac_DB_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap; 20 looks (3 placebo, 9 mediation arms, 8 practice first-stage slopes in count units not recorded).",
+      "closing_ground": null,
+      "description": "Residual load added to served logit plus DNP/limited practice count differential (prac_DB, home minus away, same-week, after opener), LOSO 2020-25; decisive 203-180; residual coef -0.0446; gap 0.00028.",
+      "effect": 0.004227409695512496,
+      "effect_units": "log_loss_improvement",
+      "family": "mod41_residual_load_u4_placebo_practice",
+      "interval": [
+        -0.001041643535766898,
+        0.009487623659011901
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Tests whether the workload effect shrinks once practice absences are accounted for.",
+      "probability_positive": 0.951,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1142,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod41/unit4_placebo_practice.json",
+      "standard_error": 0.0026860375496884693
+    },
+    "mod41_u4_resid_load_given_practice_prac_DL_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap; 20 looks (3 placebo, 9 mediation arms, 8 practice first-stage slopes in count units not recorded).",
+      "closing_ground": null,
+      "description": "Residual load added to served logit plus DNP/limited practice count differential (prac_DL, home minus away, same-week, after opener), LOSO 2020-25; decisive 190-175; residual coef -0.0446; gap 0.00034.",
+      "effect": 0.004171208118366909,
+      "effect_units": "log_loss_improvement",
+      "family": "mod41_residual_load_u4_placebo_practice",
+      "interval": [
+        -0.0010488473210821024,
+        0.009605119526745448
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Tests whether the workload effect shrinks once practice absences are accounted for.",
+      "probability_positive": 0.947,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1142,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod41/unit4_placebo_practice.json",
+      "standard_error": 0.0027178486856702937
+    },
+    "mod41_u4_resid_load_given_practice_prac_LB_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap; 20 looks (3 placebo, 9 mediation arms, 8 practice first-stage slopes in count units not recorded).",
+      "closing_ground": null,
+      "description": "Residual load added to served logit plus DNP/limited practice count differential (prac_LB, home minus away, same-week, after opener), LOSO 2020-25; decisive 210-175; residual coef -0.0439; gap 0.00036.",
+      "effect": 0.004015713764754181,
+      "effect_units": "log_loss_improvement",
+      "family": "mod41_residual_load_u4_placebo_practice",
+      "interval": [
+        -0.0011918283414075635,
+        0.009342264677772666
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Tests whether the workload effect shrinks once practice absences are accounted for.",
+      "probability_positive": 0.941,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1142,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod41/unit4_placebo_practice.json",
+      "standard_error": 0.002687268627341895
+    },
+    "mod41_u4_resid_load_given_practice_prac_OL_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap; 20 looks (3 placebo, 9 mediation arms, 8 practice first-stage slopes in count units not recorded).",
+      "closing_ground": null,
+      "description": "Residual load added to served logit plus DNP/limited practice count differential (prac_OL, home minus away, same-week, after opener), LOSO 2020-25; decisive 206-178; residual coef -0.0441; gap 0.00024.",
+      "effect": 0.004184576537411666,
+      "effect_units": "log_loss_improvement",
+      "family": "mod41_residual_load_u4_placebo_practice",
+      "interval": [
+        -0.0010767410696341738,
+        0.009567496409932551
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Tests whether the workload effect shrinks once practice absences are accounted for.",
+      "probability_positive": 0.953,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1142,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod41/unit4_placebo_practice.json",
+      "standard_error": 0.0027153667039711035
+    },
+    "mod41_u4_resid_load_given_practice_prac_QB_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap; 20 looks (3 placebo, 9 mediation arms, 8 practice first-stage slopes in count units not recorded).",
+      "closing_ground": null,
+      "description": "Residual load added to served logit plus DNP/limited practice count differential (prac_QB, home minus away, same-week, after opener), LOSO 2020-25; decisive 193-187; residual coef -0.0432; gap 0.00031.",
+      "effect": 0.003916381648922385,
+      "effect_units": "log_loss_improvement",
+      "family": "mod41_residual_load_u4_placebo_practice",
+      "interval": [
+        -0.0013507504110859103,
+        0.009117361613381773
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Tests whether the workload effect shrinks once practice absences are accounted for.",
+      "probability_positive": 0.942,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1142,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod41/unit4_placebo_practice.json",
+      "standard_error": 0.0026704367409356336
+    },
+    "mod41_u4_resid_load_given_practice_prac_RB_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap; 20 looks (3 placebo, 9 mediation arms, 8 practice first-stage slopes in count units not recorded).",
+      "closing_ground": null,
+      "description": "Residual load added to served logit plus DNP/limited practice count differential (prac_RB, home minus away, same-week, after opener), LOSO 2020-25; decisive 198-181; residual coef -0.0441; gap 0.00028.",
+      "effect": 0.004133736014958367,
+      "effect_units": "log_loss_improvement",
+      "family": "mod41_residual_load_u4_placebo_practice",
+      "interval": [
+        -0.0011983828246496825,
+        0.009464403374669843
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Tests whether the workload effect shrinks once practice absences are accounted for.",
+      "probability_positive": 0.949,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1142,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod41/unit4_placebo_practice.json",
+      "standard_error": 0.002720098520234573
+    },
+    "mod41_u4_resid_load_given_practice_prac_receivers_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap; 20 looks (3 placebo, 9 mediation arms, 8 practice first-stage slopes in count units not recorded).",
+      "closing_ground": null,
+      "description": "Residual load added to served logit plus DNP/limited practice count differential (prac_receivers, home minus away, same-week, after opener), LOSO 2020-25; decisive 194-185; residual coef -0.0436; gap 0.00027.",
+      "effect": 0.004036875832488018,
+      "effect_units": "log_loss_improvement",
+      "family": "mod41_residual_load_u4_placebo_practice",
+      "interval": [
+        -0.0011561884297467016,
+        0.009318674377426728
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Tests whether the workload effect shrinks once practice absences are accounted for.",
+      "probability_positive": 0.948,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1142,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod41/unit4_placebo_practice.json",
+      "standard_error": 0.0026721588793809773
+    },
+    "mod41_u4_same_week_swap_placebo_log_loss_gain": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No positive control and no admissible closing ground; probability_positive from week-blocked bootstrap; 20 looks (3 placebo, 9 mediation arms, 8 practice first-stage slopes in count units not recorded).",
+      "closing_ground": null,
+      "description": "Residual load shuffled among games within the same week, 500 draws; mean, 2.5-97.5 percentile of draws, share positive; observed real gain +0.0041.",
+      "effect": -0.00038439404130838795,
+      "effect_units": "log_loss_improvement",
+      "family": "mod41_residual_load_u4_placebo_practice",
+      "interval": [
+        -0.0016728103170898317,
+        0.000995710962243243
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Placebo: workload assigned to the wrong game in the same week should add nothing.",
+      "probability_positive": 0.226,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1142,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod41/unit4_placebo_practice.json",
+      "standard_error": 0.0006807452243196619
+    }
+  }
+}

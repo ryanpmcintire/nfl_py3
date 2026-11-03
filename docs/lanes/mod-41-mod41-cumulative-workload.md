@@ -38,3 +38,10 @@ Step 2 done 2026-11-03 ~16:15: artifacts/mod41/unit3_injury_mechanism.json, 9 ce
 - First-stage slope of count on residual: QB -.0012 p+ .29, RB -.0021 .25, receivers +.0061 .86, OL +.0002 .55, DL -.0024 .29, LB +.0039 .83, DB -.0057 .20; all intervals straddle 0.
 Reading (inferred): no sign the effect runs through Out/Doubtful designations; receivers and LB lean the expected direction, unresolved. Not closed.
 Next: same-week placebo on residual; practice-status (DNP/limited) rather than game-status; add term to served combine once forward weeks score.
+
+## Unit 4 done 2026-11-03 ~16:32
+scripts/mod41_unit4_placebo_practice.py, artifacts/mod41/unit4_placebo_practice.json, 10 cells recorded (family mod41_residual_load_u4_placebo_practice, unit4_weak_signals_batch.json). 20 looks.
+- Future-load placebo (next game's residual, 1056 rows): ll +.0012 [-.0025,.0046] p+ .74, coef -.029, decisive 166-165; real term on same rows +.0043 p+ .95. Caveat: next-game window overlaps current by 2 of 3 games (corr .75), so it is a weak placebo; the gain is a quarter of the real one.
+- Same-week swap, 500 draws: mean -.0004, 2.5-97.5 [-.0017,.0010], p+ .23; observed .0041 above every percentile.
+- Practice (DNP+limited, same-week report, after opener: mediation only): first stage QB +.0084 [.0017,.0152] p+ .99; receivers +.0126 p+ .91; DB -.0143 p+ .09; RB, OL, DL, LB, all straddle 0. Residual coef stays -.0432 to -.0447, ll gain .0039-.0042 in every arm. No mediation.
+Next: term to served combine once forward weeks score; QB practice slope is the one lean (8 slopes, unadjusted).
