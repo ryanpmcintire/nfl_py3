@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-11-03T16:26:24.091105+00:00`
+Refreshed at: `2026-11-03T16:28:08.661780+00:00`
 
 ## Start here
 
@@ -21,29 +21,29 @@ Refreshed at: `2026-11-03T16:26:24.091105+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `ef98691675cf` — MOD-24 FTN turnover luck; MOD-10 first graph-term look; SIM-08 sim cover read is inverted
-- Pending change set: 258 paths
-  - `M  ROADMAP.md`
+- Baseline commit: `ea1e551b11ed` — ROADMAP reconciled with 2026-11-03 measurements (25 rows annotated)
+- Pending change set: 255 paths
+  - `M  HANDOFF.md`
   - ` M docs/findings.html`
+  - `A  docs/forward_pooling_declaration_2026-11-03.md`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lanes/backlog-all-2026-11-02.md`
-  - `M  docs/lanes/done/lead65-protection-window-split.md`
-  - `M  docs/lanes/done/mod07-prospective-status-audit.md`
-  - `M  docs/lanes/lead75.md`
-  - `M  docs/lanes/mod10-graph-reliability-2026-11-03.md`
-  - `M  docs/lanes/mod24-next-2026-11-03.md`
-  - `M  docs/lanes/news-trigger-refresh.md`
-  - `M  docs/lanes/sky01-news-availability.md`
+  - ` M docs/lanes/mod10-graph-reliability-2026-11-03.md`
   - ` M docs/model.html`
-  - `M  registry/weak_signals/mod10_graph_term.json`
   - ` M scripts/capture_scheduler.py`
   - ` M scripts/mod25d_variance.py`
   - ` M scripts/mod25e_desp.py`
   - ` M scripts/mod25e_rulestr.py`
   - ` M scripts/sim08_market_anchored.py`
   - ` M scripts/sim09_f3.py`
-  - ...and 238 more
+  - ` M scripts/sim09_personnel.py`
+  - ` M scripts/sim09_u4d.py`
+  - ` M scripts/sim09_urgency.py`
+  - ` M scripts/sim10_drive.py`
+  - `?? an.csv`
+  - `?? data/pool_observables/20261103T130853Z/manifest.json`
+  - `?? data/pool_observables/20261103T130853Z/observations.json`
+  - ...and 235 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
