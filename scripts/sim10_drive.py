@@ -652,6 +652,42 @@ TWO_MIN = 120.0
 Q4_SECS = 900.0
 
 
+class TerminalTables:
+    def __init__(self, directory):
+        import sim08_terminal_fit as ttf
+
+        self.ttf = ttf
+        self.dir = ttf.OUT if directory == "1" else Path(directory)
+        self.window = float(ttf.WINDOW_SECS)
+        self.cps = {}
+        self.score = [ttf.CATS.index(c) for c in ("td", "fg", "def_score")]
+
+    def cum(self, season):
+        key = self.ttf.table_key(season)
+        if key not in self.cps:
+            t = self.ttf.load_table(season, self.dir)
+            self.cps[key] = (
+                self.ttf.cum_probs(np.array(t["reg_counts"])),
+                self.ttf.cum_probs(np.array(t["ot_counts"])),
+            )
+        return self.cps[key]
+
+    def probs(self, cp, ix):
+        row = cp[ix]
+        return np.diff(np.r_[0.0, row])[self.score]
+
+    def reg(self, season, secs, m):
+        ttf = self.ttf
+        b = int(ttf.bin_of(secs))
+        mi = int(ttf.margin_idx(m, ttf.KEY_MARGIN_MAX))
+        return self.probs(self.cum(season)[0], (b, mi))
+
+    def ot(self, season, k, m):
+        ttf = self.ttf
+        mi = int(ttf.margin_idx(m, ttf.OT_MARGIN_MAX))
+        return self.probs(self.cum(season)[1], (min(int(k), ttf.OT_POSS_MAX), mi))
+
+
 def phase_of_state(half, secs):
     if half == 3:
         return 6
@@ -977,6 +1013,9 @@ def strength_adjust(vals, gam, z):
 
 
 class Engine:
+    il = None
+    gl = None
+
     def __init__(
         self,
         h,
@@ -1062,6 +1101,19 @@ class Engine:
         self.h_ot = pad_h(h if h_ot is None else h_ot)
         self.head = Head(seg) if os.environ.get("SIM10_HEAD") == "1" else None
         self.hecarry = os.environ.get("SIM10_HECARRY") == "1"
+        self.sit = None
+        if os.environ.get("SIM10_SITUATIONAL"):
+            from sim10_situational import Situational
+
+            self.sit = Situational(os.environ["SIM10_SITUATIONAL"].split(","))
+        self.drlam = float(os.environ.get("SIM10_DRLAM", "1.0"))
+        self.stslope = self.koseason = None
+        if os.environ.get("SIM10_STSLOPE") == "1" or os.environ.get("SIM10_KOSEASON") == "1":
+            tb = np.load(REPO / "artifacts" / "sim06" / "start_tables.npz")
+            if os.environ.get("SIM10_STSLOPE") == "1" and len(tb["slope_seg"]) == len(seg):
+                self.stslope = tb["slope_seg"]
+            if os.environ.get("SIM10_KOSEASON") == "1":
+                self.koseason = {int(y): tb["ko_values"][tb["ko_years"] == y] for y in np.unique(tb["ko_years"])}
         self.mucurve = os.environ.get("SIM10_MUCURVE") == "1" and self.ptab is not None
         self.joint = None
         if os.environ.get("SIM10_JOINT") == "1" and self.ptab is not None:
@@ -1085,6 +1137,10 @@ class Engine:
         self.q4dec = None
         if os.environ.get("SIM10_Q4DEC"):
             self.q4dec = json.loads(Path(os.environ["SIM10_Q4DEC"]).read_text())
+        self.term = None
+        self.poss_k = 0
+        if os.environ.get("SIM10_TERMINAL"):
+            self.term = TerminalTables(os.environ["SIM10_TERMINAL"])
         self.kst = (0.0, 0.0)
         self.st_m = 0.0
         self.stl = None
@@ -1148,6 +1204,8 @@ class Engine:
         w = np.exp(-0.5 * (z - z.min()))
         nz = np.flatnonzero(w > 1e-12)
         w = w[nz]
+        if self.sit is not None:
+            w = w * self.sit.nh_ratio(idx[nz], hf, math.expm1(q[2]), q[1], 1 - hm)
         if self.head is not None and hf < 3:
             hq = [q[0], q[1], q[2], q[3], q[4], q[7], hf - 1.0, hm]
             w = self.head.reweight(idx[nz], w, hq, hf, hm)
@@ -1184,17 +1242,23 @@ class Engine:
                 ml = 1.0 / (1.0 + math.exp(-lg_))
                 tg = np.array(tg, dtype=np.float64)
                 tg[2] = tg[2] * ml / self.st_m
-            if self.fgdec is not None and hf == 2 and FG_DEC_LO <= q[1] <= 0.0:
+            term_on = self.term is not None and hf == 2 and secs <= self.term.window
+            if not term_on and self.fgdec is not None and hf == 2 and FG_DEC_LO <= q[1] <= 0.0:
                 cf_ = self.fgdec.get(str(regime(hf, secs)), 0.0)
                 tg = np.array(tg, dtype=np.float64)
                 tg[2] = 1.0 / (1.0 + math.exp(-(math.log(tg[2] / (1.0 - tg[2])) + cf_)))
-            if self.q4dec is not None and hf == 2 and secs <= Q4_SECS:
+            if not term_on and self.q4dec is not None and hf == 2 and secs <= Q4_SECS:
                 key_ = f"{regime(hf, secs)}_{q4_bin(q[1])}"
                 tg = np.array(tg, dtype=np.float64)
                 for k_, nm_ in ((1, "td"), (2, "fg")):
                     cf_ = self.q4dec[nm_].get(key_, 0.0)
                     if cf_:
                         tg[k_] = 1.0 / (1.0 + math.exp(-(math.log(tg[k_] / (1.0 - tg[k_])) + cf_)))
+            if term_on:
+                tg = np.array(tg, dtype=np.float64)
+                tg[1:4] = self.term.reg(q[6], secs, q[1])
+            if self.sit is not None:
+                tg = self.sit.tg_shift(tg, hf, secs, q[1], 1 - hm, q[7])
             tg0 = tg
             mt = q[5:6]
             if self.ptab is not None:
@@ -1210,7 +1274,7 @@ class Engine:
                 w1 = tilt_weights(w, X[nz, 5:6], mt) if self.dr_mu else w
                 u = w1 / w1.sum()
                 adj = u @ self.out_arr[idx[nz]] - u @ self.m_arr[idx[nz]]
-                tg = tg + adj * DR_MASK
+                tg = tg + adj * DR_MASK * (self.drlam if self.head is not None else 1.0)
             rg_ = regime(hf, secs)
             if rg_ in self.mu_free and self.eoh == "mu":
                 w = tilt_weights(w, X[nz, 5:6], mt)
@@ -1228,6 +1292,9 @@ class Engine:
                 self.trace.append(
                     np.r_[tg0, tg, u @ self.out_arr[idx[nz]], u @ X[nz, 5], 1.0 / (u @ u)]
                 )
+        elif self.term is not None and hf == 3 and self.models is not None:
+            tgt = self.term.ot(q[6], self.poss_k, q[1])
+            w = tilt_weights(w, self.out_arr[idx[nz]][:, 1:4], tgt)
         else:
             tdims = [d for d in self.tilt if d == 5 or fin[d]] if hf < 3 else []
             if tdims:
@@ -1284,11 +1351,14 @@ class Engine:
                     week,
                 ]
             )
+            self.poss_k = n_poss
             j = self.draw(hf, 1 if pos == 0 else 0, q, rng)
             trunc = self.he[j] == 1 or self.el[j] >= secs
             now = base + secs
             scored = td = dsc = False
             skip = None
+            if self.il is not None:
+                p0, o0 = sc[pos], sc[other]
             for k in range(self.ev_ptr[j], self.ev_ptr[j + 1]):
                 off_, po, pd_ = self.ev[k]
                 if trunc and off_ > secs:
@@ -1324,9 +1394,24 @@ class Engine:
                 if trunc:
                     r = r[r[:, 1] <= secs]
                 pls.append(np.c_[r[:, 0], np.full(len(r), pos)])
+            if self.il is not None:
+                self.il.append(
+                    [
+                        hf,
+                        pos,
+                        float(yl),
+                        float(secs),
+                        sc[pos] - p0,
+                        sc[other] - o0,
+                        float(min(self.el[j], secs)),
+                        int(trunc),
+                    ]
+                )
             if trunc:
                 return
             secs -= self.el[j]
+            if self.sit is not None:
+                self.sit.after_drive(j, pos)
             tos[pos] = max(0.0, tos[pos] - self.uo[j])
             tos[other] = max(0.0, tos[other] - self.ud[j])
             n_poss += 1
@@ -1340,7 +1425,16 @@ class Engine:
             d = yl - self.yl[j]
             ny = self.nyl[j]
             if not scored:
-                ny = ny + d if self.nsame[j] == 1 else ny - d
+                if self.nsame[j] == 1:
+                    ny = ny + d
+                elif self.stslope is not None:
+                    ny = ny + self.stslope[j] * d
+                else:
+                    ny = ny - d
+            elif self.koseason is not None and self.nsame[j] != 1:
+                ks = [y for y in self.koseason if y <= season]
+                ko = self.koseason[max(ks) if ks else min(self.koseason)]
+                ny = float(ko[rng.integers(len(ko))])
             if self.stl is not None:
                 ny = ny + self.st_shift(pos, other, scored, j)
             yl = min(99.0, max(1.0, ny))
@@ -1348,7 +1442,11 @@ class Engine:
                 pos = other
 
     def game(self, rng, lat, season, week=9.0):
+        if self.sit is not None:
+            self.sit.reset()
         week = float(min(week, LAST_REG_WEEK))
+        if self.il is not None:
+            self.il = []
         sc = [0.0, 0.0]
         evs, pls = [], []
         xq = [(lat[0][0] + lat[1][1]) / self.s, (lat[1][0] + lat[0][1]) / self.s]
@@ -1374,6 +1472,7 @@ class Engine:
         self.run_half(rng, 2, recv2, o[2], 1800.0 - o[3], sc, 0.0, xq, season, evs, pls, week=week)
         reg = sc[0] - sc[1]
         went_ot = sc[0] == sc[1]
+        oo = None
         if went_ot:
             tot = 600.0 if season >= 2017 else 900.0
             if season in SUDDEN_DEATH:
@@ -1386,6 +1485,7 @@ class Engine:
             recv = 0 if rng.random() < 0.5 else 1
             sc[recv] += o[4]
             sc[1 - recv] += o[5]
+            oo = [recv, float(o[2]), float(o[3]), float(o[4]), float(o[5]), rule, tot]
             if not (o[4] or o[5]):
                 self.run_half(
                     rng,
@@ -1406,6 +1506,18 @@ class Engine:
         reg_e = e[e[:, 3] < 3]
         dm = reg_e[:, 1] - reg_e[:, 2]
         ms = [float(dm[reg_e[:, 0] >= t].sum()) for t in (2700.0, 1800.0, 900.0)]
+        if self.il is not None:
+            rm = e[e[:, 3] < 3]
+            hm = rm[:, 1] - rm[:, 2]
+            self.gl = {
+                "m300": float(hm[rm[:, 0] >= 300.0].sum()),
+                "m120": float(hm[rm[:, 0] >= 120.0].sum()),
+                "last": rm[-2:, :3].tolist(),
+                "dr": self.il,
+                "oo": oo,
+                "end": [sc[0], sc[1]],
+                "reg": reg,
+            }
         pl = np.concatenate(pls) if pls else np.zeros((0, 2))
         return sc[0], sc[1], ms, reg, went_ot, pl
 
@@ -1489,6 +1601,10 @@ def sim_world(task):
         setting["form_ratio"] = FORM_VAR_NET / FORM_SEASON_VAR_NET
         setting["form_phi"] = FORM_DECAY
     grows, prow, ptm = [], [], []
+    ilab = os.environ.get("SIM10_INSTR")
+    ilines = []
+    if ilab:
+        eng.il = []
     rng = np.random.default_rng(wseed)
     lat = gen.gen_world_latents(rng, n_seasons, fit, setting)
     gseeds = wseed.spawn(n_seasons)
@@ -1514,6 +1630,11 @@ def sim_world(task):
             sched = gen.make_schedule(rng)
         ratings = gen.season_ratings(weekly, qb_out, fit, setting, 0.0, 0.0)
         grng = np.random.default_rng(gseeds[sidx])
+        book = None
+        if eng.sit is not None and "stakes" in eng.sit.flags:
+            from sim10_situational import StakesBook
+
+            book = StakesBook(sched, int(gseeds[sidx].generate_state(1)[0]))
         sid = w * 1000 + sidx + 1
         for gi, (week, h, a) in enumerate(sched):
             rh, ra = ratings[week][h], ratings[week][a]
@@ -1522,8 +1643,14 @@ def sim_world(task):
             if stl is not None:
                 eng.stl = (stl[sidx][h], stl[sidx][a])
                 eng.kst = (float(stl[sidx][h][4]), float(stl[sidx][a][4]))
+            if book:
+                eng.sit.set_stakes(book.tags(week, h, a))
             hs, as_, ms, reg, ot, pl = eng.game(grng, (rh, ra), season, week)
+            if book:
+                book.record(week, h, a, hs - as_)
             gidn = f"w{w:04d}s{sidx:02d}g{gi:03d}"
+            if ilab:
+                ilines.append(json.dumps({"id": gidn, "season": int(season), **eng.gl}))
             dl = (rh[0] + ra[1]) - (ra[0] + rh[1])
             grows.append(
                 (
@@ -1546,6 +1673,11 @@ def sim_world(task):
             if len(pl):
                 prow.append(pl[:, 0].astype(np.int64))
                 ptm.append((gidn, f"W{w}T{h}", f"W{w}T{a}", pl[:, 1].astype(np.int8)))
+    if ilab:
+        idir = REPO / "artifacts" / "sim10" / "instrument" / ilab
+        idir.mkdir(parents=True, exist_ok=True)
+        with open(idir / f"w{os.getpid()}.jsonl", "a", encoding="utf-8") as fh:
+            fh.write("\n".join(ilines) + "\n")
     if eng.head is not None:
         eng.head.flush()
     return w, grows, prow, ptm
@@ -2342,6 +2474,7 @@ def cmd_sim(a):
     t0 = time.time()
     os.environ["SIM10_LATENT"] = a.latent
     os.environ["SIM10_Q4DEC"] = a.q4dec
+    os.environ["SIM10_SITUATIONAL"] = a.sit
     os.environ["SIM10_FGDEC"] = a.fgdec
     os.environ["SIM10_FORM"] = str(int(a.form))
     os.environ["SIM10_HECARRY"] = str(int(a.hecarry))
@@ -2474,6 +2607,7 @@ def main():
     s.add_argument("--stfull", default="")
     s.add_argument("--st", default="")
     s.add_argument("--fgdec", default="")
+    s.add_argument("--sit", default="")
     s.add_argument("--q4dec", default=str(OUT / "q4dec_fg.json"))
     s.add_argument("--latent", default=str(OUT / "latent_fit_2009_25.json"))
     s.add_argument("--label", default="sim10")

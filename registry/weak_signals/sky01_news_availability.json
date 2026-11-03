@@ -141,6 +141,34 @@
       "source": "artifacts/sky01/lead_times.json",
       "standard_error": null
     },
+    "sky01_snap_weighted_repaired_oos_brier": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "SKY-01 snap-weighted out-count differential with the 28% unweighted report rows filled by a leave-one-season-out fitted snap-share expectation (last observed share, draft round, position group)",
+      "effect": -9.66e-05,
+      "effect_units": "brier_improvement",
+      "family": "sky01_news_availability",
+      "interval": [
+        -0.001223,
+        0.000866
+      ],
+      "league": "nfl",
+      "notes": "OOS log loss gain -0.000237 [-0.002552,+0.001778] P+ 0.4395; decisive 10 games 6-4 vs base; in-sample Brier +0.0000055, gap +0.000102; one new look",
+      "plain_summary": null,
+      "probability_positive": 0.4605,
+      "recorded_at": "2026-11-03",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/sky01/snap_repair.json",
+      "standard_error": 0.000533
+    },
     "sky01_term_ins_accuracy_gain_points": {
       "category": "health",
       "classification": "unresolved_below_power",

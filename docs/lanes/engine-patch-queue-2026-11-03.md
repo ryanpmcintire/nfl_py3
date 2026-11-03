@@ -25,3 +25,9 @@ Apply: `git -C F:\Repos\nfl_py3 apply F:\Repos\nfl_py3\tests\scratch\engine-queu
 - Spec A cannot run yet (read): sim08_terminal_fit.py has no `terminal_cum`, `terminal_probs`, or OT lookup; the lane diff's OT branch (poss_idx, kneel/other mapping) is prose, not a diff, so the patch carries only init, guards and the regulation tg override. Also the fit writes one transitions_<season>.json per season, but SIM10_TERMINAL takes one file. Needs a unit writing those functions and the OT hunk.
 - Regulation override sets td and fg only; kneel/turnover/punt mass unmapped (reported in spec A lane).
 - Kickoff-season flag is keyed to `season`, valid only with --realsched 1.
+
+## 2026-11-03 identity run (agent)
+- Combined patch APPLIED to scripts/sim10_drive.py (git apply OK). ruff E501: committed 5844564b 4, disk-with-queue 5 (delta +1; new line ~455).
+- Baseline: committed engine + copied scripts + junctions at tests/scratch/engine_identity/base/; running idbase (seed 5, 1 world, 3 seasons, workers 1, realsched 1, 1 thread) in background task b7yv0emdq; log tests/scratch/engine_identity/idbase.log (last line rc/secs). Output artifacts/sim10/idbase_s5/.
+- Next: when idbase finishes, run the same from scripts/sim10_drive.py with label idall (no SIM10_* env set), then compare SHA256 of games.parquet and plays.parquet in artifacts/sim10/idbase_s5 vs idall_s5. If different, git apply -R the combined patch and test instrumentation alone.
+- RESULT: idbase vs idall byte-identical. games.parquet sha256 26b3415a9ab702360a07a7ecf5665368741a248fa8d6b279ac74bb342236cd71; plays.parquet 74ebec4da923912e0756d1958c3bd44718d8cdffdb8bb030a981a6c0d3109e5b. Combined patch stays applied; queue ready.
